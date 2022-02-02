@@ -1,0 +1,13 @@
+{
+  "env": {
+    "es6": true
+  },
+  "extends": ["next", "prettier", "eslint:recommended"],
+  "rules": {
+    "comma-dangle": ["error", "always-multiline"],
+    "id-length": ["error", { "min": 2 }],
+    "object-curly-spacing": ["error", "always"],
+    "react/prop-types": ["error", { "ignore": ["children"] }],
+    "semi": ["error", "never"]
+  }
+}
