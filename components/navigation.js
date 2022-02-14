@@ -1,7 +1,7 @@
-// react
-import React from "react"
-// nextjs
+// node_modules
 import Link from "next/link"
+import PropTypes from "prop-types"
+import React from "react"
 // components
 import SiteLogo from "../components/logo"
 
@@ -43,6 +43,11 @@ const NavigationItem = ({ href, children }) => {
   )
 }
 
+NavigationItem.propTypes = {
+  // The href for the navigation link
+  href: PropTypes.string.isRequired,
+}
+
 /**
  * Wraps the navigation items in <nav> and <ul> tags.
  */
@@ -62,6 +67,7 @@ const Navigation = () => {
     <NavigationList>
       <NavigationItem href="/users">Users</NavigationItem>
       <NavigationItem href="/awards">Awards</NavigationItem>
+      <NavigationItem href="/labs">Labs</NavigationItem>
     </NavigationList>
   )
 }

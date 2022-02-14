@@ -8,42 +8,43 @@ import PageTitle from "../../components/page-title"
 import { UC } from "../../libs/constants"
 import { getCollection } from "../../libs/request"
 
-const AwardList = ({ awards, siteContext, pageContext }) => {
+const LabList = ({ labs, siteContext, pageContext }) => {
   return (
     <>
       <Head>
         <title>{`${siteContext.title} ${UC.mdash} ${pageContext.title}`}</title>
       </Head>
-      <PageTitle>Awards</PageTitle>
-      {awards.map((award) => (
-        <Link href={award["@id"]} key={award.uuid}>
-          <a className="block px-2 py-4 hover:bg-slate-50 hover:dark:bg-slate-800">
-            <div>{award.name}</div>
-            <div>{award.title}</div>
-          </a>
-        </Link>
-      ))}
+      <div>
+        <PageTitle>Users</PageTitle>
+        <div>
+          {labs.map((lab) => (
+            <Link href={lab["@id"]} key={lab.uuid}>
+              <a className="block">{lab.title}</a>
+            </Link>
+          ))}
+        </div>
+      </div>
     </>
   )
 }
 
-AwardList.propTypes = {
-  // Awards to display in the list
-  awards: PropTypes.array.isRequired,
+LabList.propTypes = {
+  // Labs to display in the list
+  labs: PropTypes.array.isRequired,
   // Site context
   siteContext: PropTypes.object.isRequired,
   // Page-specific context
   pageContext: PropTypes.object.isRequired,
 }
 
-export default AwardList
+export default LabList
 
 export const getServerSideProps = async () => {
-  const awards = await getCollection("awards")
+  const labs = await getCollection("lab")
   return {
     props: {
-      awards: awards["@graph"],
-      pageContext: { title: awards.title },
+      labs: labs["@graph"],
+      pageContext: { title: labs.title },
     },
   }
 }

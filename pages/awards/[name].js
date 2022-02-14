@@ -1,11 +1,12 @@
-// nextjs
+// node_modules
 import Head from "next/head"
+import PropTypes from "prop-types"
 // components
-import PageTitle from "../../components/page-title"
 import DataItem, {
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-item"
+import PageTitle from "../../components/page-title"
 // libs
 import { UC } from "../../libs/constants"
 import { getObject } from "../../libs/request"
@@ -45,6 +46,17 @@ const Award = ({ award, pi, siteContext, pageContext }) => {
       </div>
     </>
   )
+}
+
+Award.propTypes = {
+  // Award data to display on the page
+  award: PropTypes.object.isRequired,
+  // Principal investigator data associated with `award`
+  pi: PropTypes.object.isRequired,
+  // Site context data
+  siteContext: PropTypes.object.isRequired,
+  // Page-specific context data
+  pageContext: PropTypes.object.isRequired,
 }
 
 export default Award

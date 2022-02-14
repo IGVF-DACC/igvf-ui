@@ -1,3 +1,4 @@
+// components
 import { Logo } from "../components/logo"
 
 const Home = () => {

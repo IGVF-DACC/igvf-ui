@@ -1,3 +1,4 @@
+// node_modules
 import Link from "next/link"
 
 export const Logo = () => {

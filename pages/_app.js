@@ -1,5 +1,6 @@
-// next
+// node_modules
 import Head from "next/head"
+import PropTypes from "prop-types"
 // libs
 import { BRAND_COLOR, SITE_TITLE } from "../libs/constants"
 // components
@@ -67,6 +68,13 @@ const App = ({ Component, pageProps }) => {
       </div>
     </>
   )
+}
+
+App.propTypes = {
+  // Component to render for the page, as determined by nextjs router
+  Component: PropTypes.elementType.isRequired,
+  // Properties associated with the page to pass to `Component`
+  pageProps: PropTypes.object.isRequired,
 }
 
 export default App

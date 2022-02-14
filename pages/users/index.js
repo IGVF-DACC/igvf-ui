@@ -1,6 +1,7 @@
-// nextjs
+// node_modules
 import Head from "next/head"
 import Link from "next/link"
+import PropTypes from "prop-types"
 // components
 import PageTitle from "../../components/page-title"
 // libs
@@ -25,6 +26,15 @@ const UserList = ({ users, siteContext, pageContext }) => {
       </div>
     </>
   )
+}
+
+UserList.propTypes = {
+  // Users to display in the list
+  users: PropTypes.array.isRequired,
+  // Site context
+  siteContext: PropTypes.object.isRequired,
+  // Page-specific context
+  pageContext: PropTypes.object.isRequired,
 }
 
 export default UserList
