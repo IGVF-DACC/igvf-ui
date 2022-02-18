@@ -23,3 +23,17 @@ Stop and clean up in both terminals:
 ```bash
 $ docker compose down -v
 ```
+
+## Testing
+
+### Jest tests
+
+To execute all Jest tests (no practical way exists to execute individual Jest tests) enter:
+
+```bash
+$ npm test
+```
+
+#### Writing Jest tests
+
+This project uses the [React Testing Library (RTL)](https://testing-library.com/docs/bs-react-testing-library/intro). NextJS provides a [primer on creating your own Jest tests]. You need to use [RTL queries](https://testing-library.com/docs/react-testing-library/cheatsheet/#queries) to extract portions of the DOM to test. You then need a combination of the [Jest matchers](https://jestjs.io/docs/expect) and [RTL matchers](https://github.com/testing-library/jest-dom#table-of-contents) to perform the tests.
