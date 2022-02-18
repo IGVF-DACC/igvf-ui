@@ -16,6 +16,9 @@ import React from "react"
  * </SeparatedList>
  * // Expected output: "First React component . Second React component . Third React component"
  *
+ * If you provide individual components between the <SeparatedList> and </SeparatedList> tags
+ * instead of a loop, each of these components must include a key attribute.
+ *
  * You can nest SeparatedList components to combine separated lists. Make sure to give each child
  * SeparatedList a unique key:
  *
