@@ -1,14 +1,22 @@
-// jest.config.js
 const nextJest = require("next/jest")
 
 const createJestConfig = nextJest({ dir: "./" })
 
-// Add any custom config to be passed to Jest
 const customJestConfig = {
-  testEnvironment: "jest-environment-jsdom",
   clearMocks: true,
-  moduleDirectories: ["node_modules", "components", "libs", "pages"],
+  moduleDirectories: [
+    "<rootDir>/node_modules",
+    "<rootDir>/components",
+    "<rootDir>/libs",
+  ],
+  testEnvironment: "jest-environment-jsdom",
+  testPathIgnorePatterns: [
+    "<rootDir>/cypress",
+    "<rootDir>/docker",
+    "<rootDir>/node_modules/",
+    "<rootDir>/public",
+    "<rootDir>/styles",
+  ],
 }
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 module.exports = createJestConfig(customJestConfig)

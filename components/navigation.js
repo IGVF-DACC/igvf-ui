@@ -31,11 +31,14 @@ const HamburgerIcon = () => {
  * Renders a single navigation item.
  * @param {href} href The href for the navigation link
  */
-const NavigationItem = ({ href, children }) => {
+const NavigationItem = ({ href, testid, children }) => {
   return (
     <li>
       <Link href={href}>
-        <a className="block px-2 py-2 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800">
+        <a
+          data-testid={testid}
+          className="block px-2 py-2 no-underline hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
+        >
           {children}
         </a>
       </Link>
@@ -46,6 +49,8 @@ const NavigationItem = ({ href, children }) => {
 NavigationItem.propTypes = {
   // The href for the navigation link
   href: PropTypes.string.isRequired,
+  // Searchable test ID for <a>
+  testid: PropTypes.string,
 }
 
 /**
@@ -65,9 +70,15 @@ const NavigationList = ({ children }) => {
 const Navigation = () => {
   return (
     <NavigationList>
-      <NavigationItem href="/users">Users</NavigationItem>
-      <NavigationItem href="/awards">Awards</NavigationItem>
-      <NavigationItem href="/labs">Labs</NavigationItem>
+      <NavigationItem href="/awards" testid="awards">
+        Awards
+      </NavigationItem>
+      <NavigationItem href="/labs" testid="labs">
+        Labs
+      </NavigationItem>
+      <NavigationItem href="/users" testid="users">
+        Users
+      </NavigationItem>
     </NavigationList>
   )
 }
