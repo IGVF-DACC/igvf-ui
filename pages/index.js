@@ -15,9 +15,7 @@ const Home = () => {
     }
   })
 
-  return (
-    <div className="flex h-screen w-full grow items-center justify-items-center" />
-  )
+  return null
 }
 
 export default Home
