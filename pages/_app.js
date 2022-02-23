@@ -62,7 +62,7 @@ const App = ({ Component, pageProps }) => {
       </Head>
       <div className="container md:flex">
         <NavigationSection />
-        <div className="grow px-8 py-2 text-black dark:text-white">
+        <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
           <Component {...pageProps} siteContext={{ title: SITE_TITLE }} />
         </div>
       </div>

@@ -5,8 +5,11 @@
   "extends": ["next", "prettier", "eslint:recommended"],
   "rules": {
     "comma-dangle": ["error", "always-multiline"],
-    "id-length": ["error", { "min": 2 }],
+    "id-length": ["error", { "min": 2, "exceptions": ["_"] }],
+    "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
     "object-curly-spacing": ["error", "always"],
+    "no-trailing-spaces": ["error"],
+    "react/no-unused-prop-types": ["error", { "skipShapeProps": true }],
     "react/prop-types": ["error", { "ignore": ["children"] }],
     "semi": ["error", "never"]
   }

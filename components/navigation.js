@@ -87,11 +87,12 @@ const Navigation = () => {
  * Displays the navigation bar (for mobile) or the sidebar navigation (for desktop).
  */
 const NavigationSection = () => {
+  // True if user has opened the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
   return (
-    <section>
-      <div className="flex h-14 justify-between md:block md:h-auto md:w-60 md:shrink-0 md:grow-0 md:basis-60">
+    <section className="md:block md:h-auto md:w-60 md:shrink-0 md:grow-0 md:basis-60">
+      <div className="flex h-14 justify-between md:block">
         <SiteLogo />
         <button
           className="md:hidden"
