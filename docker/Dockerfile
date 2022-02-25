@@ -8,7 +8,7 @@ RUN chmod +x ./entrypoint.sh
 
 WORKDIR /igvf-ui
 
-COPY package*.json .
+COPY package*.json ./
 
 RUN npm ci
 
