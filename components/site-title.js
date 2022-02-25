@@ -12,7 +12,7 @@ const SiteTitle = () => {
   return (
     <Head>
       <title>{`${site.title}${
-        page.title && `${UC.mdash} ${page.title}`
+        page.title && ` ${UC.mdash} ${page.title}`
       }`}</title>
     </Head>
   )
