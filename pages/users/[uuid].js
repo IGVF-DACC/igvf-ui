@@ -1,5 +1,4 @@
 // node_modules
-import Head from "next/head"
 import PropTypes from "prop-types"
 // components
 import DataItem, {
@@ -7,23 +6,19 @@ import DataItem, {
   DataItemValue,
 } from "../../components/data-item"
 import PageTitle from "../../components/page-title"
+import SiteTitle from "../../components/site-title"
 // libs
-import { UC } from "../../libs/constants"
 import { getObject } from "../../libs/request"
 
-const User = ({ user, lab, siteContext, pageContext }) => {
+const User = ({ user, lab }) => {
   return (
     <>
-      <Head>
-        <title>{`${siteContext.title} ${UC.mdash} ${pageContext.title}`}</title>
-      </Head>
-      <div>
-        <PageTitle>{user.title}</PageTitle>
-        <DataItem>
-          <DataItemLabel>Lab</DataItemLabel>
-          <DataItemValue>{lab.title}</DataItemValue>
-        </DataItem>
-      </div>
+      <SiteTitle />
+      <PageTitle>{user.title}</PageTitle>
+      <DataItem>
+        <DataItemLabel>Lab</DataItemLabel>
+        <DataItemValue>{lab.title}</DataItemValue>
+      </DataItem>
     </>
   )
 }
@@ -33,10 +28,6 @@ User.propTypes = {
   user: PropTypes.object.isRequired,
   // Lab data associated with `user`
   lab: PropTypes.object.isRequired,
-  // Site context
-  siteContext: PropTypes.object.isRequired,
-  // Page-specific context
-  pageContext: PropTypes.object.isRequired,
 }
 
 export default User

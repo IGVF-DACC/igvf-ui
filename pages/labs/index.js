@@ -1,29 +1,22 @@
 // node_modules
-import Head from "next/head"
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
 import PageTitle from "../../components/page-title"
+import SiteTitle from "../../components/site-title"
 // libs
-import { UC } from "../../libs/constants"
 import { getCollection } from "../../libs/request"
 
-const LabList = ({ labs, siteContext, pageContext }) => {
+const LabList = ({ labs }) => {
   return (
     <>
-      <Head>
-        <title>{`${siteContext.title} ${UC.mdash} ${pageContext.title}`}</title>
-      </Head>
-      <div>
-        <PageTitle>Users</PageTitle>
-        <div>
-          {labs.map((lab) => (
-            <Link href={lab["@id"]} key={lab.uuid}>
-              <a className="block">{lab.title}</a>
-            </Link>
-          ))}
-        </div>
-      </div>
+      <SiteTitle />
+      <PageTitle>Users</PageTitle>
+      {labs.map((lab) => (
+        <Link href={lab["@id"]} key={lab.uuid}>
+          <a className="block">{lab.title}</a>
+        </Link>
+      ))}
     </>
   )
 }
@@ -31,10 +24,6 @@ const LabList = ({ labs, siteContext, pageContext }) => {
 LabList.propTypes = {
   // Labs to display in the list
   labs: PropTypes.array.isRequired,
-  // Site context
-  siteContext: PropTypes.object.isRequired,
-  // Page-specific context
-  pageContext: PropTypes.object.isRequired,
 }
 
 export default LabList

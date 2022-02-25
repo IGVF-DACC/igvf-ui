@@ -1,19 +1,16 @@
 // node_modules
-import Head from "next/head"
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
 import PageTitle from "../../components/page-title"
+import SiteTitle from "../../components/site-title"
 // libs
-import { UC } from "../../libs/constants"
 import { getCollection } from "../../libs/request"
 
-const AwardList = ({ awards, siteContext, pageContext }) => {
+const AwardList = ({ awards }) => {
   return (
     <>
-      <Head>
-        <title>{`${siteContext.title} ${UC.mdash} ${pageContext.title}`}</title>
-      </Head>
+      <SiteTitle />
       <PageTitle>Awards</PageTitle>
       {awards.map((award) => (
         <Link href={award["@id"]} key={award.uuid}>
@@ -30,10 +27,6 @@ const AwardList = ({ awards, siteContext, pageContext }) => {
 AwardList.propTypes = {
   // Awards to display in the list
   awards: PropTypes.array.isRequired,
-  // Site context
-  siteContext: PropTypes.object.isRequired,
-  // Page-specific context
-  pageContext: PropTypes.object.isRequired,
 }
 
 export default AwardList
