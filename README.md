@@ -44,10 +44,30 @@ The Docker desktop app should now show no running containers.
 
 Use Jest for unit testing individual functions and isolated React components that rely on simple data. More complex React components, e.g. those relying on server data, typically get tested better with Cypress.
 
-To execute all Jest tests (no practical way exists to execute individual Jest tests), enter:
+To execute all Jest tests and clean up:
 
 ```bash
+$ docker compose -f docker-compose.test.yml up --exit-code-from nextjs
+....
+$ docker compose -f docker-compose.test.yml down -v
+
+```
+
+Or run tests interactively:
+
+```bash
+# Start interactive container.
+$ docker compose -f docker-compose.test.yml run nextjs /bin/sh
+# In interactive container (modify test command as needed).
 $ npm test
+# Run specific Jest test (e.g. separated-list).
+$ npm test -- separated-list
+```
+
+And stop and clean, exit the interactive container and then:
+
+```bash
+$ docker compose down -v
 ```
 
 #### Writing Jest Tests

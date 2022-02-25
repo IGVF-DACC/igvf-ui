@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+
+  nextjs:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    image: igvf-ui-nextjs
+    volumes:
+      - ".:/igvf-ui:cached"
+      - "/igvf-ui/node_modules"
+      - "/igvf-ui/.next"
+    command: npm test -- --coverage
+    ports:
+      - "3000:3000"
