@@ -28,6 +28,20 @@ $ docker compose down -v
 
 The Docker desktop app should now show no running containers.
 
+## Installing packages
+
+Install packages from the Docker environment itself (to ensure proper `npm` version and `package.json` format).
+
+For example to install `uuid` package start interactive container:
+```bash
+$ docker compose run nextjs /bin/sh
+```
+In container run desired `npm install` command:
+```bash
+$ npm install uuid
+```
+Changes should be reflected in the `package*.json` files of local repository (exit container and commit them to `git`). Make sure to use `docker compose up --build` when starting the application the next time to rebuild Docker image with latest dependencies.
+
 ## Testing
 
 ### Jest Tests
