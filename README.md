@@ -11,18 +11,9 @@ Clone the [igvfd](https://github.com/IGVF-DACC/igvfd) repo locally and start its
 
 ```bash
 $ docker compose up
-```
-
-Clone the `igvf-ui` repo, and then make sure the Docker container’s npm packages have built. You only need to do this step when you first install `igvf-ui`, or when you modify its `package.json` dependencies:
-
-```bash
-$ docker compose build
-```
-
-Then install the npm packages and start the Next.js server with this one step (connects to the igvfd Docker network):
-
-```bash
-$ docker compose up
+# Note if dependencies have changes (such as in `package.json`) use the `build` flag
+# as well to rebuild the underlying Docker image.
+$ docker compose up --build
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the `igvf-ui` home page.
