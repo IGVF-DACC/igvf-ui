@@ -7,8 +7,6 @@ This is the UI portion of the IGVF DACC project bootstrapped with [Next.js](http
 
 You must first install [Docker Desktop](https://hub.docker.com/editions/community/docker-ce-desktop-mac) and launch it so that its window with the blue title bar appears. Keep this app running in the background while you test `igvf-ui` locally.
 
-If you haven’t yet, install [Node](https://nodejs.org/en/download/) in your preferred way, frequently from their website or from [Homebrew](https://brew.sh). Next.js determines the [minimum required version of node](https://nextjs.org/docs) you should have installed.
-
 Clone the [igvfd](https://github.com/IGVF-DACC/igvfd) repo locally and start its server with:
 
 ```bash
