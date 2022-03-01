@@ -26,7 +26,7 @@ When you have finished local development, stop and clean up the Docker instances
 $ docker compose down -v
 ```
 
-The Docker desktop app should now show no running containers.
+The Docker Desktop app should now show no running containers.
 
 ## Installing packages
 
