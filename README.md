@@ -11,7 +11,7 @@ Clone the [igvfd](https://github.com/IGVF-DACC/igvfd) repo locally and start its
 
 ```bash
 $ docker compose up
-# Note if dependencies have changed (such as in package.json) use the `build` flag
+# Note if dependencies have changed (such as in package.json) use the build flag
 # as well to rebuild the underlying Docker image.
 $ docker compose up --build
 ```
