@@ -5,7 +5,7 @@ This is the UI portion of the IGVF DACC project bootstrapped with [Next.js](http
 
 ## Getting Started
 
-You must first install [Docker Desktop](https://hub.docker.com/editions/community/docker-ce-desktop-mac) and launch it so that its window with the blue title bar appears. Keep this app running in the background while you test igvf-ui locally.
+You must first install [Docker Desktop](https://hub.docker.com/editions/community/docker-ce-desktop-mac) and launch it so that its window with the blue title bar appears. Keep this app running in the background while you test `igvf-ui` locally.
 
 If you haven’t yet, install [Node](https://nodejs.org/en/download/) in your preferred way, frequently from their website or from [Homebrew](https://brew.sh). Next.js determines the [minimum required version of node](https://nextjs.org/docs) you should have installed.
 
@@ -15,7 +15,7 @@ Clone the [igvfd](https://github.com/IGVF-DACC/igvfd) repo locally and start its
 $ docker compose up
 ```
 
-Clone the igvf-ui repo, and then make sure the Docker container’s npm packages have built. You only need to do this step when you first install igvf-ui, or when you modify its package.json dependencies:
+Clone the `igvf-ui` repo, and then make sure the Docker container’s npm packages have built. You only need to do this step when you first install `igvf-ui`, or when you modify its `package.json` dependencies:
 
 ```bash
 $ docker compose build
@@ -27,9 +27,9 @@ Then install the npm packages and start the Next.js server with this one step (c
 $ docker compose up
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the igvf-ui home page.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the `igvf-ui` home page.
 
-Changes you make to Javascript files hot reload this local igvf-ui.
+Changes you make to Javascript files hot reload this local `igvf-ui`.
 
 When you have finished local development, stop and clean up the Docker instances in both terminals:
 
