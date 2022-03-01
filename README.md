@@ -7,12 +7,17 @@ This is the UI portion of the IGVF DACC project bootstrapped with [Next.js](http
 
 You must first install [Docker Desktop](https://hub.docker.com/editions/community/docker-ce-desktop-mac) and launch it so that its window with the blue title bar appears. Keep this app running in the background while you test `igvf-ui` locally.
 
-Clone the [igvfd](https://github.com/IGVF-DACC/igvfd) repo locally and start its server with:
+1. Clone the [igvfd](https://github.com/IGVF-DACC/igvfd) repo and start its server:
 
 ```bash
-$ docker compose up
-# Note if dependencies have changed (such as in package.json) use the build flag
-# as well to rebuild the underlying Docker image.
+# In igvfd repo.
+$ docker compose up --build
+```
+
+2. Clone this repo (`igvf-ui`) and start the `Next.js` server:
+```bash
+# In igvf-ui repo.
+# Note the build flag is only required if dependencies (e.g. package.json) have changed.
 $ docker compose up --build
 ```
 
