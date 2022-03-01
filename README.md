@@ -17,7 +17,8 @@ $ docker compose up --build
 2. Clone this repo (`igvf-ui`) and start the `Next.js` server:
 ```bash
 # In igvf-ui repo.
-# Note the build flag is only required if dependencies (e.g. package.json) have changed.
+# Note the build flag is only required if dependencies
+# (e.g. package.json) have changed.
 $ docker compose up --build
 ```
 
