@@ -34,7 +34,7 @@ Install packages from the Docker environment itself (to ensure proper `npm` vers
 
 For example to install `uuid` package start interactive container:
 ```bash
-$ docker compose run nextjs /bin/sh
+$ docker compose -f docker-compose.test.yml run nextjs /bin/sh
 ```
 In container run desired `npm install` command:
 ```bash
