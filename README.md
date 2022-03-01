@@ -5,31 +5,20 @@ This is the UI portion of the IGVF DACC project bootstrapped with [Next.js](http
 
 ## Getting Started
 
-You must first install [Docker Desktop](https://hub.docker.com/editions/community/docker-ce-desktop-mac) and launch it so that its window with the blue title bar appears. Keep this app running in the background while you test igvf-ui locally.
-
-If you haven’t yet, install [Node](https://nodejs.org/en/download/) in your preferred way, frequently from their website or from [Homebrew](https://brew.sh). Next.js determines the [minimum required version of node](https://nextjs.org/docs) you should have installed.
+You must first install [Docker Desktop](https://hub.docker.com/editions/community/docker-ce-desktop-mac) and launch it so that its window with the blue title bar appears. Keep this app running in the background while you test `igvf-ui` locally.
 
 Clone the [igvfd](https://github.com/IGVF-DACC/igvfd) repo locally and start its server with:
 
 ```bash
 $ docker compose up
+# Note if dependencies have changed (such as in package.json) use the build flag
+# as well to rebuild the underlying Docker image.
+$ docker compose up --build
 ```
 
-Clone the igvf-ui repo, and then make sure the Docker container’s npm packages have built. You only need to do this step when you first install igvf-ui, or when you modify its package.json dependencies:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the `igvf-ui` home page.
 
-```bash
-$ docker compose build
-```
-
-Then install the npm packages and start the Next.js server with this one step (connects to the igvfd Docker network):
-
-```bash
-$ docker compose up
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the igvf-ui home page.
-
-Changes you make to Javascript files hot reload this local igvf-ui.
+Changes you make to Javascript files hot reload this local `igvf-ui`.
 
 When you have finished local development, stop and clean up the Docker instances in both terminals:
 
@@ -37,7 +26,21 @@ When you have finished local development, stop and clean up the Docker instances
 $ docker compose down -v
 ```
 
-The Docker desktop app should now show no running containers.
+The Docker Desktop app should now show no running containers.
+
+## Installing packages
+
+Install packages from the Docker environment itself (to ensure proper `npm` version and `package.json` format).
+
+For example to install `uuid` package start interactive container:
+```bash
+$ docker compose -f docker-compose.test.yml run nextjs /bin/sh
+```
+In container run desired `npm install` command:
+```bash
+$ npm install uuid
+```
+Changes should be reflected in the `package*.json` files of local repository (exit container and commit them to `git`). Make sure to use `docker compose up --build` when starting the application the next time to rebuild Docker image with latest dependencies.
 
 ## Testing
 
