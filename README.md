@@ -15,6 +15,7 @@ $ docker compose up --build
 ```
 
 2. Clone this repo (`igvf-ui`) and start the `Next.js` server:
+
 ```bash
 # In igvf-ui repo.
 # Note the build flag is only required if dependencies
@@ -34,18 +35,22 @@ $ docker compose down -v
 
 The Docker Desktop app should now show no running containers.
 
-## Installing packages
+## Installing Packages
 
 Install packages from the Docker environment itself (to ensure proper `npm` version and `package.json` format).
 
 For example to install `uuid` package start interactive container:
+
 ```bash
 $ docker compose -f docker-compose.test.yml run nextjs /bin/sh
 ```
+
 In container run desired `npm install` command:
+
 ```bash
 $ npm install uuid
 ```
+
 Changes should be reflected in the `package*.json` files of local repository (exit container and commit them to `git`). Make sure to use `docker compose up --build` when starting the application the next time to rebuild Docker image with latest dependencies.
 
 ## Testing
@@ -103,3 +108,33 @@ $ npx cypress run
 #### Writing Cypress Tests
 
 Generally, each page or major feature on a page should have its own Cypress test, though some pages might have too few elements to justify this. [This Cypress tutorial](https://docs.cypress.io/guides/getting-started/writing-your-first-test#Write-your-first-test) provides a good starting point for writing these tests, which in many ways shares methods with Jest tests.
+
+## Editor Setup
+
+### Visual Studio Code
+
+1. Install [Visual Studio Code](https://code.visualstudio.com/download) if needed.
+1. Install the [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) extension so you can see code-formatting errors.
+1. Install the [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) extension. This automatically formats the code to standard on each save.
+1. Install the [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) extension. This lets you see and select Tailwind CSS classes as you type them, and shows the corresponding CSS when you hover over Tailwind CSS classes.
+
+In addition, you might have a better experience if you set these in your Visual Studio Code JSON settings, either as your preferences (user settings) or specific to the igvf-ui project (workspace settings):
+
+```json
+  "css.validate": false,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "editor.tabSize": 2,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  "tailwindCSS.classAttributes": ["class", "className"],
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.includeLanguages": {
+    "javascript": "javascript",
+    "html": "HTML"
+  },
+```
+
+Some of these might already exist in your settings, so search for them first to avoid conflicts.
