@@ -29,7 +29,6 @@ const HamburgerIcon = () => {
 
 /**
  * Renders a single navigation item.
- * @param {href} href The href for the navigation link
  */
 const NavigationItem = ({ href, testid, children }) => {
   return (
