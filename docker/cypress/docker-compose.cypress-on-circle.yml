@@ -9,8 +9,6 @@ services:
       - "./cypress:/test/cypress"
       - "./cypress-docker.json:/test/cypress.json"
     command: cypress run
-    depends_on:
-      - nextjs
 
 networks:
   default:
