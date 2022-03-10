@@ -7,7 +7,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "cypress": "cypress open"
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run --record --key 083e76f3-5f44-43f0-b248-ace10abf0877"
   },
   "dependencies": {
     "@heroicons/react": "^1.0.6",

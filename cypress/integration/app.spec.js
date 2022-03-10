@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe("Navigation", () => {
   it("should navigate to other pages from the home page", () => {
     cy.visit("/")
