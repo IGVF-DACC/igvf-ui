@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+
+  cypress:
+    image: cypress/included:9.5.1
+    working_dir: "/test"
+    volumes:
+      - "./cypress:/test/cypress"
+      - "./cypress-docker.json:/test/cypress.json"
+    command: cypress run
+    depends_on:
+      - nextjs
+
+networks:
+  default:
+    external: true
+    name: igvfd_default

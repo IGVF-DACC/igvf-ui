@@ -1,0 +1,4 @@
+{
+  "baseUrl": "http://nextjs:3000",
+  "watchForFileChanges": true
+}

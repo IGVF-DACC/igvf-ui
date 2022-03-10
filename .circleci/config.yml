@@ -3,10 +3,11 @@ version: 2.1
 workflows:
   igvf-ui-tests:
     jobs:
-      - run-tests
+      - jest
+      - cypress
 
 jobs:
-  run-tests:
+  jest:
     machine:
       image: ubuntu-2004:202111-02
       docker_layer_caching: true
@@ -27,3 +28,25 @@ jobs:
           name: Upload coverage
           command: |
               docker-compose -f docker-compose.test.yml run --no-deps -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN nextjs npx coveralls < ./coverage/lcov.info
+  cypress:
+    machine:
+      image: ubuntu-2004:202111-02
+      docker_layer_caching: true
+    resource_class: medium
+    working_directory: ~/igvf-ui
+    steps:
+      - checkout
+      - run:
+          name: Clone and build igvfd
+          command: |
+	      git clone https://github.com/IGVF-DACC/igvfd.git
+	      cd igvfd
+	      docker-compose build
+	      docker compose up -d
+      - run:
+          name: pwd
+          command: pwd
+      - run:
+          name: Run tests
+          command: |
+	      docker compose -f docker-compose.yml -f docker/cypress/docker-compose.cypress-on-circle.yml up --exit-code-from cypress
