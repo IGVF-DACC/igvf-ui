@@ -93,17 +93,42 @@ This project uses the [React Testing Library (RTL)](https://testing-library.com/
 
 Use [Cypress](https://www.cypress.io) for end-to-end integration testing, such as testing entire pages, interacting with those pages as a user would, and testing navigation between pages.
 
-To run the Cypress test runner:
+Run Cypress tests with Docker Compose.
+
+1. Start `igvfd`:
 
 ```bash
-$ npm run cypress
+# In igvfd repo. Note can use -d flag to detach from output.
+$ docker compose up
 ```
 
-You can also run the tests immediately from the command line instead of within the Cypress test runner:
+2. Start `igvfd-ui`:
 
 ```bash
-$ npx cypress run
+# In igvf-ui repo.
+$ docker compose up
 ```
+
+3. Run Cypress tests:
+
+```bash
+# In igvf-ui repo.
+$ docker compose -f docker-compose.cypress-m1.yml up --exit-code-from cypress
+```
+
+Note if you want to run Cypress locally using the official Cypress image (not M1) you can use the `docker-compose.cypress-on-circle.yml` in `./docker/cypress` folder, e.g.:
+
+```bash
+# In igvf-ui repo.
+# Temporarily copy yml to root directory so Docker context is correct.
+$ cp ./docker/cypress/docker-compose.cypress-on-circle.yml docker-compose.cypress.yml
+# Run tests.
+$ docker compose -f docker-compose.cypress.yml up --exit-code-from cypress
+# Clean up untracked yml.
+$ rm docker-compose.cypress.yml
+```
+
+4. Review video in `./cypress/videos/`.
 
 #### Writing Cypress Tests
 
