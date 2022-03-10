@@ -7,7 +7,7 @@ services:
     working_dir: "/test"
     volumes:
       - "./cypress:/test/cypress"
-      - "./cypress-docker.json:/test/cypress.json"
+      - "./docker/cypress/cypress-docker.json:/test/cypress.json"
     command: cypress run
 
 networks:

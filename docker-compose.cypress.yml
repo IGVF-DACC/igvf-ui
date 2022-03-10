@@ -9,7 +9,7 @@ services:
     image: igvf-ui-cypress
     volumes:
       - "./cypress:/igvf-ui/cypress"
-      - "./cypress-docker.json:/igvf-ui/cypress.json"
+      - "./docker/cypress/cypress-docker.json:/igvf-ui/cypress.json"
     command: cypress run
 
 networks:
