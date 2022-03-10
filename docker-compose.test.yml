@@ -5,7 +5,7 @@ services:
   nextjs:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/nextjs/Dockerfile
     image: igvf-ui-nextjs
     volumes:
       - ".:/igvf-ui:cached"

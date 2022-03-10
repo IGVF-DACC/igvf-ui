@@ -3,10 +3,11 @@ version: 2.1
 workflows:
   igvf-ui-tests:
     jobs:
-      - run-tests
+      - jest
+      - cypress
 
 jobs:
-  run-tests:
+  jest:
     machine:
       image: ubuntu-2004:202111-02
       docker_layer_caching: true
@@ -27,3 +28,46 @@ jobs:
           name: Upload coverage
           command: |
               docker-compose -f docker-compose.test.yml run --no-deps -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN nextjs npx coveralls < ./coverage/lcov.info
+  cypress:
+    machine:
+      image: ubuntu-2004:202111-02
+      docker_layer_caching: true
+    resource_class: medium
+    working_directory: ~/igvf-ui
+    steps:
+      - checkout
+      - run:
+          name: Clone igvfd
+          environment:
+            - IGVFD_BRANCH: dev
+          command: |
+              git clone https://github.com/IGVF-DACC/igvfd.git --branch $IGVFD_BRANCH
+      - run:
+          name: Build igvfd
+          command: |
+              cd igvfd
+              docker-compose build
+      - run:
+          name: Start igvfd
+          command: |
+              cd igvfd
+              docker-compose up -d
+      - run:
+          name: Build igvf-ui
+          command: |
+              docker-compose build
+      - run:
+          name: Start igvf-ui
+          command: |
+              # Match mounted volume to Docker user.
+              sudo chown root:root -R .
+              docker-compose up -d
+      - run:
+          name: Run Cypress
+          command: |
+              sudo cp docker/cypress/docker-compose.cypress-on-circle.yml .
+              docker-compose -f docker-compose.cypress-on-circle.yml up --exit-code-from cypress
+      - store_artifacts:
+          path: cypress/videos
+      - store_artifacts:
+          path: cypress/screenshots

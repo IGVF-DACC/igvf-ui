@@ -2,7 +2,7 @@ FROM node:16.14.0-alpine
 
 WORKDIR /docker
 
-COPY ./docker/entrypoint.sh .
+COPY ./docker/nextjs/entrypoint.sh .
 
 RUN chmod +x ./entrypoint.sh
 
