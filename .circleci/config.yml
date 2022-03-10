@@ -37,16 +37,20 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Clone and build igvfd
+          name: Clone igvfd
           command: |
               git clone https://github.com/IGVF-DACC/igvfd.git
+       - run:
+          name: Build igvfd
+          command: |
               cd igvfd
               docker-compose build
+       - run:
+          name: Start igvfd
+          command: |
+              cd igvfd
               docker-compose up -d
       - run:
-          name: pwd
-          command: pwd
-      - run:
-          name: Run tests
+          name: Run Cypress
           command: |
-              docker compose -f docker-compose.yml -f docker/cypress/docker-compose.cypress-on-circle.yml up --exit-code-from cypress
+              docker-compose -f docker-compose.yml -f docker/cypress/docker-compose.cypress-on-circle.yml up --exit-code-from cypress

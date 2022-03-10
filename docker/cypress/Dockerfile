@@ -34,8 +34,9 @@ ENV TERM=xterm \
     _X11_NO_MITSHM=1 \
     _MITSHM=0 \
     CYPRESS_INSTALL_BINARY=0 \
-    CYPRESS_CACHE_FOLDER=/root/.cache/Cypress \
-    CYPRESS_VERSION=9.4.1
+    CYPRESS_CACHE_FOLDER=/root/.cache/Cypress
+
+WORKDIR /cypress
 
 RUN npm install -g cypress@${CYPRESS_VERSION} && \
     cypress verify
