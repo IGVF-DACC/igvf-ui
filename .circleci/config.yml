@@ -64,7 +64,7 @@ jobs:
       - run:
           name: Run Cypress
           command: |
-              cp docker/cypress/docker-compose.cypress-on-circle.yml .
+              sudo cp docker/cypress/docker-compose.cypress-on-circle.yml .
               docker-compose -f docker-compose.cypress-on-circle.yml up --exit-code-from cypress
       - store_artifacts:
           path: cypress/videos
