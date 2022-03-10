@@ -59,8 +59,7 @@ jobs:
       - run:
           name: Start igvf-ui
           command: |
-	      # Match mounted volume with Docker user.
-	      sudo chown root:root -R .
+              sudo chown root:root -R .
               docker-compose up -d
       - run:
           name: Run Cypress
