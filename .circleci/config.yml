@@ -46,19 +46,18 @@ jobs:
               cd igvfd
               docker-compose build
       - run:
-          name: Start igvfd
-          command: |
-              cd igvfd
-              docker-compose up -d
-      - run:
           name: Build igvf-ui
           command: |
               docker-compose build
       - run:
-          name: Start igvf-ui
-          command: |
-              docker-compose up -d
-      - run:
           name: Run Cypress
           command: |
-              docker-compose -f docker-compose.yml -f docker/cypress/docker-compose.cypress-on-circle.yml up --exit-code-from cypress
+              echo Starting igvfd
+              cd igvfd
+              docker-compose up -d
+              echo Staring igvf-ui
+              cd ../
+              docker-compose up -d
+              echo Running Cypress
+              cp docker/cypress/docker-compose.cypress-on-circle.yml .
+              docker-compose -f docker-compose.cypress-on-circle.yml up --exit-code-from cypress
