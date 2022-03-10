@@ -42,7 +42,7 @@ jobs:
               git clone https://github.com/IGVF-DACC/igvfd.git
               cd igvfd
               docker-compose build
-              docker compose up -d
+              docker-compose up -d
       - run:
           name: pwd
           command: pwd
