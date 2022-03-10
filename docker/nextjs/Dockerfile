@@ -1,8 +1,8 @@
-FROM node:17.6.0-buster
+FROM node:16.14.0-alpine
 
 WORKDIR /docker
 
-COPY ./docker/entrypoint.sh .
+COPY ./docker/nextjs/entrypoint.sh .
 
 RUN chmod +x ./entrypoint.sh
 
