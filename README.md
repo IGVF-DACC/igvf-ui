@@ -116,7 +116,7 @@ $ docker compose up
 $ docker compose -f docker-compose.cypress-m1.yml up --exit-code-from cypress
 ```
 
-Note if you want to run Cypress locally using the official Cypress image (not M1) you can use the `docker-compose.cypress-on-circle.yml` in `./docker/cypress` folder, e.g.:
+Note if you want to run Cypress locally using the official Cypress image (not for M1 macs) you can use the `docker-compose.cypress-on-circle.yml` in `./docker/cypress` folder, e.g.:
 
 ```bash
 # In igvf-ui repo.
