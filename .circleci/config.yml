@@ -45,7 +45,7 @@ jobs:
           command: |
               cd igvfd
               docker-compose build
-       - run:
+      - run:
           name: Start igvfd
           command: |
               cd igvfd
