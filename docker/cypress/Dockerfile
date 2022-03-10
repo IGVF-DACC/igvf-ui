@@ -28,6 +28,8 @@ RUN git clone https://github.com/cypress-io/cypress.git --depth 1 --branch v${CY
     && yarn \ 
     && yarn binary-build --version ${CYPRESS_VERSION}
 
+COPY /tmp/cypress-build/linux/build/linux-arm64-unpacked /root/.cache/Cypress/${CY_VERSION}/Cypress
+
 ENV TERM=xterm \
     NPM_CONFIG_LOGLEVEL=warn \
     QT_X11_NO_MITSHM=1 \
