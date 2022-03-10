@@ -130,6 +130,12 @@ $ rm docker-compose.cypress.yml
 
 4. Review video in `./cypress/videos/`.
 
+5. Stop and clean up `igvf-ui` and `igvfd` services in respective terminals:
+
+```bash
+$ docker compose down -v
+```
+
 #### Writing Cypress Tests
 
 Generally, each page or major feature on a page should have its own Cypress test, though some pages might have too few elements to justify this. [This Cypress tutorial](https://docs.cypress.io/guides/getting-started/writing-your-first-test#Write-your-first-test) provides a good starting point for writing these tests, which in many ways shares methods with Jest tests.
