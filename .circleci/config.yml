@@ -40,7 +40,7 @@ jobs:
           name: Clone igvfd
           command: |
               git clone https://github.com/IGVF-DACC/igvfd.git
-       - run:
+      - run:
           name: Build igvfd
           command: |
               cd igvfd
