@@ -11,7 +11,7 @@ const LabList = ({ labs }) => {
   return (
     <>
       <SiteTitle />
-      <PageTitle>Users</PageTitle>
+      <PageTitle>Labs</PageTitle>
       {labs.map((lab) => (
         <Link href={lab["@id"]} key={lab.uuid}>
           <a className="block">{lab.title}</a>

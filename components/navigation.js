@@ -1,9 +1,32 @@
 // node_modules
 import Link from "next/link"
+import { useRouter } from "next/router"
 import PropTypes from "prop-types"
 import React from "react"
 // components
 import SiteLogo from "../components/logo"
+
+/**
+ * Contains each navigation item. It might get extensions to allow hierarchical navigation.
+ * `testid` must have a unique value for each item.
+ */
+const navigationItems = [
+  {
+    title: "Awards",
+    href: "/awards",
+    testid: "awards",
+  },
+  {
+    title: "Labs",
+    href: "/labs",
+    testid: "labs",
+  },
+  {
+    title: "Users",
+    href: "/users",
+    testid: "users",
+  },
+]
 
 /**
  * Renders the hamburger icon SVG. Click handling gets handled by the parent component.
@@ -15,7 +38,6 @@ const HamburgerIcon = () => {
       className="h-6 w-6"
       fill="none"
       viewBox="0 0 24 24"
-      stroke="currentColor"
     >
       <path
         strokeLinecap="round"
@@ -30,16 +52,26 @@ const HamburgerIcon = () => {
 /**
  * Renders a single navigation item.
  */
-const NavigationItem = ({ href, testid, children }) => {
+const NavigationItem = ({ href, testid, navigationClick, children }) => {
+  const router = useRouter()
+
+  const onClick = () => {
+    // Notify the main navigation component that the user has clicked a navigation item, then
+    // navigate to the href for the navigation item.
+    navigationClick()
+    router.push(href)
+  }
+
   return (
     <li>
-      <Link href={href}>
-        <a
+      <Link href={href} passHref>
+        <button
+          onClick={onClick}
           data-testid={testid}
-          className="block px-2 py-2 no-underline hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
+          className="hover:bg-brand-lighten block w-full px-2 py-2 text-left text-white no-underline dark:text-white dark:hover:bg-gray-800 md:text-black md:dark:text-white"
         >
           {children}
-        </a>
+        </button>
       </Link>
     </li>
   )
@@ -50,6 +82,8 @@ NavigationItem.propTypes = {
   href: PropTypes.string.isRequired,
   // Searchable test ID for <a>
   testid: PropTypes.string,
+  // Function to call when user clicks a navigation item
+  navigationClick: PropTypes.func.isRequired,
 }
 
 /**
@@ -57,7 +91,7 @@ NavigationItem.propTypes = {
  */
 const NavigationList = ({ children }) => {
   return (
-    <nav className="px-8">
+    <nav className="p-4">
       <ul>{children}</ul>
     </nav>
   )
@@ -66,20 +100,26 @@ const NavigationList = ({ children }) => {
 /**
  * Renders the navigation area for mobile and desktop.
  */
-const Navigation = () => {
+const Navigation = ({ navigationClick }) => {
   return (
     <NavigationList>
-      <NavigationItem href="/awards" testid="awards">
-        Awards
-      </NavigationItem>
-      <NavigationItem href="/labs" testid="labs">
-        Labs
-      </NavigationItem>
-      <NavigationItem href="/users" testid="users">
-        Users
-      </NavigationItem>
+      {navigationItems.map((item) => (
+        <NavigationItem
+          key={item.testid}
+          href={item.href}
+          testid={item.testid}
+          navigationClick={navigationClick}
+        >
+          {item.title}
+        </NavigationItem>
+      ))}
     </NavigationList>
   )
+}
+
+Navigation.propTypes = {
+  // Function to call when user clicks a navigation item
+  navigationClick: PropTypes.func.isRequired,
 }
 
 /**
@@ -89,24 +129,31 @@ const NavigationSection = () => {
   // True if user has opened the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
+  /**
+   * Called when the user clicks a navigation menu item.
+   */
+  const navigationClick = () => {
+    setIsMobileMenuOpen(false)
+  }
+
   return (
-    <section className="md:block md:h-auto md:w-60 md:shrink-0 md:grow-0 md:basis-60">
-      <div className="flex h-14 justify-between md:block">
+    <section className="bg-brand md:block md:h-auto md:w-60 md:shrink-0 md:grow-0 md:basis-60 md:bg-transparent">
+      <div className="flex h-14 justify-between px-4 md:block">
         <SiteLogo />
         <button
-          className="md:hidden"
+          className="stroke-white md:hidden"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           <HamburgerIcon />
         </button>
         <div className="hidden md:block">
-          <Navigation />
+          <Navigation navigationClick={navigationClick} />
         </div>
       </div>
 
       {isMobileMenuOpen && (
         <div className="md:hidden">
-          <Navigation />
+          <Navigation navigationClick={navigationClick} />
         </div>
       )}
     </section>

@@ -16,6 +16,10 @@
   * {
     box-sizing: border-box;
   }
+
+  :root {
+    --color-brand: #991133;
+  }
 }
 
 a {
