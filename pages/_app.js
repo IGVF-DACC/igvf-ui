@@ -86,7 +86,7 @@ const App = ({ Component, pageProps }) => {
           href="/apple-touch-icon-180x180.png"
         />
       </Head>
-      <div className="container md:flex">
+      <div className="md:container md:flex">
         <GlobalContext.Provider value={globalContext}>
           <NavigationSection />
           <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
