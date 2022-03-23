@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@heroicons/react": "^1.0.6",
-    "color": "^4.2.1",
     "framer-motion": "^6.2.8",
     "lodash": "^4.17.21",
     "next": "^12.1.0",
