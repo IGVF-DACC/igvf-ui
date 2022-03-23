@@ -1,4 +1,5 @@
 module.exports = {
+  darkMode: "class",
   content: ["./pages/**/*.js", "./components/**/*.js"],
   theme: {
     container: {
@@ -6,7 +7,14 @@ module.exports = {
     },
     extend: {
       colors: {
-        "logo-color": "#991133",
+        brand: "var(--color-brand)",
+        "nav-highlight": "var(--color-brand-highlight)",
+      },
+      textColor: {
+        base: "var(--color-text-base)",
+      },
+      backgroundColor: {
+        highlight: "var(--color-highlight)",
       },
     },
   },

@@ -1,9 +1,10 @@
 // node_modules
 import Head from "next/head"
 import PropTypes from "prop-types"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 // libs
 import { BRAND_COLOR, SITE_TITLE } from "../libs/constants"
+import DarkModeManager from "../libs/dark-mode-manager"
 // components
 import GlobalContext from "../components/global-context"
 import NavigationSection from "../components/navigation"
@@ -11,6 +12,17 @@ import NavigationSection from "../components/navigation"
 import "../styles/globals.css"
 
 const App = ({ Component, pageProps }) => {
+  useEffect(() => {
+    // Install the dark-mode event listener to react to dark-mode changes.
+    const darkModeManager = new DarkModeManager()
+    darkModeManager.installDarkModeListener()
+    darkModeManager.setCurrentDarkMode()
+
+    return () => {
+      darkModeManager.removeDarkModeListener()
+    }
+  }, [])
+
   const globalContext = useMemo(
     () => ({
       site: {
@@ -74,7 +86,7 @@ const App = ({ Component, pageProps }) => {
           href="/apple-touch-icon-180x180.png"
         />
       </Head>
-      <div className="container md:flex">
+      <div className="md:container md:flex">
         <GlobalContext.Provider value={globalContext}>
           <NavigationSection />
           <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">

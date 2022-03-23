@@ -12,7 +12,7 @@ export const Logo = () => {
       width="100%"
       height="100%"
     >
-      <g className="fill-black dark:fill-white">
+      <g className="fill-white dark:fill-white md:fill-black md:dark:fill-white">
         <path
           d="M562.1,41.6h-48.9c-5.7,0-10,4.5-10,10.3v97c0,5.7,4.5,10.3,10.3,10.3c6,0,10.3-4.6,10.3-10.3V60h38.3
 		c5.3,0,9.4-4.1,9.4-9.1C571.6,45.7,567.5,41.6,562.1,41.6z"
@@ -31,7 +31,7 @@ export const Logo = () => {
         <path d="M223.2,67.5v81.5c0,5.7,4.5,10.3,10.3,10.3c6,0,10.3-4.6,10.3-10.3V67.5l-10.3,10.3L223.2,67.5z" />
         <path d="M233.5,40.7c-5.8,0-10.3,4.5-10.3,10.3v6.5l10.3,10.3l10.3-10.3v-6.5C243.8,45.2,239.5,40.7,233.5,40.7z" />
       </g>
-      <g className="fill-logo-color">
+      <g className="fill-white md:fill-brand">
         <circle cx="543.9" cy="102.3" r="9" />
         <circle cx="322.1" cy="102.3" r="9" />
         <path
@@ -58,7 +58,7 @@ export const Logo = () => {
 const SiteLogo = () => {
   return (
     <Link href="/">
-      <a className="block px-8 py-2 md:h-24">
+      <a className="block w-32 py-2 md:h-24 md:w-auto md:px-8">
         <Logo />
         <span className="sr-only">Home</span>
       </a>
