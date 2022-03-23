@@ -142,6 +142,7 @@ const NavigationSection = () => {
       <div className="flex h-14 justify-between px-4 md:block">
         <SiteLogo />
         <button
+          data-testid="mobile-navigation-trigger"
           className="stroke-white md:hidden"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
@@ -155,6 +156,7 @@ const NavigationSection = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
+            data-testid="mobile-navigation"
             className="overflow-hidden md:hidden"
             initial="collapsed"
             animate="open"
