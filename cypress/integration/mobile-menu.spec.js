@@ -11,7 +11,7 @@ describe("Mobile menu tests", () => {
     cy.get("[data-testid='mobile-navigation']").should("be.visible")
 
     // Selecting a mobile navigation item should close the menu.
-    cy.get("[data-testid='awards']").click()
+    cy.get("[data-testid=awards]").eq(1).click()
     cy.get("[data-testid='mobile-navigation']").should("not.exist")
   })
 })
