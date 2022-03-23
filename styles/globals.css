@@ -20,12 +20,14 @@
 
 :root {
   --color-brand: #991133;
+  --color-brand-highlight: #860f2d;
   --color-text-base: #000000;
   --color-highlight: #f0f0f0;
 }
 
 .dark {
   --color-brand: #991133;
+  --color-brand-highlight: #860f2d;
   --color-text-base: #ffffff;
   --color-highlight: #1b263d;
 }

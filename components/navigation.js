@@ -69,7 +69,7 @@ const NavigationItem = ({ href, testid, navigationClick, children }) => {
         <button
           onClick={onClick}
           data-testid={testid}
-          className="block w-full px-2 py-2 text-left text-base no-underline hover:bg-highlight"
+          className="block w-full px-2 py-2 text-left text-white no-underline hover:bg-nav-highlight md:text-base md:hover:bg-highlight"
         >
           {children}
         </button>

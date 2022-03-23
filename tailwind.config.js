@@ -8,6 +8,7 @@ module.exports = {
     extend: {
       colors: {
         brand: "var(--color-brand)",
+        "nav-highlight": "var(--color-brand-highlight)",
       },
       textColor: {
         base: "var(--color-text-base)",
