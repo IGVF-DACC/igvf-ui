@@ -1,4 +1,5 @@
 // node_modules
+import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
@@ -151,11 +152,23 @@ const NavigationSection = () => {
         </div>
       </div>
 
-      {isMobileMenuOpen && (
-        <div className="md:hidden">
-          <Navigation navigationClick={navigationClick} />
-        </div>
-      )}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            className="overflow-hidden md:hidden"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            variants={{
+              open: { height: "auto" },
+              collapsed: { height: 0 },
+            }}
+          >
+            <Navigation navigationClick={navigationClick} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
