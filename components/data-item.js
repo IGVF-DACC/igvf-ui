@@ -17,7 +17,7 @@ export default DataItem
  */
 export const DataItemLabel = ({ children }) => {
   return (
-    <div className="mb-1 font-semibold uppercase text-gray-500 dark:text-gray-400">
+    <div className="mb-1 font-semibold uppercase text-data-label dark:text-gray-400">
       {children}
     </div>
   )
@@ -27,5 +27,5 @@ export const DataItemLabel = ({ children }) => {
  * Display the value of a <DataItem>.
  */
 export const DataItemValue = ({ children }) => {
-  return <div className="text-sm">{children}</div>
+  return <div className="text-sm text-data-value">{children}</div>
 }

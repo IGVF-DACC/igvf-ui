@@ -23,6 +23,10 @@
   --color-brand-highlight: #860f2d;
   --color-text-base: #000000;
   --color-highlight: #f0f0f0;
+  --color-title-border: #6b7280;
+
+  --color-data-label: #6b7280;
+  --color-data-value: #000000;
 }
 
 .dark {
@@ -30,6 +34,10 @@
   --color-brand-highlight: #860f2d;
   --color-text-base: #ffffff;
   --color-highlight: #1b263d;
+  --color-title-border: #6b7280;
+
+  --color-data-label: #9ca3af;
+  --color-data-value: #ffffff;
 }
 
 a {

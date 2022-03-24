@@ -3,7 +3,9 @@
  */
 const PageTitle = ({ children }) => {
   return (
-    <h1 className="border-b border-gray-500 text-4xl font-thin">{children}</h1>
+    <h1 className="border-b border-title-border text-4xl font-thin">
+      {children}
+    </h1>
   )
 }
 
