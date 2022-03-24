@@ -8,6 +8,7 @@ export const BRAND_COLOR = "#991133"
 // UNICODE entity codes, needed in JSX string templates. Each property named after the equivalent
 // HTML entity. Add new entries to this object as needed.
 export const UC = {
+  ndash: "\u2013", // en dash
   mdash: "\u2014", // em dash
   lsquo: "\u2018", // Right single quote
   rsquo: "\u2019", // Right single quote
