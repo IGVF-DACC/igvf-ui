@@ -20,28 +20,36 @@ const Award = ({ award, pis }) => {
         <DataItemLabel>Title</DataItemLabel>
         <DataItemValue>{award.title}</DataItemValue>
       </DataItem>
-      <DataItem>
-        <DataItemLabel>Description</DataItemLabel>
-        <DataItemValue>{award.description}</DataItemValue>
-      </DataItem>
-      <DataItem>
-        <DataItemLabel>Principal Investigator</DataItemLabel>
-        <DataItemValue>{pis.map((pi) => pi.title).join(", ")}</DataItemValue>
-      </DataItem>
-      <DataItem>
-        <DataItemLabel>Component</DataItemLabel>
-        <DataItemValue>{award.component}</DataItemValue>
-      </DataItem>
+      {award.description && (
+        <DataItem>
+          <DataItemLabel>Description</DataItemLabel>
+          <DataItemValue>{award.description}</DataItemValue>
+        </DataItem>
+      )}
+      {award.pi && award.pi.length > 0 && (
+        <DataItem>
+          <DataItemLabel>Principal Investigator</DataItemLabel>
+          <DataItemValue>{pis.map((pi) => pi.title).join(", ")}</DataItemValue>
+        </DataItem>
+      )}
+      {award.component && (
+        <DataItem>
+          <DataItemLabel>Component</DataItemLabel>
+          <DataItemValue>{award.component}</DataItemValue>
+        </DataItem>
+      )}
       <DataItem>
         <DataItemLabel>Project</DataItemLabel>
         <DataItemValue>{award.project}</DataItemValue>
       </DataItem>
-      <DataItem>
-        <DataItemLabel>Grant Dates</DataItemLabel>
-        <DataItemValue>
-          {formatDateRange(award.start_date, award.end_date)}
-        </DataItemValue>
-      </DataItem>
+      {(award.start_date || award.end_date) && (
+        <DataItem>
+          <DataItemLabel>Grant Dates</DataItemLabel>
+          <DataItemValue>
+            {formatDateRange(award.start_date, award.end_date)}
+          </DataItemValue>
+        </DataItem>
+      )}
       {award.url && (
         <DataItem>
           <DataItemValue>
