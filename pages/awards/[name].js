@@ -8,9 +8,10 @@ import DataItem, {
 import PageTitle from "../../components/page-title"
 import SiteTitle from "../../components/site-title"
 // libs
-import { getObject } from "../../libs/request"
+import { formatDateRange } from "../../libs/dates"
+import { getMultipleObjects, getObject } from "../../libs/request"
 
-const Award = ({ award, pi }) => {
+const Award = ({ award, pis }) => {
   return (
     <>
       <SiteTitle />
@@ -25,7 +26,7 @@ const Award = ({ award, pi }) => {
       </DataItem>
       <DataItem>
         <DataItemLabel>Principal Investigator</DataItemLabel>
-        <DataItemValue>{pi.title}</DataItemValue>
+        <DataItemValue>{pis.map((pi) => pi.title).join(", ")}</DataItemValue>
       </DataItem>
       <DataItem>
         <DataItemLabel>Component</DataItemLabel>
@@ -36,9 +37,20 @@ const Award = ({ award, pi }) => {
         <DataItemValue>{award.project}</DataItemValue>
       </DataItem>
       <DataItem>
-        <DataItemLabel>RFA</DataItemLabel>
-        <DataItemValue>{award.rfa}</DataItemValue>
+        <DataItemLabel>Grant Dates</DataItemLabel>
+        <DataItemValue>
+          {formatDateRange(award.start_date, award.end_date)}
+        </DataItemValue>
       </DataItem>
+      {award.url && (
+        <DataItem>
+          <DataItemValue>
+            <a href={award.url} target="_blank" rel="noreferrer">
+              Additional Information
+            </a>
+          </DataItemValue>
+        </DataItem>
+      )}
     </>
   )
 }
@@ -47,18 +59,18 @@ Award.propTypes = {
   // Award data to display on the page
   award: PropTypes.object.isRequired,
   // Principal investigator data associated with `award`
-  pi: PropTypes.object.isRequired,
+  pis: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
 export default Award
 
 export const getServerSideProps = async ({ params }) => {
   const award = await getObject(`/awards/${params.name}/`)
-  const pi = await getObject(award.pi)
+  const pis = await getMultipleObjects(award.pi)
   return {
     props: {
       award,
-      pi,
+      pis,
       pageContext: { title: award.name },
     },
   }
