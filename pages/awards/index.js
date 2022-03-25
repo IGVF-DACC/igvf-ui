@@ -1,7 +1,11 @@
 // node_modules
-import Link from "next/link"
 import PropTypes from "prop-types"
 // components
+import {
+  Collection,
+  CollectionItem,
+  CollectionItemName,
+} from "../../components/collection"
 import PageTitle from "../../components/page-title"
 import SiteTitle from "../../components/site-title"
 // libs
@@ -12,16 +16,14 @@ const AwardList = ({ awards }) => {
     <>
       <SiteTitle />
       <PageTitle>Awards</PageTitle>
-      {awards.map((award) => (
-        <Link href={award["@id"]} key={award.uuid}>
-          <a className="block border-b border-gray-300 p-4 px-2 no-underline last:border-b-0 hover:bg-highlight dark:border-gray-700">
-            <div className="text-xl font-semibold text-gray-600 dark:text-gray-400">
-              {award.name}
-            </div>
+      <Collection>
+        {awards.map((award) => (
+          <CollectionItem key={award.uuid} href={award["@id"]}>
+            <CollectionItemName name={award.name} />
             <div>{award.title}</div>
-          </a>
-        </Link>
-      ))}
+          </CollectionItem>
+        ))}
+      </Collection>
     </>
   )
 }

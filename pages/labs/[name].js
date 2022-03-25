@@ -20,9 +20,11 @@ const Lab = ({ lab, awards }) => {
       {lab.institute_name && (
         <DataItem>
           <DataItemLabel>Institute</DataItemLabel>
-          <DataItemValue>
-            <span className="text-lg font-bold">{lab.institute_name}</span>
-          </DataItemValue>
+          {lab.institute_name && (
+            <DataItemValue>
+              <span className="text-lg font-bold">{lab.institute_name}</span>
+            </DataItemValue>
+          )}
           {lab.address1 && <DataItemValue>{lab.address1}</DataItemValue>}
           {lab.address2 && <DataItemValue>{lab.address2}</DataItemValue>}
           {(lab.city || lab.state || lab.postal_code) && (

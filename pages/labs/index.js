@@ -1,7 +1,11 @@
 // node_modules
-import Link from "next/link"
 import PropTypes from "prop-types"
 // components
+import {
+  Collection,
+  CollectionItem,
+  CollectionItemName,
+} from "../../components/collection"
 import PageTitle from "../../components/page-title"
 import SiteTitle from "../../components/site-title"
 // libs
@@ -12,11 +16,14 @@ const LabList = ({ labs }) => {
     <>
       <SiteTitle />
       <PageTitle>Labs</PageTitle>
-      {labs.map((lab) => (
-        <Link href={lab["@id"]} key={lab.uuid}>
-          <a className="block">{lab.title}</a>
-        </Link>
-      ))}
+      <Collection>
+        {labs.map((lab) => (
+          <CollectionItem key={lab.uuid} href={lab["@id"]}>
+            <CollectionItemName name={lab.title} />
+            {lab.institute_name && <div>{lab.institute_name}</div>}
+          </CollectionItem>
+        ))}
+      </Collection>
     </>
   )
 }
@@ -30,6 +37,7 @@ export default LabList
 
 export const getServerSideProps = async () => {
   const labs = await getCollection("lab")
+  console.log("LABS %o", labs)
   return {
     props: {
       labs: labs["@graph"],
