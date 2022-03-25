@@ -14,8 +14,10 @@ const AwardList = ({ awards }) => {
       <PageTitle>Awards</PageTitle>
       {awards.map((award) => (
         <Link href={award["@id"]} key={award.uuid}>
-          <a className="block px-2 py-4 no-underline hover:bg-highlight">
-            <div>{award.name}</div>
+          <a className="block border-b border-gray-300 p-4 px-2 no-underline last:border-b-0 hover:bg-highlight dark:border-gray-700">
+            <div className="text-xl font-semibold text-gray-600 dark:text-gray-400">
+              {award.name}
+            </div>
             <div>{award.title}</div>
           </a>
         </Link>

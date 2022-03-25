@@ -12,6 +12,7 @@ import { formatDateRange } from "../../libs/dates"
 import { getMultipleObjects, getObject } from "../../libs/request"
 
 const Award = ({ award, pis }) => {
+  console.log(pis)
   return (
     <>
       <SiteTitle />
@@ -26,7 +27,7 @@ const Award = ({ award, pis }) => {
           <DataItemValue>{award.description}</DataItemValue>
         </DataItem>
       )}
-      {award.pi && award.pi.length > 0 && (
+      {pis.length > 0 && (
         <DataItem>
           <DataItemLabel>Principal Investigator</DataItemLabel>
           <DataItemValue>{pis.map((pi) => pi.title).join(", ")}</DataItemValue>
@@ -74,7 +75,7 @@ export default Award
 
 export const getServerSideProps = async ({ params }) => {
   const award = await getObject(`/awards/${params.name}/`)
-  const pis = await getMultipleObjects(award.pi)
+  const pis = award.pi ? await getMultipleObjects(award.pi) : []
   return {
     props: {
       award,
