@@ -15,7 +15,7 @@ export const Collection = ({ children }) => {
 export const CollectionItem = ({ href, children }) => {
   return (
     <Link href={href}>
-      <a className="block border-b border-gray-300 p-4 px-2 no-underline last:border-b-0 hover:bg-highlight dark:border-gray-700">
+      <a className="my-0.5 block border border-data-background bg-data-background p-4 no-underline hover:border-highlight">
         {children}
       </a>
     </Link>

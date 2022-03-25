@@ -9,11 +9,7 @@ import GlobalContext from "./global-context"
 const PageTitle = () => {
   const { page } = useContext(GlobalContext)
 
-  return (
-    <h1 className="border-b border-title-border text-4xl font-thin">
-      {page.title}
-    </h1>
-  )
+  return <h1 className="mb-5 text-4xl font-thin">{page.title}</h1>
 }
 
 export default PageTitle
