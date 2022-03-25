@@ -6,16 +6,14 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
-import PageTitle from "../../components/page-title"
-import SiteTitle from "../../components/site-title"
+import PagePreamble from "../../components/page-preamble"
 // libs
 import { getCollection } from "../../libs/request"
 
 const LabList = ({ labs }) => {
   return (
     <>
-      <SiteTitle />
-      <PageTitle>Labs</PageTitle>
+      <PagePreamble />
       <Collection>
         {labs.map((lab) => (
           <CollectionItem key={lab.uuid} href={lab["@id"]}>

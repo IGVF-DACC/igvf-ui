@@ -6,17 +6,15 @@ import DataItem, {
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-item"
-import PageTitle from "../../components/page-title"
+import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
-import SiteTitle from "../../components/site-title"
 // libs
 import { getMultipleObjects, getObject } from "../../libs/request"
 
 const Lab = ({ lab, awards }) => {
   return (
     <>
-      <SiteTitle />
-      <PageTitle>{lab.title}</PageTitle>
+      <PagePreamble />
       {lab.institute_name && (
         <DataItem>
           <DataItemLabel>Institute</DataItemLabel>

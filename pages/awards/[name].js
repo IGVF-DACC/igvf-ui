@@ -5,18 +5,15 @@ import DataItem, {
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-item"
-import PageTitle from "../../components/page-title"
-import SiteTitle from "../../components/site-title"
+import PagePreamble from "../../components/page-preamble"
 // libs
 import { formatDateRange } from "../../libs/dates"
 import { getMultipleObjects, getObject } from "../../libs/request"
 
 const Award = ({ award, pis }) => {
-  console.log(pis)
   return (
     <>
-      <SiteTitle />
-      <PageTitle>{award.name}</PageTitle>
+      <PagePreamble />
       <DataItem>
         <DataItemLabel>Title</DataItemLabel>
         <DataItemValue>{award.title}</DataItemValue>
