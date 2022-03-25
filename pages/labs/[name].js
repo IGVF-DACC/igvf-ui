@@ -11,30 +11,18 @@ import SeparatedList from "../../components/separated-list"
 // libs
 import { getMultipleObjects, getObject } from "../../libs/request"
 
-const Lab = ({ lab, awards }) => {
+const Lab = ({ lab, awards, pi }) => {
   return (
     <>
       <PagePreamble />
-      {lab.institute_name && (
-        <DataItem>
-          <DataItemLabel>Institute</DataItemLabel>
-          {lab.institute_name && (
-            <DataItemValue>
-              <span className="text-lg font-bold">{lab.institute_name}</span>
-            </DataItemValue>
-          )}
-          {lab.address1 && <DataItemValue>{lab.address1}</DataItemValue>}
-          {lab.address2 && <DataItemValue>{lab.address2}</DataItemValue>}
-          {(lab.city || lab.state || lab.postal_code) && (
-            <DataItemValue>
-              {[[lab.city, lab.state].join(", "), lab.postal_code].join(" ")}
-            </DataItemValue>
-          )}
-          {lab.country && <DataItemValue>{lab.country}</DataItemValue>}
-          {lab.phone1 && <DataItemValue>{lab.phone1}</DataItemValue>}
-          {lab.phone2 && <DataItemValue>{lab.phone2}</DataItemValue>}
-        </DataItem>
-      )}
+      <DataItem>
+        <DataItemLabel>Institute</DataItemLabel>
+        <DataItemValue>{lab.institute_label}</DataItemValue>
+      </DataItem>
+      <DataItem>
+        <DataItemLabel>Principal Investigator</DataItemLabel>
+        <DataItemValue>{pi.title}</DataItemValue>
+      </DataItem>
       {awards.length > 0 && (
         <DataItem>
           <DataItemLabel>Awards</DataItemLabel>
@@ -56,6 +44,11 @@ Lab.propTypes = {
   lab: PropTypes.object.isRequired,
   // Awards associated with `lab`
   awards: PropTypes.array.isRequired,
+  // Principal investigator for `lab`
+  pi: PropTypes.shape({
+    // PI full name
+    title: PropTypes.string.isRequired,
+  }),
 }
 
 export default Lab
@@ -63,10 +56,12 @@ export default Lab
 export const getServerSideProps = async ({ params }) => {
   const lab = await getObject(`/labs/${params.name}/`)
   const awards = await getMultipleObjects(lab.awards)
+  const pi = await getObject(lab.pi)
   return {
     props: {
       lab,
       awards,
+      pi,
       pageContext: { title: lab.title },
     },
   }

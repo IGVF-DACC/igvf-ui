@@ -30,15 +30,10 @@ CollectionItem.propTypes = {
 /**
  * Displays the name of the collection item.
  */
-export const CollectionItemName = ({ name }) => {
+export const CollectionItemName = ({ children }) => {
   return (
     <div className="text-xl font-semibold text-gray-600 dark:text-gray-400">
-      {name}
+      {children}
     </div>
   )
-}
-
-CollectionItemName.propTypes = {
-  // Name of collection item
-  name: PropTypes.string.isRequired,
 }

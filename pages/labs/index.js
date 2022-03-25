@@ -17,8 +17,8 @@ const LabList = ({ labs }) => {
       <Collection>
         {labs.map((lab) => (
           <CollectionItem key={lab.uuid} href={lab["@id"]}>
-            <CollectionItemName name={lab.title} />
-            {lab.institute_name && <div>{lab.institute_name}</div>}
+            <CollectionItemName>{lab.title}</CollectionItemName>
+            <div>{lab.institute_label}</div>
           </CollectionItem>
         ))}
       </Collection>
@@ -35,7 +35,6 @@ export default LabList
 
 export const getServerSideProps = async () => {
   const labs = await getCollection("lab")
-  console.log("LABS %o", labs)
   return {
     props: {
       labs: labs["@graph"],

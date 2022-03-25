@@ -17,7 +17,7 @@ const AwardList = ({ awards }) => {
       <Collection>
         {awards.map((award) => (
           <CollectionItem key={award.uuid} href={award["@id"]}>
-            <CollectionItemName name={award.name} />
+            <CollectionItemName>{award.name}</CollectionItemName>
             <div>{award.title}</div>
           </CollectionItem>
         ))}
