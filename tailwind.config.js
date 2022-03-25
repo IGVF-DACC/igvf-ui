@@ -12,6 +12,7 @@ module.exports = {
         "nav-highlight": "var(--color-brand-highlight)",
         "title-border": "var(--color-title-border)",
         "data-background": "var(--color-data-background)",
+        "data-border": "var(--color-data-border)",
         highlight: "var(--color-highlight)",
       },
       textColor: {

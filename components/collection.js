@@ -16,7 +16,7 @@ export const CollectionItem = ({ href, label, children }) => {
   return (
     <Link href={href}>
       <a
-        className="my-0.5 block border border-data-background bg-data-background p-4 no-underline hover:border-highlight"
+        className="my-0.5 block border border-data-background bg-data-background p-4 no-underline hover:border-data-border"
         aria-label={label}
       >
         {children}

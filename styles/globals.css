@@ -23,6 +23,7 @@
   --color-brand: #991133;
   --color-brand-highlight: #860f2d;
   --color-data-background: #ffffff;
+  --color-data-border: #c0c0c0;
   --color-highlight: #c0c0c0;
   --color-text-base: #000000;
   --color-title-border: #6b7280;
@@ -40,6 +41,7 @@
   --color-brand: #991133;
   --color-brand-highlight: #860f2d;
   --color-data-background: #0b0f19;
+  --color-data-border: #2c3f66;
   --color-highlight: #2c3f66;
   --color-text-base: #ffffff;
   --color-title-border: #6b7280;

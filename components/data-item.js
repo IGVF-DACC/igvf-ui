@@ -16,7 +16,7 @@
  */
 export const DataArea = ({ children }) => {
   return (
-    <div className="border border-highlight bg-data-background p-4">
+    <div className="border border-data-border bg-data-background p-4">
       {children}
     </div>
   )
