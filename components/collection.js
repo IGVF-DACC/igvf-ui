@@ -12,10 +12,13 @@ export const Collection = ({ children }) => {
 /**
  * Displays a single item in a collection.
  */
-export const CollectionItem = ({ href, children }) => {
+export const CollectionItem = ({ href, label, children }) => {
   return (
     <Link href={href}>
-      <a className="my-0.5 block border border-data-background bg-data-background p-4 no-underline hover:border-highlight">
+      <a
+        className="my-0.5 block border border-data-background bg-data-background p-4 no-underline hover:border-highlight"
+        aria-label={label}
+      >
         {children}
       </a>
     </Link>
@@ -25,6 +28,8 @@ export const CollectionItem = ({ href, children }) => {
 CollectionItem.propTypes = {
   // Path to item this links to
   href: PropTypes.string.isRequired,
+  // Voice label for item
+  label: PropTypes.string,
 }
 
 /**

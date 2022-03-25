@@ -2,7 +2,9 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
-import DataItem, {
+import {
+  DataArea,
+  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-item"
@@ -15,26 +17,28 @@ const Lab = ({ lab, awards, pi }) => {
   return (
     <>
       <PagePreamble />
-      <DataItem>
-        <DataItemLabel>Institute</DataItemLabel>
-        <DataItemValue>{lab.institute_label}</DataItemValue>
-      </DataItem>
-      <DataItem>
-        <DataItemLabel>Principal Investigator</DataItemLabel>
-        <DataItemValue>{pi.title}</DataItemValue>
-      </DataItem>
-      {awards.length > 0 && (
+      <DataArea>
         <DataItem>
-          <DataItemLabel>Awards</DataItemLabel>
-          <SeparatedList key="a">
-            {awards.map((award) => (
-              <Link href={award["@id"]} key={award.uuid}>
-                <a>{award.name}</a>
-              </Link>
-            ))}
-          </SeparatedList>
+          <DataItemLabel>Institute</DataItemLabel>
+          <DataItemValue>{lab.institute_label}</DataItemValue>
         </DataItem>
-      )}
+        <DataItem>
+          <DataItemLabel>Principal Investigator</DataItemLabel>
+          <DataItemValue>{pi.title}</DataItemValue>
+        </DataItem>
+        {awards.length > 0 && (
+          <DataItem>
+            <DataItemLabel>Awards</DataItemLabel>
+            <SeparatedList key="a">
+              {awards.map((award) => (
+                <Link href={award["@id"]} key={award.uuid}>
+                  <a aria-label={`Award ${award.name}`}>{award.name}</a>
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItem>
+        )}
+      </DataArea>
     </>
   )
 }

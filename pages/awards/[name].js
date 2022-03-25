@@ -1,7 +1,9 @@
 // node_modules
 import PropTypes from "prop-types"
 // components
-import DataItem, {
+import {
+  DataArea,
+  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-item"
@@ -14,49 +16,53 @@ const Award = ({ award, pis }) => {
   return (
     <>
       <PagePreamble />
-      <DataItem>
-        <DataItemLabel>Title</DataItemLabel>
-        <DataItemValue>{award.title}</DataItemValue>
-      </DataItem>
-      {award.description && (
+      <DataArea>
         <DataItem>
-          <DataItemLabel>Description</DataItemLabel>
-          <DataItemValue>{award.description}</DataItemValue>
+          <DataItemLabel>Title</DataItemLabel>
+          <DataItemValue>{award.title}</DataItemValue>
         </DataItem>
-      )}
-      {pis.length > 0 && (
+        {award.description && (
+          <DataItem>
+            <DataItemLabel>Description</DataItemLabel>
+            <DataItemValue>{award.description}</DataItemValue>
+          </DataItem>
+        )}
+        {pis.length > 0 && (
+          <DataItem>
+            <DataItemLabel>Principal Investigator</DataItemLabel>
+            <DataItemValue>
+              {pis.map((pi) => pi.title).join(", ")}
+            </DataItemValue>
+          </DataItem>
+        )}
+        {award.component && (
+          <DataItem>
+            <DataItemLabel>Component</DataItemLabel>
+            <DataItemValue>{award.component}</DataItemValue>
+          </DataItem>
+        )}
         <DataItem>
-          <DataItemLabel>Principal Investigator</DataItemLabel>
-          <DataItemValue>{pis.map((pi) => pi.title).join(", ")}</DataItemValue>
+          <DataItemLabel>Project</DataItemLabel>
+          <DataItemValue>{award.project}</DataItemValue>
         </DataItem>
-      )}
-      {award.component && (
-        <DataItem>
-          <DataItemLabel>Component</DataItemLabel>
-          <DataItemValue>{award.component}</DataItemValue>
-        </DataItem>
-      )}
-      <DataItem>
-        <DataItemLabel>Project</DataItemLabel>
-        <DataItemValue>{award.project}</DataItemValue>
-      </DataItem>
-      {(award.start_date || award.end_date) && (
-        <DataItem>
-          <DataItemLabel>Grant Dates</DataItemLabel>
-          <DataItemValue>
-            {formatDateRange(award.start_date, award.end_date)}
-          </DataItemValue>
-        </DataItem>
-      )}
-      {award.url && (
-        <DataItem>
-          <DataItemValue>
-            <a href={award.url} target="_blank" rel="noreferrer">
-              Additional Information
-            </a>
-          </DataItemValue>
-        </DataItem>
-      )}
+        {(award.start_date || award.end_date) && (
+          <DataItem>
+            <DataItemLabel>Grant Dates</DataItemLabel>
+            <DataItemValue>
+              {formatDateRange(award.start_date, award.end_date)}
+            </DataItemValue>
+          </DataItem>
+        )}
+        {award.url && (
+          <DataItem>
+            <DataItemValue>
+              <a href={award.url} target="_blank" rel="noreferrer">
+                Additional Information
+              </a>
+            </DataItemValue>
+          </DataItem>
+        )}
+      </DataArea>
     </>
   )
 }

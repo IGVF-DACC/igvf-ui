@@ -16,7 +16,11 @@ const AwardList = ({ awards }) => {
       <PagePreamble />
       <Collection>
         {awards.map((award) => (
-          <CollectionItem key={award.uuid} href={award["@id"]}>
+          <CollectionItem
+            key={award.uuid}
+            href={award["@id"]}
+            label={`Award ${award.name}`}
+          >
             <CollectionItemName>{award.name}</CollectionItemName>
             <div>{award.title}</div>
           </CollectionItem>

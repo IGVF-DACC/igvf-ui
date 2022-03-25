@@ -16,7 +16,11 @@ const LabList = ({ labs }) => {
       <PagePreamble />
       <Collection>
         {labs.map((lab) => (
-          <CollectionItem key={lab.uuid} href={lab["@id"]}>
+          <CollectionItem
+            key={lab.uuid}
+            href={lab["@id"]}
+            label={`Lab ${lab.title}`}
+          >
             <CollectionItemName>{lab.title}</CollectionItemName>
             <div>{lab.institute_label}</div>
           </CollectionItem>

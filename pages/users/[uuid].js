@@ -1,7 +1,9 @@
 // node_modules
 import PropTypes from "prop-types"
 // components
-import DataItem, {
+import {
+  DataArea,
+  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-item"
@@ -13,10 +15,12 @@ const User = ({ lab }) => {
   return (
     <>
       <PagePreamble />
-      <DataItem>
-        <DataItemLabel>Lab</DataItemLabel>
-        <DataItemValue>{lab.title}</DataItemValue>
-      </DataItem>
+      <DataArea>
+        <DataItem>
+          <DataItemLabel>Lab</DataItemLabel>
+          <DataItemValue>{lab.title}</DataItemValue>
+        </DataItem>
+      </DataArea>
     </>
   )
 }
