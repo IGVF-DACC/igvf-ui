@@ -2,16 +2,14 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
-import PageTitle from "../../components/page-title"
-import SiteTitle from "../../components/site-title"
+import PagePreamble from "../../components/page-preamble"
 // libs
 import { getCollection } from "../../libs/request"
 
 const UserList = ({ users }) => {
   return (
     <>
-      <SiteTitle />
-      <PageTitle>Users</PageTitle>
+      <PagePreamble />
       <div>
         {users.map((user) => (
           <Link href={user["@id"]} key={user.uuid}>

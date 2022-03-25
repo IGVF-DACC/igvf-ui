@@ -19,21 +19,31 @@
 }
 
 :root {
+  --color-background: #f8f8f8;
   --color-brand: #991133;
   --color-brand-highlight: #860f2d;
+  --color-data-background: #ffffff;
+  --color-data-border: #c0c0c0;
+  --color-highlight: #c0c0c0;
   --color-text-base: #000000;
-  --color-highlight: #f0f0f0;
   --color-title-border: #6b7280;
 
   --color-data-label: #6b7280;
   --color-data-value: #000000;
 }
 
+/**
+ * Keep this outside of @layer base to avoid it being tree shaken, because the .dark class gets
+ * applied after the body element mounts.
+ */
 .dark {
+  --color-background: #111827;
   --color-brand: #991133;
   --color-brand-highlight: #860f2d;
+  --color-data-background: #0b0f19;
+  --color-data-border: #2c3f66;
+  --color-highlight: #2c3f66;
   --color-text-base: #ffffff;
-  --color-highlight: #1b263d;
   --color-title-border: #6b7280;
 
   --color-data-label: #9ca3af;

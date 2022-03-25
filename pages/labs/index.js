@@ -1,22 +1,31 @@
 // node_modules
-import Link from "next/link"
 import PropTypes from "prop-types"
 // components
-import PageTitle from "../../components/page-title"
-import SiteTitle from "../../components/site-title"
+import {
+  Collection,
+  CollectionItem,
+  CollectionItemName,
+} from "../../components/collection"
+import PagePreamble from "../../components/page-preamble"
 // libs
 import { getCollection } from "../../libs/request"
 
 const LabList = ({ labs }) => {
   return (
     <>
-      <SiteTitle />
-      <PageTitle>Labs</PageTitle>
-      {labs.map((lab) => (
-        <Link href={lab["@id"]} key={lab.uuid}>
-          <a className="block">{lab.title}</a>
-        </Link>
-      ))}
+      <PagePreamble />
+      <Collection>
+        {labs.map((lab) => (
+          <CollectionItem
+            key={lab.uuid}
+            href={lab["@id"]}
+            label={`Lab ${lab.title}`}
+          >
+            <CollectionItemName>{lab.title}</CollectionItemName>
+            <div>{lab.institute_label}</div>
+          </CollectionItem>
+        ))}
+      </Collection>
     </>
   )
 }
