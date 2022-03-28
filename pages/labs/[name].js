@@ -12,6 +12,7 @@ import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
 // libs
 import { getMultipleObjects, getObject } from "../../libs/request"
+import { buildBreadcrumbContext } from "../../libs/breadcrumbs"
 
 const Lab = ({ lab, awards, pi }) => {
   return (
@@ -61,12 +62,14 @@ export const getServerSideProps = async ({ params }) => {
   const lab = await getObject(`/labs/${params.name}/`)
   const awards = await getMultipleObjects(lab.awards)
   const pi = await getObject(lab.pi)
+  const breadcrumbContext = await buildBreadcrumbContext(lab)
   return {
     props: {
       lab,
       awards,
       pi,
       pageContext: { title: lab.title },
+      breadcrumbContext,
     },
   }
 }
