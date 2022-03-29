@@ -1,4 +1,4 @@
-import { buildBreadcrumbContext } from "../breadcrumbs"
+import buildBreadcrumbContext from "../breadcrumbs"
 
 describe("Test breadcrumb composition and rendering functionality", () => {
   it("builds a collection breadcrumb context properly", async () => {
@@ -9,10 +9,13 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "@id": "/labs/",
       "@type": ["LabCollection", "Collection"],
     }
-    const breadcrumbContext = await buildBreadcrumbContext(labCollectionData)
+    const breadcrumbContext = await buildBreadcrumbContext(
+      labCollectionData,
+      "title"
+    )
     expect(breadcrumbContext).toHaveLength(1)
     expect(breadcrumbContext[0].title).toBe("Labs")
-    expect(breadcrumbContext[0].path).toBe("/labs/")
+    expect(breadcrumbContext[0].href).toBe("/labs/")
   })
 
   it("builds an item breadcrumb context properly", async () => {
@@ -37,11 +40,11 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       title: "J. Michael Cherry, Stanford",
     }
 
-    const breadcrumbContext = await buildBreadcrumbContext(labItemData)
+    const breadcrumbContext = await buildBreadcrumbContext(labItemData, "title")
     expect(breadcrumbContext).toHaveLength(2)
     expect(breadcrumbContext[0].title).toBe("Labs")
-    expect(breadcrumbContext[0].path).toBe("/labs/")
+    expect(breadcrumbContext[0].href).toBe("/labs/")
     expect(breadcrumbContext[1].title).toBe("J. Michael Cherry, Stanford")
-    expect(breadcrumbContext[0].path).toBe("/labs/")
+    expect(breadcrumbContext[0].href).toBe("/labs/")
   })
 })
