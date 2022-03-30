@@ -10,19 +10,24 @@ import SeparatedList from "./separated-list"
  * Render a single breadcrumb element. If no `href` provided, the element only displays its title
  * with no link.
  */
-const BreadcrumbElement = ({ href = "", className = "", children }) => {
+const BreadcrumbElement = ({ href = "", className = "", id, children }) => {
   // For all but the last element...
   if (href) {
     return (
       <Link href={href}>
-        <a className={className}>{children}</a>
+        <a data-testid={id} className={className}>
+          {children}
+        </a>
       </Link>
     )
   }
 
   // Last element doesn't have a link.
   return (
-    <div className={`${className} text-gray-400 dark:text-gray-600`}>
+    <div
+      data-testid={id}
+      className={`${className} text-gray-400 dark:text-gray-600`}
+    >
       {children}
     </div>
   )
@@ -33,12 +38,14 @@ BreadcrumbElement.propTypes = {
   href: PropTypes.string,
   // Class name to apply to the element; last element displayed in a specific color
   className: PropTypes.string,
+  // Unique ID within the breadcrumb trail
+  id: PropTypes.string.isRequired,
 }
 
 /**
  * Static breadcrumb for the home page.
  */
-const homeBreadcrumbContext = [
+const homeBreadcrumb = [
   {
     title: "Home",
     href: "/",
@@ -49,31 +56,32 @@ const homeBreadcrumbContext = [
  * Render a breadcrumb trail for the current page.
  */
 const Breadcrumbs = () => {
-  const { breadcrumbContext } = useContext(GlobalContext)
+  const { breadcrumbs } = useContext(GlobalContext)
 
   return (
-    <SeparatedList
-      className="mb-4 flex items-center text-xs"
-      separator={
-        <div className="mt-[-2px] px-2 font-bold text-gray-800 dark:text-gray-200">
-          /
-        </div>
-      }
-    >
-      {homeBreadcrumbContext
-        .concat(breadcrumbContext)
-        .map((breadcrumb, index) => {
+    <nav aria-label="breadcrumbs">
+      <SeparatedList
+        className="mb-4 flex items-center text-xs"
+        separator={
+          <div className="mt-[-2px] px-2 font-bold text-gray-800 dark:text-gray-200">
+            /
+          </div>
+        }
+      >
+        {homeBreadcrumb.concat(breadcrumbs).map((breadcrumb, index) => {
           return (
             <BreadcrumbElement
-              key={index}
-              href={index < breadcrumbContext.length ? breadcrumb.href : null}
+              key={breadcrumb.href}
+              id={breadcrumb.href}
+              href={index < breadcrumbs.length ? breadcrumb.href : null}
               className="block font-bold uppercase text-gray-600 no-underline dark:text-gray-400"
             >
               {breadcrumb.title}
             </BreadcrumbElement>
           )
         })}
-    </SeparatedList>
+      </SeparatedList>
+    </nav>
   )
 }
 

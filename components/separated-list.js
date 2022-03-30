@@ -39,12 +39,16 @@ import React from "react"
  * // Expected output: "First component, Second component LINK Third component, Fourth component"
  */
 const SeparatedList = ({ separator = ", ", className = "", children }) => {
-  if (children.length) {
+  if (children.length > 0) {
     return (
       <div className={className || ""}>
         {children
           .map((item) => <React.Fragment key={item.key}>{item}</React.Fragment>)
-          .reduce((combined, curr) => [combined, separator, curr])}
+          .reduce((combined, curr, index) => [
+            combined,
+            <React.Fragment key={`sep-${index}`}>{separator}</React.Fragment>,
+            curr,
+          ])}
       </div>
     )
   }

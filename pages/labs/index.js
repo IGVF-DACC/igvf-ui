@@ -9,7 +9,7 @@ import {
 } from "../../components/collection"
 import PagePreamble from "../../components/page-preamble"
 // libs
-import buildBreadcrumbContext from "../../libs/breadcrumbs"
+import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { getCollection } from "../../libs/request"
 
 const LabList = ({ labs }) => {
@@ -42,12 +42,12 @@ export default LabList
 
 export const getServerSideProps = async () => {
   const labs = await getCollection("lab")
-  const breadcrumbContext = await buildBreadcrumbContext(labs, "title")
+  const breadcrumbs = await buildBreadcrumbs(labs, "title")
   return {
     props: {
       labs: labs["@graph"],
       pageContext: { title: labs.title },
-      breadcrumbContext,
+      breadcrumbs,
     },
   }
 }

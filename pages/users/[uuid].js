@@ -10,7 +10,7 @@ import {
 } from "../../components/data-item"
 import PagePreamble from "../../components/page-preamble"
 // libs
-import buildBreadcrumbContext from "../../libs/breadcrumbs"
+import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { getObject } from "../../libs/request"
 
 const User = ({ lab }) => {
@@ -38,12 +38,12 @@ export default User
 export const getServerSideProps = async ({ params }) => {
   const user = await getObject(`/users/${params.uuid}/`)
   const lab = await getObject(user.lab)
-  const breadcrumbContext = await buildBreadcrumbContext(user, "title")
+  const breadcrumbs = await buildBreadcrumbs(user, "title")
   return {
     props: {
       lab,
       pageContext: { title: user.title },
-      breadcrumbContext,
+      breadcrumbs,
     },
   }
 }

@@ -9,7 +9,7 @@ import {
 } from "../../components/collection"
 import PagePreamble from "../../components/page-preamble"
 // libs
-import buildBreadcrumbContext from "../../libs/breadcrumbs"
+import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { getCollection } from "../../libs/request"
 
 const AwardList = ({ awards }) => {
@@ -42,12 +42,12 @@ export default AwardList
 
 export const getServerSideProps = async () => {
   const awards = await getCollection("awards")
-  const breadcrumbContext = await buildBreadcrumbContext(awards, "name")
+  const breadcrumbs = await buildBreadcrumbs(awards, "title")
   return {
     props: {
       awards: awards["@graph"],
       pageContext: { title: awards.title },
-      breadcrumbContext,
+      breadcrumbs,
     },
   }
 }

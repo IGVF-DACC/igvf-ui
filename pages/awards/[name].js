@@ -10,7 +10,7 @@ import {
 } from "../../components/data-item"
 import PagePreamble from "../../components/page-preamble"
 // libs
-import buildBreadcrumbContext from "../../libs/breadcrumbs"
+import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
 import { getMultipleObjects, getObject } from "../../libs/request"
 
@@ -82,13 +82,13 @@ export default Award
 export const getServerSideProps = async ({ params }) => {
   const award = await getObject(`/awards/${params.name}/`)
   const pis = award.pi ? await getMultipleObjects(award.pi) : []
-  const breadcrumbContext = await buildBreadcrumbContext(award, "name")
+  const breadcrumbs = await buildBreadcrumbs(award, "name")
   return {
     props: {
       award,
       pis,
       pageContext: { title: award.name },
-      breadcrumbContext,
+      breadcrumbs,
     },
   }
 }

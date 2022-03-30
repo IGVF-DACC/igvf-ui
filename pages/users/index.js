@@ -5,7 +5,7 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import PagePreamble from "../../components/page-preamble"
 // libs
-import buildBreadcrumbContext from "../../libs/breadcrumbs"
+import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { getCollection } from "../../libs/request"
 
 const UserList = ({ users }) => {
@@ -33,12 +33,12 @@ export default UserList
 
 export const getServerSideProps = async () => {
   const users = await getCollection("users")
-  const breadcrumbContext = await buildBreadcrumbContext(users, "title")
+  const breadcrumbs = await buildBreadcrumbs(users, "title")
   return {
     props: {
       users: users["@graph"],
       pageContext: { title: users.title },
-      breadcrumbContext,
+      breadcrumbs,
     },
   }
 }

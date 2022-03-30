@@ -1,7 +1,7 @@
-import buildBreadcrumbContext from "../breadcrumbs"
+import buildBreadcrumbs from "../breadcrumbs"
 
 describe("Test breadcrumb composition and rendering functionality", () => {
-  it("builds a collection breadcrumb context properly", async () => {
+  it("builds a collection breadcrumb data properly", async () => {
     const labCollectionData = {
       "@graph": [],
       title: "Labs",
@@ -9,16 +9,13 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "@id": "/labs/",
       "@type": ["LabCollection", "Collection"],
     }
-    const breadcrumbContext = await buildBreadcrumbContext(
-      labCollectionData,
-      "title"
-    )
-    expect(breadcrumbContext).toHaveLength(1)
-    expect(breadcrumbContext[0].title).toBe("Labs")
-    expect(breadcrumbContext[0].href).toBe("/labs/")
+    const breadcrumbs = await buildBreadcrumbs(labCollectionData, "title")
+    expect(breadcrumbs).toHaveLength(1)
+    expect(breadcrumbs[0].title).toBe("Labs")
+    expect(breadcrumbs[0].href).toBe("/labs/")
   })
 
-  it("builds an item breadcrumb context properly", async () => {
+  it("builds an item breadcrumb data properly", async () => {
     // Mock lab collection retrieval.
     const mockCollectionData = {
       "@graph": [],
@@ -40,11 +37,11 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       title: "J. Michael Cherry, Stanford",
     }
 
-    const breadcrumbContext = await buildBreadcrumbContext(labItemData, "title")
-    expect(breadcrumbContext).toHaveLength(2)
-    expect(breadcrumbContext[0].title).toBe("Labs")
-    expect(breadcrumbContext[0].href).toBe("/labs/")
-    expect(breadcrumbContext[1].title).toBe("J. Michael Cherry, Stanford")
-    expect(breadcrumbContext[0].href).toBe("/labs/")
+    const breadcrumbs = await buildBreadcrumbs(labItemData, "title")
+    expect(breadcrumbs).toHaveLength(2)
+    expect(breadcrumbs[0].title).toBe("Labs")
+    expect(breadcrumbs[0].href).toBe("/labs/")
+    expect(breadcrumbs[1].title).toBe("J. Michael Cherry, Stanford")
+    expect(breadcrumbs[0].href).toBe("/labs/")
   })
 })

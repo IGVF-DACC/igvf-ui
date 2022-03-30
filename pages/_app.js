@@ -31,9 +31,9 @@ const App = ({ Component, pageProps }) => {
       page: {
         title: pageProps.pageContext?.title || "",
       },
-      breadcrumbContext: pageProps.breadcrumbContext || [],
+      breadcrumbs: pageProps.breadcrumbs || [],
     }
-  }, [pageProps.pageContext?.title, pageProps.breadcrumbContext])
+  }, [pageProps.pageContext?.title, pageProps.breadcrumbs])
 
   return (
     <>
