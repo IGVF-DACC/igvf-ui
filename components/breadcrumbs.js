@@ -15,7 +15,10 @@ const BreadcrumbElement = ({ href = "", className = "", id, children }) => {
   if (href) {
     return (
       <Link href={href}>
-        <a data-testid={id} className={className}>
+        <a
+          data-testid={id}
+          className={`${className} text-gray-600 dark:text-gray-400`}
+        >
           {children}
         </a>
       </Link>
@@ -74,7 +77,7 @@ const Breadcrumbs = () => {
               key={breadcrumb.href}
               id={breadcrumb.href}
               href={index < breadcrumbs.length ? breadcrumb.href : null}
-              className="block font-bold uppercase text-gray-600 no-underline dark:text-gray-400"
+              className="block font-bold uppercase no-underline"
             >
               {breadcrumb.title}
             </BreadcrumbElement>
