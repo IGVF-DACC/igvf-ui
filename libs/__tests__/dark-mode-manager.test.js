@@ -52,4 +52,9 @@ describe("Test proper DOM manipulation for Tailwind CSS dark mode", () => {
     expect(document.documentElement.classList.contains("dark")).toBe(true)
     matchMediaDark.destroy()
   })
+
+  it("Missing matchMedia does reasonable things", () => {
+    darkModeManager.setCurrentDarkMode()
+    expect(document.documentElement.classList.contains("dark")).toBe(false)
+  })
 })

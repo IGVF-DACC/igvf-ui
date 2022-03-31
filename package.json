@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
+    "test": "jest --coverage",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --record --key 083e76f3-5f44-43f0-b248-ace10abf0877"
   },
