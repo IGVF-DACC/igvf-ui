@@ -2,6 +2,7 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
+import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
   DataItem,
@@ -12,10 +13,12 @@ import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
 // libs
 import { getMultipleObjects, getObject } from "../../libs/request"
+import buildBreadcrumbs from "../../libs/breadcrumbs"
 
 const Lab = ({ lab, awards, pi }) => {
   return (
     <>
+      <Breadcrumbs />
       <PagePreamble />
       <DataArea>
         <DataItem>
@@ -29,7 +32,7 @@ const Lab = ({ lab, awards, pi }) => {
         {awards.length > 0 && (
           <DataItem>
             <DataItemLabel>Awards</DataItemLabel>
-            <SeparatedList key="a">
+            <SeparatedList>
               {awards.map((award) => (
                 <Link href={award["@id"]} key={award.uuid}>
                   <a aria-label={`Award ${award.name}`}>{award.name}</a>
@@ -61,12 +64,14 @@ export const getServerSideProps = async ({ params }) => {
   const lab = await getObject(`/labs/${params.name}/`)
   const awards = await getMultipleObjects(lab.awards)
   const pi = await getObject(lab.pi)
+  const breadcrumbs = await buildBreadcrumbs(lab, "title")
   return {
     props: {
       lab,
       awards,
       pi,
       pageContext: { title: lab.title },
+      breadcrumbs,
     },
   }
 }

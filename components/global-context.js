@@ -8,6 +8,7 @@ import React from "react"
 const GlobalContext = React.createContext({
   site: {},
   page: {},
+  breacrumbs: [],
 })
 
 export default GlobalContext

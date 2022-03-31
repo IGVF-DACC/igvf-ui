@@ -23,17 +23,17 @@ const App = ({ Component, pageProps }) => {
     }
   }, [])
 
-  const globalContext = useMemo(
-    () => ({
+  const globalContext = useMemo(() => {
+    return {
       site: {
         title: SITE_TITLE,
       },
       page: {
         title: pageProps.pageContext?.title || "",
       },
-    }),
-    [pageProps.pageContext?.title]
-  )
+      breadcrumbs: pageProps.breadcrumbs || [],
+    }
+  }, [pageProps.pageContext?.title, pageProps.breadcrumbs])
 
   return (
     <>

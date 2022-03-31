@@ -2,13 +2,16 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
+import Breadcrumbs from "../../components/breadcrumbs"
 import PagePreamble from "../../components/page-preamble"
 // libs
+import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { getCollection } from "../../libs/request"
 
 const UserList = ({ users }) => {
   return (
     <>
+      <Breadcrumbs />
       <PagePreamble />
       <div>
         {users.map((user) => (
@@ -30,10 +33,12 @@ export default UserList
 
 export const getServerSideProps = async () => {
   const users = await getCollection("users")
+  const breadcrumbs = await buildBreadcrumbs(users, "title")
   return {
     props: {
       users: users["@graph"],
       pageContext: { title: users.title },
+      breadcrumbs,
     },
   }
 }

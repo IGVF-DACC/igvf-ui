@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types"
 // components
+import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
   DataItem,
@@ -9,12 +10,14 @@ import {
 } from "../../components/data-item"
 import PagePreamble from "../../components/page-preamble"
 // libs
+import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
 import { getMultipleObjects, getObject } from "../../libs/request"
 
 const Award = ({ award, pis }) => {
   return (
     <>
+      <Breadcrumbs />
       <PagePreamble />
       <DataArea>
         <DataItem>
@@ -79,11 +82,13 @@ export default Award
 export const getServerSideProps = async ({ params }) => {
   const award = await getObject(`/awards/${params.name}/`)
   const pis = award.pi ? await getMultipleObjects(award.pi) : []
+  const breadcrumbs = await buildBreadcrumbs(award, "name")
   return {
     props: {
       award,
       pis,
       pageContext: { title: award.name },
+      breadcrumbs,
     },
   }
 }
