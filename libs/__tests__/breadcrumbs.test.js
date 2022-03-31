@@ -9,7 +9,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "@id": "/labs/",
       "@type": ["LabCollection", "Collection"],
     }
-    const breadcrumbs = await buildBreadcrumbs(labCollectionData, "title")
+    const breadcrumbs = await buildBreadcrumbs(labCollectionData)
     expect(breadcrumbs).toHaveLength(1)
     expect(breadcrumbs[0].title).toBe("Labs")
     expect(breadcrumbs[0].href).toBe("/labs/")

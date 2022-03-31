@@ -10,7 +10,7 @@ import SeparatedList from "./separated-list"
  * Render a single breadcrumb element. If no `href` provided, the element only displays its title
  * with no link.
  */
-const BreadcrumbElement = ({ href = "", className = "", id, children }) => {
+const BreadcrumbElement = ({ href = "", className, id, children }) => {
   // For all but the last element...
   if (href) {
     return (
@@ -40,7 +40,7 @@ BreadcrumbElement.propTypes = {
   // Link to navigate to
   href: PropTypes.string,
   // Class name to apply to the element; last element displayed in a specific color
-  className: PropTypes.string,
+  className: PropTypes.string.isRequired,
   // Unique ID within the breadcrumb trail
   id: PropTypes.string.isRequired,
 }
@@ -76,7 +76,7 @@ const Breadcrumbs = () => {
             <BreadcrumbElement
               key={breadcrumb.href}
               id={breadcrumb.href}
-              href={index < breadcrumbs.length ? breadcrumb.href : null}
+              href={index < breadcrumbs.length ? breadcrumb.href : undefined}
               className="block font-bold uppercase no-underline"
             >
               {breadcrumb.title}
