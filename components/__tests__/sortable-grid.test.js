@@ -1,5 +1,4 @@
-import { render, screen, within } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import { DataGridContainer } from "../data-grid"
 import SortableGrid from "../sortable-grid"
 
@@ -109,7 +108,7 @@ describe("SortableGrid", () => {
 
     // Click the accession header.
     let headerButton = within(headers[0]).getByRole("button")
-    userEvent.click(headerButton)
+    fireEvent.click(headerButton)
     cells = within(table).getAllByRole("cell")
 
     // Make sure it now sorts by accession, descending.
@@ -124,7 +123,7 @@ describe("SortableGrid", () => {
 
     // Click the biosample header.
     headerButton = within(headers[1]).getByRole("button")
-    userEvent.click(headerButton)
+    fireEvent.click(headerButton)
     cells = within(table).getAllByRole("cell")
 
     // Make sure it sorts by biosample, ascending.
@@ -138,7 +137,7 @@ describe("SortableGrid", () => {
     expect(cells[7]).not.toHaveValue()
 
     // Click the biosample header again.
-    userEvent.click(headerButton)
+    fireEvent.click(headerButton)
     cells = within(table).getAllByRole("cell")
 
     // Make sure it sorts by biosample, descending.
@@ -189,7 +188,7 @@ describe("SortableGrid", () => {
     // Click the Age column header.
     const ageColumnHeader = screen.getByRole("columnheader", { name: "Age" })
     const ageSortButton = within(ageColumnHeader).getByRole("button")
-    userEvent.click(ageSortButton)
+    fireEvent.click(ageSortButton)
 
     // Make sure it sorts by age, ascending.
     cells = screen.getAllByRole("cell")
@@ -197,7 +196,7 @@ describe("SortableGrid", () => {
     expect(cells[6]).toHaveTextContent("14")
 
     // Click the Age column header again.
-    userEvent.click(ageSortButton)
+    fireEvent.click(ageSortButton)
 
     // Make sure it sorts by age, descending.
     cells = screen.getAllByRole("cell")
@@ -205,7 +204,7 @@ describe("SortableGrid", () => {
     expect(cells[6]).toHaveTextContent("9")
 
     // Click the Age column header yet again.
-    userEvent.click(ageSortButton)
+    fireEvent.click(ageSortButton)
 
     // Make sure it returns to sorting by age, ascending.
     cells = screen.getAllByRole("cell")
