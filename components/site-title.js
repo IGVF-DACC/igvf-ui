@@ -1,21 +1,26 @@
 // node_modules
 import Head from "next/head"
+import PropTypes from "prop-types"
 import { useContext } from "react"
 // libs
 import { UC } from "../libs/constants"
 // components
 import GlobalContext from "./global-context"
 
-const SiteTitle = () => {
+const SiteTitle = ({ pageTitle = "" }) => {
   const { site, page } = useContext(GlobalContext)
+  const title = pageTitle || page.title
 
   return (
     <Head>
-      <title>{`${site.title}${
-        page.title && ` ${UC.mdash} ${page.title}`
-      }`}</title>
+      <title>{`${site.title}${title && ` ${UC.mdash} ${title}`}`}</title>
     </Head>
   )
+}
+
+SiteTitle.propTypes = {
+  // Page title for pages in which the server doesn't supply one
+  pageTitle: PropTypes.string,
 }
 
 export default SiteTitle

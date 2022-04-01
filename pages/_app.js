@@ -1,8 +1,10 @@
 // node_modules
+import { Auth0Provider } from "@auth0/auth0-react"
 import Head from "next/head"
 import PropTypes from "prop-types"
 import { useEffect, useMemo } from "react"
 // libs
+import { onRedirectCallback } from "../libs/authentication"
 import { BRAND_COLOR, SITE_TITLE } from "../libs/constants"
 import DarkModeManager from "../libs/dark-mode-manager"
 // components
@@ -65,12 +67,22 @@ const App = ({ Component, pageProps }) => {
         <meta name="msapplication-TileColor" content="#da532c" />
       </Head>
       <div className="md:container md:flex">
-        <GlobalContext.Provider value={globalContext}>
-          <NavigationSection />
-          <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
-            <Component {...pageProps} />
-          </div>
-        </GlobalContext.Provider>
+        <Auth0Provider
+          domain={process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN}
+          clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
+          redirectUri={typeof window !== "undefined" && window.location.origin}
+          audience={process.env.NEXT_PUBLIC_AUTH0_AUDIENCE}
+          onRedirectCallback={onRedirectCallback}
+          useRefreshTokens={true}
+          cacheLocation="localstorage"
+        >
+          <GlobalContext.Provider value={globalContext}>
+            <NavigationSection />
+            <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
+              <Component {...pageProps} />
+            </div>
+          </GlobalContext.Provider>
+        </Auth0Provider>
       </div>
     </>
   )

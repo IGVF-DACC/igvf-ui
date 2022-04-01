@@ -9,8 +9,6 @@ services:
       - "./cypress:/test/cypress"
       - "./docker/cypress/cypress-docker.json:/test/cypress.json"
     command: cypress run
-
-networks:
-  default:
-    external: true
-    name: igvfd_default
+    network_mode: "host"
+    environment:
+      - DISPLAY
