@@ -9,6 +9,7 @@ module.exports = {
       colors: {
         background: "var(--color-background)",
         brand: "var(--color-brand)",
+        "brand-accent": "var(--color-brand-accent)",
         "nav-highlight": "var(--color-brand-highlight)",
         "title-border": "var(--color-title-border)",
         "data-background": "var(--color-data-background)",
