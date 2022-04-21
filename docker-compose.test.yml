@@ -8,7 +8,7 @@ services:
       dockerfile: ./docker/nextjs/Dockerfile
     image: igvf-ui-nextjs
     volumes:
-      - ".:/igvf-ui:cached"
+      - ".:/igvf-ui"
       - "/igvf-ui/node_modules"
       - "/igvf-ui/.next"
     command: npm test -- --coverage
