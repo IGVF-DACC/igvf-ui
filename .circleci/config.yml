@@ -39,7 +39,7 @@ jobs:
       - run:
           name: Clone igvfd
           environment:
-            - IGVFD_BRANCH: dev
+            - IGVFD_BRANCH: IGVF-62-auth0-integration
           command: |
               git clone https://github.com/IGVF-DACC/igvfd.git --branch $IGVFD_BRANCH
       - run:
@@ -66,6 +66,9 @@ jobs:
           name: Run Cypress
           command: |
               sudo cp docker/cypress/docker-compose.cypress-on-circle.yml .
+              # Share running Xvfb server with Cypress
+              Xvfb -screen 0 1280x1024x24 :444 &
+              export DISPLAY=:444
               docker-compose -f docker-compose.cypress-on-circle.yml up --exit-code-from cypress
       - store_artifacts:
           path: cypress/videos

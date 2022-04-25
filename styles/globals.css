@@ -26,7 +26,8 @@
   --color-data-background: #ffffff;
   --color-data-border: #c0c0c0;
   --color-highlight: #c0c0c0;
-  --color-text-base: #000000;
+  --color-highlight-border: #a0a0a0;
+  --color-text-default: #000000;
   --color-title-border: #6b7280;
 
   --color-data-label: #6b7280;
@@ -39,13 +40,13 @@
  */
 .dark {
   --color-background: #111827;
-  --color-brand: #991133;
   --color-brand-accent: #444444;
   --color-brand-highlight: #860f2d;
   --color-data-background: #0b0f19;
   --color-data-border: #2c3f66;
   --color-highlight: #2c3f66;
-  --color-text-base: #ffffff;
+  --color-highlight-border: #45629f;
+  --color-text-default: #ffffff;
   --color-title-border: #6b7280;
 
   --color-data-label: #9ca3af;

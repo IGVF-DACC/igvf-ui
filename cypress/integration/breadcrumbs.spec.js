@@ -14,9 +14,7 @@ describe("Mobile menu tests", () => {
     cy.visit("/")
     cy.get("[data-testid=awards]").click()
     cy.get("[aria-label='Award HG012012']").click()
-
-    // Wait for the individual award page to load.
-    cy.location("pathname", { timeout: 10000 }).should("eq", "/awards/HG012012")
+    cy.contains("h1", "HG012012")
 
     cy.get("[aria-label='breadcrumbs']").should("exist")
     cy.get("[aria-label='breadcrumbs']").find("a").its("length").should("eq", 2)

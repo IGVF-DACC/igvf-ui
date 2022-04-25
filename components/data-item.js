@@ -11,6 +11,8 @@
  * </DataArea>
  */
 
+import PropTypes from "prop-types"
+
 /**
  * Wrapper for an area containing <DataItem>s.
  */
@@ -25,8 +27,15 @@ export const DataArea = ({ children }) => {
 /**
  * Display a single data item containing a label and value.
  */
-export const DataItem = ({ children }) => {
-  return <div className="my-6 first:mt-0 last:mb-0">{children}</div>
+export const DataItem = ({ className = "", children }) => {
+  return (
+    <div className={`my-6 first:mt-0 last:mb-0 ${className}`}>{children}</div>
+  )
+}
+
+DataItem.propTypes = {
+  // Additional Tailwind CSS classes to apply to the <div> element
+  className: PropTypes.string,
 }
 
 /**

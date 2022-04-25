@@ -1,5 +1,8 @@
 // igvfd data server URL
 export const SERVER_URL = "http://nginx:8000"
+export const API_URL = "http://localhost:8000"
+export const BACKEND_URL = "http://localhost:3000"
+
 // Site title
 export const SITE_TITLE = "IGVF"
 // Brand color
@@ -23,3 +26,6 @@ export const KC = {
   ESC: 27,
   SPACE: 32,
 }
+
+// auth0
+export const AUTH0_DOMAIN = "dev-2bg1vkmg.us.auth0.com"

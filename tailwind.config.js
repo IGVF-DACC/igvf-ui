@@ -15,9 +15,10 @@ module.exports = {
         "data-background": "var(--color-data-background)",
         "data-border": "var(--color-data-border)",
         highlight: "var(--color-highlight)",
+        "highlight-border": "var(--color-highlight-border)",
       },
       textColor: {
-        base: "var(--color-text-base)",
+        default: "var(--color-text-default)",
         "data-label": "var(--color-data-label)",
         "data-value": "var(--color-data-value)",
       },
