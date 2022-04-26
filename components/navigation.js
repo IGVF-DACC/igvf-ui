@@ -39,12 +39,13 @@ const NavigationIcon = ({ children }) => {
  * items. Must use forwardRef to work with <Link>, if the navigation item uses one.
  */
 const NavigationButton = React.forwardRef(
-  ({ id, onClick, isChildItem = false, children }, ref) => {
+  ({ id, onClick, isChildItem = false, isDisabled = false, children }, ref) => {
     return (
       <button
         onClick={onClick}
         data-testid={id}
-        className={`flex w-full items-center rounded-sm border border-transparent px-2 py-1 text-left text-white no-underline hover:bg-nav-highlight md:text-black md:hover:border md:hover:border-highlight-border md:hover:bg-highlight md:dark:text-gray-200 ${
+        disabled={isDisabled}
+        className={`flex w-full items-center rounded-sm border border-transparent px-2 py-1 text-left text-white no-underline hover:bg-nav-highlight disabled:text-gray-500 md:text-black md:hover:border md:hover:border-highlight-border md:hover:bg-highlight md:dark:text-gray-200 ${
           isChildItem ? "text-sm font-normal" : "text-base font-medium"
         }`}
         ref={ref}
@@ -62,6 +63,8 @@ NavigationButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   // True if this item is a child of another navigation item
   isChildItem: PropTypes.bool,
+  // True if button should appear disabled
+  isDisabled: PropTypes.bool,
 }
 
 // Forwarded components don't automatically get the required display name.
@@ -71,7 +74,7 @@ NavigationButton.displayName = "NavigationButton"
  * Navigation item to handle the Sign In button.
  */
 const NavigationSignInItem = ({ id, children }) => {
-  const { loginWithRedirect } = useAuth0()
+  const { isLoading, loginWithRedirect } = useAuth0()
 
   /**
    * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
@@ -88,7 +91,11 @@ const NavigationSignInItem = ({ id, children }) => {
 
   return (
     <li>
-      <NavigationButton id={id} onClick={handleAuthClick}>
+      <NavigationButton
+        id={id}
+        isDisabled={isLoading}
+        onClick={handleAuthClick}
+      >
         {children}
       </NavigationButton>
     </li>
@@ -241,7 +248,7 @@ const Navigation = ({ navigationClick }) => {
   // Holds the ids of the currently open parent navigation items
   const [openedParents, setOpenedParents] = React.useState([])
   // Current Auth0 information
-  const { isAuthenticated, user } = useAuth0()
+  const { isAuthenticated, isLoading, user } = useAuth0()
 
   /**
    * Called when the user clicks a group navigation item to open or close it.
@@ -289,7 +296,7 @@ const Navigation = ({ navigationClick }) => {
         </NavigationIcon>
         Users
       </NavigationHrefItem>
-      {isAuthenticated ? (
+      {isAuthenticated && !isLoading ? (
         <NavigationGroupItem
           id="authenticate"
           title={user.name}
@@ -331,7 +338,7 @@ const NavigationSection = () => {
   // True if user has opened the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   // Auth0 information
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0()
+  const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0()
 
   /**
    * Called when the user clicks a navigation menu item.
@@ -342,16 +349,18 @@ const NavigationSection = () => {
 
   useEffect(() => {
     getSession().then((session) => {
-      if (isAuthenticated && !session["auth.userid"]) {
-        // Auth0 has authenticated, but we haven't authenticated with the server yet.
-        loginToServer(getAccessTokenSilently)
-      } else if (!isAuthenticated && session["auth.userid"]) {
-        // Auth0 has de-authenticated, but we have still authenticated with the server.
-        logoutFromServer()
+      if (!isLoading) {
+        if (isAuthenticated && !session["auth.userid"]) {
+          // Auth0 has authenticated, but we haven't authenticated with the server yet.
+          loginToServer(getAccessTokenSilently)
+        } else if (!isAuthenticated && session["auth.userid"]) {
+          // Auth0 has de-authenticated, but we have still authenticated with the server.
+          logoutFromServer()
+        }
       }
     })
     // Once the user has logged into auth0, turn around and log into the server.
-  }, [getAccessTokenSilently, isAuthenticated])
+  }, [getAccessTokenSilently, isAuthenticated, isLoading])
 
   return (
     <section className="bg-brand md:block md:h-auto md:w-60 md:shrink-0 md:grow-0 md:basis-60 md:bg-transparent">
