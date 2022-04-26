@@ -7,10 +7,11 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
+import NoCollectionData from "../../components/no-collection-data"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
-import { getCollection } from "../../libs/request"
+import Request from "../../libs/request"
 
 const LabList = ({ labs }) => {
   return (
@@ -18,16 +19,20 @@ const LabList = ({ labs }) => {
       <Breadcrumbs />
       <PagePreamble />
       <Collection>
-        {labs.map((lab) => (
-          <CollectionItem
-            key={lab.uuid}
-            href={lab["@id"]}
-            label={`Lab ${lab.title}`}
-          >
-            <CollectionItemName>{lab.title}</CollectionItemName>
-            <div>{lab.institute_label}</div>
-          </CollectionItem>
-        ))}
+        {labs.length > 0 ? (
+          labs.map((lab) => (
+            <CollectionItem
+              key={lab.uuid}
+              href={lab["@id"]}
+              label={`Lab ${lab.title}`}
+            >
+              <CollectionItemName>{lab.title}</CollectionItemName>
+              <div>{lab.institute_label}</div>
+            </CollectionItem>
+          ))
+        ) : (
+          <NoCollectionData />
+        )}
       </Collection>
     </>
   )
@@ -40,8 +45,9 @@ LabList.propTypes = {
 
 export default LabList
 
-export const getServerSideProps = async () => {
-  const labs = await getCollection("lab")
+export const getServerSideProps = async ({ req }) => {
+  const request = new Request(req?.headers?.cookie)
+  const labs = await request.getCollection("lab")
   const breadcrumbs = await buildBreadcrumbs(labs, "title")
   return {
     props: {

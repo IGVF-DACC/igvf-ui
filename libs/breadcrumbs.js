@@ -5,7 +5,7 @@
  * that the breadcrumb element links to.
  */
 import { getCollectionPathFromItemPath } from "./paths"
-import { getObject } from "./request"
+import Request from "./request"
 
 /**
  * Given a collection object from the server, return breadcrumb data for this collection.
@@ -30,7 +30,10 @@ const buildCollectionBreadcrumbs = (collection) => {
 const buildItemBreadcrumbs = async (item, titleProp) => {
   // Retrieve the collection object that the item belongs to so that we can get the collection's
   // title.
-  const collection = await getObject(getCollectionPathFromItemPath(item["@id"]))
+  const request = new Request()
+  const collection = await request.getObject(
+    getCollectionPathFromItemPath(item["@id"])
+  )
 
   // Build the breadcrumb data from the collection and item.
   const breadcrumbs = buildCollectionBreadcrumbs(collection).concat({

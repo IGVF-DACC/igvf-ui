@@ -19,6 +19,7 @@ import {
   loginToServer,
   logoutFromServer,
 } from "../libs/authentication"
+import { BACKEND_URL } from "../libs/constants"
 // components
 import Icon from "./icon"
 import SiteLogo from "./logo"
@@ -114,9 +115,7 @@ const NavigationSignOutItem = ({ id, children }) => {
   const { logout } = useAuth0()
 
   /**
-   * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
-   * Redirect the post-login to the page the user currently views. See the Auth0Provider usage in
-   * _app.js to see how this gets used.
+   * Called when the user clicks the Sign Out button.
    */
   const handleAuthClick = () => {
     logout({ returnTo: process.env.NEXT_PUBLIC_AUTH0_BASE_URL })
@@ -287,6 +286,16 @@ const Navigation = ({ navigationClick }) => {
         Labs
       </NavigationHrefItem>
       <NavigationHrefItem
+        id="technical_samples"
+        href="/technical_samples"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <Icon.TechnicalSample />
+        </NavigationIcon>
+        Technical Samples
+      </NavigationHrefItem>
+      <NavigationHrefItem
         id="users"
         href="/users"
         navigationClick={navigationClick}
@@ -338,7 +347,8 @@ const NavigationSection = () => {
   // True if user has opened the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   // Auth0 information
-  const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0()
+  const { getAccessTokenSilently, isAuthenticated, isLoading, logout } =
+    useAuth0()
 
   /**
    * Called when the user clicks a navigation menu item.
@@ -352,7 +362,13 @@ const NavigationSection = () => {
       if (!isLoading) {
         if (isAuthenticated && !session["auth.userid"]) {
           // Auth0 has authenticated, but we haven't authenticated with the server yet.
-          loginToServer(getAccessTokenSilently)
+          loginToServer(getAccessTokenSilently).then((sessionProperties) => {
+            if (!sessionProperties) {
+              // Auth0 authenticated successfully, but we couldn't authenticate with the server.
+              // Log back out of Auth0 and go to an error page.
+              logout({ returnTo: `${BACKEND_URL}/auth-error` })
+            }
+          })
         } else if (!isAuthenticated && session["auth.userid"]) {
           // Auth0 has de-authenticated, but we have still authenticated with the server.
           logoutFromServer()
@@ -360,10 +376,10 @@ const NavigationSection = () => {
       }
     })
     // Once the user has logged into auth0, turn around and log into the server.
-  }, [getAccessTokenSilently, isAuthenticated, isLoading])
+  }, [getAccessTokenSilently, isAuthenticated, isLoading, logout])
 
   return (
-    <section className="bg-brand md:block md:h-auto md:w-60 md:shrink-0 md:grow-0 md:basis-60 md:bg-transparent">
+    <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">
       <div className="flex h-14 justify-between px-4 md:block">
         <SiteLogo />
         <button
