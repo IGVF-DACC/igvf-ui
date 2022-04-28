@@ -12,7 +12,7 @@ import {
 import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
 // libs
-import { getMultipleObjects, getObject } from "../../libs/request"
+import Request from "../../libs/request"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 
 const Lab = ({ lab, awards, pi }) => {
@@ -60,10 +60,11 @@ Lab.propTypes = {
 
 export default Lab
 
-export const getServerSideProps = async ({ params }) => {
-  const lab = await getObject(`/labs/${params.name}/`)
-  const awards = await getMultipleObjects(lab.awards)
-  const pi = await getObject(lab.pi)
+export const getServerSideProps = async ({ params, req }) => {
+  const request = new Request(req?.headers?.cookie)
+  const lab = await request.getObject(`/labs/${params.name}/`)
+  const awards = await request.getMultipleObjects(lab.awards)
+  const pi = await request.getObject(lab.pi)
   const breadcrumbs = await buildBreadcrumbs(lab, "title")
   return {
     props: {

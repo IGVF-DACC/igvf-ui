@@ -17,7 +17,11 @@ import { API_URL } from "../libs/constants"
  * @param {object} appState Auth0 app state saved when signing out
  */
 export const onRedirectCallback = (appState) => {
-  Router.replace(appState?.returnTo || "/")
+  setTimeout(() => {
+    // If we redirect too soon, the `session` cookie element doesn't get updated to the signed-in
+    // value yet. A one-second delay seems to allow this update to happen.
+    Router.replace(appState?.returnTo || "/")
+  }, 1000)
 }
 
 /**
@@ -37,21 +41,26 @@ export const getSession = async () => {
 
 /**
  * POST to the server to log the user in.
- * @param {string} accessToken Auth0 access token
+ * @param {string} accessToken Auth0 access token for Auth0-authorized user
  * @param {string} csrfToken CSRF token from the server
  * @returns {object} User session information
  */
 const reqLogin = async (accessToken, csrfToken) => {
-  const response = await fetch(`${API_URL}/login`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": csrfToken,
-    },
-    body: JSON.stringify({ accessToken }),
-  })
-  return response.json()
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken,
+      },
+      body: JSON.stringify({ accessToken }),
+    })
+    return await response.json()
+  } catch {
+    // Likely the Auth0-authenticated user has no user record in the igbfd database.
+    return null
+  }
 }
 
 /**

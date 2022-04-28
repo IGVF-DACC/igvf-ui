@@ -12,7 +12,7 @@ import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
-import { getMultipleObjects, getObject } from "../../libs/request"
+import Request from "../../libs/request"
 
 const Award = ({ award, pis }) => {
   return (
@@ -79,9 +79,10 @@ Award.propTypes = {
 
 export default Award
 
-export const getServerSideProps = async ({ params }) => {
-  const award = await getObject(`/awards/${params.name}/`)
-  const pis = award.pi ? await getMultipleObjects(award.pi) : []
+export const getServerSideProps = async ({ params, req }) => {
+  const request = new Request(req?.headers?.cookie)
+  const award = await request.getObject(`/awards/${params.name}/`)
+  const pis = award.pi ? await request.getMultipleObjects(award.pi) : []
   const breadcrumbs = await buildBreadcrumbs(award, "name")
   return {
     props: {

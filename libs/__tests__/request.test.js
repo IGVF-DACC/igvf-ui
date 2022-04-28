@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { getCollection, getMultipleObjects, getObject } from "../request"
+import Request from "../request"
 
 describe("Test functions to handle requests to the server", () => {
   it("retrieves a single item from the server correctly", async () => {
@@ -16,7 +16,8 @@ describe("Test functions to handle requests to the server", () => {
       })
     )
 
-    const labItem = await getObject("/labs/j-michael-cherry/")
+    const request = new Request()
+    const labItem = await request.getObject("/labs/j-michael-cherry/")
     expect(labItem).toBeTruthy()
     expect(_.isEqual(labItem, mockData)).toBeTruthy()
   })
@@ -43,7 +44,8 @@ describe("Test functions to handle requests to the server", () => {
     )
 
     // Retrieve multiple lab items.
-    const labItems = await getMultipleObjects([
+    const request = new Request("mockcookie")
+    const labItems = await request.getMultipleObjects([
       "/labs/j-michael-cherry/",
       "/labs/jesse-engreitz/",
     ])
@@ -51,7 +53,7 @@ describe("Test functions to handle requests to the server", () => {
     expect(labItems).toHaveLength(2)
 
     // Make sure passing an empty array returns an empty array.
-    const noLabItems = await getMultipleObjects([])
+    const noLabItems = await request.getMultipleObjects([])
     expect(noLabItems).toBeTruthy()
     expect(noLabItems).toHaveLength(0)
   })
@@ -70,7 +72,8 @@ describe("Test functions to handle requests to the server", () => {
       })
     )
 
-    const labCollection = await getCollection("labs")
+    const request = new Request()
+    const labCollection = await request.getCollection("labs")
     expect(labCollection).toBeTruthy()
     expect(_.isEqual(labCollection, mockData)).toBeTruthy()
   })

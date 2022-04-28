@@ -25,12 +25,28 @@ const Icon = {
       <polygon points="10,3.6 11.4,6.5 14.4,6.9 12.2,9 12.7,12.1 10,10.6 7.3,12.1 7.8,9 5.6,6.9 8.6,6.5 " />
     </svg>
   ),
+  TechnicalSample: ({ className = null }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        d="M16.6,0h-1.5H5.3H3.8v1.2h1.5v3.7V11v4.1c0,2.7,2.2,4.9,4.9,4.9s4.9-2.2,4.9-4.9V11V4.9V1.2h1.5V0z M13.7,7H6.6
+      V1.2h7.1V7z"
+      />
+    </svg>
+  ),
 }
 
 /**
  * List all icon PropTypes here.
  */
 Icon.Award.propTypes = {
+  className: PropTypes.string,
+}
+Icon.TechnicalSample.propTypes = {
   className: PropTypes.string,
 }
 

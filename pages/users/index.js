@@ -3,10 +3,11 @@ import Link from "next/link"
 import PropTypes from "prop-types"
 // components
 import Breadcrumbs from "../../components/breadcrumbs"
+import NoCollectionData from "../../components/no-collection-data"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
-import { getCollection } from "../../libs/request"
+import Request from "../../libs/request"
 
 const UserList = ({ users }) => {
   return (
@@ -14,11 +15,15 @@ const UserList = ({ users }) => {
       <Breadcrumbs />
       <PagePreamble />
       <div>
-        {users.map((user) => (
-          <Link href={user["@id"]} key={user.uuid}>
-            <a className="block">{user.title}</a>
-          </Link>
-        ))}
+        {users.length > 0 ? (
+          users.map((user) => (
+            <Link href={user["@id"]} key={user.uuid}>
+              <a className="block">{user.title}</a>
+            </Link>
+          ))
+        ) : (
+          <NoCollectionData />
+        )}
       </div>
     </>
   )
@@ -31,8 +36,9 @@ UserList.propTypes = {
 
 export default UserList
 
-export const getServerSideProps = async () => {
-  const users = await getCollection("users")
+export const getServerSideProps = async ({ req }) => {
+  const request = new Request(req?.headers?.cookie)
+  const users = await request.getCollection("users")
   const breadcrumbs = await buildBreadcrumbs(users, "title")
   return {
     props: {
