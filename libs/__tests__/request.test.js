@@ -79,13 +79,6 @@ describe("Test functions to handle requests to the server", () => {
   })
 
   it("retrieves a single item from the server correctly", async () => {
-    // Mock lab collection retrieval.
-    const mockData = {
-      name: "j-michael-cherry",
-      "@id": "/labs/j-michael-cherry/",
-      "@type": ["Lab", "Item"],
-      title: "J. Michael Cherry, Stanford",
-    }
     window.fetch = jest.fn().mockImplementation(() => {
       throw "Mock request error"
     })
