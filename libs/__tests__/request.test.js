@@ -17,7 +17,13 @@ describe("Test functions to handle requests to the server", () => {
     )
 
     const request = new Request()
-    const labItem = await request.getObject("/labs/j-michael-cherry/")
+    let labItem = await request.getObject("/labs/j-michael-cherry/")
+    expect(labItem).toBeTruthy()
+    expect(_.isEqual(labItem, mockData)).toBeTruthy()
+
+    labItem = await request.getObject("/labs/j-michael-cherry/", {
+      includeEmbeds: true,
+    })
     expect(labItem).toBeTruthy()
     expect(_.isEqual(labItem, mockData)).toBeTruthy()
   })
