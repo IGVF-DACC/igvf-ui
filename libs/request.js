@@ -32,12 +32,16 @@ export default class Request {
    */
   async getObject(path) {
     const headers = buildHeaders(this.#cookie)
-    const response = await fetch(`${SERVER_URL}${path}?frame=object`, {
-      method: "GET",
-      credentials: "include",
-      headers,
-    })
-    return response.json()
+    try {
+      const response = await fetch(`${SERVER_URL}${path}?frame=object`, {
+        method: "GET",
+        credentials: "include",
+        headers,
+      })
+      return response.json()
+    } catch (error) {
+      return null
+    }
   }
 
   /**

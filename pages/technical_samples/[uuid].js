@@ -115,18 +115,21 @@ export default TechnicalSample
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
   const sample = await request.getObject(`/technical_samples/${params.uuid}/`)
-  const award = await request.getObject(sample.award)
-  const lab = await request.getObject(sample.lab)
-  const source = await request.getObject(sample.source)
-  const breadcrumbs = await buildBreadcrumbs(sample, "accession")
-  return {
-    props: {
-      sample,
-      award,
-      lab,
-      source,
-      pageContext: { title: sample.accession },
-      breadcrumbs,
-    },
+  if (sample && sample.status !== "error") {
+    const award = await request.getObject(sample.award)
+    const lab = await request.getObject(sample.lab)
+    const source = await request.getObject(sample.source)
+    const breadcrumbs = await buildBreadcrumbs(sample, "accession")
+    return {
+      props: {
+        sample,
+        award,
+        lab,
+        source,
+        pageContext: { title: sample.accession },
+        breadcrumbs,
+      },
+    }
   }
+  return { notFound: true }
 }
