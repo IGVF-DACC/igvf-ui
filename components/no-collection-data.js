@@ -10,7 +10,11 @@ import GlobalContext from "./global-context"
 const NoCollectionData = () => {
   const { page } = useContext(GlobalContext)
 
-  return <DataArea>No {page.title} to display</DataArea>
+  return (
+    <DataArea>
+      <div className="text-center italic">No {page.title} to display</div>
+    </DataArea>
+  )
 }
 
 export default NoCollectionData

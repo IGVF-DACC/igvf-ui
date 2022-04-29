@@ -38,13 +38,16 @@ export default User
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
   const user = await request.getObject(`/users/${params.uuid}/`)
-  const lab = await request.getObject(user.lab)
-  const breadcrumbs = await buildBreadcrumbs(user, "title")
-  return {
-    props: {
-      lab,
-      pageContext: { title: user.title },
-      breadcrumbs,
-    },
+  if (user && user.status !== "error") {
+    const lab = await request.getObject(user.lab)
+    const breadcrumbs = await buildBreadcrumbs(user, "title")
+    return {
+      props: {
+        lab,
+        pageContext: { title: user.title },
+        breadcrumbs,
+      },
+    }
   }
+  return { notFound: true }
 }

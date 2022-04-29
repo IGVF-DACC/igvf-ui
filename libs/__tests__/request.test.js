@@ -17,7 +17,13 @@ describe("Test functions to handle requests to the server", () => {
     )
 
     const request = new Request()
-    const labItem = await request.getObject("/labs/j-michael-cherry/")
+    let labItem = await request.getObject("/labs/j-michael-cherry/")
+    expect(labItem).toBeTruthy()
+    expect(_.isEqual(labItem, mockData)).toBeTruthy()
+
+    labItem = await request.getObject("/labs/j-michael-cherry/", {
+      includeEmbeds: true,
+    })
     expect(labItem).toBeTruthy()
     expect(_.isEqual(labItem, mockData)).toBeTruthy()
   })
@@ -76,5 +82,15 @@ describe("Test functions to handle requests to the server", () => {
     const labCollection = await request.getCollection("labs")
     expect(labCollection).toBeTruthy()
     expect(_.isEqual(labCollection, mockData)).toBeTruthy()
+  })
+
+  it("receives a null result when fetch throws an error", async () => {
+    window.fetch = jest.fn().mockImplementation(() => {
+      throw "Mock request error"
+    })
+
+    const request = new Request()
+    const labItem = await request.getObject("/labs/j-michael-cherry/")
+    expect(labItem).toBeNull()
   })
 })

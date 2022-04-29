@@ -82,14 +82,17 @@ export default Award
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
   const award = await request.getObject(`/awards/${params.name}/`)
-  const pis = award.pi ? await request.getMultipleObjects(award.pi) : []
-  const breadcrumbs = await buildBreadcrumbs(award, "name")
-  return {
-    props: {
-      award,
-      pis,
-      pageContext: { title: award.name },
-      breadcrumbs,
-    },
+  if (award && award.status !== "error") {
+    const pis = award.pi ? await request.getMultipleObjects(award.pi) : []
+    const breadcrumbs = await buildBreadcrumbs(award, "name")
+    return {
+      props: {
+        award,
+        pis,
+        pageContext: { title: award.name },
+        breadcrumbs,
+      },
+    }
   }
+  return { notFound: true }
 }
