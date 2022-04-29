@@ -84,7 +84,7 @@ describe("Test functions to handle requests to the server", () => {
     expect(_.isEqual(labCollection, mockData)).toBeTruthy()
   })
 
-  it("retrieves a single item from the server correctly", async () => {
+  it("receives a null result when fetch throws an error", async () => {
     window.fetch = jest.fn().mockImplementation(() => {
       throw "Mock request error"
     })
