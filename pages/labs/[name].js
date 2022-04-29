@@ -63,16 +63,19 @@ export default Lab
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
   const lab = await request.getObject(`/labs/${params.name}/`)
-  const awards = await request.getMultipleObjects(lab.awards)
-  const pi = await request.getObject(lab.pi)
-  const breadcrumbs = await buildBreadcrumbs(lab, "title")
-  return {
-    props: {
-      lab,
-      awards,
-      pi,
-      pageContext: { title: lab.title },
-      breadcrumbs,
-    },
+  if (lab && lab.status !== "error") {
+    const awards = await request.getMultipleObjects(lab.awards)
+    const pi = await request.getObject(lab.pi)
+    const breadcrumbs = await buildBreadcrumbs(lab, "title")
+    return {
+      props: {
+        lab,
+        awards,
+        pi,
+        pageContext: { title: lab.title },
+        breadcrumbs,
+      },
+    }
   }
+  return { notFound: true }
 }
