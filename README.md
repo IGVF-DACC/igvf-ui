@@ -39,14 +39,14 @@ The Docker Desktop app should now show no running containers.
 
 If you want to sign into the site you need to:
 
-1. Download the environment-variable files.
+1. Download the environment-variable files and place them in the igvf-ui root directory.
 2. Make sure you have a user record in the igvfd user.json test insert file.
 
 You can download the environment files here:
 
 https://drive.google.com/drive/folders/1jBPTau0Bqzr418IjraWnEhFgiy09e_98?usp=sharing
 
-Rename the `dot-env.local` file to `.env.local`.
+Move these both to your igvf-ui root directory, then rename the `dot-env.local` file to `.env.local`.
 
 You need to make sure you have a user record in the [user.json test insert file](https://github.com/IGVF-DACC/igvfd/blob/dev/src/igvfd/tests/data/inserts/user.json). When you click “Sign In” on the site, you can enter your username and password in the login text fields. If you have a Stanford email, you can use single-click sign in with the Google button.
 
