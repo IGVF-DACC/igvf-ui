@@ -51,7 +51,7 @@ export default TechnicalSampleList
 
 export const getServerSideProps = async ({ req }) => {
   const request = new Request(req?.headers?.cookie)
-  const technicalSamples = await request.getCollection("technical_samples")
+  const technicalSamples = await request.getCollection("technical-samples")
   const breadcrumbs = await buildBreadcrumbs(technicalSamples, "title")
   return {
     props: {

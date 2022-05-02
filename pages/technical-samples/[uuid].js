@@ -114,7 +114,7 @@ export default TechnicalSample
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const sample = await request.getObject(`/technical_samples/${params.uuid}/`)
+  const sample = await request.getObject(`/technical-samples/${params.uuid}/`)
   if (sample && sample.status !== "error") {
     const award = await request.getObject(sample.award)
     const lab = await request.getObject(sample.lab)
