@@ -13,7 +13,7 @@ const Status = ({ children }) => {
     const status = children.replace(" ", "-")
     return (
       <div
-        className={`w-fit rounded-full border px-2 py-0 text-xs font-semibold uppercase bg-status-${status} text-status-${status} border-status-${status}`}
+        className={`m-0.5 w-fit rounded-full border border-white px-2 py-0 text-xs font-semibold uppercase bg-status-${status} text-status-${status} shadow-outline-${status}`}
       >
         {children}
       </div>

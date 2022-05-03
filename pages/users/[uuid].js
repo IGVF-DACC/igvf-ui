@@ -9,7 +9,6 @@ import {
   DataItemValue,
 } from "../../components/data-item"
 import PagePreamble from "../../components/page-preamble"
-import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -20,12 +19,6 @@ const User = ({ lab }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status>{lab.status}</Status>
-          </DataItemValue>
-        </DataItem>
         <DataItem>
           <DataItemLabel>Lab</DataItemLabel>
           <DataItemValue>{lab.title}</DataItemValue>

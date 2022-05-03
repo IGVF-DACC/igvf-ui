@@ -28,16 +28,15 @@ module.exports = {
           revoked: "var(--color-status-revoked)",
         },
       },
-      borderColor: {
-        status: {
-          current: "var(--color-status-current-border)",
-          deleted: "var(--color-status-deleted-border)",
-          disabled: "var(--color-status-disabled-border)",
-          "in-progress": "var(--color-status-in-progress-border)",
-          released: "var(--color-status-released-border)",
-          replaced: "var(--color-status-replaced-border)",
-          revoked: "var(--color-status-revoked-border)",
-        },
+      boxShadow: {
+        "outline-current": "0 0 0 1px var(--color-status-current-border)",
+        "outline-deleted": "0 0 0 1px var(--color-status-deleted-border)",
+        "outline-disabled": "0 0 0 1px var(--color-status-disabled-border)",
+        "outline-in-progress":
+          "0 0 0 1px var(--color-status-in-progress-border)",
+        "outline-released": "0 0 0 1px var(--color-status-released-border)",
+        "outline-replaced": "0 0 0 1px var(--color-status-replaced-border)",
+        "outline-revoked": "0 0 0 1px var(--color-status-revoked-border)",
       },
       textColor: {
         status: {
@@ -61,13 +60,13 @@ module.exports = {
     "bg-status-replaced",
     "bg-status-revoked",
 
-    "border-status-current",
-    "border-status-deleted",
-    "border-status-disabled",
-    "border-status-in-progress",
-    "border-status-released",
-    "border-status-replaced",
-    "border-status-revoked",
+    "shadow-outline-current",
+    "shadow-outline-deleted",
+    "shadow-outline-disabled",
+    "shadow-outline-in-progress",
+    "shadow-outline-released",
+    "shadow-outline-replaced",
+    "shadow-outline-revoked",
 
     "text-status-current",
     "text-status-deleted",
