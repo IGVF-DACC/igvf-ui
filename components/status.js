@@ -2,19 +2,32 @@
 import PropTypes from "prop-types"
 
 /**
- * Displays the status of any object. The children must include exactly one text item (the status
- * string) or nothing gets displayed. If new statuses get added, define their colors in
- * globals.css, add their background- and border-color classes to the status properties in
- * tailwind.config.js, and add them to the safelist property because the className gets generated
- * dynamically here, and so these class names get tree shaken unless you add them to that list.
+ * Styles for each possible status value. As new status values get added to the schemas, add a
+ * corresponding entry with its colors here. bg-[#xxxxxx] define the color of the badge background
+ * while shadoow-[#xxxxxx] define the color of the badge outline.
+ */
+const statusStyles = {
+  fallback: "bg-[#d0d0d0] text-black shadow-[#a0a0a0]",
+  current: "bg-[#00a99d] text-white shadow-[#007f76]",
+  deleted: "bg-[#ed1c24] text-white shadow-[#c6171d]",
+  disabled: "bg-[#ed145b] text-white shadow-[#c4114b]",
+  "in progress": "bg-[#0072bc] text-white shadow-[#00578f]",
+  released: "bg-[#00a651] text-white shadow-[#007d3d]",
+  replaced: "bg-[#f26522] text-white shadow-[#cd541b]",
+  revoked: "bg-[#ed145b] text-white shadow-[#c4114b]",
+}
+
+/**
+ * Displays the status of any object. If new statuses get added, define their colors in the
+ * `statusStyles` object above.
  */
 const Status = ({ status }) => {
-  const dashedStatus = status.replace(" ", "-")
+  const statusClass = statusStyles[status] || statusStyles.fallback
   return (
     <div
-      className={`m-0.5 w-fit rounded-full border border-white px-2 py-0 text-xs font-semibold uppercase bg-status-${status} text-status-${status} shadow-outline-${status}`}
+      className={`my-0.5 mx-px w-fit rounded-full border border-white px-2 py-0 text-xs font-semibold uppercase shadow-status ${statusClass}`}
     >
-      {dashedStatus}
+      {status}
     </div>
   )
 }

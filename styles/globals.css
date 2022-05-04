@@ -32,28 +32,6 @@
 
   --color-data-label: #6b7280;
   --color-data-value: #000000;
-
-  /**
-   * Object statuses
-   */
-  --color-status-current: #00a99d;
-  --color-status-deleted: #ed1c24;
-  --color-status-disabled: #ed145b;
-  --color-status-in-progress: #0072bc;
-  --color-status-released: #00a651;
-  --color-status-replaced: #f26522;
-  --color-status-revoked: #ed145b;
-
-  /**
-   * Object status borders
-   */
-  --color-status-current-border: #007f76;
-  --color-status-deleted-border: #c6171d;
-  --color-status-disabled-border: #c4114b;
-  --color-status-in-progress-border: #00578f;
-  --color-status-released-border: #007d3d;
-  --color-status-replaced-border: #cd541b;
-  --color-status-revoked-border: #c4114b;
 }
 
 /**
