@@ -25,6 +25,7 @@ const TechnicalSampleList = ({ technicalSamples }) => {
               key={sample.uuid}
               href={sample["@id"]}
               label={`Lab ${sample.title}`}
+              status={sample.status}
             >
               <CollectionItemName>
                 {sample.accession} &mdash; {sample.sample_material}

@@ -25,6 +25,7 @@ const LabList = ({ labs }) => {
               key={lab.uuid}
               href={lab["@id"]}
               label={`Lab ${lab.title}`}
+              status={lab.status}
             >
               <CollectionItemName>{lab.title}</CollectionItemName>
               <div>{lab.institute_label}</div>

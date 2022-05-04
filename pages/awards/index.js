@@ -25,6 +25,7 @@ const AwardList = ({ awards }) => {
               key={award.uuid}
               href={award["@id"]}
               label={`Award ${award.name}`}
+              status={award.status}
             >
               <CollectionItemName>{award.name}</CollectionItemName>
               <div>{award.title}</div>
