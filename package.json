@@ -10,7 +10,7 @@
     "cypress:run": "cypress run --record --key 083e76f3-5f44-43f0-b248-ace10abf0877"
   },
   "dependencies": {
-    "@auth0/auth0-react": "^1.9.0",
+    "@auth0/auth0-react": "^1.10.1",
     "@headlessui/react": "^1.6.1",
     "@heroicons/react": "^1.0.6",
     "dayjs": "^1.11.1",
