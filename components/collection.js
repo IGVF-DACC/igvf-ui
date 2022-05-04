@@ -2,7 +2,6 @@
 import { ChevronDoubleRightIcon } from "@heroicons/react/solid"
 import Link from "next/link"
 import PropTypes from "prop-types"
-import { Children } from "react"
 // components
 import Status from "./status"
 
@@ -10,11 +9,14 @@ import Status from "./status"
  * Displays the number of items in a collection.
  */
 export const CollectionCount = ({ count }) => {
-  return (
-    <div>
-      {count} item{count === 1 ? "" : "s"}
-    </div>
-  )
+  if (count > 0) {
+    return (
+      <div>
+        {count} item{count === 1 ? "" : "s"}
+      </div>
+    )
+  }
+  return null
 }
 
 CollectionCount.propTypes = {
@@ -26,12 +28,7 @@ CollectionCount.propTypes = {
  * Displays an entire collection of items.
  */
 export const Collection = ({ children }) => {
-  return (
-    <div className="overflow-hidden">
-      <CollectionCount count={Children.count(children)} />
-      {children}
-    </div>
-  )
+  return <div className="overflow-hidden">{children}</div>
 }
 
 /**
