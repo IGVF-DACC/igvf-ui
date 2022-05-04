@@ -14,14 +14,16 @@ export const Collection = ({ children }) => {
 
 export const CollectionItemLink = ({ href, label }) => {
   return (
-    <Link href={href}>
-      <a
-        className="h-fill flex basis-8 items-center justify-center hover:bg-gray-100"
-        aria-label={label}
-      >
-        <ChevronRightIcon className="h-5 w-5 fill-gray-700" />
-      </a>
-    </Link>
+    <div className="h-fill flex items-center justify-center pl-2">
+      <Link href={href}>
+        <a
+          className="rounded-full border border-transparent p-2 hover:border-highlight-border hover:bg-highlight"
+          aria-label={label}
+        >
+          <ChevronRightIcon className="h-5 w-5 fill-gray-700 dark:fill-gray-300" />
+        </a>
+      </Link>
+    </div>
   )
 }
 
@@ -37,7 +39,7 @@ CollectionItemLink.propTypes = {
  */
 export const CollectionItem = ({ href, label, status = "", children }) => {
   return (
-    <div className="my-0.5 flex border border-data-background bg-data-background">
+    <div className="my-0.5 flex border border-data-border bg-data-background">
       <CollectionItemLink href={href} label={label} />
       <div className="grow p-4">{children}</div>
       <div className="basis-2 justify-end self-center p-2">
