@@ -1,17 +1,42 @@
 // node_modules
+import { ChevronDoubleRightIcon } from "@heroicons/react/solid"
 import Link from "next/link"
 import PropTypes from "prop-types"
-import { ChevronDoubleRightIcon } from "@heroicons/react/solid"
+import { Children } from "react"
 // components
 import Status from "./status"
+
+/**
+ * Displays the number of items in a collection.
+ */
+export const CollectionCount = ({ count }) => {
+  return (
+    <div>
+      {count} item{count === 1 ? "" : "s"}
+    </div>
+  )
+}
+
+CollectionCount.propTypes = {
+  // Number of items in the collection
+  count: PropTypes.number.isRequired,
+}
 
 /**
  * Displays an entire collection of items.
  */
 export const Collection = ({ children }) => {
-  return <>{children}</>
+  return (
+    <div className="overflow-hidden">
+      <CollectionCount count={Children.count(children)} />
+      {children}
+    </div>
+  )
 }
 
+/**
+ * Displays the link in a collection item.
+ */
 export const CollectionItemLink = ({ href, label }) => {
   return (
     <div className="h-fill flex items-center justify-center pl-2">
@@ -42,7 +67,7 @@ export const CollectionItem = ({ href, label, status = "", children }) => {
     <div className="my-0.5 flex border border-data-border bg-data-background">
       <CollectionItemLink href={href} label={label} />
       <div className="grow p-4">{children}</div>
-      <div className="basis-2 justify-end self-center p-2">
+      <div className="shrink justify-end self-center p-2">
         <Status status={status} />
       </div>
     </div>
