@@ -24,7 +24,7 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
         <DataItem>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
-            <Status>{sample.status}</Status>
+            <Status status={sample.status} />
           </DataItemValue>
         </DataItem>
         {sample.additional_description && (

@@ -24,7 +24,7 @@ const Award = ({ award, pis }) => {
         <DataItem>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
-            <Status>{award.status}</Status>
+            <Status status={award.status} />
           </DataItemValue>
         </DataItem>
         <DataItem>

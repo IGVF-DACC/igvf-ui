@@ -25,7 +25,7 @@ const Lab = ({ lab, awards, pi }) => {
         <DataItem>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
-            <Status>{lab.status}</Status>
+            <Status status={lab.status} />
           </DataItemValue>
         </DataItem>
         <DataItem>

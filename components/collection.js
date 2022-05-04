@@ -1,7 +1,7 @@
 // node_modules
 import Link from "next/link"
 import PropTypes from "prop-types"
-import { ChevronRightIcon } from "@heroicons/react/solid"
+import { ChevronDoubleRightIcon } from "@heroicons/react/solid"
 // components
 import Status from "./status"
 
@@ -20,7 +20,7 @@ export const CollectionItemLink = ({ href, label }) => {
           className="rounded-full border border-transparent p-2 hover:border-highlight-border hover:bg-highlight"
           aria-label={label}
         >
-          <ChevronRightIcon className="h-5 w-5 fill-gray-700 dark:fill-gray-300" />
+          <ChevronDoubleRightIcon className="h-5 w-5 fill-gray-700 dark:fill-gray-300" />
         </a>
       </Link>
     </div>
@@ -43,7 +43,7 @@ export const CollectionItem = ({ href, label, status = "", children }) => {
       <CollectionItemLink href={href} label={label} />
       <div className="grow p-4">{children}</div>
       <div className="basis-2 justify-end self-center p-2">
-        <Status>{status}</Status>
+        <Status status={status} />
       </div>
     </div>
   )
