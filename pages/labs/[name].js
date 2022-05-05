@@ -11,6 +11,7 @@ import {
 } from "../../components/data-item"
 import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
+import Status from "../../components/status"
 // libs
 import Request from "../../libs/request"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -21,6 +22,12 @@ const Lab = ({ lab, awards, pi }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
+        <DataItem>
+          <DataItemLabel>Status</DataItemLabel>
+          <DataItemValue>
+            <Status status={lab.status} />
+          </DataItemValue>
+        </DataItem>
         <DataItem>
           <DataItemLabel>Institute</DataItemLabel>
           <DataItemValue>{lab.institute_label}</DataItemValue>

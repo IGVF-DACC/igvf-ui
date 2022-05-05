@@ -16,11 +16,12 @@ module.exports = {
         "data-border": "var(--color-data-border)",
         highlight: "var(--color-highlight)",
         "highlight-border": "var(--color-highlight-border)",
-      },
-      textColor: {
-        default: "var(--color-text-default)",
         "data-label": "var(--color-data-label)",
         "data-value": "var(--color-data-value)",
+      },
+      boxShadow: {
+        // Status badges
+        status: "0 0 0 1px #a0a0a0",
       },
     },
   },

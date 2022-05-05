@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
+  CollectionCount,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
@@ -20,20 +21,24 @@ const TechnicalSampleList = ({ technicalSamples }) => {
       <PagePreamble />
       <Collection>
         {technicalSamples.length > 0 ? (
-          technicalSamples.map((sample) => (
-            <CollectionItem
-              key={sample.uuid}
-              href={sample["@id"]}
-              label={`Lab ${sample.title}`}
-            >
-              <CollectionItemName>
-                {sample.accession} &mdash; {sample.sample_material}
-              </CollectionItemName>
-              {sample.additional_description && (
-                <div>{sample.additional_description}</div>
-              )}
-            </CollectionItem>
-          ))
+          <>
+            <CollectionCount count={technicalSamples.length} />
+            {technicalSamples.map((sample) => (
+              <CollectionItem
+                key={sample.uuid}
+                href={sample["@id"]}
+                label={`Lab ${sample.title}`}
+                status={sample.status}
+              >
+                <CollectionItemName>
+                  {sample.accession} &mdash; {sample.sample_material}
+                </CollectionItemName>
+                {sample.additional_description && (
+                  <div>{sample.additional_description}</div>
+                )}
+              </CollectionItem>
+            ))}
+          </>
         ) : (
           <NoCollectionData />
         )}

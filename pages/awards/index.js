@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
+  CollectionCount,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
@@ -20,16 +21,20 @@ const AwardList = ({ awards }) => {
       <PagePreamble />
       <Collection>
         {awards.length > 0 ? (
-          awards.map((award) => (
-            <CollectionItem
-              key={award.uuid}
-              href={award["@id"]}
-              label={`Award ${award.name}`}
-            >
-              <CollectionItemName>{award.name}</CollectionItemName>
-              <div>{award.title}</div>
-            </CollectionItem>
-          ))
+          <>
+            <CollectionCount count={awards.length} />
+            {awards.map((award) => (
+              <CollectionItem
+                key={award.uuid}
+                href={award["@id"]}
+                label={`Award ${award.name}`}
+                status={award.status}
+              >
+                <CollectionItemName>{award.name}</CollectionItemName>
+                <div>{award.title}</div>
+              </CollectionItem>
+            ))}
+          </>
         ) : (
           <NoCollectionData />
         )}

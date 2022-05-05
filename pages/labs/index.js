@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
+  CollectionCount,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
@@ -20,16 +21,20 @@ const LabList = ({ labs }) => {
       <PagePreamble />
       <Collection>
         {labs.length > 0 ? (
-          labs.map((lab) => (
-            <CollectionItem
-              key={lab.uuid}
-              href={lab["@id"]}
-              label={`Lab ${lab.title}`}
-            >
-              <CollectionItemName>{lab.title}</CollectionItemName>
-              <div>{lab.institute_label}</div>
-            </CollectionItem>
-          ))
+          <>
+            <CollectionCount count={labs.length} />
+            {labs.map((lab) => (
+              <CollectionItem
+                key={lab.uuid}
+                href={lab["@id"]}
+                label={`Lab ${lab.title}`}
+                status={lab.status}
+              >
+                <CollectionItemName>{lab.title}</CollectionItemName>
+                <div>{lab.institute_label}</div>
+              </CollectionItem>
+            ))}
+          </>
         ) : (
           <NoCollectionData />
         )}

@@ -9,6 +9,7 @@ import {
   DataItemValue,
 } from "../../components/data-item"
 import PagePreamble from "../../components/page-preamble"
+import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
@@ -20,6 +21,12 @@ const Award = ({ award, pis }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
+        <DataItem>
+          <DataItemLabel>Status</DataItemLabel>
+          <DataItemValue>
+            <Status status={award.status} />
+          </DataItemValue>
+        </DataItem>
         <DataItem>
           <DataItemLabel>Title</DataItemLabel>
           <DataItemValue>{award.title}</DataItemValue>
