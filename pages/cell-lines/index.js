@@ -10,32 +10,29 @@ import {
 } from "../../components/collection"
 import NoCollectionData from "../../components/no-collection-data"
 import PagePreamble from "../../components/page-preamble"
+import SourceProp from "../../components/source-prop"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const TechnicalSampleList = ({ technicalSamples }) => {
+const CellLineList = ({ cellLines }) => {
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
       <Collection>
-        {technicalSamples.length > 0 ? (
+        {cellLines.length > 0 ? (
           <>
-            <CollectionCount count={technicalSamples.length} />
-            {technicalSamples.map((sample) => (
+            <CollectionCount count={cellLines.length} />
+            {cellLines.map((sample) => (
               <CollectionItem
                 key={sample.uuid}
                 href={sample["@id"]}
-                label={`Technical Sample ${sample.title}`}
+                label={`Cell Line ${sample.title}`}
                 status={sample.status}
               >
-                <CollectionItemName>
-                  {sample.accession} &mdash; {sample.sample_material}
-                </CollectionItemName>
-                {sample.additional_description && (
-                  <div>{sample.additional_description}</div>
-                )}
+                <CollectionItemName>{sample.accession}</CollectionItemName>
+                <SourceProp source={sample.source} />
               </CollectionItem>
             ))}
           </>
@@ -47,21 +44,22 @@ const TechnicalSampleList = ({ technicalSamples }) => {
   )
 }
 
-TechnicalSampleList.propTypes = {
+CellLineList.propTypes = {
   // Technical samples to display in the list
-  technicalSamples: PropTypes.array.isRequired,
+  cellLines: PropTypes.array.isRequired,
 }
 
-export default TechnicalSampleList
+export default CellLineList
 
 export const getServerSideProps = async ({ req }) => {
   const request = new Request(req?.headers?.cookie)
-  const technicalSamples = await request.getCollection("technical-samples")
-  const breadcrumbs = await buildBreadcrumbs(technicalSamples, "title")
+  const cellLines = await request.getCollection("cell-lines")
+  await request.getAndEmbedCollectionObjects(cellLines["@graph"], "source")
+  const breadcrumbs = await buildBreadcrumbs(cellLines, "title")
   return {
     props: {
-      technicalSamples: technicalSamples["@graph"],
-      pageContext: { title: technicalSamples.title },
+      cellLines: cellLines["@graph"],
+      pageContext: { title: cellLines.title },
       breadcrumbs,
     },
   }
