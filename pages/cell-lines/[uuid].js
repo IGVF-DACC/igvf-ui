@@ -12,12 +12,13 @@ import {
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
+import TreatmentTable from "../../components/treatment-table"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDate } from "../../libs/dates"
 import Request from "../../libs/request"
 
-const CellLine = ({ sample, award, lab, source }) => {
+const CellLine = ({ sample, award, lab, source, treatments }) => {
   return (
     <>
       <Breadcrumbs />
@@ -138,6 +139,12 @@ const CellLine = ({ sample, award, lab, source }) => {
           </DataItem>
         )}
       </DataArea>
+      {treatments.length > 0 && (
+        <>
+          <DataAreaTitle>Treatments</DataAreaTitle>
+          <TreatmentTable treatments={treatments} />
+        </>
+      )}
     </>
   )
 }
@@ -151,6 +158,8 @@ CellLine.propTypes = {
   lab: PropTypes.object.isRequired,
   // Source lab or source for this technical sample
   source: PropTypes.object.isRequired,
+  // List of associated treatments
+  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
 export default CellLine
@@ -162,6 +171,7 @@ export const getServerSideProps = async ({ params, req }) => {
     const award = await request.getObject(sample.award)
     const lab = await request.getObject(sample.lab)
     const source = await request.getObject(sample.source)
+    const treatments = await request.getMultipleObjects(sample.treatments)
     const breadcrumbs = await buildBreadcrumbs(sample, "accession")
     return {
       props: {
@@ -169,6 +179,7 @@ export const getServerSideProps = async ({ params, req }) => {
         award,
         lab,
         source,
+        treatments,
         pageContext: { title: sample.accession },
         breadcrumbs,
       },

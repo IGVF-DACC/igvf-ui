@@ -27,10 +27,6 @@ const Treatment = ({ treatment }) => {
           </DataItemValue>
         </DataItem>
         <DataItem>
-          <DataItemLabel>Treatment Term ID</DataItemLabel>
-          <DataItemValue>{treatment.treatment_term_id}</DataItemValue>
-        </DataItem>
-        <DataItem>
           <DataItemLabel>Treatment Term Name</DataItemLabel>
           <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
         </DataItem>
