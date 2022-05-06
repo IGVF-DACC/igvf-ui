@@ -4,7 +4,7 @@ import Image from "next/image"
 // components
 import Spinner from "../components/spinner"
 // components
-import { DataArea, DataItem } from "../components/data-item"
+import { DataArea, DataItem } from "../components/data-area"
 import PagePreamble from "../components/page-preamble"
 
 const UserProfile = () => {

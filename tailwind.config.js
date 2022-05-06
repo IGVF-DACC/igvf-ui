@@ -16,6 +16,7 @@ module.exports = {
         "data-border": "var(--color-data-border)",
         highlight: "var(--color-highlight)",
         "highlight-border": "var(--color-highlight-border)",
+        "data-title": "var(--color-data-title)",
         "data-label": "var(--color-data-label)",
         "data-value": "var(--color-data-value)",
       },

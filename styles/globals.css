@@ -30,6 +30,7 @@
   --color-text-default: #000000;
   --color-title-border: #6b7280;
 
+  --color-data-title: #6b7280;
   --color-data-label: #6b7280;
   --color-data-value: #000000;
 }
@@ -49,6 +50,7 @@
   --color-text-default: #ffffff;
   --color-title-border: #6b7280;
 
+  --color-data-title: #9ca3af;
   --color-data-label: #9ca3af;
   --color-data-value: #ffffff;
 }

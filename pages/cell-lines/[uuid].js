@@ -5,10 +5,11 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
+  DataAreaTitle,
   DataItem,
   DataItemLabel,
   DataItemValue,
-} from "../../components/data-item"
+} from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 // libs
@@ -100,6 +101,9 @@ const CellLine = ({ sample, award, lab, source }) => {
             </DataItemValue>
           </DataItem>
         )}
+      </DataArea>
+      <DataAreaTitle>Attribution</DataAreaTitle>
+      <DataArea>
         <DataItem>
           <DataItemLabel>Award</DataItemLabel>
           <DataItemValue>

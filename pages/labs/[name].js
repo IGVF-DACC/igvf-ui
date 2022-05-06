@@ -8,7 +8,7 @@ import {
   DataItem,
   DataItemLabel,
   DataItemValue,
-} from "../../components/data-item"
+} from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
 import Status from "../../components/status"

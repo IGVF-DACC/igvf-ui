@@ -8,7 +8,7 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../components/collection"
-import { DataArea } from "../components/data-item"
+import { DataArea } from "../components/data-area"
 import NoCollectionData from "../components/no-collection-data"
 import PagePreamble from "../components/page-preamble"
 

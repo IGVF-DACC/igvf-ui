@@ -24,6 +24,14 @@ export const DataArea = ({ children }) => {
   )
 }
 
+export const DataAreaTitle = ({ children }) => {
+  return (
+    <h2 className="mt-4 mb-1 text-lg font-semibold uppercase text-data-title">
+      {children}
+    </h2>
+  )
+}
+
 /**
  * Display a single data item containing a label and value.
  */
