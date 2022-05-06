@@ -93,5 +93,8 @@ Icon.CellLine.propTypes = {
 Icon.TechnicalSample.propTypes = {
   className: PropTypes.string,
 }
+Icon.Treatment.propTypes = {
+  className: PropTypes.string,
+}
 
 export default Icon
