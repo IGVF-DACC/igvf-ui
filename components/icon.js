@@ -25,6 +25,39 @@ const Icon = {
       <polygon points="10,3.6 11.4,6.5 14.4,6.9 12.2,9 12.7,12.1 10,10.6 7.3,12.1 7.8,9 5.6,6.9 8.6,6.5 " />
     </svg>
   ),
+  CellLine: ({ className = null }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <g>
+        <path
+          className="fill-transparent stroke-current"
+          d="M14.7,5.3c0.3,2.3-2.6,4.3-4.5,4.5c-2.5,0.1-4-2.2-4.3-4.5C5.6,3,7.8,0.8,10.3,0.8C12.9,0.9,14.4,3.5,14.7,5.3
+		z"
+        />
+      </g>
+      <g>
+        <path
+          className="fill-transparent stroke-current"
+          d="M19,17.4c-0.9,2.1-4.4,2.5-6.1,1.6c-2.2-1.1-2.4-3.9-1.5-6.1c0.9-2.1,3.9-2.9,6-1.6
+		C19.7,12.7,19.7,15.7,19,17.4z"
+        />
+      </g>
+      <g>
+        <path
+          className="fill-transparent stroke-current"
+          d="M6.4,19.3C4.3,20.1,1.5,17.8,1,16c-0.8-2.4,1.1-4.5,3.3-5.3c2.2-0.8,4.8,0.7,5.4,3.2
+		C10.2,16.4,8.1,18.6,6.4,19.3z"
+        />
+      </g>
+      <circle cx="10.3" cy="5.3" r="1.3" />
+      <circle cx="15.6" cy="14.7" r="1.3" />
+      <circle cx="5.5" cy="14.5" r="1.3" />
+    </svg>
+  ),
   TechnicalSample: ({ className = null }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -44,6 +77,9 @@ const Icon = {
  * List all icon PropTypes here.
  */
 Icon.Award.propTypes = {
+  className: PropTypes.string,
+}
+Icon.CellLine.propTypes = {
   className: PropTypes.string,
 }
 Icon.TechnicalSample.propTypes = {
