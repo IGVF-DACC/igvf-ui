@@ -68,7 +68,7 @@ export default class Request {
 
   /**
    * Given an array of objects containing paths to other objects, request all these objects from
-   * the server and embed them in place of the paths.
+   * the server and embed them in place of the paths, mutating the objects in `items`.
    * @param {array} items - Objects containing non-embedded properties to fetch and embed
    * @param {string} prop - Property of each item to fetch and embed
    */

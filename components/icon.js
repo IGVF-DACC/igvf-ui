@@ -32,23 +32,16 @@ const Icon = {
       viewBox="0 0 20 20"
       fill="currentColor"
     >
-      <g>
+      <g className="fill-transparent stroke-current">
         <path
-          className="fill-transparent stroke-current"
           d="M14.7,5.3c0.3,2.3-2.6,4.3-4.5,4.5c-2.5,0.1-4-2.2-4.3-4.5C5.6,3,7.8,0.8,10.3,0.8C12.9,0.9,14.4,3.5,14.7,5.3
 		z"
         />
-      </g>
-      <g>
         <path
-          className="fill-transparent stroke-current"
           d="M19,17.4c-0.9,2.1-4.4,2.5-6.1,1.6c-2.2-1.1-2.4-3.9-1.5-6.1c0.9-2.1,3.9-2.9,6-1.6
 		C19.7,12.7,19.7,15.7,19,17.4z"
         />
-      </g>
-      <g>
         <path
-          className="fill-transparent stroke-current"
           d="M6.4,19.3C4.3,20.1,1.5,17.8,1,16c-0.8-2.4,1.1-4.5,3.3-5.3c2.2-0.8,4.8,0.7,5.4,3.2
 		C10.2,16.4,8.1,18.6,6.4,19.3z"
         />
