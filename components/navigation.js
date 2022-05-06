@@ -306,6 +306,16 @@ const Navigation = ({ navigationClick }) => {
         Technical Samples
       </NavigationHrefItem>
       <NavigationHrefItem
+        id="treatments"
+        href="/treatments"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <Icon.Treatment />
+        </NavigationIcon>
+        Treatments
+      </NavigationHrefItem>
+      <NavigationHrefItem
         id="users"
         href="/users"
         navigationClick={navigationClick}

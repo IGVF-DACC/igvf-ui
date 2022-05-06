@@ -1,11 +1,9 @@
 // node_modules
-import Link from "next/link"
 import PropTypes from "prop-types"
 // components
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataAreaTitle,
   DataItem,
   DataItemLabel,
   DataItemValue,
