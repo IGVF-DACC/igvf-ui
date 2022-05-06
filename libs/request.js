@@ -83,10 +83,11 @@ export default class Request {
       const objectPath = item[embedProp]
       let cachedObject = cache[objectPath]
       if (!cachedObject) {
-        cache[item[embedProp]] = objects.find(
+        // Cache miss: add requested object to the cache with its path as key.
+        cache[objectPath] = objects.find(
           (object) => object["@id"] === objectPath
         )
-        cachedObject = cache[item[embedProp]]
+        cachedObject = cache[objectPath]
       }
       item[embedProp] = cachedObject
     })
