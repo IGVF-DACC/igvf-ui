@@ -14,7 +14,7 @@ describe("Test the SourceProp component", () => {
       uuid: "b40f24ee-8803-4937-9223-1df3a6bf3cd9",
       "@context": "/terms/",
     }
-    render(<SourceProp sourceProp={sourceObject} />)
+    render(<SourceProp source={sourceObject} />)
     expect(screen.getByText("Abcam")).toBeInTheDocument()
     expect(screen.getByRole("link")).toHaveAttribute(
       "href",
@@ -37,7 +37,7 @@ describe("Test the SourceProp component", () => {
       title: "J. Michael Cherry, Stanford",
       "@context": "/terms/",
     }
-    render(<SourceProp sourceProp={labObject} />)
+    render(<SourceProp source={labObject} />)
     expect(screen.getByText("J. Michael Cherry, Stanford")).toBeInTheDocument()
     expect(screen.getByRole("link")).toHaveAttribute(
       "href",
@@ -50,7 +50,7 @@ describe("Test the SourceProp component", () => {
     const otherObject = {
       "@id": "/users/j-michael-cherry/",
     }
-    const { container } = render(<SourceProp sourceProp={otherObject} />)
+    const { container } = render(<SourceProp source={otherObject} />)
     expect(container.firstChild).toBeNull()
   })
 })
