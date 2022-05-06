@@ -1,5 +1,5 @@
 // components
-import { DataArea } from "../components/data-item"
+import { DataArea } from "../components/data-area"
 import PagePreamble from "../components/page-preamble"
 
 const AuthError = () => {

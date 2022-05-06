@@ -1,3 +1,5 @@
+// node_modules
+import _ from "lodash"
 // libs
 import { SERVER_URL } from "./constants"
 
@@ -62,6 +64,32 @@ export default class Request {
     return paths.length > 0
       ? Promise.all(paths.map((path) => this.getObject(path)))
       : []
+  }
+
+  /**
+   * Given an array of objects containing paths to other objects, request all these objects from
+   * the server and embed them in place of the paths, mutating the objects in `items`.
+   * @param {array} items - Objects containing non-embedded properties to fetch and embed
+   * @param {string} prop - Property of each item to fetch and embed
+   */
+  async getAndEmbedCollectionObjects(items, embedProp) {
+    // Retrieve the specified non-embedded objects from the server.
+    const paths = _.uniq(items.map((item) => item[embedProp]))
+    const objects = await this.getMultipleObjects(paths)
+
+    // Embed the retrieved objects in the given items.
+    const cache = {}
+    items.forEach((item) => {
+      const objectPath = item[embedProp]
+      let cachedObject = cache[objectPath]
+      if (!cachedObject) {
+        cache[item[embedProp]] = objects.find(
+          (object) => object["@id"] === objectPath
+        )
+        cachedObject = cache[item[embedProp]]
+      }
+      item[embedProp] = cachedObject
+    })
   }
 
   /**

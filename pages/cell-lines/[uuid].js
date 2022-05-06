@@ -14,9 +14,10 @@ import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
+import { formatDate } from "../../libs/dates"
 import Request from "../../libs/request"
 
-const TechnicalSample = ({ sample, award, lab, source }) => {
+const CellLine = ({ sample, award, lab, source }) => {
   return (
     <>
       <Breadcrumbs />
@@ -28,16 +29,24 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
             <Status status={sample.status} />
           </DataItemValue>
         </DataItem>
-        {sample.additional_description && (
+        {sample.organism && (
           <DataItem>
-            <DataItemLabel>Description</DataItemLabel>
-            <DataItemValue>{sample.additional_description}</DataItemValue>
+            <DataItemLabel>Organism</DataItemLabel>
+            <DataItemValue>{sample.organism}</DataItemValue>
           </DataItem>
         )}
-        <DataItem>
-          <DataItemLabel>Sample Material</DataItemLabel>
-          <DataItemValue>{sample.sample_material}</DataItemValue>
-        </DataItem>
+        {sample.biosample_ontology && (
+          <DataItem>
+            <DataItemLabel>Biosample</DataItemLabel>
+            <DataItemValue>{sample.biosample_ontology}</DataItemValue>
+          </DataItem>
+        )}
+        {sample.disease_ontology && (
+          <DataItem>
+            <DataItemLabel>Disease</DataItemLabel>
+            <DataItemValue>{sample.disease_ontology}</DataItemValue>
+          </DataItem>
+        )}
         {sample.product_id && (
           <DataItem>
             <DataItemLabel>Product ID</DataItemLabel>
@@ -48,6 +57,35 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
           <DataItem>
             <DataItemLabel>Lot ID</DataItemLabel>
             <DataItemValue>{sample.lot_id}</DataItemValue>
+          </DataItem>
+        )}
+        {sample.date_obtained && (
+          <DataItem>
+            <DataItemLabel>Obtained</DataItemLabel>
+            <DataItemValue>{formatDate(sample.date_obtained)}</DataItemValue>
+          </DataItem>
+        )}
+        {sample.life_stage && (
+          <DataItem>
+            <DataItemLabel>Life Stage</DataItemLabel>
+            <DataItemValue>{sample.life_stage}</DataItemValue>
+          </DataItem>
+        )}
+        {sample.age && (
+          <DataItem>
+            <DataItemLabel>Age</DataItemLabel>
+            <DataItemValue>
+              {sample.age}
+              {sample.age_units ? (
+                <>
+                  {" "}
+                  {sample.age_units}
+                  {sample.age !== 1 ? "s" : ""}
+                </>
+              ) : (
+                ""
+              )}
+            </DataItemValue>
           </DataItem>
         )}
         {sample.starting_amount && (
@@ -61,12 +99,6 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
                 ""
               )}
             </DataItemValue>
-          </DataItem>
-        )}
-        {sample.technical_sample_ontology && (
-          <DataItem>
-            <DataItemLabel>Ontology</DataItemLabel>
-            <DataItemValue>{sample.technical_sample_ontology}</DataItemValue>
           </DataItem>
         )}
       </DataArea>
@@ -110,7 +142,7 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
   )
 }
 
-TechnicalSample.propTypes = {
+CellLine.propTypes = {
   // Technical sample to display
   sample: PropTypes.object.isRequired,
   // Award applied to this technical sample
@@ -121,11 +153,11 @@ TechnicalSample.propTypes = {
   source: PropTypes.object.isRequired,
 }
 
-export default TechnicalSample
+export default CellLine
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const sample = await request.getObject(`/technical-samples/${params.uuid}/`)
+  const sample = await request.getObject(`/cell-lines/${params.uuid}/`)
   if (sample && sample.status !== "error") {
     const award = await request.getObject(sample.award)
     const lab = await request.getObject(sample.lab)

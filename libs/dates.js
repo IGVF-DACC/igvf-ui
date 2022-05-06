@@ -9,6 +9,10 @@ import dayjs from "dayjs"
 // libs
 import { UC } from "./constants"
 
+export const formatDate = (date) => {
+  return dayjs(date).format("MMMM D, YYYY")
+}
+
 /**
  * Format a start and end date in YYYY-MM-DD format into a dash-separated string. If only one of
  * the dates is provided, this returns a single date.
@@ -19,6 +23,6 @@ import { UC } from "./constants"
 export const formatDateRange = (startDate, endDate) => {
   const dateRange = [startDate, endDate]
     .filter((date) => date)
-    .map((date) => dayjs(date).format("MMMM D, YYYY"))
+    .map((date) => formatDate(date))
   return dateRange.join(` ${UC.ndash} `)
 }

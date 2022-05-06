@@ -276,6 +276,16 @@ const Navigation = ({ navigationClick }) => {
         Awards
       </NavigationHrefItem>
       <NavigationHrefItem
+        id="cell-lines"
+        href="/cell-lines"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <Icon.CellLine />
+        </NavigationIcon>
+        Cell Lines
+      </NavigationHrefItem>
+      <NavigationHrefItem
         id="labs"
         href="/labs"
         navigationClick={navigationClick}

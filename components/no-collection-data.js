@@ -1,7 +1,7 @@
 // node_modules
 import { useContext } from "react"
 // components
-import { DataArea } from "./data-item"
+import { DataArea } from "./data-area"
 import GlobalContext from "./global-context"
 
 /**
