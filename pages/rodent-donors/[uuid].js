@@ -1,5 +1,4 @@
 // node_modules
-import dayjs from "dayjs"
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
@@ -11,34 +10,15 @@ import {
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
-import { DataGridContainer } from "../../components/data-grid"
 import ExternalResources from "../../components/external-resources"
 import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
-import SortableGrid from "../../components/sortable-grid"
 import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
-import { formatDateRange } from "../../libs/dates"
 import Request from "../../libs/request"
 
-const healthStatusHistoryColumns = [
-  {
-    id: "dates",
-    title: "Health Change Date",
-    display: ({ source }) =>
-      formatDateRange(source.date_start, source.date_end),
-    sorter: (healthStatus) =>
-      dayjs(healthStatus.date_start || healthStatus.date_end).unix(),
-  },
-  {
-    id: "health_description",
-    title: "Description",
-    isSortable: false,
-  },
-]
-
-const HumanDonor = ({ donor, award, lab, parents }) => {
+const RodentDonor = ({ donor, award, lab, parents }) => {
   return (
     <>
       <Breadcrumbs />
@@ -54,10 +34,18 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
           <DataItemLabel>Taxa Identifier</DataItemLabel>
           <DataItemValue>{donor.taxon_id}</DataItemValue>
         </DataItem>
-        {donor.sex && (
+        <DataItem>
+          <DataItemLabel>Sex</DataItemLabel>
+          <DataItemValue>{donor.sex}</DataItemValue>
+        </DataItem>
+        <DataItem>
+          <DataItemLabel>Strain</DataItemLabel>
+          <DataItemValue>{donor.strain}</DataItemValue>
+        </DataItem>
+        {donor.strain_background && (
           <DataItem>
-            <DataItemLabel>Sex</DataItemLabel>
-            <DataItemValue>{donor.sex}</DataItemValue>
+            <DataItemLabel>Strain Background</DataItemLabel>
+            <DataItemValue>{donor.strain_background}</DataItemValue>
           </DataItem>
         )}
         {parents.length > 0 && (
@@ -74,25 +62,8 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
             </SeparatedList>
           </DataItem>
         )}
-        {donor.ethnicity && (
-          <DataItem>
-            <DataItemLabel>Ethnicity</DataItemLabel>
-            <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
-          </DataItem>
-        )}
       </DataArea>
       <ExternalResources resources={donor.external_resources} />
-      {donor.health_status_history?.length > 0 && (
-        <>
-          <DataAreaTitle>Health Status History</DataAreaTitle>
-          <DataGridContainer>
-            <SortableGrid
-              data={donor.health_status_history}
-              columns={healthStatusHistoryColumns}
-            />
-          </DataGridContainer>
-        </>
-      )}
       <DataAreaTitle>Attribution</DataAreaTitle>
       <DataArea>
         <DataItem>
@@ -125,7 +96,7 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
   )
 }
 
-HumanDonor.propTypes = {
+RodentDonor.propTypes = {
   // Technical sample to display
   donor: PropTypes.object.isRequired,
   // Award applied to this technical sample
@@ -142,11 +113,11 @@ HumanDonor.propTypes = {
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
-export default HumanDonor
+export default RodentDonor
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const donor = await request.getObject(`/human-donors/${params.uuid}/`)
+  const donor = await request.getObject(`/rodent-donors/${params.uuid}/`)
   if (donor && donor.status !== "error") {
     const award = await request.getObject(donor.award)
     const lab = await request.getObject(donor.lab)
