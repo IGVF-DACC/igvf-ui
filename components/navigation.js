@@ -286,7 +286,7 @@ const Navigation = ({ navigationClick }) => {
         Cell Lines
       </NavigationHrefItem>
       <NavigationHrefItem
-        id="human-donor"
+        id="human-donors"
         href="/human-donors"
         navigationClick={navigationClick}
       >
@@ -306,7 +306,7 @@ const Navigation = ({ navigationClick }) => {
         Labs
       </NavigationHrefItem>
       <NavigationHrefItem
-        id="rodent-donor"
+        id="rodent-donors"
         href="/rodent-donors"
         navigationClick={navigationClick}
       >
