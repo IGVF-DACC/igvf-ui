@@ -58,6 +58,7 @@ class FrontendStack(Stack):
             ),
             task_image_options=ApplicationLoadBalancedTaskImageOptions(
                 container_name='nextjs',
+                container_port=3000,
                 image=nextjs_image,
                 log_driver=LogDriver.aws_logs(
                     stream_prefix='nextjs',
