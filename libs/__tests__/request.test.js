@@ -21,9 +21,7 @@ describe("Test functions to handle requests to the server", () => {
     expect(labItem).toBeTruthy()
     expect(_.isEqual(labItem, mockData)).toBeTruthy()
 
-    labItem = await request.getObject("/labs/j-michael-cherry/", {
-      includeEmbeds: true,
-    })
+    labItem = await request.getObject("/labs/j-michael-cherry/")
     expect(labItem).toBeTruthy()
     expect(_.isEqual(labItem, mockData)).toBeTruthy()
   })
