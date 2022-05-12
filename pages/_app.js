@@ -77,7 +77,7 @@ const App = ({ Component, pageProps }) => {
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="msapplication-TileColor" content="#da532c" />
       </Head>
-      <div className="md:container md:flex">
+      <div className="h-screen md:container md:flex">
         <Auth0Provider
           domain={process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN}
           clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
