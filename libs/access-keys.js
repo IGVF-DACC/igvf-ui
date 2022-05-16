@@ -7,7 +7,7 @@ import { API_URL } from "../libs/constants"
  * @returns {object} User access-key response
  */
 export const createAccessKey = async (session) => {
-  const response = await fetch(`${API_URL}/access-keys`, {
+  const response = await fetch(`${API_URL}/access-keys/`, {
     method: "POST",
     credentials: "include",
     headers: {

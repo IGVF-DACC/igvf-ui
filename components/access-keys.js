@@ -1,12 +1,18 @@
 // node_modules
 import { Popover } from "@headlessui/react"
 import { RefreshIcon, TrashIcon } from "@heroicons/react/solid"
+import { useRouter } from "next/router"
 import PropTypes from "prop-types"
-import { useContext, useState } from "react"
+import { Fragment, useContext, useState } from "react"
 // components
+import Button from "./button"
+import CopyButton from "./copy-button"
+import Modal from "./modal"
 import SessionContext from "./session-context"
 // libs
 import { resetAccessKey, deleteAccessKey } from "../libs/access-keys"
+import { createAccessKey } from "../libs/access-keys"
+import { DataItemLabel } from "./data-area"
 
 const Tooltip = ({ content, className = "", children }) => {
   const [isTooltipVisible, setTooltipVisible] = useState(false)
@@ -43,6 +49,109 @@ Tooltip.propTypes = {
   content: PropTypes.node.isRequired,
   // Tailwind CSS classes to add to the tooltip wrapper element
   className: PropTypes.string,
+}
+
+/**
+ * Displays the access key ID and secret in a table.
+ */
+const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
+  const rows = [
+    {
+      label: "Access key ID",
+      value: accessKeyId,
+    },
+    {
+      label: "Access key secret",
+      value: accessKeySecret,
+    },
+  ]
+
+  return (
+    <div className="my-5 gap-3 border border-gray-200 bg-gray-100 py-2.5 px-5 md:grid md:auto-cols-min md:grid-cols-min-2">
+      {rows.map((row) => {
+        return (
+          <Fragment key={row.label}>
+            <DataItemLabel className="flex h-full items-center whitespace-nowrap">
+              {row.label}
+            </DataItemLabel>
+            <div className="flex items-center justify-between">
+              <div className="shrink-1 font-mono">{row.value}</div>
+              <div className="ml-2 flex shrink-0 justify-end">
+                <CopyButton target={row.value} />
+              </div>
+            </div>
+          </Fragment>
+        )
+      })}
+    </div>
+  )
+}
+
+AccessKeyDisplay.propTypes = {
+  // The access key ID
+  accessKeyId: PropTypes.string.isRequired,
+  // The access key secret
+  accessKeySecret: PropTypes.string.isRequired,
+}
+
+/**
+ * Displays a button to create a new access key.
+ */
+export const CreateAccessKeyTrigger = () => {
+  // True if modal displaying newly created access-keys open
+  const [isKeysOpen, setKeysOpen] = useState(false)
+  // Access key ID
+  const [accessKeyId, setAccessKeyId] = useState("")
+  // Access key secret
+  const [accessKeySecret, setAccessKeySecret] = useState("")
+
+  const router = useRouter()
+  const { session } = useContext(SessionContext)
+
+  /**
+   * Create a new access key and opens the modal to display it.
+   */
+  const createKey = () => {
+    createAccessKey(session).then((response) => {
+      setAccessKeyId(response.access_key_id)
+      setAccessKeySecret(response.secret_access_key)
+
+      // Rerender the page with the new access keys and with the modal showing the new access keys
+      // open.
+      router.replace(router.asPath)
+      setKeysOpen(true)
+    })
+  }
+
+  const closeModal = () => {
+    setKeysOpen(false)
+  }
+
+  return (
+    <>
+      <Button className="mb-4 w-full sm:w-auto" onClick={createKey}>
+        Create Access Key
+      </Button>
+      <Modal isOpen={isKeysOpen} onClose={closeModal}>
+        <Modal.Header onClose={closeModal}>Created Access Key</Modal.Header>
+        <Modal.Body>
+          <p>
+            Please make a note of the new secret access key. This is the last
+            time you will be able to view it.
+          </p>
+          <div className="flex justify-center">
+            <AccessKeyDisplay
+              accessKeyId={accessKeyId}
+              accessKeySecret={accessKeySecret}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={closeModal}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  )
 }
 
 /**
@@ -103,7 +212,7 @@ AccessKeyItem.propTypes = {
 /**
  * Displays a list of access keys and their associated controls.
  */
-const AccessKeyList = ({ accessKeys }) => {
+export const AccessKeyList = ({ accessKeys }) => {
   const { session } = useContext(SessionContext)
 
   const onResetClick = (accessKeyId) => {
@@ -115,7 +224,7 @@ const AccessKeyList = ({ accessKeys }) => {
   }
 
   return (
-    <div className="block sm:grid sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {accessKeys.map((accessKey) => {
         return (
           <AccessKeyItem
@@ -134,5 +243,3 @@ AccessKeyList.propTypes = {
   // Array of access keys from user object
   accessKeys: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
-
-export default AccessKeyList

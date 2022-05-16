@@ -1,0 +1,76 @@
+/**
+ * Standard button types so that all buttons on the site have the same look and feel.
+ */
+
+// node_modules
+import PropTypes from "prop-types"
+
+/**
+ * Background colors for each of the button types.
+ */
+const buttonTypeClasses = {
+  primary: "bg-button-primary",
+  secondary: "bg-button-secondary",
+  success: "bg-button-success",
+  alert: "bg-button-alert",
+  warning: "bg-button-warning",
+  clear: "bg-button-clear",
+}
+
+/**
+ * Text colors for each of the button types.
+ */
+const buttonTextTypeClasses = {
+  primary: "text-button-primary",
+  secondary: "text-button-secondary",
+  success: "text-button-success",
+  alert: "text-button-alert",
+  warning: "text-button-warning",
+  clear: "text-button-clear",
+}
+
+/**
+ * Classes for each of the button sizes.
+ */
+const buttonSizeClasses = {
+  sm: "px-3 py-1 text-xs",
+  md: "px-4 py-2 text-sm",
+  lg: "px-6 py-4 text-base",
+}
+
+const Button = ({
+  onClick,
+  type = "primary",
+  size = "md",
+  className = "",
+  children,
+}) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`block rounded font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
+    >
+      {children}
+    </button>
+  )
+}
+
+Button.propTypes = {
+  // Called when the button is clicked
+  onClick: PropTypes.func.isRequired,
+  // Button color type
+  type: PropTypes.oneOf([
+    "primary",
+    "secondary",
+    "success",
+    "alert",
+    "warning",
+    "clear",
+  ]),
+  // Button sizes
+  size: PropTypes.oneOf(["sm", "md", "lg"]),
+  // Additional Tailwind CSS classes to apply to the <button> element
+  className: PropTypes.string,
+}
+
+export default Button

@@ -33,6 +33,14 @@
   --color-data-title: #6b7280;
   --color-data-label: #6b7280;
   --color-data-value: #000000;
+
+  --color-button-primary: #1779ba;
+  --color-button-secondary: #767676;
+  --color-button-success: #3adb76;
+  --color-button-alert: #cc4b37;
+  --color-button-warning: #ffae00;
+
+  --color-button-text-clear: #000000;
 }
 
 /**
@@ -53,6 +61,8 @@
   --color-data-title: #9ca3af;
   --color-data-label: #9ca3af;
   --color-data-value: #ffffff;
+
+  --color-button-text-clear: #ffffff;
 }
 
 a {

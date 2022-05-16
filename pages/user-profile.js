@@ -1,30 +1,20 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react"
 import Image from "next/image"
-import { useRouter } from "next/router"
 import PropTypes from "prop-types"
-import { useContext } from "react"
 // components
-import AccessKeyList from "../components/access-keys"
+import {
+  AccessKeyList,
+  CreateAccessKeyTrigger,
+} from "../components/access-keys"
 import { DataArea, DataItem } from "../components/data-area"
 import PagePreamble from "../components/page-preamble"
-import SessionContext from "../components/session-context"
 import Spinner from "../components/spinner"
 // libs
-import { createAccessKey } from "../libs/access-keys"
 import Request from "../libs/request"
 
 const UserProfile = ({ sessionUser = null }) => {
   const { isLoading, user } = useAuth0()
-  const router = useRouter()
-
-  const { session } = useContext(SessionContext)
-
-  const handleCreateKey = () => {
-    createAccessKey(session).then(() => {
-      router.replace(router.asPath)
-    })
-  }
 
   return (
     <>
@@ -45,8 +35,10 @@ const UserProfile = ({ sessionUser = null }) => {
                   />
                   <div className="ml-2">{user.name}</div>
                 </DataItem>
-                <button onClick={handleCreateKey}>Create Access Key</button>
-                <AccessKeyList accessKeys={sessionUser.access_keys} />
+                <CreateAccessKeyTrigger />
+                {sessionUser && (
+                  <AccessKeyList accessKeys={sessionUser.access_keys} />
+                )}
               </>
             ) : (
               <div className="text-center text-xl italic">Not signed in</div>
