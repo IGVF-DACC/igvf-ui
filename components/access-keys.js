@@ -176,27 +176,70 @@ AccessKeyControl.propTypes = {
 }
 
 /**
+ * Displays the modal to confirm the user wants to delete an access key.
+ */
+const DeleteAccessKeyModal = ({ accessKeyId, isOpen, onConfirm, onCancel }) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onCancel}>
+      <Modal.Header onClose={onCancel}>Delete Access Key</Modal.Header>
+      <Modal.Body>
+        <p>
+          Are you sure you want to delete the access key{" "}
+          <strong>{accessKeyId}</strong>?
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={onConfirm}>Delete</Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
+
+DeleteAccessKeyModal.propTypes = {
+  // ID of access key to delete
+  accessKeyId: PropTypes.string.isRequired,
+  // True if the modal is open
+  isOpen: PropTypes.bool.isRequired,
+  // Function to call when the user confirms the deletion
+  onConfirm: PropTypes.func.isRequired,
+  // Function to call when the user cancels the deletion
+  onCancel: PropTypes.func.isRequired,
+}
+
+/**
  * Displays a single access key and its associated controls.
  */
-const AccessKeyItem = ({ accessKey, onResetClick, onDeleteClick }) => {
+const AccessKeyItem = ({ accessKey, onReset, onDelete }) => {
+  // True if access key delete warning modal is visible.
+  const [isDeleteOpen, setDeleteOpen] = useState(false)
+
   return (
-    <div className="flex items-center justify-between border px-2 py-1">
-      <div className="font-mono">{accessKey.access_key_id}</div>
-      <div className="flex">
-        <AccessKeyControl
-          label={`Reset access key ${accessKey.access_key_id}`}
-          onClick={onResetClick}
-        >
-          <RefreshIcon />
-        </AccessKeyControl>
-        <AccessKeyControl
-          label={`Delete access key ${accessKey.access_key_id}`}
-          onClick={onDeleteClick}
-        >
-          <TrashIcon />
-        </AccessKeyControl>
+    <>
+      <div className="flex items-center justify-between border px-2 py-1">
+        <div className="font-mono">{accessKey.access_key_id}</div>
+        <div className="flex">
+          <AccessKeyControl
+            label={`Reset access key ${accessKey.access_key_id}`}
+            onClick={onReset}
+          >
+            <RefreshIcon />
+          </AccessKeyControl>
+          <AccessKeyControl
+            label={`Delete access key ${accessKey.access_key_id}`}
+            onClick={() => setDeleteOpen(true)}
+          >
+            <TrashIcon />
+          </AccessKeyControl>
+        </div>
       </div>
-    </div>
+      <DeleteAccessKeyModal
+        accessKeyId={accessKey.access_key_id}
+        isOpen={isDeleteOpen}
+        onConfirm={onDelete}
+        onCancel={() => setDeleteOpen(false)}
+      />
+    </>
   )
 }
 
@@ -204,9 +247,9 @@ AccessKeyItem.propTypes = {
   // Array of access keys from the session user object
   accessKey: PropTypes.shape({ access_key_id: PropTypes.string }).isRequired,
   // Callback to reset the access key
-  onResetClick: PropTypes.func.isRequired,
+  onReset: PropTypes.func.isRequired,
   // Callback to delete the access key
-  onDeleteClick: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 }
 
 /**
@@ -215,12 +258,18 @@ AccessKeyItem.propTypes = {
 export const AccessKeyList = ({ accessKeys }) => {
   const { session } = useContext(SessionContext)
 
-  const onResetClick = (accessKeyId) => {
+  const router = useRouter()
+
+  const onReset = (accessKeyId) => {
     resetAccessKey(accessKeyId, session)
   }
 
-  const onDeleteClick = (accessKeyId) => {
+  const onDelete = (accessKeyId) => {
     deleteAccessKey(accessKeyId, session)
+
+    // Rerender the page with the new access keys and with the modal showing the new access keys
+    // open.
+    router.replace(router.asPath)
   }
 
   return (
@@ -230,8 +279,8 @@ export const AccessKeyList = ({ accessKeys }) => {
           <AccessKeyItem
             key={accessKey.uuid}
             accessKey={accessKey}
-            onResetClick={() => onResetClick(accessKey.access_key_id)}
-            onDeleteClick={() => onDeleteClick(accessKey.access_key_id)}
+            onReset={() => onReset(accessKey.access_key_id)}
+            onDelete={() => onDelete(accessKey.access_key_id)}
           />
         )
       })}
