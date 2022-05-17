@@ -51,12 +51,13 @@ Modal.propTypes = {
 /**
  * Displays the close button in the header.
  */
-const HeaderCloseButton = ({ onClose }) => {
+const HeaderCloseButton = ({ onClose, label }) => {
   return (
     <button
       type="button"
       className="h-6 w-6 rounded-full bg-gray-100 p-1 hover:bg-gray-300"
       onClick={onClose}
+      aria-label={label}
     >
       <XIcon className="fill-gray-500" />
     </button>
@@ -66,6 +67,8 @@ const HeaderCloseButton = ({ onClose }) => {
 HeaderCloseButton.propTypes = {
   // Called to close the modal on click
   onClose: PropTypes.func.isRequired,
+  // Accessible label for the close button
+  label: PropTypes.string.isRequired,
 }
 
 /**
@@ -75,7 +78,12 @@ HeaderCloseButton.propTypes = {
  * rendered as is, though within a flex container so that the optional close box still gets
  * rendered.
  */
-const Header = ({ onClose = null, className = "", children }) => {
+const Header = ({
+  onClose = null,
+  closeLabel = "",
+  className = "",
+  children,
+}) => {
   // If the children is a single string or number, wrap it in an <h2>. Otherwise the children
   // comprise one or more JSX elements, in which case we just render them within the header <div>
   // as is.
@@ -90,9 +98,13 @@ const Header = ({ onClose = null, className = "", children }) => {
   }
 
   return (
-    <div className={`flex items-center justify-between p-2 ${className}`}>
+    <div
+      className={`flex items-center justify-between border-b border-gray-200 p-2 ${className}`}
+    >
       {headerChildren}
-      {onClose ? <HeaderCloseButton onClose={onClose} /> : null}
+      {onClose ? (
+        <HeaderCloseButton label={closeLabel} onClose={onClose} />
+      ) : null}
     </div>
   )
 }
@@ -100,6 +112,8 @@ const Header = ({ onClose = null, className = "", children }) => {
 Header.propTypes = {
   // Called to close the modal when clicking the close button
   onClose: PropTypes.func,
+  // Accessible label for the header close button
+  closeLabel: PropTypes.string,
   // Tailwind CSS classes to add to the header
   className: PropTypes.string,
 }
@@ -117,7 +131,7 @@ const Body = ({ children }) => {
  */
 const Footer = ({ children }) => {
   return (
-    <div className="flex justify-end border-t border-gray-200 bg-gray-50 p-2">
+    <div className="flex justify-end gap-1 border-t border-gray-200 bg-gray-50 p-1.5">
       {children}
     </div>
   )

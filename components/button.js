@@ -34,14 +34,15 @@ const buttonTextTypeClasses = {
  */
 const buttonSizeClasses = {
   sm: "px-3 py-1 text-xs",
-  md: "px-4 py-2 text-sm",
-  lg: "px-6 py-4 text-base",
+  md: "px-4 py-1 text-sm",
+  lg: "px-6 py-2 text-base",
 }
 
 const Button = ({
   onClick,
   type = "primary",
   size = "md",
+  label = "",
   className = "",
   children,
 }) => {
@@ -49,6 +50,7 @@ const Button = ({
     <button
       onClick={onClick}
       className={`block rounded font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
+      aria-label={label}
     >
       {children}
     </button>
@@ -58,6 +60,8 @@ const Button = ({
 Button.propTypes = {
   // Called when the button is clicked
   onClick: PropTypes.func.isRequired,
+  // Accessible label of the button if the button text is not sufficient
+  label: PropTypes.string,
   // Button color type
   type: PropTypes.oneOf([
     "primary",

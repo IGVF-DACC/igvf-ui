@@ -77,7 +77,7 @@ const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
             <div className="flex items-center justify-between">
               <div className="shrink-1 font-mono">{row.value}</div>
               <div className="ml-2 flex shrink-0 justify-end">
-                <CopyButton target={row.value} />
+                <CopyButton target={row.value} label={row.label} />
               </div>
             </div>
           </Fragment>
@@ -133,7 +133,12 @@ export const CreateAccessKeyTrigger = () => {
         Create Access Key
       </Button>
       <Modal isOpen={isKeysOpen} onClose={closeModal}>
-        <Modal.Header onClose={closeModal}>Created Access Key</Modal.Header>
+        <Modal.Header
+          closeLabel="Close dialog containing your new access key"
+          onClose={closeModal}
+        >
+          Created Access Key
+        </Modal.Header>
         <Modal.Body>
           <p>
             Please make a note of the new secret access key. This is the last
@@ -147,7 +152,12 @@ export const CreateAccessKeyTrigger = () => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={closeModal}>Close</Button>
+          <Button
+            onClick={closeModal}
+            label="Close dialog containing your new access key"
+          >
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
     </>
@@ -181,7 +191,9 @@ AccessKeyControl.propTypes = {
 const DeleteAccessKeyModal = ({ accessKeyId, isOpen, onConfirm, onCancel }) => {
   return (
     <Modal isOpen={isOpen} onClose={onCancel}>
-      <Modal.Header onClose={onCancel}>Delete Access Key</Modal.Header>
+      <Modal.Header onClose={onCancel} closeModal="Cancel deleting access key">
+        Delete Access Key
+      </Modal.Header>
       <Modal.Body>
         <p>
           Are you sure you want to delete the access key{" "}
@@ -189,8 +201,12 @@ const DeleteAccessKeyModal = ({ accessKeyId, isOpen, onConfirm, onCancel }) => {
         </p>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={onCancel}>Cancel</Button>
-        <Button onClick={onConfirm}>Delete</Button>
+        <Button onClick={onCancel} label="Cancel deleting access key">
+          Cancel
+        </Button>
+        <Button onClick={onConfirm} label="Confirm deleting access key">
+          Delete
+        </Button>
       </Modal.Footer>
     </Modal>
   )
