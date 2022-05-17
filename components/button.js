@@ -69,7 +69,7 @@ Button.propTypes = {
     "success",
     "alert",
     "warning",
-    "clear",
+    "info",
   ]),
   // Button sizes
   size: PropTypes.oneOf(["sm", "md", "lg"]),
