@@ -14,7 +14,19 @@ const buttonTypeClasses = {
   success: "bg-button-success",
   alert: "bg-button-alert",
   warning: "bg-button-warning",
-  clear: "bg-button-clear",
+  info: "bg-button-info",
+}
+
+/**
+ * Border colors for each of the button types.
+ */
+const borderTypeClasses = {
+  primary: "border-button-primary",
+  secondary: "border-button-secondary",
+  success: "border-button-success",
+  alert: "border-button-alert",
+  warning: "border-button-warning",
+  info: "border-button-info",
 }
 
 /**
@@ -26,7 +38,7 @@ const buttonTextTypeClasses = {
   success: "text-button-success",
   alert: "text-button-alert",
   warning: "text-button-warning",
-  clear: "text-button-clear",
+  info: "text-button-info",
 }
 
 /**
@@ -49,7 +61,7 @@ const Button = ({
   return (
     <button
       onClick={onClick}
-      className={`block rounded font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
+      className={`block rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
       aria-label={label}
     >
       {children}

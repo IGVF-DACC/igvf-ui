@@ -26,7 +26,7 @@ module.exports = {
         "button-success": "var(--color-button-success)",
         "button-alert": "var(--color-button-alert)",
         "button-warning": "var(--color-button-warning)",
-        "button-clear": "transparent",
+        "button-info": "var(--color-button-info)",
       },
       textColor: {
         "button-primary": "#ffffff",
@@ -34,7 +34,15 @@ module.exports = {
         "button-success": "#000000",
         "button-alert": "#ffffff",
         "button-warning": "#000000",
-        "button-clear": "var(--color-button-clear)",
+        "button-info": "var(--color-button-text-info)",
+      },
+      borderColor: {
+        "button-primary": "var(--color-border-primary)",
+        "button-secondary": "var(--color-border-secondary)",
+        "button-success": "var(--color-border-success)",
+        "button-alert": "var(--color-border-alert)",
+        "button-warning": "var(--color-border-warning)",
+        "button-info": "var(--color-border-info)",
       },
       boxShadow: {
         // Status badges

@@ -34,13 +34,23 @@
   --color-data-label: #6b7280;
   --color-data-value: #000000;
 
+  /** Button backgrounds */
   --color-button-primary: #1779ba;
   --color-button-secondary: #767676;
   --color-button-success: #3adb76;
   --color-button-alert: #cc4b37;
   --color-button-warning: #ffae00;
+  --color-button-info: #ffffff;
 
-  --color-button-text-clear: #000000;
+  /** Button borders */
+  --color-border-primary: #0f517c;
+  --color-border-secondary: #4f4f4f;
+  --color-border-success: #248749;
+  --color-border-alert: #8b3325;
+  --color-border-warning: #a26f00;
+  --color-border-info: #808080;
+
+  --color-button-text-info: #000000;
 }
 
 /**
@@ -62,7 +72,10 @@
   --color-data-label: #9ca3af;
   --color-data-value: #ffffff;
 
-  --color-button-text-clear: #ffffff;
+  --color-button-info: #000000;
+  --color-border-info: #ffffff;
+
+  --color-button-text-info: #ffffff;
 }
 
 a {

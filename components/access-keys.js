@@ -95,6 +95,74 @@ AccessKeyDisplay.propTypes = {
 }
 
 /**
+ * Messages to display in the access key creation or reset modal.
+ */
+const accessKeyModalMessages = {
+  create: {
+    title: "Your secret key has been created",
+    close: "Close dialog containing your new access key",
+  },
+  reset: {
+    title: "Your secret key has been reset",
+    close: "Close dialog containing your reset access key",
+  },
+}
+
+/**
+ * Displays the modal to show the user their new or reset access keys. This component always shows
+ * the modal, so display or hide it from the parent component.
+ */
+const AccessKeyModals = ({
+  accessKeyId,
+  accessKeySecret,
+  createOrReset,
+  onClose,
+}) => {
+  return (
+    <Modal isOpen={true} onClose={onClose}>
+      <Modal.Header
+        closeLabel={accessKeyModalMessages[createOrReset].close}
+        onClose={onClose}
+      >
+        {accessKeyModalMessages[createOrReset].title}
+      </Modal.Header>
+      <Modal.Body>
+        <p>
+          Please make a note of the new secret access key. This is the last time
+          you will be able to view it.
+        </p>
+        <div className="flex justify-center">
+          <AccessKeyDisplay
+            accessKeyId={accessKeyId}
+            accessKeySecret={accessKeySecret}
+          />
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          type="info"
+          onClick={onClose}
+          label={accessKeyModalMessages[createOrReset].close}
+        >
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
+
+AccessKeyModals.propTypes = {
+  // The access key ID
+  accessKeyId: PropTypes.string.isRequired,
+  // The new access key secret
+  accessKeySecret: PropTypes.string.isRequired,
+  // The action to perform on the access key
+  createOrReset: PropTypes.oneOf(["create", "reset"]).isRequired,
+  // Callback to close the modal
+  onClose: PropTypes.func.isRequired,
+}
+
+/**
  * Displays a button to create a new access key.
  */
 export const CreateAccessKeyTrigger = () => {
@@ -132,36 +200,66 @@ export const CreateAccessKeyTrigger = () => {
       <Button className="mb-4 w-full sm:w-auto" onClick={createKey}>
         Create Access Key
       </Button>
-      <Modal isOpen={isKeysOpen} onClose={closeModal}>
-        <Modal.Header
-          closeLabel="Close dialog containing your new access key"
+      {isKeysOpen && (
+        <AccessKeyModals
+          accessKeyId={accessKeyId}
+          accessKeySecret={accessKeySecret}
+          createOrReset="create"
           onClose={closeModal}
-        >
-          Created Access Key
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            Please make a note of the new secret access key. This is the last
-            time you will be able to view it.
-          </p>
-          <div className="flex justify-center">
-            <AccessKeyDisplay
-              accessKeyId={accessKeyId}
-              accessKeySecret={accessKeySecret}
-            />
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            onClick={closeModal}
-            label="Close dialog containing your new access key"
-          >
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        />
+      )}
     </>
   )
+}
+
+/**
+ * Displays a button to create a new access key.
+ */
+export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
+  // True if modal displaying reset access-keys open
+  const [isKeysOpen, setKeysOpen] = useState(false)
+  // Access key secret
+  const [accessKeySecret, setAccessKeySecret] = useState("")
+
+  const { session } = useContext(SessionContext)
+
+  /**
+   * Create a new access key and opens the modal to display it.
+   */
+  const resetKey = () => {
+    resetAccessKey(accessKeyId, session).then((response) => {
+      setAccessKeySecret(response.secret_access_key)
+      setKeysOpen(true)
+    })
+  }
+
+  const closeModal = () => {
+    setKeysOpen(false)
+  }
+
+  return (
+    <>
+      <AccessKeyControl
+        label={`Reset access key ${accessKeyId}`}
+        onClick={resetKey}
+      >
+        <RefreshIcon />
+      </AccessKeyControl>
+      {isKeysOpen && (
+        <AccessKeyModals
+          accessKeyId={accessKeyId}
+          accessKeySecret={accessKeySecret}
+          createOrReset="create"
+          onClose={closeModal}
+        />
+      )}
+    </>
+  )
+}
+
+ResetAccessKeyTrigger.propTypes = {
+  // The access key ID to reset
+  accessKeyId: PropTypes.string.isRequired,
 }
 
 /**
@@ -197,14 +295,22 @@ const DeleteAccessKeyModal = ({ accessKeyId, isOpen, onConfirm, onCancel }) => {
       <Modal.Body>
         <p>
           Are you sure you want to delete the access key{" "}
-          <strong>{accessKeyId}</strong>?
+          <strong>{accessKeyId}</strong>? You cannot undo this action.
         </p>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={onCancel} label="Cancel deleting access key">
+        <Button
+          type="info"
+          onClick={onCancel}
+          label="Cancel deleting access key"
+        >
           Cancel
         </Button>
-        <Button onClick={onConfirm} label="Confirm deleting access key">
+        <Button
+          type="alert"
+          onClick={onConfirm}
+          label="Confirm deleting access key"
+        >
           Delete
         </Button>
       </Modal.Footer>
@@ -226,7 +332,7 @@ DeleteAccessKeyModal.propTypes = {
 /**
  * Displays a single access key and its associated controls.
  */
-const AccessKeyItem = ({ accessKey, onReset, onDelete }) => {
+const AccessKeyItem = ({ accessKey, onDelete }) => {
   // True if access key delete warning modal is visible.
   const [isDeleteOpen, setDeleteOpen] = useState(false)
 
@@ -235,12 +341,7 @@ const AccessKeyItem = ({ accessKey, onReset, onDelete }) => {
       <div className="flex items-center justify-between border px-2 py-1">
         <div className="font-mono">{accessKey.access_key_id}</div>
         <div className="flex">
-          <AccessKeyControl
-            label={`Reset access key ${accessKey.access_key_id}`}
-            onClick={onReset}
-          >
-            <RefreshIcon />
-          </AccessKeyControl>
+          <ResetAccessKeyTrigger accessKeyId={accessKey.access_key_id} />
           <AccessKeyControl
             label={`Delete access key ${accessKey.access_key_id}`}
             onClick={() => setDeleteOpen(true)}
@@ -262,8 +363,6 @@ const AccessKeyItem = ({ accessKey, onReset, onDelete }) => {
 AccessKeyItem.propTypes = {
   // Array of access keys from the session user object
   accessKey: PropTypes.shape({ access_key_id: PropTypes.string }).isRequired,
-  // Callback to reset the access key
-  onReset: PropTypes.func.isRequired,
   // Callback to delete the access key
   onDelete: PropTypes.func.isRequired,
 }
@@ -275,10 +374,6 @@ export const AccessKeyList = ({ accessKeys }) => {
   const { session } = useContext(SessionContext)
 
   const router = useRouter()
-
-  const onReset = (accessKeyId) => {
-    resetAccessKey(accessKeyId, session)
-  }
 
   const onDelete = (accessKeyId) => {
     deleteAccessKey(accessKeyId, session)
@@ -295,7 +390,6 @@ export const AccessKeyList = ({ accessKeys }) => {
           <AccessKeyItem
             key={accessKey.uuid}
             accessKey={accessKey}
-            onReset={() => onReset(accessKey.access_key_id)}
             onDelete={() => onDelete(accessKey.access_key_id)}
           />
         )
