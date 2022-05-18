@@ -85,6 +85,7 @@ export const getServerSideProps = async ({ req, resolvedUrl }) => {
     return {
       props: {
         generic,
+        sessionCookie: req?.headers?.cookie,
       },
     }
   }

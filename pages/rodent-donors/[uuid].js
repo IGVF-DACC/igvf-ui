@@ -131,6 +131,7 @@ export const getServerSideProps = async ({ params, req }) => {
         parents,
         pageContext: { title: donor.accession },
         breadcrumbs,
+        sessionCookie: req?.headers?.cookie,
       },
     }
   }

@@ -98,6 +98,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pis,
         pageContext: { title: award.name },
         breadcrumbs,
+        sessionCookie: req?.headers?.cookie,
       },
     }
   }

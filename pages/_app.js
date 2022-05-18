@@ -29,6 +29,7 @@ const App = ({ Component, pageProps }) => {
   }, [])
 
   useEffect(() => {
+    console.log("SESSION COOKIE:", pageProps.sessionCookie)
     // Set the session cookie if the back end has retrieved one.
     if (pageProps.sessionCookie) {
       setSessionCookie(pageProps.sessionCookie)

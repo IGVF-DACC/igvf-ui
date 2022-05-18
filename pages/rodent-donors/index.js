@@ -58,6 +58,7 @@ export const getServerSideProps = async ({ req }) => {
       donors: donors["@graph"],
       pageContext: { title: donors.title },
       breadcrumbs,
+      sessionCookie: req?.headers?.cookie,
     },
   }
 }

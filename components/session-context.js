@@ -29,11 +29,14 @@ export const Session = ({ children }) => {
 
   useEffect(() => {
     // Once Auth0 has confirmed the user has logged in, get the session record from the back end
-    // and then make it available to the rest of the app.
+    // and then make it available to the rest of the app. Need to have a delay before requesting
+    // the session to allow the back end time to generate the CSRF token.
     if (!isLoading && isAuthenticated) {
-      getSession().then((sessionResponse) => {
-        setSession(sessionResponse)
-      })
+      setTimeout(() => {
+        getSession().then((sessionResponse) => {
+          setSession(sessionResponse)
+        })
+      }, 1000)
     }
   }, [isLoading, isAuthenticated])
 

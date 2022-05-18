@@ -81,6 +81,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pi,
         pageContext: { title: lab.title },
         breadcrumbs,
+        sessionCookie: req?.headers?.cookie,
       },
     }
   }
