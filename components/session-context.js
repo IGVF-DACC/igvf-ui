@@ -1,7 +1,8 @@
 /**
  * Establishes the context to hold the back-end session record for the currently logged-in user.
  * You have to do this within the <Auth0Provider> component so that we can get the current Auth0
- * login state.
+ * login state. The session record gets retrieved from the server only after the authentication
+ * mechanism has authorized the user.
  */
 
 // node_modules
@@ -31,7 +32,6 @@ export const Session = ({ children }) => {
     // and then make it available to the rest of the app.
     if (!isLoading && isAuthenticated) {
       getSession().then((sessionResponse) => {
-        console.log("SESSION %o", sessionResponse)
         setSession(sessionResponse)
       })
     }

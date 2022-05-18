@@ -50,6 +50,14 @@ const buttonSizeClasses = {
   lg: "px-6 py-2 text-base",
 }
 
+/**
+ * Button component to make all buttons consistent across the site. Use this component to wrap the
+ * contents of a button:
+ *
+ * <Button type="info" size="lg">
+ *   Click me!
+ * </Button>
+ */
 const Button = ({
   onClick,
   type = "primary",
@@ -72,7 +80,7 @@ const Button = ({
 Button.propTypes = {
   // Called when the button is clicked
   onClick: PropTypes.func.isRequired,
-  // Accessible label of the button if the button text is not sufficient
+  // Accessible label of the button if the button text is not sufficient for screen readers
   label: PropTypes.string,
   // Button color type
   type: PropTypes.oneOf([

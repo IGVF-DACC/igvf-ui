@@ -1,5 +1,4 @@
 // node_modules
-import { Popover } from "@headlessui/react"
 import { RefreshIcon, TrashIcon } from "@heroicons/react/solid"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
@@ -9,47 +8,11 @@ import Button from "./button"
 import CopyButton from "./copy-button"
 import Modal from "./modal"
 import SessionContext from "./session-context"
+import Tooltip from "./tooltip"
 // libs
 import { resetAccessKey, deleteAccessKey } from "../libs/access-keys"
 import { createAccessKey } from "../libs/access-keys"
 import { DataItemLabel } from "./data-area"
-
-const Tooltip = ({ content, className = "", children }) => {
-  const [isTooltipVisible, setTooltipVisible] = useState(false)
-
-  const onMouseEnter = () => {
-    setTooltipVisible(true)
-  }
-
-  const onMouseLeave = () => {
-    setTooltipVisible(false)
-  }
-
-  return (
-    <div
-      className={className}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {children}
-      <Popover className="relative">
-        <Popover.Panel
-          static={isTooltipVisible}
-          className="absolute z-10 w-max max-w-xs border bg-white px-4 py-1 text-sm drop-shadow-md"
-        >
-          <div className="relative">{content}</div>
-        </Popover.Panel>
-      </Popover>
-    </div>
-  )
-}
-
-Tooltip.propTypes = {
-  // Contents of the tooltip
-  content: PropTypes.node.isRequired,
-  // Tailwind CSS classes to add to the tooltip wrapper element
-  className: PropTypes.string,
-}
 
 /**
  * Displays the access key ID and secret in a table.
@@ -172,7 +135,6 @@ export const CreateAccessKeyTrigger = () => {
   const [accessKeyId, setAccessKeyId] = useState("")
   // Access key secret
   const [accessKeySecret, setAccessKeySecret] = useState("")
-
   const router = useRouter()
   const { session } = useContext(SessionContext)
 
@@ -220,7 +182,6 @@ export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
   const [isKeysOpen, setKeysOpen] = useState(false)
   // Access key secret
   const [accessKeySecret, setAccessKeySecret] = useState("")
-
   const { session } = useContext(SessionContext)
 
   /**
@@ -262,6 +223,74 @@ ResetAccessKeyTrigger.propTypes = {
   accessKeyId: PropTypes.string.isRequired,
 }
 
+const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
+  // True if access key delete warning modal is visible.
+  const [isDeleteOpen, setDeleteOpen] = useState(false)
+  const router = useRouter()
+  const { session } = useContext(SessionContext)
+
+  /**
+   * Called to perform the deletion of the access key.
+   */
+  const onDelete = () => {
+    deleteAccessKey(accessKeyId, session).then(() => {
+      // Rerender the page with the new access keys and with the modal showing the new access keys
+      // open.
+      router.replace(router.asPath)
+    })
+  }
+
+  const onCancel = () => {
+    setDeleteOpen(false)
+  }
+
+  return (
+    <>
+      <AccessKeyControl
+        label={`Delete access key ${accessKeyId}`}
+        onClick={() => setDeleteOpen(true)}
+      >
+        <TrashIcon />
+      </AccessKeyControl>
+      <Modal isOpen={isDeleteOpen} onClose={onCancel}>
+        <Modal.Header
+          onClose={onCancel}
+          closeModal="Cancel deleting access key"
+        >
+          Delete Access Key
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to delete the access key{" "}
+            <strong>{accessKeyId}</strong>? You cannot undo this action.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            type="info"
+            onClick={onCancel}
+            label="Cancel deleting access key"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="alert"
+            onClick={onDelete}
+            label="Confirm deleting access key"
+          >
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  )
+}
+
+DeleteAccessKeyTrigger.propTypes = {
+  // ID of access key to delete
+  accessKeyId: PropTypes.string.isRequired,
+}
+
 /**
  * Display a single access key control button, normally an icon child of this component.
  */
@@ -284,78 +313,18 @@ AccessKeyControl.propTypes = {
 }
 
 /**
- * Displays the modal to confirm the user wants to delete an access key.
- */
-const DeleteAccessKeyModal = ({ accessKeyId, isOpen, onConfirm, onCancel }) => {
-  return (
-    <Modal isOpen={isOpen} onClose={onCancel}>
-      <Modal.Header onClose={onCancel} closeModal="Cancel deleting access key">
-        Delete Access Key
-      </Modal.Header>
-      <Modal.Body>
-        <p>
-          Are you sure you want to delete the access key{" "}
-          <strong>{accessKeyId}</strong>? You cannot undo this action.
-        </p>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button
-          type="info"
-          onClick={onCancel}
-          label="Cancel deleting access key"
-        >
-          Cancel
-        </Button>
-        <Button
-          type="alert"
-          onClick={onConfirm}
-          label="Confirm deleting access key"
-        >
-          Delete
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  )
-}
-
-DeleteAccessKeyModal.propTypes = {
-  // ID of access key to delete
-  accessKeyId: PropTypes.string.isRequired,
-  // True if the modal is open
-  isOpen: PropTypes.bool.isRequired,
-  // Function to call when the user confirms the deletion
-  onConfirm: PropTypes.func.isRequired,
-  // Function to call when the user cancels the deletion
-  onCancel: PropTypes.func.isRequired,
-}
-
-/**
  * Displays a single access key and its associated controls.
  */
-const AccessKeyItem = ({ accessKey, onDelete }) => {
-  // True if access key delete warning modal is visible.
-  const [isDeleteOpen, setDeleteOpen] = useState(false)
-
+const AccessKeyItem = ({ accessKey }) => {
   return (
     <>
       <div className="flex items-center justify-between border px-2 py-1">
         <div className="font-mono">{accessKey.access_key_id}</div>
         <div className="flex">
           <ResetAccessKeyTrigger accessKeyId={accessKey.access_key_id} />
-          <AccessKeyControl
-            label={`Delete access key ${accessKey.access_key_id}`}
-            onClick={() => setDeleteOpen(true)}
-          >
-            <TrashIcon />
-          </AccessKeyControl>
+          <DeleteAccessKeyTrigger accessKeyId={accessKey.access_key_id} />
         </div>
       </div>
-      <DeleteAccessKeyModal
-        accessKeyId={accessKey.access_key_id}
-        isOpen={isDeleteOpen}
-        onConfirm={onDelete}
-        onCancel={() => setDeleteOpen(false)}
-      />
     </>
   )
 }
@@ -363,36 +332,16 @@ const AccessKeyItem = ({ accessKey, onDelete }) => {
 AccessKeyItem.propTypes = {
   // Array of access keys from the session user object
   accessKey: PropTypes.shape({ access_key_id: PropTypes.string }).isRequired,
-  // Callback to delete the access key
-  onDelete: PropTypes.func.isRequired,
 }
 
 /**
  * Displays a list of access keys and their associated controls.
  */
 export const AccessKeyList = ({ accessKeys }) => {
-  const { session } = useContext(SessionContext)
-
-  const router = useRouter()
-
-  const onDelete = (accessKeyId) => {
-    deleteAccessKey(accessKeyId, session)
-
-    // Rerender the page with the new access keys and with the modal showing the new access keys
-    // open.
-    router.replace(router.asPath)
-  }
-
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {accessKeys.map((accessKey) => {
-        return (
-          <AccessKeyItem
-            key={accessKey.uuid}
-            accessKey={accessKey}
-            onDelete={() => onDelete(accessKey.access_key_id)}
-          />
-        )
+        return <AccessKeyItem key={accessKey.uuid} accessKey={accessKey} />
       })}
     </div>
   )

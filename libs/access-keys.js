@@ -1,10 +1,15 @@
+/**
+ * This file contains the functions to easily use the access-key API. These all require a session object that you can get using:
+ * const { session } = useContext(SessionContext)
+ */
+
 // libs
 import { API_URL } from "../libs/constants"
 
 /**
  * Creates an access key for the currently logged-in user. It returns the response object including
  * the new access key object in the object's `@graph` property.
- * @returns {object} User access-key response
+ * @returns {object} Access-key response
  */
 export const createAccessKey = async (session) => {
   const response = await fetch(`${API_URL}/access-keys/`, {
@@ -19,6 +24,13 @@ export const createAccessKey = async (session) => {
   return response.json()
 }
 
+/**
+ * Resets the access key secret for the given access key ID. It returns the response object
+ * including the new access key object in the object's `@graph` property.
+ * @param {string} accessKeyId - Access key ID to reset
+ * @param {object} session - Current signed-in user's session
+ * @returns {object} Access-key response
+ */
 export const resetAccessKey = async (accessKeyId, session) => {
   const response = await fetch(
     `${API_URL}/access-keys/${accessKeyId}/reset-secret`,
@@ -34,6 +46,13 @@ export const resetAccessKey = async (accessKeyId, session) => {
   return response.json()
 }
 
+/**
+ * Deletes the access key secret for the given access key ID. It returns the response object
+ * including the new access key object in the object's `@graph` property.
+ * @param {string} accessKeyId - Access key ID to delete
+ * @param {object} session - Current signed-in user's session
+ * @returns {object} Access-key response
+ */
 export const deleteAccessKey = async (accessKeyId, session) => {
   const response = await fetch(
     `${API_URL}/access-keys/${accessKeyId}/?render=false`,
