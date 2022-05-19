@@ -10,13 +10,19 @@ import Modal from "./modal"
 import SessionContext from "./session-context"
 import Tooltip from "./tooltip"
 // libs
-import { resetAccessKey, deleteAccessKey } from "../libs/access-keys"
-import { createAccessKey } from "../libs/access-keys"
+import {
+  createAccessKey,
+  deleteAccessKey,
+  resetAccessKey,
+} from "../libs/access-keys"
 
 /**
- * Displays the access key ID and secret in a table.
+ * Displays the access key ID and secret for the modal used when creating or resetting an access
+ * key.
  */
 const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
+  // The labels and keys appear in a two-row table. The row contents get defined here. On mobile
+  // they appear in one column.
   const rows = [
     {
       label: "Access Key ID",
@@ -29,14 +35,14 @@ const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
   ]
 
   return (
-    <div className="my-5 w-full gap-3 border border-gray-200 bg-gray-100 py-2.5 px-2 md:grid md:w-auto md:auto-cols-min md:grid-cols-min-2 md:px-5">
+    <div className="my-5 w-full gap-3 border border-modal-border bg-gray-100 py-2.5 px-2 dark:bg-gray-800 md:grid md:w-auto md:auto-cols-min md:grid-cols-min-2 md:px-5">
       {rows.map((row) => {
         return (
           <Fragment key={row.label}>
             <div className="flex items-center whitespace-nowrap font-bold text-data-title md:h-full">
               {row.label}
             </div>
-            <div className="mb-2 flex items-center justify-between last:mb-0">
+            <div className="mb-2 flex items-center justify-between last:mb-0 md:mb-0">
               <div className="shrink-1 font-mono">{row.value}</div>
               <div className="ml-2 flex shrink-0 justify-end">
                 <CopyButton target={row.value} label={row.label} />
@@ -50,14 +56,15 @@ const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
 }
 
 AccessKeyDisplay.propTypes = {
-  // The access key ID
+  // Access key ID
   accessKeyId: PropTypes.string.isRequired,
-  // The access key secret
+  // Access key secret
   accessKeySecret: PropTypes.string.isRequired,
 }
 
 /**
- * Messages to display in the access key creation or reset modal.
+ * The access key creation and reset modals have nearly identical contents except for these
+ * messages.
  */
 const accessKeyModalMessages = {
   create: {
@@ -72,7 +79,7 @@ const accessKeyModalMessages = {
 
 /**
  * Displays the modal to show the user their new or reset access keys. This component always shows
- * the modal, so display or hide it from the parent component.
+ * the modal, so its visibility gets controlled from the parent component.
  */
 const AccessKeyModal = ({
   accessKeyId,
@@ -90,8 +97,8 @@ const AccessKeyModal = ({
       </Modal.Header>
       <Modal.Body>
         <p>
-          Please make a note of the new access key secret. Once you close this
-          dialog you have no way to retrieve it.
+          Please make a note of the new access key secret. You have no way to
+          retrieve it once you close this dialog.
         </p>
         <div className="flex justify-center">
           <AccessKeyDisplay
@@ -114,32 +121,33 @@ const AccessKeyModal = ({
 }
 
 AccessKeyModal.propTypes = {
-  // The access key ID
+  // New (create) or existing (reset) access key ID
   accessKeyId: PropTypes.string.isRequired,
-  // The new access key secret
+  // New access key secret
   accessKeySecret: PropTypes.string.isRequired,
-  // The action to perform on the access key
+  // Specifies either the create or reset messages to display in the modal
   createOrReset: PropTypes.oneOf(["create", "reset"]).isRequired,
   // Callback to close the modal
   onClose: PropTypes.func.isRequired,
 }
 
 /**
- * Displays a button to create a new access key.
+ * Displays a button and modal to create a new access key.
  */
 export const CreateAccessKeyTrigger = () => {
-  // True if modal displaying newly created access-keys open
-  const [isKeysOpen, setKeysOpen] = useState(false)
+  // True if modal displaying newly created access-keys is open
+  const [isOpen, setOpen] = useState(false)
   // Access key ID
   const [accessKeyId, setAccessKeyId] = useState("")
   // Access key secret
   const [accessKeySecret, setAccessKeySecret] = useState("")
+
   const router = useRouter()
   const { session } = useContext(SessionContext)
-  console.log("CREATE SESSION %o", session)
 
   /**
-   * Create a new access key and opens the modal to display it.
+   * Called to create a new access key. Once that happens it opens the modal to display the new
+   * access key ID and secret.
    */
   const createKey = () => {
     createAccessKey(session).then((response) => {
@@ -149,20 +157,20 @@ export const CreateAccessKeyTrigger = () => {
       // Rerender the page with the new access keys and with the modal showing the new access keys
       // open.
       router.replace(router.asPath)
-      setKeysOpen(true)
+      setOpen(true)
     })
   }
 
   const closeModal = () => {
-    setKeysOpen(false)
+    setOpen(false)
   }
 
   return (
     <>
-      <Button className="mb-4 w-full sm:w-auto" onClick={createKey}>
+      <Button className="mt-2 w-full sm:w-auto" onClick={createKey}>
         Create Access Key
       </Button>
-      {isKeysOpen && (
+      {isOpen && (
         <AccessKeyModal
           accessKeyId={accessKeyId}
           accessKeySecret={accessKeySecret}
@@ -175,27 +183,48 @@ export const CreateAccessKeyTrigger = () => {
 }
 
 /**
- * Displays a button to create a new access key.
+ * Display a single access key control button.
+ */
+const AccessKeyControl = ({ label, onClick, type, children }) => {
+  return (
+    <Button.Icon label={label} onClick={onClick} type={type}>
+      <Tooltip content={label}>{children}</Tooltip>
+    </Button.Icon>
+  )
+}
+
+AccessKeyControl.propTypes = {
+  // The label for the control for screen readers and tooltip
+  label: PropTypes.string.isRequired,
+  // Function to call when the user clicks the control
+  onClick: PropTypes.func.isRequired,
+  // Additional Tailwind CSS class names to apply to the button
+  type: PropTypes.string,
+}
+
+/**
+ * Displays a button and new-key modal to reset an existing access key.
  */
 export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
   // True if modal displaying reset access-keys open
-  const [isKeysOpen, setKeysOpen] = useState(false)
+  const [isOpen, setOpen] = useState(false)
   // Access key secret
   const [accessKeySecret, setAccessKeySecret] = useState("")
+
   const { session } = useContext(SessionContext)
 
   /**
-   * Create a new access key and opens the modal to display it.
+   * Creates a new access key and opens the modal to display it.
    */
   const resetKey = () => {
     resetAccessKey(accessKeyId, session).then((response) => {
       setAccessKeySecret(response.secret_access_key)
-      setKeysOpen(true)
+      setOpen(true)
     })
   }
 
   const closeModal = () => {
-    setKeysOpen(false)
+    setOpen(false)
   }
 
   return (
@@ -203,11 +232,11 @@ export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
       <AccessKeyControl
         label={`Reset access key ${accessKeyId}`}
         onClick={resetKey}
-        className="bg-button-secondary"
+        type="secondary"
       >
         <RefreshIcon className="fill-white" />
       </AccessKeyControl>
-      {isKeysOpen && (
+      {isOpen && (
         <AccessKeyModal
           accessKeyId={accessKeyId}
           accessKeySecret={accessKeySecret}
@@ -220,13 +249,17 @@ export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
 }
 
 ResetAccessKeyTrigger.propTypes = {
-  // The access key ID to reset
+  // Access key ID to reset
   accessKeyId: PropTypes.string.isRequired,
 }
 
+/**
+ * Displays a button and warning modal to delete an access key.
+ */
 const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
   // True if access key delete warning modal is visible.
-  const [isDeleteOpen, setDeleteOpen] = useState(false)
+  const [isOpen, setOpen] = useState(false)
+
   const router = useRouter()
   const { session } = useContext(SessionContext)
 
@@ -235,26 +268,25 @@ const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
    */
   const onDelete = () => {
     deleteAccessKey(accessKeyId, session).then(() => {
-      // Rerender the page with the new access keys and with the modal showing the new access keys
-      // open.
+      // Rerender the page with the deleted access key removed.
       router.replace(router.asPath)
     })
   }
 
   const onCancel = () => {
-    setDeleteOpen(false)
+    setOpen(false)
   }
 
   return (
     <>
       <AccessKeyControl
         label={`Delete access key ${accessKeyId}`}
-        onClick={() => setDeleteOpen(true)}
-        className="bg-button-alert"
+        onClick={() => setOpen(true)}
+        type="alert"
       >
         <TrashIcon className="fill-white" />
       </AccessKeyControl>
-      <Modal isOpen={isDeleteOpen} onClose={onCancel}>
+      <Modal isOpen={isOpen} onClose={onCancel}>
         <Modal.Header
           onClose={onCancel}
           closeModal="Cancel deleting access key"
@@ -294,38 +326,12 @@ DeleteAccessKeyTrigger.propTypes = {
 }
 
 /**
- * Display a single access key control button, normally an icon child of this component.
- */
-const AccessKeyControl = ({ label, onClick, className = "", children }) => {
-  return (
-    <button
-      onClick={onClick}
-      className={`h-6 w-6 rounded-full p-1 ${className}`}
-    >
-      <Tooltip content={label}>
-        {children}
-        <span className="sr-only">{label}</span>
-      </Tooltip>
-    </button>
-  )
-}
-
-AccessKeyControl.propTypes = {
-  // The label for the control for screen readers and tooltip
-  label: PropTypes.string.isRequired,
-  // Function to call when the user clicks the control
-  onClick: PropTypes.func.isRequired,
-  // Additional Tailwind CSS class names to apply to the button
-  className: PropTypes.string,
-}
-
-/**
  * Displays a single access key and its associated controls.
  */
 const AccessKeyItem = ({ accessKey }) => {
   return (
     <>
-      <div className="flex items-center justify-between border px-3 py-2 md:px-2 md:py-1">
+      <div className="flex items-center justify-between border border-data-border px-3 py-2 md:px-2 md:py-1">
         <div className="font-mono">{accessKey.access_key_id}</div>
         <div className="flex gap-1">
           <ResetAccessKeyTrigger accessKeyId={accessKey.access_key_id} />
@@ -345,13 +351,16 @@ AccessKeyItem.propTypes = {
  * Displays a list of access keys and their associated controls.
  */
 export const AccessKeyList = ({ accessKeys }) => {
-  return (
-    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {accessKeys.map((accessKey) => {
-        return <AccessKeyItem key={accessKey.uuid} accessKey={accessKey} />
-      })}
-    </div>
-  )
+  if (accessKeys.length > 0) {
+    return (
+      <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {accessKeys.map((accessKey) => {
+          return <AccessKeyItem key={accessKey.uuid} accessKey={accessKey} />
+        })}
+      </div>
+    )
+  }
+  return null
 }
 
 AccessKeyList.propTypes = {

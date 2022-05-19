@@ -27,7 +27,6 @@
   --color-data-border: #c0c0c0;
   --color-highlight: #c0c0c0;
   --color-highlight-border: #a0a0a0;
-  --color-text-default: #000000;
   --color-title-border: #6b7280;
 
   --color-data-title: #6b7280;
@@ -50,6 +49,9 @@
   --color-border-warning: #a26f00;
   --color-border-info: #808080;
 
+  /** Modal borders */
+  --color-modal-border: #e5e7eb;
+
   --color-button-text-info: #000000;
 }
 
@@ -65,7 +67,6 @@
   --color-data-border: #2c3f66;
   --color-highlight: #2c3f66;
   --color-highlight-border: #45629f;
-  --color-text-default: #ffffff;
   --color-title-border: #6b7280;
 
   --color-data-title: #9ca3af;
@@ -74,6 +75,9 @@
 
   --color-button-info: #000000;
   --color-border-info: #ffffff;
+
+  /** Modal borders */
+  --color-modal-border: #4b5563;
 
   --color-button-text-info: #ffffff;
 }

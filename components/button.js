@@ -42,17 +42,20 @@ const buttonTextTypeClasses = {
   info: "text-button-info",
 }
 
-const buttonStrokeTypeClasses = {
-  primary: "stroke-button-primary",
-  secondary: "stroke-button-secondary",
-  success: "stroke-button-success",
-  alert: "stroke-button-alert",
-  warning: "stroke-button-warning",
-  info: "stroke-button-info",
+/**
+ * SVG fill colors for each of the button types.
+ */
+const buttonFillTypeClasses = {
+  primary: "fill-button-primary",
+  secondary: "fill-button-secondary",
+  success: "fill-button-success",
+  alert: "fill-button-alert",
+  warning: "fill-button-warning",
+  info: "fill-button-info",
 }
 
 /**
- * Classes for each of the button sizes.
+ * Tailwind CSS classes for each of the button sizes.
  */
 const buttonSizeClasses = {
   sm: "px-3 py-1 text-xs",
@@ -108,6 +111,12 @@ Button.propTypes = {
   className: PropTypes.string,
 }
 
+/**
+ * Displays a circular icon button. Use similarly to <Button> but only one size is available.
+ * <Button.Icon>
+ *   <SomeIcon />
+ * </Button.Icon>
+ */
 const Icon = ({
   onClick,
   type = "primary",
@@ -118,7 +127,7 @@ const Icon = ({
   // Add the Tailwind CSS classes for the SVG fill to the <svg> children of the button.
   const filledChildren = Children.map(children, (child) => {
     return cloneElement(child, {
-      className: buttonStrokeTypeClasses[type],
+      className: buttonFillTypeClasses[type],
     })
   })
 
@@ -137,7 +146,7 @@ const Icon = ({
 Icon.propTypes = {
   // Called when the button is clicked
   onClick: PropTypes.func.isRequired,
-  // Accessible label of the button if the button text is not sufficient for screen readers
+  // Accessible label of the button for screen readers
   label: PropTypes.string.isRequired,
   // Button color type
   type: PropTypes.oneOf([

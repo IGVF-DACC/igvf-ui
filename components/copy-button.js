@@ -1,10 +1,13 @@
 // node_modules
-import { CheckIcon, ClipboardCopyIcon } from "@heroicons/react/outline"
+import { CheckIcon, ClipboardCopyIcon } from "@heroicons/react/solid"
 import PropTypes from "prop-types"
 import { useState } from "react"
 // components
 import Button from "./button"
 
+/**
+ * Displays a button to copy text to the clipboard.
+ */
 const CopyButton = ({ target, label, className = "" }) => {
   const [isCopied, setCopied] = useState(false)
 
@@ -13,7 +16,9 @@ const CopyButton = ({ target, label, className = "" }) => {
    */
   const copy = () => {
     navigator.clipboard.writeText(target).then(() => {
-      // Temporarily display a checkmark to confirm the copy.
+      // Temporarily display a checkmark to confirm to the user that the copy was successful. Once
+      // tooltips are feature complete, might want to add a "Copied" tooltip along with the check
+      // mark.
       setCopied(true)
       setTimeout(() => {
         setCopied(false)

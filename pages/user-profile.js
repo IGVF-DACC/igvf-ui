@@ -7,7 +7,7 @@ import {
   AccessKeyList,
   CreateAccessKeyTrigger,
 } from "../components/access-keys"
-import { DataArea, DataItem } from "../components/data-area"
+import { DataArea } from "../components/data-area"
 import PagePreamble from "../components/page-preamble"
 import Spinner from "../components/spinner"
 // libs
@@ -26,7 +26,7 @@ const UserProfile = ({ sessionUser = null }) => {
           <>
             {user ? (
               <>
-                <DataItem className="flex items-center">
+                <div className="flex items-center">
                   <Image
                     src={user.picture}
                     width={64}
@@ -34,7 +34,7 @@ const UserProfile = ({ sessionUser = null }) => {
                     alt={`${user.name}'s profile picture`}
                   />
                   <div className="ml-2">{user.name}</div>
-                </DataItem>
+                </div>
                 <CreateAccessKeyTrigger />
                 {sessionUser && (
                   <AccessKeyList accessKeys={sessionUser.access_keys} />

@@ -16,10 +16,13 @@ module.exports = {
         "data-border": "var(--color-data-border)",
         highlight: "var(--color-highlight)",
         "highlight-border": "var(--color-highlight-border)",
+        "modal-border": "var(--color-modal-border)",
+
         // Data items on an object page
         "data-title": "var(--color-data-title)",
         "data-label": "var(--color-data-label)",
         "data-value": "var(--color-data-value)",
+
         // Generic button styles
         "button-primary": "var(--color-button-primary)",
         "button-secondary": "var(--color-button-secondary)",
@@ -48,7 +51,7 @@ module.exports = {
         // Status badges
         status: "0 0 0 1px #a0a0a0",
       },
-      stroke: {
+      fill: {
         "button-primary": "#ffffff",
         "button-secondary": "#ffffff",
         "button-success": "#000000",
