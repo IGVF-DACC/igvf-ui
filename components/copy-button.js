@@ -2,6 +2,8 @@
 import { CheckIcon, ClipboardCopyIcon } from "@heroicons/react/outline"
 import PropTypes from "prop-types"
 import { useState } from "react"
+// components
+import Button from "./button"
 
 const CopyButton = ({ target, label, className = "" }) => {
   const [isCopied, setCopied] = useState(false)
@@ -20,14 +22,9 @@ const CopyButton = ({ target, label, className = "" }) => {
   }
 
   return (
-    <button
-      type="button"
-      className={`block h-6 w-8 rounded-sm border border-gray-400 py-px px-1.5 ${className}`}
-      onClick={copy}
-      aria-label={`Copy ${label} to clipboard`}
-    >
+    <Button.Icon onClick={copy} className={className} label={label}>
       {isCopied ? <CheckIcon /> : <ClipboardCopyIcon />}
-    </button>
+    </Button.Icon>
   )
 }
 

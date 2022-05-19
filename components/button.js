@@ -4,6 +4,7 @@
 
 // node_modules
 import PropTypes from "prop-types"
+import { Children, cloneElement } from "react"
 
 /**
  * Background colors for each of the button types.
@@ -41,6 +42,15 @@ const buttonTextTypeClasses = {
   info: "text-button-info",
 }
 
+const buttonStrokeTypeClasses = {
+  primary: "stroke-button-primary",
+  secondary: "stroke-button-secondary",
+  success: "stroke-button-success",
+  alert: "stroke-button-alert",
+  warning: "stroke-button-warning",
+  info: "stroke-button-info",
+}
+
 /**
  * Classes for each of the button sizes.
  */
@@ -68,6 +78,7 @@ const Button = ({
 }) => {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`block rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
       aria-label={label}
@@ -97,4 +108,49 @@ Button.propTypes = {
   className: PropTypes.string,
 }
 
+const Icon = ({
+  onClick,
+  type = "primary",
+  label,
+  className = "",
+  children,
+}) => {
+  // Add the Tailwind CSS classes for the SVG fill to the <svg> children of the button.
+  const filledChildren = Children.map(children, (child) => {
+    return cloneElement(child, {
+      className: buttonStrokeTypeClasses[type],
+    })
+  })
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`block h-6 w-6 rounded-full border p-1 ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${className}`}
+      aria-label={label}
+    >
+      {filledChildren}
+    </button>
+  )
+}
+
+Icon.propTypes = {
+  // Called when the button is clicked
+  onClick: PropTypes.func.isRequired,
+  // Accessible label of the button if the button text is not sufficient for screen readers
+  label: PropTypes.string.isRequired,
+  // Button color type
+  type: PropTypes.oneOf([
+    "primary",
+    "secondary",
+    "success",
+    "alert",
+    "warning",
+    "info",
+  ]),
+  // Additional Tailwind CSS classes to apply to the <button> element
+  className: PropTypes.string,
+}
+
+Button.Icon = Icon
 export default Button

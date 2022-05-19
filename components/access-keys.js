@@ -12,7 +12,6 @@ import Tooltip from "./tooltip"
 // libs
 import { resetAccessKey, deleteAccessKey } from "../libs/access-keys"
 import { createAccessKey } from "../libs/access-keys"
-import { DataItemLabel } from "./data-area"
 
 /**
  * Displays the access key ID and secret in a table.
@@ -20,24 +19,24 @@ import { DataItemLabel } from "./data-area"
 const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
   const rows = [
     {
-      label: "Access key ID",
+      label: "Access Key ID",
       value: accessKeyId,
     },
     {
-      label: "Access key secret",
+      label: "Access Key Secret",
       value: accessKeySecret,
     },
   ]
 
   return (
-    <div className="my-5 gap-3 border border-gray-200 bg-gray-100 py-2.5 px-5 md:grid md:auto-cols-min md:grid-cols-min-2">
+    <div className="my-5 w-full gap-3 border border-gray-200 bg-gray-100 py-2.5 px-2 md:grid md:w-auto md:auto-cols-min md:grid-cols-min-2 md:px-5">
       {rows.map((row) => {
         return (
           <Fragment key={row.label}>
-            <DataItemLabel className="flex h-full items-center whitespace-nowrap">
+            <div className="flex items-center whitespace-nowrap font-bold text-data-title md:h-full">
               {row.label}
-            </DataItemLabel>
-            <div className="flex items-center justify-between">
+            </div>
+            <div className="mb-2 flex items-center justify-between last:mb-0">
               <div className="shrink-1 font-mono">{row.value}</div>
               <div className="ml-2 flex shrink-0 justify-end">
                 <CopyButton target={row.value} label={row.label} />
@@ -62,11 +61,11 @@ AccessKeyDisplay.propTypes = {
  */
 const accessKeyModalMessages = {
   create: {
-    title: "Your secret key has been created",
+    title: "Your new secret key",
     close: "Close dialog containing your new access key",
   },
   reset: {
-    title: "Your secret key has been reset",
+    title: "Your reset secret key",
     close: "Close dialog containing your reset access key",
   },
 }
@@ -91,8 +90,8 @@ const AccessKeyModal = ({
       </Modal.Header>
       <Modal.Body>
         <p>
-          Please make a note of the new secret access key. This is the last time
-          you will be able to view it.
+          Please make a note of the new access key secret. Once you close this
+          dialog you have no way to retrieve it.
         </p>
         <div className="flex justify-center">
           <AccessKeyDisplay

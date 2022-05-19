@@ -48,6 +48,14 @@ module.exports = {
         // Status badges
         status: "0 0 0 1px #a0a0a0",
       },
+      stroke: {
+        "button-primary": "#ffffff",
+        "button-secondary": "#ffffff",
+        "button-success": "#000000",
+        "button-alert": "#ffffff",
+        "button-warning": "#000000",
+        "button-info": "var(--color-button-text-info)",
+      },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
       },

@@ -34,7 +34,7 @@ const Modal = ({ isOpen, onClose, children }) => {
         className="fixed inset-0 bg-black/20 backdrop-blur-sm"
         aria-hidden="true"
       />
-      <Dialog.Panel className="mx-auto my-40 w-4/5 max-w-4xl overflow-hidden rounded-xl border border-gray-400 bg-white drop-shadow-lg dark:bg-gray-900">
+      <Dialog.Panel className="mx-auto my-5 w-4/5 max-w-4xl overflow-hidden rounded-xl border border-gray-400 bg-white drop-shadow-lg dark:bg-gray-900 xl:my-20">
         {children}
       </Dialog.Panel>
     </Dialog>
