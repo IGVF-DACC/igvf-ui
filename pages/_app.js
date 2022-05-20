@@ -2,18 +2,21 @@
 import { Auth0Provider } from "@auth0/auth0-react"
 import Head from "next/head"
 import PropTypes from "prop-types"
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 // libs
 import { onRedirectCallback } from "../libs/authentication"
 import { BRAND_COLOR, SITE_TITLE } from "../libs/constants"
 import DarkModeManager from "../libs/dark-mode-manager"
 // components
 import GlobalContext from "../components/global-context"
+import { Session } from "../components/session-context"
 import NavigationSection from "../components/navigation"
 // CSS
 import "../styles/globals.css"
 
 const App = ({ Component, pageProps }) => {
+  const [sessionCookie, setSessionCookie] = useState("")
+
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
     const darkModeManager = new DarkModeManager()
@@ -25,6 +28,13 @@ const App = ({ Component, pageProps }) => {
     }
   }, [])
 
+  useEffect(() => {
+    // Set the session cookie if the back end has retrieved one.
+    if (pageProps.sessionCookie) {
+      setSessionCookie(pageProps.sessionCookie)
+    }
+  }, [pageProps.sessionCookie])
+
   const globalContext = useMemo(() => {
     return {
       site: {
@@ -34,8 +44,9 @@ const App = ({ Component, pageProps }) => {
         title: pageProps.pageContext?.title || "",
       },
       breadcrumbs: pageProps.breadcrumbs || [],
+      sessionCookie,
     }
-  }, [pageProps.pageContext?.title, pageProps.breadcrumbs])
+  }, [pageProps.pageContext?.title, pageProps.breadcrumbs, sessionCookie])
 
   return (
     <>
@@ -66,7 +77,7 @@ const App = ({ Component, pageProps }) => {
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="msapplication-TileColor" content="#da532c" />
       </Head>
-      <div className="md:container md:flex">
+      <div className="h-screen md:container md:flex">
         <Auth0Provider
           domain={process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN}
           clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
@@ -77,10 +88,12 @@ const App = ({ Component, pageProps }) => {
           cacheLocation="localstorage"
         >
           <GlobalContext.Provider value={globalContext}>
-            <NavigationSection />
-            <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
-              <Component {...pageProps} />
-            </div>
+            <Session>
+              <NavigationSection />
+              <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
+                <Component {...pageProps} />
+              </div>
+            </Session>
           </GlobalContext.Provider>
         </Auth0Provider>
       </div>

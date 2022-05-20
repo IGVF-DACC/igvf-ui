@@ -80,11 +80,12 @@ export default FallbackObject
 
 export const getServerSideProps = async ({ req, resolvedUrl }) => {
   const request = new Request(req?.headers?.cookie)
-  const generic = await request.getObject(resolvedUrl, { includeEmbeds: true })
+  const generic = await request.getObject(resolvedUrl)
   if (generic && generic.status !== "error") {
     return {
       props: {
         generic,
+        sessionCookie: req?.headers?.cookie,
       },
     }
   }

@@ -63,6 +63,7 @@ export const getServerSideProps = async ({ req }) => {
       technicalSamples: technicalSamples["@graph"],
       pageContext: { title: technicalSamples.title },
       breadcrumbs,
+      sessionCookie: req?.headers?.cookie,
     },
   }
 }

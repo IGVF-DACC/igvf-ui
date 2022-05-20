@@ -52,12 +52,19 @@ DataItem.propTypes = {
 /**
  * Display the label of a <DataItem>.
  */
-export const DataItemLabel = ({ children }) => {
+export const DataItemLabel = ({ className = "", children }) => {
   return (
-    <div className="mb-1 font-semibold uppercase text-data-label dark:text-gray-400">
+    <div
+      className={`mb-1 font-semibold uppercase text-data-label dark:text-gray-400 ${className}`}
+    >
       {children}
     </div>
   )
+}
+
+DataItemLabel.propTypes = {
+  // Additional Tailwind CSS classes to apply to the <div> element
+  className: PropTypes.string,
 }
 
 /**

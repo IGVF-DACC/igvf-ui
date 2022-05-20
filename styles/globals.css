@@ -27,12 +27,32 @@
   --color-data-border: #c0c0c0;
   --color-highlight: #c0c0c0;
   --color-highlight-border: #a0a0a0;
-  --color-text-default: #000000;
   --color-title-border: #6b7280;
 
   --color-data-title: #6b7280;
   --color-data-label: #6b7280;
   --color-data-value: #000000;
+
+  /** Button backgrounds */
+  --color-button-primary: #1779ba;
+  --color-button-secondary: #767676;
+  --color-button-success: #3adb76;
+  --color-button-alert: #cc4b37;
+  --color-button-warning: #ffae00;
+  --color-button-info: #ffffff;
+
+  /** Button borders */
+  --color-border-primary: #0f517c;
+  --color-border-secondary: #4f4f4f;
+  --color-border-success: #248749;
+  --color-border-alert: #8b3325;
+  --color-border-warning: #a26f00;
+  --color-border-info: #808080;
+
+  /** Modal borders */
+  --color-modal-border: #e5e7eb;
+
+  --color-button-text-info: #000000;
 }
 
 /**
@@ -47,12 +67,19 @@
   --color-data-border: #2c3f66;
   --color-highlight: #2c3f66;
   --color-highlight-border: #45629f;
-  --color-text-default: #ffffff;
   --color-title-border: #6b7280;
 
   --color-data-title: #9ca3af;
   --color-data-label: #9ca3af;
   --color-data-value: #ffffff;
+
+  --color-button-info: #000000;
+  --color-border-info: #ffffff;
+
+  /** Modal borders */
+  --color-modal-border: #4b5563;
+
+  --color-button-text-info: #ffffff;
 }
 
 a {

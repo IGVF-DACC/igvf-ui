@@ -46,6 +46,7 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         pageContext: { title: user.title },
         breadcrumbs,
+        sessionCookie: req?.headers?.cookie,
       },
     }
   }
