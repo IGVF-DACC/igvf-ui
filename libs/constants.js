@@ -6,7 +6,7 @@ export const BACKEND_URL = "http://localhost:3000"
 // Site title
 export const SITE_TITLE = "IGVF"
 // Brand color
-export const BRAND_COLOR = "#991133"
+export const BRAND_COLOR = "#337788"
 
 // UNICODE entity codes, needed in JSX string templates. Each property named after the equivalent
 // HTML entity. Add new entries to this object as needed.
