@@ -37,8 +37,6 @@ Cypress.Commands.add("login", (username, password) => {
   cy.visit("http://localhost:3000/")
   cy.clearLocalStorage()
 
-  cy.log("ENV:", Cypress.env("NEXT_PUBLIC_AUTH0_CLIENT_SECRET"))
-
   const client_id = Cypress.env("AUTH_CLIENT_ID")
   const client_secret = Cypress.env("AUTH_CLIENT_SECRET")
   const audience = Cypress.env("AUTH_AUDIENCE")

@@ -182,6 +182,7 @@ export const getServerSideProps = async ({ params, req }) => {
         treatments,
         pageContext: { title: sample.accession },
         breadcrumbs,
+        sessionCookie: req?.headers?.cookie,
       },
     }
   }

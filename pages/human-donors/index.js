@@ -14,24 +14,23 @@ import PagePreamble from "../../components/page-preamble"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const AwardList = ({ awards }) => {
+const HumanDonorsList = ({ donors }) => {
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
       <Collection>
-        {awards.length > 0 ? (
+        {donors.length > 0 ? (
           <>
-            <CollectionCount count={awards.length} />
-            {awards.map((award) => (
+            <CollectionCount count={donors.length} />
+            {donors.map((donor) => (
               <CollectionItem
-                key={award.uuid}
-                href={award["@id"]}
-                label={`Award ${award.name}`}
-                status={award.status}
+                key={donor.uuid}
+                href={donor["@id"]}
+                label={`Human Donor ${donor.accession}`}
+                status={donor.status}
               >
-                <CollectionItemName>{award.name}</CollectionItemName>
-                <div>{award.title}</div>
+                <CollectionItemName>{donor.accession}</CollectionItemName>
               </CollectionItem>
             ))}
           </>
@@ -43,21 +42,21 @@ const AwardList = ({ awards }) => {
   )
 }
 
-AwardList.propTypes = {
-  // Awards to display in the list
-  awards: PropTypes.array.isRequired,
+HumanDonorsList.propTypes = {
+  // Technical samples to display in the list
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
-export default AwardList
+export default HumanDonorsList
 
 export const getServerSideProps = async ({ req }) => {
   const request = new Request(req?.headers?.cookie)
-  const awards = await request.getCollection("awards")
-  const breadcrumbs = await buildBreadcrumbs(awards, "title")
+  const donors = await request.getCollection("human-donors")
+  const breadcrumbs = await buildBreadcrumbs(donors, "title")
   return {
     props: {
-      awards: awards["@graph"],
-      pageContext: { title: awards.title },
+      donors: donors["@graph"],
+      pageContext: { title: donors.title },
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,
     },

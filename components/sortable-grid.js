@@ -24,13 +24,13 @@ const SORT_DIRECTIONS = {
  * this array to a form that `DataGrid` can render.
  * @param {array} items Array of objects to render in a sortable grid
  * @param {array} columns Column definitions for the sortable grid
- * @param {string} keyProp Property of each item to use as the React key
+ * @param {string} keyProp Property of each item to use as the React key; index used if not provided
  * @returns {array} `items` contents in a form suitable for passing to <DataGrid>
  */
 const convertObjectArrayToDataGrid = (items, columns, keyProp) => {
-  return items.map((item) => {
+  return items.map((item, index) => {
     return {
-      id: item[keyProp],
+      id: keyProp ? item[keyProp] : index,
       cells: columns.map((column) => {
         let content = column.display || item[column.id] || null
 
@@ -98,7 +98,7 @@ HeaderSortIcon.propTypes = {
   // Entry in the column configuration array for the current column
   columnConfiguration: PropTypes.shape({
     // Unique ID for the column
-    id: PropTypes.string.isRequired,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   }),
   // id of the currently sorted column
   sortBy: PropTypes.string.isRequired,
@@ -240,7 +240,7 @@ HeaderCell.propTypes = {
 const SortableGrid = ({
   data,
   columns,
-  keyProp,
+  keyProp = "",
   initialSort = {},
   meta = {},
   CustomHeaderCell = HeaderCell,
@@ -308,7 +308,7 @@ SortableGrid.propTypes = {
   // Column configurations for the grid
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Which prop of the objects in the data array to use as the React key
-  keyProp: PropTypes.string.isRequired,
+  keyProp: PropTypes.string,
   // Optional initial sorting of the grid
   initialSort: PropTypes.exact({
     // id of the column to sort by

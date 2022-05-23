@@ -68,7 +68,7 @@ describe("SortableGrid", () => {
 
     render(
       <DataGridContainer>
-        <SortableGrid data={data} columns={columns} keyProp="uuid" />
+        <SortableGrid data={data} columns={columns} />
       </DataGridContainer>
     )
 

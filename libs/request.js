@@ -34,21 +34,16 @@ export default class Request {
   /**
    * Request the object with the given path from the server without any embedded properties.
    * @param {string} path - Path to requested resource
-   * @param {object} options - Options to alter fetching data
-   *   - includeEmbeds: Whether to include embedded properties in the response; default false
    * @returns {object} Requested object
    */
-  async getObject(path, options = {}) {
+  async getObject(path) {
     const headers = buildHeaders(this.#cookie)
     try {
-      const response = await fetch(
-        `${SERVER_URL}${path}${options.includeEmbeds ? "" : "?frame=object"}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers,
-        }
-      )
+      const response = await fetch(`${SERVER_URL}${path}`, {
+        method: "GET",
+        credentials: "include",
+        headers,
+      })
       return response.json()
     } catch (error) {
       return null

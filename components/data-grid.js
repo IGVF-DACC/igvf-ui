@@ -102,7 +102,7 @@ DataGrid.propTypes = {
   // The data to render in the data-grid form
   data: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       cells: PropTypes.arrayOf(
         PropTypes.shape({
           content: PropTypes.any,
