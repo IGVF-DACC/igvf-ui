@@ -3,7 +3,7 @@ import dayjs from "dayjs"
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
-import Attributions from "./../components/attributions"
+import Attributions from "../../components/attributions"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
