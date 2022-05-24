@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link"
 import PropTypes from "prop-types"
 // components
 import { Attributions } from "../../components/attributions"
@@ -11,14 +12,41 @@ import {
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
+import { DataGridContainer } from "../../components/data-grid"
 import PagePreamble from "../../components/page-preamble"
+import SortableGrid from "../../components/sortable-grid"
 import Status from "../../components/status"
-import TreatmentTable from "../../components/treatment-table"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
+const treatmentColumns = [
+  {
+    id: "treatment_term_id",
+    title: "Term ID",
+    display: ({ source: treatment }) => {
+      return (
+        <Link href={treatment["@id"]}>
+          <a>{treatment.treatment_term_id}</a>
+        </Link>
+      )
+    },
+  },
+  {
+    id: "treatment_term_name",
+    title: "Term Name",
+  },
+  {
+    id: "treatment_type",
+    title: "Type",
+  },
+  {
+    id: "purpose",
+    title: "Purpose",
+  },
+]
+
+const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
   return (
     <>
       <Breadcrumbs />
@@ -27,28 +55,47 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
         <DataItem>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
-            <Status status={cellLine.status} />
+            <Status status={tissue.status} />
           </DataItemValue>
         </DataItem>
         <BiosampleDataItems
-          biosample={cellLine}
+          biosample={tissue}
           source={source}
           donors={donors}
           options={{
             dateObtainedTitle: "Date Harvested",
           }}
         />
-        {cellLine.passage_number && (
+        {tissue.pmi && (
           <DataItem>
-            <DataItemLabel>Passage Number</DataItemLabel>
-            <DataItemValue>{cellLine.passage_number}</DataItemValue>
+            <DataItemLabel>Post-mortem Interval</DataItemLabel>
+            <DataItemValue>
+              {tissue.pmi}
+              {tissue.pmi_units ? (
+                <>
+                  {" "}
+                  {tissue.pmi_units}
+                  {tissue.pmi_units === 1 ? "" : "s"}
+                </>
+              ) : (
+                ""
+              )}
+            </DataItemValue>
+          </DataItem>
+        )}
+        {tissue.preservation_method && (
+          <DataItem>
+            <DataItemLabel>Preservation Method</DataItemLabel>
+            <DataItemValue>{tissue.preservation_method}</DataItemValue>
           </DataItem>
         )}
       </DataArea>
       {treatments.length > 0 && (
         <>
           <DataAreaTitle>Treatments</DataAreaTitle>
-          <TreatmentTable treatments={treatments} />
+          <DataGridContainer>
+            <SortableGrid data={treatments} columns={treatmentColumns} />
+          </DataGridContainer>
         </>
       )}
       <Attributions award={award} lab={lab} />
@@ -56,9 +103,9 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
   )
 }
 
-CellLine.propTypes = {
-  // Cell-line sample to display
-  cellLine: PropTypes.object.isRequired,
+Tissue.propTypes = {
+  // Technical treatment to display
+  tissue: PropTypes.object.isRequired,
   // Donors associated with the tissue
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Award applied to this technical sample
@@ -76,31 +123,31 @@ CellLine.propTypes = {
     "@id": PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
   }).isRequired,
-  // List of associated treatments
+  // Treatments associated with the tissue
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
-export default CellLine
+export default Tissue
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const cellLine = await request.getObject(`/cell-lines/${params.uuid}/`)
-  if (cellLine && cellLine.status !== "error") {
-    const award = await request.getObject(cellLine.award)
-    const donors = await request.getMultipleObjects(cellLine.donors)
-    const lab = await request.getObject(cellLine.lab)
-    const source = await request.getObject(cellLine.source)
-    const treatments = await request.getMultipleObjects(cellLine.treatments)
-    const breadcrumbs = await buildBreadcrumbs(cellLine, "accession")
+  const tissue = await request.getObject(`/tissues/${params.uuid}/`)
+  if (tissue && tissue.status !== "error") {
+    const award = await request.getObject(tissue.award)
+    const donors = await request.getMultipleObjects(tissue.donors)
+    const lab = await request.getObject(tissue.lab)
+    const source = await request.getObject(tissue.source)
+    const treatments = await request.getMultipleObjects(tissue.treatments)
+    const breadcrumbs = await buildBreadcrumbs(tissue, "accession")
     return {
       props: {
-        cellLine,
+        tissue,
         award,
         donors,
         lab,
         source,
         treatments,
-        pageContext: { title: cellLine.accession },
+        pageContext: { title: tissue.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },

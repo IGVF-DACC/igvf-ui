@@ -2,10 +2,10 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
+import Attributions from "../../components/attributions"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataAreaTitle,
   DataItem,
   DataItemLabel,
   DataItemValue,
@@ -64,34 +64,7 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
         )}
       </DataArea>
       <ExternalResources resources={donor.external_resources} />
-      <DataAreaTitle>Attribution</DataAreaTitle>
-      <DataArea>
-        <DataItem>
-          <DataItemLabel>Award</DataItemLabel>
-          <DataItemValue>
-            <Link href={award["@id"]}>
-              <a>{award.name}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Lab</DataItemLabel>
-          <DataItemValue>
-            <Link href={lab["@id"]}>
-              <a>{lab.title}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
-        {donor.url && (
-          <DataItem>
-            <DataItemValue>
-              <a href={donor.url} target="_blank" rel="noreferrer">
-                Additional Information
-              </a>
-            </DataItemValue>
-          </DataItem>
-        )}
-      </DataArea>
+      <Attributions award={award} lab={lab} />
     </>
   )
 }

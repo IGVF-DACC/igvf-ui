@@ -1,16 +1,16 @@
 // node_modules
-import Link from "next/link"
 import PropTypes from "prop-types"
 // components
+import Attributions from "../../components/attributions"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataAreaTitle,
   DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
+import SourceProp from "../../components/source-prop"
 import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -69,43 +69,16 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
             <DataItemValue>{sample.technical_sample_ontology}</DataItemValue>
           </DataItem>
         )}
-      </DataArea>
-      <DataAreaTitle>Attribution</DataAreaTitle>
-      <DataArea>
-        <DataItem>
-          <DataItemLabel>Award</DataItemLabel>
-          <DataItemValue>
-            <Link href={award["@id"]}>
-              <a>{award.name}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Lab</DataItemLabel>
-          <DataItemValue>
-            <Link href={lab["@id"]}>
-              <a>{lab.title}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Source</DataItemLabel>
-          <DataItemValue>
-            <Link href={source["@id"]}>
-              <a>{lab.title}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
-        {sample.url && (
+        {source && (
           <DataItem>
+            <DataItemLabel>Source</DataItemLabel>
             <DataItemValue>
-              <a href={sample.url} target="_blank" rel="noreferrer">
-                Additional Information
-              </a>
+              <SourceProp source={source} />
             </DataItemValue>
           </DataItem>
         )}
       </DataArea>
+      <Attributions award={award} lab={lab} />
     </>
   )
 }
