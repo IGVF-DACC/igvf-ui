@@ -8,7 +8,6 @@ import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
   DataAreaTitle,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
@@ -45,24 +44,20 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={donor.status} />
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Taxa Identifier</DataItemLabel>
-          <DataItemValue>{donor.taxon_id}</DataItemValue>
-        </DataItem>
+        <DataItemLabel>Status</DataItemLabel>
+        <DataItemValue>
+          <Status status={donor.status} />
+        </DataItemValue>
+        <DataItemLabel>Taxa Identifier</DataItemLabel>
+        <DataItemValue>{donor.taxon_id}</DataItemValue>
         {donor.sex && (
-          <DataItem>
+          <>
             <DataItemLabel>Sex</DataItemLabel>
             <DataItemValue>{donor.sex}</DataItemValue>
-          </DataItem>
+          </>
         )}
         {parents.length > 0 && (
-          <DataItem>
+          <>
             <DataItemLabel>Parents</DataItemLabel>
             <SeparatedList>
               {parents.map((parent) => (
@@ -73,13 +68,13 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
                 </Link>
               ))}
             </SeparatedList>
-          </DataItem>
+          </>
         )}
         {donor.ethnicity && (
-          <DataItem>
+          <>
             <DataItemLabel>Ethnicity</DataItemLabel>
             <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
-          </DataItem>
+          </>
         )}
       </DataArea>
       <ExternalResources resources={donor.external_resources} />

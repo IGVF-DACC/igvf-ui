@@ -5,7 +5,6 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
@@ -22,22 +21,16 @@ const Lab = ({ lab, awards, pi }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={lab.status} />
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Institute</DataItemLabel>
-          <DataItemValue>{lab.institute_label}</DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Principal Investigator</DataItemLabel>
-          <DataItemValue>{pi.title}</DataItemValue>
-        </DataItem>
+        <DataItemLabel>Status</DataItemLabel>
+        <DataItemValue>
+          <Status status={lab.status} />
+        </DataItemValue>
+        <DataItemLabel>Institute</DataItemLabel>
+        <DataItemValue>{lab.institute_label}</DataItemValue>
+        <DataItemLabel>Principal Investigator</DataItemLabel>
+        <DataItemValue>{pi.title}</DataItemValue>
         {awards.length > 0 && (
-          <DataItem>
+          <>
             <DataItemLabel>Awards</DataItemLabel>
             <SeparatedList>
               {awards.map((award) => (
@@ -46,7 +39,7 @@ const Lab = ({ lab, awards, pi }) => {
                 </Link>
               ))}
             </SeparatedList>
-          </DataItem>
+          </>
         )}
       </DataArea>
     </>

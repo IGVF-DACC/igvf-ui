@@ -4,7 +4,6 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
@@ -20,64 +19,56 @@ const Treatment = ({ treatment }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={treatment.status} />
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Treatment Term Name</DataItemLabel>
-          <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Treatment Type</DataItemLabel>
-          <DataItemValue>{treatment.treatment_type}</DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Amount</DataItemLabel>
-          <DataItemValue>
-            {treatment.amount} {treatment.amount_units}
-          </DataItemValue>
-        </DataItem>
+        <DataItemLabel>Status</DataItemLabel>
+        <DataItemValue>
+          <Status status={treatment.status} />
+        </DataItemValue>
+        <DataItemLabel>Treatment Term Name</DataItemLabel>
+        <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
+        <DataItemLabel>Treatment Type</DataItemLabel>
+        <DataItemValue>{treatment.treatment_type}</DataItemValue>
+        <DataItemLabel>Amount</DataItemLabel>
+        <DataItemValue>
+          {treatment.amount} {treatment.amount_units}
+        </DataItemValue>
         {treatment.duration && (
-          <DataItem>
+          <>
             <DataItemLabel>Duration</DataItemLabel>
             <DataItemValue>
               {treatment.duration} {treatment.duration_units}
               {treatment.duration === 1 ? "" : "s"}
             </DataItemValue>
-          </DataItem>
+          </>
         )}
         {treatment.pH && (
-          <DataItem>
+          <>
             <DataItemLabel>pH</DataItemLabel>
             <DataItemValue>{treatment.pH}</DataItemValue>
-          </DataItem>
+          </>
         )}
         {treatment.purpose && (
-          <DataItem>
+          <>
             <DataItemLabel>Purpose</DataItemLabel>
             <DataItemValue>{treatment.purpose}</DataItemValue>
-          </DataItem>
+          </>
         )}
         {treatment.post_treatment_time && (
-          <DataItem>
+          <>
             <DataItemLabel>Post-Treatment Time</DataItemLabel>
             <DataItemValue>
               {treatment.post_treatment_time}{" "}
               {treatment.post_treatment_time_units}
               {treatment.post_treatment_time === 1 ? "" : "s"}
             </DataItemValue>
-          </DataItem>
+          </>
         )}
         {treatment["temperature (Celsius)"] && (
-          <DataItem>
+          <>
             <DataItemLabel>Temperature</DataItemLabel>
             <DataItemValue>
               {treatment["temperature (Celsius)"]} &deg;C
             </DataItemValue>
-          </DataItem>
+          </>
         )}
       </DataArea>
     </>

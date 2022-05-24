@@ -6,7 +6,6 @@ import Attribution from "../../components/attribution"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
@@ -24,32 +23,24 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={donor.status} />
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Taxa Identifier</DataItemLabel>
-          <DataItemValue>{donor.taxon_id}</DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Sex</DataItemLabel>
-          <DataItemValue>{donor.sex}</DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Strain</DataItemLabel>
-          <DataItemValue>{donor.strain}</DataItemValue>
-        </DataItem>
+        <DataItemLabel>Status</DataItemLabel>
+        <DataItemValue>
+          <Status status={donor.status} />
+        </DataItemValue>
+        <DataItemLabel>Taxa Identifier</DataItemLabel>
+        <DataItemValue>{donor.taxon_id}</DataItemValue>
+        <DataItemLabel>Sex</DataItemLabel>
+        <DataItemValue>{donor.sex}</DataItemValue>
+        <DataItemLabel>Strain</DataItemLabel>
+        <DataItemValue>{donor.strain}</DataItemValue>
         {donor.strain_background && (
-          <DataItem>
+          <>
             <DataItemLabel>Strain Background</DataItemLabel>
             <DataItemValue>{donor.strain_background}</DataItemValue>
-          </DataItem>
+          </>
         )}
         {parents.length > 0 && (
-          <DataItem>
+          <>
             <DataItemLabel>Parents</DataItemLabel>
             <SeparatedList>
               {parents.map((parent) => (
@@ -60,7 +51,7 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
                 </Link>
               ))}
             </SeparatedList>
-          </DataItem>
+          </>
         )}
       </DataArea>
       <ExternalResources resources={donor.external_resources} />

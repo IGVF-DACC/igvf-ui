@@ -8,7 +8,6 @@ import { BiosampleDataItems } from "../../components/common-data-items"
 import {
   DataArea,
   DataAreaTitle,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
@@ -52,12 +51,10 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={tissue.status} />
-          </DataItemValue>
-        </DataItem>
+        <DataItemLabel>Status</DataItemLabel>
+        <DataItemValue>
+          <Status status={tissue.status} />
+        </DataItemValue>
         <BiosampleDataItems
           biosample={tissue}
           source={source}
@@ -67,7 +64,7 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
           }}
         />
         {tissue.pmi && (
-          <DataItem>
+          <>
             <DataItemLabel>Post-mortem Interval</DataItemLabel>
             <DataItemValue>
               {tissue.pmi}
@@ -81,13 +78,13 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
                 ""
               )}
             </DataItemValue>
-          </DataItem>
+          </>
         )}
         {tissue.preservation_method && (
-          <DataItem>
+          <>
             <DataItemLabel>Preservation Method</DataItemLabel>
             <DataItemValue>{tissue.preservation_method}</DataItemValue>
-          </DataItem>
+          </>
         )}
       </DataArea>
       {treatments.length > 0 && (

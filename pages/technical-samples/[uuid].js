@@ -6,7 +6,6 @@ import Breadcrumbs from "../../components/breadcrumbs"
 import { SampleDataItems } from "../../components/common-data-items"
 import {
   DataArea,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
@@ -23,28 +22,24 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={sample.status} />
-          </DataItemValue>
-        </DataItem>
+        <DataItemLabel>Status</DataItemLabel>
+        <DataItemValue>
+          <Status status={sample.status} />
+        </DataItemValue>
         <SampleDataItems sample={sample} source={source} />
         {sample.date && (
-          <DataItem>
+          <>
             <DataItemLabel>Technical Sample Date</DataItemLabel>
             <DataItemValue>{formatDate(sample.date)}</DataItemValue>
-          </DataItem>
+          </>
         )}
-        <DataItem>
-          <DataItemLabel>Sample Material</DataItemLabel>
-          <DataItemValue>{sample.sample_material}</DataItemValue>
-        </DataItem>
+        <DataItemLabel>Sample Material</DataItemLabel>
+        <DataItemValue>{sample.sample_material}</DataItemValue>
         {sample.technical_sample_ontology && (
-          <DataItem>
+          <>
             <DataItemLabel>Ontology</DataItemLabel>
             <DataItemValue>{sample.technical_sample_ontology}</DataItemValue>
-          </DataItem>
+          </>
         )}
       </DataArea>
       <Attribution award={award} lab={lab} />

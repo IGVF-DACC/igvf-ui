@@ -61,6 +61,7 @@ module.exports = {
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
+        "data-item": "fit-content(200px) 1fr",
       },
     },
   },

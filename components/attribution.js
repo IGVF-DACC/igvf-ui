@@ -5,7 +5,6 @@ import PropTypes from "prop-types"
 import {
   DataArea,
   DataAreaTitle,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "./data-area"
@@ -19,22 +18,18 @@ const Attribution = ({ award, lab }) => {
     <>
       <DataAreaTitle>Attribution</DataAreaTitle>
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Award</DataItemLabel>
-          <DataItemValue>
-            <Link href={award["@id"]}>
-              <a>{award.name}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Lab</DataItemLabel>
-          <DataItemValue>
-            <Link href={lab["@id"]}>
-              <a>{lab.title}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
+        <DataItemLabel>Award</DataItemLabel>
+        <DataItemValue>
+          <Link href={award["@id"]}>
+            <a>{award.name}</a>
+          </Link>
+        </DataItemValue>
+        <DataItemLabel>Lab</DataItemLabel>
+        <DataItemValue>
+          <Link href={lab["@id"]}>
+            <a>{lab.title}</a>
+          </Link>
+        </DataItemValue>
       </DataArea>
     </>
   )

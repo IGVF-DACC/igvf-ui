@@ -4,7 +4,6 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
@@ -21,56 +20,50 @@ const Award = ({ award, pis }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={award.status} />
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Title</DataItemLabel>
-          <DataItemValue>{award.title}</DataItemValue>
-        </DataItem>
+        <DataItemLabel>Status</DataItemLabel>
+        <DataItemValue>
+          <Status status={award.status} />
+        </DataItemValue>
+        <DataItemLabel>Title</DataItemLabel>
+        <DataItemValue>{award.title}</DataItemValue>
         {award.description && (
-          <DataItem>
+          <>
             <DataItemLabel>Description</DataItemLabel>
             <DataItemValue>{award.description}</DataItemValue>
-          </DataItem>
+          </>
         )}
         {pis.length > 0 && (
-          <DataItem>
+          <>
             <DataItemLabel>Principal Investigator</DataItemLabel>
             <DataItemValue>
               {pis.map((pi) => pi.title).join(", ")}
             </DataItemValue>
-          </DataItem>
+          </>
         )}
         {award.component && (
-          <DataItem>
+          <>
             <DataItemLabel>Component</DataItemLabel>
             <DataItemValue>{award.component}</DataItemValue>
-          </DataItem>
+          </>
         )}
-        <DataItem>
-          <DataItemLabel>Project</DataItemLabel>
-          <DataItemValue>{award.project}</DataItemValue>
-        </DataItem>
+        <DataItemLabel>Project</DataItemLabel>
+        <DataItemValue>{award.project}</DataItemValue>
         {(award.start_date || award.end_date) && (
-          <DataItem>
+          <>
             <DataItemLabel>Grant Dates</DataItemLabel>
             <DataItemValue>
               {formatDateRange(award.start_date, award.end_date)}
             </DataItemValue>
-          </DataItem>
+          </>
         )}
         {award.url && (
-          <DataItem>
+          <>
             <DataItemValue>
               <a href={award.url} target="_blank" rel="noreferrer">
                 Additional Information
               </a>
             </DataItemValue>
-          </DataItem>
+          </>
         )}
       </DataArea>
     </>

@@ -7,7 +7,6 @@ import { BiosampleDataItems } from "../../components/common-data-items"
 import {
   DataArea,
   DataAreaTitle,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
@@ -24,12 +23,10 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={cellLine.status} />
-          </DataItemValue>
-        </DataItem>
+        <DataItemLabel>Status</DataItemLabel>
+        <DataItemValue>
+          <Status status={cellLine.status} />
+        </DataItemValue>
         <BiosampleDataItems
           biosample={cellLine}
           source={source}
@@ -39,10 +36,10 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
           }}
         />
         {cellLine.passage_number && (
-          <DataItem>
+          <>
             <DataItemLabel>Passage Number</DataItemLabel>
             <DataItemValue>{cellLine.passage_number}</DataItemValue>
-          </DataItem>
+          </>
         )}
       </DataArea>
       {treatments.length > 0 && (

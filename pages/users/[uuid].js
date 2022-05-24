@@ -4,7 +4,6 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataItem,
   DataItemLabel,
   DataItemValue,
 } from "../../components/data-area"
@@ -19,10 +18,8 @@ const User = ({ lab }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataArea>
-        <DataItem>
-          <DataItemLabel>Lab</DataItemLabel>
-          <DataItemValue>{lab.title}</DataItemValue>
-        </DataItem>
+        <DataItemLabel>Lab</DataItemLabel>
+        <DataItemValue>{lab.title}</DataItemValue>
       </DataArea>
     </>
   )

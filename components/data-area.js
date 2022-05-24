@@ -2,11 +2,8 @@
  * Wrap a single data item containing a label and value. This normally gets used like:
  *
  * <DataArea>
- *   <DataItem>
- *     <DataItemLabel>Lab</DataItemLabel>
- *     <DataItemValue>{lab.title}</DataItemValue>
- *   </DataItem>
- *   <DataItem>
+ *   <DataItemLabel>Lab</DataItemLabel>
+ *   <DataItemValue>{lab.title}</DataItemValue>
  *   ...
  * </DataArea>
  */
@@ -14,11 +11,11 @@
 import PropTypes from "prop-types"
 
 /**
- * Wrapper for an area containing <DataItem>s.
+ * Wrapper for an area containing data items.
  */
 export const DataArea = ({ children }) => {
   return (
-    <div className="border border-data-border bg-data-background p-4">
+    <div className="border border-data-border bg-data-background p-4 md:grid md:grid-cols-data-item md:gap-4">
       {children}
     </div>
   )
@@ -36,26 +33,12 @@ export const DataAreaTitle = ({ children }) => {
 }
 
 /**
- * Display a single data item containing a label and value.
- */
-export const DataItem = ({ className = "", children }) => {
-  return (
-    <div className={`my-6 first:mt-0 last:mb-0 ${className}`}>{children}</div>
-  )
-}
-
-DataItem.propTypes = {
-  // Additional Tailwind CSS classes to apply to the <div> element
-  className: PropTypes.string,
-}
-
-/**
- * Display the label of a <DataItem>.
+ * Display the label of a data item.
  */
 export const DataItemLabel = ({ className = "", children }) => {
   return (
     <div
-      className={`mb-1 font-semibold uppercase text-data-label dark:text-gray-400 ${className}`}
+      className={`mt-4 break-words font-semibold text-data-label first:mt-0 dark:text-gray-400 md:mt-0 ${className}`}
     >
       {children}
     </div>
@@ -68,8 +51,12 @@ DataItemLabel.propTypes = {
 }
 
 /**
- * Display the value of a <DataItem>.
+ * Display the value of a data item.
  */
 export const DataItemValue = ({ children }) => {
-  return <div className="text-sm text-data-value">{children}</div>
+  return (
+    <div className="mb-4 font-medium text-data-value last:mb-0 md:mb-0">
+      {children}
+    </div>
+  )
 }

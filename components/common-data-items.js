@@ -2,7 +2,7 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
-import { DataItem, DataItemLabel, DataItemValue } from "./data-area"
+import { DataItemLabel, DataItemValue } from "./data-area"
 import SeparatedList from "./separated-list"
 import SourceProp from "./source-prop"
 // libs
@@ -15,27 +15,27 @@ export const SampleDataItems = ({ sample, source = null }) => {
   return (
     <>
       {sample.product_id && (
-        <DataItem>
+        <>
           <DataItemLabel>Product ID</DataItemLabel>
           <DataItemValue>{sample.product_id}</DataItemValue>
-        </DataItem>
+        </>
       )}
       {sample.lot_id && (
-        <DataItem>
+        <>
           <DataItemLabel>Lot ID</DataItemLabel>
           <DataItemValue>{sample.lot_id}</DataItemValue>
-        </DataItem>
+        </>
       )}
       {source && (
-        <DataItem>
+        <>
           <DataItemLabel>Source</DataItemLabel>
           <DataItemValue>
             <SourceProp source={source} />
           </DataItemValue>
-        </DataItem>
+        </>
       )}
       {sample.starting_amount && (
-        <DataItem>
+        <>
           <DataItemLabel>Starting Amount</DataItemLabel>
           <DataItemValue>
             {sample.starting_amount}
@@ -45,16 +45,17 @@ export const SampleDataItems = ({ sample, source = null }) => {
               ""
             )}
           </DataItemValue>
-        </DataItem>
+        </>
       )}
       {sample.url && (
-        <DataItem>
+        <>
+          <DataItemLabel>Additional Information</DataItemLabel>
           <DataItemValue>
             <a href={sample.url} target="_blank" rel="noreferrer">
-              Additional Information
+              {sample.url}
             </a>
           </DataItemValue>
-        </DataItem>
+        </>
       )}
     </>
   )
@@ -82,25 +83,25 @@ export const BiosampleDataItems = ({
     <>
       <SampleDataItems sample={biosample} source={source} />
       {biosample.organism && (
-        <DataItem>
+        <>
           <DataItemLabel>Organism</DataItemLabel>
           <DataItemValue>{biosample.organism}</DataItemValue>
-        </DataItem>
+        </>
       )}
       {biosample.sex && (
-        <DataItem>
+        <>
           <DataItemLabel>Sex</DataItemLabel>
           <DataItemValue>{biosample.sex}</DataItemValue>
-        </DataItem>
+        </>
       )}
       {biosample.life_stage && (
-        <DataItem>
+        <>
           <DataItemLabel>Life Stage</DataItemLabel>
           <DataItemValue>{biosample.life_stage}</DataItemValue>
-        </DataItem>
+        </>
       )}
       {biosample.age && (
-        <DataItem>
+        <>
           <DataItemLabel>Age</DataItemLabel>
           <DataItemValue>
             {biosample.age}
@@ -114,36 +115,36 @@ export const BiosampleDataItems = ({
               ""
             )}
           </DataItemValue>
-        </DataItem>
+        </>
       )}
       {biosample.date_obtained && (
-        <DataItem>
+        <>
           <DataItemLabel>{options.dateObtainedTitle}</DataItemLabel>
           <DataItemValue>{formatDate(biosample.date_obtained)}</DataItemValue>
-        </DataItem>
+        </>
       )}
       {biosample.biosample_ontology && (
-        <DataItem>
+        <>
           <DataItemLabel>Biosample</DataItemLabel>
           <DataItemValue>{biosample.biosample_ontology}</DataItemValue>
-        </DataItem>
+        </>
       )}
       {biosample.disease_ontology && (
-        <DataItem>
+        <>
           <DataItemLabel>Disease</DataItemLabel>
           <DataItemValue>{biosample.disease_ontology}</DataItemValue>
-        </DataItem>
+        </>
       )}
       {biosample.nih_institutional_certification && (
-        <DataItem>
+        <>
           <DataItemLabel>NIH Institutional Certification</DataItemLabel>
           <DataItemValue>
             {biosample.nih_institutional_certification}
           </DataItemValue>
-        </DataItem>
+        </>
       )}
       {donors.length > 0 && (
-        <DataItem>
+        <>
           <DataItemLabel>Donors</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
@@ -154,7 +155,7 @@ export const BiosampleDataItems = ({
               ))}
             </SeparatedList>
           </DataItemValue>
-        </DataItem>
+        </>
       )}
     </>
   )
