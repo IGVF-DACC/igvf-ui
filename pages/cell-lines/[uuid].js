@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types"
 // components
-import { Attributions } from "../../components/attributions"
+import Attribution from "../../components/attribution"
 import Breadcrumbs from "../../components/breadcrumbs"
 import { BiosampleDataItems } from "../../components/common-data-items"
 import {
@@ -51,7 +51,7 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
           <TreatmentTable treatments={treatments} />
         </>
       )}
-      <Attributions award={award} lab={lab} />
+      <Attribution award={award} lab={lab} />
     </>
   )
 }

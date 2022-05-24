@@ -3,7 +3,7 @@ import dayjs from "dayjs"
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
-import Attributions from "../../components/attributions"
+import Attribution from "../../components/attribution"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
@@ -94,7 +94,7 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
           </DataGridContainer>
         </>
       )}
-      <Attributions award={award} lab={lab} />
+      <Attribution award={award} lab={lab} />
     </>
   )
 }

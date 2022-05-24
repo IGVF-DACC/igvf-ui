@@ -2,7 +2,7 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
-import { Attributions } from "../../components/attributions"
+import Attribution from "../../components/attribution"
 import Breadcrumbs from "../../components/breadcrumbs"
 import { BiosampleDataItems } from "../../components/common-data-items"
 import {
@@ -98,7 +98,7 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
           </DataGridContainer>
         </>
       )}
-      <Attributions award={award} lab={lab} />
+      <Attribution award={award} lab={lab} />
     </>
   )
 }

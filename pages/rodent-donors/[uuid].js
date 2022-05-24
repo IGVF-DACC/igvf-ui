@@ -2,7 +2,7 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
-import Attributions from "../../components/attributions"
+import Attribution from "../../components/attribution"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
@@ -64,7 +64,7 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
         )}
       </DataArea>
       <ExternalResources resources={donor.external_resources} />
-      <Attributions award={award} lab={lab} />
+      <Attribution award={award} lab={lab} />
     </>
   )
 }

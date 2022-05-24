@@ -1,8 +1,9 @@
 // node_modules
 import PropTypes from "prop-types"
 // components
-import Attributions from "../../components/attributions"
+import Attribution from "../../components/attribution"
 import Breadcrumbs from "../../components/breadcrumbs"
+import { SampleDataItems } from "../../components/common-data-items"
 import {
   DataArea,
   DataItem,
@@ -10,10 +11,10 @@ import {
   DataItemValue,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
-import SourceProp from "../../components/source-prop"
 import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
+import { formatDate } from "../../libs/dates"
 import Request from "../../libs/request"
 
 const TechnicalSample = ({ sample, award, lab, source }) => {
@@ -28,57 +29,25 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
             <Status status={sample.status} />
           </DataItemValue>
         </DataItem>
-        {sample.additional_description && (
+        <SampleDataItems sample={sample} source={source} />
+        {sample.date && (
           <DataItem>
-            <DataItemLabel>Description</DataItemLabel>
-            <DataItemValue>{sample.additional_description}</DataItemValue>
+            <DataItemLabel>Technical Sample Date</DataItemLabel>
+            <DataItemValue>{formatDate(sample.date)}</DataItemValue>
           </DataItem>
         )}
         <DataItem>
           <DataItemLabel>Sample Material</DataItemLabel>
           <DataItemValue>{sample.sample_material}</DataItemValue>
         </DataItem>
-        {sample.product_id && (
-          <DataItem>
-            <DataItemLabel>Product ID</DataItemLabel>
-            <DataItemValue>{sample.product_id}</DataItemValue>
-          </DataItem>
-        )}
-        {sample.lot_id && (
-          <DataItem>
-            <DataItemLabel>Lot ID</DataItemLabel>
-            <DataItemValue>{sample.lot_id}</DataItemValue>
-          </DataItem>
-        )}
-        {sample.starting_amount && (
-          <DataItem>
-            <DataItemLabel>Starting Amount</DataItemLabel>
-            <DataItemValue>
-              {sample.starting_amount}
-              {sample.starting_amount_units ? (
-                <> {sample.starting_amount_units}</>
-              ) : (
-                ""
-              )}
-            </DataItemValue>
-          </DataItem>
-        )}
         {sample.technical_sample_ontology && (
           <DataItem>
             <DataItemLabel>Ontology</DataItemLabel>
             <DataItemValue>{sample.technical_sample_ontology}</DataItemValue>
           </DataItem>
         )}
-        {source && (
-          <DataItem>
-            <DataItemLabel>Source</DataItemLabel>
-            <DataItemValue>
-              <SourceProp source={source} />
-            </DataItemValue>
-          </DataItem>
-        )}
       </DataArea>
-      <Attributions award={award} lab={lab} />
+      <Attribution award={award} lab={lab} />
     </>
   )
 }

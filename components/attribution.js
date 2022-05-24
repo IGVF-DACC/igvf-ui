@@ -14,10 +14,10 @@ import {
  * Displays the attribution attributes of an item in its own data panel, typically a data object
  * with a defined schema.
  */
-const Attributions = ({ award, lab }) => {
+const Attribution = ({ award, lab }) => {
   return (
     <>
-      <DataAreaTitle>Attributions</DataAreaTitle>
+      <DataAreaTitle>Attribution</DataAreaTitle>
       <DataArea>
         <DataItem>
           <DataItemLabel>Award</DataItemLabel>
@@ -40,7 +40,7 @@ const Attributions = ({ award, lab }) => {
   )
 }
 
-Attributions.propTypes = {
+Attribution.propTypes = {
   // Award applied to this technical sample
   award: PropTypes.shape({
     "@id": PropTypes.string.isRequired,
@@ -53,4 +53,4 @@ Attributions.propTypes = {
   }).isRequired,
 }
 
-export default Attributions
+export default Attribution
