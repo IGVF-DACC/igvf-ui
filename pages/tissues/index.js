@@ -47,7 +47,7 @@ const TissueList = ({ tissues }) => {
 }
 
 TissueList.propTypes = {
-  // Technical samples to display in the list
+  // Tissue samples to display in the list
   tissues: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
