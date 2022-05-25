@@ -1,10 +1,10 @@
 // node_modules
 import dayjs from "dayjs"
-import Link from "next/link"
 import PropTypes from "prop-types"
 // components
 import Attribution from "../../components/attribution"
 import Breadcrumbs from "../../components/breadcrumbs"
+import { DonorDataItems } from "../../components/common-data-items"
 import {
   DataArea,
   DataAreaTitle,
@@ -14,7 +14,6 @@ import {
 import { DataGridContainer } from "../../components/data-grid"
 import ExternalResources from "../../components/external-resources"
 import PagePreamble from "../../components/page-preamble"
-import SeparatedList from "../../components/separated-list"
 import SortableGrid from "../../components/sortable-grid"
 import Status from "../../components/status"
 // libs
@@ -48,28 +47,7 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
         <DataItemValue>
           <Status status={donor.status} />
         </DataItemValue>
-        <DataItemLabel>Taxa Identifier</DataItemLabel>
-        <DataItemValue>{donor.taxon_id}</DataItemValue>
-        {donor.sex && (
-          <>
-            <DataItemLabel>Sex</DataItemLabel>
-            <DataItemValue>{donor.sex}</DataItemValue>
-          </>
-        )}
-        {parents.length > 0 && (
-          <>
-            <DataItemLabel>Parents</DataItemLabel>
-            <SeparatedList>
-              {parents.map((parent) => (
-                <Link href={parent["@id"]} key={parent.uuid}>
-                  <a aria-label={`Parent Donor ${parent.accession}`}>
-                    {parent.accession}
-                  </a>
-                </Link>
-              ))}
-            </SeparatedList>
-          </>
-        )}
+        <DonorDataItems donor={donor} parents={parents} />
         {donor.ethnicity && (
           <>
             <DataItemLabel>Ethnicity</DataItemLabel>

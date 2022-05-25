@@ -1,9 +1,9 @@
 // node_modules
-import Link from "next/link"
 import PropTypes from "prop-types"
 // components
 import Attribution from "../../components/attribution"
 import Breadcrumbs from "../../components/breadcrumbs"
+import { DonorDataItems } from "../../components/common-data-items"
 import {
   DataArea,
   DataItemLabel,
@@ -11,7 +11,6 @@ import {
 } from "../../components/data-area"
 import ExternalResources from "../../components/external-resources"
 import PagePreamble from "../../components/page-preamble"
-import SeparatedList from "../../components/separated-list"
 import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -27,10 +26,7 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
         <DataItemValue>
           <Status status={donor.status} />
         </DataItemValue>
-        <DataItemLabel>Taxa Identifier</DataItemLabel>
-        <DataItemValue>{donor.taxon_id}</DataItemValue>
-        <DataItemLabel>Sex</DataItemLabel>
-        <DataItemValue>{donor.sex}</DataItemValue>
+        <DonorDataItems donor={donor} parents={parents} />
         <DataItemLabel>Strain</DataItemLabel>
         <DataItemValue>{donor.strain}</DataItemValue>
         {donor.strain_background && (
@@ -39,18 +35,10 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
             <DataItemValue>{donor.strain_background}</DataItemValue>
           </>
         )}
-        {parents.length > 0 && (
+        {donor.genotype && (
           <>
-            <DataItemLabel>Parents</DataItemLabel>
-            <SeparatedList>
-              {parents.map((parent) => (
-                <Link href={parent["@id"]} key={parent.uuid}>
-                  <a aria-label={`Parent Donor ${parent.accession}`}>
-                    {parent.accession}
-                  </a>
-                </Link>
-              ))}
-            </SeparatedList>
+            <DataItemLabel>Genotype</DataItemLabel>
+            <DataItemValue>{donor.genotype}</DataItemValue>
           </>
         )}
       </DataArea>

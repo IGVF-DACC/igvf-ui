@@ -8,6 +8,44 @@ import SourceProp from "./source-prop"
 // libs
 import { formatDate } from "../libs/dates"
 
+export const DonorDataItems = ({ donor, parents }) => {
+  return (
+    <>
+      {donor.sex && (
+        <>
+          <DataItemLabel>Sex</DataItemLabel>
+          <DataItemValue>{donor.sex}</DataItemValue>
+        </>
+      )}
+      <DataItemLabel>Taxa Identifier</DataItemLabel>
+      <DataItemValue>{donor.taxon_id}</DataItemValue>
+      {parents.length > 0 && (
+        <>
+          <DataItemLabel>Parents</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {parents.map((parent) => (
+                <Link href={parent["@id"]} key={parent.uuid}>
+                  <a aria-label={`Parent Donor ${parent.accession}`}>
+                    {parent.accession}
+                  </a>
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
+    </>
+  )
+}
+
+DonorDataItems.propTypes = {
+  // Object derived from donor.json schema
+  donor: PropTypes.object.isRequired,
+  // Parents of this donor
+  parents: PropTypes.arrayOf(PropTypes.object).isRequired,
+}
+
 /**
  * Display data items common to all sample-derived objects.
  */

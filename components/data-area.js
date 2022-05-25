@@ -25,11 +25,7 @@ export const DataArea = ({ children }) => {
  * Displays the title above a data area
  */
 export const DataAreaTitle = ({ children }) => {
-  return (
-    <h2 className="mt-4 mb-1 text-lg font-semibold uppercase text-data-title">
-      {children}
-    </h2>
-  )
+  return <h2 className="mt-4 mb-1 text-2xl font-light">{children}</h2>
 }
 
 /**
