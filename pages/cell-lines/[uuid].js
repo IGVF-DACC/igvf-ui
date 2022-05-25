@@ -1,157 +1,66 @@
 // node_modules
-import Link from "next/link"
 import PropTypes from "prop-types"
 // components
+import Attribution from "../../components/attribution"
 import Breadcrumbs from "../../components/breadcrumbs"
+import { BiosampleDataItems } from "../../components/common-data-items"
 import {
   DataArea,
   DataAreaTitle,
-  DataItem,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
-import { formatDate } from "../../libs/dates"
 import Request from "../../libs/request"
 
-const CellLine = ({ sample, award, lab, source, treatments }) => {
+const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItem>
+      <DataPanel>
+        <DataArea>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
-            <Status status={sample.status} />
+            <Status status={cellLine.status} />
           </DataItemValue>
-        </DataItem>
-        {sample.organism && (
-          <DataItem>
-            <DataItemLabel>Organism</DataItemLabel>
-            <DataItemValue>{sample.organism}</DataItemValue>
-          </DataItem>
-        )}
-        {sample.biosample_ontology && (
-          <DataItem>
-            <DataItemLabel>Biosample</DataItemLabel>
-            <DataItemValue>{sample.biosample_ontology}</DataItemValue>
-          </DataItem>
-        )}
-        {sample.disease_ontology && (
-          <DataItem>
-            <DataItemLabel>Disease</DataItemLabel>
-            <DataItemValue>{sample.disease_ontology}</DataItemValue>
-          </DataItem>
-        )}
-        {sample.product_id && (
-          <DataItem>
-            <DataItemLabel>Product ID</DataItemLabel>
-            <DataItemValue>{sample.product_id}</DataItemValue>
-          </DataItem>
-        )}
-        {sample.lot_id && (
-          <DataItem>
-            <DataItemLabel>Lot ID</DataItemLabel>
-            <DataItemValue>{sample.lot_id}</DataItemValue>
-          </DataItem>
-        )}
-        {sample.date_obtained && (
-          <DataItem>
-            <DataItemLabel>Obtained</DataItemLabel>
-            <DataItemValue>{formatDate(sample.date_obtained)}</DataItemValue>
-          </DataItem>
-        )}
-        {sample.life_stage && (
-          <DataItem>
-            <DataItemLabel>Life Stage</DataItemLabel>
-            <DataItemValue>{sample.life_stage}</DataItemValue>
-          </DataItem>
-        )}
-        {sample.age && (
-          <DataItem>
-            <DataItemLabel>Age</DataItemLabel>
-            <DataItemValue>
-              {sample.age}
-              {sample.age_units ? (
-                <>
-                  {" "}
-                  {sample.age_units}
-                  {sample.age !== 1 ? "s" : ""}
-                </>
-              ) : (
-                ""
-              )}
-            </DataItemValue>
-          </DataItem>
-        )}
-        {sample.starting_amount && (
-          <DataItem>
-            <DataItemLabel>Starting Amount</DataItemLabel>
-            <DataItemValue>
-              {sample.starting_amount}
-              {sample.starting_amount_units ? (
-                <> {sample.starting_amount_units}</>
-              ) : (
-                ""
-              )}
-            </DataItemValue>
-          </DataItem>
-        )}
-      </DataArea>
-      <DataAreaTitle>Attribution</DataAreaTitle>
-      <DataArea>
-        <DataItem>
-          <DataItemLabel>Award</DataItemLabel>
-          <DataItemValue>
-            <Link href={award["@id"]}>
-              <a>{award.name}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Lab</DataItemLabel>
-          <DataItemValue>
-            <Link href={lab["@id"]}>
-              <a>{lab.title}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
-        <DataItem>
-          <DataItemLabel>Source</DataItemLabel>
-          <DataItemValue>
-            <Link href={source["@id"]}>
-              <a>{lab.title}</a>
-            </Link>
-          </DataItemValue>
-        </DataItem>
-        {sample.url && (
-          <DataItem>
-            <DataItemValue>
-              <a href={sample.url} target="_blank" rel="noreferrer">
-                Additional Information
-              </a>
-            </DataItemValue>
-          </DataItem>
-        )}
-      </DataArea>
+          <BiosampleDataItems
+            biosample={cellLine}
+            source={source}
+            donors={donors}
+            options={{
+              dateObtainedTitle: "Date Harvested",
+            }}
+          />
+          {cellLine.passage_number && (
+            <>
+              <DataItemLabel>Passage Number</DataItemLabel>
+              <DataItemValue>{cellLine.passage_number}</DataItemValue>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
       {treatments.length > 0 && (
         <>
           <DataAreaTitle>Treatments</DataAreaTitle>
           <TreatmentTable treatments={treatments} />
         </>
       )}
+      <Attribution award={award} lab={lab} />
     </>
   )
 }
 
 CellLine.propTypes = {
-  // Technical sample to display
-  sample: PropTypes.object.isRequired,
+  // Cell-line sample to display
+  cellLine: PropTypes.object.isRequired,
+  // Donors associated with the tissue
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Award applied to this technical sample
   award: PropTypes.object.isRequired,
   // Lab that submitted this technical sample
@@ -166,21 +75,23 @@ export default CellLine
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const sample = await request.getObject(`/cell-lines/${params.uuid}/`)
-  if (sample && sample.status !== "error") {
-    const award = await request.getObject(sample.award)
-    const lab = await request.getObject(sample.lab)
-    const source = await request.getObject(sample.source)
-    const treatments = await request.getMultipleObjects(sample.treatments)
-    const breadcrumbs = await buildBreadcrumbs(sample, "accession")
+  const cellLine = await request.getObject(`/cell-lines/${params.uuid}/`)
+  if (cellLine && cellLine.status !== "error") {
+    const award = await request.getObject(cellLine.award)
+    const donors = await request.getMultipleObjects(cellLine.donors)
+    const lab = await request.getObject(cellLine.lab)
+    const source = await request.getObject(cellLine.source)
+    const treatments = await request.getMultipleObjects(cellLine.treatments)
+    const breadcrumbs = await buildBreadcrumbs(cellLine, "accession")
     return {
       props: {
-        sample,
+        cellLine,
         award,
+        donors,
         lab,
         source,
         treatments,
-        pageContext: { title: sample.accession },
+        pageContext: { title: cellLine.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },

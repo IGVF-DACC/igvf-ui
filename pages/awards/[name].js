@@ -4,9 +4,9 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataItem,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
@@ -20,59 +20,56 @@ const Award = ({ award, pis }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItem>
+      <DataPanel>
+        <DataArea>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
             <Status status={award.status} />
           </DataItemValue>
-        </DataItem>
-        <DataItem>
           <DataItemLabel>Title</DataItemLabel>
           <DataItemValue>{award.title}</DataItemValue>
-        </DataItem>
-        {award.description && (
-          <DataItem>
-            <DataItemLabel>Description</DataItemLabel>
-            <DataItemValue>{award.description}</DataItemValue>
-          </DataItem>
-        )}
-        {pis.length > 0 && (
-          <DataItem>
-            <DataItemLabel>Principal Investigator</DataItemLabel>
-            <DataItemValue>
-              {pis.map((pi) => pi.title).join(", ")}
-            </DataItemValue>
-          </DataItem>
-        )}
-        {award.component && (
-          <DataItem>
-            <DataItemLabel>Component</DataItemLabel>
-            <DataItemValue>{award.component}</DataItemValue>
-          </DataItem>
-        )}
-        <DataItem>
+          {award.description && (
+            <>
+              <DataItemLabel>Description</DataItemLabel>
+              <DataItemValue>{award.description}</DataItemValue>
+            </>
+          )}
+          {pis.length > 0 && (
+            <>
+              <DataItemLabel>Principal Investigator</DataItemLabel>
+              <DataItemValue>
+                {pis.map((pi) => pi.title).join(", ")}
+              </DataItemValue>
+            </>
+          )}
+          {award.component && (
+            <>
+              <DataItemLabel>Component</DataItemLabel>
+              <DataItemValue>{award.component}</DataItemValue>
+            </>
+          )}
           <DataItemLabel>Project</DataItemLabel>
           <DataItemValue>{award.project}</DataItemValue>
-        </DataItem>
-        {(award.start_date || award.end_date) && (
-          <DataItem>
-            <DataItemLabel>Grant Dates</DataItemLabel>
-            <DataItemValue>
-              {formatDateRange(award.start_date, award.end_date)}
-            </DataItemValue>
-          </DataItem>
-        )}
-        {award.url && (
-          <DataItem>
-            <DataItemValue>
-              <a href={award.url} target="_blank" rel="noreferrer">
-                Additional Information
-              </a>
-            </DataItemValue>
-          </DataItem>
-        )}
-      </DataArea>
+          {(award.start_date || award.end_date) && (
+            <>
+              <DataItemLabel>Grant Dates</DataItemLabel>
+              <DataItemValue>
+                {formatDateRange(award.start_date, award.end_date)}
+              </DataItemValue>
+            </>
+          )}
+          {award.url && (
+            <>
+              <DataItemLabel>Additional Information</DataItemLabel>
+              <DataItemValue>
+                <a href={award.url} target="_blank" rel="noreferrer">
+                  {award.url}
+                </a>
+              </DataItemValue>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
     </>
   )
 }

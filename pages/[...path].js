@@ -8,7 +8,7 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../components/collection"
-import { DataArea } from "../components/data-area"
+import { DataPanel } from "../components/data-area"
 import NoCollectionData from "../components/no-collection-data"
 import PagePreamble from "../components/page-preamble"
 
@@ -60,11 +60,11 @@ const FallbackObject = ({ generic = null }) => {
     return (
       <>
         <PagePreamble pageTitle={extractTitle(generic)} />
-        <DataArea>
+        <DataPanel>
           <div className="overflow-x-auto border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
             <pre className="p-1">{JSON.stringify(generic, null, 4)}</pre>
           </div>
-        </DataArea>
+        </DataPanel>
       </>
     )
   }
