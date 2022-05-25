@@ -12,6 +12,7 @@ import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
+import { UC } from "../../libs/constants"
 import Request from "../../libs/request"
 
 const Treatment = ({ treatment }) => {
@@ -64,11 +65,14 @@ const Treatment = ({ treatment }) => {
               </DataItemValue>
             </>
           )}
-          {treatment["temperature (Celsius)"] && (
+          {treatment.temperature && (
             <>
               <DataItemLabel>Temperature</DataItemLabel>
               <DataItemValue>
-                {treatment["temperature (Celsius)"]} &deg;C
+                {treatment.temperature}{" "}
+                {treatment.temperature_units === "Celsius"
+                  ? `${UC.deg}C`
+                  : treatment.temperature_units}
               </DataItemValue>
             </>
           )}
