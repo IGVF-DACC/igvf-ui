@@ -18,7 +18,14 @@ import TreatmentTable from "../../components/treatment-table"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
+const DifferentiatedTissue = ({
+  differentiatedTissue,
+  donors,
+  award,
+  lab,
+  source,
+  treatments,
+}) => {
   return (
     <>
       <Breadcrumbs />
@@ -27,37 +34,33 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
         <DataArea>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
-            <Status status={tissue.status} />
+            <Status status={differentiatedTissue.status} />
           </DataItemValue>
           <BiosampleDataItems
-            biosample={tissue}
+            biosample={differentiatedTissue}
             source={source}
             donors={donors}
             options={{
-              dateObtainedTitle: "Date Harvested",
+              dateObtainedTitle: "Date Collected",
             }}
           />
-          {tissue.pmi && (
+          {differentiatedTissue.post_differentiation_time && (
             <>
-              <DataItemLabel>Post-mortem Interval</DataItemLabel>
+              <DataItemLabel>Post-differentiation time</DataItemLabel>
               <DataItemValue>
-                {tissue.pmi}
-                {tissue.pmi_units ? (
+                {differentiatedTissue.post_differentiation_time}
+                {differentiatedTissue.post_differentiation_time_units ? (
                   <>
                     {" "}
-                    {tissue.pmi_units}
-                    {tissue.pmi_units === 1 ? "" : "s"}
+                    {differentiatedTissue.post_differentiation_time_units}
+                    {differentiatedTissue.post_differentiation_time === 1
+                      ? ""
+                      : "s"}
                   </>
                 ) : (
                   ""
                 )}
               </DataItemValue>
-            </>
-          )}
-          {tissue.preservation_method && (
-            <>
-              <DataItemLabel>Preservation Method</DataItemLabel>
-              <DataItemValue>{tissue.preservation_method}</DataItemValue>
             </>
           )}
         </DataArea>
@@ -73,9 +76,9 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
   )
 }
 
-Tissue.propTypes = {
-  // Tissue sample to display
-  tissue: PropTypes.object.isRequired,
+DifferentiatedTissue.propTypes = {
+  // Differentiated-tissue sample to display
+  differentiatedTissue: PropTypes.object.isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Award applied to this sample
@@ -97,27 +100,34 @@ Tissue.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
-export default Tissue
+export default DifferentiatedTissue
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const tissue = await request.getObject(`/tissues/${params.uuid}/`)
-  if (tissue && tissue.status !== "error") {
-    const award = await request.getObject(tissue.award)
-    const donors = await request.getMultipleObjects(tissue.donors)
-    const lab = await request.getObject(tissue.lab)
-    const source = await request.getObject(tissue.source)
-    const treatments = await request.getMultipleObjects(tissue.treatments)
-    const breadcrumbs = await buildBreadcrumbs(tissue, "accession")
+  const differentiatedTissue = await request.getObject(
+    `/differentiated-tissues/${params.uuid}/`
+  )
+  if (differentiatedTissue && differentiatedTissue.status !== "error") {
+    const award = await request.getObject(differentiatedTissue.award)
+    const donors = await request.getMultipleObjects(differentiatedTissue.donors)
+    const lab = await request.getObject(differentiatedTissue.lab)
+    const source = await request.getObject(differentiatedTissue.source)
+    const treatments = await request.getMultipleObjects(
+      differentiatedTissue.treatments
+    )
+    const breadcrumbs = await buildBreadcrumbs(
+      differentiatedTissue,
+      "accession"
+    )
     return {
       props: {
-        tissue,
+        differentiatedTissue,
         award,
         donors,
         lab,
         source,
         treatments,
-        pageContext: { title: tissue.accession },
+        pageContext: { title: differentiatedTissue.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },

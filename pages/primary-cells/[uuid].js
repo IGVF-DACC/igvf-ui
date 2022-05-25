@@ -18,7 +18,14 @@ import TreatmentTable from "../../components/treatment-table"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
+const PrimaryCell = ({
+  primaryCell,
+  donors,
+  award,
+  lab,
+  source,
+  treatments,
+}) => {
   return (
     <>
       <Breadcrumbs />
@@ -27,37 +34,20 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
         <DataArea>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
-            <Status status={tissue.status} />
+            <Status status={primaryCell.status} />
           </DataItemValue>
           <BiosampleDataItems
-            biosample={tissue}
+            biosample={primaryCell}
             source={source}
             donors={donors}
             options={{
               dateObtainedTitle: "Date Harvested",
             }}
           />
-          {tissue.pmi && (
+          {primaryCell.passage_number && (
             <>
-              <DataItemLabel>Post-mortem Interval</DataItemLabel>
-              <DataItemValue>
-                {tissue.pmi}
-                {tissue.pmi_units ? (
-                  <>
-                    {" "}
-                    {tissue.pmi_units}
-                    {tissue.pmi_units === 1 ? "" : "s"}
-                  </>
-                ) : (
-                  ""
-                )}
-              </DataItemValue>
-            </>
-          )}
-          {tissue.preservation_method && (
-            <>
-              <DataItemLabel>Preservation Method</DataItemLabel>
-              <DataItemValue>{tissue.preservation_method}</DataItemValue>
+              <DataItemLabel>Passage Number</DataItemLabel>
+              <DataItemValue>{primaryCell.passage_number}</DataItemValue>
             </>
           )}
         </DataArea>
@@ -73,9 +63,9 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
   )
 }
 
-Tissue.propTypes = {
-  // Tissue sample to display
-  tissue: PropTypes.object.isRequired,
+PrimaryCell.propTypes = {
+  // Primary-cell sample to display
+  primaryCell: PropTypes.object.isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Award applied to this sample
@@ -97,27 +87,27 @@ Tissue.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
-export default Tissue
+export default PrimaryCell
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const tissue = await request.getObject(`/tissues/${params.uuid}/`)
-  if (tissue && tissue.status !== "error") {
-    const award = await request.getObject(tissue.award)
-    const donors = await request.getMultipleObjects(tissue.donors)
-    const lab = await request.getObject(tissue.lab)
-    const source = await request.getObject(tissue.source)
-    const treatments = await request.getMultipleObjects(tissue.treatments)
-    const breadcrumbs = await buildBreadcrumbs(tissue, "accession")
+  const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`)
+  if (primaryCell && primaryCell.status !== "error") {
+    const award = await request.getObject(primaryCell.award)
+    const donors = await request.getMultipleObjects(primaryCell.donors)
+    const lab = await request.getObject(primaryCell.lab)
+    const source = await request.getObject(primaryCell.source)
+    const treatments = await request.getMultipleObjects(primaryCell.treatments)
+    const breadcrumbs = await buildBreadcrumbs(primaryCell, "accession")
     return {
       props: {
-        tissue,
+        primaryCell,
         award,
         donors,
         lab,
         source,
         treatments,
-        pageContext: { title: tissue.accession },
+        pageContext: { title: primaryCell.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },

@@ -286,6 +286,7 @@ const Navigation = ({ navigationClick }) => {
           id="human-donors"
           href="/human-donors"
           navigationClick={navigationClick}
+          isChildItem
         >
           Human Donors
         </NavigationHrefItem>
@@ -293,6 +294,7 @@ const Navigation = ({ navigationClick }) => {
           id="rodent-donors"
           href="/rodent-donors"
           navigationClick={navigationClick}
+          isChildItem
         >
           Rodent Donors
         </NavigationHrefItem>
@@ -318,13 +320,39 @@ const Navigation = ({ navigationClick }) => {
           id="cell-lines"
           href="/cell-lines"
           navigationClick={navigationClick}
+          isChildItem
         >
           Cell Lines
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="differentiated-cells"
+          href="/differentiated-cells"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Differentiated Cells
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="differentiated-tissues"
+          href="/differentiated-tissues"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Differentiated Tissues
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="primary-cells"
+          href="/primary-cells"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Primary Cells
         </NavigationHrefItem>
         <NavigationHrefItem
           id="technical-samples"
           href="/technical-samples"
           navigationClick={navigationClick}
+          isChildItem
         >
           Technical Samples
         </NavigationHrefItem>
@@ -332,6 +360,7 @@ const Navigation = ({ navigationClick }) => {
           id="tissues"
           href="/tissues"
           navigationClick={navigationClick}
+          isChildItem
         >
           Tissues
         </NavigationHrefItem>
