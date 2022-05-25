@@ -7,6 +7,7 @@ import {
   DataArea,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
@@ -20,28 +21,30 @@ const Lab = ({ lab, awards, pi }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItemLabel>Status</DataItemLabel>
-        <DataItemValue>
-          <Status status={lab.status} />
-        </DataItemValue>
-        <DataItemLabel>Institute</DataItemLabel>
-        <DataItemValue>{lab.institute_label}</DataItemValue>
-        <DataItemLabel>Principal Investigator</DataItemLabel>
-        <DataItemValue>{pi.title}</DataItemValue>
-        {awards.length > 0 && (
-          <>
-            <DataItemLabel>Awards</DataItemLabel>
-            <SeparatedList>
-              {awards.map((award) => (
-                <Link href={award["@id"]} key={award.uuid}>
-                  <a aria-label={`Award ${award.name}`}>{award.name}</a>
-                </Link>
-              ))}
-            </SeparatedList>
-          </>
-        )}
-      </DataArea>
+      <DataPanel>
+        <DataArea>
+          <DataItemLabel>Status</DataItemLabel>
+          <DataItemValue>
+            <Status status={lab.status} />
+          </DataItemValue>
+          <DataItemLabel>Institute</DataItemLabel>
+          <DataItemValue>{lab.institute_label}</DataItemValue>
+          <DataItemLabel>Principal Investigator</DataItemLabel>
+          <DataItemValue>{pi.title}</DataItemValue>
+          {awards.length > 0 && (
+            <>
+              <DataItemLabel>Awards</DataItemLabel>
+              <SeparatedList>
+                {awards.map((award) => (
+                  <Link href={award["@id"]} key={award.uuid}>
+                    <a aria-label={`Award ${award.name}`}>{award.name}</a>
+                  </Link>
+                ))}
+              </SeparatedList>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
     </>
   )
 }

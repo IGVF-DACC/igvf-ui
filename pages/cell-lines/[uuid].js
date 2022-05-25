@@ -9,6 +9,7 @@ import {
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
@@ -22,26 +23,28 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItemLabel>Status</DataItemLabel>
-        <DataItemValue>
-          <Status status={cellLine.status} />
-        </DataItemValue>
-        <BiosampleDataItems
-          biosample={cellLine}
-          source={source}
-          donors={donors}
-          options={{
-            dateObtainedTitle: "Date Harvested",
-          }}
-        />
-        {cellLine.passage_number && (
-          <>
-            <DataItemLabel>Passage Number</DataItemLabel>
-            <DataItemValue>{cellLine.passage_number}</DataItemValue>
-          </>
-        )}
-      </DataArea>
+      <DataPanel>
+        <DataArea>
+          <DataItemLabel>Status</DataItemLabel>
+          <DataItemValue>
+            <Status status={cellLine.status} />
+          </DataItemValue>
+          <BiosampleDataItems
+            biosample={cellLine}
+            source={source}
+            donors={donors}
+            options={{
+              dateObtainedTitle: "Date Harvested",
+            }}
+          />
+          {cellLine.passage_number && (
+            <>
+              <DataItemLabel>Passage Number</DataItemLabel>
+              <DataItemValue>{cellLine.passage_number}</DataItemValue>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
       {treatments.length > 0 && (
         <>
           <DataAreaTitle>Treatments</DataAreaTitle>

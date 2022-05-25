@@ -7,30 +7,33 @@ import {
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "./data-area"
 
 /**
- * Displays the attribution attributes of an item in its own data panel, typically a data object
+ * Displays the attribution properties of an item in its own data panel, typically a data object
  * with a defined schema.
  */
 const Attribution = ({ award, lab }) => {
   return (
     <>
       <DataAreaTitle>Attribution</DataAreaTitle>
-      <DataArea>
-        <DataItemLabel>Award</DataItemLabel>
-        <DataItemValue>
-          <Link href={award["@id"]}>
-            <a>{award.name}</a>
-          </Link>
-        </DataItemValue>
-        <DataItemLabel>Lab</DataItemLabel>
-        <DataItemValue>
-          <Link href={lab["@id"]}>
-            <a>{lab.title}</a>
-          </Link>
-        </DataItemValue>
-      </DataArea>
+      <DataPanel>
+        <DataArea>
+          <DataItemLabel>Award</DataItemLabel>
+          <DataItemValue>
+            <Link href={award["@id"]}>
+              <a>{award.name}</a>
+            </Link>
+          </DataItemValue>
+          <DataItemLabel>Lab</DataItemLabel>
+          <DataItemValue>
+            <Link href={lab["@id"]}>
+              <a>{lab.title}</a>
+            </Link>
+          </DataItemValue>
+        </DataArea>
+      </DataPanel>
     </>
   )
 }

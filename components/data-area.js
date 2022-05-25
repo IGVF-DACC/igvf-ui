@@ -10,14 +10,20 @@
 
 import PropTypes from "prop-types"
 
+export const DataPanel = ({ children }) => {
+  return (
+    <div className="border border-data-border bg-data-background p-4">
+      {children}
+    </div>
+  )
+}
+
 /**
  * Wrapper for an area containing data items.
  */
 export const DataArea = ({ children }) => {
   return (
-    <div className="border border-data-border bg-data-background p-4 md:grid md:grid-cols-data-item md:gap-4">
-      {children}
-    </div>
+    <div className="md:grid md:grid-cols-data-item md:gap-4">{children}</div>
   )
 }
 

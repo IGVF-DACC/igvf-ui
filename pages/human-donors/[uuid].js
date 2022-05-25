@@ -10,6 +10,7 @@ import {
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import { DataGridContainer } from "../../components/data-grid"
 import ExternalResources from "../../components/external-resources"
@@ -42,19 +43,21 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItemLabel>Status</DataItemLabel>
-        <DataItemValue>
-          <Status status={donor.status} />
-        </DataItemValue>
-        <DonorDataItems donor={donor} parents={parents} />
-        {donor.ethnicity && (
-          <>
-            <DataItemLabel>Ethnicity</DataItemLabel>
-            <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
-          </>
-        )}
-      </DataArea>
+      <DataPanel>
+        <DataArea>
+          <DataItemLabel>Status</DataItemLabel>
+          <DataItemValue>
+            <Status status={donor.status} />
+          </DataItemValue>
+          <DonorDataItems donor={donor} parents={parents} />
+          {donor.ethnicity && (
+            <>
+              <DataItemLabel>Ethnicity</DataItemLabel>
+              <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
       <ExternalResources resources={donor.external_resources} />
       {donor.health_status_history?.length > 0 && (
         <>

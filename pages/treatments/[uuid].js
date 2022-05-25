@@ -6,6 +6,7 @@ import {
   DataArea,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
@@ -18,59 +19,61 @@ const Treatment = ({ treatment }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItemLabel>Status</DataItemLabel>
-        <DataItemValue>
-          <Status status={treatment.status} />
-        </DataItemValue>
-        <DataItemLabel>Treatment Term Name</DataItemLabel>
-        <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
-        <DataItemLabel>Treatment Type</DataItemLabel>
-        <DataItemValue>{treatment.treatment_type}</DataItemValue>
-        <DataItemLabel>Amount</DataItemLabel>
-        <DataItemValue>
-          {treatment.amount} {treatment.amount_units}
-        </DataItemValue>
-        {treatment.duration && (
-          <>
-            <DataItemLabel>Duration</DataItemLabel>
-            <DataItemValue>
-              {treatment.duration} {treatment.duration_units}
-              {treatment.duration === 1 ? "" : "s"}
-            </DataItemValue>
-          </>
-        )}
-        {treatment.pH && (
-          <>
-            <DataItemLabel>pH</DataItemLabel>
-            <DataItemValue>{treatment.pH}</DataItemValue>
-          </>
-        )}
-        {treatment.purpose && (
-          <>
-            <DataItemLabel>Purpose</DataItemLabel>
-            <DataItemValue>{treatment.purpose}</DataItemValue>
-          </>
-        )}
-        {treatment.post_treatment_time && (
-          <>
-            <DataItemLabel>Post-Treatment Time</DataItemLabel>
-            <DataItemValue>
-              {treatment.post_treatment_time}{" "}
-              {treatment.post_treatment_time_units}
-              {treatment.post_treatment_time === 1 ? "" : "s"}
-            </DataItemValue>
-          </>
-        )}
-        {treatment["temperature (Celsius)"] && (
-          <>
-            <DataItemLabel>Temperature</DataItemLabel>
-            <DataItemValue>
-              {treatment["temperature (Celsius)"]} &deg;C
-            </DataItemValue>
-          </>
-        )}
-      </DataArea>
+      <DataPanel>
+        <DataArea>
+          <DataItemLabel>Status</DataItemLabel>
+          <DataItemValue>
+            <Status status={treatment.status} />
+          </DataItemValue>
+          <DataItemLabel>Treatment Term Name</DataItemLabel>
+          <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
+          <DataItemLabel>Treatment Type</DataItemLabel>
+          <DataItemValue>{treatment.treatment_type}</DataItemValue>
+          <DataItemLabel>Amount</DataItemLabel>
+          <DataItemValue>
+            {treatment.amount} {treatment.amount_units}
+          </DataItemValue>
+          {treatment.duration && (
+            <>
+              <DataItemLabel>Duration</DataItemLabel>
+              <DataItemValue>
+                {treatment.duration} {treatment.duration_units}
+                {treatment.duration === 1 ? "" : "s"}
+              </DataItemValue>
+            </>
+          )}
+          {treatment.pH && (
+            <>
+              <DataItemLabel>pH</DataItemLabel>
+              <DataItemValue>{treatment.pH}</DataItemValue>
+            </>
+          )}
+          {treatment.purpose && (
+            <>
+              <DataItemLabel>Purpose</DataItemLabel>
+              <DataItemValue>{treatment.purpose}</DataItemValue>
+            </>
+          )}
+          {treatment.post_treatment_time && (
+            <>
+              <DataItemLabel>Post-Treatment Time</DataItemLabel>
+              <DataItemValue>
+                {treatment.post_treatment_time}{" "}
+                {treatment.post_treatment_time_units}
+                {treatment.post_treatment_time === 1 ? "" : "s"}
+              </DataItemValue>
+            </>
+          )}
+          {treatment["temperature (Celsius)"] && (
+            <>
+              <DataItemLabel>Temperature</DataItemLabel>
+              <DataItemValue>
+                {treatment["temperature (Celsius)"]} &deg;C
+              </DataItemValue>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
     </>
   )
 }

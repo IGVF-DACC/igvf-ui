@@ -8,6 +8,7 @@ import {
   DataArea,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
@@ -21,27 +22,29 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItemLabel>Status</DataItemLabel>
-        <DataItemValue>
-          <Status status={sample.status} />
-        </DataItemValue>
-        <SampleDataItems sample={sample} source={source} />
-        {sample.date && (
-          <>
-            <DataItemLabel>Technical Sample Date</DataItemLabel>
-            <DataItemValue>{formatDate(sample.date)}</DataItemValue>
-          </>
-        )}
-        <DataItemLabel>Sample Material</DataItemLabel>
-        <DataItemValue>{sample.sample_material}</DataItemValue>
-        {sample.technical_sample_ontology && (
-          <>
-            <DataItemLabel>Ontology</DataItemLabel>
-            <DataItemValue>{sample.technical_sample_ontology}</DataItemValue>
-          </>
-        )}
-      </DataArea>
+      <DataPanel>
+        <DataArea>
+          <DataItemLabel>Status</DataItemLabel>
+          <DataItemValue>
+            <Status status={sample.status} />
+          </DataItemValue>
+          <SampleDataItems sample={sample} source={source} />
+          {sample.date && (
+            <>
+              <DataItemLabel>Technical Sample Date</DataItemLabel>
+              <DataItemValue>{formatDate(sample.date)}</DataItemValue>
+            </>
+          )}
+          <DataItemLabel>Sample Material</DataItemLabel>
+          <DataItemValue>{sample.sample_material}</DataItemValue>
+          {sample.technical_sample_ontology && (
+            <>
+              <DataItemLabel>Ontology</DataItemLabel>
+              <DataItemValue>{sample.technical_sample_ontology}</DataItemValue>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
       <Attribution award={award} lab={lab} />
     </>
   )

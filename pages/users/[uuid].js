@@ -6,6 +6,7 @@ import {
   DataArea,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 // libs
@@ -17,10 +18,12 @@ const User = ({ lab }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItemLabel>Lab</DataItemLabel>
-        <DataItemValue>{lab.title}</DataItemValue>
-      </DataArea>
+      <DataPanel>
+        <DataArea>
+          <DataItemLabel>Lab</DataItemLabel>
+          <DataItemValue>{lab.title}</DataItemValue>
+        </DataArea>
+      </DataPanel>
     </>
   )
 }
