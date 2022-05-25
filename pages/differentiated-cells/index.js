@@ -27,7 +27,7 @@ const DifferentiatedCellList = ({ differentiatedCells }) => {
               <CollectionItem
                 key={differentiatedCell.uuid}
                 href={differentiatedCell["@id"]}
-                label={`Tissue ${differentiatedCell.accession}`}
+                label={`Differentiated Cell ${differentiatedCell.accession}`}
                 status={differentiatedCell.status}
               >
                 <CollectionItemName>
