@@ -62,20 +62,11 @@ CellLine.propTypes = {
   // Donors associated with the tissue
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Award applied to this technical sample
-  award: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
+  award: PropTypes.object.isRequired,
   // Lab that submitted this technical sample
-  lab: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
+  lab: PropTypes.object.isRequired,
   // Source lab or source for this technical sample
-  source: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
+  source: PropTypes.object.isRequired,
   // List of associated treatments
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 }

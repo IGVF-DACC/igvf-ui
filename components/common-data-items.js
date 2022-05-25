@@ -1,3 +1,10 @@
+/**
+ * Use components in this module to display data common to multiple objects. Many object schemas
+ * derive from others, so you would typically use these components to display properties within a
+ * parent schema so that the components displaying objects for the child schemas can all display
+ * the same parent properties.
+ */
+
 // node_modules
 import Link from "next/link"
 import PropTypes from "prop-types"
@@ -8,6 +15,9 @@ import SourceProp from "./source-prop"
 // libs
 import { formatDate } from "../libs/dates"
 
+/**
+ * Display the data items common to all donor-derived objects.
+ */
 export const DonorDataItems = ({ donor, parents }) => {
   return (
     <>

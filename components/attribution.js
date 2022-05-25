@@ -11,8 +11,8 @@ import {
 } from "./data-area"
 
 /**
- * Displays the attribution properties of an item in its own data panel, typically a data object
- * with a defined schema.
+ * Displays the attribution properties of an item in its own data panel, typically from a data
+ * object with a defined schema.
  */
 const Attribution = ({ award, lab }) => {
   return (
@@ -39,12 +39,12 @@ const Attribution = ({ award, lab }) => {
 }
 
 Attribution.propTypes = {
-  // Award applied to this technical sample
+  // Award applied to the displayed object
   award: PropTypes.shape({
     "@id": PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
   }).isRequired,
-  // Lab that submitted this technical sample
+  // Lab that submitted the displayed object
   lab: PropTypes.shape({
     "@id": PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,

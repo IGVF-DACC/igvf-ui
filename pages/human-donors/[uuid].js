@@ -22,6 +22,9 @@ import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
 import Request from "../../libs/request"
 
+/**
+ * Defines the columns for the health-status table.
+ */
 const healthStatusHistoryColumns = [
   {
     id: "dates",
@@ -79,15 +82,9 @@ HumanDonor.propTypes = {
   // Technical sample to display
   donor: PropTypes.object.isRequired,
   // Award applied to this technical sample
-  award: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
+  award: PropTypes.object.isRequired,
   // Lab that submitted this technical sample
-  lab: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
+  lab: PropTypes.object.isRequired,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
