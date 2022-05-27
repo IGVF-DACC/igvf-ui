@@ -43,26 +43,27 @@ const DifferentiatedTissue = ({
             options={{
               dateObtainedTitle: "Date Collected",
             }}
-          />
-          {differentiatedTissue.post_differentiation_time && (
-            <>
-              <DataItemLabel>Post-differentiation time</DataItemLabel>
-              <DataItemValue>
-                {differentiatedTissue.post_differentiation_time}
-                {differentiatedTissue.post_differentiation_time_units ? (
-                  <>
-                    {" "}
-                    {differentiatedTissue.post_differentiation_time_units}
-                    {differentiatedTissue.post_differentiation_time === 1
-                      ? ""
-                      : "s"}
-                  </>
-                ) : (
-                  ""
-                )}
-              </DataItemValue>
-            </>
-          )}
+          >
+            {differentiatedTissue.post_differentiation_time && (
+              <>
+                <DataItemLabel>Post-differentiation time</DataItemLabel>
+                <DataItemValue>
+                  {differentiatedTissue.post_differentiation_time}
+                  {differentiatedTissue.post_differentiation_time_units ? (
+                    <>
+                      {" "}
+                      {differentiatedTissue.post_differentiation_time_units}
+                      {differentiatedTissue.post_differentiation_time === 1
+                        ? ""
+                        : "s"}
+                    </>
+                  ) : (
+                    ""
+                  )}
+                </DataItemValue>
+              </>
+            )}
+          </BiosampleDataItems>
         </DataArea>
       </DataPanel>
       {treatments.length > 0 && (

@@ -36,13 +36,14 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
             options={{
               dateObtainedTitle: "Date Harvested",
             }}
-          />
-          {cellLine.passage_number && (
-            <>
-              <DataItemLabel>Passage Number</DataItemLabel>
-              <DataItemValue>{cellLine.passage_number}</DataItemValue>
-            </>
-          )}
+          >
+            {cellLine.passage_number && (
+              <>
+                <DataItemLabel>Passage Number</DataItemLabel>
+                <DataItemValue>{cellLine.passage_number}</DataItemValue>
+              </>
+            )}
+          </BiosampleDataItems>
         </DataArea>
       </DataPanel>
       {treatments.length > 0 && (

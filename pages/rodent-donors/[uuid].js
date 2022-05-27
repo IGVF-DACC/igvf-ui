@@ -28,21 +28,22 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
           <DataItemValue>
             <Status status={donor.status} />
           </DataItemValue>
-          <DonorDataItems donor={donor} parents={parents} />
-          <DataItemLabel>Strain</DataItemLabel>
-          <DataItemValue>{donor.strain}</DataItemValue>
-          {donor.strain_background && (
-            <>
-              <DataItemLabel>Strain Background</DataItemLabel>
-              <DataItemValue>{donor.strain_background}</DataItemValue>
-            </>
-          )}
-          {donor.genotype && (
-            <>
-              <DataItemLabel>Genotype</DataItemLabel>
-              <DataItemValue>{donor.genotype}</DataItemValue>
-            </>
-          )}
+          <DonorDataItems donor={donor} parents={parents}>
+            <DataItemLabel>Strain</DataItemLabel>
+            <DataItemValue>{donor.strain}</DataItemValue>
+            {donor.strain_background && (
+              <>
+                <DataItemLabel>Strain Background</DataItemLabel>
+                <DataItemValue>{donor.strain_background}</DataItemValue>
+              </>
+            )}
+            {donor.genotype && (
+              <>
+                <DataItemLabel>Genotype</DataItemLabel>
+                <DataItemValue>{donor.genotype}</DataItemValue>
+              </>
+            )}
+          </DonorDataItems>
         </DataArea>
       </DataPanel>
       <ExternalResources resources={donor.external_resources} />

@@ -9,6 +9,7 @@
 import Link from "next/link"
 import PropTypes from "prop-types"
 // components
+import AliasList from "./alias-list"
 import { DataItemLabel, DataItemValue } from "./data-area"
 import SeparatedList from "./separated-list"
 import SourceProp from "./source-prop"
@@ -18,7 +19,7 @@ import { formatDate } from "../libs/dates"
 /**
  * Display the data items common to all donor-derived objects.
  */
-export const DonorDataItems = ({ donor, parents }) => {
+export const DonorDataItems = ({ donor, parents, children }) => {
   return (
     <>
       {donor.sex && (
@@ -45,6 +46,15 @@ export const DonorDataItems = ({ donor, parents }) => {
           </DataItemValue>
         </>
       )}
+      {children}
+      {donor.aliases.length > 0 && (
+        <>
+          <DataItemLabel>Aliases</DataItemLabel>
+          <DataItemValue>
+            <AliasList aliases={donor.aliases} />
+          </DataItemValue>
+        </>
+      )}
     </>
   )
 }
@@ -59,7 +69,7 @@ DonorDataItems.propTypes = {
 /**
  * Display data items common to all sample-derived objects.
  */
-export const SampleDataItems = ({ sample, source = null }) => {
+export const SampleDataItems = ({ sample, source = null, children }) => {
   return (
     <>
       {sample.product_id && (
@@ -99,9 +109,23 @@ export const SampleDataItems = ({ sample, source = null }) => {
         <>
           <DataItemLabel>Additional Information</DataItemLabel>
           <DataItemValue>
-            <a href={sample.url} target="_blank" rel="noreferrer">
+            <a
+              className="break-all"
+              href={sample.url}
+              target="_blank"
+              rel="noreferrer"
+            >
               {sample.url}
             </a>
+          </DataItemValue>
+        </>
+      )}
+      {children}
+      {sample.aliases && (
+        <>
+          <DataItemLabel>Aliases</DataItemLabel>
+          <DataItemValue>
+            <AliasList aliases={sample.aliases} />
           </DataItemValue>
         </>
       )}
@@ -126,10 +150,10 @@ export const BiosampleDataItems = ({
   options = {
     dateObtainedTitle: "Date Obtained",
   },
+  children,
 }) => {
   return (
-    <>
-      <SampleDataItems sample={biosample} source={source} />
+    <SampleDataItems sample={biosample} source={source}>
       {biosample.organism && (
         <>
           <DataItemLabel>Organism</DataItemLabel>
@@ -205,7 +229,8 @@ export const BiosampleDataItems = ({
           </DataItemValue>
         </>
       )}
-    </>
+      {children}
+    </SampleDataItems>
   )
 }
 

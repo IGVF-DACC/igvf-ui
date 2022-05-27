@@ -52,13 +52,14 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
           <DataItemValue>
             <Status status={donor.status} />
           </DataItemValue>
-          <DonorDataItems donor={donor} parents={parents} />
-          {donor.ethnicity && (
-            <>
-              <DataItemLabel>Ethnicity</DataItemLabel>
-              <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
-            </>
-          )}
+          <DonorDataItems donor={donor} parents={parents}>
+            {donor.ethnicity && (
+              <>
+                <DataItemLabel>Ethnicity</DataItemLabel>
+                <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
+              </>
+            )}
+          </DonorDataItems>
         </DataArea>
       </DataPanel>
       <ExternalResources resources={donor.external_resources} />

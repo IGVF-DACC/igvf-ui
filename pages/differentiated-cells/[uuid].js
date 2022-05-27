@@ -43,26 +43,27 @@ const DifferentiatedCell = ({
             options={{
               dateObtainedTitle: "Date Collected",
             }}
-          />
-          {differentiatedCell.post_differentiation_time && (
-            <>
-              <DataItemLabel>Post-differentiation time</DataItemLabel>
-              <DataItemValue>
-                {differentiatedCell.post_differentiation_time}
-                {differentiatedCell.post_differentiation_time_units ? (
-                  <>
-                    {" "}
-                    {differentiatedCell.post_differentiation_time_units}
-                    {differentiatedCell.post_differentiation_time === 1
-                      ? ""
-                      : "s"}
-                  </>
-                ) : (
-                  ""
-                )}
-              </DataItemValue>
-            </>
-          )}
+          >
+            {differentiatedCell.post_differentiation_time && (
+              <>
+                <DataItemLabel>Post-differentiation time</DataItemLabel>
+                <DataItemValue>
+                  {differentiatedCell.post_differentiation_time}
+                  {differentiatedCell.post_differentiation_time_units ? (
+                    <>
+                      {" "}
+                      {differentiatedCell.post_differentiation_time_units}
+                      {differentiatedCell.post_differentiation_time === 1
+                        ? ""
+                        : "s"}
+                    </>
+                  ) : (
+                    ""
+                  )}
+                </DataItemValue>
+              </>
+            )}
+          </BiosampleDataItems>
         </DataArea>
       </DataPanel>
       {treatments.length > 0 && (

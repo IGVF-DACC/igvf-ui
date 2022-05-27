@@ -43,13 +43,14 @@ const PrimaryCell = ({
             options={{
               dateObtainedTitle: "Date Harvested",
             }}
-          />
-          {primaryCell.passage_number && (
-            <>
-              <DataItemLabel>Passage Number</DataItemLabel>
-              <DataItemValue>{primaryCell.passage_number}</DataItemValue>
-            </>
-          )}
+          >
+            {primaryCell.passage_number && (
+              <>
+                <DataItemLabel>Passage Number</DataItemLabel>
+                <DataItemValue>{primaryCell.passage_number}</DataItemValue>
+              </>
+            )}
+          </BiosampleDataItems>
         </DataArea>
       </DataPanel>
       {treatments.length > 0 && (
