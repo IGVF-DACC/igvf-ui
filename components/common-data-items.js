@@ -44,7 +44,11 @@ export const DonorDataItems = ({ donor, parents, children }) => {
               ))}
             </SeparatedList>
           </DataItemValue>
-          {children}
+        </>
+      )}
+      {children}
+      {donor.aliases.length > 0 && (
+        <>
           <DataItemLabel>Aliases</DataItemLabel>
           <DataItemValue>
             <AliasList aliases={donor.aliases} />
