@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types"
 // components
+import AliasList from "../../components/alias-list"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
@@ -73,6 +74,14 @@ const Treatment = ({ treatment }) => {
                 {treatment.temperature_units === "Celsius"
                   ? `${UC.deg}C`
                   : treatment.temperature_units}
+              </DataItemValue>
+            </>
+          )}
+          {treatment.aliases.length > 0 && (
+            <>
+              <DataItemLabel>Aliases</DataItemLabel>
+              <DataItemValue>
+                <AliasList aliases={treatment.aliases} />
               </DataItemValue>
             </>
           )}

@@ -28,21 +28,24 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
           <DataItemValue>
             <Status status={sample.status} />
           </DataItemValue>
-          <SampleDataItems sample={sample} source={source} />
-          {sample.date && (
-            <>
-              <DataItemLabel>Technical Sample Date</DataItemLabel>
-              <DataItemValue>{formatDate(sample.date)}</DataItemValue>
-            </>
-          )}
-          <DataItemLabel>Sample Material</DataItemLabel>
-          <DataItemValue>{sample.sample_material}</DataItemValue>
-          {sample.technical_sample_ontology && (
-            <>
-              <DataItemLabel>Ontology</DataItemLabel>
-              <DataItemValue>{sample.technical_sample_ontology}</DataItemValue>
-            </>
-          )}
+          <SampleDataItems sample={sample} source={source}>
+            {sample.date && (
+              <>
+                <DataItemLabel>Technical Sample Date</DataItemLabel>
+                <DataItemValue>{formatDate(sample.date)}</DataItemValue>
+              </>
+            )}
+            <DataItemLabel>Sample Material</DataItemLabel>
+            <DataItemValue>{sample.sample_material}</DataItemValue>
+            {sample.technical_sample_ontology && (
+              <>
+                <DataItemLabel>Ontology</DataItemLabel>
+                <DataItemValue>
+                  {sample.technical_sample_ontology}
+                </DataItemValue>
+              </>
+            )}
+          </SampleDataItems>
         </DataArea>
       </DataPanel>
       <Attribution award={award} lab={lab} />

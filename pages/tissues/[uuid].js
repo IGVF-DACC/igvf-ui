@@ -36,30 +36,31 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
             options={{
               dateObtainedTitle: "Date Harvested",
             }}
-          />
-          {tissue.pmi && (
-            <>
-              <DataItemLabel>Post-mortem Interval</DataItemLabel>
-              <DataItemValue>
-                {tissue.pmi}
-                {tissue.pmi_units ? (
-                  <>
-                    {" "}
-                    {tissue.pmi_units}
-                    {tissue.pmi_units === 1 ? "" : "s"}
-                  </>
-                ) : (
-                  ""
-                )}
-              </DataItemValue>
-            </>
-          )}
-          {tissue.preservation_method && (
-            <>
-              <DataItemLabel>Preservation Method</DataItemLabel>
-              <DataItemValue>{tissue.preservation_method}</DataItemValue>
-            </>
-          )}
+          >
+            {tissue.pmi && (
+              <>
+                <DataItemLabel>Post-mortem Interval</DataItemLabel>
+                <DataItemValue>
+                  {tissue.pmi}
+                  {tissue.pmi_units ? (
+                    <>
+                      {" "}
+                      {tissue.pmi_units}
+                      {tissue.pmi_units === 1 ? "" : "s"}
+                    </>
+                  ) : (
+                    ""
+                  )}
+                </DataItemValue>
+              </>
+            )}
+            {tissue.preservation_method && (
+              <>
+                <DataItemLabel>Preservation Method</DataItemLabel>
+                <DataItemValue>{tissue.preservation_method}</DataItemValue>
+              </>
+            )}
+          </BiosampleDataItems>
         </DataArea>
       </DataPanel>
       {treatments.length > 0 && (
