@@ -187,8 +187,9 @@ const HeaderCell = ({ cells, cellIndex, meta, children }) => {
   // Determine whether to render a sortable (`isSortable` true or not used) or non-sortable
   // (`isSortable` false) header cell.
   const HeaderCellRenderer =
-    columnConfiguration.isSortable ||
-    columnConfiguration.isSortable === undefined
+    (columnConfiguration.isSortable ||
+      columnConfiguration.isSortable === undefined) &&
+    meta.dataLength > 1
       ? SortableHeaderCell
       : NonSortableHeaderCell
 
@@ -229,6 +230,8 @@ HeaderCell.propTypes = {
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     // Callback to handle a click in a header cell
     handleSortClick: PropTypes.func.isRequired,
+    // Number of rows in the grid
+    dataLength: PropTypes.number.isRequired,
   }).isRequired,
 }
 
@@ -299,7 +302,14 @@ const SortableGrid = ({
   return (
     <DataGrid
       data={headerRow.concat(dataRows)}
-      meta={{ ...meta, sortBy, columns, sortDirection, handleSortClick }}
+      meta={{
+        ...meta,
+        sortBy,
+        columns,
+        sortDirection,
+        handleSortClick,
+        dataLength: dataRows.length,
+      }}
     />
   )
 }

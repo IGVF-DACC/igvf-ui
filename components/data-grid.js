@@ -20,7 +20,10 @@ export const DefaultCell = ({ children }) => {
 }
 
 /**
- * Surround the <DataGrid> component with this wrapper component, or a custom one like it.
+ * Surround the <DataGrid> component with this wrapper component, or a custom one like it. Note
+ * the use of CSS outlines instead of borders as all other panels use. This prevents Safari (12.4
+ * at the time of writing) from allowing the table to scroll horizontally even if you can see the
+ * entire table.
  */
 export const DataGridContainer = ({ className = "", children }) => {
   return (
