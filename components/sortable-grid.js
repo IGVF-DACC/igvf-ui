@@ -87,7 +87,7 @@ const HeaderSortIcon = ({ columnConfiguration, sortBy, sortDirection }) => {
 
   return (
     <SortIcon
-      className={`h-6 w-6 min-w-max${
+      className={`h-6 w-6${
         sortBy === columnConfiguration.id ? "" : " invisible"
       }`}
     />
@@ -123,12 +123,14 @@ const SortableHeaderCell = ({
       onClick={onClick}
       className={`justify-between hover:bg-gray-300 dark:hover:bg-gray-700 ${className}`}
     >
-      {children}
-      <HeaderSortIcon
-        columnConfiguration={columnConfiguration}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-      />
+      <div className="flex-auto">{children}</div>
+      <div className="flex-initial">
+        <HeaderSortIcon
+          columnConfiguration={columnConfiguration}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+        />
+      </div>
     </button>
   )
 }

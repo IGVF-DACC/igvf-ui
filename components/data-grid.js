@@ -26,7 +26,7 @@ export const DataGridContainer = ({ className = "", children }) => {
   return (
     <div
       role="table"
-      className={`grid w-full gap-px overflow-auto border border-gray-300 bg-gray-300 text-sm dark:border-gray-700 dark:bg-gray-700${
+      className={`grid w-full gap-px overflow-x-auto bg-gray-300 text-sm outline outline-1 outline-data-border dark:outline-gray-700 dark:bg-gray-700${
         className ? ` ${className}` : ""
       }`}
     >
