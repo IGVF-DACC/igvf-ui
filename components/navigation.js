@@ -462,6 +462,7 @@ const NavigationSection = () => {
     <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">
       <div className="flex h-14 justify-between px-4 md:block">
         <SiteLogo />
+        <div>{process.env.NEXT_PUBLIC_TEST}</div>
         <button
           data-testid="mobile-navigation-trigger"
           className="stroke-white md:hidden"
