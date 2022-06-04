@@ -14,6 +14,8 @@ RUN npm ci
 
 COPY . .
 
+RUN echo "export NEXT_PUBLIC_TEST=rudder" >> ./.env.local
+
 RUN npm run build
 
 ENTRYPOINT ["/docker/entrypoint.sh"]
