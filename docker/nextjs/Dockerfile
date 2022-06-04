@@ -14,7 +14,7 @@ RUN npm ci
 
 COPY . .
 
-RUN echo "export NEXT_PUBLIC_TEST=rudder" >> /igvf-ui/.env.local
+RUN echo "NEXT_PUBLIC_TEST='rudder'" >> /igvf-ui/.env.local
 
 RUN npm run build
 
