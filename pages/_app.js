@@ -90,6 +90,7 @@ const App = ({ Component, pageProps }) => {
           <GlobalContext.Provider value={globalContext}>
             <Session>
               <NavigationSection />
+              <div>{process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN}</div>
               <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
                 <Component {...pageProps} />
               </div>
