@@ -53,9 +53,13 @@ jobs:
               cd igvfd
               docker-compose up -d
       - run:
+          name: Test environment variables
+          command: |
+              echo $NEXT_PUBLIC_TEST
+      - run:
           name: Build igvf-ui
           environment:
-            NEXT_PUBLIC_TEST: $NEXT_PUBLIC_TEST
+              NEXT_PUBLIC_TEST: $NEXT_PUBLIC_TEST
           command: |
               docker-compose build
       - run:
