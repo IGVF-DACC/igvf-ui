@@ -54,6 +54,8 @@ jobs:
               docker-compose up -d
       - run:
           name: Build igvf-ui
+          environment:
+            NEXT_PUBLIC_TEST: $NEXT_PUBLIC_TEST
           command: |
               docker-compose build
       - run:
