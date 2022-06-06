@@ -21,6 +21,7 @@ import Status from "../../components/status"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
 import Request from "../../libs/request"
+import { EditLink } from '../../components/edit-func'
 
 const healthStatusHistoryColumns = [
   {
@@ -38,7 +39,7 @@ const healthStatusHistoryColumns = [
   },
 ]
 
-const HumanDonor = ({ donor, award, lab, parents }) => {
+const HumanDonor = ({ donor, award, lab, parents, uuid }) => {
   return (
     <>
       <Breadcrumbs />
@@ -121,6 +122,7 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
           </DataItem>
         )}
       </DataArea>
+      <EditLink path={`/human-donors/${uuid}`} item={donor}/>
     </>
   )
 }
@@ -140,6 +142,7 @@ HumanDonor.propTypes = {
   }).isRequired,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  uuid: PropTypes.string.isRequired,
 }
 
 export default HumanDonor
@@ -161,6 +164,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: donor.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }

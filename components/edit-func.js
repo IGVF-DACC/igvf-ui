@@ -1,43 +1,11 @@
 import React from 'react'
-import { PropTypes } from 'prop-types'
-// import AceEditor from "react-ace"
-// import Head from 'next/head'
+import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-// import 'ace-builds/webpack-resolver'
-// import "react-ace"
-// import 'ace-builds/src-noconflict/ace'
-// import "ace-builds/src-noconflict/mode-json"
-// import "ace-builds/src-noconflict/theme-solarized_light"
+
+import { LinkButton } from './button'
+import { canEdit } from '../libs/general'
 
 /*eslint no-unused-vars: ["error", { "varsIgnorePattern": "^_.*" }]*/
-
-function sortedJson(obj) {
-    if (obj instanceof Array) {
-        return obj.map((value) => sortedJson(value))
-    }
-    if (obj instanceof Object) {
-        const sorted = {}
-        Object.keys(obj).sort().forEach((key) => {
-            sorted[key] = obj[key]
-        })
-        return sorted
-    }
-    return obj
-}
-
-function onChange(newValue) {
-    console.log("change", newValue)
-}
-
-function onLoad(newValue) {
-    console.log("loaded", newValue)
-}
-
-const filterItem = (item) => {
-
-    const { ['@type']: _type, ['@id']: _id, _uuid, ...filtered } = item
-    return filtered
-}
 
 const Editor = dynamic(
     async () => {
@@ -56,31 +24,25 @@ const Editor = dynamic(
     }
 )
 
-const annotations = [
-    // {
-    //   row: 0, // must be 0 based
-    //   column: 0, // must be 0 based
-    //   text: "error.message", // text to show in tooltip
-    //   type: "error",
-    // },
-]
+const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
 
-const JsonEditor = ({ data }) => {
-    const editItem = filterItem(data)
-    const editorValue = JSON.stringify(sortedJson(editItem), null, 4)
-    // require("ace-builds/src-noconflict/mode-json")
+    const annotations = errors.map((msg) => ({ row: 0, column: 0, text: msg, type: "error" }) )
+
     const editor = <Editor
-        value={editorValue}
+        value={text}
         mode="json"
         theme="solarized_light"
         name="JSON Editor"
-        onLoad={onLoad}
+        onLoad={() => ({})}
         onChange={onChange}
         fontSize={14}
         showPrintMargin={true}
         showGutter={true}
         highlightActiveLine={true}
         annotations={annotations}
+        width="100%"
+        // height="600px"
+        readOnly={!enabled}
         setOptions={{
             enableBasicAutocompletion: true,
             enableLiveAutocompletion: false,
@@ -88,16 +50,17 @@ const JsonEditor = ({ data }) => {
             showLineNumbers: true,
             useWorker: false,
             tabSize: 4,
+            maxLines: 1000,
+            minLines: 24,
         }}/>
     return editor
 }
 
 JsonEditor.propTypes = {
-    data: PropTypes.object,
-}
-
-JsonEditor.defaultProps = {
-    data: {},
+    text: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    enabled: PropTypes.bool.isRequired,
+    errors: PropTypes.array,
 }
 
 const ControlButton = ({ id, onClick, isDisabled = false, children }) => {
@@ -132,7 +95,7 @@ SaveCancelControl.propTypes = {
     saveClick: PropTypes.func,
 }
 
-const EditJson = ({ data }) => {
+const EditJson = ({ text, onChange, enabled = true, errors = [] }) => {
     return (
         <div>
             <div style={{
@@ -141,14 +104,30 @@ const EditJson = ({ data }) => {
                 margin: "auto",
                 width: "100%",
             }}>
-                <JsonEditor data={data}/>
+                <JsonEditor text={text} onChange={onChange} enabled={enabled} errors={errors}/>
             </div>
         </div>
     )
 }
 
 EditJson.propTypes = {
-    data: PropTypes.obj,
+    text: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    enabled: PropTypes.bool,
+    errors: PropTypes.array,
+}
+
+export const EditLink = ({ path, item }) => {
+    if (canEdit(item)) {
+        return (<LinkButton href={`${path}/edit`} navigationClick={ () => {} }>Edit JSON</LinkButton>)
+    } else {
+        return null
+    }
+}
+
+EditLink.propTypes = {
+    path: PropTypes.string.isRequired,
+    item: PropTypes.object.isRequired,
 }
 
 export default EditJson

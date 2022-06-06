@@ -14,12 +14,14 @@ import Status from "../../components/status"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
 import Request from "../../libs/request"
+import { EditLink } from '../../components/edit-func'
 
 const Award = ({ award, pis }) => {
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
+
       <DataArea>
         <DataItem>
           <DataItemLabel>Status</DataItemLabel>
@@ -73,6 +75,7 @@ const Award = ({ award, pis }) => {
           </DataItem>
         )}
       </DataArea>
+      <EditLink path={`/awards/${award.name}`} item={award}/>
     </>
   )
 }

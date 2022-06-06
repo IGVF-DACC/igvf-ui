@@ -15,8 +15,9 @@ import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
+import { EditLink } from '../../components/edit-func'
 
-const TechnicalSample = ({ sample, award, lab, source }) => {
+const TechnicalSample = ({ sample, award, lab, source, uuid }) => {
   return (
     <>
       <Breadcrumbs />
@@ -106,6 +107,7 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
           </DataItem>
         )}
       </DataArea>
+      <EditLink path={`/technical-samples/${uuid}`} item={sample}/>
     </>
   )
 }
@@ -119,6 +121,8 @@ TechnicalSample.propTypes = {
   lab: PropTypes.object.isRequired,
   // Source lab or source for this technical sample
   source: PropTypes.object.isRequired,
+  // UUID of the technical sample
+  uuid: PropTypes.string.isRequired,
 }
 
 export default TechnicalSample
@@ -140,6 +144,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: sample.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }

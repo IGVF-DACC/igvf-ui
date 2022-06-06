@@ -17,8 +17,9 @@ import TreatmentTable from "../../components/treatment-table"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDate } from "../../libs/dates"
 import Request from "../../libs/request"
+import { EditLink } from '../../components/edit-func'
 
-const CellLine = ({ sample, award, lab, source, treatments }) => {
+const CellLine = ({ sample, award, lab, source, treatments, uuid }) => {
   return (
     <>
       <Breadcrumbs />
@@ -145,6 +146,7 @@ const CellLine = ({ sample, award, lab, source, treatments }) => {
           <TreatmentTable treatments={treatments} />
         </>
       )}
+      <EditLink path={`/cell-lines/${uuid}`} item={sample}/>
     </>
   )
 }
@@ -160,6 +162,8 @@ CellLine.propTypes = {
   source: PropTypes.object.isRequired,
   // List of associated treatments
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // UUID of cell line
+  uuid: PropTypes.string.isRequired,
 }
 
 export default CellLine
@@ -183,6 +187,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: sample.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }

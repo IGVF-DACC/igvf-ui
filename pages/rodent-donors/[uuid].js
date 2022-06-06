@@ -17,8 +17,9 @@ import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
+import { EditLink } from '../../components/edit-func'
 
-const RodentDonor = ({ donor, award, lab, parents }) => {
+const RodentDonor = ({ donor, award, lab, parents, uuid }) => {
   return (
     <>
       <Breadcrumbs />
@@ -92,6 +93,7 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
           </DataItem>
         )}
       </DataArea>
+      <EditLink path={`/rodent-donors/${uuid}`} item={donor}/>
     </>
   )
 }
@@ -111,6 +113,8 @@ RodentDonor.propTypes = {
   }).isRequired,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // UUID of the current rodent donor item
+  uuid: PropTypes.string.isRequired,
 }
 
 export default RodentDonor
@@ -132,6 +136,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: donor.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }

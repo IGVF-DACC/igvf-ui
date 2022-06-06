@@ -12,8 +12,10 @@ import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
+import { EditLink } from '../../components/edit-func'
 
-const User = ({ lab }) => {
+const User = ({ lab, uuid, user }) => {
+
   return (
     <>
       <Breadcrumbs />
@@ -24,6 +26,7 @@ const User = ({ lab }) => {
           <DataItemValue>{lab.title}</DataItemValue>
         </DataItem>
       </DataArea>
+      <EditLink path={`/users/${uuid}`} item={user}/>
     </>
   )
 }
@@ -31,6 +34,10 @@ const User = ({ lab }) => {
 User.propTypes = {
   // Lab data associated with `user`
   lab: PropTypes.object.isRequired,
+  // UUID of the User
+  uuid: PropTypes.string.isRequired,
+  // user object from the server
+  user: PropTypes.object.isRequired,
 }
 
 export default User
@@ -48,6 +55,8 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: user.title },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        user: user,
+        uuid: params.uuid,
       },
     }
   }

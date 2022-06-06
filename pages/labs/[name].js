@@ -15,6 +15,7 @@ import Status from "../../components/status"
 // libs
 import Request from "../../libs/request"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
+import { EditLink } from '../../components/edit-func'
 
 const Lab = ({ lab, awards, pi }) => {
   return (
@@ -49,6 +50,7 @@ const Lab = ({ lab, awards, pi }) => {
           </DataItem>
         )}
       </DataArea>
+      <EditLink path={`/labs/${lab.name}`} item={lab}/>
     </>
   )
 }

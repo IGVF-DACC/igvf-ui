@@ -13,8 +13,9 @@ import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
+import { EditLink } from '../../components/edit-func'
 
-const Treatment = ({ treatment }) => {
+const Treatment = ({ treatment, uuid }) => {
   return (
     <>
       <Breadcrumbs />
@@ -80,6 +81,7 @@ const Treatment = ({ treatment }) => {
           </DataItem>
         )}
       </DataArea>
+      <EditLink path={`/treatments/${uuid}`} item={treatment}/>
     </>
   )
 }
@@ -87,6 +89,8 @@ const Treatment = ({ treatment }) => {
 Treatment.propTypes = {
   // Technical treatment to display
   treatment: PropTypes.object.isRequired,
+  // UUID for the treatment
+  uuid: PropTypes.string.isRequired,
 }
 
 export default Treatment
@@ -102,6 +106,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: treatment.treatment_term_id },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }
