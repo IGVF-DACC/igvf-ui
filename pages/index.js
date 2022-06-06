@@ -15,6 +15,7 @@ const Home = () => {
     }
   })
 
+  console.log("ENV ENV %s", process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN)
   return null
 }
 
