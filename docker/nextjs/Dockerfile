@@ -14,7 +14,7 @@ RUN npm ci
 
 COPY . .
 
-RUN echo "NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN='rudder'" >> /igvf-ui/.env.local
+RUN echo "NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN=$NEXT_PUBLIC_TEST" >> /igvf-ui/.env.local
 
 RUN npm run build
 
