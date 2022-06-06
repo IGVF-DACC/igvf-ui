@@ -16,8 +16,8 @@ COPY . .
 
 RUN echo "NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN='rudder'" >> /igvf-ui/.env.local
 
-RUN cat /igvf-ui/.env.local
-
 RUN npm run build
+
+RUN cat /igvf-ui/.env.local
 
 ENTRYPOINT ["/docker/entrypoint.sh"]
