@@ -56,7 +56,8 @@ export const getServerSideProps = async ({ req }) => {
   const request = new Request(req?.headers?.cookie)
   const awards = await request.getCollection("awards")
   const breadcrumbs = await buildBreadcrumbs(awards, "title")
-  const stuff = process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN
+  // const stuff = process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN
+  const stuff = "dummy"
   return {
     props: {
       awards: awards["@graph"],
