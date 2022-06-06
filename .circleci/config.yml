@@ -57,6 +57,7 @@ jobs:
           command: |
               echo $NEXT_PUBLIC_TEST
               cat $BASH_ENV
+              echo "NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN=$NEXT_PUBLIC_TEST" >> /igvf-ui/.env.local
       - run:
           name: Build igvf-ui
           environment:

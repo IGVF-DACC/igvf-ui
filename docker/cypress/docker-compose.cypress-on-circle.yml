@@ -11,4 +11,3 @@ services:
     network_mode: "host"
     environment:
       - DISPLAY
-      - NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN=ruddeR
