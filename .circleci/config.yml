@@ -55,7 +55,7 @@ jobs:
       - run:
           name: Build igvf-ui
           command: |
-              docker-compose build
+              docker-compose build --no-rm
       - run:
           name: Start igvf-ui
           command: |
