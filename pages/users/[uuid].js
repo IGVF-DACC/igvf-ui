@@ -4,9 +4,9 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataItem,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 // libs
@@ -20,12 +20,12 @@ const User = ({ lab, uuid, user }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItem>
+      <DataPanel>
+        <DataArea>
           <DataItemLabel>Lab</DataItemLabel>
           <DataItemValue>{lab.title}</DataItemValue>
-        </DataItem>
-      </DataArea>
+        </DataArea>
+      </DataPanel>
       <EditLink path={`/users/${uuid}`} item={user}/>
     </>
   )

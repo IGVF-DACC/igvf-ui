@@ -17,9 +17,15 @@ import TreatmentTable from "../../components/treatment-table"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
-import { EditLink } from '../../components/edit-func'
 
-const CellLine = ({ cellLine, award, donors, lab, source, treatments, uuid }) => {
+const PrimaryCell = ({
+  primaryCell,
+  donors,
+  award,
+  lab,
+  source,
+  treatments,
+}) => {
   return (
     <>
       <Breadcrumbs />
@@ -28,20 +34,20 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments, uuid }) =>
         <DataArea>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
-            <Status status={cellLine.status} />
+            <Status status={primaryCell.status} />
           </DataItemValue>
           <BiosampleDataItems
-            biosample={cellLine}
+            biosample={primaryCell}
             source={source}
             donors={donors}
             options={{
               dateObtainedTitle: "Date Harvested",
             }}
           >
-            {cellLine.passage_number && (
+            {primaryCell.passage_number && (
               <>
                 <DataItemLabel>Passage Number</DataItemLabel>
-                <DataItemValue>{cellLine.passage_number}</DataItemValue>
+                <DataItemValue>{primaryCell.passage_number}</DataItemValue>
               </>
             )}
           </BiosampleDataItems>
@@ -54,52 +60,57 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments, uuid }) =>
         </>
       )}
       <Attribution award={award} lab={lab} />
-      <EditLink path={`/cell-lines/${uuid}`} item={cellLine}/>
     </>
   )
 }
 
-CellLine.propTypes = {
-  // Cell-line sample to display
-  cellLine: PropTypes.object.isRequired,
-  // Donors associated with the tissue
+PrimaryCell.propTypes = {
+  // Primary-cell sample to display
+  primaryCell: PropTypes.object.isRequired,
+  // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Award applied to this technical sample
-  award: PropTypes.object.isRequired,
-  // Lab that submitted this technical sample
-  lab: PropTypes.object.isRequired,
-  // Source lab or source for this technical sample
-  source: PropTypes.object.isRequired,
-  // List of associated treatments
+  // Award applied to this sample
+  award: PropTypes.shape({
+    "@id": PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+  }).isRequired,
+  // Lab that submitted this sample
+  lab: PropTypes.shape({
+    "@id": PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+  }).isRequired,
+  // Source lab or source for this sample
+  source: PropTypes.shape({
+    "@id": PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+  }).isRequired,
+  // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // UUID of cell line
-  uuid: PropTypes.string.isRequired,
 }
 
-export default CellLine
+export default PrimaryCell
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const cellLine = await request.getObject(`/cell-lines/${params.uuid}/`)
-  if (cellLine && cellLine.status !== "error") {
-    const award = await request.getObject(cellLine.award)
-    const donors = await request.getMultipleObjects(cellLine.donors)
-    const lab = await request.getObject(cellLine.lab)
-    const source = await request.getObject(cellLine.source)
-    const treatments = await request.getMultipleObjects(cellLine.treatments)
-    const breadcrumbs = await buildBreadcrumbs(cellLine, "accession")
+  const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`)
+  if (primaryCell && primaryCell.status !== "error") {
+    const award = await request.getObject(primaryCell.award)
+    const donors = await request.getMultipleObjects(primaryCell.donors)
+    const lab = await request.getObject(primaryCell.lab)
+    const source = await request.getObject(primaryCell.source)
+    const treatments = await request.getMultipleObjects(primaryCell.treatments)
+    const breadcrumbs = await buildBreadcrumbs(primaryCell, "accession")
     return {
       props: {
-        cellLine,
+        primaryCell,
         award,
         donors,
         lab,
         source,
         treatments,
-        pageContext: { title: cellLine.accession },
+        pageContext: { title: primaryCell.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
-        uuid: params.uuid,
       },
     }
   }

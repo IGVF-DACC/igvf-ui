@@ -5,9 +5,9 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   DataArea,
-  DataItem,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
@@ -22,34 +22,30 @@ const Lab = ({ lab, awards, pi }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <DataArea>
-        <DataItem>
+      <DataPanel>
+        <DataArea>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
             <Status status={lab.status} />
           </DataItemValue>
-        </DataItem>
-        <DataItem>
           <DataItemLabel>Institute</DataItemLabel>
           <DataItemValue>{lab.institute_label}</DataItemValue>
-        </DataItem>
-        <DataItem>
           <DataItemLabel>Principal Investigator</DataItemLabel>
           <DataItemValue>{pi.title}</DataItemValue>
-        </DataItem>
-        {awards.length > 0 && (
-          <DataItem>
-            <DataItemLabel>Awards</DataItemLabel>
-            <SeparatedList>
-              {awards.map((award) => (
-                <Link href={award["@id"]} key={award.uuid}>
-                  <a aria-label={`Award ${award.name}`}>{award.name}</a>
-                </Link>
-              ))}
-            </SeparatedList>
-          </DataItem>
-        )}
-      </DataArea>
+          {awards.length > 0 && (
+            <>
+              <DataItemLabel>Awards</DataItemLabel>
+              <SeparatedList>
+                {awards.map((award) => (
+                  <Link href={award["@id"]} key={award.uuid}>
+                    <a aria-label={`Award ${award.name}`}>{award.name}</a>
+                  </Link>
+                ))}
+              </SeparatedList>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
       <EditLink path={`/labs/${lab.name}`} item={lab}/>
     </>
   )

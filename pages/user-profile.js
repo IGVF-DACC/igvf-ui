@@ -7,7 +7,7 @@ import {
   AccessKeyList,
   CreateAccessKeyTrigger,
 } from "../components/access-keys"
-import { DataArea } from "../components/data-area"
+import { DataPanel } from "../components/data-area"
 import PagePreamble from "../components/page-preamble"
 import Spinner from "../components/spinner"
 // libs
@@ -19,7 +19,7 @@ const UserProfile = ({ sessionUser = null }) => {
   return (
     <>
       <PagePreamble />
-      <DataArea>
+      <DataPanel>
         {isLoading ? (
           <Spinner className="stroke-gray-400" />
         ) : (
@@ -45,7 +45,7 @@ const UserProfile = ({ sessionUser = null }) => {
             )}
           </>
         )}
-      </DataArea>
+      </DataPanel>
     </>
   )
 }

@@ -275,26 +275,30 @@ const Navigation = ({ navigationClick }) => {
         </NavigationIcon>
         Awards
       </NavigationHrefItem>
-      <NavigationHrefItem
-        id="cell-lines"
-        href="/cell-lines"
-        navigationClick={navigationClick}
+      <NavigationGroupItem
+        id="donors"
+        title="Donors"
+        icon={<Icon.Donor />}
+        isGroupOpened={openedParents.includes("donors")}
+        handleGroupClick={handleParentClick}
       >
-        <NavigationIcon>
-          <Icon.CellLine />
-        </NavigationIcon>
-        Cell Lines
-      </NavigationHrefItem>
-      <NavigationHrefItem
-        id="human-donors"
-        href="/human-donors"
-        navigationClick={navigationClick}
-      >
-        <NavigationIcon>
-          <Icon.HumanDonor />
-        </NavigationIcon>
-        Human Donors
-      </NavigationHrefItem>
+        <NavigationHrefItem
+          id="human-donors"
+          href="/human-donors"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Human Donors
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="rodent-donors"
+          href="/rodent-donors"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Rodent Donors
+        </NavigationHrefItem>
+      </NavigationGroupItem>
       <NavigationHrefItem
         id="labs"
         href="/labs"
@@ -305,26 +309,62 @@ const Navigation = ({ navigationClick }) => {
         </NavigationIcon>
         Labs
       </NavigationHrefItem>
-      <NavigationHrefItem
-        id="rodent-donors"
-        href="/rodent-donors"
-        navigationClick={navigationClick}
+      <NavigationGroupItem
+        id="samples"
+        title="Samples"
+        icon={<Icon.Sample />}
+        isGroupOpened={openedParents.includes("samples")}
+        handleGroupClick={handleParentClick}
       >
-        <NavigationIcon>
-          <Icon.RodentDonor />
-        </NavigationIcon>
-        Rodent Donors
-      </NavigationHrefItem>
-      <NavigationHrefItem
-        id="technical-samples"
-        href="/technical-samples"
-        navigationClick={navigationClick}
-      >
-        <NavigationIcon>
-          <Icon.TechnicalSample />
-        </NavigationIcon>
-        Technical Samples
-      </NavigationHrefItem>
+        <NavigationHrefItem
+          id="cell-lines"
+          href="/cell-lines"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Cell Lines
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="differentiated-cells"
+          href="/differentiated-cells"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Differentiated Cells
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="differentiated-tissues"
+          href="/differentiated-tissues"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Differentiated Tissues
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="primary-cells"
+          href="/primary-cells"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Primary Cells
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="technical-samples"
+          href="/technical-samples"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Technical Samples
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="tissues"
+          href="/tissues"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Tissues
+        </NavigationHrefItem>
+      </NavigationGroupItem>
       <NavigationHrefItem
         id="treatments"
         href="/treatments"

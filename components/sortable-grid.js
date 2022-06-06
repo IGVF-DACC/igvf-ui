@@ -87,7 +87,7 @@ const HeaderSortIcon = ({ columnConfiguration, sortBy, sortDirection }) => {
 
   return (
     <SortIcon
-      className={`h-6 w-6 min-w-max${
+      className={`h-6 w-6${
         sortBy === columnConfiguration.id ? "" : " invisible"
       }`}
     />
@@ -123,12 +123,14 @@ const SortableHeaderCell = ({
       onClick={onClick}
       className={`justify-between hover:bg-gray-300 dark:hover:bg-gray-700 ${className}`}
     >
-      {children}
-      <HeaderSortIcon
-        columnConfiguration={columnConfiguration}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-      />
+      <div className="flex-auto">{children}</div>
+      <div className="flex-initial">
+        <HeaderSortIcon
+          columnConfiguration={columnConfiguration}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+        />
+      </div>
     </button>
   )
 }
@@ -185,8 +187,9 @@ const HeaderCell = ({ cells, cellIndex, meta, children }) => {
   // Determine whether to render a sortable (`isSortable` true or not used) or non-sortable
   // (`isSortable` false) header cell.
   const HeaderCellRenderer =
-    columnConfiguration.isSortable ||
-    columnConfiguration.isSortable === undefined
+    (columnConfiguration.isSortable ||
+      columnConfiguration.isSortable === undefined) &&
+    meta.dataLength > 1
       ? SortableHeaderCell
       : NonSortableHeaderCell
 
@@ -227,6 +230,8 @@ HeaderCell.propTypes = {
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     // Callback to handle a click in a header cell
     handleSortClick: PropTypes.func.isRequired,
+    // Number of rows in the grid
+    dataLength: PropTypes.number.isRequired,
   }).isRequired,
 }
 
@@ -297,7 +302,14 @@ const SortableGrid = ({
   return (
     <DataGrid
       data={headerRow.concat(dataRows)}
-      meta={{ ...meta, sortBy, columns, sortDirection, handleSortClick }}
+      meta={{
+        ...meta,
+        sortBy,
+        columns,
+        sortDirection,
+        handleSortClick,
+        dataLength: dataRows.length,
+      }}
     />
   )
 }

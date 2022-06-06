@@ -64,9 +64,11 @@ export const CollectionItem = ({ href, label, status = "", children }) => {
     <div className="my-0.5 flex border border-data-border bg-data-background">
       <CollectionItemLink href={href} label={label} />
       <div className="grow p-4">{children}</div>
-      <div className="shrink justify-end self-center p-2">
-        <Status status={status} />
-      </div>
+      {status && (
+        <div className="shrink justify-end self-center p-2">
+          <Status status={status} />
+        </div>
+      )}
     </div>
   )
 }
