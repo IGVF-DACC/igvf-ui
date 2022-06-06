@@ -1,5 +1,7 @@
 FROM node:16.14.0-alpine
 
+ARG NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN
+
 WORKDIR /docker
 
 COPY ./docker/nextjs/entrypoint.sh .
@@ -13,6 +15,8 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+
+RUN echo "NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN=$NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN" >> /igvf-ui/.env.local
 
 RUN npm run build
 

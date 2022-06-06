@@ -53,15 +53,9 @@ jobs:
               cd igvfd
               docker-compose up -d
       - run:
-          name: Test environment variables
-          command: |
-              echo $NEXT_PUBLIC_TEST
-              echo "NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN=$NEXT_PUBLIC_TEST" >> /igvf-ui/.env.local
-              cat /igvf-ui/.env.local
-      - run:
           name: Build igvf-ui
-          environment:
-              NEXT_PUBLIC_TEST: $NEXT_PUBLIC_TEST
+          args:
+            - NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN=$NEXT_PUBLIC_TEST
           command: |
               docker-compose build
       - run:
