@@ -438,6 +438,7 @@ const NavigationSection = () => {
   }
 
   useEffect(() => {
+    console.log("AUTENTICATED")
     getSession().then((session) => {
       if (!isLoading) {
         if (isAuthenticated && !session["auth.userid"]) {
