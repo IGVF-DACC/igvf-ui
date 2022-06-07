@@ -369,6 +369,30 @@ const Navigation = ({ navigationClick }) => {
           Tissues
         </NavigationHrefItem>
       </NavigationGroupItem>
+      <NavigationGroupItem
+        id="ontologies"
+        title="Ontologies"
+        icon={<Icon.Sample />}
+        isGroupOpened={openedParents.includes("ontologies")}
+        handleGroupClick={handleParentClick}
+      >
+        <NavigationHrefItem
+          id="sample"
+          href="/sample-ontology-terms"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Samples
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="diseases"
+          href="/disease-ontology-terms"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Diseases
+        </NavigationHrefItem>
+      </NavigationGroupItem>
       <NavigationHrefItem
         id="treatments"
         href="/treatments"

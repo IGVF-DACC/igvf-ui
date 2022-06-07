@@ -11,6 +11,7 @@ import PropTypes from "prop-types"
 // components
 import AliasList from "./alias-list"
 import { DataItemLabel, DataItemValue } from "./data-area"
+import OntologyTermId from "./ontology"
 import SeparatedList from "./separated-list"
 import SourceProp from "./source-prop"
 // libs
@@ -246,4 +247,33 @@ BiosampleDataItems.propTypes = {
     // Title of date_obtained property
     dateObtainedTitle: PropTypes.string,
   }),
+}
+
+/**
+ * Display data items common to all ontology-term-derived objects.
+ */
+export const OntologyTermDataItems = ({ ontologyTerm, children }) => {
+  console.log("ontologyTerm", ontologyTerm)
+  return (
+    <>
+      <DataItemLabel>Term Name</DataItemLabel>
+      <DataItemValue>{ontologyTerm.term_name}</DataItemValue>
+      <DataItemLabel>Term Reference</DataItemLabel>
+      <DataItemValue>
+        <OntologyTermId termId={ontologyTerm.term_id} />
+      </DataItemValue>
+      {ontologyTerm.synonyms.length > 0 && (
+        <>
+          <DataItemLabel>Synonyms</DataItemLabel>
+          <DataItemValue>{ontologyTerm.synonyms.join(", ")}</DataItemValue>
+        </>
+      )}
+      {children}
+    </>
+  )
+}
+
+OntologyTermDataItems.propTypes = {
+  // Ontology term object
+  ontologyTerm: PropTypes.object.isRequired,
 }
