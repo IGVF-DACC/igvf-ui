@@ -1,5 +1,6 @@
 // node_modules
 import { Auth0Provider } from "@auth0/auth0-react"
+import getConfig from "next/config"
 import Head from "next/head"
 import PropTypes from "prop-types"
 import { useEffect, useMemo, useState } from "react"
@@ -48,6 +49,9 @@ const App = ({ Component, pageProps }) => {
     }
   }, [pageProps.pageContext?.title, pageProps.breadcrumbs, sessionCookie])
 
+  const { publicRuntimeConfig } = getConfig()
+  console.log("NEXT_PUBLIC_TEST %s", publicRuntimeConfig.nextTest)
+
   return (
     <>
       <Head>
@@ -90,7 +94,7 @@ const App = ({ Component, pageProps }) => {
           <GlobalContext.Provider value={globalContext}>
             <Session>
               <NavigationSection />
-              <div>{process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN}</div>
+              <div>{publicRuntimeConfig.nextTest}</div>
               <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
                 <Component {...pageProps} />
               </div>
@@ -107,6 +111,10 @@ App.propTypes = {
   Component: PropTypes.elementType.isRequired,
   // Properties associated with the page to pass to `Component`
   pageProps: PropTypes.object.isRequired,
+}
+
+App.getInitialProps = async () => {
+  return { pageProps: {} }
 }
 
 export default App

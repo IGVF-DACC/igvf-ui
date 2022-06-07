@@ -12,7 +12,7 @@ services:
       - "/igvf-ui/.next"
     command: npm run dev
     environment:
-      - NEXT_PUBLIC_TEST=https://igvf-dacc.auth0.com
+      - NEXT_PUBLIC_TEST=testintest
     ports:
       - "3000:3000"
 
