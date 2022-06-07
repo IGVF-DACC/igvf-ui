@@ -29,14 +29,22 @@ export const onRedirectCallback = (appState) => {
  * @returns {object} Session object including the CSRF token
  */
 export const getSession = async () => {
-  const session = await fetch(`${API_URL}/session`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-    },
-  })
-  return session.json()
+  try {
+    const session = await fetch(`${API_URL}/session`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+    if (!session.ok) {
+      throw session.statusText
+    }
+    return session.json()
+  } catch (err) {
+    console.error("ERR ERR ERR %o", err)
+    return null
+  }
 }
 
 /**
