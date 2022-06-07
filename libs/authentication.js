@@ -30,6 +30,7 @@ export const onRedirectCallback = (appState) => {
  */
 export const getSession = async () => {
   try {
+    console.log("GET SESSION")
     const session = await fetch(`${API_URL}/session`, {
       method: "GET",
       credentials: "include",
@@ -42,7 +43,7 @@ export const getSession = async () => {
     }
     return session.json()
   } catch (err) {
-    console.error("ERR ERR ERR %o", err)
+    console.log("ERR ERR ERR %o", err)
     return null
   }
 }
