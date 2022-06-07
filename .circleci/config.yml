@@ -54,14 +54,10 @@ jobs:
               docker-compose up -d
       - run:
           name: Build igvf-ui
-          args:
-            - NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN=$NEXT_PUBLIC_TEST
           command: |
               docker-compose build
       - run:
           name: Start igvf-ui
-          args:
-            - NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN=$NEXT_PUBLIC_TEST
           command: |
               # Match mounted volume to Docker user.
               sudo chown root:root -R .

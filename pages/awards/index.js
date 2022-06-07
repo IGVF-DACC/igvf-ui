@@ -14,7 +14,7 @@ import PagePreamble from "../../components/page-preamble"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const AwardList = ({ awards, stuff = "nothing" }) => {
+const AwardList = ({ awards }) => {
   return (
     <>
       <Breadcrumbs />
@@ -23,7 +23,6 @@ const AwardList = ({ awards, stuff = "nothing" }) => {
         {awards.length > 0 ? (
           <>
             <CollectionCount count={awards.length} />
-            <div>{stuff}</div>
             {awards.map((award) => (
               <CollectionItem
                 key={award.uuid}
@@ -47,7 +46,6 @@ const AwardList = ({ awards, stuff = "nothing" }) => {
 AwardList.propTypes = {
   // Awards to display in the list
   awards: PropTypes.array.isRequired,
-  stuff: PropTypes.string,
 }
 
 export default AwardList
@@ -56,12 +54,9 @@ export const getServerSideProps = async ({ req }) => {
   const request = new Request(req?.headers?.cookie)
   const awards = await request.getCollection("awards")
   const breadcrumbs = await buildBreadcrumbs(awards, "title")
-  // const stuff = process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN
-  const stuff = "dummy"
   return {
     props: {
       awards: awards["@graph"],
-      stuff,
       pageContext: { title: awards.title },
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,
