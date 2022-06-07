@@ -2,6 +2,7 @@
 
 describe("Exercise access keys", () => {
   it("It should sign in through auth0", () => {
+    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`)
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"))
     cy.contains("Cypress Testing")
     cy.wait(1000)
