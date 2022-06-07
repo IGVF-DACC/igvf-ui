@@ -96,7 +96,7 @@ const App = ({ Component, pageProps }) => {
           <GlobalContext.Provider value={globalContext}>
             <Session>
               <NavigationSection />
-              <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
+              <div className="shrink grow px-8 py-2 text-black dark:text-white">
                 <Component {...pageProps} />
               </div>
             </Session>
