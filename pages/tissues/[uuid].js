@@ -11,10 +11,10 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
+import { EditLink } from '../../components/edit-func'
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
-import { EditLink } from '../../components/edit-func'
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -96,6 +96,7 @@ Tissue.propTypes = {
     "@id": PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
   }).isRequired,
+  uuid: PropTypes.string.isRequired,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 }

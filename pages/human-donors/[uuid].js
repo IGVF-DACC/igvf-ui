@@ -12,6 +12,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
+import { EditLink } from '../../components/edit-func'
 import { DataGridContainer } from "../../components/data-grid"
 import ExternalResources from "../../components/external-resources"
 import PagePreamble from "../../components/page-preamble"
@@ -21,7 +22,6 @@ import Status from "../../components/status"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
 import Request from "../../libs/request"
-import { EditLink } from '../../components/edit-func'
 
 /**
  * Defines the columns for the health-status table.

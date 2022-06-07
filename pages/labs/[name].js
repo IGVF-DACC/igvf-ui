@@ -9,13 +9,13 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
+import { EditLink } from '../../components/edit-func'
 import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
 import Status from "../../components/status"
 // libs
 import Request from "../../libs/request"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
-import { EditLink } from '../../components/edit-func'
 
 const Lab = ({ lab, awards, pi }) => {
   return (

@@ -6,9 +6,11 @@
 import PropTypes from "prop-types"
 import { Children, cloneElement } from "react"
 import { useRouter } from 'next/router'
-import Link  from 'next/link'
 import React from 'react'
+import Link from 'next/link'
 
+console.log("begin button")
+console.log(Link)
 /**
  * Background colors for each of the button types.
  */
@@ -74,7 +76,7 @@ const buttonSizeClasses = {
  *   Click me!
  * </Button>
  */
-export const Button = React.forwardRef(({
+const Button = React.forwardRef(({
   onClick,
   type = "primary",
   size = "md",
@@ -115,12 +117,15 @@ Button.propTypes = {
   size: PropTypes.oneOf(["sm", "md", "lg"]),
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
+  // If enabled is true then the button is clickable. If disabled (set to false)
+  // then the button cannot be clicked. Corresponds to the `disabled` property
+  // on the React Button component and is set to `!enabled`.
   enabled: PropTypes.bool,
 }
 
 Button.displayName = "Button"
 
-export const LinkButton = ({
+export const Linkr = ({
   href,
   navigationClick,
   type = "primary",
@@ -151,7 +156,7 @@ export const LinkButton = ({
   )
 }
 
-LinkButton.propTypes = {
+Linkr.propTypes = {
   // Link that pressing the button will navigate to
   href: PropTypes.string,
   // Called when the button is clicked

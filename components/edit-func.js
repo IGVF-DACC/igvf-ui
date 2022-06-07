@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
 
-import { LinkButton } from './button'
+import { Button, Linkr } from './button'
 import { canEdit } from '../libs/general'
 
 /*eslint no-unused-vars: ["error", { "varsIgnorePattern": "^_.*" }]*/
@@ -15,7 +15,6 @@ const Editor = dynamic(
         return ace
     },
     {
-        // eslint-disable-next-line react/display-name
         loading: () => {
             console.log("LOADING")
             return <div>Loading...</div>
@@ -41,7 +40,6 @@ const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
         highlightActiveLine={true}
         annotations={annotations}
         width="100%"
-        // height="600px"
         readOnly={!enabled}
         setOptions={{
             enableBasicAutocompletion: true,
@@ -57,9 +55,16 @@ const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
 }
 
 JsonEditor.propTypes = {
+    // The text that will be shown in the editor
     text: PropTypes.string.isRequired,
+    // Function that will be called whenever the contents of the editor changes
     onChange: PropTypes.func.isRequired,
+    // When false, the text field on the editor cannot be changed, and when true
+    // editing is allowed
     enabled: PropTypes.bool.isRequired,
+    // If there are any errors in the text, these are passed on to the react-ace `annotations`
+    // prop and are rendered in the editor component. Array elements are the error
+    // messages as strings.
     errors: PropTypes.array,
 }
 
@@ -85,8 +90,8 @@ ControlButton.propTypes = {
 const SaveCancelControl = ({ cancelClick, saveClick }) => {
     return (
         <div>
-            <ControlButton onClick={cancelClick} id="edit-cancel">Cancel</ControlButton>
-            <ControlButton onClick={saveClick} id="edit-save">Save</ControlButton>
+            <Button onClick={cancelClick} id="edit-cancel">Cancel</Button>
+            <Button onClick={saveClick} id="edit-save">Save</Button>
         </div>)
 }
 
@@ -97,15 +102,8 @@ SaveCancelControl.propTypes = {
 
 const EditJson = ({ text, onChange, enabled = true, errors = [] }) => {
     return (
-        <div>
-            <div style={{
-                position: "relative",
-                border: "1px solid lightgray",
-                margin: "auto",
-                width: "100%",
-            }}>
-                <JsonEditor text={text} onChange={onChange} enabled={enabled} errors={errors}/>
-            </div>
+        <div className='w-full m-px border-2 border-solid border-slate-300 relative'>
+            <JsonEditor text={text} onChange={onChange} enabled={enabled} errors={errors}/>
         </div>
     )
 }
@@ -119,10 +117,9 @@ EditJson.propTypes = {
 
 export const EditLink = ({ path, item }) => {
     if (canEdit(item)) {
-        return (<LinkButton href={`${path}/edit`} navigationClick={ () => {} }>Edit JSON</LinkButton>)
-    } else {
-        return null
+        return (<Linkr href={`${path}/edit`} navigationClick={ () => {} }>Edit JSON</Linkr>)
     }
+    return null
 }
 
 EditLink.propTypes = {

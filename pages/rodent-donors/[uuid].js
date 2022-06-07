@@ -10,13 +10,13 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
+import { EditLink } from '../../components/edit-func'
 import ExternalResources from "../../components/external-resources"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
-import { EditLink } from '../../components/edit-func'
 
 const RodentDonor = ({ donor, award, lab, parents, uuid }) => {
   return (

@@ -11,13 +11,13 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
+import { EditLink } from '../../components/edit-func'
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
-import { EditLink } from '../../components/edit-func'
 
 const CellLine = ({ cellLine, award, donors, lab, source, treatments, uuid }) => {
   return (

@@ -8,11 +8,11 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
+import { EditLink } from '../../components/edit-func'
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
-import { EditLink } from '../../components/edit-func'
 
 const User = ({ lab, uuid, user }) => {
 
