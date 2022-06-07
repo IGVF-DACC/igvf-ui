@@ -11,8 +11,6 @@ services:
       - "/igvf-ui/node_modules"
       - "/igvf-ui/.next"
     command: npm run dev
-    environment:
-      - NEXT_PUBLIC_TEST=testintest
     ports:
       - "3000:3000"
 
