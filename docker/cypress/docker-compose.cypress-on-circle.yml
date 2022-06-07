@@ -10,4 +10,5 @@ services:
     command: cypress run
     network_mode: "host"
     environment:
+      - NEXT_PUBLIC_TEST=https://igvf-dacc.auth0.com
       - DISPLAY
