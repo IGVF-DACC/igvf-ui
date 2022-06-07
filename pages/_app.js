@@ -1,12 +1,17 @@
 // node_modules
 import { Auth0Provider } from "@auth0/auth0-react"
-import getConfig from "next/config"
 import Head from "next/head"
 import PropTypes from "prop-types"
 import { useEffect, useMemo, useState } from "react"
 // libs
 import { onRedirectCallback } from "../libs/authentication"
-import { BRAND_COLOR, SITE_TITLE } from "../libs/constants"
+import {
+  AUTH0_AUDIENCE,
+  AUTH0_CLIENT_ID,
+  AUTH0_ISSUER_BASE_DOMAIN,
+  BRAND_COLOR,
+  SITE_TITLE,
+} from "../libs/constants"
 import DarkModeManager from "../libs/dark-mode-manager"
 // components
 import GlobalContext from "../components/global-context"
@@ -49,9 +54,6 @@ const App = ({ Component, pageProps }) => {
     }
   }, [pageProps.pageContext?.title, pageProps.breadcrumbs, sessionCookie])
 
-  const { publicRuntimeConfig } = getConfig()
-  console.log("NEXT_PUBLIC_TEST %s", publicRuntimeConfig.nextTest)
-
   return (
     <>
       <Head>
@@ -83,10 +85,10 @@ const App = ({ Component, pageProps }) => {
       </Head>
       <div className="h-screen md:container md:flex">
         <Auth0Provider
-          domain={process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN}
-          clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
+          domain={AUTH0_ISSUER_BASE_DOMAIN}
+          clientId={AUTH0_CLIENT_ID}
           redirectUri={typeof window !== "undefined" && window.location.origin}
-          audience={process.env.NEXT_PUBLIC_AUTH0_AUDIENCE}
+          audience={AUTH0_AUDIENCE}
           onRedirectCallback={onRedirectCallback}
           useRefreshTokens={true}
           cacheLocation="localstorage"
@@ -94,7 +96,6 @@ const App = ({ Component, pageProps }) => {
           <GlobalContext.Provider value={globalContext}>
             <Session>
               <NavigationSection />
-              <div>{publicRuntimeConfig.nextTest}</div>
               <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
                 <Component {...pageProps} />
               </div>
@@ -111,10 +112,6 @@ App.propTypes = {
   Component: PropTypes.elementType.isRequired,
   // Properties associated with the page to pass to `Component`
   pageProps: PropTypes.object.isRequired,
-}
-
-App.getInitialProps = async () => {
-  return { pageProps: {} }
 }
 
 export default App
