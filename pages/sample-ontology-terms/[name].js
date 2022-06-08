@@ -26,8 +26,6 @@ const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
           <DataItemValue>
             <Status status={sampleOntologyTerm.status} />
           </DataItemValue>
-          <DataItemLabel>Term Name</DataItemLabel>
-          <DataItemValue>{sampleOntologyTerm.term_name}</DataItemValue>
           <OntologyTermDataItems ontologyTerm={sampleOntologyTerm}>
             {sampleOntologyTerm.organ_slims.length > 0 && (
               <>
