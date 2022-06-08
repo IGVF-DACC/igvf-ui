@@ -34,8 +34,8 @@ export const OntologyTermId = ({ termId }) => {
     }
   }
 
-  // Either term ID not in specified form (schema should disallow) or not one of the ones
-  // we link to. Just display the term ID without linking out.
+  // Either term ID not in specified form (schema should disallow) or we don't handle the prefix,
+  // displaying the term ID without linking anywhere.
   return <>{termId}</>
 }
 
