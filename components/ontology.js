@@ -17,7 +17,7 @@ const urlMap = {
  * of the term ID has one. Any term IDs with prefixes not matching any in the `urlMap` global
  * variable simply display without a link. All term IDs are of the form XXX:nnnnnnn...
  */
-const OntologyTermId = ({ termId }) => {
+export const OntologyTermId = ({ termId }) => {
   const idPieces = termId.split(":")
   if (idPieces.length === 2) {
     const urlBase = urlMap[idPieces[0]]
@@ -43,5 +43,3 @@ OntologyTermId.propTypes = {
   // Term ID to map to a link
   termId: PropTypes.string.isRequired,
 }
-
-export default OntologyTermId
