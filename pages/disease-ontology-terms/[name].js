@@ -26,8 +26,8 @@ const DiseaseOntologyTerm = ({ diseaseOntologyTerm }) => {
           <DataItemValue>
             <Status status={diseaseOntologyTerm.status} />
           </DataItemValue>
+          <OntologyTermDataItems ontologyTerm={diseaseOntologyTerm} />
         </DataArea>
-        <OntologyTermDataItems ontologyTerm={diseaseOntologyTerm} />
       </DataPanel>
     </>
   )

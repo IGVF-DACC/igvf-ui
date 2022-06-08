@@ -69,7 +69,7 @@ const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
 }
 
 SampleOntologyTerm.propTypes = {
-  // Data for lab displayed on the page
+  // Sample ontology term object to display
   sampleOntologyTerm: PropTypes.object.isRequired,
 }
 
@@ -80,7 +80,6 @@ export const getServerSideProps = async ({ params, req }) => {
   const sampleOntologyTerm = await request.getObject(
     `/sample-ontology-terms//${params.name}/`
   )
-  console.log("ENV %s", process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN)
   if (sampleOntologyTerm && sampleOntologyTerm.status !== "error") {
     const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerm, "term_id")
     return {
