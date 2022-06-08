@@ -14,7 +14,7 @@ import PagePreamble from "../../components/page-preamble"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const User = ({ lab, uuid, user }) => {
+const User = ({ lab, user }) => {
 
   return (
     <>
@@ -26,7 +26,7 @@ const User = ({ lab, uuid, user }) => {
           <DataItemValue>{lab.title}</DataItemValue>
         </DataArea>
       </DataPanel>
-      <EditLink path={`/users/${uuid}`} item={user}/>
+      <EditLink item={user}/>
     </>
   )
 }
@@ -34,8 +34,6 @@ const User = ({ lab, uuid, user }) => {
 User.propTypes = {
   // Lab data associated with `user`
   lab: PropTypes.object.isRequired,
-  // UUID of the User
-  uuid: PropTypes.string.isRequired,
   // user object from the server
   user: PropTypes.object.isRequired,
 }
@@ -56,7 +54,6 @@ export const getServerSideProps = async ({ params, req }) => {
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
         user: user,
-        uuid: params.uuid,
       },
     }
   }

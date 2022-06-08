@@ -17,7 +17,7 @@ import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { UC } from "../../libs/constants"
 import Request from "../../libs/request"
 
-const Treatment = ({ treatment, uuid }) => {
+const Treatment = ({ treatment }) => {
   return (
     <>
       <Breadcrumbs />
@@ -88,7 +88,7 @@ const Treatment = ({ treatment, uuid }) => {
           )}
         </DataArea>
       </DataPanel>
-      <EditLink path={`/treatments/${uuid}`} item={treatment}/>
+      <EditLink item={treatment}/>
     </>
   )
 }
@@ -96,8 +96,6 @@ const Treatment = ({ treatment, uuid }) => {
 Treatment.propTypes = {
   // Technical treatment to display
   treatment: PropTypes.object.isRequired,
-  // UUID for the treatment
-  uuid: PropTypes.string.isRequired,
 }
 
 export default Treatment

@@ -71,7 +71,7 @@ const Award = ({ award, pis }) => {
           )}
         </DataArea>
       </DataPanel>
-      <EditLink path={`/awards/${award.name}`} item={award}/>
+      <EditLink item={award}/>
     </>
   )
 }

@@ -19,7 +19,7 @@ import TreatmentTable from "../../components/treatment-table"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const Tissue = ({ tissue, donors, award, lab, source, treatments, uuid }) => {
+const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
   return (
     <>
       <Breadcrumbs />
@@ -71,7 +71,7 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments, uuid }) => {
         </>
       )}
       <Attribution award={award} lab={lab} />
-      <EditLink path={`/tissues/${uuid}`} item={tissue}/>
+      <EditLink item={tissue}/>
     </>
   )
 }
@@ -96,7 +96,6 @@ Tissue.propTypes = {
     "@id": PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
   }).isRequired,
-  uuid: PropTypes.string.isRequired,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 }

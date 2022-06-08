@@ -115,15 +115,21 @@ EditJson.propTypes = {
     errors: PropTypes.array,
 }
 
-export const EditLink = ({ path, item }) => {
+export const EditLink = ({ item }) => {
+
+    const removeTrailingSlash = (url) => {
+        return url.endsWith("/") ? url.slice(0, url.length - 1) : url
+    }
+
+    console.log(item)
+    const editPath = `${removeTrailingSlash(item["@id"])}/edit`
     if (canEdit(item)) {
-        return (<Linkr href={`${path}/edit`} navigationClick={ () => {} }>Edit JSON</Linkr>)
+        return (<Linkr href={`${editPath}`} navigationClick={ () => {} }>Edit JSON</Linkr>)
     }
     return null
 }
 
 EditLink.propTypes = {
-    path: PropTypes.string.isRequired,
     item: PropTypes.object.isRequired,
 }
 

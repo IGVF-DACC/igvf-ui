@@ -18,7 +18,7 @@ import Status from "../../components/status"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const RodentDonor = ({ donor, award, lab, parents, uuid }) => {
+const RodentDonor = ({ donor, award, lab, parents }) => {
   return (
     <>
       <Breadcrumbs />
@@ -49,7 +49,7 @@ const RodentDonor = ({ donor, award, lab, parents, uuid }) => {
       </DataPanel>
       <ExternalResources resources={donor.external_resources} />
       <Attribution award={award} lab={lab} />
-      <EditLink path={`/rodent-donors/${uuid}`} item={donor}/>
+      <EditLink item={donor}/>
     </>
   )
 }
@@ -69,8 +69,6 @@ RodentDonor.propTypes = {
   }).isRequired,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // UUID of the current rodent donor item
-  uuid: PropTypes.string.isRequired,
 }
 
 export default RodentDonor

@@ -19,7 +19,7 @@ import TreatmentTable from "../../components/treatment-table"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const CellLine = ({ cellLine, award, donors, lab, source, treatments, uuid }) => {
+const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
   return (
     <>
       <Breadcrumbs />
@@ -54,7 +54,7 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments, uuid }) =>
         </>
       )}
       <Attribution award={award} lab={lab} />
-      <EditLink path={`/cell-lines/${uuid}`} item={cellLine}/>
+      <EditLink item={cellLine}/>
     </>
   )
 }
@@ -72,8 +72,6 @@ CellLine.propTypes = {
   source: PropTypes.object.isRequired,
   // List of associated treatments
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // UUID of cell line
-  uuid: PropTypes.string.isRequired,
 }
 
 export default CellLine

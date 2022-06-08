@@ -42,7 +42,7 @@ const healthStatusHistoryColumns = [
   },
 ]
 
-const HumanDonor = ({ donor, award, lab, parents, uuid }) => {
+const HumanDonor = ({ donor, award, lab, parents }) => {
   return (
     <>
       <Breadcrumbs />
@@ -76,7 +76,7 @@ const HumanDonor = ({ donor, award, lab, parents, uuid }) => {
         </>
       )}
       <Attribution award={award} lab={lab} />
-      <EditLink path={`/human-donors/${uuid}`} item={donor}/>
+      <EditLink item={donor}/>
     </>
   )
 }
@@ -90,7 +90,6 @@ HumanDonor.propTypes = {
   lab: PropTypes.object.isRequired,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  uuid: PropTypes.string.isRequired,
 }
 
 export default HumanDonor

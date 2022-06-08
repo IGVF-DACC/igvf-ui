@@ -11,6 +11,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
+import { EditLink } from "../../components/edit-func"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
@@ -73,6 +74,7 @@ const DifferentiatedCell = ({
         </>
       )}
       <Attribution award={award} lab={lab} />
+      <EditLink item={differentiatedCell}/>
     </>
   )
 }

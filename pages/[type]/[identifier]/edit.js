@@ -141,7 +141,9 @@ const EditPage = ({ item, path }) => {
 
   const { session } = useContext(SessionContext)
 
-  const editorValue = sortedJson(filterItem(item))
+  const editorValue = sortedJson(item)
+
+  console.log(editorValue)
 
   const [text, setText] = useState(() => JSON.stringify(editorValue, null, 4))
 
@@ -224,7 +226,7 @@ EditPage.propTypes = {
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const obj = await request.getObject(`/${params.type}/${params.identifier}/`)
+  const obj = await request.getObject(`/${params.type}/${params.identifier}?frame=edit`)
   if (obj && obj.status !== "error") {
     return {
       props: {

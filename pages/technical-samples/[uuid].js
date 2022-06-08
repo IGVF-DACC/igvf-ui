@@ -18,7 +18,7 @@ import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDate } from "../../libs/dates"
 import Request from "../../libs/request"
 
-const TechnicalSample = ({ sample, award, lab, source, uuid }) => {
+const TechnicalSample = ({ sample, award, lab, source }) => {
   return (
     <>
       <Breadcrumbs />
@@ -50,7 +50,7 @@ const TechnicalSample = ({ sample, award, lab, source, uuid }) => {
         </DataArea>
       </DataPanel>
       <Attribution award={award} lab={lab} />
-      <EditLink path={`/technical-samples/${uuid}`} item={sample}/>
+      <EditLink item={sample}/>
     </>
   )
 }
@@ -64,8 +64,6 @@ TechnicalSample.propTypes = {
   lab: PropTypes.object.isRequired,
   // Source lab or source for this technical sample
   source: PropTypes.object.isRequired,
-  // UUID of the technical sample
-  uuid: PropTypes.string.isRequired,
 }
 
 export default TechnicalSample
