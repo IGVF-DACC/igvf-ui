@@ -22,6 +22,15 @@ import SiteLogo from "./logo"
 import { AUTH_ERROR_URI } from "../libs/constants"
 
 /**
+ * Animation configurations for mobile and hierarchical navigation.
+ */
+const navigationTransition = { duration: 0.2, ease: "easeInOut" }
+const navigationVariants = {
+  open: { height: "auto" },
+  collapsed: { height: 0 },
+}
+
+/**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
  */
 const NavigationIcon = ({ children }) => {
@@ -216,7 +225,20 @@ const NavigationGroupItem = ({
         {title}
         <NavigationGroupExpandIcon isGroupOpened={isGroupOpened} />
       </NavigationButton>
-      {isGroupOpened && <ul className="ml-5">{children}</ul>}
+      <AnimatePresence>
+        {isGroupOpened && (
+          <motion.div
+            className="overflow-hidden md:hidden"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            transition={navigationTransition}
+            variants={navigationVariants}
+          >
+            <ul className="ml-5">{children}</ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </li>
   )
 }
@@ -505,11 +527,8 @@ const NavigationSection = () => {
             initial="collapsed"
             animate="open"
             exit="collapsed"
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-            variants={{
-              open: { height: "auto" },
-              collapsed: { height: 0 },
-            }}
+            transition={navigationTransition}
+            variants={navigationVariants}
           >
             <Navigation navigationClick={navigationClick} />
           </motion.div>
