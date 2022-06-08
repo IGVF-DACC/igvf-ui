@@ -31,6 +31,37 @@ const navigationVariants = {
 }
 
 /**
+ * Renders collapsable navigation items, both for the mobile menu and for collapsable children of
+ * grouped navigation items.
+ */
+const NavigationCollapsableArea = ({ isOpen, testid = "", children }) => {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          data-testid={testid}
+          className="overflow-hidden md:hidden"
+          initial="collapsed"
+          animate="open"
+          exit="collapsed"
+          transition={navigationTransition}
+          variants={navigationVariants}
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+NavigationCollapsableArea.propTypes = {
+  // True if the collapsable navigation area is visible.
+  isOpen: PropTypes.bool.isRequired,
+  // Optional data-testid for the motion div.
+  testid: PropTypes.string,
+}
+
+/**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
  */
 const NavigationIcon = ({ children }) => {
@@ -225,20 +256,9 @@ const NavigationGroupItem = ({
         {title}
         <NavigationGroupExpandIcon isGroupOpened={isGroupOpened} />
       </NavigationButton>
-      <AnimatePresence>
-        {isGroupOpened && (
-          <motion.div
-            className="overflow-hidden md:hidden"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            transition={navigationTransition}
-            variants={navigationVariants}
-          >
-            <ul className="ml-5">{children}</ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <NavigationCollapsableArea isOpen={isGroupOpened}>
+        <ul className="ml-5">{children}</ul>
+      </NavigationCollapsableArea>
     </li>
   )
 }
@@ -519,21 +539,12 @@ const NavigationSection = () => {
         </div>
       </div>
 
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            data-testid="mobile-navigation"
-            className="overflow-hidden md:hidden"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            transition={navigationTransition}
-            variants={navigationVariants}
-          >
-            <Navigation navigationClick={navigationClick} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <NavigationCollapsableArea
+        isOpen={isMobileMenuOpen}
+        testid="mobile-navigation"
+      >
+        <Navigation navigationClick={navigationClick} />
+      </NavigationCollapsableArea>
     </section>
   )
 }
