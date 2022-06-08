@@ -337,6 +337,38 @@ const Navigation = ({ navigationClick }) => {
         Labs
       </NavigationHrefItem>
       <NavigationGroupItem
+        id="ontologies"
+        title="Ontologies"
+        icon={<TagIcon />}
+        isGroupOpened={openedParents.includes("ontologies")}
+        handleGroupClick={handleParentClick}
+      >
+        <NavigationHrefItem
+          id="assays-ontology"
+          href="/assay-ontology-terms"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Assays
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="diseases-ontology"
+          href="/disease-ontology-terms"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Diseases
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="samples-ontology"
+          href="/sample-ontology-terms"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Samples
+        </NavigationHrefItem>
+      </NavigationGroupItem>
+      <NavigationGroupItem
         id="samples"
         title="Samples"
         icon={<Icon.Sample />}
@@ -390,38 +422,6 @@ const Navigation = ({ navigationClick }) => {
           isChildItem
         >
           Tissues
-        </NavigationHrefItem>
-      </NavigationGroupItem>
-      <NavigationGroupItem
-        id="ontologies"
-        title="Ontologies"
-        icon={<TagIcon />}
-        isGroupOpened={openedParents.includes("ontologies")}
-        handleGroupClick={handleParentClick}
-      >
-        <NavigationHrefItem
-          id="assay-ontology"
-          href="/assay-ontology-terms"
-          navigationClick={navigationClick}
-          isChildItem
-        >
-          Assays
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="diseases-ontology"
-          href="/disease-ontology-terms"
-          navigationClick={navigationClick}
-          isChildItem
-        >
-          Diseases
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="sample-ontology"
-          href="/sample-ontology-terms"
-          navigationClick={navigationClick}
-          isChildItem
-        >
-          Samples
         </NavigationHrefItem>
       </NavigationGroupItem>
       <NavigationHrefItem

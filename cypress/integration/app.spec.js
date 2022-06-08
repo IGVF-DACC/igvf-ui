@@ -20,6 +20,18 @@ describe("Navigation", () => {
     cy.get("[data-testid=labs]").click()
     cy.url().should("include", "/labs")
 
+    cy.get("[data-testid=ontologies]").click()
+    cy.get("[data-testid=assays-ontology]").click()
+    cy.url().should("include", "/assay-ontology-terms")
+    cy.get("[data-testid=diseases-ontology]").click()
+    cy.url().should("include", "/disease-ontology-terms")
+    cy.get("[data-testid=samples-ontology]").click()
+    cy.url().should("include", "/sample-ontology-terms")
+    cy.get("[data-testid=ontologies]").click()
+    cy.get("[data-testid=assays-ontology]").should("not.exist")
+    cy.get("[data-testid=diseases-ontology]").should("not.exist")
+    cy.get("[data-testid=samples-ontology]").should("not.exist")
+
     cy.get("[data-testid=samples]").click()
     cy.get("[data-testid=cell-lines]").click()
     cy.url().should("include", "/cell-lines")
