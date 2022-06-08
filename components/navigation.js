@@ -7,6 +7,7 @@ import {
   MenuAlt4Icon,
   MinusIcon,
   PlusIcon,
+  TagIcon,
   UserGroupIcon,
   UserIcon,
 } from "@heroicons/react/solid"
@@ -372,7 +373,7 @@ const Navigation = ({ navigationClick }) => {
       <NavigationGroupItem
         id="ontologies"
         title="Ontologies"
-        icon={<Icon.Sample />}
+        icon={<TagIcon />}
         isGroupOpened={openedParents.includes("ontologies")}
         handleGroupClick={handleParentClick}
       >
