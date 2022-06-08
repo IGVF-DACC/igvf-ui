@@ -53,11 +53,6 @@ jobs:
               cd igvfd
               docker-compose up -d
       - run:
-          name: Cypress env
-          command: |
-              echo $CYPRESS_AUTH_USERNAME
-              echo $AUTH_USERNAME
-      - run:
           name: Build igvf-ui
           command: |
               docker-compose build
