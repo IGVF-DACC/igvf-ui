@@ -23,6 +23,7 @@ import "../styles/globals.css"
 const App = ({ Component, pageProps }) => {
   // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("")
+  const [profiles, setProfiles] = useState(null)
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
@@ -42,6 +43,24 @@ const App = ({ Component, pageProps }) => {
     }
   }, [pageProps.sessionCookie])
 
+  useEffect(() => {
+    if (pageProps.sessionCookie) {
+      fetch("http://localhost:8000/profiles", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: pageProps.sessionCookie,
+        },
+      })
+        .then((response) => {
+          return response.json()
+        })
+        .then((profiles) => {
+          setProfiles(profiles)
+        })
+    }
+  }, [pageProps.sessionCookie])
+
   const globalContext = useMemo(() => {
     return {
       site: {
@@ -52,8 +71,14 @@ const App = ({ Component, pageProps }) => {
       },
       breadcrumbs: pageProps.breadcrumbs || [],
       sessionCookie,
+      profiles,
     }
-  }, [pageProps.pageContext?.title, pageProps.breadcrumbs, sessionCookie])
+  }, [
+    pageProps.pageContext?.title,
+    pageProps.breadcrumbs,
+    profiles,
+    sessionCookie,
+  ])
 
   return (
     <>
