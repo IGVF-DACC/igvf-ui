@@ -118,7 +118,7 @@ const NavigationSignOutItem = ({ id, children }) => {
    * Called when the user clicks the Sign Out button.
    */
   const handleAuthClick = () => {
-    logout({ returnTo: process.env.NEXT_PUBLIC_AUTH0_BASE_URL })
+    logout({ returnTo: BACKEND_URL })
   }
 
   return (

@@ -33,7 +33,7 @@
  * @param {string} username - The username to use for the login.
  * @param {string} password - The password to use for the login.
  */
-Cypress.Commands.add("login", (username, password) => {
+Cypress.Commands.add("loginAuth0", (username, password) => {
   cy.visit("http://localhost:3000/")
   cy.clearLocalStorage()
 

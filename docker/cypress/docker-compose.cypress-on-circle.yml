@@ -1,9 +1,8 @@
 version: "3.8"
 
 services:
-
   cypress:
-    image: cypress/included:9.5.1
+    image: cypress/included:9.7.0
     working_dir: "/test"
     volumes:
       - "./cypress:/test/cypress"
@@ -12,3 +11,9 @@ services:
     network_mode: "host"
     environment:
       - DISPLAY
+      - CYPRESS_AUTH_USERNAME=$CYPRESS_AUTH_USERNAME
+      - CYPRESS_AUTH_PASSWORD=$CYPRESS_AUTH_PASSWORD
+      - CYPRESS_AUTH_CLIENT_ID=$CYPRESS_AUTH_CLIENT_ID
+      - CYPRESS_AUTH_CLIENT_SECRET=$CYPRESS_AUTH_CLIENT_SECRET
+      - CYPRESS_AUTH_AUDIENCE=$CYPRESS_AUTH_AUDIENCE
+      - CYPRESS_AUTH_URL=$CYPRESS_AUTH_URL
