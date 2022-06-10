@@ -44,4 +44,26 @@ describe("Test breadcrumb composition and rendering functionality", () => {
     expect(breadcrumbs[1].title).toBe("J. Michael Cherry, Stanford")
     expect(breadcrumbs[0].href).toBe("/labs/")
   })
+
+  it("builds a schema breadcrumb properly", async () => {
+    const mockSchemaData = {
+      "@graph": [],
+      title: "Primary Cell",
+      description: "Schema for submitting a primary cell sample.",
+      "@id": "/profiles/primary_cell.json",
+      "@type": ["JSONSchema"],
+    }
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        json: () => Promise.resolve(mockCollectionData),
+      })
+    )
+
+    const breadcrumbs = await buildBreadcrumbs(mockSchemaData, "primary_cell")
+    expect(breadcrumbs).toHaveLength(2)
+    expect(breadcrumbs[0].title).toBe("Schemas")
+    expect(breadcrumbs[0].href).toBe("/profiles")
+    expect(breadcrumbs[1].title).toBe("Primary Cell")
+    expect(breadcrumbs[1].href).toBe("/profiles/primary_cell")
+  })
 })

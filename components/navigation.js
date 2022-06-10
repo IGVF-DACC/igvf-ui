@@ -2,6 +2,7 @@
 import { useAuth0 } from "@auth0/auth0-react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
+  CodeIcon,
   BeakerIcon,
   MenuAlt4Icon,
   MinusIcon,
@@ -387,6 +388,16 @@ const Navigation = ({ navigationClick }) => {
           <UserGroupIcon />
         </NavigationIcon>
         Users
+      </NavigationHrefItem>
+      <NavigationHrefItem
+        id="profiles"
+        href="/profiles"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <CodeIcon />
+        </NavigationIcon>
+        Schemas
       </NavigationHrefItem>
       {isAuthenticated && !isLoading ? (
         <NavigationGroupItem
