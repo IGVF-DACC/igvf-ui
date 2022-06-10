@@ -30,19 +30,10 @@ export const Session = ({ children }) => {
   const requestCount = useRef(0)
 
   useEffect(() => {
-    console.log(
-      "SESS AUTHENTICATED %s:%s:%o",
-      isAuthenticated,
-      intervalId.current,
-      session
-    )
-
     const requestSession = () => {
       requestCount.current += 1
-      if (requestCount.current < 5) {
-        console.log("SESSION INITIATE")
+      if (requestCount.current < 3) {
         getSession().then((sessionResponse) => {
-          console.log("SESS RESPONSE %s:%o", isAuthenticated, sessionResponse)
           setSession(sessionResponse)
           clearInterval(intervalId.current)
           intervalId.current = null
@@ -64,7 +55,7 @@ export const Session = ({ children }) => {
       (!isAuthenticated && session["auth.userid"])
     ) {
       if (intervalId.current === null) {
-        intervalId.current = setInterval(requestSession, 1000)
+        intervalId.current = setInterval(requestSession, 500)
       }
     }
   }, [isAuthenticated, session])
