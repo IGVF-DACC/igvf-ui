@@ -12,6 +12,8 @@ export const AUTH0_AUDIENCE = "https://igvf-dacc.us.auth0.com/api/v2/"
 export const SITE_TITLE = "IGVF"
 // Brand color
 export const BRAND_COLOR = "#337788"
+// Path for authorization error page
+export const AUTH_ERROR_URI = "/auth-error"
 
 // UNICODE entity codes, needed in JSX string templates. Each property named after the equivalent
 // HTML entity. Add new entries to this object as needed.

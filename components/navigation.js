@@ -12,21 +12,12 @@ import {
 import Link from "next/link"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
-import React, {
-  Children,
-  isValidElement,
-  useContext,
-  useEffect,
-  useState,
-} from "react"
+import React, { Children, isValidElement, useState } from "react"
 // components
-import { useAuthenticated } from "./authentication"
 import Icon from "./icon"
 import SiteLogo from "./logo"
-import SessionContext from "./session-context"
 // libs
-import { loginToServer, logoutFromServer } from "../libs/authentication"
-import { BACKEND_URL } from "../libs/constants"
+import { AUTH_ERROR_URI } from "../libs/constants"
 
 /**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
@@ -83,13 +74,17 @@ const NavigationSignInItem = ({ id, children }) => {
 
   /**
    * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
-   * Redirect the post-login to the page the user currently views. See the Auth0Provider usage in
-   * _app.js to see how this gets used.
+   * Redirect the post-login to the page the user currently views unless the current page is the
+   * authentication error one. We leave the rest of the provider authentication process to them.
+   * We only know it was successful once `useAuth0` return true in `isAuthenticated`.
    */
   const handleAuthClick = () => {
     loginWithRedirect({
       appState: {
-        returnTo: window.location.pathname,
+        returnTo:
+          window.location.pathname === AUTH_ERROR_URI
+            ? "/"
+            : window.location.pathname,
       },
     })
   }
@@ -430,11 +425,7 @@ Navigation.propTypes = {
 const NavigationSection = () => {
   // True if user has opened the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  // Auth0 information
-  const { getAccessTokenSilently, logout } = useAuth0()
   // Auth0 authentication status
-  const isAuthenticated = useAuthenticated()
-  const { session } = useContext(SessionContext)
 
   /**
    * Called when the user clicks a navigation menu item.
@@ -442,29 +433,6 @@ const NavigationSection = () => {
   const navigationClick = () => {
     setIsMobileMenuOpen(false)
   }
-
-  useEffect(() => {
-    if (session) {
-      if (isAuthenticated && !session["auth.userid"]) {
-        // Auth0 has authenticated, but we haven't authenticated with the server yet.
-        console.log("LOGGING INTO SERVER")
-        loginToServer(session, getAccessTokenSilently).then(
-          (sessionProperties) => {
-            if (!sessionProperties) {
-              // Auth0 authenticated successfully, but we couldn't authenticate with the server.
-              // Log back out of Auth0 and go to an error page.
-              logout({ returnTo: `${BACKEND_URL}/auth-error` })
-            }
-          }
-        )
-      } else if (!isAuthenticated && session["auth.userid"]) {
-        console.log("LOGGING OUT OF SERVER")
-        // Auth0 has de-authenticated, but we have still authenticated with the server.
-        logoutFromServer()
-      }
-    }
-    // Once the user has logged into auth0, turn around and log into the server.
-  }, [getAccessTokenSilently, isAuthenticated, logout, session])
 
   return (
     <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">

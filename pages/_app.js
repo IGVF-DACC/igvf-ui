@@ -21,6 +21,7 @@ import NavigationSection from "../components/navigation"
 import "../styles/globals.css"
 
 const App = ({ Component, pageProps }) => {
+  // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("")
 
   useEffect(() => {

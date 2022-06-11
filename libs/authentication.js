@@ -10,6 +10,18 @@ import Router from "next/router"
 // libs
 import { API_URL } from "../libs/constants"
 
+// All possible authentication state machine states.
+export const authStateDefs = {
+  // The user is not signed in to the provider (Auth0) or the server.
+  NOT_AUTHENTICATED: "NOT_AUTHENTICATED",
+  // The provider has authenticated the user, but the server has not yet confirmed the user.
+  PROVIDER_AUTHENTICATED: "PROVIDER_AUTHENTICATED",
+  // We have sent an authentication request to the server and are waiting for a response.
+  WAITING_FOR_SERVER: "WAITING_FOR_SERVER",
+  // The server has confirmed the user, so both it and the provider have authenticated the user.
+  AUTHENTICATED: "AUTHENTICATED",
+}
+
 /**
  * Called by Auth0 when the user is redirected back from the home page after signing into Auth0.
  * This redirects back to the page the user viewed before they signed in. `appState` gets set when
