@@ -46,6 +46,7 @@ export const Session = ({ children }) => {
   const prevAuthenticated = useRef(isAuthenticated)
   // Set to true once we start the process of signing out of the server
   const isServerAuthPending = useRef(false)
+  console.log("SESSION: %s:%s", isAuthenticated, prevAuthenticated.current)
 
   // Detects and handles the authorization provider changing from signed out to signed in by
   // signing into the server.
@@ -81,6 +82,7 @@ export const Session = ({ children }) => {
           } else {
             // Auth0 and the server authenticated successfully. Get the signed-in session object.
             getSession().then((sessionResponse) => {
+              console.log("SET SESSION %o", sessionResponse)
               setSession(sessionResponse)
               isServerAuthPending.current = false
             })
