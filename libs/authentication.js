@@ -17,7 +17,6 @@ import { API_URL } from "../libs/constants"
  * @param {object} appState Auth0 app state saved when signing out
  */
 export const onRedirectCallback = (appState) => {
-  console.log("REDIRECT CALLBACK")
   Router.replace(appState?.returnTo || "/")
 }
 

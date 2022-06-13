@@ -16,6 +16,7 @@ import React, { Children, isValidElement, useState } from "react"
 // components
 import Icon from "./icon"
 import SiteLogo from "./logo"
+import useSessionState from "./session-state"
 // libs
 import { AUTH_ERROR_URI } from "../libs/constants"
 
@@ -71,6 +72,7 @@ NavigationButton.displayName = "NavigationButton"
  */
 const NavigationSignInItem = ({ id, children }) => {
   const { isLoading, loginWithRedirect } = useAuth0()
+  const [, setPostSigninUrl] = useSessionState("auth0returnurl", "/")
 
   /**
    * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
@@ -79,12 +81,14 @@ const NavigationSignInItem = ({ id, children }) => {
    * We only know it was successful once `useAuth0` return true in `isAuthenticated`.
    */
   const handleAuthClick = () => {
+    const returnTo =
+      window.location.pathname === AUTH_ERROR_URI
+        ? "/"
+        : window.location.pathname
+    setPostSigninUrl(returnTo)
     loginWithRedirect({
       appState: {
-        returnTo:
-          window.location.pathname === AUTH_ERROR_URI
-            ? "/"
-            : window.location.pathname,
+        returnTo,
       },
     })
   }
