@@ -16,7 +16,7 @@ import React, { Children, isValidElement, useState } from "react"
 // components
 import Icon from "./icon"
 import SiteLogo from "./logo"
-import useSessionStorage from "./session-state"
+import useSessionStorage from "./session-storage"
 // libs
 import { AUTH_ERROR_URI, BACKEND_URL } from "../libs/constants"
 
