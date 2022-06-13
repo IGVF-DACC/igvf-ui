@@ -1,7 +1,7 @@
 // node_modules
 import Router from "next/router"
 // components
-import { useSessionStorage } from "./session-state"
+import useSessionStorage from "./session-state"
 
 /**
  * Establishes the context to hold the back-end session record for the currently logged-in user.
