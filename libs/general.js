@@ -12,14 +12,3 @@ export const pathToType = (path) => {
   }
   return ""
 }
-
-/**
- * If you need to delay a certain amount of time inline with other code, you can use this function
- * to create a timer promise. Once the timer expires, the promise resolves. If you need a delay
- * between iterations of a loop, this function can let you have a clean solution.
- * @param {number} ms Number of milliseconds to delay
- * @returns {Promise} Promise that resolves after the specified number of milliseconds
- */
-export const delayPromise = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
