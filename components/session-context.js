@@ -52,7 +52,6 @@ export const Session = ({ children }) => {
   // Set to true once we start the process of signing out of the server
   const isServerAuthPending = useRef(false)
   const [postSigninUrl] = useSessionState("auth0returnurl", "/")
-  console.log("SESSION: %s:%s", isAuthenticated, prevAuthenticated.current)
 
   // Detects and handles the authorization provider changing from signed out to signed in by
   // signing into the server.
@@ -88,7 +87,6 @@ export const Session = ({ children }) => {
           } else {
             // Auth0 and the server authenticated successfully. Get the signed-in session object.
             getSession().then((sessionResponse) => {
-              console.log("SET SESSION %o--%s", sessionResponse, postSigninUrl)
               setSession(sessionResponse)
               isServerAuthPending.current = false
               Router.replace(postSigninUrl || "/")

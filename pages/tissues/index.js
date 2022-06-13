@@ -57,7 +57,6 @@ export const getServerSideProps = async ({ req }) => {
   const request = new Request(req?.headers?.cookie)
   const tissues = await request.getCollection("tissues")
   const breadcrumbs = await buildBreadcrumbs(tissues, "title")
-  console.log("SERVER %s:%s", req?.headers?.cookie, tissues["@graph"].length)
   return {
     props: {
       tissues: tissues["@graph"],

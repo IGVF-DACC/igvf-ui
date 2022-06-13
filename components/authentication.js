@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react"
  * Determine whether the user has authenticated with Auth0 or not, in a stable way. The `useAuth0`
  * hook returns `isAuthenticated` as a boolean, but you can't rely on its value until `useAuth0`
  * returns false in `isLoading`, causing modules to have to pay attention to both booleans. This
- * hook returns a more stable form of `isAuthenticated` that is true only when the user has
+ * hook returns a more stable form of `isAuthenticated` that returns true only when the user has
  * authenticated with Auth0 and `isLoading` is false, without having to pay attention to the
  * `isLoading` boolean.
  */

@@ -18,7 +18,7 @@ import Icon from "./icon"
 import SiteLogo from "./logo"
 import useSessionState from "./session-state"
 // libs
-import { AUTH_ERROR_URI } from "../libs/constants"
+import { AUTH_ERROR_URI, BACKEND_URL } from "../libs/constants"
 
 /**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
