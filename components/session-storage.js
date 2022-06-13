@@ -8,10 +8,10 @@ import { useState } from "react"
  * @param {string} initialValue Initial value to set for the key; including objects
  * @returns {array} [
  *   0: Value retrieved from session storage
- *   1: Function to set new value in session storage
+ *   1: Function to set new value in session storage; calling component must be mounted
  * ]
  */
-export const useSessionState = (key, initialValue) => {
+export const useSessionStorage = (key, initialValue) => {
   const [value, setValue] = useState(() => {
     const item =
       typeof window !== "undefined" ? window.sessionStorage.getItem(key) : null
@@ -19,11 +19,13 @@ export const useSessionState = (key, initialValue) => {
   })
 
   const setValueMethod = (valueToStore) => {
-    setValue(valueToStore)
-    window.sessionStorage.setItem(key, JSON.stringify(valueToStore))
+    if (typeof window !== "undefined") {
+      setValue(valueToStore)
+      window.sessionStorage.setItem(key, JSON.stringify(valueToStore))
+    }
   }
 
   return [value, setValueMethod]
 }
 
-export default useSessionState
+export default useSessionStorage

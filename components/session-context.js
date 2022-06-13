@@ -1,7 +1,7 @@
 // node_modules
 import Router from "next/router"
 // components
-import { useSessionState } from "./session-state"
+import { useSessionStorage } from "./session-state"
 
 /**
  * Establishes the context to hold the back-end session record for the currently logged-in user.
@@ -51,7 +51,7 @@ export const Session = ({ children }) => {
   const prevAuthenticated = useRef(isAuthenticated)
   // Set to true once we start the process of signing out of the server
   const isServerAuthPending = useRef(false)
-  const [postSigninUrl] = useSessionState("auth0returnurl", "/")
+  const [postSigninUrl] = useSessionStorage("auth0returnurl", "/")
 
   // Detects and handles the authorization provider changing from signed out to signed in by
   // signing into the server.

@@ -16,7 +16,7 @@ import React, { Children, isValidElement, useState } from "react"
 // components
 import Icon from "./icon"
 import SiteLogo from "./logo"
-import useSessionState from "./session-state"
+import useSessionStorage from "./session-state"
 // libs
 import { AUTH_ERROR_URI, BACKEND_URL } from "../libs/constants"
 
@@ -72,15 +72,20 @@ NavigationButton.displayName = "NavigationButton"
  */
 const NavigationSignInItem = ({ id, children }) => {
   const { isLoading, loginWithRedirect } = useAuth0()
-  const [, setPostSigninUrl] = useSessionState("auth0returnurl", "/")
+  // Stores the current page in session storage so we can redirected back to the page after sign in.
+  const [, setPostSigninUrl] = useSessionStorage("auth0returnurl", "/")
 
   /**
    * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
    * Redirect the post-login to the page the user currently views unless the current page is the
-   * authentication error one. We leave the rest of the provider authentication process to them.
+   * authentication error one. We leave the rest of the provider authentication process to Auth0.
    * We only know it was successful once `useAuth0` return true in `isAuthenticated`.
    */
   const handleAuthClick = () => {
+    // Save the current page in session storage so we can redirect back to it after sign in. Also
+    // save this in Auth0 appstate in case the post-sign-in callback gets called before the session
+    // code does. Don't redirect to the authentication error page as that could be confusing to the
+    // user.
     const returnTo =
       window.location.pathname === AUTH_ERROR_URI
         ? "/"
@@ -429,7 +434,6 @@ Navigation.propTypes = {
 const NavigationSection = () => {
   // True if user has opened the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  // Auth0 authentication status
 
   /**
    * Called when the user clicks a navigation menu item.
