@@ -6,8 +6,9 @@
  */
 
 // node_modules
-import { useAuth0 } from "@auth0/auth0-react"
-import { createContext, useEffect, useState } from "react"
+import { createContext, useEffect, useRef, useState } from "react"
+// components
+import { useAuthenticated } from "./authentication"
 // libs
 import { getSession } from "../libs/authentication"
 
@@ -24,21 +25,49 @@ export default SessionContext
 export const Session = ({ children }) => {
   // Tracks the back-end session record.
   const [session, setSession] = useState(null)
-
-  const { isLoading, isAuthenticated } = useAuth0()
+  const isAuthenticated = useAuthenticated()
+  const intervalId = useRef(null)
+  const requestCount = useRef(0)
 
   useEffect(() => {
+    console.log(
+      "SESS AUTHENTICATED %s:%s:%o",
+      isAuthenticated,
+      intervalId.current,
+      session
+    )
+
+    const requestSession = () => {
+      requestCount.current += 1
+      if (requestCount.current < 5) {
+        console.log("SESSION INITIATE")
+        getSession().then((sessionResponse) => {
+          console.log("SESS RESPONSE %s:%o", isAuthenticated, sessionResponse)
+          setSession(sessionResponse)
+          clearInterval(intervalId.current)
+          intervalId.current = null
+        })
+      } else {
+        // Never got user ID from the session even though we signed in, or we kept getting a user
+        // ID from the session even though we signed out. Give up.
+        clearInterval(intervalId.current)
+        intervalId.current = null
+      }
+    }
+
     // Once Auth0 has confirmed the user has logged in, get the session record from the back end
     // and then make it available to the rest of the app. Need to have a delay before requesting
     // the session to allow the back end time to generate the CSRF token.
-    if (!isLoading && isAuthenticated) {
-      setTimeout(() => {
-        getSession().then((sessionResponse) => {
-          setSession(sessionResponse)
-        })
-      }, 1000)
+    if (
+      !session ||
+      (isAuthenticated && !session["auth.userid"]) ||
+      (!isAuthenticated && session["auth.userid"])
+    ) {
+      if (intervalId.current === null) {
+        intervalId.current = setInterval(requestSession, 1000)
+      }
     }
-  }, [isLoading, isAuthenticated])
+  }, [isAuthenticated, session])
 
   return (
     <SessionContext.Provider value={{ session }}>

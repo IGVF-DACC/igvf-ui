@@ -69,8 +69,7 @@ const reqLogin = async (accessToken, csrfToken) => {
  * @param {function} getAccessTokenSilently Auth0 function to retrieve the current access token
  * @returns {object} Session object including the CSRF token
  */
-export const loginToServer = async (getAccessTokenSilently) => {
-  const session = await getSession()
+export const loginToServer = async (session, getAccessTokenSilently) => {
   const accessToken = await getAccessTokenSilently()
   return await reqLogin(accessToken, session._csrft_)
 }

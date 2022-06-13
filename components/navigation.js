@@ -12,17 +12,21 @@ import {
 import Link from "next/link"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
-import React, { Children, isValidElement, useEffect, useState } from "react"
-// libs
-import {
-  getSession,
-  loginToServer,
-  logoutFromServer,
-} from "../libs/authentication"
-import { BACKEND_URL } from "../libs/constants"
+import React, {
+  Children,
+  isValidElement,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 // components
+import { useAuthenticated } from "./authentication"
 import Icon from "./icon"
 import SiteLogo from "./logo"
+import SessionContext from "./session-context"
+// libs
+import { loginToServer, logoutFromServer } from "../libs/authentication"
+import { BACKEND_URL } from "../libs/constants"
 
 /**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
@@ -427,8 +431,10 @@ const NavigationSection = () => {
   // True if user has opened the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   // Auth0 information
-  const { getAccessTokenSilently, isAuthenticated, isLoading, logout } =
-    useAuth0()
+  const { getAccessTokenSilently, logout } = useAuth0()
+  // Auth0 authentication status
+  const isAuthenticated = useAuthenticated()
+  const { session } = useContext(SessionContext)
 
   /**
    * Called when the user clicks a navigation menu item.
@@ -438,25 +444,27 @@ const NavigationSection = () => {
   }
 
   useEffect(() => {
-    getSession().then((session) => {
-      if (!isLoading) {
-        if (isAuthenticated && !session["auth.userid"]) {
-          // Auth0 has authenticated, but we haven't authenticated with the server yet.
-          loginToServer(getAccessTokenSilently).then((sessionProperties) => {
+    if (session) {
+      if (isAuthenticated && !session["auth.userid"]) {
+        // Auth0 has authenticated, but we haven't authenticated with the server yet.
+        console.log("LOGGING INTO SERVER")
+        loginToServer(session, getAccessTokenSilently).then(
+          (sessionProperties) => {
             if (!sessionProperties) {
               // Auth0 authenticated successfully, but we couldn't authenticate with the server.
               // Log back out of Auth0 and go to an error page.
               logout({ returnTo: `${BACKEND_URL}/auth-error` })
             }
-          })
-        } else if (!isAuthenticated && session["auth.userid"]) {
-          // Auth0 has de-authenticated, but we have still authenticated with the server.
-          logoutFromServer()
-        }
+          }
+        )
+      } else if (!isAuthenticated && session["auth.userid"]) {
+        console.log("LOGGING OUT OF SERVER")
+        // Auth0 has de-authenticated, but we have still authenticated with the server.
+        logoutFromServer()
       }
-    })
+    }
     // Once the user has logged into auth0, turn around and log into the server.
-  }, [getAccessTokenSilently, isAuthenticated, isLoading, logout])
+  }, [getAccessTokenSilently, isAuthenticated, logout, session])
 
   return (
     <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">
