@@ -52,7 +52,7 @@ export default AssayOntologyTerm
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
   const assayOntologyTerm = await request.getObject(
-    `/assay-ontology-terms//${params.name}/`
+    `/assay-ontology-terms/${params.name}/`
   )
   if (assayOntologyTerm && assayOntologyTerm.status !== "error") {
     const breadcrumbs = await buildBreadcrumbs(assayOntologyTerm, "term_id")

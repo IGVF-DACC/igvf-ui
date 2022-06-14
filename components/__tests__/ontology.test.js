@@ -1,5 +1,23 @@
 import { render, screen } from "@testing-library/react"
-import { OntologyTermId } from "../ontology"
+import { OntologyTerm, OntologyTermId } from "../ontology"
+
+describe("Test OntologyTerm class", () => {
+  it("properly detects valid and invalid ontology terms", () => {
+    const validTerm = new OntologyTerm("EFO:0000001")
+    expect(validTerm.isValid).toBe(true)
+
+    const invalidTerm = new OntologyTerm("EFO:")
+    expect(invalidTerm.isValid).toBe(false)
+  })
+
+  it("properly generates a URL for a valid and invalid ontology terms", () => {
+    const validTerm = new OntologyTerm("EFO:0000001")
+    expect(validTerm.url).toBe("http://www.ebi.ac.uk/efo/EFO_0000001")
+
+    const invalidTerm = new OntologyTerm("ABC:123")
+    expect(invalidTerm.url).toBe("")
+  })
+})
 
 describe("Test mapping ontology term IDs to links", () => {
   it("should map term IDs to corresponding links", () => {

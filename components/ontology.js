@@ -1,5 +1,7 @@
 // node_modules
 import PropTypes from "prop-types"
+// libs
+import Curie from "../libs/curie"
 
 /**
  * Map from ontology term ID prefixes to corresponding URL bases.
@@ -7,9 +9,28 @@ import PropTypes from "prop-types"
 const urlMap = {
   EFO: "http://www.ebi.ac.uk/efo/",
   UBERON:
-    "http://www.ontobee.org/ontology/UBERON?iri=http://purl.obolibrary.org/obo/",
+    "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F",
   CL: "http://www.ontobee.org/ontology/CL?iri=http://purl.obolibrary.org/obo/",
   CLO: "http://www.ontobee.org/ontology/CLO?iri=http://purl.obolibrary.org/obo/",
+}
+
+/**
+ * Map from ontology term ID prefixes to corresponding URLs.
+ */
+export class OntologyTerm extends Curie {
+  constructor(curie) {
+    super(curie)
+  }
+
+  get isValid() {
+    return Boolean(this.prefix && this.id && urlMap[this.prefix])
+  }
+
+  get url() {
+    return this.isValid
+      ? `${urlMap[this.prefix]}${this.curie.replace(":", "_")}`
+      : ""
+  }
 }
 
 /**
@@ -18,25 +39,18 @@ const urlMap = {
  * variable simply display without a link. All term IDs are of the form XXX:nnnnnnn...
  */
 export const OntologyTermId = ({ termId }) => {
-  const idPieces = termId.split(":")
-  if (idPieces.length === 2) {
-    const urlBase = urlMap[idPieces[0]]
-    if (urlBase) {
-      return (
-        <a
-          href={urlBase + termId.replace(":", "_")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {termId}
-        </a>
-      )
-    }
+  const ontologyTerm = new OntologyTerm(termId)
+  if (ontologyTerm.isValid) {
+    return (
+      <a href={ontologyTerm.url} target="_blank" rel="noreferrer">
+        {ontologyTerm.curie}
+      </a>
+    )
   }
 
   // Either term ID not in specified form (schema should disallow) or we don't handle the prefix,
   // displaying the term ID without linking anywhere.
-  return <>{termId}</>
+  return <>{ontologyTerm.curie}</>
 }
 
 OntologyTermId.propTypes = {
