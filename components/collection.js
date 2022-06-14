@@ -12,6 +12,14 @@ import Status from "./status"
 import reportColumns from "../libs/report-columns"
 
 /**
+ * States for the collection view display
+ */
+export const COLLECTION_VIEW = {
+  LIST: "list", // Display as a list
+  TABLE: "table", // Display as a table
+}
+
+/**
  * Displays the number of items in a collection.
  */
 export const CollectionCount = ({ count }) => {
@@ -105,7 +113,7 @@ export const CollectionItemName = ({ children }) => {
 export const CollectionContent = ({ collection, children }) => {
   const { currentCollectionView, profiles, page } = useContext(GlobalContext)
 
-  if (currentCollectionView.collectionView === "list") {
+  if (currentCollectionView.collectionView === COLLECTION_VIEW.LIST) {
     // Display list view
     return <>{children}</>
   }

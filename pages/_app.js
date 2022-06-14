@@ -14,9 +14,10 @@ import {
 } from "../libs/constants"
 import DarkModeManager from "../libs/dark-mode-manager"
 // components
+import { COLLECTION_VIEW } from "../components/collection"
 import GlobalContext from "../components/global-context"
-import { Session } from "../components/session-context"
 import NavigationSection from "../components/navigation"
+import { Session } from "../components/session-context"
 // CSS
 import "../styles/globals.css"
 
@@ -24,8 +25,8 @@ const App = ({ Component, pageProps }) => {
   // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("")
   const [profiles, setProfiles] = useState(null)
-  // Selects between "list" and "report" collection views
-  const [collectionView, setCollectionView] = useState("list")
+  // Selects between "list" and "table" collection views
+  const [collectionView, setCollectionView] = useState(COLLECTION_VIEW.TABLE)
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
