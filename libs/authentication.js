@@ -61,7 +61,7 @@ const reqLogin = async (accessToken, csrfToken) => {
 
 /**
  * Handle the process of logging the user into the server. It first retrieves the CSRF token from
- * the server and the user's access token from auth0.
+ * the server session and the user's access token from auth0.
  * @param {function} getAccessTokenSilently Auth0 function to retrieve the current access token
  * @returns {object} Session object including the CSRF token
  */

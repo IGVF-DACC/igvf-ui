@@ -27,7 +27,7 @@ import {
 import { BACKEND_URL } from "../libs/constants"
 
 /**
- * Establishes the context to hold the back-end session record for the currently logged-in user.
+ * Establishes the context to hold the back-end session record for the currently signed-in user.
  * Other modules needing the session record can get it from this context.
  */
 const SessionContext = createContext({

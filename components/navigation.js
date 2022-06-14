@@ -79,7 +79,7 @@ const NavigationSignInItem = ({ id, children }) => {
    * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
    * Redirect the post-login to the page the user currently views unless the current page is the
    * authentication error one. We leave the rest of the provider authentication process to Auth0.
-   * We only know it was successful once `useAuth0` return true in `isAuthenticated`.
+   * We only know it was successful once `useAuth0` returns true in `isAuthenticated`.
    */
   const handleAuthClick = () => {
     // Save the current page in session storage so we can redirect back to it after sign in. Also

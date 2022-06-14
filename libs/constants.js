@@ -18,7 +18,7 @@ export const AUTH_ERROR_URI = "/auth-error"
 // UNICODE entity codes, needed in JSX string templates. Each property named after the equivalent
 // HTML entity. Add new entries to this object as needed.
 export const UC = {
-  deg: "\u00B0",
+  deg: "\u00B0", // degree symbol
   ndash: "\u2013", // en dash
   mdash: "\u2014", // em dash
   lsquo: "\u2018", // Right single quote
