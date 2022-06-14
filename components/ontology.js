@@ -18,10 +18,6 @@ const urlMap = {
  * Map from ontology term ID prefixes to corresponding URLs.
  */
 export class OntologyTerm extends Curie {
-  constructor(curie) {
-    super(curie)
-  }
-
   get isValid() {
     return Boolean(this.prefix && this.id && urlMap[this.prefix])
   }
