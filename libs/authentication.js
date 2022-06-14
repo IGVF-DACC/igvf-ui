@@ -12,8 +12,8 @@ import { API_URL } from "../libs/constants"
 
 /**
  * Called by Auth0 when the user is redirected back from the home page after signing into Auth0.
- * This redirects back to the page the user viewed before they signed in. `appState` gets set when
- * we call `loginWithRedirect()`.
+ * This redirects back to the page the user viewed before they signed in. The timing can vary, but
+ * session-context handles this usually.
  * @param {object} appState Auth0 app state saved when signing out
  */
 export const onRedirectCallback = (appState) => {

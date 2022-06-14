@@ -51,6 +51,7 @@ export const Session = ({ children }) => {
   const prevAuthenticated = useRef(isAuthenticated)
   // Set to true once we start the process of signing out of the server
   const isServerAuthPending = useRef(false)
+  // Session storage for the post-sign-in redirect URL
   const [postSigninUrl] = useSessionStorage("auth0returnurl", "/")
 
   // Detects and handles the authorization provider changing from signed out to signed in by
@@ -119,8 +120,7 @@ export const Session = ({ children }) => {
           !isServerAuthPending.current
         ) {
           // We have a signed-in session object but the authorization provider has signed the user out,
-          // so we now need to sign out of the server. Remember we have started the signing-out process
-          // in case this `useEffect` gets called again before the server can respond.
+          // so we now need to sign out of the server.
           isServerAuthPending.current = true
           logoutFromServer()
             .then(() => {
