@@ -120,8 +120,8 @@ const NavigationSignOutItem = ({ id, children }) => {
   /**
    * Called when the user clicks the Sign Out button.
    */
-  const handleAuthClick = () => {
-    logout({ returnTo: BACKEND_URL })
+    const handleAuthClick = () => {
+    logout({ returnTo: window.location.origin })
   }
 
   return (
@@ -436,6 +436,27 @@ const NavigationSection = () => {
   const navigationClick = () => {
     setIsMobileMenuOpen(false)
   }
+
+  useEffect(() => {
+    getSession().then((session) => {
+      if (!isLoading) {
+        if (isAuthenticated && !session["auth.userid"]) {
+          // Auth0 has authenticated, but we haven't authenticated with the server yet.
+          loginToServer(getAccessTokenSilently).then((sessionProperties) => {
+            if (!sessionProperties) {
+              // Auth0 authenticated successfully, but we couldn't authenticate with the server.
+              // Log back out of Auth0 and go to an error page.
+              logout({ returnTo: `${window.location.origin}/auth-error` })
+            }
+          })
+        } else if (!isAuthenticated && session["auth.userid"]) {
+          // Auth0 has de-authenticated, but we have still authenticated with the server.
+          logoutFromServer()
+        }
+      }
+    })
+    // Once the user has logged into auth0, turn around and log into the server.
+  }, [getAccessTokenSilently, isAuthenticated, isLoading, logout])
 
   return (
     <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">
