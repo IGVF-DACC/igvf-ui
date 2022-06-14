@@ -22,6 +22,7 @@ from aws_cdk.aws_iam import ManagedPolicy
 from shared_infrastructure.igvf_dev.network import DemoNetwork
 from shared_infrastructure.igvf_dev.domain import DemoDomain
 
+
 class FrontendStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, *, branch, **kwargs) -> None:
