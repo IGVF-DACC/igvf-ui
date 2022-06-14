@@ -24,6 +24,8 @@ const App = ({ Component, pageProps }) => {
   // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("")
   const [profiles, setProfiles] = useState(null)
+  // Selects between "list" and "report" collection views
+  const [collectionView, setCollectionView] = useState("list")
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
@@ -68,16 +70,24 @@ const App = ({ Component, pageProps }) => {
       },
       page: {
         title: pageProps.pageContext?.title || "",
+        type: pageProps.pageContext?.type || "",
       },
       breadcrumbs: pageProps.breadcrumbs || [],
       sessionCookie,
       profiles,
+      currentCollectionView: {
+        collectionView,
+        setCollectionView,
+      },
     }
   }, [
-    pageProps.pageContext?.title,
+    collectionView,
     pageProps.breadcrumbs,
+    pageProps.pageContext?.title,
+    pageProps.pageContext?.type,
     profiles,
     sessionCookie,
+    setCollectionView,
   ])
 
   return (

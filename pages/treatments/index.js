@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
+  CollectionContent,
   CollectionCount,
   CollectionItem,
   CollectionItemName,
@@ -23,22 +24,24 @@ const TreatmentList = ({ treatments }) => {
         {treatments.length > 0 ? (
           <>
             <CollectionCount count={treatments.length} />
-            {treatments.map((treatment) => (
-              <CollectionItem
-                key={treatment.uuid}
-                href={treatment["@id"]}
-                label={`Treatment ${treatment.treatment_term_id}`}
-                status={treatment.status}
-              >
-                <CollectionItemName>
-                  {treatment.treatment_term_id}
-                </CollectionItemName>
-                {treatment.purpose && <div>{treatment.purpose}</div>}
-                {treatment.treatment_term_name && (
-                  <div>{treatment.treatment_term_name}</div>
-                )}
-              </CollectionItem>
-            ))}
+            <CollectionContent collection={treatments}>
+              {treatments.map((treatment) => (
+                <CollectionItem
+                  key={treatment.uuid}
+                  href={treatment["@id"]}
+                  label={`Treatment ${treatment.treatment_term_id}`}
+                  status={treatment.status}
+                >
+                  <CollectionItemName>
+                    {treatment.treatment_term_id}
+                  </CollectionItemName>
+                  {treatment.purpose && <div>{treatment.purpose}</div>}
+                  {treatment.treatment_term_name && (
+                    <div>{treatment.treatment_term_name}</div>
+                  )}
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
@@ -62,7 +65,10 @@ export const getServerSideProps = async ({ req }) => {
   return {
     props: {
       treatments: treatments["@graph"],
-      pageContext: { title: treatments.title },
+      pageContext: {
+        title: treatments.title,
+        type: treatments["@graph"][0]?.["@type"][0] || "",
+      },
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,
     },

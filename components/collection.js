@@ -2,8 +2,14 @@
 import { ChevronDoubleRightIcon } from "@heroicons/react/solid"
 import Link from "next/link"
 import PropTypes from "prop-types"
+import { useContext } from "react"
 // components
+import GlobalContext from "./global-context"
+import Report from "../components/report"
+import SortableGrid from "./sortable-grid"
 import Status from "./status"
+// libs
+import reportColumns from "../libs/report-columns"
 
 /**
  * Displays the number of items in a collection.
@@ -91,4 +97,30 @@ export const CollectionItemName = ({ children }) => {
       {children}
     </div>
   )
+}
+
+/**
+ * Display either a list or report view of the collection.
+ */
+export const CollectionContent = ({ collection, children }) => {
+  const { currentCollectionView, profiles, page } = useContext(GlobalContext)
+
+  if (currentCollectionView.collectionView === "list") {
+    // Display list view
+    return <>{children}</>
+  }
+  if (profiles) {
+    const columns = reportColumns(profiles[page.type])
+    return (
+      <Report>
+        <SortableGrid data={collection} columns={columns} />
+      </Report>
+    )
+  }
+  return null
+}
+
+CollectionContent.propTypes = {
+  // Collection of items to display
+  collection: PropTypes.arrayOf(PropTypes.object).isRequired,
 }

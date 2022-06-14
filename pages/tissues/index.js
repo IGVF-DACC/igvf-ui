@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
+  CollectionContent,
   CollectionCount,
   CollectionItem,
   CollectionItemName,
@@ -23,20 +24,22 @@ const TissueList = ({ tissues }) => {
         {tissues.length > 0 ? (
           <>
             <CollectionCount count={tissues.length} />
-            {tissues.map((tissue) => (
-              <CollectionItem
-                key={tissue.uuid}
-                href={tissue["@id"]}
-                label={`Tissue ${tissue.accession}`}
-                status={tissue.status}
-              >
-                <CollectionItemName>{tissue.accession}</CollectionItemName>
-                {tissue.organism && <div>{tissue.organism}</div>}
-                {tissue.nih_institutional_certification && (
-                  <div>{tissue.nih_institutional_certification}</div>
-                )}
-              </CollectionItem>
-            ))}
+            <CollectionContent>
+              {tissues.map((tissue) => (
+                <CollectionItem
+                  key={tissue.uuid}
+                  href={tissue["@id"]}
+                  label={`Tissue ${tissue.accession}`}
+                  status={tissue.status}
+                >
+                  <CollectionItemName>{tissue.accession}</CollectionItemName>
+                  {tissue.organism && <div>{tissue.organism}</div>}
+                  {tissue.nih_institutional_certification && (
+                    <div>{tissue.nih_institutional_certification}</div>
+                  )}
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
