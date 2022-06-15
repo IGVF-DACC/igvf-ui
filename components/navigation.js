@@ -12,17 +12,13 @@ import {
 import Link from "next/link"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
-import React, { Children, isValidElement, useEffect, useState } from "react"
-// libs
-import {
-  getSession,
-  loginToServer,
-  logoutFromServer,
-} from "../libs/authentication"
-import { BACKEND_URL } from "../libs/constants"
+import React, { Children, isValidElement, useState } from "react"
 // components
 import Icon from "./icon"
 import SiteLogo from "./logo"
+import useSessionStorage from "./session-storage"
+// libs
+import { AUTH_ERROR_URI, BACKEND_URL } from "../libs/constants"
 
 /**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
@@ -76,16 +72,28 @@ NavigationButton.displayName = "NavigationButton"
  */
 const NavigationSignInItem = ({ id, children }) => {
   const { isLoading, loginWithRedirect } = useAuth0()
+  // Stores the current page in session storage so we can redirected back to the page after sign in.
+  const [, setPostSigninUrl] = useSessionStorage("auth0returnurl", "/")
 
   /**
    * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
-   * Redirect the post-login to the page the user currently views. See the Auth0Provider usage in
-   * _app.js to see how this gets used.
+   * Redirect the post-login to the page the user currently views unless the current page is the
+   * authentication error one. We leave the rest of the provider authentication process to Auth0.
+   * We only know it was successful once `useAuth0` returns true in `isAuthenticated`.
    */
   const handleAuthClick = () => {
+    // Save the current page in session storage so we can redirect back to it after sign in. Also
+    // save this in Auth0 appstate in case the post-sign-in callback gets called before the session
+    // code does. Don't redirect to the authentication error page as that could be confusing to the
+    // user.
+    const returnTo =
+      window.location.pathname === AUTH_ERROR_URI
+        ? "/"
+        : window.location.pathname
+    setPostSigninUrl(returnTo)
     loginWithRedirect({
       appState: {
-        returnTo: window.location.pathname,
+        returnTo,
       },
     })
   }
@@ -426,9 +434,6 @@ Navigation.propTypes = {
 const NavigationSection = () => {
   // True if user has opened the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  // Auth0 information
-  const { getAccessTokenSilently, isAuthenticated, isLoading, logout } =
-    useAuth0()
 
   /**
    * Called when the user clicks a navigation menu item.
@@ -436,27 +441,6 @@ const NavigationSection = () => {
   const navigationClick = () => {
     setIsMobileMenuOpen(false)
   }
-
-  useEffect(() => {
-    getSession().then((session) => {
-      if (!isLoading) {
-        if (isAuthenticated && !session["auth.userid"]) {
-          // Auth0 has authenticated, but we haven't authenticated with the server yet.
-          loginToServer(getAccessTokenSilently).then((sessionProperties) => {
-            if (!sessionProperties) {
-              // Auth0 authenticated successfully, but we couldn't authenticate with the server.
-              // Log back out of Auth0 and go to an error page.
-              logout({ returnTo: `${BACKEND_URL}/auth-error` })
-            }
-          })
-        } else if (!isAuthenticated && session["auth.userid"]) {
-          // Auth0 has de-authenticated, but we have still authenticated with the server.
-          logoutFromServer()
-        }
-      }
-    })
-    // Once the user has logged into auth0, turn around and log into the server.
-  }, [getAccessTokenSilently, isAuthenticated, isLoading, logout])
 
   return (
     <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">
