@@ -29,8 +29,12 @@ export const DonorDataItems = ({ donor, parents, children }) => {
           <DataItemValue>{donor.sex}</DataItemValue>
         </>
       )}
-      <DataItemLabel>Taxa Identifier</DataItemLabel>
-      <DataItemValue>{donor.taxon_id}</DataItemValue>
+      {donor.taxon_id && (
+        <>
+          <DataItemLabel>Taxa Identifier</DataItemLabel>
+          <DataItemValue>{donor.taxon_id}</DataItemValue>
+        </>
+      )}
       {parents.length > 0 && (
         <>
           <DataItemLabel>Parents</DataItemLabel>
@@ -149,7 +153,7 @@ export const BiosampleDataItems = ({
   source = null,
   donors = [],
   biosampleOntology = null,
-  phenotypeOntology = null,
+  diseaseOntology = null,
   options = {
     dateObtainedTitle: "Date Obtained",
   },
@@ -208,12 +212,12 @@ export const BiosampleDataItems = ({
           </DataItemValue>
         </>
       )}
-      {phenotypeOntology && (
+      {diseaseOntology && (
         <>
-          <DataItemLabel>Phenotype</DataItemLabel>
+          <DataItemLabel>Disease</DataItemLabel>
           <DataItemValue>
-            <Link href={phenotypeOntology["@id"]}>
-              <a>{phenotypeOntology.term_id}</a>
+            <Link href={diseaseOntology["@id"]}>
+              <a>{diseaseOntology.term_id}</a>
             </Link>
           </DataItemValue>
         </>
@@ -255,7 +259,7 @@ BiosampleDataItems.propTypes = {
   // Sample ontology for the biosample
   biosampleOntology: PropTypes.object,
   // Phenotype ontology for the biosample
-  phenotypeOntology: PropTypes.object,
+  diseaseOntology: PropTypes.object,
   // General options to alter the display of the data items
   options: PropTypes.shape({
     // Title of date_obtained property
