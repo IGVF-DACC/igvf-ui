@@ -275,7 +275,7 @@ export const OntologyTermDataItems = ({ ontologyTerm, children }) => {
     <>
       <DataItemLabel>Term Name</DataItemLabel>
       <DataItemValue>{ontologyTerm.term_name}</DataItemValue>
-      <DataItemLabel>Term Reference</DataItemLabel>
+      <DataItemLabel>External Reference</DataItemLabel>
       <DataItemValue>
         <OntologyTermId termId={ontologyTerm.term_id} />
       </DataItemValue>

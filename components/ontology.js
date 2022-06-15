@@ -23,9 +23,7 @@ export class OntologyTerm extends Curie {
   }
 
   get url() {
-    return this.isValid
-      ? `${urlMap[this.prefix]}${this.curie.replace(":", "_")}`
-      : ""
+    return this.isValid ? `${urlMap[this.prefix]}${this.prefix}_${this.id}` : ""
   }
 }
 
