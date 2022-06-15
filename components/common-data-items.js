@@ -258,7 +258,7 @@ BiosampleDataItems.propTypes = {
   donors: PropTypes.array,
   // Sample ontology for the biosample
   biosampleOntology: PropTypes.object,
-  // Phenotype ontology for the biosample
+  // Disease ontology for the biosample
   diseaseOntology: PropTypes.object,
   // General options to alter the display of the data items
   options: PropTypes.shape({

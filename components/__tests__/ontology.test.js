@@ -10,7 +10,7 @@ describe("Test OntologyTerm class", () => {
     expect(invalidTerm.isValid).toBe(false)
   })
 
-  it("properly generates a URL for a valid and invalid ontology terms", () => {
+  it("properly generates a URL for known and unknown ontology terms", () => {
     const validTerm = new OntologyTerm("EFO:0000001")
     expect(validTerm.url).toBe("http://www.ebi.ac.uk/efo/EFO_0000001")
 
