@@ -11,10 +11,10 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
-import { EditLink } from "../../components/edit-func"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
+import { useEditor } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -30,51 +30,54 @@ const DifferentiatedTissue = ({
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={differentiatedTissue.status} />
-          </DataItemValue>
-          <BiosampleDataItems
-            biosample={differentiatedTissue}
-            source={source}
-            donors={donors}
-            options={{
-              dateObtainedTitle: "Date Collected",
-            }}
-          >
-            {differentiatedTissue.post_differentiation_time && (
-              <>
-                <DataItemLabel>Post-differentiation time</DataItemLabel>
-                <DataItemValue>
-                  {differentiatedTissue.post_differentiation_time}
-                  {differentiatedTissue.post_differentiation_time_units ? (
-                    <>
-                      {" "}
-                      {differentiatedTissue.post_differentiation_time_units}
-                      {differentiatedTissue.post_differentiation_time === 1
-                        ? ""
-                        : "s"}
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </DataItemValue>
-              </>
-            )}
-          </BiosampleDataItems>
-        </DataArea>
-      </DataPanel>
-      {treatments.length > 0 && (
+      {useEditor(differentiatedTissue,
         <>
-          <DataAreaTitle>Treatments</DataAreaTitle>
-          <TreatmentTable treatments={treatments} />
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={differentiatedTissue.status} />
+            </DataItemValue>
+            <BiosampleDataItems
+              biosample={differentiatedTissue}
+              source={source}
+              donors={donors}
+              options={{
+                dateObtainedTitle: "Date Collected",
+              }}
+            >
+              {differentiatedTissue.post_differentiation_time && (
+                <>
+                  <DataItemLabel>Post-differentiation time</DataItemLabel>
+                  <DataItemValue>
+                    {differentiatedTissue.post_differentiation_time}
+                    {differentiatedTissue.post_differentiation_time_units ? (
+                      <>
+                        {" "}
+                        {differentiatedTissue.post_differentiation_time_units}
+                        {differentiatedTissue.post_differentiation_time === 1
+                          ? ""
+                          : "s"}
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </DataItemValue>
+                </>
+              )}
+            </BiosampleDataItems>
+          </DataArea>
+        </DataPanel>
+        {treatments.length > 0 && (
+          <>
+            <DataAreaTitle>Treatments</DataAreaTitle>
+            <TreatmentTable treatments={treatments} />
+          </>
+        )}
+        <Attribution award={award} lab={lab} />
         </>
       )}
-      <Attribution award={award} lab={lab} />
-      <EditLink item={differentiatedTissue}/>
     </>
   )
 }

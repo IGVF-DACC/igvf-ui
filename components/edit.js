@@ -1,16 +1,15 @@
-import Request from "../../../libs/request"
-import EditJson from "../../../components/edit-func"
+// node_modules
 import PropTypes from "prop-types"
-import React from "react"
-import { useContext, useState } from "react"
-// import { Button, Link } from "../../../components/button"
-import { API_URL } from "../../../libs/constants"
-import { canEdit } from "../../../libs/general"
-import SessionContext from "../../../components/session-context"
+import React, { useContext, useState, useEffect } from "react"
+// components
+import Button from "./button"
+import EditJson, { EditLink } from "./edit-func"
+import Fetch from "../libs/sessionFetch"
+import SessionContext from "./session-context"
 import { useRouter } from "next/router"
-import Button, { Linkr } from "../../../components/button"
-
-/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "^_.*" }]*/
+// libs
+import { API_URL } from "../libs/constants"
+import { canEdit } from "../libs/general"
 
 const updateItem = async (path, item, session) => {
   const response = await fetch(`${API_URL}${path}`, {
@@ -38,6 +37,39 @@ const updateItem = async (path, item, session) => {
   return response
 }
 
+export const useEditor = (item, viewComponent) => {
+
+  const editing = (url) => { return url.endsWith("#!edit") }
+
+  const [edit, setEditing] = useState(false)
+
+  const router = useRouter()
+
+  useEffect(() => {
+    const isEdit = editing(document.URL)
+    // If the URL says edit but we aren't editing yet, set the state
+    if (isEdit && !edit) {
+      setEditing(true)
+    }
+
+    // If the URL has us not editing but we just were, set to false, and update props
+    if (!isEdit && edit) {
+      setEditing( false )
+      router.replace(router.asPath)
+    }
+  }, [edit, router])
+
+  const editpage = <EditPage item={item}/>
+  const editlink = <EditLink item={item}/>
+
+  const componentToShow = edit ? editpage :
+  <>
+    {viewComponent}
+    {editlink}
+  </>
+  return componentToShow
+}
+
 const SaveCancelControl = ({
   cancelClick,
   saveClick,
@@ -46,9 +78,9 @@ const SaveCancelControl = ({
 }) => {
   return (
     <div className="flex space-x-1">
-      <Linkr href={itemPath} navigationClick={cancelClick}>
+      <Button.Link href={itemPath} navigationClick={cancelClick}>
         Cancel
-      </Linkr>
+      </Button.Link>
       <Button
         onClick={saveClick}
         enabled={saveEnabled}
@@ -65,21 +97,6 @@ SaveCancelControl.propTypes = {
   saveClick: PropTypes.func.isRequired,
   itemPath: PropTypes.string.isRequired,
   saveEnabled: PropTypes.bool.isRequired,
-}
-
-const filterItem = (item) => {
-  const {
-    ["@type"]: _type,
-    ["@id"]: _id,
-    ["@context"]: _context,
-    ["uuid"]: _uuid,
-    ["actions"]: _actions,
-    ["access_keys"]: _access,
-    ["schema_version"]: _version,
-    ["title"]: _title,
-    ...filtered
-  } = item
-  return filtered
 }
 
 function sortedJson(obj) {
@@ -117,7 +134,9 @@ SavedErrors.propTypes = {
   errors: PropTypes.array.isRequired,
 }
 
-const EditPage = ({ item, path }) => {
+const EditPage = ({ item }) => {
+  const path = item["@id"]
+
   const editable = (session, item) => {
     // cannot edit if not logged in or object not editable
     const loggedIn =
@@ -141,11 +160,9 @@ const EditPage = ({ item, path }) => {
 
   const { session } = useContext(SessionContext)
 
-  const editorValue = sortedJson(item)
-
-  console.log(editorValue)
-
-  const [text, setText] = useState(() => JSON.stringify(editorValue, null, 4))
+  const [text, setText] = useState(() => {
+    JSON.stringify({}, null, 4)
+  })
 
   const [saveErrors, setErrors] = useState([])
 
@@ -154,6 +171,16 @@ const EditPage = ({ item, path }) => {
     canSave: editable(session, item),
     errors: [],
   })
+
+  useEffect(() => {
+    const fetch = new Fetch(session)
+    fetch.getObject(`${path}?frame=edit`, "GET").then((value) => {
+      const json = value.json()
+      return json
+    }).then((value) => {
+      setText(JSON.stringify(sortedJson(value), null, 4))
+    })
+  }, [])
 
   const router = useRouter()
 
@@ -174,7 +201,7 @@ const EditPage = ({ item, path }) => {
       canSave: false,
       errors: [],
     })
-    const value = sortedJson(filterItem(JSON.parse(text)))
+    const value = sortedJson(JSON.parse(text))
     updateItem(path, value, session).then((response) => {
       if (response.ok) {
         setErrors([])
@@ -221,22 +248,6 @@ const EditPage = ({ item, path }) => {
 
 EditPage.propTypes = {
   item: PropTypes.object.isRequired,
-  path: PropTypes.string.isRequired,
-}
-
-export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const obj = await request.getObject(`/${params.type}/${params.identifier}?frame=edit`)
-  if (obj && obj.status !== "error") {
-    return {
-      props: {
-        item: obj,
-        path: `/${params.type}/${params.identifier}/`,
-      },
-    }
-  } else {
-    return { notFound: true }
-  }
 }
 
 export default EditPage

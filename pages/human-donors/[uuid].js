@@ -12,12 +12,12 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
-import { EditLink } from '../../components/edit-func'
 import { DataGridContainer } from "../../components/data-grid"
 import ExternalResources from "../../components/external-resources"
 import PagePreamble from "../../components/page-preamble"
 import SortableGrid from "../../components/sortable-grid"
 import Status from "../../components/status"
+import { useEditor } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
@@ -46,37 +46,40 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={donor.status} />
-          </DataItemValue>
-          <DonorDataItems donor={donor} parents={parents}>
-            {donor.ethnicity && (
-              <>
-                <DataItemLabel>Ethnicity</DataItemLabel>
-                <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
-              </>
-            )}
-          </DonorDataItems>
-        </DataArea>
-      </DataPanel>
-      <ExternalResources resources={donor.external_resources} />
-      {donor.health_status_history?.length > 0 && (
+      {useEditor(donor,
         <>
-          <DataAreaTitle>Health Status History</DataAreaTitle>
-          <DataGridContainer>
-            <SortableGrid
-              data={donor.health_status_history}
-              columns={healthStatusHistoryColumns}
-            />
-          </DataGridContainer>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={donor.status} />
+            </DataItemValue>
+            <DonorDataItems donor={donor} parents={parents}>
+              {donor.ethnicity && (
+                <>
+                  <DataItemLabel>Ethnicity</DataItemLabel>
+                  <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
+                </>
+              )}
+            </DonorDataItems>
+          </DataArea>
+        </DataPanel>
+        <ExternalResources resources={donor.external_resources} />
+        {donor.health_status_history?.length > 0 && (
+          <>
+            <DataAreaTitle>Health Status History</DataAreaTitle>
+            <DataGridContainer>
+              <SortableGrid
+                data={donor.health_status_history}
+                columns={healthStatusHistoryColumns}
+              />
+            </DataGridContainer>
+          </>
+        )}
+        <Attribution award={award} lab={lab} />
         </>
       )}
-      <Attribution award={award} lab={lab} />
-      <EditLink item={donor}/>
     </>
   )
 }

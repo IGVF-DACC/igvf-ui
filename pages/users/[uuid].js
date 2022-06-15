@@ -8,7 +8,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
-import { EditLink } from '../../components/edit-func'
+import { useEditor } from "../../components/edit"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -19,14 +19,16 @@ const User = ({ lab, user }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Lab</DataItemLabel>
-          <DataItemValue>{lab.title}</DataItemValue>
-        </DataArea>
-      </DataPanel>
-      <EditLink item={user}/>
+      {useEditor(user,
+        <>
+          <PagePreamble />
+          <DataPanel>
+            <DataArea>
+              <DataItemLabel>Lab</DataItemLabel>
+              <DataItemValue>{lab.title}</DataItemValue>
+            </DataArea>
+          </DataPanel>
+        </>)}
     </>
   )
 }

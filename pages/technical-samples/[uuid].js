@@ -10,9 +10,9 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
-import { EditLink } from '../../components/edit-func'
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
+import { useEditor } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDate } from "../../libs/dates"
@@ -22,35 +22,38 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={sample.status} />
-          </DataItemValue>
-          <SampleDataItems sample={sample} source={source}>
-            {sample.date && (
-              <>
-                <DataItemLabel>Technical Sample Date</DataItemLabel>
-                <DataItemValue>{formatDate(sample.date)}</DataItemValue>
-              </>
-            )}
-            <DataItemLabel>Sample Material</DataItemLabel>
-            <DataItemValue>{sample.sample_material}</DataItemValue>
-            {sample.technical_sample_ontology && (
-              <>
-                <DataItemLabel>Ontology</DataItemLabel>
-                <DataItemValue>
-                  {sample.technical_sample_ontology}
-                </DataItemValue>
-              </>
-            )}
-          </SampleDataItems>
-        </DataArea>
-      </DataPanel>
-      <Attribution award={award} lab={lab} />
-      <EditLink item={sample}/>
+      {useEditor(sample,
+      <>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={sample.status} />
+            </DataItemValue>
+            <SampleDataItems sample={sample} source={source}>
+              {sample.date && (
+                <>
+                  <DataItemLabel>Technical Sample Date</DataItemLabel>
+                  <DataItemValue>{formatDate(sample.date)}</DataItemValue>
+                </>
+              )}
+              <DataItemLabel>Sample Material</DataItemLabel>
+              <DataItemValue>{sample.sample_material}</DataItemValue>
+              {sample.technical_sample_ontology && (
+                <>
+                  <DataItemLabel>Ontology</DataItemLabel>
+                  <DataItemValue>
+                    {sample.technical_sample_ontology}
+                  </DataItemValue>
+                </>
+              )}
+            </SampleDataItems>
+          </DataArea>
+        </DataPanel>
+        <Attribution award={award} lab={lab} />
+        </>
+      )}
     </>
   )
 }

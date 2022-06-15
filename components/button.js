@@ -7,10 +7,7 @@ import PropTypes from "prop-types"
 import { Children, cloneElement } from "react"
 import { useRouter } from 'next/router'
 import React from 'react'
-import Link from 'next/link'
 
-console.log("begin button")
-console.log(Link)
 /**
  * Background colors for each of the button types.
  */
@@ -125,7 +122,14 @@ Button.propTypes = {
 
 Button.displayName = "Button"
 
-export const Linkr = ({
+/**
+ * Displays a Button that links to a URL. The navigationClick handler is run
+ * just before we link to the destination in the href prop.
+ * <Button.Link href=/path/to/page>
+ *   Go Here!
+ * </Button.Link>
+ */
+export const Link = ({
   href,
   navigationClick,
   type = "primary",
@@ -142,7 +146,6 @@ export const Linkr = ({
   }
 
   return (
-    <Link href={href} passHref>
       <Button
         onClick={onClick}
         type={type}
@@ -152,11 +155,10 @@ export const Linkr = ({
       >
         {children}
       </Button>
-    </Link>
   )
 }
 
-Linkr.propTypes = {
+Link.propTypes = {
   // Link that pressing the button will navigate to
   href: PropTypes.string,
   // Called when the button is clicked
@@ -229,4 +231,5 @@ Icon.propTypes = {
 }
 
 Button.Icon = Icon
+Button.Link = Link
 export default Button

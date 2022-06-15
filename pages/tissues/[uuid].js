@@ -11,10 +11,10 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
-import { EditLink } from '../../components/edit-func'
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
+import { useEditor } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -23,55 +23,58 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={tissue.status} />
-          </DataItemValue>
-          <BiosampleDataItems
-            biosample={tissue}
-            source={source}
-            donors={donors}
-            options={{
-              dateObtainedTitle: "Date Harvested",
-            }}
-          >
-            {tissue.pmi && (
-              <>
-                <DataItemLabel>Post-mortem Interval</DataItemLabel>
-                <DataItemValue>
-                  {tissue.pmi}
-                  {tissue.pmi_units ? (
-                    <>
-                      {" "}
-                      {tissue.pmi_units}
-                      {tissue.pmi_units === 1 ? "" : "s"}
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </DataItemValue>
-              </>
-            )}
-            {tissue.preservation_method && (
-              <>
-                <DataItemLabel>Preservation Method</DataItemLabel>
-                <DataItemValue>{tissue.preservation_method}</DataItemValue>
-              </>
-            )}
-          </BiosampleDataItems>
-        </DataArea>
-      </DataPanel>
-      {treatments.length > 0 && (
+      {useEditor(tissue,
         <>
-          <DataAreaTitle>Treatments</DataAreaTitle>
-          <TreatmentTable treatments={treatments} />
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={tissue.status} />
+            </DataItemValue>
+            <BiosampleDataItems
+              biosample={tissue}
+              source={source}
+              donors={donors}
+              options={{
+                dateObtainedTitle: "Date Harvested",
+              }}
+            >
+              {tissue.pmi && (
+                <>
+                  <DataItemLabel>Post-mortem Interval</DataItemLabel>
+                  <DataItemValue>
+                    {tissue.pmi}
+                    {tissue.pmi_units ? (
+                      <>
+                        {" "}
+                        {tissue.pmi_units}
+                        {tissue.pmi_units === 1 ? "" : "s"}
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </DataItemValue>
+                </>
+              )}
+              {tissue.preservation_method && (
+                <>
+                  <DataItemLabel>Preservation Method</DataItemLabel>
+                  <DataItemValue>{tissue.preservation_method}</DataItemValue>
+                </>
+              )}
+            </BiosampleDataItems>
+          </DataArea>
+        </DataPanel>
+        {treatments.length > 0 && (
+          <>
+            <DataAreaTitle>Treatments</DataAreaTitle>
+            <TreatmentTable treatments={treatments} />
+          </>
+        )}
+        <Attribution award={award} lab={lab} />
         </>
       )}
-      <Attribution award={award} lab={lab} />
-      <EditLink item={tissue}/>
     </>
   )
 }

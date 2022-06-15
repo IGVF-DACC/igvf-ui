@@ -11,10 +11,10 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
-import { EditLink } from "../../components/edit-func"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
+import { useEditor } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -30,38 +30,41 @@ const PrimaryCell = ({
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={primaryCell.status} />
-          </DataItemValue>
-          <BiosampleDataItems
-            biosample={primaryCell}
-            source={source}
-            donors={donors}
-            options={{
-              dateObtainedTitle: "Date Harvested",
-            }}
-          >
-            {primaryCell.passage_number && (
-              <>
-                <DataItemLabel>Passage Number</DataItemLabel>
-                <DataItemValue>{primaryCell.passage_number}</DataItemValue>
-              </>
-            )}
-          </BiosampleDataItems>
-        </DataArea>
-      </DataPanel>
-      {treatments.length > 0 && (
+      {useEditor(primaryCell,
         <>
-          <DataAreaTitle>Treatments</DataAreaTitle>
-          <TreatmentTable treatments={treatments} />
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={primaryCell.status} />
+            </DataItemValue>
+            <BiosampleDataItems
+              biosample={primaryCell}
+              source={source}
+              donors={donors}
+              options={{
+                dateObtainedTitle: "Date Harvested",
+              }}
+            >
+              {primaryCell.passage_number && (
+                <>
+                  <DataItemLabel>Passage Number</DataItemLabel>
+                  <DataItemValue>{primaryCell.passage_number}</DataItemValue>
+                </>
+              )}
+            </BiosampleDataItems>
+          </DataArea>
+        </DataPanel>
+        {treatments.length > 0 && (
+          <>
+            <DataAreaTitle>Treatments</DataAreaTitle>
+            <TreatmentTable treatments={treatments} />
+          </>
+        )}
+        <Attribution award={award} lab={lab} />
         </>
       )}
-      <Attribution award={award} lab={lab} />
-      <EditLink item={primaryCell}/>
     </>
   )
 }
