@@ -5,7 +5,13 @@ import PropTypes from "prop-types"
 import { useEffect, useMemo, useState } from "react"
 // libs
 import { onRedirectCallback } from "../libs/authentication"
-import { BRAND_COLOR, SITE_TITLE } from "../libs/constants"
+import {
+  AUTH0_AUDIENCE,
+  AUTH0_CLIENT_ID,
+  AUTH0_ISSUER_BASE_DOMAIN,
+  BRAND_COLOR,
+  SITE_TITLE,
+} from "../libs/constants"
 import DarkModeManager from "../libs/dark-mode-manager"
 // components
 import GlobalContext from "../components/global-context"
@@ -15,6 +21,7 @@ import NavigationSection from "../components/navigation"
 import "../styles/globals.css"
 
 const App = ({ Component, pageProps }) => {
+  // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("")
 
   useEffect(() => {
@@ -79,10 +86,10 @@ const App = ({ Component, pageProps }) => {
       </Head>
       <div className="h-screen md:container md:flex">
         <Auth0Provider
-          domain={process.env.NEXT_PUBLIC_AUTH0_ISSUER_BASE_DOMAIN}
-          clientId={process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID}
+          domain={AUTH0_ISSUER_BASE_DOMAIN}
+          clientId={AUTH0_CLIENT_ID}
           redirectUri={typeof window !== "undefined" && window.location.origin}
-          audience={process.env.NEXT_PUBLIC_AUTH0_AUDIENCE}
+          audience={AUTH0_AUDIENCE}
           onRedirectCallback={onRedirectCallback}
           useRefreshTokens={true}
           cacheLocation="localstorage"
@@ -90,7 +97,7 @@ const App = ({ Component, pageProps }) => {
           <GlobalContext.Provider value={globalContext}>
             <Session>
               <NavigationSection />
-              <div className="shrink grow overflow-x-hidden px-8 py-2 text-black dark:text-white">
+              <div className="shrink grow px-8 py-2 text-black dark:text-white">
                 <Component {...pageProps} />
               </div>
             </Session>

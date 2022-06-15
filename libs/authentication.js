@@ -12,16 +12,12 @@ import { API_URL } from "../libs/constants"
 
 /**
  * Called by Auth0 when the user is redirected back from the home page after signing into Auth0.
- * This redirects back to the page the user viewed before they signed in. `appState` gets set when
- * we call `loginWithRedirect()`.
+ * This redirects back to the page the user viewed before they signed in. The timing can vary, but
+ * session-context handles this usually.
  * @param {object} appState Auth0 app state saved when signing out
  */
 export const onRedirectCallback = (appState) => {
-  setTimeout(() => {
-    // If we redirect too soon, the `session` cookie element doesn't get updated to the signed-in
-    // value yet. A one-second delay seems to allow this update to happen.
-    Router.replace(appState?.returnTo || "/")
-  }, 1000)
+  Router.replace(appState?.returnTo || "/")
 }
 
 /**
@@ -65,12 +61,11 @@ const reqLogin = async (accessToken, csrfToken) => {
 
 /**
  * Handle the process of logging the user into the server. It first retrieves the CSRF token from
- * the server and the user's access token from auth0.
+ * the server session and the user's access token from auth0.
  * @param {function} getAccessTokenSilently Auth0 function to retrieve the current access token
  * @returns {object} Session object including the CSRF token
  */
-export const loginToServer = async (getAccessTokenSilently) => {
-  const session = await getSession()
+export const loginToServer = async (session, getAccessTokenSilently) => {
   const accessToken = await getAccessTokenSilently()
   return await reqLogin(accessToken, session._csrft_)
 }
