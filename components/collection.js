@@ -139,22 +139,30 @@ const flattenCollection = (collection) => {
  * Display the buttons to view the collection as a table or list.
  */
 export const CollectionViewSwitch = () => {
-  const { currentCollectionView } = useContext(GlobalContext)
+  const { collectionView } = useContext(GlobalContext)
 
   return (
     <div className="flex gap-1 pb-2">
       <Button.Icon
-        type="info"
+        type={
+          collectionView.currentCollectionView === COLLECTION_VIEW.LIST
+            ? "success"
+            : "info"
+        }
         onClick={() =>
-          currentCollectionView.setCollectionView(COLLECTION_VIEW.LIST)
+          collectionView.setCurrentCollectionView(COLLECTION_VIEW.LIST)
         }
       >
         <ViewListIcon />
       </Button.Icon>
       <Button.Icon
-        type="info"
+        type={
+          collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
+            ? "success"
+            : "info"
+        }
         onClick={() =>
-          currentCollectionView.setCollectionView(COLLECTION_VIEW.TABLE)
+          collectionView.setCurrentCollectionView(COLLECTION_VIEW.TABLE)
         }
       >
         <TableIcon />
@@ -186,15 +194,15 @@ CollectionHeader.propTypes = {
  */
 export const CollectionContent = ({ collection, children }) => {
   // Collection view setting and /profiles content
-  const { currentCollectionView, profiles } = useContext(GlobalContext)
+  const { collectionView, profiles } = useContext(GlobalContext)
 
-  if (currentCollectionView.collectionView === COLLECTION_VIEW.LIST) {
+  if (collectionView.currentCollectionView === COLLECTION_VIEW.LIST) {
     // Display list view.
     return <>{children}</>
   }
 
   if (
-    currentCollectionView.collectionView === COLLECTION_VIEW.TABLE &&
+    collectionView.currentCollectionView === COLLECTION_VIEW.TABLE &&
     profiles
   ) {
     // Display table view.
