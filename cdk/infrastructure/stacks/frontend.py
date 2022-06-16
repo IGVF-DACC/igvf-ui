@@ -23,11 +23,6 @@ from shared_infrastructure.igvf_dev.network import DemoNetwork
 from shared_infrastructure.igvf_dev.domain import DemoDomain
 
 
-
-def delme():
-    pass
-def delme2():
-    pass
 class FrontendStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, *, branch, **kwargs) -> None:
