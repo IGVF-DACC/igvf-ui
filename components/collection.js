@@ -47,7 +47,7 @@ CollectionCount.propTypes = {
  * Displays an entire collection of items.
  */
 export const Collection = ({ children }) => {
-  return <div className="overflow-hidden">{children}</div>
+  return <div>{children}</div>
 }
 
 /**
@@ -139,6 +139,7 @@ const flattenCollection = (collection) => {
  * Display the buttons to view the collection as a table or list.
  */
 export const CollectionViewSwitch = () => {
+  // Get the current collection view from the global context.
   const { collectionView } = useContext(GlobalContext)
 
   return (
@@ -149,6 +150,7 @@ export const CollectionViewSwitch = () => {
             ? "success"
             : "info"
         }
+        label="Select collection list view"
         onClick={() =>
           collectionView.setCurrentCollectionView(COLLECTION_VIEW.LIST)
         }
@@ -161,6 +163,7 @@ export const CollectionViewSwitch = () => {
             ? "success"
             : "info"
         }
+        label="Select collection table view"
         onClick={() =>
           collectionView.setCurrentCollectionView(COLLECTION_VIEW.TABLE)
         }
