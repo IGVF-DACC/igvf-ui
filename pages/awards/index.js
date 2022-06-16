@@ -1,41 +1,49 @@
 // node_modules
 import PropTypes from "prop-types"
-import { useContext } from "react"
 // components
 import Breadcrumbs from "../../components/breadcrumbs"
-import { CollectionCount } from "../../components/collection"
-import GlobalContext from "../../components/global-context"
+import {
+  Collection,
+  CollectionContent,
+  CollectionHeader,
+  CollectionItem,
+  CollectionItemName,
+} from "../../components/collection"
 import NoCollectionData from "../../components/no-collection-data"
 import PagePreamble from "../../components/page-preamble"
-import Report from "../../components/report"
-import SortableGrid from "../../components/sortable-grid"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
-import reportColumns from "../../libs/report-columns"
 
 const AwardList = ({ awards }) => {
-  const { profiles } = useContext(GlobalContext)
-  if (profiles) {
-    const columns = reportColumns(profiles.Award)
-    return (
-      <>
-        <Breadcrumbs />
-        <PagePreamble />
+  return (
+    <>
+      <Breadcrumbs />
+      <PagePreamble />
+      <Collection>
         {awards.length > 0 ? (
           <>
-            <CollectionCount count={awards.length} />
-            <Report>
-              <SortableGrid data={awards} columns={columns} />
-            </Report>
+            <CollectionHeader count={awards.length} />
+            <CollectionContent collection={awards}>
+              {awards.map((award) => (
+                <CollectionItem
+                  key={award.uuid}
+                  href={award["@id"]}
+                  label={`Award ${award.name}`}
+                  status={award.status}
+                >
+                  <CollectionItemName>{award.name}</CollectionItemName>
+                  <div>{award.title}</div>
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
         )}
-      </>
-    )
-  }
-  return null
+      </Collection>
+    </>
+  )
 }
 
 AwardList.propTypes = {
@@ -54,7 +62,7 @@ export const getServerSideProps = async ({ req }) => {
       awards: awards["@graph"],
       pageContext: { title: awards.title },
       breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
+      sessionCookie: req?.headers?.cookie || "",
     },
   }
 }

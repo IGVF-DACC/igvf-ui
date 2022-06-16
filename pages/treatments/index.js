@@ -5,7 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
   CollectionContent,
-  CollectionCount,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
@@ -23,7 +23,7 @@ const TreatmentList = ({ treatments }) => {
       <Collection>
         {treatments.length > 0 ? (
           <>
-            <CollectionCount count={treatments.length} />
+            <CollectionHeader count={treatments.length} />
             <CollectionContent collection={treatments}>
               {treatments.map((treatment) => (
                 <CollectionItem
@@ -67,7 +67,6 @@ export const getServerSideProps = async ({ req }) => {
       treatments: treatments["@graph"],
       pageContext: {
         title: treatments.title,
-        type: treatments["@graph"][0]?.["@type"][0] || "",
       },
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,

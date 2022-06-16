@@ -1,9 +1,14 @@
 // node_modules
-import { ChevronDoubleRightIcon } from "@heroicons/react/solid"
+import {
+  ChevronDoubleRightIcon,
+  TableIcon,
+  ViewListIcon,
+} from "@heroicons/react/solid"
 import Link from "next/link"
 import PropTypes from "prop-types"
 import { useContext } from "react"
 // components
+import Button from "./button"
 import GlobalContext from "./global-context"
 import Report from "../components/report"
 import SortableGrid from "./sortable-grid"
@@ -108,23 +113,104 @@ export const CollectionItemName = ({ children }) => {
 }
 
 /**
- * Display either a list or report view of the collection.
+ *
+ */
+const flattenCollection = (collection) => {
+  const flattenedCollection = collection.map((item) => {
+    const flattenedItem = {}
+    Object.keys(item).forEach((key) => {
+      const propType = typeof item[key]
+      if (propType === "object") {
+        // Generally, object, array, or null (which is OK to stringify to 'null').
+        flattenedItem[key] = JSON.stringify(item[key])
+      } else if (propType !== "function" && propType !== "undefined") {
+        // Generally, any simple value.
+        flattenedItem[key] = item[key]
+      }
+      // Anything else (function, undefined) is ignored.
+    })
+    return flattenedItem
+  })
+  return flattenedCollection
+}
+
+/**
+ * Display the buttons to view the collection as a table or list.
+ */
+export const CollectionViewSwitch = () => {
+  const { currentCollectionView } = useContext(GlobalContext)
+
+  return (
+    <div className="flex gap-1 pb-2">
+      <Button.Icon
+        type="info"
+        onClick={() =>
+          currentCollectionView.setCollectionView(COLLECTION_VIEW.LIST)
+        }
+      >
+        <ViewListIcon />
+      </Button.Icon>
+      <Button.Icon
+        type="info"
+        onClick={() =>
+          currentCollectionView.setCollectionView(COLLECTION_VIEW.TABLE)
+        }
+      >
+        <TableIcon />
+      </Button.Icon>
+    </div>
+  )
+}
+
+/**
+ * Displays information above the collection display.
+ */
+export const CollectionHeader = ({ count }) => {
+  return (
+    <div className="flex justify-between">
+      <CollectionCount count={count} />
+      <CollectionViewSwitch />
+    </div>
+  )
+}
+
+CollectionHeader.propTypes = {
+  // Number of items in the collection
+  count: PropTypes.number.isRequired,
+}
+
+/**
+ * Display either a list or report view of the collection. For a list, the `children` provides the
+ * content. For the report view, the content comes from this use of the `Report` component.
  */
 export const CollectionContent = ({ collection, children }) => {
-  const { currentCollectionView, profiles, page } = useContext(GlobalContext)
+  // Collection view setting and /profiles content
+  const { currentCollectionView, profiles } = useContext(GlobalContext)
 
   if (currentCollectionView.collectionView === COLLECTION_VIEW.LIST) {
-    // Display list view
+    // Display list view.
     return <>{children}</>
   }
-  if (profiles) {
-    const columns = reportColumns(profiles[page.type])
-    return (
-      <Report>
-        <SortableGrid data={collection} columns={columns} />
-      </Report>
-    )
+
+  if (
+    currentCollectionView.collectionView === COLLECTION_VIEW.TABLE &&
+    profiles
+  ) {
+    // Display report view.
+    const flattenedCollection = flattenCollection(collection)
+    const collectionType = collection[0]?.["@type"][0] || ""
+    if (collectionType) {
+      const columns = reportColumns(profiles[collectionType])
+      return (
+        <>
+          <Report>
+            <SortableGrid data={flattenedCollection} columns={columns} />
+          </Report>
+        </>
+      )
+    }
   }
+
   return null
 }
 

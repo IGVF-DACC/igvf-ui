@@ -5,7 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
   CollectionContent,
-  CollectionCount,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
@@ -23,8 +23,8 @@ const TissueList = ({ tissues }) => {
       <Collection>
         {tissues.length > 0 ? (
           <>
-            <CollectionCount count={tissues.length} />
-            <CollectionContent>
+            <CollectionHeader count={tissues.length} />
+            <CollectionContent collection={tissues}>
               {tissues.map((tissue) => (
                 <CollectionItem
                   key={tissue.uuid}
@@ -57,7 +57,7 @@ TissueList.propTypes = {
 export default TissueList
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie)
+  const request = new Request(req?.headers?.cookie || "")
   const tissues = await request.getCollection("tissues")
   const breadcrumbs = await buildBreadcrumbs(tissues, "title")
   return {
@@ -65,7 +65,7 @@ export const getServerSideProps = async ({ req }) => {
       tissues: tissues["@graph"],
       pageContext: { title: tissues.title },
       breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
+      sessionCookie: req?.headers?.cookie || "",
     },
   }
 }

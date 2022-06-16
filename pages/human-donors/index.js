@@ -4,7 +4,8 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
@@ -22,17 +23,19 @@ const HumanDonorsList = ({ donors }) => {
       <Collection>
         {donors.length > 0 ? (
           <>
-            <CollectionCount count={donors.length} />
-            {donors.map((donor) => (
-              <CollectionItem
-                key={donor.uuid}
-                href={donor["@id"]}
-                label={`Human Donor ${donor.accession}`}
-                status={donor.status}
-              >
-                <CollectionItemName>{donor.accession}</CollectionItemName>
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={donors.length} />
+            <CollectionContent collection={donors}>
+              {donors.map((donor) => (
+                <CollectionItem
+                  key={donor.uuid}
+                  href={donor["@id"]}
+                  label={`Human Donor ${donor.accession}`}
+                  status={donor.status}
+                >
+                  <CollectionItemName>{donor.accession}</CollectionItemName>
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />

@@ -26,7 +26,7 @@ const App = ({ Component, pageProps }) => {
   const [sessionCookie, setSessionCookie] = useState("")
   const [profiles, setProfiles] = useState(null)
   // Selects between "list" and "table" collection views
-  const [collectionView, setCollectionView] = useState(COLLECTION_VIEW.TABLE)
+  const [collectionView, setCollectionView] = useState(COLLECTION_VIEW.LIST)
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.

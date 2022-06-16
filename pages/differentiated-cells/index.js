@@ -4,7 +4,8 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
@@ -22,27 +23,29 @@ const DifferentiatedCellList = ({ differentiatedCells }) => {
       <Collection>
         {differentiatedCells.length > 0 ? (
           <>
-            <CollectionCount count={differentiatedCells.length} />
-            {differentiatedCells.map((differentiatedCell) => (
-              <CollectionItem
-                key={differentiatedCell.uuid}
-                href={differentiatedCell["@id"]}
-                label={`Differentiated Cell ${differentiatedCell.accession}`}
-                status={differentiatedCell.status}
-              >
-                <CollectionItemName>
-                  {differentiatedCell.accession}
-                </CollectionItemName>
-                {differentiatedCell.organism && (
-                  <div>{differentiatedCell.organism}</div>
-                )}
-                {differentiatedCell.nih_institutional_certification && (
-                  <div>
-                    {differentiatedCell.nih_institutional_certification}
-                  </div>
-                )}
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={differentiatedCells.length} />
+            <CollectionContent collection={differentiatedCells}>
+              {differentiatedCells.map((differentiatedCell) => (
+                <CollectionItem
+                  key={differentiatedCell.uuid}
+                  href={differentiatedCell["@id"]}
+                  label={`Differentiated Cell ${differentiatedCell.accession}`}
+                  status={differentiatedCell.status}
+                >
+                  <CollectionItemName>
+                    {differentiatedCell.accession}
+                  </CollectionItemName>
+                  {differentiatedCell.organism && (
+                    <div>{differentiatedCell.organism}</div>
+                  )}
+                  {differentiatedCell.nih_institutional_certification && (
+                    <div>
+                      {differentiatedCell.nih_institutional_certification}
+                    </div>
+                  )}
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />

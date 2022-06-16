@@ -4,7 +4,8 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
@@ -23,18 +24,20 @@ const CellLineList = ({ cellLines }) => {
       <Collection>
         {cellLines.length > 0 ? (
           <>
-            <CollectionCount count={cellLines.length} />
-            {cellLines.map((sample) => (
-              <CollectionItem
-                key={sample.uuid}
-                href={sample["@id"]}
-                label={`Cell Line ${sample.title}`}
-                status={sample.status}
-              >
-                <CollectionItemName>{sample.accession}</CollectionItemName>
-                <SourceProp source={sample.source} />
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={cellLines.length} />
+            <CollectionContent collection={cellLines}>
+              {cellLines.map((sample) => (
+                <CollectionItem
+                  key={sample.uuid}
+                  href={sample["@id"]}
+                  label={`Cell Line ${sample.title}`}
+                  status={sample.status}
+                >
+                  <CollectionItemName>{sample.accession}</CollectionItemName>
+                  <SourceProp source={sample.source} />
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
