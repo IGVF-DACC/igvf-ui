@@ -91,7 +91,7 @@ jobs:
       - checkout:
           path: ~/igvf-ui
       - run: pip install pre-commit==2.17.0
-      - run: pre-commit run --all-files
+      - run: pre-commit run --files $(git ls-files)
 
   cdk-mypy:
     docker:
