@@ -17,9 +17,6 @@ from shared_infrastructure.igvf_dev.notification import Notification
 
 from infrastructure.stacks.frontend import FrontendStack
 
-from infrastructure.naming import prepend_branch_name
-from infrastructure.naming import prepend_project_name
-
 
 class DevStage(Stage):
 
@@ -122,12 +119,7 @@ class PipelineStack(Stack):
     def _add_demo_deploy_stage(self) -> None:
         stage = DevStage(
             self,
-            prepend_project_name(
-                prepend_branch_name(
-                    self.branch,
-                    'DeployDemo',
-                )
-            ),
+            'DeployDemo',
             branch=self.branch,
         )
         self.code_pipeline.add_stage(
