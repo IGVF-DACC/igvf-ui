@@ -10,7 +10,7 @@ import { useContext } from "react"
 // components
 import Button from "./button"
 import GlobalContext from "./global-context"
-import Report from "../components/report"
+import TableView from "./table-view"
 import SortableGrid from "./sortable-grid"
 import Status from "./status"
 // libs
@@ -113,7 +113,8 @@ export const CollectionItemName = ({ children }) => {
 }
 
 /**
- *
+ * Copy the given collection with any non-simple properties of the collection objects converted to
+ * a JSON string. Any functions or undefined properties get omitted from the returned copy.
  */
 const flattenCollection = (collection) => {
   const flattenedCollection = collection.map((item) => {
@@ -196,16 +197,16 @@ export const CollectionContent = ({ collection, children }) => {
     currentCollectionView.collectionView === COLLECTION_VIEW.TABLE &&
     profiles
   ) {
-    // Display report view.
+    // Display table view.
     const flattenedCollection = flattenCollection(collection)
     const collectionType = collection[0]?.["@type"][0] || ""
     if (collectionType) {
       const columns = reportColumns(profiles[collectionType])
       return (
         <>
-          <Report>
+          <TableView>
             <SortableGrid data={flattenedCollection} columns={columns} />
-          </Report>
+          </TableView>
         </>
       )
     }

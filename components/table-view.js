@@ -1,7 +1,7 @@
 import { DataGridContainer } from "./data-grid"
 
-const Report = ({ children }) => {
+const TableView = ({ children }) => {
   return <DataGridContainer>{children}</DataGridContainer>
 }
 
-export default Report
+export default TableView
