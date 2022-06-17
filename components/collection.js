@@ -6,13 +6,14 @@ import {
 } from "@heroicons/react/solid"
 import Link from "next/link"
 import PropTypes from "prop-types"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 // components
 import Button from "./button"
 import GlobalContext from "./global-context"
-import TableView from "./table-view"
+import NoContent from "./no-content"
 import SortableGrid from "./sortable-grid"
 import Status from "./status"
+import TableView from "./table-view"
 // libs
 import reportColumns from "../libs/report-columns"
 
@@ -136,6 +137,19 @@ const flattenCollection = (collection) => {
 }
 
 /**
+ * Copy the columns array intended for <SortableGrid> but with any columns with ids matching an
+ * entry in `hiddenColumns` omitted.
+ * @param {array} columns Sortable grid columns to filter
+ * @param {array} hiddenColumns Ids of columns to hide
+ * @returns {array} `columns` copy but with hidden columns removed
+ */
+const filterHiddenColumns = (columns, hiddenColumns) => {
+  return columns.filter((column) => {
+    return !hiddenColumns.includes(column.id)
+  })
+}
+
+/**
  * Display the buttons to view the collection as a table or list.
  */
 export const CollectionViewSwitch = () => {
@@ -199,6 +213,8 @@ CollectionHeader.propTypes = {
 export const CollectionContent = ({ collection, children }) => {
   // Collection view setting and /profiles content
   const { collectionView, profiles } = useContext(GlobalContext)
+  // Track the user's selected hidden columns
+  const [hiddenColumns, setHiddenColumns] = useState([])
 
   if (collectionView.currentCollectionView === COLLECTION_VIEW.LIST) {
     // Display list view.
@@ -212,16 +228,23 @@ export const CollectionContent = ({ collection, children }) => {
     // Display table view.
     const flattenedCollection = flattenCollection(collection)
     const collectionType = collection[0]?.["@type"][0] || ""
-    if (collectionType) {
+    if (collectionType && profiles) {
       const columns = reportColumns(profiles[collectionType])
+      const filteredColumns = filterHiddenColumns(columns, hiddenColumns)
       return (
         <>
           <TableView>
-            <SortableGrid data={flattenedCollection} columns={columns} />
+            <SortableGrid
+              data={flattenedCollection}
+              columns={filteredColumns}
+            />
           </TableView>
         </>
       )
     }
+
+    // No profiles loaded or no collection type in the collection data.
+    return <NoContent>No displayable collection data</NoContent>
   }
 
   return null

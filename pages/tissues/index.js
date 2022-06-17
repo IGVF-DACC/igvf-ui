@@ -9,7 +9,7 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
+import { NoCollectionData } from "../../components/no-content"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"

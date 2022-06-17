@@ -3,7 +3,7 @@ import Link from "next/link"
 import PropTypes from "prop-types"
 // components
 import Breadcrumbs from "../../components/breadcrumbs"
-import NoCollectionData from "../../components/no-collection-data"
+import { NoCollectionData } from "../../components/no-content"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
