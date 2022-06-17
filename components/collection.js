@@ -6,8 +6,7 @@ import {
 } from "@heroicons/react/solid"
 import Link from "next/link"
 import PropTypes from "prop-types"
-import { useContext, useEffect } from "react"
-import url from "url"
+import { useContext } from "react"
 // components
 import Button from "./button"
 import GlobalContext from "./global-context"
@@ -129,7 +128,7 @@ const flattenCollection = (collection) => {
         // Generally, any simple value.
         flattenedItem[key] = item[key]
       }
-      // Anything else (function, undefined) is ignored.
+      // Anything else (function, undefined) gets ignored.
     })
     return flattenedItem
   })
@@ -143,15 +142,18 @@ export const CollectionViewSwitch = () => {
   // Get the current collection view from the global context.
   const { collectionView } = useContext(GlobalContext)
 
+  const isListSelected =
+    collectionView.currentCollectionView === COLLECTION_VIEW.LIST
+  const isTableSelected =
+    collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
+
   return (
     <div className="flex gap-1 pb-2">
       <Button.Icon
-        type={
-          collectionView.currentCollectionView === COLLECTION_VIEW.LIST
-            ? "success"
-            : "info"
-        }
-        label="Select collection list view"
+        type={isListSelected ? "success" : "info"}
+        label={`Select collection list view${
+          isListSelected ? " (selected)" : ""
+        }`}
         onClick={() =>
           collectionView.setCurrentCollectionView(COLLECTION_VIEW.LIST)
         }
@@ -159,12 +161,10 @@ export const CollectionViewSwitch = () => {
         <ViewListIcon />
       </Button.Icon>
       <Button.Icon
-        type={
-          collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
-            ? "success"
-            : "info"
-        }
-        label="Select collection table view"
+        type={isTableSelected ? "success" : "info"}
+        label={`Select collection table view${
+          isTableSelected ? " (selected)" : ""
+        }`}
         onClick={() =>
           collectionView.setCurrentCollectionView(COLLECTION_VIEW.TABLE)
         }
@@ -199,10 +199,6 @@ CollectionHeader.propTypes = {
 export const CollectionContent = ({ collection, children }) => {
   // Collection view setting and /profiles content
   const { collectionView, profiles } = useContext(GlobalContext)
-
-  useEffect(() => {
-    console.log("URL %s", window.location.href)
-  })
 
   if (collectionView.currentCollectionView === COLLECTION_VIEW.LIST) {
     // Display list view.
