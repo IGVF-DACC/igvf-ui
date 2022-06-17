@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/solid"
 import Link from "next/link"
 import PropTypes from "prop-types"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 // components
 import Button from "./button"
 import GlobalContext from "./global-context"
@@ -311,6 +311,28 @@ const sortColumns = (columns) => {
 }
 
 /**
+ * Retrieve the array of hidden columns from localStorage for the given type.
+ * @param {string} type The @type of the object whose hidden columns we need from localStorage
+ * @returns {array} Array of column ids to hide for the given @type; null if nothing stored
+ */
+const loadStoredHiddenColumns = (type) => {
+  const hiddenColumns = localStorage.getItem(`hidden-columns-${type}`)
+  if (hiddenColumns) {
+    return JSON.parse(hiddenColumns)
+  }
+  return null
+}
+
+/**
+ * Save the array of hidden columns to localStorage for the given type.
+ * @param {string} type The @type of the object whose hidden columns we save to localStorage
+ * @param {array} hiddenColumns Array of column ids to hide for the given @type
+ */
+const saveStoredHiddenColumns = (type, hiddenColumns) => {
+  localStorage.setItem(`hidden-columns-${type}`, JSON.stringify(hiddenColumns))
+}
+
+/**
  * Display either a list or report view of the collection. For a list, the `children` provides the
  * content. For the report view, the content comes from this use of the `Report` component.
  */
@@ -319,29 +341,52 @@ export const CollectionContent = ({ collection, children }) => {
   const { collectionView, profiles } = useContext(GlobalContext)
   // Track the user's selected hidden columns
   const [hiddenColumns, setHiddenColumns] = useState([])
+  // Get the collection type from the first collection item, if any
+  const collectionType = collection[0]?.["@type"][0] || ""
+  // True if the user views the list view
+  const isListView =
+    collectionView.currentCollectionView === COLLECTION_VIEW.LIST
+  // True if the user views the table view
+  const isTableView =
+    profiles && collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
 
-  const composeHiddenColumns = (selectedColumnId, isNowHidden) => {
+  /**
+   * Called when the user changes which columns are visible and hidden through the column selector.
+   * It updates the `hiddenColumns` state and saves the new state to localStorage.
+   * @param {string} selectedColumnId The id of the column that was hidden or shown
+   * @param {boolean} isNowHidden True if the column is now hidden; false if it is now visible
+   */
+  const updateHiddenColumns = (selectedColumnId, isNowHidden) => {
+    let newHiddenColumns = []
     if (isNowHidden) {
-      setHiddenColumns(hiddenColumns.concat(selectedColumnId))
+      newHiddenColumns = hiddenColumns.concat(selectedColumnId)
     } else {
-      setHiddenColumns(
-        hiddenColumns.filter((columnId) => columnId !== selectedColumnId)
+      newHiddenColumns = hiddenColumns.filter(
+        (columnId) => columnId !== selectedColumnId
       )
     }
+    setHiddenColumns(newHiddenColumns)
+    saveStoredHiddenColumns(collectionType, newHiddenColumns)
   }
 
-  if (collectionView.currentCollectionView === COLLECTION_VIEW.LIST) {
+  useEffect(() => {
+    if (isTableView) {
+      // Load the hidden columns for the current collection type from localStorage.
+      const storedHiddenColumns = loadStoredHiddenColumns(collectionType)
+      if (storedHiddenColumns) {
+        setHiddenColumns(storedHiddenColumns)
+      }
+    }
+  }, [collection.columns, collectionType, isTableView])
+
+  if (isListView) {
     // Display list view.
     return <>{children}</>
   }
 
-  if (
-    collectionView.currentCollectionView === COLLECTION_VIEW.TABLE &&
-    profiles
-  ) {
+  if (isTableView) {
     // Display table view.
     const flattenedCollection = flattenCollection(collection)
-    const collectionType = collection[0]?.["@type"][0] || ""
     if (collectionType && profiles) {
       const columns = tableColumns(profiles[collectionType])
       const filteredColumns = filterHiddenColumns(columns, hiddenColumns)
@@ -350,7 +395,7 @@ export const CollectionContent = ({ collection, children }) => {
           <TableViewColumnSelector
             columns={columns}
             hiddenColumns={hiddenColumns}
-            onChange={composeHiddenColumns}
+            onChange={updateHiddenColumns}
           />
           <TableView>
             <SortableGrid
