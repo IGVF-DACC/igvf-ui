@@ -1,6 +1,6 @@
 // igvfd data server URL
-export const SERVER_URL = "https://igvfd-igvf-130-allow-trusted-cors-suffix.demo.igvf.org"
-export const API_URL = "https://igvfd-igvf-130-allow-trusted-cors-suffix.demo.igvf.org"
+export const SERVER_URL = "http://nginx:8000"
+export const API_URL = "http://localhost:8000"
 export const BACKEND_URL = "http://localhost:3000"
 
 // Auth0
