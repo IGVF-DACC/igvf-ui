@@ -29,18 +29,16 @@ import { Children } from "react"
  */
 const Modal = ({ isOpen, onClose, children }) => {
   return (
-    <Dialog
-      open={isOpen}
-      onClose={onClose}
-      className="fixed inset-0 dark:text-white"
-    >
+    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div
         className="fixed inset-0 bg-black/20 backdrop-blur-sm"
         aria-hidden="true"
       />
-      <Dialog.Panel className="mx-auto my-5 w-4/5 max-w-4xl overflow-hidden rounded-xl border border-modal-border bg-white drop-shadow-lg dark:bg-gray-900 xl:my-20">
-        {children}
-      </Dialog.Panel>
+      <div className="fixed inset-0 overflow-y-auto">
+        <Dialog.Panel className="mx-auto my-5 w-4/5 max-w-4xl overflow-hidden rounded-xl border border-modal-border bg-white drop-shadow-lg dark:bg-gray-900 xl:my-20">
+          {children}
+        </Dialog.Panel>
+      </div>
     </Dialog>
   )
 }

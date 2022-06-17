@@ -10,12 +10,13 @@ import { useContext, useState } from "react"
 // components
 import Button from "./button"
 import GlobalContext from "./global-context"
+import Modal from "./modal"
 import NoContent from "./no-content"
 import SortableGrid from "./sortable-grid"
 import Status from "./status"
 import TableView from "./table-view"
 // libs
-import reportColumns from "../libs/report-columns"
+import _ from "lodash"
 
 /**
  * States for the collection view display
@@ -207,6 +208,109 @@ CollectionHeader.propTypes = {
 }
 
 /**
+ * Display the actuator button to display the modal for the user to select which columns to
+ * display and which to hide. This also displays that modal.
+ */
+const TableViewColumnSelector = ({ columns, hiddenColumns, onChange }) => {
+  // True if the column-selection modal is open.
+  const [isOpen, setIsOpen] = useState(false)
+
+  // Display the selectable columns sorted by title.
+  const sortedColumns = sortColumns(columns)
+
+  return (
+    <>
+      <Button onClick={() => setIsOpen(true)}>Select Columns</Button>
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <Modal.Header>Select columns to display</Modal.Header>
+        <Modal.Body>
+          <fieldset>
+            <legend>Select the visible columns</legend>
+            <div className="md:flex md:flex-wrap">
+              {sortedColumns.map((column) => {
+                if (column.id !== "@id") {
+                  const isHidden = hiddenColumns.includes(column.id)
+                  return (
+                    <label
+                      key={column.id}
+                      className="block md:basis-1/2 lg:basis-1/3"
+                    >
+                      <input
+                        type="checkbox"
+                        label={column.label}
+                        checked={!isHidden}
+                        onChange={() => onChange(column.id, !isHidden)}
+                      />
+                      {column.title}
+                    </label>
+                  )
+                }
+
+                // Don't include @id property; @id is always visible.
+                return null
+              })}
+            </div>
+          </fieldset>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type="info" onClick={() => setIsOpen(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  )
+}
+
+TableViewColumnSelector.propTypes = {
+  // Array of columns to display
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Array of columns to hide
+  hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // Called when the user changes the selected columns
+  onChange: PropTypes.func.isRequired,
+}
+
+/**
+ * Generate a list of report columns for the sortable grid.
+ * @param {object} profile Profile for one schema object type
+ * @returns {object} Sortable grid columns
+ */
+const tableColumns = (profile) => {
+  return Object.keys(profile.properties).map((property) => {
+    const column = {
+      id: property,
+      title: profile.properties[property].title,
+    }
+
+    // @id property should display a link to the object displayed in the collection table.
+    if (property === "@id") {
+      column.display = ({ source }) => {
+        return (
+          <Link href={source["@id"]}>
+            <a>{source["@id"]}</a>
+          </Link>
+        )
+      }
+    }
+    return column
+  })
+}
+
+/**
+ * Sort the array of table columns by their titles, except for the column for the @id property.
+ * That one always sorts first.
+ * @param {array} columns Array of table columns to sort
+ * @returns {array} Copy of `columns` sorted by title, but with @id always first
+ */
+const sortColumns = (columns) => {
+  return _.sortBy(columns, [
+    (column) => column.id !== "@id",
+    (column) => (column.id === "@id" ? 0 : column.title),
+  ])
+}
+
+/**
  * Display either a list or report view of the collection. For a list, the `children` provides the
  * content. For the report view, the content comes from this use of the `Report` component.
  */
@@ -215,6 +319,16 @@ export const CollectionContent = ({ collection, children }) => {
   const { collectionView, profiles } = useContext(GlobalContext)
   // Track the user's selected hidden columns
   const [hiddenColumns, setHiddenColumns] = useState([])
+
+  const composeHiddenColumns = (selectedColumnId, isNowHidden) => {
+    if (isNowHidden) {
+      setHiddenColumns(hiddenColumns.concat(selectedColumnId))
+    } else {
+      setHiddenColumns(
+        hiddenColumns.filter((columnId) => columnId !== selectedColumnId)
+      )
+    }
+  }
 
   if (collectionView.currentCollectionView === COLLECTION_VIEW.LIST) {
     // Display list view.
@@ -229,10 +343,15 @@ export const CollectionContent = ({ collection, children }) => {
     const flattenedCollection = flattenCollection(collection)
     const collectionType = collection[0]?.["@type"][0] || ""
     if (collectionType && profiles) {
-      const columns = reportColumns(profiles[collectionType])
+      const columns = tableColumns(profiles[collectionType])
       const filteredColumns = filterHiddenColumns(columns, hiddenColumns)
       return (
         <>
+          <TableViewColumnSelector
+            columns={columns}
+            hiddenColumns={hiddenColumns}
+            onChange={composeHiddenColumns}
+          />
           <TableView>
             <SortableGrid
               data={flattenedCollection}
