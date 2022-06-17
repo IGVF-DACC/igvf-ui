@@ -17,7 +17,7 @@ import React, { Children, isValidElement, useState } from "react"
 import Icon from "./icon"
 import SiteLogo from "./logo"
 // libs
-import { AUTH_ERROR_URI, BACKEND_URL } from "../libs/constants"
+import { AUTH_ERROR_URI } from "../libs/constants"
 
 /**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
@@ -436,27 +436,6 @@ const NavigationSection = () => {
   const navigationClick = () => {
     setIsMobileMenuOpen(false)
   }
-
-  useEffect(() => {
-    getSession().then((session) => {
-      if (!isLoading) {
-        if (isAuthenticated && !session["auth.userid"]) {
-          // Auth0 has authenticated, but we haven't authenticated with the server yet.
-          loginToServer(getAccessTokenSilently).then((sessionProperties) => {
-            if (!sessionProperties) {
-              // Auth0 authenticated successfully, but we couldn't authenticate with the server.
-              // Log back out of Auth0 and go to an error page.
-              logout({ returnTo: `${window.location.origin}/auth-error` })
-            }
-          })
-        } else if (!isAuthenticated && session["auth.userid"]) {
-          // Auth0 has de-authenticated, but we have still authenticated with the server.
-          logoutFromServer()
-        }
-      }
-    })
-    // Once the user has logged into auth0, turn around and log into the server.
-  }, [getAccessTokenSilently, isAuthenticated, isLoading, logout])
 
   return (
     <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">
