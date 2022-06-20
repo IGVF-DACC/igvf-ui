@@ -81,10 +81,11 @@ SaveCancelControl.propTypes = {
 }
 
 function sortedJson(obj) {
-  if (obj instanceof Array) {
+  if (Array.isArray(obj)) {
     return obj.map((value) => sortedJson(value))
   }
-  if (obj instanceof Object) {
+  // We know it's not an array if we're here because the above `if`
+  if (typeof obj == "object") {
     const sorted = {}
     Object.keys(obj)
       .sort()
