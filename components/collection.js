@@ -8,8 +8,10 @@ import {
 import Link from "next/link"
 import PropTypes from "prop-types"
 import { useContext, useEffect, useState } from "react"
+import url from "url"
 // components
 import Button from "./button"
+import CopyButton from "./copy-button"
 import GlobalContext from "./global-context"
 import Modal from "./modal"
 import NoContent from "./no-content"
@@ -18,6 +20,7 @@ import Status from "./status"
 import TableView from "./table-view"
 // libs
 import _ from "lodash"
+import Router from "next/router"
 
 /**
  * States for the collection view display
@@ -273,6 +276,30 @@ TableViewColumnSelector.propTypes = {
 }
 
 /**
+ * Displays a button to copy the current collection URL along with a hashtag for the currently
+ * hidden columns so the user can share the collection view with selected columns hidden.
+ */
+const TableViewColumnUrlCopy = ({ hiddenColumns }) => {
+  const parsedUrl = url.parse(window.location.href)
+  const hashtag = `#hidden=${hiddenColumns.join()}`
+  parsedUrl.hash = hashtag
+  const hiddenColumnsUrl = url.format(parsedUrl)
+
+  return (
+    <CopyButton target={hiddenColumnsUrl}>
+      {() => {
+        return <>Copy Hidden Columns URL</>
+      }}
+    </CopyButton>
+  )
+}
+
+TableViewColumnUrlCopy.propTypes = {
+  // Array of column IDs of the hidden columns
+  hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
+}
+
+/**
  * Display a list of buttons for the hidden columns, and clicking a button removes that column
  * from the hidden columns list, causing it to appear again.
  */
@@ -282,17 +309,20 @@ const TableHiddenColumnViewer = ({ hiddenColumns, columns, onChange }) => {
     <div className="flex flex-wrap gap-0.5">
       {sortedHiddenColumns.map((columnId) => {
         const column = columns.find((column) => column.id === columnId)
-        return (
-          <Button
-            key={columnId}
-            type="success"
-            onClick={() => onChange(columnId, false)}
-            size="sm"
-          >
-            {column.title}
-            <XIcon className="ml-1 h-3 w-3" />
-          </Button>
-        )
+        if (column) {
+          return (
+            <Button
+              key={columnId}
+              type="success"
+              onClick={() => onChange(columnId, false)}
+              size="sm"
+            >
+              {column.title}
+              <XIcon className="ml-1 h-3 w-3" />
+            </Button>
+          )
+        }
+        return null
       })}
     </div>
   )
@@ -369,6 +399,26 @@ const saveStoredHiddenColumns = (type, hiddenColumns) => {
 }
 
 /**
+ * Extract a list of hidden column IDs from the URL. Hidden column get specified as:
+ * path#hidden=column_id_1,column_id_2,column_id_3
+ * Export for Jest testing.
+ * @param {string} urlHash Hashtag from browser URL
+ * @returns {array} Hidden column IDs
+ */
+export const extractHiddenColumnIds = (urlHash) => {
+  // First detect we have "hidden=something" in the hashtag.
+  const columnSpecifier = urlHash.match(/#hidden=(.+)/)
+  if (columnSpecifier) {
+    // Now get the comma-separated list of column IDs after the "hidden=".
+    const commaSeparatedColumnIds = columnSpecifier[1].match(/([a-zA-Z0-9]+)/g)
+    return commaSeparatedColumnIds || []
+  }
+
+  // URL doesn't have a form of path#hidden=column1,column2,column3
+  return []
+}
+
+/**
  * Display either a list or report view of the collection. For a list, the `children` provides the
  * content. For the report view, the content comes from this use of the `Report` component.
  */
@@ -377,12 +427,15 @@ export const CollectionContent = ({ collection, children }) => {
   const { collectionView, profiles } = useContext(GlobalContext)
   // Track the user's selected hidden columns
   const [hiddenColumns, setHiddenColumns] = useState([])
+  // True if hidden columns determine by hashtag instead of localStorage
+  const [isHiddenColumnsFromHashtag, setIsHiddenColumnsFromHashtag] =
+    useState(false)
   // Get the collection type from the first collection item, if any
   const collectionType = collection[0]?.["@type"][0] || ""
-  // True if the user views the list view
+  // True if the user has selected the list view
   const isListView =
     collectionView.currentCollectionView === COLLECTION_VIEW.LIST
-  // True if the user views the table view
+  // True if the user has selected the table view
   const isTableView =
     profiles && collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
 
@@ -405,15 +458,49 @@ export const CollectionContent = ({ collection, children }) => {
     saveStoredHiddenColumns(collectionType, newHiddenColumns)
   }
 
+  /**
+   * Called when the user clicks the button to save the hashtag-specified hidden columns to
+   * localStorage.
+   */
+  const saveHashtagHiddenColumns = () => {
+    // Save current hidden columns to localStorage.
+    saveStoredHiddenColumns(collectionType, hiddenColumns)
+    setIsHiddenColumnsFromHashtag(false)
+
+    // Update the URL to remove the hashtag.
+    const parsedUrl = url.parse(window.location.href)
+    parsedUrl.hash = null
+    const newUrl = url.format(parsedUrl)
+    Router.replace(newUrl)
+  }
+
   useEffect(() => {
+    const hashtag = url.parse(window.location.href).hash || ""
+    const hashedHiddenColumns = hashtag ? extractHiddenColumnIds(hashtag) : []
+    if (hashedHiddenColumns.length > 0) {
+      collectionView.setCurrentCollectionView(COLLECTION_VIEW.TABLE)
+    }
+  }, [collectionView])
+
+  useEffect(() => {
+    // Get the current collection view from the global context.
     if (isTableView) {
-      // Load the hidden columns for the current collection type from localStorage.
-      const storedHiddenColumns = loadStoredHiddenColumns(collectionType)
-      if (storedHiddenColumns) {
-        setHiddenColumns(storedHiddenColumns)
+      const hashtag = url.parse(window.location.href).hash || ""
+      const hashedHiddenColumns = hashtag ? extractHiddenColumnIds(hashtag) : []
+      if (hashedHiddenColumns.length > 0) {
+        // Current browser URL has a list of hidden columns. Ignore localStorage and use these
+        // instead.
+        setHiddenColumns(hashedHiddenColumns)
+        setIsHiddenColumnsFromHashtag(true)
+      } else {
+        // Load the hidden columns for the current collection type from localStorage.
+        const storedHiddenColumns = loadStoredHiddenColumns(collectionType)
+        if (storedHiddenColumns) {
+          setHiddenColumns(storedHiddenColumns)
+        }
       }
     }
-  }, [collection.columns, collectionType, isTableView])
+  }, [collectionType, isTableView])
 
   if (isListView) {
     // Display list view.
@@ -428,11 +515,20 @@ export const CollectionContent = ({ collection, children }) => {
       const filteredColumns = filterHiddenColumns(columns, hiddenColumns)
       return (
         <>
-          <TableViewColumnSelector
-            columns={columns}
-            hiddenColumns={hiddenColumns}
-            onChange={updateHiddenColumns}
-          />
+          {!isHiddenColumnsFromHashtag ? (
+            <>
+              <TableViewColumnSelector
+                columns={columns}
+                hiddenColumns={hiddenColumns}
+                onChange={updateHiddenColumns}
+              />
+              <TableViewColumnUrlCopy hiddenColumns={hiddenColumns} />
+            </>
+          ) : (
+            <Button onClick={saveHashtagHiddenColumns}>
+              Save Hidden Columns
+            </Button>
+          )}
           <TableHiddenColumnViewer
             columns={columns}
             hiddenColumns={hiddenColumns}
