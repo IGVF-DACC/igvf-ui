@@ -5,6 +5,7 @@ import React, { useContext, useState, useEffect } from "react"
 import Button from "./button"
 import EditJson, { EditLink, canEdit } from "./edit-func"
 import SessionContext from "./session-context"
+import { useAuthenticated } from './authentication'
 import { useRouter } from "next/router"
 // libs
 import Fetch from "../libs/sessionFetch"
@@ -117,12 +118,10 @@ SavedErrors.propTypes = {
 const EditPage = ({ item }) => {
   const path = item["@id"]
 
+  const loggedIn = useAuthenticated()
+
   const editable = (session, item) => {
     // cannot edit if not logged in or object not editable
-    const loggedIn =
-      session != null &&
-      "auth.userid" in session &&
-      session["auth.userid"].length > 0
     const editable = canEdit(item)
     return loggedIn && editable
   }
@@ -185,7 +184,6 @@ const EditPage = ({ item }) => {
     })
     const value = sortedJson(JSON.parse(text))
     const fetch = new Fetch(session)
-    // updateItem(path, value, session).
     fetch.updateObject(path, "PATCH", value).
     then((response) => {
       if (response.ok) {
