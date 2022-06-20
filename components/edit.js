@@ -155,8 +155,6 @@ const EditPage = ({ item }) => {
   useEffect(() => {
     const fetch = new Fetch(session)
     fetch.getObject(`${path}?frame=edit`, "GET").then((value) => {
-      console.log(value)
-      console.log(Object.getOwnPropertyNames(Response))
       const json = value.json()
       return json
     }).then((value) => {
