@@ -59,7 +59,7 @@ const buttonFillTypeClasses = {
  * Tailwind CSS classes for each of the button sizes.
  */
 const buttonSizeClasses = {
-  sm: "px-3 py-1 text-xs",
+  sm: "px-2 py-0.5 text-xs",
   md: "px-4 py-1 text-sm",
   lg: "px-6 py-2 text-base",
 }
@@ -85,7 +85,7 @@ const Button = ({
     <button
       type="button"
       onClick={onClick}
-      className={`block rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
+      className={`flex items-center rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
       aria-label={label}
       disabled={!enabled}
     >

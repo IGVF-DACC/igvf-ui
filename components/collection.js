@@ -3,6 +3,7 @@ import {
   ChevronDoubleRightIcon,
   TableIcon,
   ViewListIcon,
+  XIcon,
 } from "@heroicons/react/solid"
 import Link from "next/link"
 import PropTypes from "prop-types"
@@ -272,6 +273,41 @@ TableViewColumnSelector.propTypes = {
 }
 
 /**
+ * Display a list of buttons for the hidden columns, and clicking a button removes that column
+ * from the hidden columns list, causing it to appear again.
+ */
+const TableHiddenColumnViewer = ({ hiddenColumns, columns, onChange }) => {
+  const sortedHiddenColumns = _.sortBy(hiddenColumns)
+  return (
+    <div className="flex flex-wrap gap-0.5">
+      {sortedHiddenColumns.map((columnId) => {
+        const column = columns.find((column) => column.id === columnId)
+        return (
+          <Button
+            key={columnId}
+            type="success"
+            onClick={() => onChange(columnId, false)}
+            size="sm"
+          >
+            {column.title}
+            <XIcon className="ml-1 h-3 w-3" />
+          </Button>
+        )
+      })}
+    </div>
+  )
+}
+
+TableHiddenColumnViewer.propTypes = {
+  // Columns to hide
+  hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // <SortTable> definitions for all columns, hidden and visible
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Called to clear the hidden column (make it visible)
+  onChange: PropTypes.func.isRequired,
+}
+
+/**
  * Generate a list of report columns for the sortable grid.
  * @param {object} profile Profile for one schema object type
  * @returns {object} Sortable grid columns
@@ -393,6 +429,11 @@ export const CollectionContent = ({ collection, children }) => {
       return (
         <>
           <TableViewColumnSelector
+            columns={columns}
+            hiddenColumns={hiddenColumns}
+            onChange={updateHiddenColumns}
+          />
+          <TableHiddenColumnViewer
             columns={columns}
             hiddenColumns={hiddenColumns}
             onChange={updateHiddenColumns}
