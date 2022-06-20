@@ -13,7 +13,7 @@ import {
 import ExternalResources from "../../components/external-resources"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
-import { useEditor } from "../../components/edit"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -22,8 +22,7 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
   return (
     <>
       <Breadcrumbs />
-      {useEditor(donor,
-        <>
+      <EditableItem item={donor}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
@@ -51,8 +50,7 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
         </DataPanel>
         <ExternalResources resources={donor.external_resources} />
         <Attribution award={award} lab={lab} />
-        </>
-      )}
+      </EditableItem>
     </>
   )
 }

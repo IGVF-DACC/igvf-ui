@@ -10,7 +10,7 @@ import {
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
-import { useEditor } from "../../components/edit"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
@@ -20,8 +20,7 @@ const Award = ({ award, pis }) => {
   return (
     <>
       <Breadcrumbs />
-      {useEditor(award,
-        <>
+      <EditableItem item={award}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
@@ -73,8 +72,7 @@ const Award = ({ award, pis }) => {
             )}
           </DataArea>
         </DataPanel>
-        </>
-      )}
+        </EditableItem>
     </>
   )
 }

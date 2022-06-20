@@ -12,7 +12,7 @@ import {
 import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
 import Status from "../../components/status"
-import { useEditor } from "../../components/edit"
+import { EditableItem } from "../../components/edit"
 // libs
 import Request from "../../libs/request"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -21,8 +21,7 @@ const Lab = ({ lab, awards, pi }) => {
   return (
     <>
       <Breadcrumbs />
-      {useEditor(lab,
-        <>
+      <EditableItem item={lab}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
@@ -48,8 +47,7 @@ const Lab = ({ lab, awards, pi }) => {
             )}
           </DataArea>
         </DataPanel>
-        </>
-      )}
+      </EditableItem>
     </>
   )
 }

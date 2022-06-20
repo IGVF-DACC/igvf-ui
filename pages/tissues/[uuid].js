@@ -14,7 +14,7 @@ import {
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
-import { useEditor } from "../../components/edit"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -23,8 +23,7 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
   return (
     <>
       <Breadcrumbs />
-      {useEditor(tissue,
-        <>
+      <EditableItem item={tissue}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
@@ -73,8 +72,7 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
           </>
         )}
         <Attribution award={award} lab={lab} />
-        </>
-      )}
+      </EditableItem>
     </>
   )
 }

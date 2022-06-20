@@ -12,7 +12,7 @@ import {
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
-import { useEditor } from "../../components/edit"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDate } from "../../libs/dates"
@@ -22,8 +22,7 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
   return (
     <>
       <Breadcrumbs />
-      {useEditor(sample,
-      <>
+      <EditableItem item={sample}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
@@ -52,8 +51,7 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
           </DataArea>
         </DataPanel>
         <Attribution award={award} lab={lab} />
-        </>
-      )}
+      </EditableItem>
     </>
   )
 }

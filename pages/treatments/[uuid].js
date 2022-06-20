@@ -11,7 +11,7 @@ import {
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
-import { useEditor } from "../../components/edit"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { UC } from "../../libs/constants"
@@ -21,8 +21,7 @@ const Treatment = ({ treatment }) => {
   return (
     <>
       <Breadcrumbs />
-      {useEditor(treatment,
-        <>
+      <EditableItem item={treatment}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
@@ -90,8 +89,7 @@ const Treatment = ({ treatment }) => {
             )}
           </DataArea>
         </DataPanel>
-        </>
-      )}
+      </EditableItem>
     </>
   )
 }

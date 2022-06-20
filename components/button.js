@@ -4,9 +4,8 @@
 
 // node_modules
 import PropTypes from "prop-types"
-import { Children, cloneElement } from "react"
+import React, { Children, cloneElement } from "react"
 import { useRouter } from 'next/router'
-import React from 'react'
 
 /**
  * Background colors for each of the button types.
@@ -73,7 +72,7 @@ const buttonSizeClasses = {
  *   Click me!
  * </Button>
  */
-const Button = React.forwardRef(({
+const Button = ({
   onClick,
   type = "primary",
   size = "md",
@@ -81,20 +80,19 @@ const Button = React.forwardRef(({
   className = "",
   enabled = true,
   children,
-}, ref) => {
+}) => {
   return (
     <button
       type="button"
       onClick={onClick}
       className={`block rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
       aria-label={label}
-      ref={ref}
       disabled={!enabled}
     >
       {children}
     </button>
   )
-})
+}
 
 Button.propTypes = {
   // Called when the button is clicked
@@ -129,7 +127,7 @@ Button.displayName = "Button"
  *   Go Here!
  * </Button.Link>
  */
-export const Link = ({
+const Link = ({
   href,
   navigationClick,
   type = "primary",
@@ -160,7 +158,7 @@ export const Link = ({
 
 Link.propTypes = {
   // Link that pressing the button will navigate to
-  href: PropTypes.string,
+  href: PropTypes.string.isRequired,
   // Called when the button is clicked
   navigationClick: PropTypes.func.isRequired,
   // Accessible label of the button if the button text is not sufficient for screen readers
@@ -186,7 +184,7 @@ Link.propTypes = {
  *   <SomeIcon />
  * </Button.Icon>
  */
-export const Icon = ({
+const Icon = ({
   onClick,
   type = "primary",
   label,

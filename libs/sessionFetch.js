@@ -33,10 +33,10 @@ export default class Fetch {
   }
 
   async updateObject(path, method, body) {
-    const response = fetch(`${API_URL}${path}`, {
+    const response = await fetch(`${API_URL}${path}`, {
       method,
       credentials: "include",
-      headers: buildHeaders(this.token, true),
+      headers: buildHeaders(this.session, true),
       body: JSON.stringify(body),
     }).then((response) => {
       return response
@@ -55,10 +55,10 @@ export default class Fetch {
   }
 
   async getObject(path, method) {
-    const response = fetch(`${API_URL}${path}`, {
+    const response = await fetch(`${API_URL}${path}`, {
       method: method,
       credentials: "include",
-      headers: buildHeaders(this.token, false),
+      headers: buildHeaders(this.session, false),
     }).then((response) => {
       return response
     })

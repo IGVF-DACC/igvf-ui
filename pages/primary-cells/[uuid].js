@@ -14,7 +14,7 @@ import {
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
-import { useEditor } from "../../components/edit"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -30,8 +30,7 @@ const PrimaryCell = ({
   return (
     <>
       <Breadcrumbs />
-      {useEditor(primaryCell,
-        <>
+      <EditableItem item={primaryCell}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
@@ -63,8 +62,7 @@ const PrimaryCell = ({
           </>
         )}
         <Attribution award={award} lab={lab} />
-        </>
-      )}
+      </EditableItem>
     </>
   )
 }

@@ -14,7 +14,7 @@ import {
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
-import { useEditor } from "../../components/edit"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -30,8 +30,7 @@ const DifferentiatedCell = ({
   return (
     <>
       <Breadcrumbs />
-      {useEditor(differentiatedCell,
-        <>
+      <EditableItem item={differentiatedCell}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
@@ -76,8 +75,7 @@ const DifferentiatedCell = ({
           </>
         )}
         <Attribution award={award} lab={lab} />
-        </>
-      )}
+        </EditableItem>
     </>
   )
 }

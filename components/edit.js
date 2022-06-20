@@ -3,39 +3,11 @@ import PropTypes from "prop-types"
 import React, { useContext, useState, useEffect } from "react"
 // components
 import Button from "./button"
-import EditJson, { EditLink } from "./edit-func"
-import Fetch from "../libs/sessionFetch"
+import EditJson, { EditLink, canEdit } from "./edit-func"
 import SessionContext from "./session-context"
 import { useRouter } from "next/router"
 // libs
-import { API_URL } from "../libs/constants"
-import { canEdit } from "../libs/general"
-
-const updateItem = async (path, item, session) => {
-  const response = await fetch(`${API_URL}${path}`, {
-    method: "PATCH",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": session._csrft_,
-    },
-    body: JSON.stringify(item),
-  })
-    .then((response) => {
-      return response
-    })
-    .catch(() => {
-      return {
-        errors: [
-          {
-            description: "Network error while saving",
-            names: ["unknown"],
-          },
-        ],
-      }
-    })
-  return response
-}
+import Fetch from "../libs/sessionFetch"
 
 export const useEditor = (item, viewComponent) => {
 
@@ -68,6 +40,14 @@ export const useEditor = (item, viewComponent) => {
     {editlink}
   </>
   return componentToShow
+}
+
+export const EditableItem = ({ item, children }) => {
+  return useEditor(item, children)
+}
+
+EditableItem.propTypes = {
+  item: PropTypes.object.isRequired,
 }
 
 const SaveCancelControl = ({
@@ -175,12 +155,14 @@ const EditPage = ({ item }) => {
   useEffect(() => {
     const fetch = new Fetch(session)
     fetch.getObject(`${path}?frame=edit`, "GET").then((value) => {
+      console.log(value)
+      console.log(Object.getOwnPropertyNames(Response))
       const json = value.json()
       return json
     }).then((value) => {
       setText(JSON.stringify(sortedJson(value), null, 4))
     })
-  }, [])
+  }, [path, session])
 
   const router = useRouter()
 
@@ -202,7 +184,10 @@ const EditPage = ({ item }) => {
       errors: [],
     })
     const value = sortedJson(JSON.parse(text))
-    updateItem(path, value, session).then((response) => {
+    const fetch = new Fetch(session)
+    // updateItem(path, value, session).
+    fetch.updateObject(path, "PATCH", value).
+    then((response) => {
       if (response.ok) {
         setErrors([])
         router.push(path)

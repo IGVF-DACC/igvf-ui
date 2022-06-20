@@ -8,7 +8,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area"
-import { useEditor } from "../../components/edit"
+import { EditableItem } from "../../components/edit"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -19,16 +19,15 @@ const User = ({ lab, user }) => {
   return (
     <>
       <Breadcrumbs />
-      {useEditor(user,
-        <>
-          <PagePreamble />
-          <DataPanel>
-            <DataArea>
-              <DataItemLabel>Lab</DataItemLabel>
-              <DataItemValue>{lab.title}</DataItemValue>
-            </DataArea>
-          </DataPanel>
-        </>)}
+      <EditableItem item={user}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Lab</DataItemLabel>
+            <DataItemValue>{lab.title}</DataItemValue>
+          </DataArea>
+        </DataPanel>
+      </EditableItem>
     </>
   )
 }

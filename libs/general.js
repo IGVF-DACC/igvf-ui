@@ -12,10 +12,3 @@ export const pathToType = (path) => {
   }
   return ""
 }
-
-export function canEdit(item) {
-  if ("actions" in item) {
-    return item.actions.find(act => act.name == "edit" || act.name == "edit-json") != undefined
-  }
-  return false
-}

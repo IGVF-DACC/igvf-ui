@@ -4,8 +4,13 @@ import PropTypes from "prop-types"
 import React from "react"
 // components
 import Button from "./button"
-// libs
-import { canEdit } from "../libs/general"
+
+export const canEdit = (item) => {
+  if ("actions" in item) {
+    return item.actions.find(act => act.name == "edit" || act.name == "edit-json") != undefined
+  }
+  return false
+}
 
 const Editor = dynamic(
   async () => {
@@ -16,7 +21,6 @@ const Editor = dynamic(
   },
   {
     loading: () => {
-      console.log("LOADING")
       return <div>Loading...</div>
     },
     ssr: false,
@@ -75,21 +79,18 @@ JsonEditor.propTypes = {
   errors: PropTypes.array,
 }
 
-const ControlButton = ({ id, onClick, isDisabled = false, children }) => {
+const ControlButton = ({ onClick, isDisabled = false, children }) => {
   return (
-    <button
+    <Button
       onClick={onClick}
-      data-testid={id}
-      disabled={isDisabled}
-      className="items-center rounded-sm border bg-slate-300 px-2 py-1 text-left text-base font-medium text-white no-underline hover:bg-nav-highlight disabled:text-gray-500 md:text-black md:hover:border md:hover:border-highlight-border md:hover:bg-highlight md:dark:text-gray-200"
+      enabled={!isDisabled}
     >
       {children}
-    </button>
+    </Button>
   )
 }
 
 ControlButton.propTypes = {
-  id: PropTypes.string.isRequired,
   onClick: PropTypes.func,
   isDisabled: PropTypes.bool,
 }
@@ -108,8 +109,8 @@ const SaveCancelControl = ({ cancelClick, saveClick }) => {
 }
 
 SaveCancelControl.propTypes = {
-  cancelClick: PropTypes.func,
-  saveClick: PropTypes.func,
+  cancelClick: PropTypes.func.isRequired,
+  saveClick: PropTypes.func.isRequired,
 }
 
 const EditJson = ({ text, onChange, enabled = true, errors = [] }) => {
