@@ -1,6 +1,12 @@
+import getConfig from 'next/config'
+
+
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
+
+
 // igvfd data server URL
-export const SERVER_URL = "http://nginx:8000"
-export const API_URL = "http://localhost:8000"
+export const SERVER_URL = serverRuntimeConfig.BACKEND_URL
+export const API_URL = publicRuntimeConfig.PUBLIC_BACKEND_URL
 export const BACKEND_URL = "http://localhost:3000"
 
 // Auth0

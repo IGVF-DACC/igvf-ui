@@ -12,5 +12,8 @@ services:
       - "/igvf-ui/node_modules"
       - "/igvf-ui/.next"
     command: npm test -- --coverage
+    environment:
+      - BACKEND_URL=http://nginx:8000
+      - PUBLIC_BACKEND_URL=http://localhost:8000
     ports:
       - "3000:3000"
