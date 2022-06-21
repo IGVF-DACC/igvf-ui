@@ -21,7 +21,7 @@ const customJestConfig = {
     "<rootDir>/public",
     "<rootDir>/styles",
     "<rootDir>/cdk/",
-  ]
+  ],
 }
 
 module.exports = createJestConfig(customJestConfig)
