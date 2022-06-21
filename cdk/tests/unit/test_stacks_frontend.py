@@ -66,6 +66,10 @@ def test_stacks_frontend_initialize_frontend_stack(config):
             },
             'Tags': [
                 {
+                    'Key': 'backend_url',
+                    'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
+                },
+                {
                     'Key': 'branch',
                     'Value': 'some-branch'
                 }

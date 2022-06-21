@@ -78,6 +78,10 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
             },
             'Tags': [
                 {
+                    'Key': 'backend_url',
+                    'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
+                },
+                {
                     'Key': 'branch',
                     'Value': 'some-branch'
                 }
@@ -136,6 +140,10 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
             ],
             'Tags': [
                 {
+                    'Key': 'backend_url',
+                    'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
+                },
+                {
                     'Key': 'branch',
                     'Value': 'some-branch'
                 }
@@ -176,6 +184,10 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
             ],
             'Tags': [
                 {
+                    'Key': 'backend_url',
+                    'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
+                },
+                {
                     'Key': 'branch',
                     'Value': 'some-branch'
                 }
@@ -204,6 +216,10 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                 }
             ],
             'Tags': [
+                {
+                    'Key': 'backend_url',
+                    'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
+                },
                 {
                     'Key': 'branch',
                     'Value': 'some-branch'

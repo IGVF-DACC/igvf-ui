@@ -111,6 +111,10 @@ class Frontend(Construct):
             'branch',
             self.props.config.branch
         )
+        Tags.of(self.fargate_service).add(
+            'backend_url',
+            self.props.config.backend_url
+        )
 
     def _enable_exec_command(self) -> None:
         self.fargate_service.task_definition.task_role.add_managed_policy(
