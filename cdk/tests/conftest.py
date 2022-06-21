@@ -124,4 +124,5 @@ def config():
         name='demo',
         branch='some-branch',
         pipeline='xyz',
+        backend_url='https://igvfd-some-test-backend.demo.igvf.org',
     )
