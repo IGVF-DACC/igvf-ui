@@ -17,6 +17,7 @@ const customJestConfig = {
     "<rootDir>/node_modules/",
     "<rootDir>/public",
     "<rootDir>/styles",
+    "<rootDir>/cdk",
   ],
 }
 
