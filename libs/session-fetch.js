@@ -1,4 +1,3 @@
-
 import { API_URL } from "./constants"
 
 /**
@@ -12,7 +11,7 @@ import { API_URL } from "./constants"
  */
 const buildHeaders = (session, hasBody) => {
   const header = {
-    "Accept": "application/json",
+    Accept: "application/json",
   }
   if (session != null) {
     header["X-CSRF-Token"] = session._csrft_
@@ -27,51 +26,50 @@ const buildHeaders = (session, hasBody) => {
  * Fetch class for server requests
  */
 export default class Fetch {
-
   constructor(session) {
     this.session = session
   }
 
   async updateObject(path, method, body) {
-    const response = await fetch(`${API_URL}${path}`, {
-      method,
-      credentials: "include",
-      headers: buildHeaders(this.session, true),
-      body: JSON.stringify(body),
-    }).then((response) => {
+    try {
+      const response = await fetch(`${API_URL}${path}`, {
+        method,
+        credentials: "include",
+        headers: buildHeaders(this.session, true),
+        body: JSON.stringify(body),
+      })
       return response
-    })
-    .catch(() => {
+    } catch (err) {
       return {
+        ok: false,
         errors: [
           {
-            description: "Network error while updating",
+            description: err.message,
             names: ["unknown"],
           },
         ],
       }
-    })
-    return response
+    }
   }
 
   async getObject(path, method) {
-    const response = await fetch(`${API_URL}${path}`, {
-      method: method,
-      credentials: "include",
-      headers: buildHeaders(this.session, false),
-    }).then((response) => {
+    try {
+      const response = await fetch(`${API_URL}${path}`, {
+        method: method,
+        credentials: "include",
+        headers: buildHeaders(this.session, false),
+      })
       return response
-    })
-    .catch(() => {
+    } catch (err) {
       return {
+        ok: false,
         errors: [
           {
-            description: "Network error while updating",
+            description: err.message,
             names: ["unknown"],
           },
         ],
       }
-    })
-    return response
+    }
   }
 }

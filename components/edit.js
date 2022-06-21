@@ -5,14 +5,15 @@ import React, { useContext, useState, useEffect } from "react"
 import Button from "./button"
 import EditJson, { EditLink, canEdit } from "./edit-func"
 import SessionContext from "./session-context"
-import { useAuthenticated } from './authentication'
+import { useAuthenticated } from "./authentication"
 import { useRouter } from "next/router"
 // libs
-import Fetch from "../libs/sessionFetch"
+import Fetch from "../libs/session-fetch"
 
 export const useEditor = (item, viewComponent) => {
-
-  const editing = (url) => { return url.endsWith("#!edit") }
+  const editing = (url) => {
+    return url.endsWith("#!edit")
+  }
 
   const [edit, setEditing] = useState(false)
 
@@ -27,19 +28,22 @@ export const useEditor = (item, viewComponent) => {
 
     // If the URL has us not editing but we just were, set to false, and update props
     if (!isEdit && edit) {
-      setEditing( false )
+      setEditing(false)
       router.replace(router.asPath)
     }
   }, [edit, router])
 
-  const editpage = <EditPage item={item}/>
-  const editlink = <EditLink item={item}/>
+  const editpage = <EditPage item={item} />
+  const editlink = <EditLink item={item} />
 
-  const componentToShow = edit ? editpage :
-  <>
-    {viewComponent}
-    {editlink}
-  </>
+  const componentToShow = edit ? (
+    editpage
+  ) : (
+    <>
+      {viewComponent}
+      {editlink}
+    </>
+  )
   return componentToShow
 }
 
@@ -121,7 +125,7 @@ const EditPage = ({ item }) => {
 
   const loggedIn = useAuthenticated()
 
-  const editable = (session, item) => {
+  const editable = (item) => {
     // cannot edit if not logged in or object not editable
     const editable = canEdit(item)
     return loggedIn && editable
@@ -144,22 +148,26 @@ const EditPage = ({ item }) => {
     JSON.stringify({}, null, 4)
   })
 
-  const [saveErrors, setErrors] = useState([])
+  const [saveErrors, setSaveErrors] = useState([])
 
+  const isEditable = editable(item)
   const [editorStatus, setEditorStatus] = useState({
-    canEdit: editable(session, item),
-    canSave: editable(session, item),
+    canEdit: isEditable,
+    canSave: isEditable,
     errors: [],
   })
 
   useEffect(() => {
     const fetch = new Fetch(session)
-    fetch.getObject(`${path}?frame=edit`, "GET").then((value) => {
-      const json = value.json()
-      return json
-    }).then((value) => {
-      setText(JSON.stringify(sortedJson(value), null, 4))
-    })
+    fetch
+      .getObject(`${path}?frame=edit`, "GET")
+      .then((value) => {
+        const json = value.json()
+        return json
+      })
+      .then((value) => {
+        setText(JSON.stringify(sortedJson(value), null, 4))
+      })
   }, [path, session])
 
   const router = useRouter()
@@ -167,9 +175,10 @@ const EditPage = ({ item }) => {
   const onChange = (newValue) => {
     setText(newValue)
     const errors = jsonErrors(newValue)
+    const isEditable = editable(item)
     const status = {
-      canEdit: editable(session, item),
-      canSave: errors.length == 0 && editable(session, item),
+      canEdit: isEditable,
+      canSave: errors.length == 0 && isEditable,
       errors,
     }
     setEditorStatus(status)
@@ -183,10 +192,9 @@ const EditPage = ({ item }) => {
     })
     const value = sortedJson(JSON.parse(text))
     const fetch = new Fetch(session)
-    fetch.updateObject(path, "PATCH", value).
-    then((response) => {
+    fetch.updateObject(path, "PATCH", value).then((response) => {
       if (response.ok) {
-        setErrors([])
+        setSaveErrors([])
         router.push(path)
       } else {
         setEditorStatus({
@@ -198,11 +206,11 @@ const EditPage = ({ item }) => {
           description: err.description,
           keys: err.names
             .map((val) => {
-              `\`${val}\``
+              return `\`${val}\``
             })
             .join(", "),
         }))
-        setErrors(errors)
+        setSaveErrors(errors)
       }
     })
   }
