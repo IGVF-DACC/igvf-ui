@@ -84,6 +84,9 @@ class Frontend(Construct):
                 container_name='nextjs',
                 container_port=3000,
                 image=self.application_image,
+                environment={
+                    'BACKEND_URL': self.props.config.backend_url,
+                },
                 log_driver=LogDriver.aws_logs(
                     stream_prefix='nextjs',
                     mode=AwsLogDriverMode.NON_BLOCKING,

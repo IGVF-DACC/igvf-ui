@@ -93,6 +93,12 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
             'ContainerDefinitions': [
                 {
                     'Essential': True,
+                    'Environment': [
+                        {
+                            'Name': 'BACKEND_URL',
+                            'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
+                        }
+                    ],
                     'LogConfiguration': {
                         'LogDriver': 'awslogs',
                         'Options': {
