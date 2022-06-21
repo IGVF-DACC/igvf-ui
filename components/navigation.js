@@ -16,7 +16,6 @@ import React, { Children, isValidElement, useState } from "react"
 // components
 import Icon from "./icon"
 import SiteLogo from "./logo"
-import useSessionStorage from "./session-storage"
 // libs
 import { AUTH_ERROR_URI, BACKEND_URL } from "../libs/constants"
 
@@ -72,8 +71,6 @@ NavigationButton.displayName = "NavigationButton"
  */
 const NavigationSignInItem = ({ id, children }) => {
   const { isLoading, loginWithRedirect } = useAuth0()
-  // Stores the current page in session storage so we can redirected back to the page after sign in.
-  const [, setPostSigninUrl] = useSessionStorage("auth0returnurl", "/")
 
   /**
    * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
@@ -82,15 +79,13 @@ const NavigationSignInItem = ({ id, children }) => {
    * We only know it was successful once `useAuth0` returns true in `isAuthenticated`.
    */
   const handleAuthClick = () => {
-    // Save the current page in session storage so we can redirect back to it after sign in. Also
-    // save this in Auth0 appstate in case the post-sign-in callback gets called before the session
-    // code does. Don't redirect to the authentication error page as that could be confusing to the
-    // user.
+    // Save the current path in auth0-react appState so we can redirect to it after signin, unless
+    // the user is on the authentication-error page, in which case we redirect to the home page
+    // after sign-in so the user doesn't see an authentication error after a good sign-in.
     const returnTo =
       window.location.pathname === AUTH_ERROR_URI
         ? "/"
         : window.location.pathname
-    setPostSigninUrl(returnTo)
     loginWithRedirect({
       appState: {
         returnTo,
