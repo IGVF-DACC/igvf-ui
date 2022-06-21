@@ -27,10 +27,12 @@ const AssayOntologyTermList = ({ assayOntologyTerms }) => {
               <CollectionItem
                 key={assayOntologyTerm.uuid}
                 href={assayOntologyTerm["@id"]}
-                label={`Sample ontology term ${assayOntologyTerm.term_id}`}
+                label={`Assay term ${assayOntologyTerm.term_id}`}
                 status={assayOntologyTerm.status}
               >
-                <CollectionItemName>{assayOntologyTerm.term_id}</CollectionItemName>
+                <CollectionItemName>
+                  {assayOntologyTerm.term_id}
+                </CollectionItemName>
                 <div>{assayOntologyTerm.term_name}</div>
               </CollectionItem>
             ))}
@@ -44,7 +46,7 @@ const AssayOntologyTermList = ({ assayOntologyTerms }) => {
 }
 
 AssayOntologyTermList.propTypes = {
-  // Assay ontology terms to display in the list
+  // Assay terms to display in the list
   assayOntologyTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
@@ -52,7 +54,7 @@ export default AssayOntologyTermList
 
 export const getServerSideProps = async ({ req }) => {
   const request = new Request(req?.headers?.cookie)
-  const assayOntologyTerms = await request.getCollection("assay-ontology-terms")
+  const assayOntologyTerms = await request.getCollection("assay-terms")
   const breadcrumbs = await buildBreadcrumbs(assayOntologyTerms, "title")
   return {
     props: {

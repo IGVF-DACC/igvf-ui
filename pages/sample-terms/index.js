@@ -30,7 +30,9 @@ const SampleOntologyTermList = ({ sampleOntologyTerms }) => {
                 label={`Sample ontology term ${sampleOntologyTerm.term_id}`}
                 status={sampleOntologyTerm.status}
               >
-                <CollectionItemName>{sampleOntologyTerm.term_id}</CollectionItemName>
+                <CollectionItemName>
+                  {sampleOntologyTerm.term_id}
+                </CollectionItemName>
                 <div>{sampleOntologyTerm.term_name}</div>
               </CollectionItem>
             ))}
@@ -52,7 +54,7 @@ export default SampleOntologyTermList
 
 export const getServerSideProps = async ({ req }) => {
   const request = new Request(req?.headers?.cookie)
-  const sampleOntologyTerms = await request.getCollection("sample-ontology-terms")
+  const sampleOntologyTerms = await request.getCollection("sample-terms")
   const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerms, "title")
   return {
     props: {

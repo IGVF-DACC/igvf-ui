@@ -43,7 +43,7 @@ export default PhenotypeOntologyTerm
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
   const phenotypeOntologyTerm = await request.getObject(
-    `/phenotype-ontology-terms/${params.name}/`
+    `/phenotype-terms/${params.name}/`
   )
   if (phenotypeOntologyTerm && phenotypeOntologyTerm.status !== "error") {
     const breadcrumbs = await buildBreadcrumbs(phenotypeOntologyTerm, "term_id")

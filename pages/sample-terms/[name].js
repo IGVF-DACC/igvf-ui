@@ -76,7 +76,7 @@ export default SampleOntologyTerm
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
   const sampleOntologyTerm = await request.getObject(
-    `/sample-ontology-terms//${params.name}/`
+    `/sample-terms//${params.name}/`
   )
   if (sampleOntologyTerm && sampleOntologyTerm.status !== "error") {
     const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerm, "term_id")

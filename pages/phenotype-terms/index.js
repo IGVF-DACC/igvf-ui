@@ -54,9 +54,7 @@ export default PhenotypeOntologyTermList
 
 export const getServerSideProps = async ({ req }) => {
   const request = new Request(req?.headers?.cookie)
-  const phenotypeOntologyTerms = await request.getCollection(
-    "phenotype-ontology-terms"
-  )
+  const phenotypeOntologyTerms = await request.getCollection("phenotype-terms")
   const breadcrumbs = await buildBreadcrumbs(phenotypeOntologyTerms, "title")
   return {
     props: {
