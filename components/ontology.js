@@ -7,11 +7,14 @@ import Curie from "../libs/curie"
  * Map from ontology term ID prefixes to corresponding URL bases.
  */
 const urlMap = {
+  CL: "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F",
+  CLO: "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F",
+  DOID: "http://purl.obolibrary.org/obo/",
   EFO: "http://www.ebi.ac.uk/efo/",
+  HP: "http://purl.obolibrary.org/obo/",
+  MONDO: "http://purl.obolibrary.org/obo/",
   UBERON:
     "https://www.ebi.ac.uk/ols/ontologies/uberon/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2F",
-  CL: "http://www.ontobee.org/ontology/CL?iri=http://purl.obolibrary.org/obo/",
-  CLO: "http://www.ontobee.org/ontology/CLO?iri=http://purl.obolibrary.org/obo/",
 }
 
 /**
