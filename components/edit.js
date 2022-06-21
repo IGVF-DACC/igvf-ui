@@ -15,6 +15,11 @@ export const useEditor = (item, viewComponent) => {
     return url.endsWith("#!edit")
   }
 
+  /**
+   * Represents whether the Editor component can be actively typed in or saved.
+   * This is determined by the logged in status of the user and if the user has
+   * edit permissions on that object being edited.
+   */
   const [edit, setEditing] = useState(false)
 
   const router = useRouter()
@@ -144,13 +149,31 @@ const EditPage = ({ item }) => {
 
   const { session } = useContext(SessionContext)
 
+  /**
+   * The text is the current editor text of the underlying Ace editor component.
+   */
   const [text, setText] = useState(() => {
     JSON.stringify({}, null, 4)
   })
 
+  /**
+   * When attempting to save the edited text to the backend, if there are any
+   * errors that come back from the server, this list will contain the error objects
+   */
   const [saveErrors, setSaveErrors] = useState([])
 
   const isEditable = editable(item)
+
+  /**
+   * Interactivity properties of the underlying Ace editor. `canEdit` implies the
+   * user may modify the text field. `canSave` means that the Save button is active.
+   * errors list indicates that the JSON entered in the field is malformed. Errors
+   * is passed to the "annotations" of the underlying Ace editor which will show an
+   * indicator that there's a JSON syntax error.
+   *
+   * If there are errors the text should not be saveable. If the user has insufficient
+   * permissions both saving and editing should be disabled.
+   */
   const [editorStatus, setEditorStatus] = useState({
     canEdit: isEditable,
     canSave: isEditable,

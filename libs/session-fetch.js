@@ -30,6 +30,14 @@ export default class Fetch {
     this.session = session
   }
 
+  /**
+   * Update a database object on the backend
+   * @param {String} path path to the database object
+   * @param {String} method HTTP method, should be any of the "unsafe" methods:
+   * PUT, POST, PATCH
+   * @param {JSON} body the body of the request as a JSON object
+   * @returns A response from fetch, or a json object reprsenting an error
+   */
   async updateObject(path, method, body) {
     try {
       const response = await fetch(`${API_URL}${path}`, {
@@ -52,7 +60,14 @@ export default class Fetch {
     }
   }
 
-  async getObject(path, method) {
+  /**
+   * Retrieve a database object on the backend
+   * @param {String} path path to the database object
+   * @param {String} method HTTP method, should be any of the "safe" methods:
+   * GET (the default), HEAD, OPTIONS, TRACE
+   * @returns A response from fetch, or a json object reprsenting an error
+   */
+  async getObject(path, method = "GET") {
     try {
       const response = await fetch(`${API_URL}${path}`, {
         method: method,
