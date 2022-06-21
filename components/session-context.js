@@ -80,7 +80,7 @@ export const Session = ({ children }) => {
             isServerAuthPending.current = false
           } else {
             // Auth0 and the server authenticated successfully. Set the signed-in session object in
-            // the session context to that any downstream component can retrieve it without doing a
+            // the session context so that any downstream component can retrieve it without doing a
             // request to /session.
             getSession().then((sessionResponse) => {
               setSession(sessionResponse)
