@@ -12,6 +12,7 @@ import {
 import PagePreamble from "../../components/page-preamble"
 import SeparatedList from "../../components/separated-list"
 import Status from "../../components/status"
+import { EditableItem } from "../../components/edit"
 // libs
 import Request from "../../libs/request"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -20,31 +21,33 @@ const Lab = ({ lab, awards, pi }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={lab.status} />
-          </DataItemValue>
-          <DataItemLabel>Institute</DataItemLabel>
-          <DataItemValue>{lab.institute_label}</DataItemValue>
-          <DataItemLabel>Principal Investigator</DataItemLabel>
-          <DataItemValue>{pi.title}</DataItemValue>
-          {awards.length > 0 && (
-            <>
-              <DataItemLabel>Awards</DataItemLabel>
-              <SeparatedList>
-                {awards.map((award) => (
-                  <Link href={award["@id"]} key={award.uuid}>
-                    <a aria-label={`Award ${award.name}`}>{award.name}</a>
-                  </Link>
-                ))}
-              </SeparatedList>
-            </>
-          )}
-        </DataArea>
-      </DataPanel>
+      <EditableItem item={lab}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={lab.status} />
+            </DataItemValue>
+            <DataItemLabel>Institute</DataItemLabel>
+            <DataItemValue>{lab.institute_label}</DataItemValue>
+            <DataItemLabel>Principal Investigator</DataItemLabel>
+            <DataItemValue>{pi.title}</DataItemValue>
+            {awards.length > 0 && (
+              <>
+                <DataItemLabel>Awards</DataItemLabel>
+                <SeparatedList>
+                  {awards.map((award) => (
+                    <Link href={award["@id"]} key={award.uuid}>
+                      <a aria-label={`Award ${award.name}`}>{award.name}</a>
+                    </Link>
+                  ))}
+                </SeparatedList>
+              </>
+            )}
+          </DataArea>
+        </DataPanel>
+      </EditableItem>
     </>
   )
 }

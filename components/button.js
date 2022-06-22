@@ -4,7 +4,8 @@
 
 // node_modules
 import PropTypes from "prop-types"
-import { Children, cloneElement } from "react"
+import React, { Children, cloneElement } from "react"
+import { useRouter } from 'next/router'
 
 /**
  * Background colors for each of the button types.
@@ -77,6 +78,7 @@ const Button = ({
   size = "md",
   label = "",
   className = "",
+  enabled = true,
   children,
 }) => {
   return (
@@ -85,6 +87,7 @@ const Button = ({
       onClick={onClick}
       className={`block rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
       aria-label={label}
+      disabled={!enabled}
     >
       {children}
     </button>
@@ -94,6 +97,70 @@ const Button = ({
 Button.propTypes = {
   // Called when the button is clicked
   onClick: PropTypes.func.isRequired,
+  // Accessible label of the button if the button text is not sufficient for screen readers
+  label: PropTypes.string,
+  // Button color type
+  type: PropTypes.oneOf([
+    "primary",
+    "secondary",
+    "success",
+    "alert",
+    "warning",
+    "info",
+  ]),
+  // Button sizes
+  size: PropTypes.oneOf(["sm", "md", "lg"]),
+  // Additional Tailwind CSS classes to apply to the <button> element
+  className: PropTypes.string,
+  // If enabled is true then the button is clickable. If disabled (set to false)
+  // then the button cannot be clicked. Corresponds to the `disabled` property
+  // on the React Button component and is set to `!enabled`.
+  enabled: PropTypes.bool,
+}
+
+Button.displayName = "Button"
+
+/**
+ * Displays a Button that links to a URL. The navigationClick handler is run
+ * just before we link to the destination in the href prop.
+ * <Button.Link href=/path/to/page>
+ *   Go Here!
+ * </Button.Link>
+ */
+const Link = ({
+  href,
+  navigationClick,
+  type = "primary",
+  size = "md",
+  label = "",
+  className = "",
+  children,
+}) => {
+  const router = useRouter()
+
+  const onClick = () => {
+    navigationClick()
+    router.push(href)
+  }
+
+  return (
+      <Button
+        onClick={onClick}
+        type={type}
+        size={size}
+        label={label}
+        className={className}
+      >
+        {children}
+      </Button>
+  )
+}
+
+Link.propTypes = {
+  // Link that pressing the button will navigate to
+  href: PropTypes.string.isRequired,
+  // Called when the button is clicked
+  navigationClick: PropTypes.func.isRequired,
   // Accessible label of the button if the button text is not sufficient for screen readers
   label: PropTypes.string,
   // Button color type
@@ -162,4 +229,5 @@ Icon.propTypes = {
 }
 
 Button.Icon = Icon
+Button.Link = Link
 export default Button

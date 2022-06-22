@@ -14,6 +14,7 @@ import {
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -22,37 +23,39 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={cellLine.status} />
-          </DataItemValue>
-          <BiosampleDataItems
-            biosample={cellLine}
-            source={source}
-            donors={donors}
-            options={{
-              dateObtainedTitle: "Date Harvested",
-            }}
-          >
-            {cellLine.passage_number && (
-              <>
-                <DataItemLabel>Passage Number</DataItemLabel>
-                <DataItemValue>{cellLine.passage_number}</DataItemValue>
-              </>
-            )}
-          </BiosampleDataItems>
-        </DataArea>
-      </DataPanel>
-      {treatments.length > 0 && (
-        <>
-          <DataAreaTitle>Treatments</DataAreaTitle>
-          <TreatmentTable treatments={treatments} />
-        </>
-      )}
-      <Attribution award={award} lab={lab} />
+      <EditableItem item={cellLine}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={cellLine.status} />
+            </DataItemValue>
+            <BiosampleDataItems
+              biosample={cellLine}
+              source={source}
+              donors={donors}
+              options={{
+                dateObtainedTitle: "Date Harvested",
+              }}
+            >
+              {cellLine.passage_number && (
+                <>
+                  <DataItemLabel>Passage Number</DataItemLabel>
+                  <DataItemValue>{cellLine.passage_number}</DataItemValue>
+                </>
+              )}
+            </BiosampleDataItems>
+          </DataArea>
+        </DataPanel>
+        {treatments.length > 0 && (
+          <>
+            <DataAreaTitle>Treatments</DataAreaTitle>
+            <TreatmentTable treatments={treatments} />
+          </>
+        )}
+        <Attribution award={award} lab={lab} />
+        </EditableItem>
     </>
   )
 }
@@ -95,6 +98,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: cellLine.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }

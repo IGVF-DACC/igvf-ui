@@ -11,6 +11,7 @@ import {
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { UC } from "../../libs/constants"
@@ -20,73 +21,75 @@ const Treatment = ({ treatment }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={treatment.status} />
-          </DataItemValue>
-          <DataItemLabel>Treatment Term Name</DataItemLabel>
-          <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
-          <DataItemLabel>Treatment Type</DataItemLabel>
-          <DataItemValue>{treatment.treatment_type}</DataItemValue>
-          <DataItemLabel>Amount</DataItemLabel>
-          <DataItemValue>
-            {treatment.amount} {treatment.amount_units}
-          </DataItemValue>
-          {treatment.duration && (
-            <>
-              <DataItemLabel>Duration</DataItemLabel>
-              <DataItemValue>
-                {treatment.duration} {treatment.duration_units}
-                {treatment.duration === 1 ? "" : "s"}
-              </DataItemValue>
-            </>
-          )}
-          {treatment.pH && (
-            <>
-              <DataItemLabel>pH</DataItemLabel>
-              <DataItemValue>{treatment.pH}</DataItemValue>
-            </>
-          )}
-          {treatment.purpose && (
-            <>
-              <DataItemLabel>Purpose</DataItemLabel>
-              <DataItemValue>{treatment.purpose}</DataItemValue>
-            </>
-          )}
-          {treatment.post_treatment_time && (
-            <>
-              <DataItemLabel>Post-Treatment Time</DataItemLabel>
-              <DataItemValue>
-                {treatment.post_treatment_time}{" "}
-                {treatment.post_treatment_time_units}
-                {treatment.post_treatment_time === 1 ? "" : "s"}
-              </DataItemValue>
-            </>
-          )}
-          {treatment.temperature && (
-            <>
-              <DataItemLabel>Temperature</DataItemLabel>
-              <DataItemValue>
-                {treatment.temperature}{" "}
-                {treatment.temperature_units === "Celsius"
-                  ? `${UC.deg}C`
-                  : treatment.temperature_units}
-              </DataItemValue>
-            </>
-          )}
-          {treatment.aliases.length > 0 && (
-            <>
-              <DataItemLabel>Aliases</DataItemLabel>
-              <DataItemValue>
-                <AliasList aliases={treatment.aliases} />
-              </DataItemValue>
-            </>
-          )}
-        </DataArea>
-      </DataPanel>
+      <EditableItem item={treatment}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={treatment.status} />
+            </DataItemValue>
+            <DataItemLabel>Treatment Term Name</DataItemLabel>
+            <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
+            <DataItemLabel>Treatment Type</DataItemLabel>
+            <DataItemValue>{treatment.treatment_type}</DataItemValue>
+            <DataItemLabel>Amount</DataItemLabel>
+            <DataItemValue>
+              {treatment.amount} {treatment.amount_units}
+            </DataItemValue>
+            {treatment.duration && (
+              <>
+                <DataItemLabel>Duration</DataItemLabel>
+                <DataItemValue>
+                  {treatment.duration} {treatment.duration_units}
+                  {treatment.duration === 1 ? "" : "s"}
+                </DataItemValue>
+              </>
+            )}
+            {treatment.pH && (
+              <>
+                <DataItemLabel>pH</DataItemLabel>
+                <DataItemValue>{treatment.pH}</DataItemValue>
+              </>
+            )}
+            {treatment.purpose && (
+              <>
+                <DataItemLabel>Purpose</DataItemLabel>
+                <DataItemValue>{treatment.purpose}</DataItemValue>
+              </>
+            )}
+            {treatment.post_treatment_time && (
+              <>
+                <DataItemLabel>Post-Treatment Time</DataItemLabel>
+                <DataItemValue>
+                  {treatment.post_treatment_time}{" "}
+                  {treatment.post_treatment_time_units}
+                  {treatment.post_treatment_time === 1 ? "" : "s"}
+                </DataItemValue>
+              </>
+            )}
+            {treatment.temperature && (
+              <>
+                <DataItemLabel>Temperature</DataItemLabel>
+                <DataItemValue>
+                  {treatment.temperature}{" "}
+                  {treatment.temperature_units === "Celsius"
+                    ? `${UC.deg}C`
+                    : treatment.temperature_units}
+                </DataItemValue>
+              </>
+            )}
+            {treatment.aliases.length > 0 && (
+              <>
+                <DataItemLabel>Aliases</DataItemLabel>
+                <DataItemValue>
+                  <AliasList aliases={treatment.aliases} />
+                </DataItemValue>
+              </>
+            )}
+          </DataArea>
+        </DataPanel>
+      </EditableItem>
     </>
   )
 }
@@ -109,6 +112,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: treatment.treatment_term_id },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }

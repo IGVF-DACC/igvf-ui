@@ -14,6 +14,7 @@ import {
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
 import TreatmentTable from "../../components/treatment-table"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -22,54 +23,56 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={tissue.status} />
-          </DataItemValue>
-          <BiosampleDataItems
-            biosample={tissue}
-            source={source}
-            donors={donors}
-            options={{
-              dateObtainedTitle: "Date Harvested",
-            }}
-          >
-            {tissue.pmi && (
-              <>
-                <DataItemLabel>Post-mortem Interval</DataItemLabel>
-                <DataItemValue>
-                  {tissue.pmi}
-                  {tissue.pmi_units ? (
-                    <>
-                      {" "}
-                      {tissue.pmi_units}
-                      {tissue.pmi_units === 1 ? "" : "s"}
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </DataItemValue>
-              </>
-            )}
-            {tissue.preservation_method && (
-              <>
-                <DataItemLabel>Preservation Method</DataItemLabel>
-                <DataItemValue>{tissue.preservation_method}</DataItemValue>
-              </>
-            )}
-          </BiosampleDataItems>
-        </DataArea>
-      </DataPanel>
-      {treatments.length > 0 && (
-        <>
-          <DataAreaTitle>Treatments</DataAreaTitle>
-          <TreatmentTable treatments={treatments} />
-        </>
-      )}
-      <Attribution award={award} lab={lab} />
+      <EditableItem item={tissue}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={tissue.status} />
+            </DataItemValue>
+            <BiosampleDataItems
+              biosample={tissue}
+              source={source}
+              donors={donors}
+              options={{
+                dateObtainedTitle: "Date Harvested",
+              }}
+            >
+              {tissue.pmi && (
+                <>
+                  <DataItemLabel>Post-mortem Interval</DataItemLabel>
+                  <DataItemValue>
+                    {tissue.pmi}
+                    {tissue.pmi_units ? (
+                      <>
+                        {" "}
+                        {tissue.pmi_units}
+                        {tissue.pmi_units === 1 ? "" : "s"}
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </DataItemValue>
+                </>
+              )}
+              {tissue.preservation_method && (
+                <>
+                  <DataItemLabel>Preservation Method</DataItemLabel>
+                  <DataItemValue>{tissue.preservation_method}</DataItemValue>
+                </>
+              )}
+            </BiosampleDataItems>
+          </DataArea>
+        </DataPanel>
+        {treatments.length > 0 && (
+          <>
+            <DataAreaTitle>Treatments</DataAreaTitle>
+            <TreatmentTable treatments={treatments} />
+          </>
+        )}
+        <Attribution award={award} lab={lab} />
+      </EditableItem>
     </>
   )
 }
@@ -120,6 +123,7 @@ export const getServerSideProps = async ({ params, req }) => {
         treatments,
         pageContext: { title: tissue.accession },
         breadcrumbs,
+        uuid: params.uuid,
         sessionCookie: req?.headers?.cookie,
       },
     }

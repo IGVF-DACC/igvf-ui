@@ -13,6 +13,7 @@ import {
 import ExternalResources from "../../components/external-resources"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -21,33 +22,35 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={donor.status} />
-          </DataItemValue>
-          <DonorDataItems donor={donor} parents={parents}>
-            <DataItemLabel>Strain</DataItemLabel>
-            <DataItemValue>{donor.strain}</DataItemValue>
-            {donor.strain_background && (
-              <>
-                <DataItemLabel>Strain Background</DataItemLabel>
-                <DataItemValue>{donor.strain_background}</DataItemValue>
-              </>
-            )}
-            {donor.genotype && (
-              <>
-                <DataItemLabel>Genotype</DataItemLabel>
-                <DataItemValue>{donor.genotype}</DataItemValue>
-              </>
-            )}
-          </DonorDataItems>
-        </DataArea>
-      </DataPanel>
-      <ExternalResources resources={donor.external_resources} />
-      <Attribution award={award} lab={lab} />
+      <EditableItem item={donor}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={donor.status} />
+            </DataItemValue>
+            <DonorDataItems donor={donor} parents={parents}>
+              <DataItemLabel>Strain</DataItemLabel>
+              <DataItemValue>{donor.strain}</DataItemValue>
+              {donor.strain_background && (
+                <>
+                  <DataItemLabel>Strain Background</DataItemLabel>
+                  <DataItemValue>{donor.strain_background}</DataItemValue>
+                </>
+              )}
+              {donor.genotype && (
+                <>
+                  <DataItemLabel>Genotype</DataItemLabel>
+                  <DataItemValue>{donor.genotype}</DataItemValue>
+                </>
+              )}
+            </DonorDataItems>
+          </DataArea>
+        </DataPanel>
+        <ExternalResources resources={donor.external_resources} />
+        <Attribution award={award} lab={lab} />
+      </EditableItem>
     </>
   )
 }
@@ -88,6 +91,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: donor.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }

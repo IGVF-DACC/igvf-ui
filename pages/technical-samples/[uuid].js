@@ -12,6 +12,7 @@ import {
 } from "../../components/data-area"
 import PagePreamble from "../../components/page-preamble"
 import Status from "../../components/status"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDate } from "../../libs/dates"
@@ -21,34 +22,36 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={sample.status} />
-          </DataItemValue>
-          <SampleDataItems sample={sample} source={source}>
-            {sample.date && (
-              <>
-                <DataItemLabel>Technical Sample Date</DataItemLabel>
-                <DataItemValue>{formatDate(sample.date)}</DataItemValue>
-              </>
-            )}
-            <DataItemLabel>Sample Material</DataItemLabel>
-            <DataItemValue>{sample.sample_material}</DataItemValue>
-            {sample.technical_sample_ontology && (
-              <>
-                <DataItemLabel>Ontology</DataItemLabel>
-                <DataItemValue>
-                  {sample.technical_sample_ontology}
-                </DataItemValue>
-              </>
-            )}
-          </SampleDataItems>
-        </DataArea>
-      </DataPanel>
-      <Attribution award={award} lab={lab} />
+      <EditableItem item={sample}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={sample.status} />
+            </DataItemValue>
+            <SampleDataItems sample={sample} source={source}>
+              {sample.date && (
+                <>
+                  <DataItemLabel>Technical Sample Date</DataItemLabel>
+                  <DataItemValue>{formatDate(sample.date)}</DataItemValue>
+                </>
+              )}
+              <DataItemLabel>Sample Material</DataItemLabel>
+              <DataItemValue>{sample.sample_material}</DataItemValue>
+              {sample.technical_sample_ontology && (
+                <>
+                  <DataItemLabel>Ontology</DataItemLabel>
+                  <DataItemValue>
+                    {sample.technical_sample_ontology}
+                  </DataItemValue>
+                </>
+              )}
+            </SampleDataItems>
+          </DataArea>
+        </DataPanel>
+        <Attribution award={award} lab={lab} />
+      </EditableItem>
     </>
   )
 }
@@ -83,6 +86,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: sample.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }

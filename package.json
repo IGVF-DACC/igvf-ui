@@ -13,6 +13,8 @@
     "@auth0/auth0-react": "^1.10.1",
     "@headlessui/react": "^1.6.4",
     "@heroicons/react": "^1.0.6",
+    "react-ace": "^10.1.0",
+    "ace-builds": "^1.5.0",
     "dayjs": "^1.11.3",
     "framer-motion": "^6.3.10",
     "jwt-decode": "^3.1.2",
@@ -20,7 +22,8 @@
     "next": "^12.1.6",
     "prop-types": "^15.8.1",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react-dom": "^18.1.0",
+    "underscore": "^1.13.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.3",

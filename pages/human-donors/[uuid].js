@@ -17,6 +17,7 @@ import ExternalResources from "../../components/external-resources"
 import PagePreamble from "../../components/page-preamble"
 import SortableGrid from "../../components/sortable-grid"
 import Status from "../../components/status"
+import { EditableItem } from "../../components/edit"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import { formatDateRange } from "../../libs/dates"
@@ -45,36 +46,38 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={donor.status} />
-          </DataItemValue>
-          <DonorDataItems donor={donor} parents={parents}>
-            {donor.ethnicity && (
-              <>
-                <DataItemLabel>Ethnicity</DataItemLabel>
-                <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
-              </>
-            )}
-          </DonorDataItems>
-        </DataArea>
-      </DataPanel>
-      <ExternalResources resources={donor.external_resources} />
-      {donor.health_status_history?.length > 0 && (
-        <>
-          <DataAreaTitle>Health Status History</DataAreaTitle>
-          <DataGridContainer>
-            <SortableGrid
-              data={donor.health_status_history}
-              columns={healthStatusHistoryColumns}
-            />
-          </DataGridContainer>
-        </>
-      )}
-      <Attribution award={award} lab={lab} />
+      <EditableItem item={donor}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={donor.status} />
+            </DataItemValue>
+            <DonorDataItems donor={donor} parents={parents}>
+              {donor.ethnicity && (
+                <>
+                  <DataItemLabel>Ethnicity</DataItemLabel>
+                  <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
+                </>
+              )}
+            </DonorDataItems>
+          </DataArea>
+        </DataPanel>
+        <ExternalResources resources={donor.external_resources} />
+        {donor.health_status_history?.length > 0 && (
+          <>
+            <DataAreaTitle>Health Status History</DataAreaTitle>
+            <DataGridContainer>
+              <SortableGrid
+                data={donor.health_status_history}
+                columns={healthStatusHistoryColumns}
+              />
+            </DataGridContainer>
+          </>
+        )}
+        <Attribution award={award} lab={lab} />
+      </EditableItem>
     </>
   )
 }
@@ -109,6 +112,7 @@ export const getServerSideProps = async ({ params, req }) => {
         pageContext: { title: donor.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
+        uuid: params.uuid,
       },
     }
   }
