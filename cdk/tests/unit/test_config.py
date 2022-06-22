@@ -43,13 +43,6 @@ def test_config_build_config_from_name():
     assert config.name == 'demo'
     assert config.backend_url == 'http://my-specific-endpoint.org'
     config = build_config_from_name(
-        'demo',
-        branch='my-branch',
-        # Overrides.
-        pipeline='my-pipeline',
-    )
-    assert config.backend_url == 'https://igvfd-my-branch.demo.igvf.org'
-    config = build_config_from_name(
         'dev',
         branch='my-branch',
     )
@@ -59,6 +52,25 @@ def test_config_build_config_from_name():
     assert config.pipeline == 'DemoDeploymentPipelineStack'
     assert config.name == 'dev'
     assert config.backend_url == 'https://igvfd-dev.demo.igvf.org'
+
+
+def test_config_build_config_from_name_demo(mocker):
+    from infrastructure.config import build_config_from_name
+    mocker.patch(
+        'infrastructure.config.get_raw_config_from_name',
+        return_value={
+            'pipeline': 'DemoDeploymentPipelineStack',
+            'branch': 'my-branch',
+            'name': 'demo',
+        }
+    )
+    config = build_config_from_name(
+        'demo',
+        branch='my-branch',
+        # Overrides.
+        pipeline='my-pipeline',
+    )
+    assert config.backend_url == 'https://igvfd-my-branch.demo.igvf.org'
 
 
 def test_config_build_config_from_branch():
@@ -72,6 +84,18 @@ def test_config_build_config_from_branch():
 def test_config_get_raw_config_from_name():
     from infrastructure.config import get_raw_config_from_name
     raw_config = get_raw_config_from_name(
+        'dev',
+        branch='my-branch',
+    )
+    assert raw_config['branch'] == 'my-branch'
+    assert raw_config['pipeline'] == 'DemoDeploymentPipelineStack'
+    assert raw_config['name'] == 'dev'
+    assert raw_config['backend_url'] == 'https://igvfd-dev.demo.igvf.org'
+
+
+def test_config_get_raw_config_from_name_demo():
+    from infrastructure.config import get_raw_config_from_name
+    raw_config = get_raw_config_from_name(
         'demo',
         branch='my-branch',
         pipeline='my-pipeline',
@@ -79,7 +103,6 @@ def test_config_get_raw_config_from_name():
     assert raw_config['branch'] == 'my-branch'
     assert raw_config['pipeline'] == 'my-pipeline'
     assert raw_config['name'] == 'demo'
-    assert 'backend_url' not in raw_config
     raw_config = get_raw_config_from_name(
         'demo',
         branch='my-branch',
@@ -90,14 +113,6 @@ def test_config_get_raw_config_from_name():
     assert raw_config['pipeline'] == 'my-pipeline'
     assert raw_config['name'] == 'demo'
     assert raw_config['backend_url'] == 'http://my-specific-endpoint.org'
-    raw_config = get_raw_config_from_name(
-        'dev',
-        branch='my-branch',
-    )
-    assert raw_config['branch'] == 'my-branch'
-    assert raw_config['pipeline'] == 'DemoDeploymentPipelineStack'
-    assert raw_config['name'] == 'dev'
-    assert raw_config['backend_url'] == 'https://igvfd-dev.demo.igvf.org'
 
 
 def test_config_maybe_add_backend_url():
@@ -123,6 +138,7 @@ def test_config_fill_in_calculated_config():
         branch='my-branch',
         pipeline='my-pipeline',
     )
+    raw_config.pop('backend_url', None)
     calculated_config = fill_in_calculated_config(raw_config)
     assert calculated_config == {
         'pipeline': 'my-pipeline',
