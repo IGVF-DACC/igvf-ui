@@ -208,6 +208,6 @@ export const CollectionContent = ({ collection, children }) => {
 }
 
 CollectionContent.propTypes = {
-  // Collection of items to display
+  // Collection of items to display in a list or table
   collection: PropTypes.arrayOf(PropTypes.object).isRequired,
 }

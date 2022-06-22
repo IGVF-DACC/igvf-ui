@@ -360,8 +360,8 @@ const CollectionTable = ({ collection }) => {
 }
 
 CollectionTable.propTypes = {
-  // Collection to display
-  collection: PropTypes.object.isRequired,
+  // Collection to display in a table
+  collection: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
 export default CollectionTable
