@@ -1,8 +1,3 @@
-// node_modules
-import Router from "next/router"
-// components
-import useSessionStorage from "./session-storage"
-
 /**
  * Establishes the context to hold the back-end session record for the currently logged-in user.
  * You have to do this within the <Auth0Provider> component so that we can get the current Auth0
@@ -51,8 +46,6 @@ export const Session = ({ children }) => {
   const prevAuthenticated = useRef(isAuthenticated)
   // Set to true once we start the process of signing out of the server
   const isServerAuthPending = useRef(false)
-  // Session storage for the post-sign-in redirect URL
-  const [postSigninUrl] = useSessionStorage("auth0returnurl", "/")
 
   // Detects and handles the authorization provider changing from signed out to signed in by
   // signing into the server.
@@ -86,24 +79,18 @@ export const Session = ({ children }) => {
             logout({ returnTo: `${BACKEND_URL}/auth-error` })
             isServerAuthPending.current = false
           } else {
-            // Auth0 and the server authenticated successfully. Get the signed-in session object.
+            // Auth0 and the server authenticated successfully. Set the signed-in session object in
+            // the session context so that any downstream component can retrieve it without doing a
+            // request to /session.
             getSession().then((sessionResponse) => {
               setSession(sessionResponse)
               isServerAuthPending.current = false
-              Router.replace(postSigninUrl || "/")
             })
           }
         })
     }
     // Once the user has logged into auth0, turn around and log into the server.
-  }, [
-    getAccessTokenSilently,
-    isAuthenticated,
-    logout,
-    session,
-    setSession,
-    postSigninUrl,
-  ])
+  }, [getAccessTokenSilently, isAuthenticated, logout, session, setSession])
 
   // Detects and handles the authorization provider changing from signed in to signed out by
   // signing out of the server.
