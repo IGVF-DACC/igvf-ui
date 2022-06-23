@@ -7,9 +7,9 @@ import Button from "./button"
 /**
  *
  * @param {string} target The text to copy to the clipboard.
- * @returns {
- *   isCopied {boolean} True if the user clicked the button within the last two seconds
- *   initiateCopy {function} Call when the user clicks the button to initiate the copy action
+ * @returns {object} {
+ *   - isCopied {boolean} True if the user clicked the button within the last two seconds
+ *   - initiateCopy {function} Call when the user clicks the button to initiate the copy action
  * }
  */
 export const useCopyAction = (target) => {
@@ -41,8 +41,8 @@ export const useCopyAction = (target) => {
 
 /**
  * Displays a button to copy text to the clipboard. The children of the button likely contains the
- * text, though it could be a React component as well. The child of the button is a function that
- * gets set to true for two seconds after the user clicks the copy button.
+ * text, though it could be a React component as well. The child of the button is a function with
+ * an argument that gets set to true for two seconds after the user clicks the copy button.
  */
 const CopyButton = ({ target, label = "", className = "", children }) => {
   const { isCopied, initiateCopy } = useCopyAction(target)

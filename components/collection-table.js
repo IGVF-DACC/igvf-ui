@@ -1,5 +1,5 @@
 // node_modules
-import { XIcon } from "@heroicons/react/solid"
+import { CheckIcon, ClipboardCopyIcon, XIcon } from "@heroicons/react/solid"
 import _ from "lodash"
 import Link from "next/link"
 import Router from "next/router"
@@ -109,56 +109,39 @@ export const extractHiddenColumnIdsFromHastag = (urlHash) => {
 }
 
 /**
- * Displays a button to copy the current collection URL along with a hashtag for the currently
- * hidden columns so the user can share the collection view with selected columns hidden.
- */
-const TableViewColumnUrlCopy = ({ hiddenColumns }) => {
-  const parsedUrl = url.parse(window.location.href)
-  const hashtag = `#hidden=${hiddenColumns.join()}`
-  parsedUrl.hash = hashtag
-  const hiddenColumnsUrl = url.format(parsedUrl)
-
-  return (
-    <CopyButton target={hiddenColumnsUrl}>
-      {() => {
-        return <>Copy Hidden Columns URL</>
-      }}
-    </CopyButton>
-  )
-}
-
-TableViewColumnUrlCopy.propTypes = {
-  // Array of column IDs of the hidden columns
-  hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
-}
-
-/**
  * Display a list of buttons for the hidden columns, and clicking a button removes that column
  * from the hidden columns list, causing it to appear again.
  */
 const TableHiddenColumnViewer = ({ hiddenColumns, columns, onChange }) => {
-  const sortedHiddenColumns = _.sortBy(hiddenColumns)
-  return (
-    <div className="flex flex-wrap gap-0.5">
-      {sortedHiddenColumns.map((columnId) => {
-        const column = columns.find((column) => column.id === columnId)
-        if (column) {
-          return (
-            <Button
-              key={columnId}
-              type="success"
-              onClick={() => onChange(columnId, false)}
-              size="sm"
-            >
-              {column.title}
-              <XIcon className="ml-1 h-3 w-3" />
-            </Button>
-          )
-        }
-        return null
-      })}
-    </div>
-  )
+  if (hiddenColumns.length > 0) {
+    const sortedHiddenColumns = _.sortBy(hiddenColumns)
+    return (
+      <div className="mb-3">
+        <div className="text-sm font-semibold ">Hidden Columns</div>
+        <div className="flex flex-wrap gap-0.5 border border-data-border bg-data-background p-1">
+          {sortedHiddenColumns.map((columnId) => {
+            const column = columns.find((column) => column.id === columnId)
+            if (column) {
+              return (
+                <Button
+                  key={columnId}
+                  type="success"
+                  onClick={() => onChange(columnId, false)}
+                  size="sm"
+                >
+                  {column.title}
+                  <XIcon className="ml-1 h-3 w-3" />
+                </Button>
+              )
+            }
+            return null
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  return null
 }
 
 TableHiddenColumnViewer.propTypes = {
@@ -209,7 +192,9 @@ const TableViewColumnSelector = ({ columns, hiddenColumns, onChange }) => {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>Select Visible Columns</Button>
+      <Button className="grow sm:grow-0" onClick={() => setIsOpen(true)}>
+        Select Visible Columns
+      </Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Modal.Header>Select columns to display</Modal.Header>
         <Modal.Body>
@@ -256,6 +241,81 @@ TableViewColumnSelector.propTypes = {
 }
 
 /**
+ * Displays a button to copy the current collection URL along with a hashtag for the currently
+ * hidden columns so the user can share the collection view with selected columns hidden.
+ */
+const TableViewColumnUrlCopy = ({ hiddenColumns }) => {
+  const parsedUrl = url.parse(window.location.href)
+  const hashtag = `#hidden=${hiddenColumns.join()}`
+  parsedUrl.hash = hashtag
+  const hiddenColumnsUrl = url.format(parsedUrl)
+
+  return (
+    <CopyButton target={hiddenColumnsUrl} className="grow sm:grow-0">
+      {(isCopied) => {
+        return (
+          <>
+            Copy Hidden Columns URL{" "}
+            <div className="ml-1 h-4 w-4">
+              {isCopied ? <CheckIcon /> : <ClipboardCopyIcon />}
+            </div>
+          </>
+        )
+      }}
+    </CopyButton>
+  )
+}
+
+TableViewColumnUrlCopy.propTypes = {
+  // Array of column IDs of the hidden columns
+  hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
+}
+
+/**
+ * Wraps the table-view column controls, such as the hidden-column selector.
+ */
+const TableViewColumnControls = ({ children }) => {
+  return <div className="my-1 flex flex-wrap gap-1">{children}</div>
+}
+
+/**
+ * Shows and handles the button to save the hashtag-specified hidden columns to localStorage.
+ */
+const TableCopySaveHiddenColumns = ({
+  collectionType,
+  hiddenColumns,
+  onSavedHiddenColumns,
+}) => {
+  /**
+   * Called when the user clicks the button to save the hashtag-specified hidden columns to
+   * localStorage. It also redirects to the same URL without the hashtag.
+   */
+  const saveHashtagHiddenColumns = () => {
+    // Save current hidden columns to localStorage and tell parent component that the user clicked
+    // the button.
+    saveStoredHiddenColumns(collectionType, hiddenColumns)
+    onSavedHiddenColumns()
+
+    // Update the URL to remove the hashtag.
+    const parsedUrl = url.parse(window.location.href)
+    parsedUrl.hash = null
+    const newUrl = url.format(parsedUrl)
+    Router.replace(newUrl)
+  }
+
+  return <Button onClick={saveHashtagHiddenColumns}>Save Hidden Columns</Button>
+}
+
+TableCopySaveHiddenColumns.propTypes = {
+  // Type of collection being displayed
+  collectionType: PropTypes.string.isRequired,
+  // Array of column IDs of the hidden columns
+  hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // Called when the user clicks the button to save the hidden columns.
+  onSavedHiddenColumns: PropTypes.func.isRequired,
+}
+
+/**
  * Displays the table view for a collection of objects on a collection page.
  */
 const CollectionTable = ({ collection }) => {
@@ -287,22 +347,6 @@ const CollectionTable = ({ collection }) => {
     saveStoredHiddenColumns(collectionType, newHiddenColumns)
   }
 
-  /**
-   * Called when the user clicks the button to save the hashtag-specified hidden columns to
-   * localStorage. It also redirects to the same URL without the hashtag.
-   */
-  const saveHashtagHiddenColumns = () => {
-    // Save current hidden columns to localStorage.
-    saveStoredHiddenColumns(collectionType, hiddenColumns)
-    setIsHiddenColumnsFromHashtag(false)
-
-    // Update the URL to remove the hashtag.
-    const parsedUrl = url.parse(window.location.href)
-    parsedUrl.hash = null
-    const newUrl = url.format(parsedUrl)
-    Router.replace(newUrl)
-  }
-
   useEffect(() => {
     // Determine whether the URL hashtag specifies hidden columns, overriding the hidden columns in
     // localStorage.
@@ -332,25 +376,27 @@ const CollectionTable = ({ collection }) => {
     const sortedColumns = sortColumns(filteredColumns)
     return (
       <>
-        {!isHiddenColumnsFromHashtag ? (
-          <>
+        <TableHiddenColumnViewer
+          columns={columns}
+          hiddenColumns={hiddenColumns}
+          onChange={updateHiddenColumns}
+        />
+        {isHiddenColumnsFromHashtag ? (
+          <TableCopySaveHiddenColumns
+            collectionType={collectionType}
+            hiddenColumns={hiddenColumns}
+            onSavedHiddenColumns={() => setIsHiddenColumnsFromHashtag(false)}
+          />
+        ) : (
+          <TableViewColumnControls>
             <TableViewColumnSelector
               columns={columns}
               hiddenColumns={hiddenColumns}
               onChange={updateHiddenColumns}
             />
             <TableViewColumnUrlCopy hiddenColumns={hiddenColumns} />
-          </>
-        ) : (
-          <Button onClick={saveHashtagHiddenColumns}>
-            Save Hidden Columns
-          </Button>
+          </TableViewColumnControls>
         )}
-        <TableHiddenColumnViewer
-          columns={columns}
-          hiddenColumns={hiddenColumns}
-          onChange={updateHiddenColumns}
-        />
         <DataGridContainer>
           <SortableGrid data={flattenedCollection} columns={sortedColumns} />
         </DataGridContainer>

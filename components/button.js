@@ -5,7 +5,7 @@
 // node_modules
 import PropTypes from "prop-types"
 import React, { Children, cloneElement } from "react"
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router"
 
 /**
  * Background colors for each of the button types.
@@ -85,7 +85,7 @@ const Button = ({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
+      className={`flex items-center justify-center rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
       aria-label={label}
       disabled={!enabled}
     >
@@ -144,15 +144,15 @@ const Link = ({
   }
 
   return (
-      <Button
-        onClick={onClick}
-        type={type}
-        size={size}
-        label={label}
-        className={className}
-      >
-        {children}
-      </Button>
+    <Button
+      onClick={onClick}
+      type={type}
+      size={size}
+      label={label}
+      className={className}
+    >
+      {children}
+    </Button>
   )
 }
 
