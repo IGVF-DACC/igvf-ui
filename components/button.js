@@ -265,7 +265,7 @@ const Icon = ({
     <button
       type="button"
       onClick={onClick}
-      className={`block h-6 w-6 rounded-full border p-1 ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${className}`}
+      className={`block h-6 w-6 rounded-full border p-1 ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonFillTypeClasses[type]} ${className}`}
       aria-label={label}
     >
       {filledChildren}
@@ -282,10 +282,18 @@ Icon.propTypes = {
   type: PropTypes.oneOf([
     "primary",
     "secondary",
-    "success",
-    "alert",
+    "tertiary",
+    "error",
     "warning",
+    "success",
     "info",
+    "primary-outline",
+    "secondary-outline",
+    "tertiary-outline",
+    "error-outline",
+    "warning-outline",
+    "success-outline",
+    "info-outline",
   ]),
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,

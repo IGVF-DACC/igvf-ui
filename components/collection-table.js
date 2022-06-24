@@ -19,7 +19,6 @@ import {
   extractHiddenColumnIdsFromUrl,
   generateHiddenColumnsUrl,
 } from "../libs/collection-table"
-import { useRef } from "react"
 
 /**
  * Copy the columns array intended for <SortableGrid> but with any columns with ids matching an

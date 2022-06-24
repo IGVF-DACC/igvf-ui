@@ -127,7 +127,7 @@ export const CollectionViewSwitch = () => {
   return (
     <div className="flex gap-1 pb-2">
       <Button.Icon
-        type={isListSelected ? "success" : "info"}
+        type={isListSelected ? "primary" : "primary-outline"}
         label={`Select collection list view${
           isListSelected ? " (selected)" : ""
         }`}
@@ -138,7 +138,7 @@ export const CollectionViewSwitch = () => {
         <ViewListIcon />
       </Button.Icon>
       <Button.Icon
-        type={isTableSelected ? "success" : "info"}
+        type={isTableSelected ? "primary" : "primary-outline"}
         label={`Select collection table view${
           isTableSelected ? " (selected)" : ""
         }`}
