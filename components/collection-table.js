@@ -14,6 +14,12 @@ import { DataGridContainer } from "./data-grid"
 import GlobalContext from "./global-context"
 import Modal from "./modal"
 import SortableGrid from "./sortable-grid"
+// libs
+import {
+  extractHiddenColumnIdsFromUrl,
+  generateHiddenColumnsUrl,
+} from "../libs/collection-table"
+import { useRef } from "react"
 
 /**
  * Copy the columns array intended for <SortableGrid> but with any columns with ids matching an
@@ -89,30 +95,15 @@ const saveStoredHiddenColumns = (type, hiddenColumns) => {
 }
 
 /**
- * Extract a list of hidden column IDs from the URL. Hidden column get specified as:
- * path#hidden=column_id_1,column_id_2,column_id_3
- * Export for Jest testing.
- * @param {string} urlHash Hashtag from browser URL
- * @returns {array} Hidden column IDs
- */
-export const extractHiddenColumnIdsFromHastag = (urlHash) => {
-  // First detect we have "hidden=something" in the hashtag.
-  const columnSpecifier = urlHash.match(/#hidden=(.+)/)
-  if (columnSpecifier) {
-    // Now get the comma-separated list of column IDs after the "hidden=".
-    const commaSeparatedColumnIds = columnSpecifier[1].match(/([a-zA-Z0-9]+)/g)
-    return commaSeparatedColumnIds || []
-  }
-
-  // URL doesn't have a form of path#hidden=column1,column2,column3
-  return []
-}
-
-/**
  * Display a list of buttons for the hidden columns, and clicking a button removes that column
  * from the hidden columns list, causing it to appear again.
  */
-const TableHiddenColumnViewer = ({ hiddenColumns, columns, onChange }) => {
+const TableHiddenColumnViewer = ({
+  hiddenColumns,
+  columns,
+  onChange,
+  isHiddenColumnsFromHashtag,
+}) => {
   if (hiddenColumns.length > 0) {
     const sortedHiddenColumns = _.sortBy(hiddenColumns)
     return (
@@ -125,7 +116,7 @@ const TableHiddenColumnViewer = ({ hiddenColumns, columns, onChange }) => {
               return (
                 <Button
                   key={columnId}
-                  type="success"
+                  type={isHiddenColumnsFromHashtag ? "warning" : "success"}
                   onClick={() => onChange(columnId, false)}
                   size="sm"
                 >
@@ -151,6 +142,8 @@ TableHiddenColumnViewer.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Called to clear the hidden column (make it visible)
   onChange: PropTypes.func.isRequired,
+  // True if hidden columns are specified in the URL
+  isHiddenColumnsFromHashtag: PropTypes.bool.isRequired,
 }
 
 /**
@@ -183,7 +176,7 @@ const tableColumns = (profile) => {
  * Display the actuator button to display the modal for the user to select which columns to
  * display and which to hide. This also displays that modal.
  */
-const TableViewColumnSelector = ({ columns, hiddenColumns, onChange }) => {
+const ColumnSelector = ({ columns, hiddenColumns, onChange }) => {
   // True if the column-selection modal is open.
   const [isOpen, setIsOpen] = useState(false)
 
@@ -193,10 +186,10 @@ const TableViewColumnSelector = ({ columns, hiddenColumns, onChange }) => {
   return (
     <>
       <Button className="grow sm:grow-0" onClick={() => setIsOpen(true)}>
-        Select Visible Columns
+        Select Hidden Columns
       </Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <Modal.Header>Select columns to display</Modal.Header>
+        <Modal.Header>Select columns to hide</Modal.Header>
         <Modal.Body>
           <fieldset>
             <div className="md:flex md:flex-wrap">
@@ -206,7 +199,7 @@ const TableViewColumnSelector = ({ columns, hiddenColumns, onChange }) => {
                   return (
                     <Checkbox
                       key={column.id}
-                      checked={!isHidden}
+                      checked={isHidden}
                       onChange={() => onChange(column.id, !isHidden)}
                       className="block md:basis-1/2 lg:basis-1/3"
                     >
@@ -231,7 +224,7 @@ const TableViewColumnSelector = ({ columns, hiddenColumns, onChange }) => {
   )
 }
 
-TableViewColumnSelector.propTypes = {
+ColumnSelector.propTypes = {
   // Array of columns to display
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Array of columns to hide
@@ -244,14 +237,23 @@ TableViewColumnSelector.propTypes = {
  * Displays a button to copy the current collection URL along with a hashtag for the currently
  * hidden columns so the user can share the collection view with selected columns hidden.
  */
-const TableViewColumnUrlCopy = ({ hiddenColumns }) => {
-  const parsedUrl = url.parse(window.location.href)
-  const hashtag = `#hidden=${hiddenColumns.join()}`
-  parsedUrl.hash = hashtag
-  const hiddenColumnsUrl = url.format(parsedUrl)
+const ColumnUrlCopy = ({ hiddenColumns }) => {
+  // True if the browser URL is available
+  const [isHrefAvailable, setIsHrefAvailable] = useState(false)
 
+  useEffect(() => {
+    setIsHrefAvailable(true)
+  }, [])
+
+  const hiddenColumnsUrl = isHrefAvailable
+    ? generateHiddenColumnsUrl(window.location.href, hiddenColumns)
+    : ""
   return (
-    <CopyButton target={hiddenColumnsUrl} className="grow sm:grow-0">
+    <CopyButton
+      target={hiddenColumnsUrl}
+      disabled={!isHrefAvailable}
+      className="grow sm:grow-0"
+    >
       {(isCopied) => {
         return (
           <>
@@ -266,22 +268,15 @@ const TableViewColumnUrlCopy = ({ hiddenColumns }) => {
   )
 }
 
-TableViewColumnUrlCopy.propTypes = {
+ColumnUrlCopy.propTypes = {
   // Array of column IDs of the hidden columns
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
 
 /**
- * Wraps the table-view column controls, such as the hidden-column selector.
- */
-const TableViewColumnControls = ({ children }) => {
-  return <div className="my-1 flex flex-wrap gap-1">{children}</div>
-}
-
-/**
  * Shows and handles the button to save the hashtag-specified hidden columns to localStorage.
  */
-const TableCopySaveHiddenColumns = ({
+const CopySaveHiddenColumns = ({
   collectionType,
   hiddenColumns,
   onSavedHiddenColumns,
@@ -306,13 +301,20 @@ const TableCopySaveHiddenColumns = ({
   return <Button onClick={saveHashtagHiddenColumns}>Save Hidden Columns</Button>
 }
 
-TableCopySaveHiddenColumns.propTypes = {
+CopySaveHiddenColumns.propTypes = {
   // Type of collection being displayed
   collectionType: PropTypes.string.isRequired,
   // Array of column IDs of the hidden columns
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
   // Called when the user clicks the button to save the hidden columns.
   onSavedHiddenColumns: PropTypes.func.isRequired,
+}
+
+/**
+ * Wraps the table-view column controls, such as the hidden-column selector.
+ */
+const ColumnControls = ({ children }) => {
+  return <div className="my-1 flex flex-wrap gap-1">{children}</div>
 }
 
 /**
@@ -330,7 +332,6 @@ const CollectionTable = ({ collection }) => {
 
   /**
    * Called when the user changes which columns are visible and hidden through the column selector.
-   * It updates the `hiddenColumns` state and saves the new state to localStorage.
    * @param {string} selectedColumnId The id of the column that was hidden or shown
    * @param {boolean} isNowHidden True if the column is now hidden; false if it is now visible
    */
@@ -344,19 +345,27 @@ const CollectionTable = ({ collection }) => {
       )
     }
     setHiddenColumns(newHiddenColumns)
-    saveStoredHiddenColumns(collectionType, newHiddenColumns)
+
+    if (isHiddenColumnsFromHashtag) {
+      const hiddenColumnsUrl = generateHiddenColumnsUrl(
+        window.location.href,
+        newHiddenColumns
+      )
+      Router.push(hiddenColumnsUrl)
+    } else {
+      saveStoredHiddenColumns(collectionType, newHiddenColumns)
+    }
   }
 
   useEffect(() => {
     // Determine whether the URL hashtag specifies hidden columns, overriding the hidden columns in
     // localStorage.
-    const hashtag = url.parse(window.location.href).hash || ""
-    const hashedHiddenColumns = hashtag
-      ? extractHiddenColumnIdsFromHastag(hashtag)
-      : []
-    if (hashedHiddenColumns.length > 0) {
-      // Current browser URL has a list of hidden columns. Ignore localStorage and use these
-      // instead.
+    const hashedHiddenColumns = extractHiddenColumnIdsFromUrl(
+      window.location.href
+    )
+    if (hashedHiddenColumns?.length >= 0) {
+      // Current browser URL has a #hidden= hashtag. Ignore localStorage and use the hidden columns
+      // specified here instead.
       setHiddenColumns(hashedHiddenColumns)
       setIsHiddenColumnsFromHashtag(true)
     } else {
@@ -368,9 +377,8 @@ const CollectionTable = ({ collection }) => {
     }
   }, [collectionType])
 
-  // Display table view.
-  const flattenedCollection = flattenCollection(collection)
   if (collectionType && profiles) {
+    const flattenedCollection = flattenCollection(collection)
     const columns = tableColumns(profiles[collectionType])
     const filteredColumns = filterHiddenColumns(columns, hiddenColumns)
     const sortedColumns = sortColumns(filteredColumns)
@@ -380,29 +388,35 @@ const CollectionTable = ({ collection }) => {
           columns={columns}
           hiddenColumns={hiddenColumns}
           onChange={updateHiddenColumns}
+          isHiddenColumnsFromHashtag={isHiddenColumnsFromHashtag}
         />
-        {isHiddenColumnsFromHashtag ? (
-          <TableCopySaveHiddenColumns
-            collectionType={collectionType}
-            hiddenColumns={hiddenColumns}
-            onSavedHiddenColumns={() => setIsHiddenColumnsFromHashtag(false)}
-          />
-        ) : (
-          <TableViewColumnControls>
-            <TableViewColumnSelector
-              columns={columns}
+        <ColumnControls>
+          {isHiddenColumnsFromHashtag ? (
+            <CopySaveHiddenColumns
+              collectionType={collectionType}
               hiddenColumns={hiddenColumns}
-              onChange={updateHiddenColumns}
+              onSavedHiddenColumns={() => setIsHiddenColumnsFromHashtag(false)}
             />
-            <TableViewColumnUrlCopy hiddenColumns={hiddenColumns} />
-          </TableViewColumnControls>
-        )}
+          ) : (
+            <>
+              <ColumnSelector
+                columns={columns}
+                hiddenColumns={hiddenColumns}
+                onChange={updateHiddenColumns}
+              />
+              <ColumnUrlCopy hiddenColumns={hiddenColumns} />
+            </>
+          )}
+        </ColumnControls>
         <DataGridContainer>
           <SortableGrid data={flattenedCollection} columns={sortedColumns} />
         </DataGridContainer>
       </>
     )
   }
+
+  // Profiles haven't loaded yet, or for some reason we couldn't determine the collection type.
+  return null
 }
 
 CollectionTable.propTypes = {

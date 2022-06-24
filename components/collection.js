@@ -7,15 +7,14 @@ import {
 import Link from "next/link"
 import PropTypes from "prop-types"
 import { useContext, useEffect } from "react"
-import url from "url"
 // components
 import Button from "./button"
-import CollectionTable, {
-  extractHiddenColumnIdsFromHastag,
-} from "./collection-table"
+import CollectionTable from "./collection-table"
 import GlobalContext from "./global-context"
 import NoContent from "./no-content"
 import Status from "./status"
+// libs
+import { extractHiddenColumnIdsFromUrl } from "../libs/collection-table"
 
 /**
  * States for the collection view display
@@ -185,11 +184,10 @@ export const CollectionContent = ({ collection, children }) => {
     collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
 
   useEffect(() => {
-    const hashtag = url.parse(window.location.href).hash || ""
-    const hashedHiddenColumns = hashtag
-      ? extractHiddenColumnIdsFromHastag(hashtag)
-      : []
-    if (hashedHiddenColumns.length > 0) {
+    const hashedHiddenColumns = extractHiddenColumnIdsFromUrl(
+      window.location.href
+    )
+    if (hashedHiddenColumns?.length >= 0) {
       collectionView.setCurrentCollectionView(COLLECTION_VIEW.TABLE)
     }
   }, [collectionView])

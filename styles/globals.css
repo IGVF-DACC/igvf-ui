@@ -34,20 +34,22 @@
   --color-data-value: #000000;
 
   /** Button backgrounds */
-  --color-button-primary: #1779ba;
-  --color-button-secondary: #767676;
-  --color-button-success: #3adb76;
-  --color-button-alert: #cc4b37;
-  --color-button-warning: #ffae00;
-  --color-button-info: #ffffff;
+  --color-button-primary: #195de6;
+  --color-button-secondary: #7f19e6;
+  --color-button-tertiary: #e619a1;
+  --color-button-error: #cc0000;
+  --color-button-warning: #ff5500;
+  --color-button-success: #00b300;
+  --color-button-info: #0088cc;
 
-  /** Button borders */
-  --color-border-primary: #0f517c;
-  --color-border-secondary: #4f4f4f;
-  --color-border-success: #248749;
-  --color-border-alert: #8b3325;
-  --color-border-warning: #a26f00;
-  --color-border-info: #808080;
+  /** Disabled button backgrounds */
+  --color-button-primary-disabled: #7795ea;
+  --color-button-secondary-disabled: #a571e9;
+  --color-button-tertiary-disabled: #e27cbf;
+  --color-button-error-disabled: #d3726a;
+  --color-button-warning-disabled: #f39875;
+  --color-button-success-disabled: #8dcc7a;
+  --color-button-info-disabled: #7fb0da;
 
   /** Modal borders */
   --color-modal-border: #e5e7eb;

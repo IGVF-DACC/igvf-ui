@@ -23,29 +23,42 @@ module.exports = {
         "data-label": "var(--color-data-label)",
         "data-value": "var(--color-data-value)",
 
-        // Generic button styles
+        // Button background colors
         "button-primary": "var(--color-button-primary)",
         "button-secondary": "var(--color-button-secondary)",
-        "button-success": "var(--color-button-success)",
-        "button-alert": "var(--color-button-alert)",
+        "button-tertiary": "var(--color-button-tertiary)",
+        "button-error": "var(--color-button-error)",
         "button-warning": "var(--color-button-warning)",
+        "button-success": "var(--color-button-success)",
+        "button-info": "var(--color-button-info)",
+
+        // Disabled button background colors
+        "button-primary-disabled": "var(--color-button-primary-disabled)",
+        "button-secondary-disabled": "var(--color-button-secondary-disabled)",
+        "button-success-disabled": "var(--color-button-success-disabled)",
+        "button-alert-disabled": "var(--color-button-alert-disabled)",
+        "button-warning-disabled": "var(--color-button-warning-disabled)",
+        "button-info-disabled": "var(--color-button-info-disabled)",
+      },
+      borderColor: {
+        // Outlined button border colors
+        "button-primary": "var(--color-button-primary)",
+        "button-secondary": "var(--color-button-secondary)",
+        "button-tertiary": "var(--color-button-tertiary)",
+        "button-error": "var(--color-button-error)",
+        "button-warning": "var(--color-button-warning)",
+        "button-success": "var(--color-button-success)",
         "button-info": "var(--color-button-info)",
       },
       textColor: {
-        "button-primary": "#ffffff",
-        "button-secondary": "#ffffff",
-        "button-success": "#000000",
-        "button-alert": "#ffffff",
-        "button-warning": "#000000",
-        "button-info": "var(--color-button-text-info)",
-      },
-      borderColor: {
-        "button-primary": "var(--color-border-primary)",
-        "button-secondary": "var(--color-border-secondary)",
-        "button-success": "var(--color-border-success)",
-        "button-alert": "var(--color-border-alert)",
-        "button-warning": "var(--color-border-warning)",
-        "button-info": "var(--color-border-info)",
+        // Outlined button text colors
+        "button-primary": "var(--color-button-primary)",
+        "button-secondary": "var(--color-button-secondary)",
+        "button-tertiary": "var(--color-button-tertiary)",
+        "button-error": "var(--color-button-error)",
+        "button-warning": "var(--color-button-warning)",
+        "button-success": "var(--color-button-success)",
+        "button-info": "var(--color-button-info)",
       },
       boxShadow: {
         // Status badges

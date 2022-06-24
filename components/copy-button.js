@@ -44,10 +44,23 @@ export const useCopyAction = (target) => {
  * text, though it could be a React component as well. The child of the button is a function with
  * an argument that gets set to true for two seconds after the user clicks the copy button.
  */
-const CopyButton = ({ target, label = "", className = "", children }) => {
+const CopyButton = ({
+  target,
+  label = "",
+  disabled = false,
+  className = "",
+  children,
+}) => {
+  // True if the user has clicked the copy button within the last two seconds
   const { isCopied, initiateCopy } = useCopyAction(target)
+
   return (
-    <Button onClick={initiateCopy} className={className} label={label}>
+    <Button
+      onClick={initiateCopy}
+      disabled={disabled}
+      className={className}
+      label={label}
+    >
       {children(isCopied)}
     </Button>
   )
@@ -58,6 +71,8 @@ CopyButton.propTypes = {
   target: PropTypes.string.isRequired,
   // Accessible label for the button
   label: PropTypes.string,
+  // True if the button should appear disabled
+  disabled: PropTypes.bool,
   // Additional Tailwind CSS class names
   className: PropTypes.string,
 }
