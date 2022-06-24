@@ -1,5 +1,17 @@
-import { render } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import Button from "../button"
+
+jest.mock("next/router", () => ({
+  useRouter() {
+    return {
+      route: "/",
+      pathname: "",
+      query: "",
+      asPath: "",
+      push: jest.fn(),
+    }
+  },
+}))
 
 describe("Button component", () => {
   const onClick = () => {
@@ -150,6 +162,188 @@ describe("Button component", () => {
       <Button onClick={onClick} type="info-outline">
         Info Outline
       </Button>
+    )
+    expect(container.firstChild).toHaveClass("bg-transparent")
+    expect(container.firstChild).toHaveClass("border-button-info")
+    expect(container.firstChild).toHaveClass("text-button-info")
+  })
+})
+
+describe("Button.Link component", () => {
+  const onClick = jest.fn()
+
+  it("renders a primary link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link href="/path" navigationClick={onClick}>
+        Primary
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-button-primary")
+    expect(container.firstChild).toHaveClass("border-button-primary")
+    expect(container.firstChild).toHaveClass("text-white")
+
+    // Really only have to see this works for one Button.Link type.
+    fireEvent.click(screen.getByText(/Primary/))
+    expect(onClick).toHaveBeenCalled()
+  })
+
+  it("renders a secondary link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link href="/path" navigationClick={onClick} type="secondary">
+        Secondary
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-button-secondary")
+    expect(container.firstChild).toHaveClass("border-button-secondary")
+    expect(container.firstChild).toHaveClass("text-white")
+  })
+
+  it("renders a tertiary link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link href="/path" navigationClick={onClick} type="tertiary">
+        Tertiary
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-button-tertiary")
+    expect(container.firstChild).toHaveClass("border-button-tertiary")
+    expect(container.firstChild).toHaveClass("text-white")
+  })
+
+  it("renders an error link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link href="/path" navigationClick={onClick} type="error">
+        Error
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-button-error")
+    expect(container.firstChild).toHaveClass("border-button-error")
+    expect(container.firstChild).toHaveClass("text-white")
+  })
+
+  it("renders a warning link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link href="/path" navigationClick={onClick} type="warning">
+        Warning
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-button-warning")
+    expect(container.firstChild).toHaveClass("border-button-warning")
+    expect(container.firstChild).toHaveClass("text-white")
+  })
+
+  it("renders a success link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link href="/path" navigationClick={onClick} type="success">
+        Success
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-button-success")
+    expect(container.firstChild).toHaveClass("border-button-success")
+    expect(container.firstChild).toHaveClass("text-white")
+  })
+
+  it("renders an info link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link href="/path" navigationClick={onClick} type="info">
+        Info
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-button-info")
+    expect(container.firstChild).toHaveClass("border-button-info")
+    expect(container.firstChild).toHaveClass("text-white")
+  })
+
+  it("renders a primary outline link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link
+        href="/path"
+        navigationClick={onClick}
+        type="primary-outline"
+      >
+        Primary Outline
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-transparent")
+    expect(container.firstChild).toHaveClass("border-button-primary")
+    expect(container.firstChild).toHaveClass("text-button-primary")
+  })
+
+  it("renders a secondary outline link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link
+        href="/path"
+        navigationClick={onClick}
+        type="secondary-outline"
+      >
+        Secondary Outline
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-transparent")
+    expect(container.firstChild).toHaveClass("border-button-secondary")
+    expect(container.firstChild).toHaveClass("text-button-secondary")
+  })
+
+  it("renders a tertiary link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link
+        href="/path"
+        navigationClick={onClick}
+        type="tertiary-outline"
+      >
+        Tertiary Outline
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-transparent")
+    expect(container.firstChild).toHaveClass("border-button-tertiary")
+    expect(container.firstChild).toHaveClass("text-button-tertiary")
+  })
+
+  it("renders an error outline link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link href="/path" navigationClick={onClick} type="error-outline">
+        Error Outline
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-transparent")
+    expect(container.firstChild).toHaveClass("border-button-error")
+    expect(container.firstChild).toHaveClass("text-button-error")
+  })
+
+  it("renders a warning outline link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link
+        href="/path"
+        navigationClick={onClick}
+        type="warning-outline"
+      >
+        Warning Outline
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-transparent")
+    expect(container.firstChild).toHaveClass("border-button-warning")
+    expect(container.firstChild).toHaveClass("text-button-warning")
+  })
+
+  it("renders a success outline link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link
+        href="/path"
+        navigationClick={onClick}
+        type="success-outline"
+      >
+        Success Outline
+      </Button.Link>
+    )
+    expect(container.firstChild).toHaveClass("bg-transparent")
+    expect(container.firstChild).toHaveClass("border-button-success")
+    expect(container.firstChild).toHaveClass("text-button-success")
+  })
+
+  it("renders an info outline link button with the correct classes", () => {
+    const { container } = render(
+      <Button.Link href="/path" navigationClick={onClick} type="info-outline">
+        Info Outline
+      </Button.Link>
     )
     expect(container.firstChild).toHaveClass("bg-transparent")
     expect(container.firstChild).toHaveClass("border-button-info")
