@@ -1,5 +1,6 @@
 import {
   extractHiddenColumnIdsFromUrl,
+  filterHiddenColumns,
   generateHiddenColumnsUrl,
 } from "../collection-table"
 
@@ -30,6 +31,42 @@ describe("test extractHiddenColumnIdsFromUrl function", () => {
       "http://localhost:3000/path/to/object"
     )
     expect(hiddenColumnIds).toEqual(null)
+  })
+})
+
+describe("test filterHiddenColumns function", () => {
+  const columns = [
+    {
+      id: "@id",
+      label: "ID",
+    },
+    {
+      id: "organism",
+      title: "Organism",
+    },
+    {
+      id: "references",
+      title: "References",
+    },
+    {
+      id: "url",
+      title: "URL",
+    },
+  ]
+
+  it("filters out hidden column property IDs", () => {
+    const hiddenColumnIds = ["organism", "references"]
+    const filteredColumns = filterHiddenColumns(columns, hiddenColumnIds)
+    expect(filteredColumns).toEqual([
+      {
+        id: "@id",
+        label: "ID",
+      },
+      {
+        id: "url",
+        title: "URL",
+      },
+    ])
   })
 })
 

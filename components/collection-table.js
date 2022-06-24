@@ -17,21 +17,9 @@ import SortableGrid from "./sortable-grid"
 // libs
 import {
   extractHiddenColumnIdsFromUrl,
+  filterHiddenColumns,
   generateHiddenColumnsUrl,
 } from "../libs/collection-table"
-
-/**
- * Copy the columns array intended for <SortableGrid> but with any columns with ids matching an
- * entry in `hiddenColumns` omitted.
- * @param {array} columns Sortable grid columns to filter
- * @param {array} hiddenColumns Ids of columns to hide
- * @returns {array} `columns` copy but with hidden columns removed
- */
-const filterHiddenColumns = (columns, hiddenColumns) => {
-  return columns.filter((column) => {
-    return !hiddenColumns.includes(column.id)
-  })
-}
 
 /**
  * Copy the given collection with any non-simple properties of the collection objects converted to

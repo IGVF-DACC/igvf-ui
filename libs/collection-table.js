@@ -21,6 +21,19 @@ export const extractHiddenColumnIdsFromUrl = (url) => {
 }
 
 /**
+ * Copy the columns array intended for <SortableGrid> but with any columns with ids matching an
+ * entry in `hiddenColumns` omitted.
+ * @param {array} columns Sortable grid columns to filter
+ * @param {array} hiddenColumns Ids of columns to hide
+ * @returns {array} `columns` copy but with hidden columns removed
+ */
+export const filterHiddenColumns = (columns, hiddenColumns) => {
+  return columns.filter((column) => {
+    return !hiddenColumns.includes(column.id)
+  })
+}
+
+/**
  * Generate a URL that includes the hashtag that specifies the hidden columns. If the
  * `hiddenColumns` array is empty, just the normal URL gets returned. Components calling this
  * function must have mounted before calling this function.
