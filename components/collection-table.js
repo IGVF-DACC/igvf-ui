@@ -4,7 +4,7 @@ import _ from "lodash"
 import Link from "next/link"
 import Router from "next/router"
 import PropTypes from "prop-types"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import url from "url"
 // components
 import Button from "./button"
@@ -316,6 +316,11 @@ const CollectionTable = ({ collection }) => {
   const { profiles } = useContext(GlobalContext)
   // Get the collection type from the first collection item, if any
   const collectionType = collection[0]?.["@type"][0] || ""
+  // Unfiltered table columns for the current collection type; memoize for useEffect dependency
+  const columns = useMemo(
+    () => tableColumns(profiles[collectionType]),
+    [profiles, collectionType]
+  )
 
   /**
    * Called when the user changes which columns are visible and hidden through the column selector.
@@ -359,14 +364,21 @@ const CollectionTable = ({ collection }) => {
       // Load the hidden columns for the current collection type from localStorage.
       const storedHiddenColumns = loadStoredHiddenColumns(collectionType)
       if (storedHiddenColumns) {
-        setHiddenColumns(storedHiddenColumns)
+        // Make sure the stored hidden columns are valid for the current collection type. If not,
+        // save the valid ones in localStorage.
+        const validHiddenColumns = storedHiddenColumns.filter((columnId) =>
+          columns.find((column) => column.id === columnId)
+        )
+        if (validHiddenColumns.length !== storedHiddenColumns.length) {
+          saveStoredHiddenColumns(collectionType, validHiddenColumns)
+        }
+        setHiddenColumns(validHiddenColumns)
       }
     }
-  }, [collectionType])
+  }, [collectionType, columns])
 
   if (collectionType && profiles) {
     const flattenedCollection = flattenCollection(collection)
-    const columns = tableColumns(profiles[collectionType])
     const filteredColumns = filterHiddenColumns(columns, hiddenColumns)
     const sortedColumns = sortColumns(filteredColumns)
     return (
