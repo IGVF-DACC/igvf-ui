@@ -85,36 +85,44 @@ const saveStoredHiddenColumns = (type, hiddenColumns) => {
  * Display a list of buttons for the hidden columns, and clicking a button removes that column
  * from the hidden columns list, causing it to appear again.
  */
-const TableHiddenColumnViewer = ({
+const HiddenColumnViewer = ({
   hiddenColumns,
   columns,
   onChange,
-  isHiddenColumnsFromHashtag,
+  isHiddenColumnsFromUrl,
 }) => {
   if (hiddenColumns.length > 0) {
     const sortedHiddenColumns = _.sortBy(hiddenColumns)
     return (
       <div className="mb-3">
-        <div className="text-sm font-semibold ">Hidden Columns</div>
-        <div className="flex flex-wrap gap-0.5 border border-data-border bg-data-background p-1">
+        <div className="text-sm font-semibold ">
+          {isHiddenColumnsFromUrl ? (
+            <>URL-Specified Hidden Columns</>
+          ) : (
+            <>Selected Hidden Columns</>
+          )}
+        </div>
+        <ul className="flex flex-wrap gap-0.5 border border-data-border bg-data-background p-1">
           {sortedHiddenColumns.map((columnId) => {
             const column = columns.find((column) => column.id === columnId)
             if (column) {
               return (
-                <Button
-                  key={columnId}
-                  type={isHiddenColumnsFromHashtag ? "warning" : "success"}
-                  onClick={() => onChange(columnId, false)}
-                  size="sm"
-                >
-                  {column.title}
-                  <XIcon className="ml-1 h-3 w-3" />
-                </Button>
+                <li key={columnId}>
+                  <Button
+                    type={isHiddenColumnsFromUrl ? "warning" : "error"}
+                    label={`Remove ${column.title} from hidden columns`}
+                    onClick={() => onChange(columnId, false)}
+                    size="sm"
+                  >
+                    {column.title}
+                    <XIcon className="ml-1 h-3 w-3" />
+                  </Button>
+                </li>
               )
             }
             return null
           })}
-        </div>
+        </ul>
       </div>
     )
   }
@@ -122,7 +130,7 @@ const TableHiddenColumnViewer = ({
   return null
 }
 
-TableHiddenColumnViewer.propTypes = {
+HiddenColumnViewer.propTypes = {
   // Columns to hide
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
   // <SortTable> definitions for all columns, hidden and visible
@@ -130,7 +138,7 @@ TableHiddenColumnViewer.propTypes = {
   // Called to clear the hidden column (make it visible)
   onChange: PropTypes.func.isRequired,
   // True if hidden columns are specified in the URL
-  isHiddenColumnsFromHashtag: PropTypes.bool.isRequired,
+  isHiddenColumnsFromUrl: PropTypes.bool.isRequired,
 }
 
 /**
@@ -311,14 +319,13 @@ const CollectionTable = ({ collection }) => {
   // Track the user's selected hidden columns
   const [hiddenColumns, setHiddenColumns] = useState([])
   // True if hidden columns determine by hashtag instead of localStorage
-  const [isHiddenColumnsFromHashtag, setIsHiddenColumnsFromHashtag] =
-    useState(false)
+  const [isHiddenColumnsFromUrl, setIsHiddenColumnsFromUrl] = useState(false)
   const { profiles } = useContext(GlobalContext)
   // Get the collection type from the first collection item, if any
   const collectionType = collection[0]?.["@type"][0] || ""
   // Unfiltered table columns for the current collection type; memoize for useEffect dependency
   const columns = useMemo(
-    () => tableColumns(profiles[collectionType]),
+    () => (profiles ? tableColumns(profiles[collectionType]) : []),
     [profiles, collectionType]
   )
 
@@ -338,7 +345,7 @@ const CollectionTable = ({ collection }) => {
     }
     setHiddenColumns(newHiddenColumns)
 
-    if (isHiddenColumnsFromHashtag) {
+    if (isHiddenColumnsFromUrl) {
       const hiddenColumnsUrl = generateHiddenColumnsUrl(
         window.location.href,
         newHiddenColumns
@@ -359,7 +366,7 @@ const CollectionTable = ({ collection }) => {
       // Current browser URL has a #hidden= hashtag. Ignore localStorage and use the hidden columns
       // specified here instead.
       setHiddenColumns(hashedHiddenColumns)
-      setIsHiddenColumnsFromHashtag(true)
+      setIsHiddenColumnsFromUrl(true)
     } else {
       // Load the hidden columns for the current collection type from localStorage.
       const storedHiddenColumns = loadStoredHiddenColumns(collectionType)
@@ -383,18 +390,18 @@ const CollectionTable = ({ collection }) => {
     const sortedColumns = sortColumns(filteredColumns)
     return (
       <>
-        <TableHiddenColumnViewer
+        <HiddenColumnViewer
           columns={columns}
           hiddenColumns={hiddenColumns}
           onChange={updateHiddenColumns}
-          isHiddenColumnsFromHashtag={isHiddenColumnsFromHashtag}
+          isHiddenColumnsFromUrl={isHiddenColumnsFromUrl}
         />
         <ColumnControls>
-          {isHiddenColumnsFromHashtag ? (
+          {isHiddenColumnsFromUrl ? (
             <CopySaveHiddenColumns
               collectionType={collectionType}
               hiddenColumns={hiddenColumns}
-              onSavedHiddenColumns={() => setIsHiddenColumnsFromHashtag(false)}
+              onSavedHiddenColumns={() => setIsHiddenColumnsFromUrl(false)}
             />
           ) : (
             <>
