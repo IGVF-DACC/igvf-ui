@@ -168,10 +168,36 @@ const tableColumns = (profile) => {
 }
 
 /**
+ * Displays the buttons to hide or show all columns at once.
+ */
+const ChangeAllControls = ({ onChangeAllHiddenColumns }) => {
+  return (
+    <div className="mb-3 flex gap-1">
+      <Button onClick={() => onChangeAllHiddenColumns(true)}>
+        Hide All Columns
+      </Button>
+      <Button onClick={() => onChangeAllHiddenColumns(false)}>
+        Hide No Columns
+      </Button>
+    </div>
+  )
+}
+
+ChangeAllControls.propTypes = {
+  // Called when the user wants to hide or show all columns at once
+  onChangeAllHiddenColumns: PropTypes.func.isRequired,
+}
+
+/**
  * Display the actuator button to display the modal for the user to select which columns to
  * display and which to hide. This also displays that modal.
  */
-const ColumnSelector = ({ columns, hiddenColumns, onChange }) => {
+const ColumnSelector = ({
+  columns,
+  hiddenColumns,
+  onChange,
+  onChangeAllHiddenColumns,
+}) => {
   // True if the column-selection modal is open.
   const [isOpen, setIsOpen] = useState(false)
 
@@ -186,6 +212,9 @@ const ColumnSelector = ({ columns, hiddenColumns, onChange }) => {
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Modal.Header>Select columns to hide</Modal.Header>
         <Modal.Body>
+          <ChangeAllControls
+            onChangeAllHiddenColumns={onChangeAllHiddenColumns}
+          />
           <fieldset>
             <div className="md:flex md:flex-wrap">
               {sortedColumns.map((column) => {
@@ -210,7 +239,7 @@ const ColumnSelector = ({ columns, hiddenColumns, onChange }) => {
           </fieldset>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="info" onClick={() => setIsOpen(false)}>
+          <Button type="primary-outline" onClick={() => setIsOpen(false)}>
             Close
           </Button>
         </Modal.Footer>
@@ -226,6 +255,8 @@ ColumnSelector.propTypes = {
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
   // Called when the user changes the selected columns
   onChange: PropTypes.func.isRequired,
+  // Called when the user wants to hide or show all columns at once
+  onChangeAllHiddenColumns: PropTypes.func.isRequired,
 }
 
 /**
@@ -365,6 +396,7 @@ const CollectionTable = ({ collection }) => {
     }
     setHiddenColumns(newHiddenColumns)
 
+    // Update the URL with the new hidden columns.
     if (isHiddenColumnsFromUrl) {
       const hiddenColumnsUrl = generateHiddenColumnsUrl(
         window.location.href,
@@ -374,6 +406,20 @@ const CollectionTable = ({ collection }) => {
     } else {
       saveStoredHiddenColumns(collectionType, newHiddenColumns)
     }
+  }
+
+  /**
+   * Handle the user selecting all columns to hide or show at once.
+   * @param {boolean} isNowHidden True if all columns now hidden; false if all columns now visible
+   */
+  const changeAllHiddenColumns = (isNowHidden) => {
+    const newHiddenColumns = isNowHidden
+      ? columns
+          .filter((column) => column.id !== "@id")
+          .map((column) => column.id)
+      : []
+    setHiddenColumns(newHiddenColumns)
+    saveStoredHiddenColumns(collectionType, newHiddenColumns)
   }
 
   useEffect(() => {
@@ -393,8 +439,10 @@ const CollectionTable = ({ collection }) => {
       if (storedHiddenColumns) {
         // Make sure the stored hidden columns are valid for the current collection type. If not,
         // save the valid ones in localStorage.
-        const validHiddenColumns = storedHiddenColumns.filter((columnId) =>
-          columns.find((column) => column.id === columnId)
+        const validHiddenColumns = storedHiddenColumns.filter(
+          (columnId) =>
+            columnId !== "@id" &&
+            columns.find((column) => column.id === columnId)
         )
         if (validHiddenColumns.length !== storedHiddenColumns.length) {
           saveStoredHiddenColumns(collectionType, validHiddenColumns)
@@ -429,6 +477,7 @@ const CollectionTable = ({ collection }) => {
                 columns={columns}
                 hiddenColumns={hiddenColumns}
                 onChange={updateHiddenColumns}
+                onChangeAllHiddenColumns={changeAllHiddenColumns}
               />
               <ColumnUrlCopy hiddenColumns={hiddenColumns} />
             </>
