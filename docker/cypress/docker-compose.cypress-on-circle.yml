@@ -2,11 +2,11 @@ version: "3.8"
 
 services:
   cypress:
-    image: cypress/included:10.1.0
+    image: cypress/included:9.7.0
     working_dir: "/test"
     volumes:
       - "./cypress:/test/cypress"
-      - "./docker/cypress/cypress.config.js:/test/cypress.config.js"
+      - "./docker/cypress/cypress-docker.json:/test/cypress.json"
     command: cypress run
     network_mode: "host"
     environment:
