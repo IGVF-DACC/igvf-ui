@@ -18,33 +18,9 @@ import {
   clearHiddenColumnsFromUrl,
   extractHiddenColumnIdsFromUrl,
   filterHiddenColumns,
+  flattenCollection,
   generateHiddenColumnsUrl,
 } from "../libs/collection-table"
-
-/**
- * Copy the given collection with any non-simple properties of the collection objects converted to
- * a JSON string. Any functions or undefined properties get omitted from the returned copy.
- * @param {array} collection Collection to copy to an array of objects with flattened properties
- * @returns {array} Copy of collection, but with objects with flattened properties
- */
-const flattenCollection = (collection) => {
-  const flattenedCollection = collection.map((item) => {
-    const flattenedItem = {}
-    Object.keys(item).forEach((key) => {
-      const propType = typeof item[key]
-      if (propType === "object") {
-        // Generally, object, array, or null (which is OK to stringify to 'null').
-        flattenedItem[key] = JSON.stringify(item[key])
-      } else if (propType !== "function" && propType !== "undefined") {
-        // Generally, any simple value.
-        flattenedItem[key] = item[key]
-      }
-      // Anything else (function, undefined) gets ignored.
-    })
-    return flattenedItem
-  })
-  return flattenedCollection
-}
 
 /**
  * Sort the array of table columns by their titles, except for the column for the @id property.

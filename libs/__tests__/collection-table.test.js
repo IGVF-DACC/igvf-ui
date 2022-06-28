@@ -2,6 +2,7 @@ import {
   clearHiddenColumnsFromUrl,
   extractHiddenColumnIdsFromUrl,
   filterHiddenColumns,
+  flattenCollection,
   generateHiddenColumnsUrl,
 } from "../collection-table"
 
@@ -77,6 +78,29 @@ describe("test filterHiddenColumns function", () => {
       {
         id: "url",
         title: "URL",
+      },
+    ])
+  })
+})
+
+describe("Test flattenCollection function", () => {
+  it("flattens objects within the collection array", () => {
+    const collection = [
+      {
+        "@id": "/cell-lines/467c72a2-4f84-2c8f-96b0-ec8715e18185/",
+        "@type": ["CellLine", "Biosample", "Sample", "Item"],
+        accession: "IGVFSM000AAA",
+        source: { institute_label: "Stanford", name: "j-michael-cherry" },
+      },
+    ]
+
+    const flattenedCollection = flattenCollection(collection)
+    expect(flattenedCollection[0]).toEqual([
+      {
+        "@id": "/cell-lines/467c72a2-4f84-2c8f-96b0-ec8715e18185/",
+        "@type": '["CellLine","Biosample","Sample","Item"]',
+        accession: "IGVFSM000AAA",
+        source: '{"institute_label":"Stanford","name":"j-michale-cherry"}',
       },
     ])
   })
