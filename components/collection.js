@@ -34,7 +34,7 @@ export const Collection = ({ children }) => {
 /**
  * Displays the link in a collection item.
  */
-export const CollectionItemLink = ({ href, label }) => {
+export const CollectionItemLink = ({ href, label = "" }) => {
   return (
     <div className="h-fill flex items-center justify-center pl-2">
       <Link href={href}>
@@ -52,14 +52,14 @@ export const CollectionItemLink = ({ href, label }) => {
 CollectionItemLink.propTypes = {
   // Path to item this links to
   href: PropTypes.string.isRequired,
-  // Voice label for item
-  label: PropTypes.string.isRequired,
+  // Voice label for item; treat as required unless you have absolutely nothing
+  label: PropTypes.string,
 }
 
 /**
  * Displays a single item in a collection.
  */
-export const CollectionItem = ({ href, label, status = "", children }) => {
+export const CollectionItem = ({ href, label = "", status = "", children }) => {
   return (
     <div className="my-0.5 flex border border-data-border bg-data-background">
       <CollectionItemLink href={href} label={label} />
