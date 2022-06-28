@@ -1,3 +1,6 @@
+// node_modules
+import _ from "lodash"
+
 /**
  * Clears any hashtag from the URL.
  * @param {string} url - The URL to clean
@@ -81,4 +84,17 @@ export const generateHiddenColumnsUrl = (url, hiddenColumns) => {
   parsedUrl.hash =
     hiddenColumns.length > 0 ? `#hidden=${hiddenColumns.join()}` : ""
   return parsedUrl.toString()
+}
+
+/**
+ * Sort the array of table columns by their titles, except for the column for the @id property.
+ * That one always sorts first.
+ * @param {array} columns Array of table columns to sort
+ * @returns {array} Copy of `columns` sorted by title, but with @id always first
+ */
+export const sortColumns = (columns) => {
+  return _.sortBy(columns, [
+    (column) => column.id !== "@id",
+    (column) => (column.id === "@id" ? 0 : column.title),
+  ])
 }

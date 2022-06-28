@@ -4,6 +4,7 @@ import {
   filterHiddenColumns,
   flattenCollection,
   generateHiddenColumnsUrl,
+  sortColumns,
 } from "../collection-table"
 
 describe("test clearHiddenColumnsFromUrl", () => {
@@ -83,7 +84,7 @@ describe("test filterHiddenColumns function", () => {
   })
 })
 
-describe("Test flattenCollection function", () => {
+describe("test flattenCollection function", () => {
   it("flattens objects within the collection array", () => {
     const collection = [
       {
@@ -95,18 +96,16 @@ describe("Test flattenCollection function", () => {
     ]
 
     const flattenedCollection = flattenCollection(collection)
-    expect(flattenedCollection[0]).toEqual([
-      {
-        "@id": "/cell-lines/467c72a2-4f84-2c8f-96b0-ec8715e18185/",
-        "@type": '["CellLine","Biosample","Sample","Item"]',
-        accession: "IGVFSM000AAA",
-        source: '{"institute_label":"Stanford","name":"j-michale-cherry"}',
-      },
-    ])
+    expect(flattenedCollection[0]).toEqual({
+      "@id": "/cell-lines/467c72a2-4f84-2c8f-96b0-ec8715e18185/",
+      "@type": '["CellLine","Biosample","Sample","Item"]',
+      accession: "IGVFSM000AAA",
+      source: '{"institute_label":"Stanford","name":"j-michael-cherry"}',
+    })
   })
 })
 
-describe("test generateHiddenColumnsUrl function", () => {
+describe("Test generateHiddenColumnsUrl function", () => {
   it("generates a URL with #hidden= and the specified columns", () => {
     const hiddenColumnsUrl = generateHiddenColumnsUrl(
       "http://localhost:3000/path/to/object",
@@ -123,5 +122,31 @@ describe("test generateHiddenColumnsUrl function", () => {
       []
     )
     expect(hiddenColumnsUrl).toEqual("http://localhost:3000/path/to/object")
+  })
+})
+
+describe("test sortColumns function", () => {
+  it("sorts the columns alphabetically except for the @id column", () => {
+    const columns = [
+      { id: "taxa", title: "Taxa" },
+      { id: "url", title: "URL" },
+      { id: "@id", title: "ID" },
+      { id: "source", title: "Source" },
+    ]
+
+    const sortedColumns = sortColumns(columns)
+    expect(sortedColumns[0]).toMatchObject({
+      id: "@id",
+      title: "ID",
+    })
+    expect(sortedColumns[1]).toMatchObject({
+      id: "source",
+      title: "Source",
+    })
+    expect(sortedColumns[2]).toMatchObject({ id: "taxa", title: "Taxa" })
+    expect(sortedColumns[3]).toMatchObject({
+      id: "url",
+      title: "URL",
+    })
   })
 })

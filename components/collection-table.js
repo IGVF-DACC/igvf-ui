@@ -20,20 +20,8 @@ import {
   filterHiddenColumns,
   flattenCollection,
   generateHiddenColumnsUrl,
+  sortColumns,
 } from "../libs/collection-table"
-
-/**
- * Sort the array of table columns by their titles, except for the column for the @id property.
- * That one always sorts first.
- * @param {array} columns Array of table columns to sort
- * @returns {array} Copy of `columns` sorted by title, but with @id always first
- */
-const sortColumns = (columns) => {
-  return _.sortBy(columns, [
-    (column) => column.id !== "@id",
-    (column) => (column.id === "@id" ? 0 : column.title),
-  ])
-}
 
 /**
  * Retrieve the array of hidden columns from localStorage for the given type.
