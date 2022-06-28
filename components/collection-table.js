@@ -172,7 +172,7 @@ const tableColumns = (profile) => {
  */
 const ChangeAllControls = ({ onChangeAllHiddenColumns }) => {
   return (
-    <div className="mb-3 flex gap-1">
+    <div className="flex gap-1">
       <Button onClick={() => onChangeAllHiddenColumns(true)}>
         Hide All Columns
       </Button>
@@ -215,6 +215,9 @@ const ColumnSelector = ({
           <ChangeAllControls
             onChangeAllHiddenColumns={onChangeAllHiddenColumns}
           />
+          <div className="mb-3 text-sm text-gray-700">
+            The <em>ID</em> column cannot be hidden
+          </div>
           <fieldset>
             <div className="md:flex md:flex-wrap">
               {sortedColumns.map((column) => {
