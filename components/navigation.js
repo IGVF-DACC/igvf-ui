@@ -120,7 +120,7 @@ const NavigationSignOutItem = ({ id, children }) => {
   /**
    * Called when the user clicks the Sign Out button.
    */
-    const handleAuthClick = () => {
+  const handleAuthClick = () => {
     logout({ returnTo: window.location.origin })
   }
 
