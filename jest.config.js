@@ -9,9 +9,7 @@ const customJestConfig = {
     "<rootDir>/components",
     "<rootDir>/libs",
   ],
-  modulePathIgnorePatterns: [
-    "<rootDir>/cdk/"
-  ],
+  modulePathIgnorePatterns: ["<rootDir>/cdk/"],
   setupFilesAfterEnv: ["./jest.setup.js"],
   testEnvironment: "jest-environment-jsdom",
   testPathIgnorePatterns: [
