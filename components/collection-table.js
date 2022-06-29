@@ -1,7 +1,6 @@
 // node_modules
 import { CheckIcon, ClipboardCopyIcon, XIcon } from "@heroicons/react/solid"
 import _ from "lodash"
-import Link from "next/link"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
 import { useContext, useEffect, useMemo, useState } from "react"
