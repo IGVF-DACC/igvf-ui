@@ -1,5 +1,6 @@
 // node_modules
 import _ from "lodash"
+import Link from "next/link"
 
 /**
  * Clears any hashtag from the URL.
@@ -97,4 +98,52 @@ export const sortColumns = (columns) => {
     (column) => column.id !== "@id",
     (column) => (column.id === "@id" ? 0 : column.title),
   ])
+}
+
+/**
+ * Retrieve the array of hidden columns from localStorage for the given type.
+ * @param {string} type The @type of the object whose hidden columns we need from localStorage
+ * @returns {array} Array of column ids to hide for the given @type; null if nothing stored
+ */
+export const loadStoredHiddenColumns = (type) => {
+  const hiddenColumns = localStorage.getItem(`hidden-columns-${type}`)
+  if (hiddenColumns) {
+    return JSON.parse(hiddenColumns)
+  }
+  return null
+}
+
+/**
+ * Save the array of hidden columns to localStorage for the given type.
+ * @param {string} type The @type of the object whose hidden columns we save to localStorage
+ * @param {array} hiddenColumns Array of column ids to hide for the given @type
+ */
+export const saveStoredHiddenColumns = (type, hiddenColumns) => {
+  localStorage.setItem(`hidden-columns-${type}`, JSON.stringify(hiddenColumns))
+}
+
+/**
+ * Generate a list of report columns for the sortable grid.
+ * @param {object} profile Profile for one schema object type
+ * @returns {object} Sortable grid columns
+ */
+export const generateTableColumns = (profile) => {
+  return Object.keys(profile.properties).map((property) => {
+    const column = {
+      id: property,
+      title: profile.properties[property].title,
+    }
+
+    // @id property should display a link to the object displayed in the collection table.
+    if (property === "@id") {
+      column.display = ({ source }) => {
+        return (
+          <Link href={source["@id"]}>
+            <a>{source["@id"]}</a>
+          </Link>
+        )
+      }
+    }
+    return column
+  })
 }

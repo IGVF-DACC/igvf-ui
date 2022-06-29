@@ -4,6 +4,9 @@ import {
   filterHiddenColumns,
   flattenCollection,
   generateHiddenColumnsUrl,
+  generateTableColumns,
+  loadStoredHiddenColumns,
+  saveStoredHiddenColumns,
   sortColumns,
 } from "../collection-table"
 
@@ -148,5 +151,48 @@ describe("test sortColumns function", () => {
       id: "url",
       title: "URL",
     })
+  })
+})
+
+describe("test saving and loading hidden columns", () => {
+  it("saves the hidden columns and loads them again", () => {
+    const hiddenColumns = ["column_1", "column_2"]
+    saveStoredHiddenColumns("testing", hiddenColumns)
+    const storedHiddenColumns = loadStoredHiddenColumns("testing")
+    expect(storedHiddenColumns).toEqual(hiddenColumns)
+    const nullHiddenColumns = loadStoredHiddenColumns("not_existing")
+    expect(nullHiddenColumns).toEqual(null)
+  })
+})
+
+describe("test generating the sortable columns object from a profile", () => {
+  it("generates the sortable columns object", () => {
+    const profile = {
+      properties: {
+        status: {
+          title: "Status",
+        },
+        name: {
+          title: "Name",
+        },
+        "@id": {
+          title: "ID",
+        },
+      },
+    }
+    const sortableColumns = generateTableColumns(profile)
+    expect(sortableColumns).toHaveLength(3)
+    expect(sortableColumns[0]).toEqual({ id: "status", title: "Status" })
+    expect(sortableColumns[1]).toEqual({ id: "name", title: "Name" })
+    expect(sortableColumns[2]).toHaveProperty("id", "@id")
+    expect(sortableColumns[2]).toHaveProperty("title", "ID")
+    expect(sortableColumns[2]).toHaveProperty("display")
+    expect(sortableColumns[2].display).toBeInstanceOf(Function)
+    const link = sortableColumns[2].display({
+      source: {
+        "@id": "http://localhost:3000/path/to/object",
+      },
+    })
+    expect(link).toBeInstanceOf(Object)
   })
 })

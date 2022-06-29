@@ -20,30 +20,11 @@ import {
   filterHiddenColumns,
   flattenCollection,
   generateHiddenColumnsUrl,
+  loadStoredHiddenColumns,
+  saveStoredHiddenColumns,
   sortColumns,
+  generateTableColumns,
 } from "../libs/collection-table"
-
-/**
- * Retrieve the array of hidden columns from localStorage for the given type.
- * @param {string} type The @type of the object whose hidden columns we need from localStorage
- * @returns {array} Array of column ids to hide for the given @type; null if nothing stored
- */
-const loadStoredHiddenColumns = (type) => {
-  const hiddenColumns = localStorage.getItem(`hidden-columns-${type}`)
-  if (hiddenColumns) {
-    return JSON.parse(hiddenColumns)
-  }
-  return null
-}
-
-/**
- * Save the array of hidden columns to localStorage for the given type.
- * @param {string} type The @type of the object whose hidden columns we save to localStorage
- * @param {array} hiddenColumns Array of column ids to hide for the given @type
- */
-const saveStoredHiddenColumns = (type, hiddenColumns) => {
-  localStorage.setItem(`hidden-columns-${type}`, JSON.stringify(hiddenColumns))
-}
 
 /**
  * Display a list of buttons for the hidden columns, and clicking a button removes that column
@@ -103,32 +84,6 @@ HiddenColumnViewer.propTypes = {
   onChange: PropTypes.func.isRequired,
   // True if hidden columns are specified in the URL
   isHiddenColumnsFromUrl: PropTypes.bool.isRequired,
-}
-
-/**
- * Generate a list of report columns for the sortable grid.
- * @param {object} profile Profile for one schema object type
- * @returns {object} Sortable grid columns
- */
-const tableColumns = (profile) => {
-  return Object.keys(profile.properties).map((property) => {
-    const column = {
-      id: property,
-      title: profile.properties[property].title,
-    }
-
-    // @id property should display a link to the object displayed in the collection table.
-    if (property === "@id") {
-      column.display = ({ source }) => {
-        return (
-          <Link href={source["@id"]}>
-            <a>{source["@id"]}</a>
-          </Link>
-        )
-      }
-    }
-    return column
-  })
 }
 
 /**
@@ -342,7 +297,7 @@ const CollectionTable = ({ collection }) => {
   const collectionType = collection[0]?.["@type"][0] || ""
   // Unfiltered table columns for the current collection type; memoize for useEffect dependency
   const columns = useMemo(
-    () => (profiles ? tableColumns(profiles[collectionType]) : []),
+    () => (profiles ? generateTableColumns(profiles[collectionType]) : []),
     [profiles, collectionType]
   )
   const router = useRouter()
