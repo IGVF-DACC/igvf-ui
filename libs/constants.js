@@ -1,8 +1,6 @@
 import getConfig from 'next/config'
 
-
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
-
 
 // igvfd data server URL
 export const SERVER_URL = serverRuntimeConfig.BACKEND_URL
