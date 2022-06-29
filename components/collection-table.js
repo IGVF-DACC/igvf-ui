@@ -1,6 +1,5 @@
 // node_modules
-import { CheckIcon, ClipboardCopyIcon, XIcon } from "@heroicons/react/solid"
-import _ from "lodash"
+import { CheckIcon, ClipboardCopyIcon } from "@heroicons/react/solid"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
 import { useContext, useEffect, useMemo, useState } from "react"
@@ -26,76 +25,22 @@ import {
 } from "../libs/collection-table"
 
 /**
- * Display a list of buttons for the hidden columns, and clicking a button removes that column
- * from the hidden columns list, causing it to appear again.
- */
-const HiddenColumnViewer = ({
-  hiddenColumns,
-  columns,
-  onChange,
-  isHiddenColumnsFromUrl,
-}) => {
-  if (hiddenColumns.length > 0) {
-    const sortedHiddenColumns = _.sortBy(hiddenColumns)
-    return (
-      <div className="mb-3">
-        <div className="text-sm font-semibold ">
-          {isHiddenColumnsFromUrl ? (
-            <>URL-Specified Hidden Columns</>
-          ) : (
-            <>Saved Hidden Columns</>
-          )}
-        </div>
-        <ul className="flex flex-wrap gap-0.5 border border-data-border bg-data-background p-1">
-          {sortedHiddenColumns.map((columnId) => {
-            const column = columns.find((column) => column.id === columnId)
-            if (column) {
-              return (
-                <li key={columnId}>
-                  <Button
-                    type={isHiddenColumnsFromUrl ? "warning" : "success"}
-                    label={`Remove ${column.title} from hidden columns`}
-                    onClick={() => onChange(columnId, false)}
-                    size="sm"
-                  >
-                    {column.title}
-                    <XIcon className="ml-1 h-3 w-3" />
-                  </Button>
-                </li>
-              )
-            }
-            return null
-          })}
-        </ul>
-      </div>
-    )
-  }
-
-  return null
-}
-
-HiddenColumnViewer.propTypes = {
-  // Columns to hide
-  hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // <SortTable> definitions for all columns, hidden and visible
-  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Called to clear the hidden column (make it visible)
-  onChange: PropTypes.func.isRequired,
-  // True if hidden columns are specified in the URL
-  isHiddenColumnsFromUrl: PropTypes.bool.isRequired,
-}
-
-/**
  * Displays the buttons to hide or show all columns at once.
  */
 const ChangeAllControls = ({ onChangeAllHiddenColumns }) => {
   return (
     <div className="flex gap-1">
-      <Button onClick={() => onChangeAllHiddenColumns(true)}>
-        Hide All Columns
+      <Button
+        className="flex-grow md:flex-grow-0"
+        onClick={() => onChangeAllHiddenColumns(false)}
+      >
+        Show All Columns
       </Button>
-      <Button onClick={() => onChangeAllHiddenColumns(false)}>
-        Hide No Columns
+      <Button
+        className="flex-grow md:flex-grow-0"
+        onClick={() => onChangeAllHiddenColumns(true)}
+      >
+        Show No Columns
       </Button>
     </div>
   )
@@ -125,16 +70,18 @@ const ColumnSelector = ({
   return (
     <>
       <Button className="grow sm:grow-0" onClick={() => setIsOpen(true)}>
-        Select Hidden Columns
+        Show / Hide Columns
       </Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <Modal.Header>Select columns to hide</Modal.Header>
+        <Modal.Header>Show / Hide Columns</Modal.Header>
         <Modal.Body>
-          <ChangeAllControls
-            onChangeAllHiddenColumns={onChangeAllHiddenColumns}
-          />
-          <div className="mb-3 text-sm text-gray-700">
-            The <em>ID</em> column cannot be hidden
+          <div className="mb-3 md:flex md:items-center">
+            <ChangeAllControls
+              onChangeAllHiddenColumns={onChangeAllHiddenColumns}
+            />
+            <div className="text-center text-sm text-gray-700 md:ml-2 md:flex-grow md:text-left">
+              The <em>ID</em> column cannot be hidden
+            </div>
           </div>
           <fieldset>
             <div className="md:flex md:flex-wrap">
@@ -144,7 +91,7 @@ const ColumnSelector = ({
                   return (
                     <Checkbox
                       key={column.id}
-                      checked={isHidden}
+                      checked={!isHidden}
                       onChange={() => onChange(column.id, !isHidden)}
                       className="block md:basis-1/2 lg:basis-1/3"
                     >
@@ -379,12 +326,6 @@ const CollectionTable = ({ collection }) => {
     const sortedColumns = sortColumns(filteredColumns)
     return (
       <>
-        <HiddenColumnViewer
-          columns={columns}
-          hiddenColumns={hiddenColumns}
-          onChange={updateHiddenColumns}
-          isHiddenColumnsFromUrl={isHiddenColumnsFromUrl}
-        />
         <ColumnControls>
           {isHiddenColumnsFromUrl ? (
             <UrlSpecifiedControls
