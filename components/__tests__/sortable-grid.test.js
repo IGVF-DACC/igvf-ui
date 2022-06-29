@@ -226,7 +226,12 @@ describe("SortableGrid", () => {
 
     render(
       <DataGridContainer>
-        <SortableGrid data={data} columns={columns} keyProp="uuid" />
+        <SortableGrid
+          data={data}
+          columns={columns}
+          keyProp="uuid"
+          initialSort={{ columnId: "doesnt_exist" }}
+        />
       </DataGridContainer>
     )
 
