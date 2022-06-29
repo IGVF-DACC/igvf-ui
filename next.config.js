@@ -11,6 +11,7 @@ module.exports = {
     BACKEND_URL: process.env.BACKEND_URL,
   },
   publicRuntimeConfig: {
-    PUBLIC_BACKEND_URL: process.env.PUBLIC_BACKEND_URL || process.env.BACKEND_URL,
+    PUBLIC_BACKEND_URL:
+      process.env.PUBLIC_BACKEND_URL || process.env.BACKEND_URL,
   },
 }
