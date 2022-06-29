@@ -8,6 +8,7 @@ services:
     image: igvf-ui-nextjs
     command: npm run start
     environment:
+      - NODE_ENV=production
       - BACKEND_URL=http://nginx:8000
       - PUBLIC_BACKEND_URL=http://localhost:8000
     ports:

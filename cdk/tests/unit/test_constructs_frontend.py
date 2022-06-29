@@ -99,6 +99,10 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                     'Essential': True,
                     'Environment': [
                         {
+                            'Name': 'NODE_ENV',
+                            'Value': 'production'
+                        },
+                        {
                             'Name': 'BACKEND_URL',
                             'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
                         }
