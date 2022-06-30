@@ -17,7 +17,7 @@ import React, { Children, isValidElement, useState } from "react"
 import Icon from "./icon"
 import SiteLogo from "./logo"
 // libs
-import { AUTH_ERROR_URI, BACKEND_URL } from "../libs/constants"
+import { AUTH_ERROR_URI } from "../libs/constants"
 
 /**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
@@ -121,7 +121,7 @@ const NavigationSignOutItem = ({ id, children }) => {
    * Called when the user clicks the Sign Out button.
    */
   const handleAuthClick = () => {
-    logout({ returnTo: BACKEND_URL })
+    logout({ returnTo: window.location.origin })
   }
 
   return (

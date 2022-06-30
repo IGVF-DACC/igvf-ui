@@ -6,13 +6,9 @@ services:
       context: .
       dockerfile: ./docker/nextjs/Dockerfile
     image: igvf-ui-nextjs
-    volumes:
-      - ".:/igvf-ui"
-      - "/igvf-ui/node_modules"
-      - "/igvf-ui/.next"
-    command: npm run dev
+    command: npm run start
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - BACKEND_URL=http://nginx:8000
       - PUBLIC_BACKEND_URL=http://localhost:8000
     ports:
