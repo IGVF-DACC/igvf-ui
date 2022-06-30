@@ -9,6 +9,7 @@ import Checkbox from "./checkbox"
 import CopyButton from "./copy-button"
 import { DataGridContainer } from "./data-grid"
 import GlobalContext from "./global-context"
+import Icon from "./icon"
 import Modal from "./modal"
 import SortableGrid from "./sortable-grid"
 // libs
@@ -52,6 +53,26 @@ ChangeAllControls.propTypes = {
 }
 
 /**
+ * Display an icon showing whether any columns are hidden or not.
+ */
+const HiddenColumnsIndicator = ({ isAnyColumnHidden }) => {
+  return (
+    <>
+      {isAnyColumnHidden ? (
+        <Icon.TableColumnsHidden className="ml-1.5 h-5 w-5" />
+      ) : (
+        <Icon.TableColumnsVisible className="ml-1.5 h-5 w-5" />
+      )}
+    </>
+  )
+}
+
+HiddenColumnsIndicator.propTypes = {
+  // True if at least one column is hidden
+  isAnyColumnHidden: PropTypes.bool.isRequired,
+}
+
+/**
  * Display the actuator button to display the modal for the user to select which columns to
  * display and which to hide. This also displays that modal.
  */
@@ -71,9 +92,17 @@ const ColumnSelector = ({
     <>
       <Button className="grow sm:grow-0" onClick={() => setIsOpen(true)}>
         Show / Hide Columns
+        <HiddenColumnsIndicator isAnyColumnHidden={hiddenColumns.length > 0} />
       </Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <Modal.Header>Show / Hide Columns</Modal.Header>
+        <Modal.Header onClose={() => setIsOpen(false)}>
+          <div className="flex items-center">
+            Show / Hide Columns
+            <HiddenColumnsIndicator
+              isAnyColumnHidden={hiddenColumns.length > 0}
+            />
+          </div>
+        </Modal.Header>
         <Modal.Body>
           <div className="mb-3 md:flex md:items-center">
             <ChangeAllControls
