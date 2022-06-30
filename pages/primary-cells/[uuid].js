@@ -113,8 +113,8 @@ export const getServerSideProps = async ({ params, req }) => {
     const biosampleTerm = primaryCell.biosample_term
       ? await request.getObject(primaryCell.biosample_term)
       : null
-    const diseaseTerm = primaryCell.disease_ontology
-      ? await request.getObject(primaryCell.disease_ontology)
+    const diseaseTerm = primaryCell.disease_term
+      ? await request.getObject(primaryCell.disease_term)
       : null
     const breadcrumbs = await buildBreadcrumbs(primaryCell, "accession")
     return {
