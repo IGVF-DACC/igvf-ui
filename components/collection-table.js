@@ -10,7 +10,9 @@ import CopyButton from "./copy-button"
 import { DataGridContainer } from "./data-grid"
 import GlobalContext from "./global-context"
 import Icon from "./icon"
+import Instruction from "./instruction"
 import Modal from "./modal"
+import Paragraph from "./paragraph"
 import SortableGrid from "./sortable-grid"
 // libs
 import {
@@ -180,7 +182,7 @@ const ColumnUrlCopy = ({ hiddenColumns }) => {
       {(isCopied) => {
         return (
           <>
-            Copy Hidden-Columns URL{" "}
+            Copy URL Columns
             <div className="ml-1 h-4 w-4">
               {isCopied ? <CheckIcon /> : <ClipboardCopyIcon />}
             </div>
@@ -234,11 +236,20 @@ const UrlSpecifiedControls = ({
   return (
     <>
       <Button onClick={saveHashtagHiddenColumns}>
-        Save URL-Specified Hidden Columns
+        Save URL Columns to Browser
       </Button>
-      <Button onClick={clearHashtagHiddenColumns}>
-        Clear URL-Specified Hidden Columns
-      </Button>
+      <Button onClick={clearHashtagHiddenColumns}>Clear URL Columns</Button>
+      <Instruction title="Save and Clear URL Columns">
+        <Paragraph>
+          <strong>Save URL Columns to Browser</strong> saves the hidden columns
+          in your URL to your browser, overwriting any hidden columns you have
+          previously saved.
+        </Paragraph>
+        <Paragraph>
+          <strong>Copy URL Columns</strong> restores the hidden columns you have
+          saved to your browser.
+        </Paragraph>
+      </Instruction>
     </>
   )
 }
@@ -256,7 +267,9 @@ UrlSpecifiedControls.propTypes = {
  * Wraps the table-view column controls, such as the hidden-column selector.
  */
 const ColumnControls = ({ children }) => {
-  return <div className="my-1 flex flex-wrap gap-1">{children}</div>
+  return (
+    <div className="my-1 flex flex-wrap items-center gap-1">{children}</div>
+  )
 }
 
 /**
@@ -371,6 +384,16 @@ const CollectionTable = ({ collection }) => {
                 onChangeAllHiddenColumns={changeAllHiddenColumns}
               />
               <ColumnUrlCopy hiddenColumns={hiddenColumns} />
+              <Instruction title="Show / Hide Columns and Copy URL Columns">
+                <Paragraph>
+                  Your choices for columns to show and hide get saved to your
+                  browser for each type of collection.
+                </Paragraph>
+                <Paragraph>
+                  Copy URL Columns with your shown and hidden columns to share
+                  with others, or to paste into another browser.
+                </Paragraph>
+              </Instruction>
             </>
           )}
         </ColumnControls>
