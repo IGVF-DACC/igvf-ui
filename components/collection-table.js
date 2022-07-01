@@ -110,7 +110,7 @@ const ColumnSelector = ({
             <ChangeAllControls
               onChangeAllHiddenColumns={onChangeAllHiddenColumns}
             />
-            <div className="text-center text-sm text-gray-700 md:ml-2 md:flex-grow md:text-left">
+            <div className="text-center text-sm text-gray-700 dark:text-gray-300 md:ml-2 md:flex-grow md:text-left">
               The <em>ID</em> column cannot be hidden
             </div>
           </div>

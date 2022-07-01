@@ -29,7 +29,11 @@ import { Children } from "react"
  */
 const Modal = ({ isOpen, onClose, children }) => {
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      className="relative z-50 text-black dark:text-white"
+    >
       <div
         className="fixed inset-0 bg-black/20 backdrop-blur-sm"
         aria-hidden="true"
