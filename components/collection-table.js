@@ -246,8 +246,8 @@ const UrlSpecifiedControls = ({
           previously saved.
         </Paragraph>
         <Paragraph>
-          <strong>Copy URL Columns</strong> restores the hidden columns you have
-          saved to your browser.
+          <strong>Clear URL Columns</strong> restores the hidden columns you
+          have saved to your browser.
         </Paragraph>
       </Instruction>
     </>
