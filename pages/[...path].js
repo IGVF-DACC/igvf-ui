@@ -28,7 +28,11 @@ const FallbackCollection = ({ collection }) => {
       <Collection>
         {collection.length > 0 ? (
           collection.map((item) => (
-            <CollectionItem key={item.uuid} href={item["@id"]}>
+            <CollectionItem
+              key={item.uuid}
+              testid={item.uuid}
+              href={item["@id"]}
+            >
               <CollectionItemName>{extractTitle(item)}</CollectionItemName>
             </CollectionItem>
           ))

@@ -2,14 +2,14 @@
 import PropTypes from "prop-types"
 import { useContext } from "react"
 // components
-import { DataArea } from "./data-area"
+import { DataPanel } from "./data-area"
 import GlobalContext from "./global-context"
 
 const NoContent = ({ message }) => {
   return (
-    <DataArea>
+    <DataPanel>
       <div className="text-center italic">{message}</div>
-    </DataArea>
+    </DataPanel>
   )
 }
 
