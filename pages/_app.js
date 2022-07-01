@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react"
 // libs
 import { onRedirectCallback } from "../libs/authentication"
 import {
+  API_URL,
   AUTH0_AUDIENCE,
   AUTH0_CLIENT_ID,
   AUTH0_ISSUER_BASE_DOMAIN,
@@ -50,7 +51,7 @@ const App = ({ Component, pageProps }) => {
 
   useEffect(() => {
     if (pageProps.sessionCookie) {
-      fetch("http://localhost:8000/profiles", {
+      fetch(`${API_URL}/profiles`, {
         method: "GET",
         headers: {
           Accept: "application/json",
