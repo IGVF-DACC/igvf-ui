@@ -55,9 +55,13 @@ describe("collection-view tests", () => {
     cy.get(`[aria-label="Select collection table view"]`).click()
     cy.get("[role=table]").should("exist")
 
-    cy.contains("Select Hidden Columns").click()
+    cy.contains("Show / Hide Columns").click()
     cy.get("[id^=headlessui-dialog-panel-]").should("exist")
 
-    cy.get("[role=columnheader]").contains("Award")
+    cy.get("[role=columnheader]").contains("Award").should("exist")
+    cy.get("input[name=awards]").uncheck()
+    cy.get("[role=columnheader]").contains("Award").should("not.exist")
+    cy.get("input[name=awards]").check()
+    cy.get("[role=columnheader]").contains("Award").should("exist")
   })
 })

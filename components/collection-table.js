@@ -43,7 +43,7 @@ const ChangeAllControls = ({ onChangeAllHiddenColumns }) => {
         className="flex-grow md:flex-grow-0"
         onClick={() => onChangeAllHiddenColumns(true)}
       >
-        Show No Columns
+        Hide All Columns
       </Button>
     </div>
   )
@@ -122,6 +122,7 @@ const ColumnSelector = ({
                   return (
                     <Checkbox
                       key={column.id}
+                      name={column.id}
                       checked={!isHidden}
                       onChange={() => onChange(column.id, !isHidden)}
                       className="block md:basis-1/2 lg:basis-1/3"
