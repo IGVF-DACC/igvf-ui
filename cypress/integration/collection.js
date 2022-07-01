@@ -103,5 +103,35 @@ describe("collection-view tests", () => {
     cy.get("[role=columnheader]").should("have.length.greaterThan", 1)
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
     cy.get("[role=columnheader]").contains("Lot ID").should("not.exist")
+
+    cy.contains("Clear URL Columns").click()
+    cy.url().should("not.include", "#hidden=aliases,lot_id")
+    cy.contains("Save URL Columns to Browser").should("not.exist")
+    cy.contains("Clear URL Columns").should("not.exist")
+    cy.contains("Show / Hide Columns").should("exist")
+    cy.contains("Copy URL Columns").should("exist")
+  })
+
+  it("overwrites the browser-saved columns with the URL columns", () => {
+    cy.get("[data-testid=treatments]").click()
+    cy.get(`[aria-label="Select collection table view"]`).click()
+    cy.contains("Show / Hide Columns").click()
+
+    cy.get("input[name=amount]").uncheck()
+    cy.get("input[name=amount_units]").uncheck()
+
+    cy.reload(true)
+    cy.visit("/treatments#hidden=aliases,lot_id")
+    cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
+    cy.get("[role=columnheader]").contains("Lot ID").should("not.exist")
+    cy.get("[role=columnheader]").contains("Amount").should("exist")
+    cy.get("[role=columnheader]").contains("Amount units").should("exist")
+
+    cy.contains("Save URL Columns to Browser").click()
+    cy.url().should("not.include", "#hidden=aliases,lot_id")
+    cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
+    cy.get("[role=columnheader]").contains("Lot ID").should("not.exist")
+    cy.get("[role=columnheader]").contains("Amount").should("exist")
+    cy.get("[role=columnheader]").contains("Amount units").should("exist")
   })
 })
