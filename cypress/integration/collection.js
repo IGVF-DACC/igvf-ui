@@ -1,8 +1,11 @@
 /// <reference types="cypress" />
 
 describe("collection-view tests", () => {
-  it("can select the table view and back to the list view", () => {
+  beforeEach(() => {
     cy.visit("/")
+  })
+
+  it("can select the table view and back to the list view", () => {
     cy.get("[data-testid=awards]").click()
     cy.get("[data-testid^=collection-list-item-]")
       .its("length")
@@ -24,7 +27,6 @@ describe("collection-view tests", () => {
   })
 
   it("remembers the current list or table view across collection pages", () => {
-    cy.visit("/")
     cy.get("[data-testid=awards]").click()
     cy.get("[data-testid^=collection-list-item-]")
       .its("length")
@@ -50,7 +52,6 @@ describe("collection-view tests", () => {
   })
 
   it("lets the user hide and show columns through the modal", () => {
-    cy.visit("/")
     cy.get("[data-testid=labs]").click()
     cy.get(`[aria-label="Select collection table view"]`).click()
     cy.get("[role=table]").should("exist")
@@ -63,5 +64,44 @@ describe("collection-view tests", () => {
     cy.get("[role=columnheader]").contains("Award").should("not.exist")
     cy.get("input[name=awards]").check()
     cy.get("[role=columnheader]").contains("Award").should("exist")
+
+    cy.contains("Hide All Columns").click()
+    cy.get("[role=columnheader]").should("have.length", 1)
+    cy.get("[role=columnheader]").contains("ID").should("exist")
+    cy.get("fieldset input[type=checkbox]").each((checkbox) => {
+      expect(checkbox[0].checked).to.equal(false)
+    })
+
+    cy.contains("Show All Columns").click()
+    cy.get("[role=columnheader]").should("have.length.greaterThan", 1)
+    cy.get("fieldset input[type=checkbox]").each((checkbox) => {
+      expect(checkbox[0].checked).to.equal(true)
+    })
+  })
+
+  it("copies a correct URL for the hidden columns", () => {
+    cy.get("[data-testid=treatments]").click()
+    cy.get(`[aria-label="Select collection table view"]`).click()
+    cy.contains("Show / Hide Columns").click()
+    cy.get("input[name=aliases]").uncheck()
+    cy.get("input[name=lot_id]").uncheck()
+    cy.contains("Close").click()
+    cy.contains("Copy URL Columns").click()
+    cy.window().then((win) => {
+      win.navigator.clipboard.readText().then((text) => {
+        expect(text).to.contain("/treatments#hidden=aliases,lot_id")
+      })
+    })
+  })
+
+  it("responds to the columns URL by showing and hiding the correct columns", () => {
+    cy.reload(true)
+    cy.visit("/treatments#hidden=aliases,lot_id")
+    cy.get("[data-testid^=collection-list-item-]").should("not.exist")
+    cy.get("[role=table]").should("exist")
+
+    cy.get("[role=columnheader]").should("have.length.greaterThan", 1)
+    cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
+    cy.get("[role=columnheader]").contains("Lot ID").should("not.exist")
   })
 })
