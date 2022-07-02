@@ -2,13 +2,13 @@
 import { useState } from "react"
 
 /**
- * Analogous to useState, but sets new values in the browser's session storage, and recalls them.
- * Supply a key to identify the value in session storage.
- * @param {string} key Identifier of the given session storage data
+ * Analogous to useState, but sets new values in the browser's localStorage, and recalls them.
+ * Supply a key to identify the value in localStorage.
+ * @param {string} key Identifier of the given localStorage data
  * @param {*} initialValue Initial value to set for the key; including objects
  * @returns {array} [
- *   0: Value retrieved from session storage
- *   1: Function to set new value in session storage; calling component must be mounted
+ *   0: Value retrieved from localStorage
+ *   1: Function to set new value in localStorage; calling component must be mounted
  * ]
  */
 export const useLocalStorage = (key, initialValue) => {
@@ -29,13 +29,13 @@ export const useLocalStorage = (key, initialValue) => {
 }
 
 /**
- * Analogous to useState, but sets new values in the browser's session storage, and recalls them.
- * Supply a key to identify the value in session storage.
- * @param {string} key Identifier of the given session storage data
+ * Analogous to useState, but sets new values in the browser's sessionStorage, and recalls them.
+ * Supply a key to identify the value in sessionStorage.
+ * @param {string} key Identifier of the given sessionStorage data
  * @param {*} initialValue Initial value to set for the key; including objects
  * @returns {array} [
- *   0: Value retrieved from session storage
- *   1: Function to set new value in session storage; calling component must be mounted
+ *   0: Value retrieved from sessionStorage
+ *   1: Function to set new value in sessionStorage; calling component must be mounted
  * ]
  */
 export const useSessionStorage = (key, initialValue) => {
