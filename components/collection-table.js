@@ -31,16 +31,17 @@ import {
  * Displays the buttons to hide or show all columns at once.
  */
 const ChangeAllControls = ({ onChangeAllHiddenColumns }) => {
+  const className = "flex-grow md:flex-grow-0"
   return (
     <div className="flex gap-1">
       <Button
-        className="flex-grow md:flex-grow-0"
+        className={className}
         onClick={() => onChangeAllHiddenColumns(false)}
       >
         Show All Columns
       </Button>
       <Button
-        className="flex-grow md:flex-grow-0"
+        className={className}
         onClick={() => onChangeAllHiddenColumns(true)}
       >
         Hide All Columns
@@ -58,12 +59,13 @@ ChangeAllControls.propTypes = {
  * Display an icon showing whether any columns are hidden or not.
  */
 const HiddenColumnsIndicator = ({ isAnyColumnHidden }) => {
+  const className = "ml-1.5 h-5 w-5"
   return (
     <>
       {isAnyColumnHidden ? (
-        <Icon.TableColumnsHidden className="ml-1.5 h-5 w-5" />
+        <Icon.TableColumnsHidden className={className} />
       ) : (
-        <Icon.TableColumnsVisible className="ml-1.5 h-5 w-5" />
+        <Icon.TableColumnsVisible className={className} />
       )}
     </>
   )
@@ -111,7 +113,7 @@ const ColumnSelector = ({
               onChangeAllHiddenColumns={onChangeAllHiddenColumns}
             />
             <div className="text-center text-sm text-gray-700 dark:text-gray-300 md:ml-2 md:flex-grow md:text-left">
-              The <em>ID</em> column cannot be hidden
+              The <i>ID</i> column cannot be hidden
             </div>
           </div>
           <fieldset>
@@ -149,11 +151,11 @@ const ColumnSelector = ({
 }
 
 ColumnSelector.propTypes = {
-  // Array of columns to display
+  // Array of all available columns
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Array of columns to hide
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // Called when the user changes the selected columns
+  // Called when the user changes which columns are shown or hidden
   onChange: PropTypes.func.isRequired,
   // Called when the user wants to hide or show all columns at once
   onChangeAllHiddenColumns: PropTypes.func.isRequired,
@@ -200,9 +202,9 @@ ColumnUrlCopy.propTypes = {
 }
 
 /**
- * Shows and handles the controls to manage the URL-specified hidden columns.
+ * Shows and handles the controls to manage the URL columns
  */
-const UrlSpecifiedControls = ({
+const UrlColumnControls = ({
   collectionType,
   hiddenColumns,
   onClearedUrlHiddenColumns,
@@ -210,15 +212,12 @@ const UrlSpecifiedControls = ({
   const router = useRouter()
 
   /**
-   * Called to clear the URL-specified hidden columns hashtag and restore the ones from
-   * localStorage.
+   * Called to clear the URL columns hashtag and restore the ones from localStorage.
    */
   const clearHashtagHiddenColumns = () => {
     onClearedUrlHiddenColumns()
-    const urlWithoutUrlHiddenColumns = clearHiddenColumnsFromUrl(
-      window.location.href
-    )
-    router.push(urlWithoutUrlHiddenColumns)
+    const urlWithoutColumns = clearHiddenColumnsFromUrl(window.location.href)
+    router.push(urlWithoutColumns)
   }
 
   /**
@@ -255,12 +254,12 @@ const UrlSpecifiedControls = ({
   )
 }
 
-UrlSpecifiedControls.propTypes = {
+UrlColumnControls.propTypes = {
   // Type of collection being displayed
   collectionType: PropTypes.string.isRequired,
   // Array of column IDs of the hidden columns
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // Called once the URL-specified hidden columns are cleared
+  // Called once the URL columns are cleared
   onClearedUrlHiddenColumns: PropTypes.func.isRequired,
 }
 
@@ -277,11 +276,11 @@ const ColumnControls = ({ children }) => {
  * Displays the table view for a collection of objects on a collection page.
  */
 const CollectionTable = ({ collection }) => {
+  const { profiles } = useContext(GlobalContext)
   // Track the user's selected hidden columns
   const [hiddenColumns, setHiddenColumns] = useState([])
   // True if hidden columns determine by hashtag instead of localStorage
   const [isHiddenColumnsFromUrl, setIsHiddenColumnsFromUrl] = useState(false)
-  const { profiles } = useContext(GlobalContext)
   // Get the collection type from the first collection item, if any
   const collectionType = collection[0]?.["@type"][0] || ""
   // Unfiltered table columns for the current collection type; memoize for useEffect dependency
@@ -289,7 +288,6 @@ const CollectionTable = ({ collection }) => {
     () => (profiles ? generateTableColumns(profiles[collectionType]) : []),
     [profiles, collectionType]
   )
-  const router = useRouter()
 
   /**
    * Called when the user changes which columns are visible and hidden through the column selector.
@@ -306,17 +304,7 @@ const CollectionTable = ({ collection }) => {
       )
     }
     setHiddenColumns(newHiddenColumns)
-
-    // Update the URL with the new hidden columns.
-    if (isHiddenColumnsFromUrl) {
-      const hiddenColumnsUrl = generateHiddenColumnsUrl(
-        window.location.href,
-        newHiddenColumns
-      )
-      router.push(hiddenColumnsUrl)
-    } else {
-      saveStoredHiddenColumns(collectionType, newHiddenColumns)
-    }
+    saveStoredHiddenColumns(collectionType, newHiddenColumns)
   }
 
   /**
@@ -371,7 +359,7 @@ const CollectionTable = ({ collection }) => {
       <>
         <ColumnControls>
           {isHiddenColumnsFromUrl ? (
-            <UrlSpecifiedControls
+            <UrlColumnControls
               collectionType={collectionType}
               hiddenColumns={hiddenColumns}
               onClearedUrlHiddenColumns={() => setIsHiddenColumnsFromUrl(false)}
