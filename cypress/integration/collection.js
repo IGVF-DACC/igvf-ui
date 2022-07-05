@@ -67,7 +67,7 @@ describe("collection-view tests", () => {
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
 
     cy.reload()
-    cy.wait(500)
+    cy.wait(1000)
     cy.get(`[aria-label="Select collection table view"]`).click()
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
 
