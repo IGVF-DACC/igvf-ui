@@ -64,7 +64,15 @@ describe("collection-view tests", () => {
     cy.get("[role=columnheader]").contains("Award").should("not.exist")
     cy.get("input[name=awards]").check()
     cy.get("[role=columnheader]").contains("Award").should("exist")
+    cy.get("input[name=aliases]").uncheck()
+    cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
 
+    cy.reload()
+    cy.wait(500)
+    cy.get(`[aria-label="Select collection table view"]`).click()
+    cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
+
+    cy.contains("Show / Hide Columns").click()
     cy.contains("Hide All Columns").click()
     cy.get("[role=columnheader]").should("have.length", 1)
     cy.get("[role=columnheader]").contains("ID").should("exist")

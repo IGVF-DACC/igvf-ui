@@ -14,14 +14,14 @@ import { useState } from "react"
 export const useLocalStorage = (key, initialValue) => {
   const [value, setValue] = useState(() => {
     const item =
-      typeof window !== "undefined" ? window.localStorage.getItem(key) : null
+      typeof window !== "undefined" ? localStorage.getItem(key) : null
     return item ? JSON.parse(item) : initialValue
   })
 
   const setValueMethod = (valueToStore) => {
     if (typeof window !== "undefined") {
       setValue(valueToStore)
-      window.localStorage.setItem(key, JSON.stringify(valueToStore))
+      localStorage.setItem(key, JSON.stringify(valueToStore))
     }
   }
 
