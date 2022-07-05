@@ -1,11 +1,8 @@
 /// <reference types="cypress" />
 
 describe("collection-view tests", () => {
-  beforeEach(() => {
-    cy.visit("/")
-  })
-
   it("can select the table view and back to the list view", () => {
+    cy.visit("/")
     cy.get("[data-testid=awards]").click()
     cy.get("[data-testid^=collection-list-item-]")
       .its("length")
@@ -27,6 +24,7 @@ describe("collection-view tests", () => {
   })
 
   it("remembers the current list or table view across collection pages", () => {
+    cy.visit("/")
     cy.get("[data-testid=awards]").click()
     cy.get("[data-testid^=collection-list-item-]")
       .its("length")
@@ -52,6 +50,7 @@ describe("collection-view tests", () => {
   })
 
   it("lets the user hide and show columns through the modal", () => {
+    cy.visit("/")
     cy.get("[data-testid=labs]").click()
     cy.get(`[aria-label="Select collection table view"]`).click()
     cy.get("[role=table]").should("exist")
@@ -88,6 +87,7 @@ describe("collection-view tests", () => {
   })
 
   it("copies a correct URL for the hidden columns", () => {
+    cy.visit("/")
     cy.get("[data-testid=treatments]").click()
     cy.get(`[aria-label="Select collection table view"]`).click()
     cy.contains("Show / Hide Columns").click()
@@ -103,7 +103,8 @@ describe("collection-view tests", () => {
   })
 
   it("responds to the columns URL by showing and hiding the correct columns", () => {
-    cy.reload(true)
+    cy.reload()
+    cy.wait(500)
     cy.visit("/treatments#hidden=aliases,lot_id")
     cy.get("[data-testid^=collection-list-item-]").should("not.exist")
     cy.get("[role=table]").should("exist")
@@ -121,6 +122,7 @@ describe("collection-view tests", () => {
   })
 
   it("overwrites the browser-saved columns with the URL columns", () => {
+    cy.visit("/")
     cy.get("[data-testid=treatments]").click()
     cy.get(`[aria-label="Select collection table view"]`).click()
     cy.contains("Show / Hide Columns").click()
@@ -128,8 +130,9 @@ describe("collection-view tests", () => {
     cy.get("input[name=amount]").uncheck()
     cy.get("input[name=amount_units]").uncheck()
 
-    cy.reload(true)
+    cy.reload()
     cy.visit("/treatments#hidden=aliases,lot_id")
+    cy.wait(500)
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
     cy.get("[role=columnheader]").contains("Lot ID").should("not.exist")
     cy.get("[role=columnheader]").contains("Amount").should("exist")
