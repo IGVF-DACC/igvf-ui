@@ -59,14 +59,19 @@ export const flattenCollection = (collection) => {
     const flattenedItem = {}
     Object.keys(item).forEach((key) => {
       const propType = typeof item[key]
-      if (propType === "object") {
+      if (propType === "object" && item[key] !== null) {
         // Generally, object, array, or null (which is OK to stringify to 'null').
-        flattenedItem[key] = JSON.stringify(item[key])
+        if (
+          (Array.isArray(item[key]) && item[key].length !== 0) ||
+          (!Array.isArray(item[key]) && Object.keys(item[key]).length !== 0)
+        ) {
+          flattenedItem[key] = JSON.stringify(item[key])
+        }
       } else if (propType !== "function" && propType !== "undefined") {
         // Generally, any simple value.
         flattenedItem[key] = item[key]
       }
-      // Anything else (function, undefined) gets ignored.
+      // Anything else (function, undefined, null, etc.) gets ignored.
     })
     return flattenedItem
   })
