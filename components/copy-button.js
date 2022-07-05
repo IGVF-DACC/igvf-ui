@@ -13,7 +13,7 @@ import Button from "./button"
  * }
  */
 export const useCopyAction = (target) => {
-  // True if the user has clicked the copy button
+  // True if the user has clicked the copy button within the last two seconds
   const [isCopied, setCopied] = useState(false)
 
   /**
@@ -51,7 +51,6 @@ const CopyButton = ({
   className = "",
   children,
 }) => {
-  // True if the user has clicked the copy button within the last two seconds
   const { isCopied, initiateCopy } = useCopyAction(target)
 
   return (

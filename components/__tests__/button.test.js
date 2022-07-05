@@ -537,7 +537,7 @@ describe("Button.Icon component", () => {
     expect(container.firstChild).toHaveClass("fill-button-success")
   })
 
-  it("renders a info icon outline button with the correct classes", () => {
+  it("renders an info icon outline button with the correct classes", () => {
     const { container } = render(
       <Button.Icon
         onClick={onClick}

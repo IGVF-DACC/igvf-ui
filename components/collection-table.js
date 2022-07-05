@@ -113,6 +113,7 @@ const ColumnSelector = ({
             />
           </div>
         </Modal.Header>
+
         <Modal.Body>
           <div className="mb-3 md:flex md:items-center">
             <ChangeAllControls
@@ -146,6 +147,7 @@ const ColumnSelector = ({
             </div>
           </fieldset>
         </Modal.Body>
+
         <Modal.Footer>
           <Button type="primary-outline" onClick={() => setIsOpen(false)}>
             Close
@@ -157,13 +159,13 @@ const ColumnSelector = ({
 }
 
 ColumnSelector.propTypes = {
-  // Array of all available columns
+  // All available columns
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Array of columns to hide
+  // Columns to hide
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // Called when the user changes which columns are shown or hidden
+  // Called when the user changes individual columns to show or hide
   onChange: PropTypes.func.isRequired,
-  // Called when the user wants to hide or show all columns at once
+  // Called when the user wants to show or hide all columns at once
   onChangeAllHiddenColumns: PropTypes.func.isRequired,
 }
 
@@ -223,8 +225,10 @@ const UrlColumnControls = ({
    */
   const clearHashtagHiddenColumns = () => {
     onClearedUrlHiddenColumns()
-    const urlWithoutColumns = clearHiddenColumnsFromUrl(window.location.href)
-    router.push(urlWithoutColumns)
+    const urlWithoutHiddenColumns = clearHiddenColumnsFromUrl(
+      window.location.href
+    )
+    router.push(urlWithoutHiddenColumns)
   }
 
   /**
@@ -313,13 +317,13 @@ const BrowserColumnControls = ({
 }
 
 BrowserColumnControls.propTypes = {
-  // Array of all available columns
+  // All available columns
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Array of column IDs of the hidden columns
+  // Column IDs of the hidden columns
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
   // Called when the user changes individual columns to show or hide
   onChange: PropTypes.func.isRequired,
-  // Called when the user changes which columns are shown or hidden
+  // Called when the user shows or hides all columns at once
   onChangeAllHiddenColumns: PropTypes.func.isRequired,
 }
 
@@ -366,7 +370,8 @@ const ScrollIndicators = ({ gridRef, children }) => {
   const [isScrollableLeft, setIsScrollableLeft] = useState(false)
 
   /**
-   * Called when the mouse enters anywhere in the table.
+   * Called when the mouse enters anywhere in the table. Determines whether the table can be
+   * scrolled to the right or left.
    */
   const onPointerEnter = () => {
     // Determine if any portion of the table exists to the right of the visible portion.
