@@ -202,7 +202,8 @@ ColumnUrlCopy.propTypes = {
 }
 
 /**
- * Shows and handles the controls to manage the URL columns
+ * Shows and handles the controls to manage the URL columns controls that let the user copy a URL
+ * containing the currently hidden columns.
  */
 const UrlColumnControls = ({
   collectionType,
@@ -242,12 +243,13 @@ const UrlColumnControls = ({
       <Instruction title="Save and Clear URL Columns">
         <Paragraph>
           <strong>Save URL Columns to Browser</strong> saves the hidden columns
-          in your URL to your browser, overwriting any hidden columns you have
-          previously saved.
+          in your URL to your browser, overwriting any shown and hidden columns
+          you had previously saved.
         </Paragraph>
         <Paragraph>
-          <strong>Clear URL Columns</strong> restores the hidden columns you
-          have saved to your browser.
+          <strong>Clear URL Columns</strong> restores the shown and hidden
+          columns you have saved to your browser, clearing the URL of hidden
+          columns.
         </Paragraph>
       </Instruction>
     </>
@@ -259,8 +261,60 @@ UrlColumnControls.propTypes = {
   collectionType: PropTypes.string.isRequired,
   // Array of column IDs of the hidden columns
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // Called once the URL columns are cleared
+  // Called once the user clears the URL columns
   onClearedUrlHiddenColumns: PropTypes.func.isRequired,
+}
+
+/**
+ * Shows and handles the controls to manage the modal to let the user show and hide individual
+ * columns, and to copy a URL with the currently hidden columns.
+ */
+const BrowserColumnControls = ({
+  columns,
+  hiddenColumns,
+  onChange,
+  onChangeAllHiddenColumns,
+}) => {
+  const className = "mx-1.5 inline h-5 w-5"
+  return (
+    <>
+      <ColumnSelector
+        columns={columns}
+        hiddenColumns={hiddenColumns}
+        onChange={onChange}
+        onChangeAllHiddenColumns={onChangeAllHiddenColumns}
+      />
+      <ColumnUrlCopy hiddenColumns={hiddenColumns} />
+      <Instruction title="Show / Hide Columns and Copy URL Columns">
+        <Paragraph>
+          <strong>Show / Hide Columns</strong> lets you choose which individual
+          columns to show and hide, and lets you show or hide all columns at
+          once, except for the <i>ID</i> column. The
+          <Icon.TableColumnsHidden className={className} />
+          symbol indicates at least one column is hidden. The
+          <Icon.TableColumnsVisible className={className} />
+          symbol indicates all columns are shown.
+        </Paragraph>
+        <Paragraph>
+          <strong>Copy URL Columns</strong> copies a URL with your currently
+          hidden columns attached to it. You can share this URL with others so
+          they can see this collection with the same columns hidden, or you can
+          paste it into another browser.
+        </Paragraph>
+      </Instruction>
+    </>
+  )
+}
+
+BrowserColumnControls.propTypes = {
+  // Array of all available columns
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Array of column IDs of the hidden columns
+  hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // Called when the user changes individual columns to show or hide
+  onChange: PropTypes.func.isRequired,
+  // Called when the user changes which columns are shown or hidden
+  onChangeAllHiddenColumns: PropTypes.func.isRequired,
 }
 
 /**
@@ -362,28 +416,16 @@ const CollectionTable = ({ collection }) => {
             <UrlColumnControls
               collectionType={collectionType}
               hiddenColumns={hiddenColumns}
+              onChange={updateHiddenColumns}
               onClearedUrlHiddenColumns={() => setIsHiddenColumnsFromUrl(false)}
             />
           ) : (
-            <>
-              <ColumnSelector
-                columns={columns}
-                hiddenColumns={hiddenColumns}
-                onChange={updateHiddenColumns}
-                onChangeAllHiddenColumns={changeAllHiddenColumns}
-              />
-              <ColumnUrlCopy hiddenColumns={hiddenColumns} />
-              <Instruction title="Show / Hide Columns and Copy URL Columns">
-                <Paragraph>
-                  Your choices for columns to show and hide get saved to your
-                  browser for each type of collection.
-                </Paragraph>
-                <Paragraph>
-                  Copy URL Columns with your shown and hidden columns to share
-                  with others, or to paste into another browser.
-                </Paragraph>
-              </Instruction>
-            </>
+            <BrowserColumnControls
+              columns={columns}
+              hiddenColumns={hiddenColumns}
+              onChange={updateHiddenColumns}
+              onChangeAllHiddenColumns={changeAllHiddenColumns}
+            />
           )}
         </ColumnControls>
         <DataGridContainer>

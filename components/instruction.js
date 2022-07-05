@@ -16,7 +16,7 @@ const Instruction = ({ title, className = null, children }) => {
   return (
     <>
       <Button.Icon
-        type="primary-outline"
+        type="info-outline"
         label={title}
         onClick={() => setIsOpen(true)}
       >
