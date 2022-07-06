@@ -4,7 +4,7 @@ import Link from "next/link"
 
 /**
  * Clears any hashtag from the URL.
- * @param {string} url - The URL to clean
+ * @param {string} url The URL to clean
  * @returns {string} `url` with any hashtag removed
  */
 export const clearHiddenColumnsFromUrl = (url) => {
@@ -14,7 +14,7 @@ export const clearHiddenColumnsFromUrl = (url) => {
 }
 
 /**
- * Extract a list of hidden column IDs from the URL. Hidden column get specified as:
+ * Extract a list of hidden column IDs from the URL. Hidden columns get specified as:
  * path#hidden=column_id_1,column_id_2,column_id_3
  * The column IDs have to contain only alphanumeric characters and underscores.
  * @param {string} url URL to extract hidden columns from
@@ -36,10 +36,10 @@ export const extractHiddenColumnIdsFromUrl = (url) => {
 }
 
 /**
- * Copy the columns array intended for <SortableGrid> but with any columns with ids matching an
- * entry in `hiddenColumns` omitted.
+ * Copy the columns array intended for <SortableGrid> but with any columns with an `id` property
+ * matching an entry in `hiddenColumns` omitted.
  * @param {array} columns Sortable grid columns to filter
- * @param {array} hiddenColumns Ids of columns to hide
+ * @param {array} hiddenColumns IDs of columns to hide
  * @returns {array} `columns` copy but with hidden columns removed
  */
 export const filterHiddenColumns = (columns, hiddenColumns) => {
@@ -60,7 +60,7 @@ export const flattenCollection = (collection) => {
     Object.keys(item).forEach((key) => {
       const propType = typeof item[key]
       if (propType === "object" && item[key] !== null) {
-        // Generally, object, array, or null (which is OK to stringify to 'null').
+        // Generally, objects and  arrays.
         if (
           (Array.isArray(item[key]) && item[key].length !== 0) ||
           (!Array.isArray(item[key]) && Object.keys(item[key]).length !== 0)
@@ -71,7 +71,8 @@ export const flattenCollection = (collection) => {
         // Generally, any simple value.
         flattenedItem[key] = item[key]
       }
-      // Anything else (function, undefined, null, etc.) gets ignored.
+      // Anything else (function, undefined, null, etc.) gets ignored, as do empty arrays and
+      // objects.
     })
     return flattenedItem
   })
@@ -80,8 +81,8 @@ export const flattenCollection = (collection) => {
 
 /**
  * Generate a URL that includes the hashtag that specifies the hidden columns. If the
- * `hiddenColumns` array is empty, just the normal URL gets returned. Components calling this
- * function must have mounted before calling this function.
+ * `hiddenColumns` array is empty, just the normal URL gets returned.
+ * @param {string} url URL to generate a URL with #hidden= hashtag
  * @param {array} hiddenColumns Array of IDS of columns to hide
  * @returns {string} URL with hashtag of hidden columns, if any
  */
@@ -108,7 +109,7 @@ export const sortColumns = (columns) => {
 /**
  * Retrieve the array of hidden columns from localStorage for the given type.
  * @param {string} type The @type of the object whose hidden columns we need from localStorage
- * @returns {array} Array of column ids to hide for the given @type; null if nothing stored
+ * @returns {array} Array of column IDs to hide for the given @type; null if nothing stored
  */
 export const loadStoredHiddenColumns = (type) => {
   const hiddenColumns = localStorage.getItem(`hidden-columns-${type}`)
@@ -128,7 +129,7 @@ export const saveStoredHiddenColumns = (type, hiddenColumns) => {
 }
 
 /**
- * Generate a list of report columns for the sortable grid.
+ * Generate a list of report columns in a format suitable for <SortableGrid>.
  * @param {object} profile Profile for one schema object type
  * @returns {object} Sortable grid columns
  */

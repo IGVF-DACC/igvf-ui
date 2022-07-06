@@ -26,26 +26,28 @@ export const DefaultCell = ({ children }) => {
  * at the time of writing) from allowing the table to scroll horizontally even if you can see the
  * entire table.
  */
-export const DataGridContainerRef = ({ className = "", children }, ref) => {
-  return (
-    <div
-      ref={ref}
-      role="table"
-      className={`grid w-full gap-px overflow-x-auto bg-gray-300 text-sm outline outline-1 outline-data-border dark:outline-gray-700 dark:bg-gray-700${
-        className ? ` ${className}` : ""
-      }`}
-    >
-      {children}
-    </div>
-  )
-}
+export const DataGridContainer = forwardRef(
+  ({ className = "", children }, ref) => {
+    return (
+      <div
+        ref={ref}
+        role="table"
+        className={`grid w-full gap-px overflow-x-auto bg-gray-300 text-sm outline outline-1 outline-data-border dark:outline-gray-700 dark:bg-gray-700${
+          className ? ` ${className}` : ""
+        }`}
+      >
+        {children}
+      </div>
+    )
+  }
+)
 
-DataGridContainerRef.propTypes = {
+DataGridContainer.propTypes = {
   // Extra Tailwind CSS classes to apply to the container
   className: PropTypes.string,
 }
 
-export const DataGridContainer = forwardRef(DataGridContainerRef)
+DataGridContainer.displayName = "DataGridContainer"
 
 /**
  * Main data-grid interface.
