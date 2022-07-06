@@ -40,9 +40,9 @@ export const useCopyAction = (target) => {
 }
 
 /**
- * Displays a button to copy text to the clipboard. The children of the button likely contains the
- * text, though it could be a React component as well. The child of the button is a function with
- * an argument that gets set to true for two seconds after the user clicks the copy button.
+ * Displays a button to copy text to the clipboard. Supply a function as the child of this button
+ * that takes an argument that gets set to true for two seconds after the user clicks the copy
+ * button.
  */
 const CopyButton = ({
   target,
@@ -66,7 +66,7 @@ const CopyButton = ({
 }
 
 CopyButton.propTypes = {
-  // The element to copy
+  // The text to copy
   target: PropTypes.string.isRequired,
   // Accessible label for the button
   label: PropTypes.string,
@@ -78,6 +78,8 @@ CopyButton.propTypes = {
 
 /**
  * Same as the base `CopyButton` component, but it has a circular style to hold a single icon.
+ * Supply a function as the child of this button that takes an argument that gets set to true for
+ * two seconds after the user clicks the copy button.
  */
 const Icon = ({ target, label, className = "", children }) => {
   const { isCopied, initiateCopy } = useCopyAction(target)
@@ -90,7 +92,7 @@ const Icon = ({ target, label, className = "", children }) => {
 }
 
 Icon.propTypes = {
-  // The element to copy
+  // The text to copy
   target: PropTypes.string.isRequired,
   // Accessible label for the button
   label: PropTypes.string.isRequired,

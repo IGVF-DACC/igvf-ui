@@ -27,10 +27,10 @@ import {
   filterHiddenColumns,
   flattenCollection,
   generateHiddenColumnsUrl,
+  generateTableColumns,
   loadStoredHiddenColumns,
   saveStoredHiddenColumns,
   sortColumns,
-  generateTableColumns,
 } from "../libs/collection-table"
 
 /**
@@ -95,7 +95,7 @@ const ColumnSelector = ({
   // True if the column-selection modal is open.
   const [isOpen, setIsOpen] = useState(false)
 
-  // Display the selectable columns sorted by title.
+  // Display the columns sorted by title, except for the ID column.
   const sortedColumns = sortColumns(columns)
 
   return (
@@ -269,7 +269,7 @@ const UrlColumnControls = ({
 UrlColumnControls.propTypes = {
   // Type of collection being displayed
   collectionType: PropTypes.string.isRequired,
-  // Array of column IDs of the hidden columns
+  // IDs of the hidden columns
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
   // Called once the user clears the URL columns
   onClearedUrlHiddenColumns: PropTypes.func.isRequired,
@@ -337,7 +337,8 @@ const ColumnControls = ({ children }) => {
 }
 
 /**
- * Renders a single left- or right-pointing scroll indicator.
+ * Renders a single left- or right-pointing scroll indicator that fades out after appearing. Don't
+ * attempt to compose the left-5 and right-5 Tailwind CSS classes or they'll get tree shaken.
  */
 const ScrollIndicator = ({ direction, children }) => {
   return (
@@ -415,18 +416,18 @@ const ScrollIndicators = ({ gridRef, children }) => {
 }
 
 ScrollIndicators.propTypes = {
-  // Reference to the table DOM element
+  // Ref to the table DOM element
   gridRef: PropTypes.object.isRequired,
 }
 
 /**
- * Displays the table view for a collection of objects on a collection page.
+ * Displays the table view for a collection page, instead of a list view.
  */
 const CollectionTable = ({ collection }) => {
   const { profiles } = useContext(GlobalContext)
-  // Track the user's selected hidden columns
+  // Holds the IDs of the hidden columns
   const [hiddenColumns, setHiddenColumns] = useState([])
-  // True if hidden columns determine by hashtag instead of localStorage
+  // True if hidden columns are determined by hashtag instead of localStorage
   const [isHiddenColumnsFromUrl, setIsHiddenColumnsFromUrl] = useState(false)
   // Get the collection type from the first collection item, if any
   const collectionType = collection[0]?.["@type"][0] || ""
@@ -435,6 +436,7 @@ const CollectionTable = ({ collection }) => {
     () => (profiles ? generateTableColumns(profiles[collectionType]) : []),
     [profiles, collectionType]
   )
+  // Keep a ref of the scrollable table DOM <div> so we can detect scroll position
   const gridRef = useRef(null)
 
   /**
@@ -485,7 +487,8 @@ const CollectionTable = ({ collection }) => {
       const storedHiddenColumns = loadStoredHiddenColumns(collectionType)
       if (storedHiddenColumns) {
         // Make sure the stored hidden columns are valid for the current collection type. If not,
-        // save the valid ones in localStorage.
+        // save the valid ones in localStorage. This can happen if the schema changes a property
+        // name after the user saved the old property name to localStorage.
         const validHiddenColumns = storedHiddenColumns.filter(
           (columnId) =>
             columnId !== "@id" &&

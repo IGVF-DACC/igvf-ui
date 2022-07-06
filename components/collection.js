@@ -197,7 +197,8 @@ CollectionHeader.propTypes = {
 
 /**
  * Display either a list or report view of the collection. For a list, the `children` provides the
- * content. For the report view, the content comes from this use of the `Report` component.
+ * content. For the table view, the content comes from this use of the <CollectionTable> component,
+ * and `children` isn’t used.
  */
 export const CollectionContent = ({ collection, children }) => {
   // Collection view setting and /profiles content
@@ -210,6 +211,7 @@ export const CollectionContent = ({ collection, children }) => {
     collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
 
   useEffect(() => {
+    // If the page loads with a URL that specifies hidden columns, set the table view.
     const hashedHiddenColumns = extractHiddenColumnIdsFromUrl(
       window.location.href
     )

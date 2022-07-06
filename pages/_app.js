@@ -25,6 +25,7 @@ import "../styles/globals.css"
 const App = ({ Component, pageProps }) => {
   // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("")
+  // Holds the /profiles schemas
   const [profiles, setProfiles] = useState(null)
   // Selects between "list" and "table" collection views
   const [currentCollectionView, setCurrentCollectionView] = useState(

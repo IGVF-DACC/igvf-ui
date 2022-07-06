@@ -35,7 +35,7 @@ const Instruction = ({ title, className = null, children }) => {
 Instruction.propTypes = {
   // Title for the instruction modal
   title: PropTypes.string.isRequired,
-  // Tailwind CSS classes to override the default styling of the instructions
+  // Tailwind CSS classes to style the instructions
   className: PropTypes.string,
 }
 
