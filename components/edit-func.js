@@ -96,24 +96,6 @@ ControlButton.propTypes = {
   isDisabled: PropTypes.bool,
 }
 
-const SaveCancelControl = ({ cancelClick, saveClick }) => {
-  return (
-    <div>
-      <Button onClick={cancelClick} id="edit-cancel">
-        Cancel
-      </Button>
-      <Button onClick={saveClick} id="edit-save">
-        Save
-      </Button>
-    </div>
-  )
-}
-
-SaveCancelControl.propTypes = {
-  cancelClick: PropTypes.func.isRequired,
-  saveClick: PropTypes.func.isRequired,
-}
-
 const EditJson = ({ text, onChange, enabled = true, errors = [] }) => {
   return (
     <div className="relative m-px w-full border-2 border-solid border-slate-300">

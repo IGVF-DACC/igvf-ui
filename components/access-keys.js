@@ -118,7 +118,7 @@ const AccessKeyModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          type="info"
+          type="primary-outline"
           onClick={onClose}
           label={accessKeyModalMessages[createOrReset].close}
         >
@@ -291,7 +291,7 @@ const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
       <AccessKeyControl
         label={`Delete access key ${accessKeyId}`}
         onClick={() => setOpen(true)}
-        type="alert"
+        type="warning"
       >
         <TrashIcon className="fill-white" />
       </AccessKeyControl>
@@ -310,14 +310,14 @@ const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            type="info"
+            type="primary-outline"
             onClick={onCancel}
             label="Cancel deleting access key"
           >
             Cancel
           </Button>
           <Button
-            type="alert"
+            type="error"
             onClick={onDelete}
             label="Confirm deleting access key"
           >
