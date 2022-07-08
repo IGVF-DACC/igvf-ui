@@ -1,10 +1,10 @@
 // node_modules
 import PropTypes from "prop-types"
-import { marked } from 'marked'
+import { marked } from "marked"
 // components
 import Breadcrumbs from "../../components/breadcrumbs"
 import PagePreamble from "../../components/page-preamble"
-import { DataPanel } from "../../components/data-area"
+import { DataPanel, DataAreaTitle } from "../../components/data-area"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
@@ -16,15 +16,13 @@ const Schema = ({ schema, changelog }) => {
       <Breadcrumbs />
       <PagePreamble />
       <DataPanel>
-        <div className="font-semibold">Schema</div>
-        <div className="overflow-x-auto border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
-          <pre className="p-1">{JSON.stringify(schema, null, 4)}</pre>
+        <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
+          <pre className="p-1 overflow-x-scroll">{JSON.stringify(schema, null, 4)}</pre>
         </div>
       </DataPanel>
-      <br />
+      <DataAreaTitle>Changelog</DataAreaTitle>
       <DataPanel>
-        <div className="font-semibold">Changelog</div>
-        <div className="overflow-x-auto border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
+        <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
           <div dangerouslySetInnerHTML={{ __html: html }} />
         </div>
       </DataPanel>

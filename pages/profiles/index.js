@@ -13,7 +13,7 @@ const ChildElement = (props) => {
   if (schema && schema.title) {
     return (
       <div className={`px-${props.indentation}`}>
-        <Link href={`${schema["$id"].replace('.json', '')}`} key={props.title}>
+        <Link href={`${schema["$id"].replace(".json", "")}`} key={props.title}>
           <a className="block">{props.title}</a>
         </Link>
       </div>
@@ -22,18 +22,22 @@ const ChildElement = (props) => {
     return (
       <div className={`px-${props.indentation}`}>
         <div className="font-semibold">{props.title}</div>
-          {Object.keys(props.child).map((child_key) => {
-            return (
-              <ChildElement
-                title={props.schemas[child_key] ? props.schemas[child_key].title : child_key}
-                schemaKey={child_key}
-                schemas={props.schemas}
-                child={props.child[child_key]}
-                indentation={(props.indentation + 4)}
-                key={child_key}
-              />
-            )
-          })}
+        {Object.keys(props.child).map((child_key) => {
+          return (
+            <ChildElement
+              title={
+                props.schemas[child_key]
+                  ? props.schemas[child_key].title
+                  : child_key
+              }
+              schemaKey={child_key}
+              schemas={props.schemas}
+              child={props.child[child_key]}
+              indentation={props.indentation + 4}
+              key={child_key}
+            />
+          )
+        })}
       </div>
     )
   }
@@ -49,7 +53,7 @@ ChildElement.propTypes = {
 }
 
 const SchemaList = ({ schemas }) => {
-  const schemaHierarchy = schemas['_hierarchy']
+  const schemaHierarchy = schemas["_hierarchy"]
 
   return (
     <>

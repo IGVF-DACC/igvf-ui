@@ -43,7 +43,7 @@ const buildItemBreadcrumbs = async (item, titleProp) => {
   return breadcrumbs
 }
 
-const buildSchemaBreadcrumbs = async (schema, profile) => {
+const buildSchemaBreadcrumbs = (schema, profile) => {
   if (!profile) {
     return [
       {
