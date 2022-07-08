@@ -34,22 +34,24 @@
   --color-data-value: #000000;
 
   /** Button backgrounds */
-  --color-button-primary: #195de6;
-  --color-button-secondary: #7f19e6;
-  --color-button-tertiary: #e619a1;
-  --color-button-error: #cc0000;
-  --color-button-warning: #ff5500;
-  --color-button-success: #00b300;
-  --color-button-info: #0088cc;
+  --color-button-primary: #465a9a;
+  --color-button-secondary: #6d326d;
+  --color-button-tertiary: #893168;
+  --color-button-quaternary: #ca6680;
+  --color-button-error: #a50104;
+  --color-button-warning: #dd6e42;
+  --color-button-success: #337357;
+  --color-button-info: #487998;
 
   /** Disabled button backgrounds */
-  --color-button-primary-disabled: #7795ea;
-  --color-button-secondary-disabled: #a571e9;
-  --color-button-tertiary-disabled: #e27cbf;
-  --color-button-error-disabled: #d3726a;
-  --color-button-warning-disabled: #f39875;
-  --color-button-success-disabled: #8dcc7a;
-  --color-button-info-disabled: #7fb0da;
+  --color-button-primary-disabled: #8a95ba;
+  --color-button-secondary-disabled: #cf734c;
+  --color-button-tertiary-disabled: #ac7e9c;
+  --color-button-quaternary-disabled: #e3d48c;
+  --color-button-error-disabled: #bc6d68;
+  --color-button-warning-disabled: #e0a58b;
+  --color-button-success-disabled: #86a494;
+  --color-button-info-disabled: #90a8ba;
 
   /** Modal borders */
   --color-modal-border: #e5e7eb;

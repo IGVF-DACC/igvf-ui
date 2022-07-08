@@ -35,7 +35,7 @@ const Modal = ({ isOpen, onClose, children }) => {
       className="relative z-50 text-black dark:text-white"
     >
       <div
-        className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/30 dark:bg-black/60"
         aria-hidden="true"
       />
       <div className="fixed inset-0 overflow-y-auto">

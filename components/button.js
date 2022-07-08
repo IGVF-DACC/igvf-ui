@@ -167,9 +167,7 @@ Button.propTypes = {
   size: PropTypes.oneOf(["sm", "md", "lg"]),
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
-  // If disabled is false then the button is clickable. If enabled
-  // then the button cannot be clicked. Corresponds to the `disabled` property
-  // on the React Button component and is set to `disabled`.
+  // True to disable the button
   disabled: PropTypes.bool,
 }
 

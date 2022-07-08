@@ -68,7 +68,7 @@ export const flattenCollection = (collection) => {
           flattenedItem[key] = JSON.stringify(item[key])
         }
       } else if (propType !== "function" && propType !== "undefined") {
-        // Generally, any simple value get passed through unchanged.
+        // Generally, any simple value gets passed through unchanged.
         flattenedItem[key] = item[key]
       }
       // Anything else (function, undefined, null, etc.) gets ignored, as do empty arrays and
