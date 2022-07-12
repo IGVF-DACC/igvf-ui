@@ -26,6 +26,7 @@ const DifferentiatedTissue = ({
   lab,
   source,
   treatments,
+  differentiationTreatments,
 }) => {
   return (
     <>
@@ -74,8 +75,14 @@ const DifferentiatedTissue = ({
             <TreatmentTable treatments={treatments} />
           </>
         )}
+        {differentiationTreatments.length > 0 && (
+          <>
+            <DataAreaTitle>Differentiation Treatments</DataAreaTitle>
+            <TreatmentTable treatments={differentiationTreatments} />
+          </>
+        )}
         <Attribution award={award} lab={lab} />
-        </EditableItem>
+      </EditableItem>
     </>
   )
 }
@@ -102,6 +109,8 @@ DifferentiatedTissue.propTypes = {
   }).isRequired,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Differentiation treatments associated with the sample
+  differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
 export default DifferentiatedTissue
@@ -119,6 +128,9 @@ export const getServerSideProps = async ({ params, req }) => {
     const treatments = await request.getMultipleObjects(
       differentiatedTissue.treatments
     )
+    const differentiationTreatments = await request.getMultipleObjects(
+      differentiatedTissue.differentiation_treatments
+    )
     const breadcrumbs = await buildBreadcrumbs(
       differentiatedTissue,
       "accession"
@@ -131,6 +143,7 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
+        differentiationTreatments,
         pageContext: { title: differentiatedTissue.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
