@@ -513,7 +513,6 @@ const CollectionTable = ({ collection }) => {
             <UrlColumnControls
               collectionType={collectionType}
               hiddenColumns={hiddenColumns}
-              onChange={updateHiddenColumns}
               onClearedUrlHiddenColumns={() => setIsHiddenColumnsFromUrl(false)}
             />
           ) : (

@@ -26,7 +26,7 @@ export const extractHiddenColumnIdsFromUrl = (url) => {
     const columnSpecifiers = hashtag.match(/#hidden=(.*)/)
     if (columnSpecifiers) {
       const commaSeparatedColumnIds =
-        columnSpecifiers[1].match(/([a-zA-Z0-9_]+)/g)
+        columnSpecifiers[1].match(/([a-zA-Z0-9_@]+)/g)
       return commaSeparatedColumnIds || []
     }
   }
