@@ -29,6 +29,21 @@ const treatmentColumns = [
     id: "purpose",
     title: "Purpose",
   },
+  {
+    id: "amount",
+    title: "Amount",
+    display: ({ source }) => `${source.amount} ${source.amount_units}`,
+  },
+  {
+    id: "duration",
+    title: "Duration",
+    display: ({ source }) =>
+      source.duration !== undefined
+        ? `${source.duration} ${source.duration_units}${
+            source.duration !== 1 ? "s" : ""
+          }`
+        : "",
+  },
 ]
 
 /**
