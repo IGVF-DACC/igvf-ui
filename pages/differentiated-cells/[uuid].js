@@ -26,6 +26,7 @@ const DifferentiatedCell = ({
   lab,
   source,
   treatments,
+  differentiationTreatments,
 }) => {
   return (
     <>
@@ -74,8 +75,14 @@ const DifferentiatedCell = ({
             <TreatmentTable treatments={treatments} />
           </>
         )}
+        {differentiationTreatments.length > 0 && (
+          <>
+            <DataAreaTitle>Differentiation Treatments</DataAreaTitle>
+            <TreatmentTable treatments={differentiationTreatments} />
+          </>
+        )}
         <Attribution award={award} lab={lab} />
-        </EditableItem>
+      </EditableItem>
     </>
   )
 }
@@ -102,6 +109,8 @@ DifferentiatedCell.propTypes = {
   }).isRequired,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Differentiation treatments associated with the sample
+  differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
 export default DifferentiatedCell
@@ -119,6 +128,9 @@ export const getServerSideProps = async ({ params, req }) => {
     const treatments = await request.getMultipleObjects(
       differentiatedCell.treatments
     )
+    const differentiationTreatments = await request.getMultipleObjects(
+      differentiatedCell.differentiation_treatments
+    )
     const breadcrumbs = await buildBreadcrumbs(differentiatedCell, "accession")
     return {
       props: {
@@ -128,6 +140,7 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
+        differentiationTreatments,
         pageContext: { title: differentiatedCell.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
