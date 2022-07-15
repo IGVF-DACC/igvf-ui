@@ -32,6 +32,20 @@ export default class Request {
   }
 
   /**
+   * Request markdown file string with the given path from the server
+   * @param {string} path - Path to requested resource
+   * @returns {string} Requested string
+   */
+  async getMarkdown(path) {
+    try {
+      const response = await fetch(`${SERVER_URL}${path}`)
+      return response.text()
+    } catch (error) {
+      return `${SERVER_URL}${path}`
+    }
+  }
+
+  /**
    * Request the object with the given path from the server without any embedded properties.
    * @param {string} path - Path to requested resource
    * @returns {object} Requested object

@@ -43,6 +43,28 @@ const buildItemBreadcrumbs = async (item, titleProp) => {
   return breadcrumbs
 }
 
+const buildSchemaBreadcrumbs = (schema, profile) => {
+  if (!profile) {
+    return [
+      {
+        title: "Schemas",
+        href: "/profiles",
+      },
+    ]
+  } else {
+    return [
+      {
+        title: "Schemas",
+        href: "/profiles",
+      },
+      {
+        title: schema.title,
+        href: `/profiles/${profile}`,
+      },
+    ]
+  }
+}
+
 /**
  * Given an item or collection object from the server, return breadcrumb data for this object. You
  * don't have to supply `titleProp` if you pass a collection object in `itemOrCollection` because
@@ -59,6 +81,9 @@ const buildBreadcrumbs = async (itemOrCollection, titleProp = "") => {
   } else if (itemOrCollection["@type"].includes("Item")) {
     // To handle the case in which `itemOrCollection` is an item...
     breadcrumbs = await buildItemBreadcrumbs(itemOrCollection, titleProp)
+  } else if (itemOrCollection["@type"].includes("JSONSchemas") || itemOrCollection["@type"].includes("JSONSchema")) {
+    // To handle the schema pages...
+    breadcrumbs = await buildSchemaBreadcrumbs(itemOrCollection, titleProp)
   }
   return breadcrumbs
 }

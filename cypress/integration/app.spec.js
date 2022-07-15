@@ -45,5 +45,7 @@ describe("Navigation", () => {
     cy.url().should("include", "/treatments")
     cy.get("[data-testid=users]").click()
     cy.url().should("include", "/users")
+    cy.get("[data-testid=profiles]").click()
+    cy.url().should("include", "/profiles")
   })
 })
