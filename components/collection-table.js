@@ -471,6 +471,15 @@ const CollectionTable = ({ collection }) => {
     saveStoredHiddenColumns(collectionType, newHiddenColumns)
   }
 
+  /**
+   * Called when the user clears the URL columns. It clears localStorage which causes all columns
+   * to show, but the useEffect below then restores the saved hidden columns, if any.
+   */
+  const clearUrlColumns = () => {
+    setHiddenColumns([])
+    setIsHiddenColumnsFromUrl(false)
+  }
+
   useEffect(() => {
     // Determine whether the URL hashtag specifies hidden columns, overriding the hidden columns in
     // localStorage.
@@ -513,7 +522,7 @@ const CollectionTable = ({ collection }) => {
             <UrlColumnControls
               collectionType={collectionType}
               hiddenColumns={hiddenColumns}
-              onClearedUrlHiddenColumns={() => setIsHiddenColumnsFromUrl(false)}
+              onClearedUrlHiddenColumns={clearUrlColumns}
             />
           ) : (
             <BrowserColumnControls
