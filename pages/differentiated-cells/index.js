@@ -28,6 +28,7 @@ const DifferentiatedCellList = ({ differentiatedCells }) => {
               {differentiatedCells.map((differentiatedCell) => (
                 <CollectionItem
                   key={differentiatedCell.uuid}
+                  testid={differentiatedCell.uuid}
                   href={differentiatedCell["@id"]}
                   label={`Differentiated Cell ${differentiatedCell.accession}`}
                   status={differentiatedCell.status}

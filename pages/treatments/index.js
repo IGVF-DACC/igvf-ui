@@ -28,6 +28,7 @@ const TreatmentList = ({ treatments }) => {
               {treatments.map((treatment) => (
                 <CollectionItem
                   key={treatment.uuid}
+                  testid={treatment.uuid}
                   href={treatment["@id"]}
                   label={`Treatment ${treatment.treatment_term_id}`}
                   status={treatment.status}

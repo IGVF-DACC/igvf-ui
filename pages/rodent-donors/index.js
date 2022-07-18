@@ -28,6 +28,7 @@ const RodentDonorsList = ({ donors }) => {
               {donors.map((donor) => (
                 <CollectionItem
                   key={donor.uuid}
+                  testid={donor.uuid}
                   href={donor["@id"]}
                   label={`Human Donor ${donor.accession}`}
                   status={donor.status}

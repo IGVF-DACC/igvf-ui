@@ -28,6 +28,7 @@ const LabList = ({ labs }) => {
               {labs.map((lab) => (
                 <CollectionItem
                   key={lab.uuid}
+                  testid={lab.uuid}
                   href={lab["@id"]}
                   label={`Lab ${lab.title}`}
                   status={lab.status}

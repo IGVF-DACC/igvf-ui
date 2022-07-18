@@ -28,6 +28,7 @@ const TissueList = ({ tissues }) => {
               {tissues.map((tissue) => (
                 <CollectionItem
                   key={tissue.uuid}
+                  testid={tissue.uuid}
                   href={tissue["@id"]}
                   label={`Tissue ${tissue.accession}`}
                   status={tissue.status}

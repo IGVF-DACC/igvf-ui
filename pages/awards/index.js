@@ -28,6 +28,7 @@ const AwardList = ({ awards }) => {
               {awards.map((award) => (
                 <CollectionItem
                   key={award.uuid}
+                  testid={award.uuid}
                   href={award["@id"]}
                   label={`Award ${award.name}`}
                   status={award.status}

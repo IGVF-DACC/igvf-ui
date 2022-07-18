@@ -29,6 +29,7 @@ const CellLineList = ({ cellLines }) => {
               {cellLines.map((sample) => (
                 <CollectionItem
                   key={sample.uuid}
+                  testid={sample.uuid}
                   href={sample["@id"]}
                   label={`Cell Line ${sample.title}`}
                   status={sample.status}

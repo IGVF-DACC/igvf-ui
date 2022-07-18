@@ -28,6 +28,7 @@ const PrimaryCellList = ({ primaryCells }) => {
               {primaryCells.map((primaryCell) => (
                 <CollectionItem
                   key={primaryCell.uuid}
+                  testid={primaryCell.uuid}
                   href={primaryCell["@id"]}
                   label={`Primary Cell ${primaryCell.accession}`}
                   status={primaryCell.status}

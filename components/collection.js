@@ -82,9 +82,18 @@ CollectionItemLink.propTypes = {
 /**
  * Displays a single item in a collection.
  */
-export const CollectionItem = ({ href, label = "", status = "", children }) => {
+export const CollectionItem = ({
+  href,
+  testid,
+  label = "",
+  status = "",
+  children,
+}) => {
   return (
-    <div className="my-0.5 flex border border-data-border bg-data-background">
+    <div
+      className="my-0.5 flex border border-data-border bg-data-background"
+      data-testid={`collection-list-item-${testid}`}
+    >
       <CollectionItemLink href={href} label={label} />
       <div className="grow p-4">{children}</div>
       {status && (
@@ -99,6 +108,8 @@ export const CollectionItem = ({ href, label = "", status = "", children }) => {
 CollectionItem.propTypes = {
   // Path to item this links to
   href: PropTypes.string.isRequired,
+  // Usually same as component key; unique on page
+  testid: PropTypes.string.isRequired,
   // Voice label for item
   label: PropTypes.string,
   // Status of item
@@ -142,7 +153,7 @@ export const CollectionViewSwitch = () => {
   }
 
   return (
-    <div className="flex gap-1 pb-2">
+    <div className="flex gap-1 pb-2" data-testid="collection-view-switch">
       <Button.Icon
         type={isListSelected ? "primary" : "primary-outline"}
         label={`Select collection list view${

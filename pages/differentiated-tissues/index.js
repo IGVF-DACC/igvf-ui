@@ -28,6 +28,7 @@ const DifferentiatedTissueList = ({ differentiatedTissues }) => {
               {differentiatedTissues.map((differentiatedTissue) => (
                 <CollectionItem
                   key={differentiatedTissue.uuid}
+                  testid={differentiatedTissue.uuid}
                   href={differentiatedTissue["@id"]}
                   label={`Differentiated Tissue ${differentiatedTissue.accession}`}
                   status={differentiatedTissue.status}

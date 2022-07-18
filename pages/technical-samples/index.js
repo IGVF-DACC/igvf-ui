@@ -28,6 +28,7 @@ const TechnicalSampleList = ({ technicalSamples }) => {
               {technicalSamples.map((sample) => (
                 <CollectionItem
                   key={sample.uuid}
+                  testid={sample.uuid}
                   href={sample["@id"]}
                   label={`Technical Sample ${sample.title}`}
                   status={sample.status}
