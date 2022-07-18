@@ -1,8 +1,20 @@
 import {
+  clearHiddenColumnsFromUrl,
   extractHiddenColumnIdsFromUrl,
   filterHiddenColumns,
   generateHiddenColumnsUrl,
 } from "../collection-table"
+
+describe("test clearHiddenColumnsFromUrl", () => {
+  it("redirects to a URL without #hidden", () => {
+    const urlWithoutUrlHiddenColumns = clearHiddenColumnsFromUrl(
+      "http://localhost:3000/path/to/object#hidden=column1,column2,column3"
+    )
+    expect(urlWithoutUrlHiddenColumns).toBe(
+      "http://localhost:3000/path/to/object"
+    )
+  })
+})
 
 describe("test extractHiddenColumnIdsFromUrl function", () => {
   it("correctly extracts hidden column IDs", () => {

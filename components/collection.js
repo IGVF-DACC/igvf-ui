@@ -5,6 +5,7 @@ import {
   ViewListIcon,
 } from "@heroicons/react/solid"
 import Link from "next/link"
+import { useRouter } from "next/router"
 import PropTypes from "prop-types"
 import { useContext, useEffect } from "react"
 // components
@@ -14,7 +15,10 @@ import GlobalContext from "./global-context"
 import NoContent from "./no-content"
 import Status from "./status"
 // libs
-import { extractHiddenColumnIdsFromUrl } from "../libs/collection-table"
+import {
+  clearHiddenColumnsFromUrl,
+  extractHiddenColumnIdsFromUrl,
+} from "../libs/collection-table"
 
 /**
  * States for the collection view display
@@ -118,11 +122,24 @@ export const CollectionItemName = ({ children }) => {
 export const CollectionViewSwitch = () => {
   // Get the current collection view from the global context.
   const { collectionView } = useContext(GlobalContext)
+  const router = useRouter()
 
   const isListSelected =
     collectionView.currentCollectionView === COLLECTION_VIEW.LIST
   const isTableSelected =
     collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
+
+  /**
+   * Called when the user selects the list view to clear any URL-specified hidden columns before
+   * switching to the list view
+   */
+  const onListViewSelect = () => {
+    collectionView.setCurrentCollectionView(COLLECTION_VIEW.LIST)
+    const urlWithoutUrlHiddenColumns = clearHiddenColumnsFromUrl(
+      window.location.href
+    )
+    router.push(urlWithoutUrlHiddenColumns)
+  }
 
   return (
     <div className="flex gap-1 pb-2">
@@ -131,9 +148,7 @@ export const CollectionViewSwitch = () => {
         label={`Select collection list view${
           isListSelected ? " (selected)" : ""
         }`}
-        onClick={() =>
-          collectionView.setCurrentCollectionView(COLLECTION_VIEW.LIST)
-        }
+        onClick={onListViewSelect}
       >
         <ViewListIcon />
       </Button.Icon>

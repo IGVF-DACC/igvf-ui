@@ -2,10 +2,9 @@
 import { CheckIcon, ClipboardCopyIcon, XIcon } from "@heroicons/react/solid"
 import _ from "lodash"
 import Link from "next/link"
-import Router from "next/router"
+import { useRouter } from "next/router"
 import PropTypes from "prop-types"
 import { useContext, useEffect, useMemo, useState } from "react"
-import url from "url"
 // components
 import Button from "./button"
 import Checkbox from "./checkbox"
@@ -16,6 +15,7 @@ import Modal from "./modal"
 import SortableGrid from "./sortable-grid"
 // libs
 import {
+  clearHiddenColumnsFromUrl,
   extractHiddenColumnIdsFromUrl,
   filterHiddenColumns,
   generateHiddenColumnsUrl,
@@ -99,7 +99,7 @@ const HiddenColumnViewer = ({
           {isHiddenColumnsFromUrl ? (
             <>URL-Specified Hidden Columns</>
           ) : (
-            <>Selected Hidden Columns</>
+            <>Saved Hidden Columns</>
           )}
         </div>
         <ul className="flex flex-wrap gap-0.5 border border-data-border bg-data-background p-1">
@@ -109,7 +109,7 @@ const HiddenColumnViewer = ({
               return (
                 <li key={columnId}>
                   <Button
-                    type={isHiddenColumnsFromUrl ? "warning" : "error"}
+                    type={isHiddenColumnsFromUrl ? "warning" : "success"}
                     label={`Remove ${column.title} from hidden columns`}
                     onClick={() => onChange(columnId, false)}
                     size="sm"
@@ -252,7 +252,7 @@ const ColumnUrlCopy = ({ hiddenColumns }) => {
       {(isCopied) => {
         return (
           <>
-            Copy Hidden Columns URL{" "}
+            Copy Hidden-Columns URL{" "}
             <div className="ml-1 h-4 w-4">
               {isCopied ? <CheckIcon /> : <ClipboardCopyIcon />}
             </div>
@@ -269,40 +269,59 @@ ColumnUrlCopy.propTypes = {
 }
 
 /**
- * Shows and handles the button to save the hashtag-specified hidden columns to localStorage.
+ * Shows and handles the controls to manage the URL-specified hidden columns.
  */
-const CopySaveHiddenColumns = ({
+const UrlSpecifiedControls = ({
   collectionType,
   hiddenColumns,
-  onSavedHiddenColumns,
+  onClearedUrlHiddenColumns,
 }) => {
+  const router = useRouter()
+
+  /**
+   * Called to clear the URL-specified hidden columns hashtag and restore the ones from
+   * localStorage.
+   */
+  const clearHashtagHiddenColumns = () => {
+    onClearedUrlHiddenColumns()
+    const urlWithoutUrlHiddenColumns = clearHiddenColumnsFromUrl(
+      window.location.href
+    )
+    router.push(urlWithoutUrlHiddenColumns)
+  }
+
   /**
    * Called when the user clicks the button to save the hashtag-specified hidden columns to
    * localStorage. It also redirects to the same URL without the hashtag.
    */
   const saveHashtagHiddenColumns = () => {
-    // Save current hidden columns to localStorage and tell parent component that the user clicked
-    // the button.
     saveStoredHiddenColumns(collectionType, hiddenColumns)
-    onSavedHiddenColumns()
-
-    // Update the URL to remove the hashtag.
-    const parsedUrl = url.parse(window.location.href)
-    parsedUrl.hash = null
-    const newUrl = url.format(parsedUrl)
-    Router.replace(newUrl)
+    onClearedUrlHiddenColumns()
+    const urlWithoutUrlHiddenColumns = clearHiddenColumnsFromUrl(
+      window.location.href
+    )
+    router.push(urlWithoutUrlHiddenColumns)
   }
 
-  return <Button onClick={saveHashtagHiddenColumns}>Save Hidden Columns</Button>
+  return (
+    <>
+      <Button onClick={saveHashtagHiddenColumns}>
+        Save URL-Specified Hidden Columns
+      </Button>
+      <Button onClick={clearHashtagHiddenColumns}>
+        Clear URL-Specified Hidden Columns
+      </Button>
+    </>
+  )
 }
 
-CopySaveHiddenColumns.propTypes = {
+UrlSpecifiedControls.propTypes = {
   // Type of collection being displayed
   collectionType: PropTypes.string.isRequired,
   // Array of column IDs of the hidden columns
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // Called when the user clicks the button to save the hidden columns.
-  onSavedHiddenColumns: PropTypes.func.isRequired,
+  // Called once the URL-specified hidden columns are cleared
+  onClearedUrlHiddenColumns: PropTypes.func.isRequired,
 }
 
 /**
@@ -328,6 +347,7 @@ const CollectionTable = ({ collection }) => {
     () => (profiles ? tableColumns(profiles[collectionType]) : []),
     [profiles, collectionType]
   )
+  const router = useRouter()
 
   /**
    * Called when the user changes which columns are visible and hidden through the column selector.
@@ -350,7 +370,7 @@ const CollectionTable = ({ collection }) => {
         window.location.href,
         newHiddenColumns
       )
-      Router.push(hiddenColumnsUrl)
+      router.push(hiddenColumnsUrl)
     } else {
       saveStoredHiddenColumns(collectionType, newHiddenColumns)
     }
@@ -382,7 +402,7 @@ const CollectionTable = ({ collection }) => {
         setHiddenColumns(validHiddenColumns)
       }
     }
-  }, [collectionType, columns])
+  }, [collectionType, columns, isHiddenColumnsFromUrl])
 
   if (collectionType && profiles) {
     const flattenedCollection = flattenCollection(collection)
@@ -398,10 +418,10 @@ const CollectionTable = ({ collection }) => {
         />
         <ColumnControls>
           {isHiddenColumnsFromUrl ? (
-            <CopySaveHiddenColumns
+            <UrlSpecifiedControls
               collectionType={collectionType}
               hiddenColumns={hiddenColumns}
-              onSavedHiddenColumns={() => setIsHiddenColumnsFromUrl(false)}
+              onClearedUrlHiddenColumns={() => setIsHiddenColumnsFromUrl(false)}
             />
           ) : (
             <>

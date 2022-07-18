@@ -1,4 +1,15 @@
 /**
+ * Clears any hashtag from the URL.
+ * @param {string} url - The URL to clean
+ * @returns {string} `url` with any hashtag removed
+ */
+export const clearHiddenColumnsFromUrl = (url) => {
+  const parsedUrl = new URL(url)
+  parsedUrl.hash = ""
+  return parsedUrl.toString()
+}
+
+/**
  * Extract a list of hidden column IDs from the URL. Hidden column get specified as:
  * path#hidden=column_id_1,column_id_2,column_id_3
  * The column IDs have to contain only alphanumeric characters and underscores.
