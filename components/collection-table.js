@@ -511,7 +511,6 @@ const CollectionTable = ({ collection }) => {
     }
   }, [collectionType, columns, isHiddenColumnsFromUrl])
 
-  console.log("COLLECTIONTABLE %s:%o", collectionType, profiles)
   if (collectionType && profiles) {
     const flattenedCollection = flattenCollection(collection)
     const filteredColumns = filterHiddenColumns(columns, hiddenColumns)
