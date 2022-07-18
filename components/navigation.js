@@ -7,6 +7,7 @@ import {
   MenuAlt4Icon,
   MinusIcon,
   PlusIcon,
+  TagIcon,
   UserGroupIcon,
   UserIcon,
 } from "@heroicons/react/solid"
@@ -19,6 +20,46 @@ import Icon from "./icon"
 import SiteLogo from "./logo"
 // libs
 import { AUTH_ERROR_URI } from "../libs/constants"
+
+/**
+ * Animation configurations for mobile and hierarchical navigation.
+ */
+const navigationTransition = { duration: 0.2, ease: "easeInOut" }
+const navigationVariants = {
+  open: { height: "auto" },
+  collapsed: { height: 0 },
+}
+
+/**
+ * Renders collapsable navigation items, both for the mobile menu and for collapsable children of
+ * grouped navigation items.
+ */
+const NavigationCollapsableArea = ({ isOpen, testid = "", children }) => {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          data-testid={testid}
+          className="overflow-hidden md:hidden"
+          initial="collapsed"
+          animate="open"
+          exit="collapsed"
+          transition={navigationTransition}
+          variants={navigationVariants}
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+NavigationCollapsableArea.propTypes = {
+  // True if the collapsable navigation area is visible.
+  isOpen: PropTypes.bool.isRequired,
+  // Optional data-testid for the motion div.
+  testid: PropTypes.string,
+}
 
 /**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
@@ -215,7 +256,9 @@ const NavigationGroupItem = ({
         {title}
         <NavigationGroupExpandIcon isGroupOpened={isGroupOpened} />
       </NavigationButton>
-      {isGroupOpened && <ul className="ml-5">{children}</ul>}
+      <NavigationCollapsableArea isOpen={isGroupOpened}>
+        <ul className="ml-5">{children}</ul>
+      </NavigationCollapsableArea>
     </li>
   )
 }
@@ -313,6 +356,38 @@ const Navigation = ({ navigationClick }) => {
         </NavigationIcon>
         Labs
       </NavigationHrefItem>
+      <NavigationGroupItem
+        id="ontologies"
+        title="Ontologies"
+        icon={<TagIcon />}
+        isGroupOpened={openedParents.includes("ontologies")}
+        handleGroupClick={handleParentClick}
+      >
+        <NavigationHrefItem
+          id="assay-terms"
+          href="/assay-terms"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Assays
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="phenotype-terms"
+          href="/phenotype-terms"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Phenotypes
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="samples-terms"
+          href="/sample-terms"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Samples
+        </NavigationHrefItem>
+      </NavigationGroupItem>
       <NavigationGroupItem
         id="samples"
         title="Samples"
@@ -464,24 +539,12 @@ const NavigationSection = () => {
         </div>
       </div>
 
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            data-testid="mobile-navigation"
-            className="overflow-hidden md:hidden"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-            variants={{
-              open: { height: "auto" },
-              collapsed: { height: 0 },
-            }}
-          >
-            <Navigation navigationClick={navigationClick} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <NavigationCollapsableArea
+        isOpen={isMobileMenuOpen}
+        testid="mobile-navigation"
+      >
+        <Navigation navigationClick={navigationClick} />
+      </NavigationCollapsableArea>
     </section>
   )
 }

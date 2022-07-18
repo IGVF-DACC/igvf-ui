@@ -26,6 +26,8 @@ const PrimaryCell = ({
   lab,
   source,
   treatments,
+  biosampleTerm = null,
+  diseaseTerm = null,
 }) => {
   return (
     <>
@@ -42,6 +44,8 @@ const PrimaryCell = ({
               biosample={primaryCell}
               source={source}
               donors={donors}
+              biosampleTerm={biosampleTerm}
+              diseaseTerm={diseaseTerm}
               options={{
                 dateObtainedTitle: "Date Harvested",
               }}
@@ -89,6 +93,10 @@ PrimaryCell.propTypes = {
   }).isRequired,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample ontology for this sample
+  biosampleTerm: PropTypes.object,
+  // Disease ontology for this sample
+  diseaseTerm: PropTypes.object,
 }
 
 export default PrimaryCell
@@ -102,6 +110,12 @@ export const getServerSideProps = async ({ params, req }) => {
     const lab = await request.getObject(primaryCell.lab)
     const source = await request.getObject(primaryCell.source)
     const treatments = await request.getMultipleObjects(primaryCell.treatments)
+    const biosampleTerm = primaryCell.biosample_term
+      ? await request.getObject(primaryCell.biosample_term)
+      : null
+    const diseaseTerm = primaryCell.disease_term
+      ? await request.getObject(primaryCell.disease_term)
+      : null
     const breadcrumbs = await buildBreadcrumbs(primaryCell, "accession")
     return {
       props: {
@@ -111,6 +125,8 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
+        biosampleTerm,
+        diseaseTerm,
         pageContext: { title: primaryCell.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,

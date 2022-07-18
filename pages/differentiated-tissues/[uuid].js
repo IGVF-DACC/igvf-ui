@@ -27,6 +27,8 @@ const DifferentiatedTissue = ({
   source,
   treatments,
   differentiationTreatments,
+  biosampleTerm = null,
+  diseaseTerm = null,
 }) => {
   return (
     <>
@@ -43,6 +45,8 @@ const DifferentiatedTissue = ({
               biosample={differentiatedTissue}
               source={source}
               donors={donors}
+              biosampleTerm={biosampleTerm}
+              diseaseTerm={diseaseTerm}
               options={{
                 dateObtainedTitle: "Date Collected",
               }}
@@ -111,6 +115,10 @@ DifferentiatedTissue.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Differentiation treatments associated with the sample
   differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample ontology for this sample
+  biosampleTerm: PropTypes.object,
+  // Disease ontology for this sample
+  diseaseTerm: PropTypes.object,
 }
 
 export default DifferentiatedTissue
@@ -131,6 +139,12 @@ export const getServerSideProps = async ({ params, req }) => {
     const differentiationTreatments = await request.getMultipleObjects(
       differentiatedTissue.differentiation_treatments
     )
+    const biosampleTerm = differentiatedTissue.biosample_term
+      ? await request.getObject(differentiatedTissue.biosample_term)
+      : null
+    const diseaseTerm = differentiatedTissue.disease_term
+      ? await request.getObject(differentiatedTissue.disease_term)
+      : null
     const breadcrumbs = await buildBreadcrumbs(
       differentiatedTissue,
       "accession"
@@ -144,6 +158,8 @@ export const getServerSideProps = async ({ params, req }) => {
         source,
         treatments,
         differentiationTreatments,
+        biosampleTerm,
+        diseaseTerm,
         pageContext: { title: differentiatedTissue.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,

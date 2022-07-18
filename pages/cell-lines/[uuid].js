@@ -19,7 +19,16 @@ import { EditableItem } from "../../components/edit"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
+const CellLine = ({
+  cellLine,
+  award,
+  donors,
+  lab,
+  source,
+  treatments,
+  biosampleTerm = null,
+  diseaseTerm = null,
+}) => {
   return (
     <>
       <Breadcrumbs />
@@ -35,6 +44,8 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
               biosample={cellLine}
               source={source}
               donors={donors}
+              biosampleTerm={biosampleTerm}
+              diseaseTerm={diseaseTerm}
               options={{
                 dateObtainedTitle: "Date Harvested",
               }}
@@ -55,7 +66,7 @@ const CellLine = ({ cellLine, award, donors, lab, source, treatments }) => {
           </>
         )}
         <Attribution award={award} lab={lab} />
-        </EditableItem>
+      </EditableItem>
     </>
   )
 }
@@ -65,14 +76,18 @@ CellLine.propTypes = {
   cellLine: PropTypes.object.isRequired,
   // Donors associated with the tissue
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Award applied to this technical sample
+  // Award applied to this cell line
   award: PropTypes.object.isRequired,
-  // Lab that submitted this technical sample
+  // Lab that submitted this cell line
   lab: PropTypes.object.isRequired,
-  // Source lab or source for this technical sample
+  // Source lab or source for this cell line
   source: PropTypes.object.isRequired,
   // List of associated treatments
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample term for this cell line
+  biosampleTerm: PropTypes.object,
+  // Disease term for this cell line
+  diseaseTerm: PropTypes.object,
 }
 
 export default CellLine
@@ -86,6 +101,12 @@ export const getServerSideProps = async ({ params, req }) => {
     const lab = await request.getObject(cellLine.lab)
     const source = await request.getObject(cellLine.source)
     const treatments = await request.getMultipleObjects(cellLine.treatments)
+    const biosampleTerm = cellLine.biosample_term
+      ? await request.getObject(cellLine.biosample_term)
+      : null
+    const diseaseTerm = cellLine.disease_term
+      ? await request.getObject(cellLine.disease_term)
+      : null
     const breadcrumbs = await buildBreadcrumbs(cellLine, "accession")
     return {
       props: {
@@ -95,6 +116,8 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
+        biosampleTerm,
+        diseaseTerm,
         pageContext: { title: cellLine.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,

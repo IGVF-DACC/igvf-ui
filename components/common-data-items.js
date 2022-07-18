@@ -11,6 +11,7 @@ import PropTypes from "prop-types"
 // components
 import AliasList from "./alias-list"
 import { DataItemLabel, DataItemValue } from "./data-area"
+import { OntologyTermId } from "./ontology"
 import SeparatedList from "./separated-list"
 import SourceProp from "./source-prop"
 // libs
@@ -28,8 +29,12 @@ export const DonorDataItems = ({ donor, parents, children }) => {
           <DataItemValue>{donor.sex}</DataItemValue>
         </>
       )}
-      <DataItemLabel>Taxa Identifier</DataItemLabel>
-      <DataItemValue>{donor.taxon_id}</DataItemValue>
+      {donor.taxon_id && (
+        <>
+          <DataItemLabel>Taxa Identifier</DataItemLabel>
+          <DataItemValue>{donor.taxon_id}</DataItemValue>
+        </>
+      )}
       {parents.length > 0 && (
         <>
           <DataItemLabel>Parents</DataItemLabel>
@@ -147,6 +152,8 @@ export const BiosampleDataItems = ({
   biosample,
   source = null,
   donors = [],
+  biosampleTerm = null,
+  diseaseTerm = null,
   options = {
     dateObtainedTitle: "Date Obtained",
   },
@@ -195,16 +202,24 @@ export const BiosampleDataItems = ({
           <DataItemValue>{formatDate(biosample.date_obtained)}</DataItemValue>
         </>
       )}
-      {biosample.biosample_ontology && (
+      {biosampleTerm && (
         <>
           <DataItemLabel>Biosample</DataItemLabel>
-          <DataItemValue>{biosample.biosample_ontology}</DataItemValue>
+          <DataItemValue>
+            <Link href={biosampleTerm["@id"]}>
+              <a>{biosampleTerm.term_id}</a>
+            </Link>
+          </DataItemValue>
         </>
       )}
-      {biosample.disease_ontology && (
+      {diseaseTerm && (
         <>
           <DataItemLabel>Disease</DataItemLabel>
-          <DataItemValue>{biosample.disease_ontology}</DataItemValue>
+          <DataItemValue>
+            <Link href={diseaseTerm["@id"]}>
+              <a>{diseaseTerm.term_id}</a>
+            </Link>
+          </DataItemValue>
         </>
       )}
       {biosample.nih_institutional_certification && (
@@ -241,9 +256,41 @@ BiosampleDataItems.propTypes = {
   source: PropTypes.object,
   // Donors for this biosample
   donors: PropTypes.array,
+  // Sample ontology for the biosample
+  biosampleTerm: PropTypes.object,
+  // Disease ontology for the biosample
+  diseaseTerm: PropTypes.object,
   // General options to alter the display of the data items
   options: PropTypes.shape({
     // Title of date_obtained property
     dateObtainedTitle: PropTypes.string,
   }),
+}
+
+/**
+ * Display data items common to all ontology-term-derived objects.
+ */
+export const OntologyTermDataItems = ({ ontologyTerm, children }) => {
+  return (
+    <>
+      <DataItemLabel>Term Name</DataItemLabel>
+      <DataItemValue>{ontologyTerm.term_name}</DataItemValue>
+      <DataItemLabel>External Reference</DataItemLabel>
+      <DataItemValue>
+        <OntologyTermId termId={ontologyTerm.term_id} />
+      </DataItemValue>
+      {ontologyTerm.synonyms.length > 0 && (
+        <>
+          <DataItemLabel>Synonyms</DataItemLabel>
+          <DataItemValue>{ontologyTerm.synonyms.join(", ")}</DataItemValue>
+        </>
+      )}
+      {children}
+    </>
+  )
+}
+
+OntologyTermDataItems.propTypes = {
+  // Ontology term object
+  ontologyTerm: PropTypes.object.isRequired,
 }
