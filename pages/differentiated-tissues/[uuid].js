@@ -26,6 +26,7 @@ const DifferentiatedTissue = ({
   lab,
   source,
   treatments,
+  differentiationTreatments,
   biosampleTerm = null,
   diseaseTerm = null,
 }) => {
