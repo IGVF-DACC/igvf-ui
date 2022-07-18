@@ -6,7 +6,8 @@ import {
 } from "@heroicons/react/solid"
 import Link from "next/link"
 import PropTypes from "prop-types"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
+import url from "url"
 // components
 import Button from "./button"
 import GlobalContext from "./global-context"
@@ -198,6 +199,10 @@ CollectionHeader.propTypes = {
 export const CollectionContent = ({ collection, children }) => {
   // Collection view setting and /profiles content
   const { collectionView, profiles } = useContext(GlobalContext)
+
+  useEffect(() => {
+    console.log("URL %s", window.location.href)
+  })
 
   if (collectionView.currentCollectionView === COLLECTION_VIEW.LIST) {
     // Display list view.
