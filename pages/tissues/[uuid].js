@@ -19,7 +19,16 @@ import { EditableItem } from "../../components/edit"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
+const Tissue = ({
+  tissue,
+  donors,
+  award,
+  lab,
+  source,
+  treatments,
+  biosampleOntology = null,
+  diseaseOntology = null,
+}) => {
   return (
     <>
       <Breadcrumbs />
@@ -35,6 +44,8 @@ const Tissue = ({ tissue, donors, award, lab, source, treatments }) => {
               biosample={tissue}
               source={source}
               donors={donors}
+              biosampleOntology={biosampleOntology}
+              diseaseOntology={diseaseOntology}
               options={{
                 dateObtainedTitle: "Date Harvested",
               }}
@@ -99,6 +110,10 @@ Tissue.propTypes = {
   }).isRequired,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample ontology for this sample
+  biosampleOntology: PropTypes.object,
+  // Disease ontology for this sample
+  diseaseOntology: PropTypes.object,
 }
 
 export default Tissue
@@ -112,6 +127,12 @@ export const getServerSideProps = async ({ params, req }) => {
     const lab = await request.getObject(tissue.lab)
     const source = await request.getObject(tissue.source)
     const treatments = await request.getMultipleObjects(tissue.treatments)
+    const biosampleOntology = tissue.biosample_ontology
+      ? await request.getObject(tissue.biosample_ontology)
+      : null
+    const diseaseOntology = tissue.disease_ontology
+      ? await request.getObject(tissue.disease_ontology)
+      : null
     const breadcrumbs = await buildBreadcrumbs(tissue, "accession")
     return {
       props: {
@@ -121,6 +142,8 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
+        biosampleOntology,
+        diseaseOntology,
         pageContext: { title: tissue.accession },
         breadcrumbs,
         uuid: params.uuid,

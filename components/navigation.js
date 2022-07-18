@@ -377,20 +377,28 @@ const Navigation = ({ navigationClick }) => {
         handleGroupClick={handleParentClick}
       >
         <NavigationHrefItem
-          id="sample"
-          href="/sample-ontology-terms"
+          id="assay-ontology"
+          href="/assay-ontology-terms"
           navigationClick={navigationClick}
           isChildItem
         >
-          Samples
+          Assays
         </NavigationHrefItem>
         <NavigationHrefItem
-          id="diseases"
+          id="diseases-ontology"
           href="/disease-ontology-terms"
           navigationClick={navigationClick}
           isChildItem
         >
           Diseases
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="sample-ontology"
+          href="/sample-ontology-terms"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Samples
         </NavigationHrefItem>
       </NavigationGroupItem>
       <NavigationHrefItem
