@@ -15,7 +15,7 @@ import Status from "../../components/status"
 import buildBreadcrumbs from "../../libs/breadcrumbs"
 import Request from "../../libs/request"
 
-const DiseaseOntologyTerm = ({ diseaseOntologyTerm }) => {
+const PhenotypeOntologyTerm = ({ phenotypeOntologyTerm }) => {
   return (
     <>
       <Breadcrumbs />
@@ -24,33 +24,33 @@ const DiseaseOntologyTerm = ({ diseaseOntologyTerm }) => {
         <DataArea>
           <DataItemLabel>Status</DataItemLabel>
           <DataItemValue>
-            <Status status={diseaseOntologyTerm.status} />
+            <Status status={phenotypeOntologyTerm.status} />
           </DataItemValue>
-          <OntologyTermDataItems ontologyTerm={diseaseOntologyTerm} />
+          <OntologyTermDataItems ontologyTerm={phenotypeOntologyTerm} />
         </DataArea>
       </DataPanel>
     </>
   )
 }
 
-DiseaseOntologyTerm.propTypes = {
-  // Disease ontology term object to display
-  diseaseOntologyTerm: PropTypes.object.isRequired,
+PhenotypeOntologyTerm.propTypes = {
+  // Phenotype ontology term object to display
+  phenotypeOntologyTerm: PropTypes.object.isRequired,
 }
 
-export default DiseaseOntologyTerm
+export default PhenotypeOntologyTerm
 
 export const getServerSideProps = async ({ params, req }) => {
   const request = new Request(req?.headers?.cookie)
-  const diseaseOntologyTerm = await request.getObject(
-    `/disease-ontology-terms//${params.name}/`
+  const phenotypeOntologyTerm = await request.getObject(
+    `/phenotype-ontology-terms/${params.name}/`
   )
-  if (diseaseOntologyTerm && diseaseOntologyTerm.status !== "error") {
-    const breadcrumbs = await buildBreadcrumbs(diseaseOntologyTerm, "term_id")
+  if (phenotypeOntologyTerm && phenotypeOntologyTerm.status !== "error") {
+    const breadcrumbs = await buildBreadcrumbs(phenotypeOntologyTerm, "term_id")
     return {
       props: {
-        diseaseOntologyTerm,
-        pageContext: { title: diseaseOntologyTerm.term_id },
+        phenotypeOntologyTerm,
+        pageContext: { title: phenotypeOntologyTerm.term_id },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },

@@ -372,12 +372,12 @@ const Navigation = ({ navigationClick }) => {
           Assays
         </NavigationHrefItem>
         <NavigationHrefItem
-          id="diseases-ontology"
-          href="/disease-ontology-terms"
+          id="phenotype-ontology"
+          href="/phenotype-ontology-terms"
           navigationClick={navigationClick}
           isChildItem
         >
-          Diseases
+          Phenotypes
         </NavigationHrefItem>
         <NavigationHrefItem
           id="samples-ontology"

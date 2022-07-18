@@ -1,13 +1,11 @@
 version: "3.8"
 
 services:
-
   cypress:
     image: public.ecr.aws/p4j3k8v5/cherry-lab:cypress-9.4.1-m1
     working_dir: "/test"
     volumes:
       - "./cypress:/test/cypress"
-      - "./docker/cypress/cypress-docker.json:/test/cypress.json"
+      - "./docker/cypress/cypress.config.js:/test/cypress.config.js"
     command: cypress run
     network_mode: "host"
-

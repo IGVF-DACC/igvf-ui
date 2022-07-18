@@ -149,7 +149,7 @@ export const BiosampleDataItems = ({
   source = null,
   donors = [],
   biosampleOntology = null,
-  diseaseOntology = null,
+  phenotypeOntology = null,
   options = {
     dateObtainedTitle: "Date Obtained",
   },
@@ -208,12 +208,12 @@ export const BiosampleDataItems = ({
           </DataItemValue>
         </>
       )}
-      {diseaseOntology && (
+      {phenotypeOntology && (
         <>
-          <DataItemLabel>Disease</DataItemLabel>
+          <DataItemLabel>Phenotype</DataItemLabel>
           <DataItemValue>
-            <Link href={diseaseOntology["@id"]}>
-              <a>{diseaseOntology.term_id}</a>
+            <Link href={phenotypeOntology["@id"]}>
+              <a>{phenotypeOntology.term_id}</a>
             </Link>
           </DataItemValue>
         </>
@@ -254,8 +254,8 @@ BiosampleDataItems.propTypes = {
   donors: PropTypes.array,
   // Sample ontology for the biosample
   biosampleOntology: PropTypes.object,
-  // Disease ontology for the biosample
-  diseaseOntology: PropTypes.object,
+  // Phenotype ontology for the biosample
+  phenotypeOntology: PropTypes.object,
   // General options to alter the display of the data items
   options: PropTypes.shape({
     // Title of date_obtained property
