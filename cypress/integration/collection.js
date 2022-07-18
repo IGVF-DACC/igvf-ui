@@ -130,8 +130,8 @@ describe("collection-view tests", () => {
     cy.get("input[name=amount]").uncheck()
     cy.get("input[name=amount_units]").uncheck()
 
-    cy.reload()
     cy.visit("/treatments#hidden=aliases,lot_id")
+    cy.reload()
     cy.wait(500)
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist")
     cy.get("[role=columnheader]").contains("Lot ID").should("not.exist")
