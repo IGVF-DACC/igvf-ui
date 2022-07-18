@@ -51,22 +51,19 @@ const App = ({ Component, pageProps }) => {
   }, [pageProps.sessionCookie])
 
   useEffect(() => {
-    if (pageProps.sessionCookie) {
-      fetch(`${API_URL}/profiles`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          Cookie: pageProps.sessionCookie,
-        },
+    fetch(`${API_URL}/profiles`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        return response.json()
       })
-        .then((response) => {
-          return response.json()
-        })
-        .then((profiles) => {
-          setProfiles(profiles)
-        })
-    }
-  }, [pageProps.sessionCookie])
+      .then((profiles) => {
+        setProfiles(profiles)
+      })
+  }, [])
 
   const globalContext = useMemo(() => {
     return {
