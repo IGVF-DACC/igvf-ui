@@ -26,8 +26,8 @@ const DifferentiatedTissue = ({
   lab,
   source,
   treatments,
-  biosampleOntology = null,
-  diseaseOntology = null,
+  biosampleTerm = null,
+  diseaseTerm = null,
 }) => {
   return (
     <>
@@ -44,8 +44,8 @@ const DifferentiatedTissue = ({
               biosample={differentiatedTissue}
               source={source}
               donors={donors}
-              biosampleOntology={biosampleOntology}
-              diseaseOntology={diseaseOntology}
+              biosampleTerm={biosampleTerm}
+              diseaseTerm={diseaseTerm}
               options={{
                 dateObtainedTitle: "Date Collected",
               }}
@@ -115,9 +115,9 @@ DifferentiatedTissue.propTypes = {
   // Differentiation treatments associated with the sample
   differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample ontology for this sample
-  biosampleOntology: PropTypes.object,
+  biosampleTerm: PropTypes.object,
   // Disease ontology for this sample
-  diseaseOntology: PropTypes.object,
+  diseaseTerm: PropTypes.object,
 }
 
 export default DifferentiatedTissue
@@ -138,11 +138,11 @@ export const getServerSideProps = async ({ params, req }) => {
     const differentiationTreatments = await request.getMultipleObjects(
       differentiatedTissue.differentiation_treatments
     )
-    const biosampleOntology = differentiatedTissue.biosample_ontology
-      ? await request.getObject(differentiatedTissue.biosample_ontology)
+    const biosampleTerm = differentiatedTissue.biosample_term
+      ? await request.getObject(differentiatedTissue.biosample_term)
       : null
-    const diseaseOntology = differentiatedTissue.disease_ontology
-      ? await request.getObject(differentiatedTissue.disease_ontology)
+    const diseaseTerm = differentiatedTissue.disease_term
+      ? await request.getObject(differentiatedTissue.disease_term)
       : null
     const breadcrumbs = await buildBreadcrumbs(
       differentiatedTissue,
@@ -157,8 +157,8 @@ export const getServerSideProps = async ({ params, req }) => {
         source,
         treatments,
         differentiationTreatments,
-        biosampleOntology,
-        diseaseOntology,
+        biosampleTerm,
+        diseaseTerm,
         pageContext: { title: differentiatedTissue.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,

@@ -26,8 +26,8 @@ const CellLine = ({
   lab,
   source,
   treatments,
-  biosampleOntology = null,
-  diseaseOntology = null,
+  biosampleTerm = null,
+  diseaseTerm = null,
 }) => {
   return (
     <>
@@ -44,8 +44,8 @@ const CellLine = ({
               biosample={cellLine}
               source={source}
               donors={donors}
-              biosampleOntology={biosampleOntology}
-              diseaseOntology={diseaseOntology}
+              biosampleTerm={biosampleTerm}
+              diseaseTerm={diseaseTerm}
               options={{
                 dateObtainedTitle: "Date Harvested",
               }}
@@ -84,10 +84,10 @@ CellLine.propTypes = {
   source: PropTypes.object.isRequired,
   // List of associated treatments
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Biosample ontology for this cell line
-  biosampleOntology: PropTypes.object,
-  // Disease ontology for this cell line
-  diseaseOntology: PropTypes.object,
+  // Biosample term for this cell line
+  biosampleTerm: PropTypes.object,
+  // Disease term for this cell line
+  diseaseTerm: PropTypes.object,
 }
 
 export default CellLine
@@ -101,11 +101,11 @@ export const getServerSideProps = async ({ params, req }) => {
     const lab = await request.getObject(cellLine.lab)
     const source = await request.getObject(cellLine.source)
     const treatments = await request.getMultipleObjects(cellLine.treatments)
-    const biosampleOntology = cellLine.biosample_ontology
-      ? await request.getObject(cellLine.biosample_ontology)
+    const biosampleTerm = cellLine.biosample_term
+      ? await request.getObject(cellLine.biosample_term)
       : null
-    const diseaseOntology = cellLine.disease_ontology
-      ? await request.getObject(cellLine.disease_ontology)
+    const diseaseTerm = cellLine.disease_term
+      ? await request.getObject(cellLine.disease_term)
       : null
     const breadcrumbs = await buildBreadcrumbs(cellLine, "accession")
     return {
@@ -116,8 +116,8 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
-        biosampleOntology,
-        diseaseOntology,
+        biosampleTerm,
+        diseaseTerm,
         pageContext: { title: cellLine.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,

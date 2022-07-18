@@ -26,8 +26,8 @@ const PrimaryCell = ({
   lab,
   source,
   treatments,
-  biosampleOntology = null,
-  diseaseOntology = null,
+  biosampleTerm = null,
+  diseaseTerm = null,
 }) => {
   return (
     <>
@@ -44,8 +44,8 @@ const PrimaryCell = ({
               biosample={primaryCell}
               source={source}
               donors={donors}
-              biosampleOntology={biosampleOntology}
-              diseaseOntology={diseaseOntology}
+              biosampleTerm={biosampleTerm}
+              diseaseTerm={diseaseTerm}
               options={{
                 dateObtainedTitle: "Date Harvested",
               }}
@@ -94,9 +94,9 @@ PrimaryCell.propTypes = {
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample ontology for this sample
-  biosampleOntology: PropTypes.object,
+  biosampleTerm: PropTypes.object,
   // Disease ontology for this sample
-  diseaseOntology: PropTypes.object,
+  diseaseTerm: PropTypes.object,
 }
 
 export default PrimaryCell
@@ -110,10 +110,10 @@ export const getServerSideProps = async ({ params, req }) => {
     const lab = await request.getObject(primaryCell.lab)
     const source = await request.getObject(primaryCell.source)
     const treatments = await request.getMultipleObjects(primaryCell.treatments)
-    const biosampleOntology = primaryCell.biosample_ontology
-      ? await request.getObject(primaryCell.biosample_ontology)
+    const biosampleTerm = primaryCell.biosample_term
+      ? await request.getObject(primaryCell.biosample_term)
       : null
-    const diseaseOntology = primaryCell.disease_ontology
+    const diseaseTerm = primaryCell.disease_ontology
       ? await request.getObject(primaryCell.disease_ontology)
       : null
     const breadcrumbs = await buildBreadcrumbs(primaryCell, "accession")
@@ -125,8 +125,8 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
-        biosampleOntology,
-        diseaseOntology,
+        biosampleTerm,
+        diseaseTerm,
         pageContext: { title: primaryCell.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
