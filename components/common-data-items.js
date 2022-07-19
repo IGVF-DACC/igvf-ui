@@ -14,8 +14,8 @@ import { DataItemLabel, DataItemValue } from "./data-area";
 import { OntologyTermId } from "./ontology";
 import SeparatedList from "./separated-list";
 import SourceProp from "./source-prop";
-// libs
-import { formatDate } from "../libs/dates";
+// lib
+import { formatDate } from "../lib/dates";
 
 /**
  * Display the data items common to all donor-derived objects.

@@ -11,9 +11,9 @@ import {
 } from "../../components/data-area";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs";
-import Request from "../../libs/request";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const AssayOntologyTerm = ({ assayOntologyTerm }) => {
   return (

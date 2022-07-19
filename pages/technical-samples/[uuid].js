@@ -13,10 +13,10 @@ import {
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs";
-import { formatDate } from "../../libs/dates";
-import Request from "../../libs/request";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { formatDate } from "../../lib/dates";
+import Request from "../../lib/request";
 
 const TechnicalSample = ({ sample, award, lab, source }) => {
   return (

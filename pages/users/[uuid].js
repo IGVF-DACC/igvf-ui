@@ -10,9 +10,9 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs";
-import Request from "../../libs/request";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const User = ({ lab, user }) => {
   return (

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import buildBreadcrumbs from "../../libs/breadcrumbs";
+import buildBreadcrumbs from "../../lib/breadcrumbs";
 import Breadcrumbs from "../breadcrumbs";
 import GlobalContext from "../global-context";
 

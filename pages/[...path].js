@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
-// libs
-import Request from "../libs/request";
+// lib
+import Request from "../lib/request";
 // components
 import {
   Collection,

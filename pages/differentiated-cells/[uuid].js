@@ -15,9 +15,9 @@ import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs";
-import Request from "../../libs/request";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const DifferentiatedCell = ({
   differentiatedCell,

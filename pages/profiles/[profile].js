@@ -5,9 +5,9 @@ import { marked } from "marked";
 import Breadcrumbs from "../../components/breadcrumbs";
 import PagePreamble from "../../components/page-preamble";
 import { DataPanel, DataAreaTitle } from "../../components/data-area";
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs";
-import Request from "../../libs/request";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const Schema = ({ schema, changelog }) => {
   const html = marked(changelog);

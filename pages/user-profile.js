@@ -10,8 +10,8 @@ import {
 import { DataPanel } from "../components/data-area";
 import PagePreamble from "../components/page-preamble";
 import Spinner from "../components/spinner";
-// libs
-import Request from "../libs/request";
+// lib
+import Request from "../lib/request";
 
 const UserProfile = ({ sessionUser = null }) => {
   const { isLoading, user } = useAuth0();

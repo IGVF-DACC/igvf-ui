@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
-// libs
-import Curie from "../libs/curie";
+// lib
+import Curie from "../lib/curie";
 
 /**
  * Map from ontology term ID prefixes to corresponding URL bases.

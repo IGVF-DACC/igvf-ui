@@ -14,11 +14,11 @@ import CollectionTable from "./collection-table";
 import GlobalContext from "./global-context";
 import NoContent from "./no-content";
 import Status from "./status";
-// libs
+// lib
 import {
   clearHiddenColumnsFromUrl,
   extractHiddenColumnIdsFromUrl,
-} from "../libs/collection-table";
+} from "../lib/collection-table";
 
 /**
  * States for the collection view display

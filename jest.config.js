@@ -7,7 +7,7 @@ const customJestConfig = {
   moduleDirectories: [
     "<rootDir>/node_modules",
     "<rootDir>/components",
-    "<rootDir>/libs",
+    "<rootDir>/lib",
   ],
   modulePathIgnorePatterns: ["<rootDir>/cdk/"],
   setupFilesAfterEnv: ["./jest.setup.js"],

@@ -10,9 +10,9 @@ import {
 } from "../../components/collection";
 import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs";
-import Request from "../../libs/request";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const AssayOntologyTermList = ({ assayOntologyTerms }) => {
   return (

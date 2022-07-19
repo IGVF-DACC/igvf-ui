@@ -3,8 +3,8 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import Head from "next/head";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
-// libs
-import { onRedirectCallback } from "../libs/authentication";
+// lib
+import { onRedirectCallback } from "../lib/authentication";
 import {
   API_URL,
   AUTH0_AUDIENCE,
@@ -12,8 +12,8 @@ import {
   AUTH0_ISSUER_BASE_DOMAIN,
   BRAND_COLOR,
   SITE_TITLE,
-} from "../libs/constants";
-import DarkModeManager from "../libs/dark-mode-manager";
+} from "../lib/constants";
+import DarkModeManager from "../lib/dark-mode-manager";
 // components
 import { COLLECTION_VIEW } from "../components/collection";
 import GlobalContext from "../components/global-context";

@@ -12,10 +12,10 @@ import {
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs";
-import { UC } from "../../libs/constants";
-import Request from "../../libs/request";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { UC } from "../../lib/constants";
+import Request from "../../lib/request";
 
 const Treatment = ({ treatment }) => {
   return (

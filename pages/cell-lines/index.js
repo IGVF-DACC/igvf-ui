@@ -12,9 +12,9 @@ import {
 import { NoCollectionData } from "../../components/no-content";
 import PagePreamble from "../../components/page-preamble";
 import SourceProp from "../../components/source-prop";
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs";
-import Request from "../../libs/request";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const CellLineList = ({ cellLines }) => {
   return (

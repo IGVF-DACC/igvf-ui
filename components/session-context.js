@@ -13,13 +13,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { createContext, useEffect, useRef, useState } from "react";
 // components
 import { useAuthenticated } from "./authentication";
-// libs
+// lib
 import {
   getSession,
   loginToServer,
   logoutFromServer,
-} from "../libs/authentication";
-import { BACKEND_URL } from "../libs/constants";
+} from "../lib/authentication";
+import { BACKEND_URL } from "../lib/constants";
 
 /**
  * Establishes the context to hold the back-end session record for the currently signed-in user.

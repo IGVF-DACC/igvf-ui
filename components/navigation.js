@@ -18,8 +18,8 @@ import React, { Children, isValidElement, useState } from "react";
 // components
 import Icon from "./icon";
 import SiteLogo from "./logo";
-// libs
-import { AUTH_ERROR_URI } from "../libs/constants";
+// lib
+import { AUTH_ERROR_URI } from "../lib/constants";
 
 /**
  * Animation configurations for mobile and hierarchical navigation.

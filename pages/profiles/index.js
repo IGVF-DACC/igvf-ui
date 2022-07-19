@@ -4,9 +4,9 @@ import PropTypes from "prop-types";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import PagePreamble from "../../components/page-preamble";
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs";
-import Request from "../../libs/request";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const ChildElement = (props) => {
   const schema = props.schemas[props.schemaKey];

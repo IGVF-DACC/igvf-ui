@@ -7,8 +7,8 @@ import EditJson, { EditLink, canEdit } from "./edit-func";
 import SessionContext from "./session-context";
 import { useAuthenticated } from "./authentication";
 import { useRouter } from "next/router";
-// libs
-import Fetch from "../libs/session-fetch";
+// lib
+import Fetch from "../lib/session-fetch";
 
 export const useEditor = (item, viewComponent) => {
   const editing = (url) => {

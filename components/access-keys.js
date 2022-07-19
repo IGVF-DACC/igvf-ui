@@ -14,12 +14,12 @@ import CopyButton from "./copy-button";
 import Modal from "./modal";
 import SessionContext from "./session-context";
 import Tooltip from "./tooltip";
-// libs
+// lib
 import {
   createAccessKey,
   deleteAccessKey,
   resetAccessKey,
-} from "../libs/access-keys";
+} from "../lib/access-keys";
 
 /**
  * Displays the access key ID and secret for the modal used when creating or resetting an access

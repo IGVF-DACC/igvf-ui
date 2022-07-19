@@ -2,8 +2,8 @@
 import Head from "next/head";
 import PropTypes from "prop-types";
 import { useContext } from "react";
-// libs
-import { UC } from "../libs/constants";
+// lib
+import { UC } from "../lib/constants";
 // components
 import GlobalContext from "./global-context";
 

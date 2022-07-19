@@ -13,9 +13,9 @@ import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
-// libs
-import Request from "../../libs/request";
-import buildBreadcrumbs from "../../libs/breadcrumbs";
+// lib
+import Request from "../../lib/request";
+import buildBreadcrumbs from "../../lib/breadcrumbs";
 
 const Lab = ({ lab, awards, pi }) => {
   return (

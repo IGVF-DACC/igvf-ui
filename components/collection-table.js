@@ -20,7 +20,7 @@ import Instruction from "./instruction";
 import Modal from "./modal";
 import Paragraph from "./paragraph";
 import SortableGrid from "./sortable-grid";
-// libs
+// lib
 import {
   clearHiddenColumnsFromUrl,
   extractHiddenColumnIdsFromUrl,
@@ -31,7 +31,7 @@ import {
   loadStoredHiddenColumns,
   saveStoredHiddenColumns,
   sortColumns,
-} from "../libs/collection-table";
+} from "../lib/collection-table";
 
 /**
  * Displays the buttons to hide or show all columns at once.

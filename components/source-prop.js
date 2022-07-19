@@ -1,8 +1,8 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
-// libs
-import { pathToType } from "../libs/general";
+// lib
+import { pathToType } from "../lib/general";
 
 /**
  * The `source` property of sample objects can refer to either a `source` or `lab` object. Display
