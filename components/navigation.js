@@ -1,6 +1,6 @@
 // node_modules
-import { useAuth0 } from "@auth0/auth0-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useAuth0 } from "@auth0/auth0-react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   CodeIcon,
   BeakerIcon,
@@ -10,25 +10,25 @@ import {
   TagIcon,
   UserGroupIcon,
   UserIcon,
-} from "@heroicons/react/solid"
-import Link from "next/link"
-import { useRouter } from "next/router"
-import PropTypes from "prop-types"
-import React, { Children, isValidElement, useState } from "react"
+} from "@heroicons/react/solid";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import PropTypes from "prop-types";
+import React, { Children, isValidElement, useState } from "react";
 // components
-import Icon from "./icon"
-import SiteLogo from "./logo"
-// libs
-import { AUTH_ERROR_URI } from "../libs/constants"
+import Icon from "./icon";
+import SiteLogo from "./logo";
+// lib
+import { AUTH_ERROR_URI } from "../lib/constants";
 
 /**
  * Animation configurations for mobile and hierarchical navigation.
  */
-const navigationTransition = { duration: 0.2, ease: "easeInOut" }
+const navigationTransition = { duration: 0.2, ease: "easeInOut" };
 const navigationVariants = {
   open: { height: "auto" },
   collapsed: { height: 0 },
-}
+};
 
 /**
  * Renders collapsable navigation items, both for the mobile menu and for collapsable children of
@@ -51,26 +51,26 @@ const NavigationCollapsableArea = ({ isOpen, testid = "", children }) => {
         </motion.div>
       )}
     </AnimatePresence>
-  )
-}
+  );
+};
 
 NavigationCollapsableArea.propTypes = {
   // True if the collapsable navigation area is visible.
   isOpen: PropTypes.bool.isRequired,
   // Optional data-testid for the motion div.
   testid: PropTypes.string,
-}
+};
 
 /**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
  */
 const NavigationIcon = ({ children }) => {
-  const iconElement = Children.only(children)
+  const iconElement = Children.only(children);
   if (isValidElement(iconElement)) {
-    return React.cloneElement(iconElement, { className: "mr-1 h-4 w-4" })
+    return React.cloneElement(iconElement, { className: "mr-1 h-4 w-4" });
   }
-  return children
-}
+  return children;
+};
 
 /**
  * Render the button for a navigation item, whether it actually navigates or just opens the child
@@ -90,9 +90,9 @@ const NavigationButton = React.forwardRef(
       >
         {children}
       </button>
-    )
+    );
   }
-)
+);
 
 NavigationButton.propTypes = {
   // The id of the navigation item
@@ -103,16 +103,16 @@ NavigationButton.propTypes = {
   isChildItem: PropTypes.bool,
   // True if button should appear disabled
   isDisabled: PropTypes.bool,
-}
+};
 
 // Forwarded components don't automatically get the required display name.
-NavigationButton.displayName = "NavigationButton"
+NavigationButton.displayName = "NavigationButton";
 
 /**
  * Navigation item to handle the Sign In button.
  */
 const NavigationSignInItem = ({ id, children }) => {
-  const { isLoading, loginWithRedirect } = useAuth0()
+  const { isLoading, loginWithRedirect } = useAuth0();
 
   /**
    * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
@@ -127,13 +127,13 @@ const NavigationSignInItem = ({ id, children }) => {
     const returnTo =
       window.location.pathname === AUTH_ERROR_URI
         ? "/"
-        : window.location.pathname
+        : window.location.pathname;
     loginWithRedirect({
       appState: {
         returnTo,
       },
-    })
-  }
+    });
+  };
 
   return (
     <li>
@@ -145,26 +145,26 @@ const NavigationSignInItem = ({ id, children }) => {
         {children}
       </NavigationButton>
     </li>
-  )
-}
+  );
+};
 
 NavigationSignInItem.propTypes = {
   // ID of the authentication navigation item
   id: PropTypes.string.isRequired,
-}
+};
 
 /**
  * Navigation item to handle the Sign Out button.
  */
 const NavigationSignOutItem = ({ id, children }) => {
-  const { logout } = useAuth0()
+  const { logout } = useAuth0();
 
   /**
    * Called when the user clicks the Sign Out button.
    */
   const handleAuthClick = () => {
-    logout({ returnTo: window.location.origin })
-  }
+    logout({ returnTo: window.location.origin });
+  };
 
   return (
     <li>
@@ -172,13 +172,13 @@ const NavigationSignOutItem = ({ id, children }) => {
         {children}
       </NavigationButton>
     </li>
-  )
-}
+  );
+};
 
 NavigationSignOutItem.propTypes = {
   // ID of the authentication navigation item
   id: PropTypes.string.isRequired,
-}
+};
 
 /**
  * Renders a single navigation item.
@@ -190,14 +190,14 @@ const NavigationHrefItem = ({
   isChildItem = false,
   children,
 }) => {
-  const router = useRouter()
+  const router = useRouter();
 
   const onClick = () => {
     // Notify the main navigation component that the user has clicked a navigation item, then
     // navigate to the href for the navigation item.
-    navigationClick()
-    router.push(href)
-  }
+    navigationClick();
+    router.push(href);
+  };
 
   return (
     <li>
@@ -207,8 +207,8 @@ const NavigationHrefItem = ({
         </NavigationButton>
       </Link>
     </li>
-  )
-}
+  );
+};
 
 NavigationHrefItem.propTypes = {
   // ID of the navigation item
@@ -219,7 +219,7 @@ NavigationHrefItem.propTypes = {
   navigationClick: PropTypes.func.isRequired,
   // True if this item is a child of another navigation item
   isChildItem: PropTypes.bool,
-}
+};
 
 /**
  * Icon for expanding or collapsing a navigation group item.
@@ -229,13 +229,13 @@ const NavigationGroupExpandIcon = ({ isGroupOpened }) => {
     <div className="ml-auto h-4 w-4">
       {isGroupOpened ? <MinusIcon /> : <PlusIcon />}
     </div>
-  )
-}
+  );
+};
 
 NavigationGroupExpandIcon.propTypes = {
   // True if the navigation group is open
   isGroupOpened: PropTypes.bool.isRequired,
-}
+};
 
 /**
  * Handles a navigation group item, reacting to clicks to expand or collapse the group, and
@@ -260,8 +260,8 @@ const NavigationGroupItem = ({
         <ul className="ml-5">{children}</ul>
       </NavigationCollapsableArea>
     </li>
-  )
-}
+  );
+};
 
 NavigationGroupItem.propTypes = {
   // ID of the navigation group item
@@ -274,7 +274,7 @@ NavigationGroupItem.propTypes = {
   isGroupOpened: PropTypes.bool.isRequired,
   // Function to call when the user clicks the parent navigation item
   handleGroupClick: PropTypes.func.isRequired,
-}
+};
 
 /**
  * Wraps the navigation items in <nav> and <ul> tags.
@@ -284,17 +284,17 @@ const NavigationList = ({ children }) => {
     <nav className="p-4">
       <ul>{children}</ul>
     </nav>
-  )
-}
+  );
+};
 
 /**
  * Renders the navigation area for mobile and desktop.
  */
 const Navigation = ({ navigationClick }) => {
   // Holds the ids of the currently open parent navigation items
-  const [openedParents, setOpenedParents] = React.useState([])
+  const [openedParents, setOpenedParents] = React.useState([]);
   // Current Auth0 information
-  const { isAuthenticated, isLoading, user } = useAuth0()
+  const { isAuthenticated, isLoading, user } = useAuth0();
 
   /**
    * Called when the user clicks a group navigation item to open or close it.
@@ -303,12 +303,12 @@ const Navigation = ({ navigationClick }) => {
   const handleParentClick = (parentId) => {
     if (openedParents.includes(parentId)) {
       // Close the parent navigation item.
-      setOpenedParents(openedParents.filter((id) => id !== parentId))
+      setOpenedParents(openedParents.filter((id) => id !== parentId));
     } else {
       // Open the parent navigation item.
-      setOpenedParents([...openedParents, parentId])
+      setOpenedParents([...openedParents, parentId]);
     }
-  }
+  };
 
   return (
     <NavigationList>
@@ -501,27 +501,27 @@ const Navigation = ({ navigationClick }) => {
         </NavigationSignInItem>
       )}
     </NavigationList>
-  )
-}
+  );
+};
 
 Navigation.propTypes = {
   // Function to call when user clicks a navigation item
   navigationClick: PropTypes.func.isRequired,
-}
+};
 
 /**
  * Displays the navigation bar (for mobile) or the sidebar navigation (for desktop).
  */
 const NavigationSection = () => {
   // True if user has opened the mobile menu
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   /**
    * Called when the user clicks a navigation menu item.
    */
   const navigationClick = () => {
-    setIsMobileMenuOpen(false)
-  }
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">
@@ -546,7 +546,7 @@ const NavigationSection = () => {
         <Navigation navigationClick={navigationClick} />
       </NavigationCollapsableArea>
     </section>
-  )
-}
+  );
+};
 
-export default NavigationSection
+export default NavigationSection;

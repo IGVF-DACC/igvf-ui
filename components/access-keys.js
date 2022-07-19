@@ -4,22 +4,22 @@ import {
   ClipboardCopyIcon,
   RefreshIcon,
   TrashIcon,
-} from "@heroicons/react/solid"
-import { useRouter } from "next/router"
-import PropTypes from "prop-types"
-import { Fragment, useContext, useState } from "react"
+} from "@heroicons/react/solid";
+import { useRouter } from "next/router";
+import PropTypes from "prop-types";
+import { Fragment, useContext, useState } from "react";
 // components
-import Button from "./button"
-import CopyButton from "./copy-button"
-import Modal from "./modal"
-import SessionContext from "./session-context"
-import Tooltip from "./tooltip"
-// libs
+import Button from "./button";
+import CopyButton from "./copy-button";
+import Modal from "./modal";
+import SessionContext from "./session-context";
+import Tooltip from "./tooltip";
+// lib
 import {
   createAccessKey,
   deleteAccessKey,
   resetAccessKey,
-} from "../libs/access-keys"
+} from "../lib/access-keys";
 
 /**
  * Displays the access key ID and secret for the modal used when creating or resetting an access
@@ -37,7 +37,7 @@ const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
       label: "Access Key Secret",
       value: accessKeySecret,
     },
-  ]
+  ];
 
   return (
     <div className="my-5 w-full gap-3 border border-modal-border bg-gray-100 py-2.5 px-2 dark:bg-gray-800 md:grid md:w-auto md:auto-cols-min md:grid-cols-min-2 md:px-5">
@@ -58,18 +58,18 @@ const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
               </div>
             </div>
           </Fragment>
-        )
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
 AccessKeyDisplay.propTypes = {
   // Access key ID
   accessKeyId: PropTypes.string.isRequired,
   // Access key secret
   accessKeySecret: PropTypes.string.isRequired,
-}
+};
 
 /**
  * The access key creation and reset modals have nearly identical contents except for these
@@ -84,7 +84,7 @@ const accessKeyModalMessages = {
     title: "Your reset secret key",
     close: "Close dialog containing your reset access key",
   },
-}
+};
 
 /**
  * Displays the modal to show the user their new or reset access keys. This component always shows
@@ -126,8 +126,8 @@ const AccessKeyModal = ({
         </Button>
       </Modal.Footer>
     </Modal>
-  )
-}
+  );
+};
 
 AccessKeyModal.propTypes = {
   // New (create) or existing (reset) access key ID
@@ -138,21 +138,21 @@ AccessKeyModal.propTypes = {
   createOrReset: PropTypes.oneOf(["create", "reset"]).isRequired,
   // Callback to close the modal
   onClose: PropTypes.func.isRequired,
-}
+};
 
 /**
  * Displays a button and modal to create a new access key.
  */
 export const CreateAccessKeyTrigger = () => {
   // True if modal displaying newly created access-keys is open
-  const [isOpen, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState(false);
   // Access key ID
-  const [accessKeyId, setAccessKeyId] = useState("")
+  const [accessKeyId, setAccessKeyId] = useState("");
   // Access key secret
-  const [accessKeySecret, setAccessKeySecret] = useState("")
+  const [accessKeySecret, setAccessKeySecret] = useState("");
 
-  const router = useRouter()
-  const { session } = useContext(SessionContext)
+  const router = useRouter();
+  const { session } = useContext(SessionContext);
 
   /**
    * Called to create a new access key. Once that happens it opens the modal to display the new
@@ -160,19 +160,19 @@ export const CreateAccessKeyTrigger = () => {
    */
   const createKey = () => {
     createAccessKey(session).then((response) => {
-      setAccessKeyId(response.access_key_id)
-      setAccessKeySecret(response.secret_access_key)
+      setAccessKeyId(response.access_key_id);
+      setAccessKeySecret(response.secret_access_key);
 
       // Rerender the page with the new access keys and with the modal showing the new access keys
       // open.
-      router.replace(router.asPath)
-      setOpen(true)
-    })
-  }
+      router.replace(router.asPath);
+      setOpen(true);
+    });
+  };
 
   const closeModal = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   return (
     <>
@@ -188,8 +188,8 @@ export const CreateAccessKeyTrigger = () => {
         />
       )}
     </>
-  )
-}
+  );
+};
 
 /**
  * Display a single access key control button.
@@ -199,8 +199,8 @@ const AccessKeyControl = ({ label, onClick, type, children }) => {
     <Button.Icon label={label} onClick={onClick} type={type}>
       <Tooltip content={label}>{children}</Tooltip>
     </Button.Icon>
-  )
-}
+  );
+};
 
 AccessKeyControl.propTypes = {
   // The label for the control for screen readers and tooltip
@@ -209,32 +209,32 @@ AccessKeyControl.propTypes = {
   onClick: PropTypes.func.isRequired,
   // Additional Tailwind CSS class names to apply to the button
   type: PropTypes.string,
-}
+};
 
 /**
  * Displays a button and new-key modal to reset an existing access key.
  */
 export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
   // True if modal displaying reset access-keys open
-  const [isOpen, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState(false);
   // Access key secret
-  const [accessKeySecret, setAccessKeySecret] = useState("")
+  const [accessKeySecret, setAccessKeySecret] = useState("");
 
-  const { session } = useContext(SessionContext)
+  const { session } = useContext(SessionContext);
 
   /**
    * Creates a new access key and opens the modal to display it.
    */
   const resetKey = () => {
     resetAccessKey(accessKeyId, session).then((response) => {
-      setAccessKeySecret(response.secret_access_key)
-      setOpen(true)
-    })
-  }
+      setAccessKeySecret(response.secret_access_key);
+      setOpen(true);
+    });
+  };
 
   const closeModal = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   return (
     <>
@@ -254,23 +254,23 @@ export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
         />
       )}
     </>
-  )
-}
+  );
+};
 
 ResetAccessKeyTrigger.propTypes = {
   // Access key ID to reset
   accessKeyId: PropTypes.string.isRequired,
-}
+};
 
 /**
  * Displays a button and warning modal to delete an access key.
  */
 const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
   // True if access key delete warning modal is visible.
-  const [isOpen, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState(false);
 
-  const router = useRouter()
-  const { session } = useContext(SessionContext)
+  const router = useRouter();
+  const { session } = useContext(SessionContext);
 
   /**
    * Called to perform the deletion of the access key.
@@ -278,13 +278,13 @@ const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
   const onDelete = () => {
     deleteAccessKey(accessKeyId, session).then(() => {
       // Rerender the page with the deleted access key removed.
-      router.replace(router.asPath)
-    })
-  }
+      router.replace(router.asPath);
+    });
+  };
 
   const onCancel = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   return (
     <>
@@ -326,13 +326,13 @@ const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
         </Modal.Footer>
       </Modal>
     </>
-  )
-}
+  );
+};
 
 DeleteAccessKeyTrigger.propTypes = {
   // ID of access key to delete
   accessKeyId: PropTypes.string.isRequired,
-}
+};
 
 /**
  * Displays a single access key and its associated controls.
@@ -348,13 +348,13 @@ const AccessKeyItem = ({ accessKey }) => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
 AccessKeyItem.propTypes = {
   // Array of access keys from the session user object
   accessKey: PropTypes.shape({ access_key_id: PropTypes.string }).isRequired,
-}
+};
 
 /**
  * Displays a list of access keys and their associated controls.
@@ -364,15 +364,15 @@ export const AccessKeyList = ({ accessKeys }) => {
     return (
       <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {accessKeys.map((accessKey) => {
-          return <AccessKeyItem key={accessKey.uuid} accessKey={accessKey} />
+          return <AccessKeyItem key={accessKey.uuid} accessKey={accessKey} />;
         })}
       </div>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 AccessKeyList.propTypes = {
   // Array of access keys from user object
   accessKeys: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};

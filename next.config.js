@@ -14,4 +14,4 @@ module.exports = {
     PUBLIC_BACKEND_URL:
       process.env.PUBLIC_BACKEND_URL || process.env.BACKEND_URL || "",
   },
-}
+};

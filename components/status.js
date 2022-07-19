@@ -1,5 +1,5 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 
 /**
  * Styles for each possible status value. As new status values get added to the schemas, add a
@@ -15,26 +15,26 @@ const statusStyles = {
   released: "bg-[#00a651] text-white shadow-[#007d3d]",
   replaced: "bg-[#f26522] text-white shadow-[#cd541b]",
   revoked: "bg-[#ed145b] text-white shadow-[#c4114b]",
-}
+};
 
 /**
  * Displays the status of any object. If new statuses get added, define their colors in the
  * `statusStyles` object above.
  */
 const Status = ({ status }) => {
-  const statusClass = statusStyles[status] || statusStyles.fallback
+  const statusClass = statusStyles[status] || statusStyles.fallback;
   return (
     <div
       className={`my-0.5 mx-px w-fit whitespace-nowrap rounded-full border border-white px-2 py-0 text-xs font-semibold uppercase shadow-status ${statusClass}`}
     >
       {status}
     </div>
-  )
-}
+  );
+};
 
 Status.propTypes = {
   // Status of item
   status: PropTypes.string.isRequired,
-}
+};
 
-export default Status
+export default Status;

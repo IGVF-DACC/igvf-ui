@@ -1,13 +1,13 @@
 // node_modules
-import Link from "next/link"
-import PropTypes from "prop-types"
+import Link from "next/link";
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
-import { NoCollectionData } from "../../components/no-content"
-import PagePreamble from "../../components/page-preamble"
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+import Breadcrumbs from "../../components/breadcrumbs";
+import { NoCollectionData } from "../../components/no-content";
+import PagePreamble from "../../components/page-preamble";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const UserList = ({ users }) => {
   return (
@@ -26,20 +26,20 @@ const UserList = ({ users }) => {
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
 UserList.propTypes = {
   // Users to display in the list
   users: PropTypes.array.isRequired,
-}
+};
 
-export default UserList
+export default UserList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const users = await request.getCollection("users")
-  const breadcrumbs = await buildBreadcrumbs(users, "title")
+  const request = new Request(req?.headers?.cookie);
+  const users = await request.getCollection("users");
+  const breadcrumbs = await buildBreadcrumbs(users, "title");
   return {
     props: {
       users: users["@graph"],
@@ -47,5 +47,5 @@ export const getServerSideProps = async ({ req }) => {
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,
     },
-  }
-}
+  };
+};

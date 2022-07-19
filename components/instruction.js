@@ -1,17 +1,17 @@
 // node_modules
-import { QuestionMarkCircleIcon } from "@heroicons/react/solid"
-import PropTypes from "prop-types"
-import { useState } from "react"
+import { QuestionMarkCircleIcon } from "@heroicons/react/solid";
+import PropTypes from "prop-types";
+import { useState } from "react";
 // components
-import Button from "./button"
-import Modal from "./modal"
+import Button from "./button";
+import Modal from "./modal";
 
 /**
  * Display pop-up instructions triggered by a help button.
  */
 const Instruction = ({ title, className = null, children }) => {
   // True if the instruction modal is open
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -29,14 +29,14 @@ const Instruction = ({ title, className = null, children }) => {
         </Modal.Body>
       </Modal>
     </>
-  )
-}
+  );
+};
 
 Instruction.propTypes = {
   // Title for the instruction modal
   title: PropTypes.string.isRequired,
   // Tailwind CSS classes to style the instructions
   className: PropTypes.string,
-}
+};
 
-export default Instruction
+export default Instruction;

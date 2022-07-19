@@ -1,13 +1,13 @@
-const nextJest = require("next/jest")
+const nextJest = require("next/jest");
 
-const createJestConfig = nextJest({ dir: "./" })
+const createJestConfig = nextJest({ dir: "./" });
 
 const customJestConfig = {
   clearMocks: true,
   moduleDirectories: [
     "<rootDir>/node_modules",
     "<rootDir>/components",
-    "<rootDir>/libs",
+    "<rootDir>/lib",
   ],
   modulePathIgnorePatterns: ["<rootDir>/cdk/"],
   setupFilesAfterEnv: ["./jest.setup.js"],
@@ -20,6 +20,6 @@ const customJestConfig = {
     "<rootDir>/styles",
     "<rootDir>/cdk/",
   ],
-}
+};
 
-module.exports = createJestConfig(customJestConfig)
+module.exports = createJestConfig(customJestConfig);

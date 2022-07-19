@@ -1,20 +1,20 @@
 // node_modules
-import { useAuth0 } from "@auth0/auth0-react"
-import Image from "next/image"
-import PropTypes from "prop-types"
+import { useAuth0 } from "@auth0/auth0-react";
+import Image from "next/image";
+import PropTypes from "prop-types";
 // components
 import {
   AccessKeyList,
   CreateAccessKeyTrigger,
-} from "../components/access-keys"
-import { DataPanel } from "../components/data-area"
-import PagePreamble from "../components/page-preamble"
-import Spinner from "../components/spinner"
-// libs
-import Request from "../libs/request"
+} from "../components/access-keys";
+import { DataPanel } from "../components/data-area";
+import PagePreamble from "../components/page-preamble";
+import Spinner from "../components/spinner";
+// lib
+import Request from "../lib/request";
 
 const UserProfile = ({ sessionUser = null }) => {
-  const { isLoading, user } = useAuth0()
+  const { isLoading, user } = useAuth0();
 
   return (
     <>
@@ -47,28 +47,28 @@ const UserProfile = ({ sessionUser = null }) => {
         )}
       </DataPanel>
     </>
-  )
-}
+  );
+};
 
 UserProfile.propTypes = {
   sessionUser: PropTypes.object,
-}
+};
 
-export default UserProfile
+export default UserProfile;
 
 export const getServerSideProps = async ({ req }) => {
   // Get the currently logged-in user from the server, then get their user object that includes
   // their access keys.
-  const request = new Request(req?.headers?.cookie)
-  const sessionProperties = await request.getObject("/session-properties")
+  const request = new Request(req?.headers?.cookie);
+  const sessionProperties = await request.getObject("/session-properties");
   const sessionUser = sessionProperties.user
     ? await request.getObject(sessionProperties.user["@id"])
-    : null
+    : null;
   return {
     props: {
       sessionUser,
       pageContext: { title: "User Profile" },
       sessionCookie: req?.headers?.cookie,
     },
-  }
-}
+  };
+};

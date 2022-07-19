@@ -12,6 +12,6 @@
     "no-trailing-spaces": ["error"],
     "react/no-unused-prop-types": ["error", { "skipShapeProps": true }],
     "react/prop-types": ["error", { "ignore": ["children"] }],
-    "semi": ["error", "never"]
+    "semi": ["error", "always"]
   }
 }

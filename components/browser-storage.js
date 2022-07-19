@@ -1,5 +1,5 @@
 // node_modules
-import { useState } from "react"
+import { useState } from "react";
 
 /**
  * Analogous to useState, but sets new values in the browser's localStorage, and recalls them.
@@ -14,19 +14,19 @@ import { useState } from "react"
 export const useLocalStorage = (key, initialValue) => {
   const [value, setValue] = useState(() => {
     const item =
-      typeof window !== "undefined" ? localStorage.getItem(key) : null
-    return item ? JSON.parse(item) : initialValue
-  })
+      typeof window !== "undefined" ? localStorage.getItem(key) : null;
+    return item ? JSON.parse(item) : initialValue;
+  });
 
   const setValueMethod = (valueToStore) => {
     if (typeof window !== "undefined") {
-      setValue(valueToStore)
-      localStorage.setItem(key, JSON.stringify(valueToStore))
+      setValue(valueToStore);
+      localStorage.setItem(key, JSON.stringify(valueToStore));
     }
-  }
+  };
 
-  return [value, setValueMethod]
-}
+  return [value, setValueMethod];
+};
 
 /**
  * Analogous to useState, but sets new values in the browser's sessionStorage, and recalls them.
@@ -41,16 +41,16 @@ export const useLocalStorage = (key, initialValue) => {
 export const useSessionStorage = (key, initialValue) => {
   const [value, setValue] = useState(() => {
     const item =
-      typeof window !== "undefined" ? window.sessionStorage.getItem(key) : null
-    return item ? JSON.parse(item) : initialValue
-  })
+      typeof window !== "undefined" ? window.sessionStorage.getItem(key) : null;
+    return item ? JSON.parse(item) : initialValue;
+  });
 
   const setValueMethod = (valueToStore) => {
     if (typeof window !== "undefined") {
-      setValue(valueToStore)
-      window.sessionStorage.setItem(key, JSON.stringify(valueToStore))
+      setValue(valueToStore);
+      window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
     }
-  }
+  };
 
-  return [value, setValueMethod]
-}
+  return [value, setValueMethod];
+};

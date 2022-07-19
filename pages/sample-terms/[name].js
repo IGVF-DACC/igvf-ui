@@ -1,19 +1,19 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
-import { OntologyTermDataItems } from "../../components/common-data-items"
+import Breadcrumbs from "../../components/breadcrumbs";
+import { OntologyTermDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import PagePreamble from "../../components/page-preamble"
-import Status from "../../components/status"
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+} from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
   return (
@@ -63,23 +63,23 @@ const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
         </DataArea>
       </DataPanel>
     </>
-  )
-}
+  );
+};
 
 SampleOntologyTerm.propTypes = {
   // Sample ontology term object to display
   sampleOntologyTerm: PropTypes.object.isRequired,
-}
+};
 
-export default SampleOntologyTerm
+export default SampleOntologyTerm;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
+  const request = new Request(req?.headers?.cookie);
   const sampleOntologyTerm = await request.getObject(
     `/sample-terms//${params.name}/`
-  )
+  );
   if (sampleOntologyTerm && sampleOntologyTerm.status !== "error") {
-    const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerm, "term_id")
+    const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerm, "term_id");
     return {
       props: {
         sampleOntologyTerm,
@@ -87,7 +87,7 @@ export const getServerSideProps = async ({ params, req }) => {
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

@@ -1,6 +1,6 @@
 // node_modules
-import Link from "next/link"
-import PropTypes from "prop-types"
+import Link from "next/link";
+import PropTypes from "prop-types";
 // components
 import {
   DataArea,
@@ -8,7 +8,7 @@ import {
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "./data-area"
+} from "./data-area";
 
 /**
  * Displays the attribution properties of an item in its own data panel, typically from a data
@@ -35,8 +35,8 @@ const Attribution = ({ award, lab }) => {
         </DataArea>
       </DataPanel>
     </>
-  )
-}
+  );
+};
 
 Attribution.propTypes = {
   // Award applied to the displayed object
@@ -49,6 +49,6 @@ Attribution.propTypes = {
     "@id": PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
   }).isRequired,
-}
+};
 
-export default Attribution
+export default Attribution;

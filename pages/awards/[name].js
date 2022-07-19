@@ -1,20 +1,20 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
+import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import PagePreamble from "../../components/page-preamble"
-import Status from "../../components/status"
-import { EditableItem } from "../../components/edit"
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import { formatDateRange } from "../../libs/dates"
-import Request from "../../libs/request"
+} from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
+import { EditableItem } from "../../components/edit";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { formatDateRange } from "../../lib/dates";
+import Request from "../../lib/request";
 
 const Award = ({ award, pis }) => {
   return (
@@ -72,26 +72,26 @@ const Award = ({ award, pis }) => {
             )}
           </DataArea>
         </DataPanel>
-        </EditableItem>
+      </EditableItem>
     </>
-  )
-}
+  );
+};
 
 Award.propTypes = {
   // Award data to display on the page
   award: PropTypes.object.isRequired,
   // Principal investigator data associated with `award`
   pis: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
-export default Award
+export default Award;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const award = await request.getObject(`/awards/${params.name}/`)
+  const request = new Request(req?.headers?.cookie);
+  const award = await request.getObject(`/awards/${params.name}/`);
   if (award && award.status !== "error") {
-    const pis = award.pi ? await request.getMultipleObjects(award.pi) : []
-    const breadcrumbs = await buildBreadcrumbs(award, "name")
+    const pis = award.pi ? await request.getMultipleObjects(award.pi) : [];
+    const breadcrumbs = await buildBreadcrumbs(award, "name");
     return {
       props: {
         award,
@@ -100,7 +100,7 @@ export const getServerSideProps = async ({ params, req }) => {
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

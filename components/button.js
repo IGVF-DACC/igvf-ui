@@ -3,9 +3,9 @@
  */
 
 // node_modules
-import PropTypes from "prop-types"
-import React, { Children, cloneElement } from "react"
-import { useRouter } from "next/router"
+import PropTypes from "prop-types";
+import React, { Children, cloneElement } from "react";
+import { useRouter } from "next/router";
 
 /**
  * Background colors for each of the button types.
@@ -26,7 +26,7 @@ const buttonTypeClasses = {
   "warning-outline": "bg-transparent",
   "success-outline": "bg-transparent",
   "info-outline": "bg-transparent",
-}
+};
 
 /**
  * Border colors for each of the button types.
@@ -53,7 +53,7 @@ const borderTypeClasses = {
   "success-outline":
     "border-button-success disabled:border-button-success-disabled",
   "info-outline": "border-button-info disabled:border-button-info-disabled",
-}
+};
 
 /**
  * Text colors for each of the outlined button types.
@@ -79,7 +79,7 @@ const buttonTextTypeClasses = {
   "success-outline":
     "text-button-success disabled:text-button-success-disabled",
   "info-outline": "text-button-info disabled:text-button-info-disabled",
-}
+};
 
 /**
  * SVG fill colors for each of the button types.
@@ -100,7 +100,7 @@ const buttonFillTypeClasses = {
   "warning-outline": "fill-button-warning",
   "success-outline": "fill-button-success",
   "info-outline": "fill-button-info",
-}
+};
 
 /**
  * Tailwind CSS classes for each of the button sizes.
@@ -109,7 +109,7 @@ const buttonSizeClasses = {
   sm: "px-2 py-0.5 text-xs",
   md: "px-4 py-1 text-sm",
   lg: "px-6 py-2 text-base",
-}
+};
 
 /**
  * Button component to make all buttons consistent across the site. Use this component to wrap the
@@ -138,8 +138,8 @@ const Button = ({
     >
       {children}
     </button>
-  )
-}
+  );
+};
 
 Button.propTypes = {
   // Called when the button is clicked
@@ -169,9 +169,9 @@ Button.propTypes = {
   className: PropTypes.string,
   // True to disable the button
   disabled: PropTypes.bool,
-}
+};
 
-Button.displayName = "Button"
+Button.displayName = "Button";
 
 /**
  * Displays a Button that links to a URL. The navigationClick handler is run
@@ -189,12 +189,12 @@ const Link = ({
   className = "",
   children,
 }) => {
-  const router = useRouter()
+  const router = useRouter();
 
   const onClick = () => {
-    navigationClick()
-    router.push(href)
-  }
+    navigationClick();
+    router.push(href);
+  };
 
   return (
     <Button
@@ -206,8 +206,8 @@ const Link = ({
     >
       {children}
     </Button>
-  )
-}
+  );
+};
 
 Link.propTypes = {
   // Link that pressing the button will navigate to
@@ -237,7 +237,7 @@ Link.propTypes = {
   size: PropTypes.oneOf(["sm", "md", "lg"]),
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
-}
+};
 
 /**
  * Displays a circular icon button. Use similarly to <Button> but only one size is available.
@@ -256,8 +256,8 @@ const Icon = ({
   const filledChildren = Children.map(children, (child) => {
     return cloneElement(child, {
       className: buttonFillTypeClasses[type],
-    })
-  })
+    });
+  });
 
   return (
     <button
@@ -268,8 +268,8 @@ const Icon = ({
     >
       {filledChildren}
     </button>
-  )
-}
+  );
+};
 
 Icon.propTypes = {
   // Called when the button is clicked
@@ -295,8 +295,8 @@ Icon.propTypes = {
   ]),
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
-}
+};
 
-Button.Icon = Icon
-Button.Link = Link
-export default Button
+Button.Icon = Icon;
+Button.Link = Link;
+export default Button;

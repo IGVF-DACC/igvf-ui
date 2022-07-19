@@ -1,8 +1,8 @@
 // node_modules
-import PropTypes from "prop-types"
-import { useState } from "react"
+import PropTypes from "prop-types";
+import { useState } from "react";
 // components
-import Button from "./button"
+import Button from "./button";
 
 /**
  *
@@ -14,7 +14,7 @@ import Button from "./button"
  */
 export const useCopyAction = (target) => {
   // True if the user has clicked the copy button within the last two seconds
-  const [isCopied, setCopied] = useState(false)
+  const [isCopied, setCopied] = useState(false);
 
   /**
    * Copies the given text to the clipboard.
@@ -24,20 +24,20 @@ export const useCopyAction = (target) => {
       // Temporarily display a checkmark to confirm to the user that the copy was successful. Once
       // tooltips are feature complete, might want to add a "Copied" tooltip along with the check
       // mark.
-      setCopied(true)
+      setCopied(true);
       setTimeout(() => {
-        setCopied(false)
-      }, 2000)
-    })
-  }
+        setCopied(false);
+      }, 2000);
+    });
+  };
 
   return {
     // States
     isCopied,
     // Actions
     initiateCopy,
-  }
-}
+  };
+};
 
 /**
  * Displays a button to copy text to the clipboard. Supply a function as the child of this button
@@ -51,7 +51,7 @@ const CopyButton = ({
   className = "",
   children,
 }) => {
-  const { isCopied, initiateCopy } = useCopyAction(target)
+  const { isCopied, initiateCopy } = useCopyAction(target);
 
   return (
     <Button
@@ -62,8 +62,8 @@ const CopyButton = ({
     >
       {children(isCopied)}
     </Button>
-  )
-}
+  );
+};
 
 CopyButton.propTypes = {
   // The text to copy
@@ -74,7 +74,7 @@ CopyButton.propTypes = {
   disabled: PropTypes.bool,
   // Additional Tailwind CSS class names
   className: PropTypes.string,
-}
+};
 
 /**
  * Same as the base `CopyButton` component, but it has a circular style to hold a single icon.
@@ -82,14 +82,14 @@ CopyButton.propTypes = {
  * two seconds after the user clicks the copy button.
  */
 const Icon = ({ target, label, className = "", children }) => {
-  const { isCopied, initiateCopy } = useCopyAction(target)
+  const { isCopied, initiateCopy } = useCopyAction(target);
 
   return (
     <Button.Icon onClick={initiateCopy} className={className} label={label}>
       {children(isCopied)}
     </Button.Icon>
-  )
-}
+  );
+};
 
 Icon.propTypes = {
   // The text to copy
@@ -98,7 +98,7 @@ Icon.propTypes = {
   label: PropTypes.string.isRequired,
   // Additional Tailwind CSS class names
   className: PropTypes.string,
-}
+};
 
-CopyButton.Icon = Icon
-export default CopyButton
+CopyButton.Icon = Icon;
+export default CopyButton;

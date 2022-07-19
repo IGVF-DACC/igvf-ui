@@ -1,6 +1,6 @@
 // node_modules
-import PropTypes from "prop-types"
-import React from "react"
+import PropTypes from "prop-types";
+import React from "react";
 
 /**
  * Display a list of inline React components with a separator between the items -- sort of like
@@ -50,16 +50,16 @@ const SeparatedList = ({ separator = ", ", className = "", children }) => {
             curr,
           ])}
       </div>
-    )
+    );
   }
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
 SeparatedList.propTypes = {
   // The separator between the items; ", " by default
   separator: PropTypes.node,
   // Additional classes for wrapper element
   className: PropTypes.string,
-}
+};
 
-export default SeparatedList
+export default SeparatedList;

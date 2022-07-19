@@ -1,45 +1,45 @@
 // node_modules
-import PropTypes from "prop-types"
-import React, { useContext, useState, useEffect } from "react"
+import PropTypes from "prop-types";
+import React, { useContext, useState, useEffect } from "react";
 // components
-import Button from "./button"
-import EditJson, { EditLink, canEdit } from "./edit-func"
-import SessionContext from "./session-context"
-import { useAuthenticated } from "./authentication"
-import { useRouter } from "next/router"
-// libs
-import Fetch from "../libs/session-fetch"
+import Button from "./button";
+import EditJson, { EditLink, canEdit } from "./edit-func";
+import SessionContext from "./session-context";
+import { useAuthenticated } from "./authentication";
+import { useRouter } from "next/router";
+// lib
+import Fetch from "../lib/session-fetch";
 
 export const useEditor = (item, viewComponent) => {
   const editing = (url) => {
-    return url.endsWith("#!edit")
-  }
+    return url.endsWith("#!edit");
+  };
 
   /**
    * Represents whether the Editor component can be actively typed in or saved.
    * This is determined by the logged in status of the user and if the user has
    * edit permissions on that object being edited.
    */
-  const [edit, setEditing] = useState(false)
+  const [edit, setEditing] = useState(false);
 
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
-    const isEdit = editing(document.URL)
+    const isEdit = editing(document.URL);
     // If the URL says edit but we aren't editing yet, set the state
     if (isEdit && !edit) {
-      setEditing(true)
+      setEditing(true);
     }
 
     // If the URL has us not editing but we just were, set to false, and update props
     if (!isEdit && edit) {
-      setEditing(false)
-      router.replace(router.asPath)
+      setEditing(false);
+      router.replace(router.asPath);
     }
-  }, [edit, router])
+  }, [edit, router]);
 
-  const editpage = <EditPage item={item} />
-  const editlink = <EditLink item={item} />
+  const editpage = <EditPage item={item} />;
+  const editlink = <EditLink item={item} />;
 
   const componentToShow = edit ? (
     editpage
@@ -48,17 +48,17 @@ export const useEditor = (item, viewComponent) => {
       {viewComponent}
       {editlink}
     </>
-  )
-  return componentToShow
-}
+  );
+  return componentToShow;
+};
 
 export const EditableItem = ({ item, children }) => {
-  return useEditor(item, children)
-}
+  return useEditor(item, children);
+};
 
 EditableItem.propTypes = {
   item: PropTypes.object.isRequired,
-}
+};
 
 const SaveCancelControl = ({
   cancelClick,
@@ -83,31 +83,31 @@ const SaveCancelControl = ({
         Save
       </Button>
     </div>
-  )
-}
+  );
+};
 
 SaveCancelControl.propTypes = {
   cancelClick: PropTypes.func.isRequired,
   saveClick: PropTypes.func.isRequired,
   itemPath: PropTypes.string.isRequired,
   saveEnabled: PropTypes.bool.isRequired,
-}
+};
 
 function sortedJson(obj) {
   if (Array.isArray(obj)) {
-    return obj.map((value) => sortedJson(value))
+    return obj.map((value) => sortedJson(value));
   }
   // We know it's not an array if we're here because the above `if`
   if (typeof obj == "object") {
-    const sorted = {}
+    const sorted = {};
     Object.keys(obj)
       .sort()
       .forEach((key) => {
-        sorted[key] = obj[key]
-      })
-    return sorted
+        sorted[key] = obj[key];
+      });
+    return sorted;
   }
-  return obj
+  return obj;
 }
 
 const SavedErrors = ({ errors = [] }) => {
@@ -122,51 +122,51 @@ const SavedErrors = ({ errors = [] }) => {
         ))}
       </ul>
     </div>
-  )
-}
+  );
+};
 
 SavedErrors.propTypes = {
   errors: PropTypes.array.isRequired,
-}
+};
 
 const EditPage = ({ item }) => {
-  const path = item["@id"]
+  const path = item["@id"];
 
-  const loggedIn = useAuthenticated()
+  const loggedIn = useAuthenticated();
 
   const editable = (item) => {
     // cannot edit if not logged in or object not editable
-    const editable = canEdit(item)
-    return loggedIn && editable
-  }
+    const editable = canEdit(item);
+    return loggedIn && editable;
+  };
 
   const jsonErrors = (json) => {
     // cannot save if we cannot edit or if the JSON is wrong
     try {
-      JSON.parse(json)
-      return []
+      JSON.parse(json);
+      return [];
     } catch (err) {
       // Save the error
-      return [err.message]
+      return [err.message];
     }
-  }
+  };
 
-  const { session } = useContext(SessionContext)
+  const { session } = useContext(SessionContext);
 
   /**
    * The text is the current editor text of the underlying Ace editor component.
    */
   const [text, setText] = useState(() => {
-    JSON.stringify({}, null, 4)
-  })
+    JSON.stringify({}, null, 4);
+  });
 
   /**
    * When attempting to save the edited text to the backend, if there are any
    * errors that come back from the server, this list will contain the error objects
    */
-  const [saveErrors, setSaveErrors] = useState([])
+  const [saveErrors, setSaveErrors] = useState([]);
 
-  const isEditable = editable(item)
+  const isEditable = editable(item);
 
   /**
    * Interactivity properties of the underlying Ace editor. `canEdit` implies the
@@ -182,65 +182,65 @@ const EditPage = ({ item }) => {
     canEdit: isEditable,
     canSave: isEditable,
     errors: [],
-  })
+  });
 
   useEffect(() => {
-    const fetch = new Fetch(session)
+    const fetch = new Fetch(session);
     fetch
       .getObject(`${path}?frame=edit`, "GET")
       .then((value) => {
-        const json = value.json()
-        return json
+        const json = value.json();
+        return json;
       })
       .then((value) => {
-        setText(JSON.stringify(sortedJson(value), null, 4))
-      })
-  }, [path, session])
+        setText(JSON.stringify(sortedJson(value), null, 4));
+      });
+  }, [path, session]);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const onChange = (newValue) => {
-    setText(newValue)
-    const errors = jsonErrors(newValue)
-    const isEditable = editable(item)
+    setText(newValue);
+    const errors = jsonErrors(newValue);
+    const isEditable = editable(item);
     const status = {
       canEdit: isEditable,
       canSave: errors.length == 0 && isEditable,
       errors,
-    }
-    setEditorStatus(status)
-  }
+    };
+    setEditorStatus(status);
+  };
 
   const save = () => {
     setEditorStatus({
       canEdit: false,
       canSave: false,
       errors: [],
-    })
-    const value = sortedJson(JSON.parse(text))
-    const fetch = new Fetch(session)
+    });
+    const value = sortedJson(JSON.parse(text));
+    const fetch = new Fetch(session);
     fetch.updateObject(path, "PATCH", value).then((response) => {
       if (response.ok) {
-        setSaveErrors([])
-        router.push(path)
+        setSaveErrors([]);
+        router.push(path);
       } else {
         setEditorStatus({
           canEdit: true,
           canSave: true,
           errors: [],
-        })
+        });
         const errors = response.errors.map((err) => ({
           description: err.description,
           keys: err.names
             .map((val) => {
-              return `\`${val}\``
+              return `\`${val}\``;
             })
             .join(", "),
-        }))
-        setSaveErrors(errors)
+        }));
+        setSaveErrors(errors);
       }
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-1">
@@ -260,11 +260,11 @@ const EditPage = ({ item }) => {
         {saveErrors.length > 0 && <SavedErrors errors={saveErrors} />}
       </div>
     </div>
-  )
-}
+  );
+};
 
 EditPage.propTypes = {
   item: PropTypes.object.isRequired,
-}
+};
 
-export default EditPage
+export default EditPage;

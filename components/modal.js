@@ -19,10 +19,10 @@
  */
 
 // node_modules
-import { Dialog } from "@headlessui/react"
-import { XIcon } from "@heroicons/react/solid"
-import PropTypes from "prop-types"
-import { Children } from "react"
+import { Dialog } from "@headlessui/react";
+import { XIcon } from "@heroicons/react/solid";
+import PropTypes from "prop-types";
+import { Children } from "react";
 
 /**
  * Main component for modal dialogs.
@@ -44,15 +44,15 @@ const Modal = ({ isOpen, onClose, children }) => {
         </Dialog.Panel>
       </div>
     </Dialog>
-  )
-}
+  );
+};
 
 Modal.propTypes = {
   // True if the modal is open
   isOpen: PropTypes.bool.isRequired,
   // Called to close the modal on click outside or ESC
   onClose: PropTypes.func.isRequired,
-}
+};
 
 /**
  * Displays the close button in the header.
@@ -67,15 +67,15 @@ const HeaderCloseButton = ({ onClose, label }) => {
     >
       <XIcon className="fill-gray-500" />
     </button>
-  )
-}
+  );
+};
 
 HeaderCloseButton.propTypes = {
   // Called to close the modal on click
   onClose: PropTypes.func.isRequired,
   // Accessible label for the close button
   label: PropTypes.string.isRequired,
-}
+};
 
 /**
  * Displays the header, typically containing a title and an optional close button on the right side
@@ -93,13 +93,13 @@ const Header = ({
   // If the children is a single string or number, wrap it in an <h2>. Otherwise the children
   // comprise one or more JSX elements, in which case we just render them within the header <div>
   // as is.
-  let headerChildren = children
+  let headerChildren = children;
   if (Children.count(children) === 1) {
-    const childrenArray = Children.toArray(children)
-    const firstChildType = typeof childrenArray[0]
+    const childrenArray = Children.toArray(children);
+    const firstChildType = typeof childrenArray[0];
     if (firstChildType === "string" || firstChildType === "number") {
       // `children` comprises a single string or number, so wrap it in an <h2>.
-      headerChildren = <h2 className="text-lg font-semibold">{children}</h2>
+      headerChildren = <h2 className="text-lg font-semibold">{children}</h2>;
     }
   }
 
@@ -112,8 +112,8 @@ const Header = ({
         <HeaderCloseButton label={closeLabel} onClose={onClose} />
       ) : null}
     </div>
-  )
-}
+  );
+};
 
 Header.propTypes = {
   // Called to close the modal when clicking the close button
@@ -122,15 +122,15 @@ Header.propTypes = {
   closeLabel: PropTypes.string,
   // Tailwind CSS classes to add to the header
   className: PropTypes.string,
-}
+};
 
 /**
  * Wraps the contents of a modal to provide a standard padding. You can skip using this if you
  * don't want padding, or non-standard padding.
  */
 const Body = ({ children }) => {
-  return <div className="p-2">{children}</div>
-}
+  return <div className="p-2">{children}</div>;
+};
 
 /**
  * Footer for the modal. This is typically used to provide an action button, or a close button.
@@ -140,10 +140,10 @@ const Footer = ({ children }) => {
     <div className="flex justify-end gap-1 border-t border-modal-border bg-gray-50 p-1.5 dark:bg-gray-800">
       {children}
     </div>
-  )
-}
+  );
+};
 
-Modal.Header = Header
-Modal.Body = Body
-Modal.Footer = Footer
-export default Modal
+Modal.Header = Header;
+Modal.Body = Body;
+Modal.Footer = Footer;
+export default Modal;

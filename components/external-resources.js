@@ -1,9 +1,9 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import { DataAreaTitle } from "./data-area"
-import { DataGridContainer } from "./data-grid"
-import SortableGrid from "./sortable-grid"
+import { DataAreaTitle } from "./data-area";
+import { DataGridContainer } from "./data-grid";
+import SortableGrid from "./sortable-grid";
 
 const columns = [
   {
@@ -26,7 +26,7 @@ const columns = [
     title: "Name",
     isSortable: false,
   },
-]
+];
 
 /**
  * Display a table of external resources.
@@ -40,14 +40,14 @@ const ExternalResources = ({ resources = [] }) => {
           <SortableGrid data={resources} columns={columns} />
         </DataGridContainer>
       </>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 ExternalResources.propTypes = {
   // List of external resources to display
   resources: PropTypes.arrayOf(PropTypes.object),
-}
+};
 
-export default ExternalResources
+export default ExternalResources;

@@ -1,6 +1,6 @@
 // components
-import { DataPanel } from "../components/data-area"
-import PagePreamble from "../components/page-preamble"
+import { DataPanel } from "../components/data-area";
+import PagePreamble from "../components/page-preamble";
 
 const AuthError = () => {
   return (
@@ -13,7 +13,7 @@ const AuthError = () => {
         </div>
       </DataPanel>
     </>
-  )
-}
+  );
+};
 
-export default AuthError
+export default AuthError;

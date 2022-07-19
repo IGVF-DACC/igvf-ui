@@ -1,22 +1,22 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Attribution from "../../components/attribution"
-import Breadcrumbs from "../../components/breadcrumbs"
-import { DonorDataItems } from "../../components/common-data-items"
+import Attribution from "../../components/attribution";
+import Breadcrumbs from "../../components/breadcrumbs";
+import { DonorDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import ExternalResources from "../../components/external-resources"
-import PagePreamble from "../../components/page-preamble"
-import Status from "../../components/status"
-import { EditableItem } from "../../components/edit"
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+} from "../../components/data-area";
+import ExternalResources from "../../components/external-resources";
+import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
+import { EditableItem } from "../../components/edit";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const RodentDonor = ({ donor, award, lab, parents }) => {
   return (
@@ -52,8 +52,8 @@ const RodentDonor = ({ donor, award, lab, parents }) => {
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
-  )
-}
+  );
+};
 
 RodentDonor.propTypes = {
   // Technical sample to display
@@ -70,18 +70,18 @@ RodentDonor.propTypes = {
   }).isRequired,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
-export default RodentDonor
+export default RodentDonor;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const donor = await request.getObject(`/rodent-donors/${params.uuid}/`)
+  const request = new Request(req?.headers?.cookie);
+  const donor = await request.getObject(`/rodent-donors/${params.uuid}/`);
   if (donor && donor.status !== "error") {
-    const award = await request.getObject(donor.award)
-    const lab = await request.getObject(donor.lab)
-    const parents = await request.getMultipleObjects(donor.parents)
-    const breadcrumbs = await buildBreadcrumbs(donor, "accession")
+    const award = await request.getObject(donor.award);
+    const lab = await request.getObject(donor.lab);
+    const parents = await request.getMultipleObjects(donor.parents);
+    const breadcrumbs = await buildBreadcrumbs(donor, "accession");
     return {
       props: {
         donor,
@@ -93,7 +93,7 @@ export const getServerSideProps = async ({ params, req }) => {
         sessionCookie: req?.headers?.cookie,
         uuid: params.uuid,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

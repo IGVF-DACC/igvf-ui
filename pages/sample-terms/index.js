@@ -1,18 +1,18 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
+import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionCount,
   CollectionItem,
   CollectionItemName,
-} from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
-import PagePreamble from "../../components/page-preamble"
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+} from "../../components/collection";
+import NoCollectionData from "../../components/no-collection-data";
+import PagePreamble from "../../components/page-preamble";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const SampleOntologyTermList = ({ sampleOntologyTerms }) => {
   return (
@@ -42,20 +42,20 @@ const SampleOntologyTermList = ({ sampleOntologyTerms }) => {
         )}
       </Collection>
     </>
-  )
-}
+  );
+};
 
 SampleOntologyTermList.propTypes = {
   // Sample ontology terms to display in the list
   sampleOntologyTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
-export default SampleOntologyTermList
+export default SampleOntologyTermList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const sampleOntologyTerms = await request.getCollection("sample-terms")
-  const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerms, "title")
+  const request = new Request(req?.headers?.cookie);
+  const sampleOntologyTerms = await request.getCollection("sample-terms");
+  const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerms, "title");
   return {
     props: {
       sampleOntologyTerms: sampleOntologyTerms["@graph"],
@@ -63,5 +63,5 @@ export const getServerSideProps = async ({ req }) => {
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,
     },
-  }
-}
+  };
+};
