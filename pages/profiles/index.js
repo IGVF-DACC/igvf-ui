@@ -1,15 +1,15 @@
 // node_modules
-import Link from "next/link"
-import PropTypes from "prop-types"
+import Link from "next/link";
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
-import PagePreamble from "../../components/page-preamble"
+import Breadcrumbs from "../../components/breadcrumbs";
+import PagePreamble from "../../components/page-preamble";
 // libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+import buildBreadcrumbs from "../../libs/breadcrumbs";
+import Request from "../../libs/request";
 
 const ChildElement = (props) => {
-  const schema = props.schemas[props.schemaKey]
+  const schema = props.schemas[props.schemaKey];
   if (schema && schema.title) {
     return (
       <div className={`px-${props.indentation}`}>
@@ -17,7 +17,7 @@ const ChildElement = (props) => {
           <a className="block">{props.title}</a>
         </Link>
       </div>
-    )
+    );
   } else if (Object.keys(props.child).length > 0) {
     return (
       <div className={`px-${props.indentation}`}>
@@ -36,13 +36,13 @@ const ChildElement = (props) => {
               indentation={props.indentation + 4}
               key={child_key}
             />
-          )
+          );
         })}
       </div>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 ChildElement.propTypes = {
   title: PropTypes.string.isRequired,
@@ -50,10 +50,10 @@ ChildElement.propTypes = {
   schemas: PropTypes.object.isRequired,
   child: PropTypes.object.isRequired,
   indentation: PropTypes.number.isRequired,
-}
+};
 
 const SchemaList = ({ schemas }) => {
-  const schemaHierarchy = schemas["_hierarchy"]
+  const schemaHierarchy = schemas["_hierarchy"];
 
   return (
     <>
@@ -62,7 +62,7 @@ const SchemaList = ({ schemas }) => {
       <>
         {Object.keys(schemaHierarchy.Item).map((hierarchy_key) => {
           if (hierarchy_key === "AccessKey") {
-            return null
+            return null;
           } else {
             return (
               <ChildElement
@@ -73,25 +73,25 @@ const SchemaList = ({ schemas }) => {
                 indentation={0}
                 key={hierarchy_key}
               />
-            )
+            );
           }
         })}
       </>
     </>
-  )
-}
+  );
+};
 
 SchemaList.propTypes = {
   // schemas to display in the list
   schemas: PropTypes.object.isRequired,
-}
+};
 
-export default SchemaList
+export default SchemaList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const schemas = await request.getCollection("profiles")
-  const breadcrumbs = await buildBreadcrumbs(schemas)
+  const request = new Request(req?.headers?.cookie);
+  const schemas = await request.getCollection("profiles");
+  const breadcrumbs = await buildBreadcrumbs(schemas);
   return {
     props: {
       schemas,
@@ -99,5 +99,5 @@ export const getServerSideProps = async ({ req }) => {
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,
     },
-  }
-}
+  };
+};

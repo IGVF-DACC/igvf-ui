@@ -3,7 +3,7 @@
  * component and specifying the icon name as a property of Icon.
  */
 
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 
 const Icon = {
   Award: ({ className = null }) => (
@@ -90,28 +90,28 @@ const Icon = {
       />
     </svg>
   ),
-}
+};
 
 /**
  * List all icon PropTypes here.
  */
 Icon.Award.propTypes = {
   className: PropTypes.string,
-}
+};
 Icon.Donor.propTypes = {
   className: PropTypes.string,
-}
+};
 Icon.Sample.propTypes = {
   className: PropTypes.string,
-}
+};
 Icon.TableColumnsHidden.propTypes = {
   className: PropTypes.string,
-}
+};
 Icon.TableColumnsVisible.propTypes = {
   className: PropTypes.string,
-}
+};
 Icon.Treatment.propTypes = {
   className: PropTypes.string,
-}
+};
 
-export default Icon
+export default Icon;

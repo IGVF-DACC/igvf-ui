@@ -1,5 +1,5 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 
 /**
  * Display a standard checkbox. Wrap this component around the label of the checkbox.
@@ -16,8 +16,8 @@ const Checkbox = ({ checked, name, onChange, className = "", children }) => {
       />
       {children}
     </label>
-  )
-}
+  );
+};
 
 Checkbox.propTypes = {
   // True if the checkbox is checked
@@ -28,6 +28,6 @@ Checkbox.propTypes = {
   onChange: PropTypes.func.isRequired,
   // Additional Tailwind CSS class names to apply to the checkbox
   className: PropTypes.string,
-}
+};
 
-export default Checkbox
+export default Checkbox;

@@ -6,9 +6,9 @@
  * Most of the code in this file handles the server authentication step.
  */
 // node_modules
-import Router from "next/router"
+import Router from "next/router";
 // libs
-import { API_URL } from "../libs/constants"
+import { API_URL } from "../libs/constants";
 
 /**
  * Called by Auth0 when the user is redirected back from the home page after signing into Auth0.
@@ -17,8 +17,8 @@ import { API_URL } from "../libs/constants"
  * @param {object} appState Auth0 app state saved when signing out
  */
 export const onRedirectCallback = (appState) => {
-  Router.replace(appState?.returnTo || "/")
-}
+  Router.replace(appState?.returnTo || "/");
+};
 
 /**
  * Request the session object from the server, which contains the browser CSRF token.
@@ -31,9 +31,9 @@ export const getSession = async () => {
     headers: {
       Accept: "application/json",
     },
-  })
-  return session.json()
-}
+  });
+  return session.json();
+};
 
 /**
  * POST to the server to log the user in.
@@ -51,13 +51,13 @@ const reqLogin = async (accessToken, csrfToken) => {
         "X-CSRF-Token": csrfToken,
       },
       body: JSON.stringify({ accessToken }),
-    })
-    return await response.json()
+    });
+    return await response.json();
   } catch {
     // Likely the Auth0-authenticated user has no user record in the igbfd database.
-    return null
+    return null;
   }
-}
+};
 
 /**
  * Handle the process of logging the user into the server. It first retrieves the CSRF token from
@@ -66,9 +66,9 @@ const reqLogin = async (accessToken, csrfToken) => {
  * @returns {object} Session object including the CSRF token
  */
 export const loginToServer = async (session, getAccessTokenSilently) => {
-  const accessToken = await getAccessTokenSilently()
-  return await reqLogin(accessToken, session._csrft_)
-}
+  const accessToken = await getAccessTokenSilently();
+  return await reqLogin(accessToken, session._csrft_);
+};
 
 /**
  * Handle logging out of the server after logging out of Auth0.
@@ -79,6 +79,6 @@ export const logoutFromServer = async () => {
     method: "GET",
     credentials: "include",
     headers: { Accept: "application/json" },
-  })
-  return response.json()
-}
+  });
+  return response.json();
+};

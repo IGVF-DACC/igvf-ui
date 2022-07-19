@@ -1,19 +1,19 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
+import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
-} from "../../components/collection"
-import { NoCollectionData } from "../../components/no-content"
-import PagePreamble from "../../components/page-preamble"
+} from "../../components/collection";
+import { NoCollectionData } from "../../components/no-content";
+import PagePreamble from "../../components/page-preamble";
 // libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+import buildBreadcrumbs from "../../libs/breadcrumbs";
+import Request from "../../libs/request";
 
 const PrimaryCellList = ({ primaryCells }) => {
   return (
@@ -49,20 +49,20 @@ const PrimaryCellList = ({ primaryCells }) => {
         )}
       </Collection>
     </>
-  )
-}
+  );
+};
 
 PrimaryCellList.propTypes = {
   // Primary cells list to display
   primaryCells: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
-export default PrimaryCellList
+export default PrimaryCellList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const primaryCells = await request.getCollection("primary-cells")
-  const breadcrumbs = await buildBreadcrumbs(primaryCells, "title")
+  const request = new Request(req?.headers?.cookie);
+  const primaryCells = await request.getCollection("primary-cells");
+  const breadcrumbs = await buildBreadcrumbs(primaryCells, "title");
   return {
     props: {
       primaryCells: primaryCells["@graph"],
@@ -70,5 +70,5 @@ export const getServerSideProps = async ({ req }) => {
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,
     },
-  }
-}
+  };
+};

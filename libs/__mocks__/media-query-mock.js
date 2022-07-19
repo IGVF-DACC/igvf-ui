@@ -5,15 +5,15 @@
  * Adapted from:
  * https://github.com/dyakovk/jest-matchmedia-mock
  */
-import { jest } from "@jest/globals"
+import { jest } from "@jest/globals";
 
 export default class MatchMediaMock {
-  #mediaQueries = {}
-  #mediaQueryList
-  #currentMediaQuery
+  #mediaQueries = {};
+  #mediaQueryList;
+  #currentMediaQuery;
 
   constructor(initialQuery = "(prefers-color-scheme: light)") {
-    this.#currentMediaQuery = initialQuery
+    this.#currentMediaQuery = initialQuery;
 
     // Add the window.matchMedia() mock.
     Object.defineProperty(window, "matchMedia", {
@@ -26,18 +26,18 @@ export default class MatchMediaMock {
           onchange: null,
           addEventListener: (type, listener) => {
             if (type === "change") {
-              this.#addListener(query, listener)
+              this.#addListener(query, listener);
             }
           },
           removeEventListener: (type, listener) => {
             if (type === "change") {
-              this.#removeListener(query, listener)
+              this.#removeListener(query, listener);
             }
           },
           dispatchEvent: jest.fn(),
-        }
+        };
       }),
-    })
+    });
   }
 
   /**
@@ -45,14 +45,14 @@ export default class MatchMediaMock {
    */
   #addListener(mediaQuery, listener) {
     if (!this.#mediaQueries[mediaQuery]) {
-      this.#mediaQueries[mediaQuery] = []
+      this.#mediaQueries[mediaQuery] = [];
     }
 
-    const query = this.#mediaQueries[mediaQuery]
-    const listenerIndex = query.indexOf(listener)
+    const query = this.#mediaQueries[mediaQuery];
+    const listenerIndex = query.indexOf(listener);
 
     if (listenerIndex === -1) {
-      query.push(listener)
+      query.push(listener);
     }
   }
 
@@ -61,10 +61,10 @@ export default class MatchMediaMock {
    */
   #removeListener(mediaQuery, listener) {
     if (this.#mediaQueries[mediaQuery]) {
-      const query = this.#mediaQueries[mediaQuery]
-      const listenerIndex = query.indexOf(listener)
+      const query = this.#mediaQueries[mediaQuery];
+      const listenerIndex = query.indexOf(listener);
       if (listenerIndex !== -1) {
-        query.splice(listenerIndex, 1)
+        query.splice(listenerIndex, 1);
       }
     }
   }
@@ -75,20 +75,20 @@ export default class MatchMediaMock {
    */
   useMediaQuery(mediaQuery, isMatch) {
     if (typeof mediaQuery !== "string") {
-      throw new Error("Media Query must be a string")
+      throw new Error("Media Query must be a string");
     }
 
-    this.#currentMediaQuery = mediaQuery
+    this.#currentMediaQuery = mediaQuery;
 
     if (this.#mediaQueries[mediaQuery]) {
       const mqListEvent = {
         matches: isMatch,
         media: mediaQuery,
-      }
+      };
 
       this.#mediaQueries[mediaQuery].forEach((listener) => {
-        listener.call(this.#mediaQueryList, mqListEvent)
-      })
+        listener.call(this.#mediaQueryList, mqListEvent);
+      });
     }
   }
 
@@ -96,7 +96,7 @@ export default class MatchMediaMock {
    * Returns an array listing the media queries for which the matchMedia has registered listeners.
    */
   getMediaQueries() {
-    return Object.keys(this.#mediaQueries)
+    return Object.keys(this.#mediaQueries);
   }
 
   /**
@@ -104,16 +104,16 @@ export default class MatchMediaMock {
    */
   getListeners(mediaQuery) {
     if (this.#mediaQueries[mediaQuery]) {
-      return this.#mediaQueries[mediaQuery].slice()
+      return this.#mediaQueries[mediaQuery].slice();
     }
-    return []
+    return [];
   }
 
   /**
    * Clears all registered media queries and their listeners.
    */
   clear() {
-    this.#mediaQueries = {}
+    this.#mediaQueries = {};
   }
 
   /**
@@ -121,7 +121,7 @@ export default class MatchMediaMock {
    * `window.matchMedia`.
    */
   destroy() {
-    this.clear()
-    delete window.matchMedia
+    this.clear();
+    delete window.matchMedia;
   }
 }

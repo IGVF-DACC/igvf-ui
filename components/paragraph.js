@@ -4,7 +4,7 @@
  * component in this file.
  */
 const Paragraph = ({ children }) => {
-  return <p className="my-3 first:mt-0 last:mb-0">{children}</p>
-}
+  return <p className="my-3 first:mt-0 last:mb-0">{children}</p>;
+};
 
-export default Paragraph
+export default Paragraph;

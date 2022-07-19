@@ -1,18 +1,18 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
+import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionCount,
   CollectionItem,
   CollectionItemName,
-} from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
-import PagePreamble from "../../components/page-preamble"
+} from "../../components/collection";
+import NoCollectionData from "../../components/no-collection-data";
+import PagePreamble from "../../components/page-preamble";
 // libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+import buildBreadcrumbs from "../../libs/breadcrumbs";
+import Request from "../../libs/request";
 
 const AssayOntologyTermList = ({ assayOntologyTerms }) => {
   return (
@@ -42,20 +42,20 @@ const AssayOntologyTermList = ({ assayOntologyTerms }) => {
         )}
       </Collection>
     </>
-  )
-}
+  );
+};
 
 AssayOntologyTermList.propTypes = {
   // Assay terms to display in the list
   assayOntologyTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
-export default AssayOntologyTermList
+export default AssayOntologyTermList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const assayOntologyTerms = await request.getCollection("assay-terms")
-  const breadcrumbs = await buildBreadcrumbs(assayOntologyTerms, "title")
+  const request = new Request(req?.headers?.cookie);
+  const assayOntologyTerms = await request.getCollection("assay-terms");
+  const breadcrumbs = await buildBreadcrumbs(assayOntologyTerms, "title");
   return {
     props: {
       assayOntologyTerms: assayOntologyTerms["@graph"],
@@ -63,5 +63,5 @@ export const getServerSideProps = async ({ req }) => {
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,
     },
-  }
-}
+  };
+};

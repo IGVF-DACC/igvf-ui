@@ -6,16 +6,16 @@
  */
 
 // node_modules
-import Link from "next/link"
-import PropTypes from "prop-types"
+import Link from "next/link";
+import PropTypes from "prop-types";
 // components
-import AliasList from "./alias-list"
-import { DataItemLabel, DataItemValue } from "./data-area"
-import { OntologyTermId } from "./ontology"
-import SeparatedList from "./separated-list"
-import SourceProp from "./source-prop"
+import AliasList from "./alias-list";
+import { DataItemLabel, DataItemValue } from "./data-area";
+import { OntologyTermId } from "./ontology";
+import SeparatedList from "./separated-list";
+import SourceProp from "./source-prop";
 // libs
-import { formatDate } from "../libs/dates"
+import { formatDate } from "../libs/dates";
 
 /**
  * Display the data items common to all donor-derived objects.
@@ -61,15 +61,15 @@ export const DonorDataItems = ({ donor, parents, children }) => {
         </>
       )}
     </>
-  )
-}
+  );
+};
 
 DonorDataItems.propTypes = {
   // Object derived from donor.json schema
   donor: PropTypes.object.isRequired,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
 /**
  * Display data items common to all sample-derived objects.
@@ -135,15 +135,15 @@ export const SampleDataItems = ({ sample, source = null, children }) => {
         </>
       )}
     </>
-  )
-}
+  );
+};
 
 SampleDataItems.propTypes = {
   // Object derived from the sample.json schema
   sample: PropTypes.object.isRequired,
   // Source lab or source for this sample
   source: PropTypes.object,
-}
+};
 
 /**
  * Display data items common to all biosample-derived objects.
@@ -246,8 +246,8 @@ export const BiosampleDataItems = ({
       )}
       {children}
     </SampleDataItems>
-  )
-}
+  );
+};
 
 BiosampleDataItems.propTypes = {
   // Object derived from the biosample.json schema
@@ -265,7 +265,7 @@ BiosampleDataItems.propTypes = {
     // Title of date_obtained property
     dateObtainedTitle: PropTypes.string,
   }),
-}
+};
 
 /**
  * Display data items common to all ontology-term-derived objects.
@@ -287,10 +287,10 @@ export const OntologyTermDataItems = ({ ontologyTerm, children }) => {
       )}
       {children}
     </>
-  )
-}
+  );
+};
 
 OntologyTermDataItems.propTypes = {
   // Ontology term object
   ontologyTerm: PropTypes.object.isRequired,
-}
+};

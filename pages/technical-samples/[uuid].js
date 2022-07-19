@@ -1,22 +1,22 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Attribution from "../../components/attribution"
-import Breadcrumbs from "../../components/breadcrumbs"
-import { SampleDataItems } from "../../components/common-data-items"
+import Attribution from "../../components/attribution";
+import Breadcrumbs from "../../components/breadcrumbs";
+import { SampleDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import PagePreamble from "../../components/page-preamble"
-import Status from "../../components/status"
-import { EditableItem } from "../../components/edit"
+} from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
+import { EditableItem } from "../../components/edit";
 // libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import { formatDate } from "../../libs/dates"
-import Request from "../../libs/request"
+import buildBreadcrumbs from "../../libs/breadcrumbs";
+import { formatDate } from "../../libs/dates";
+import Request from "../../libs/request";
 
 const TechnicalSample = ({ sample, award, lab, source }) => {
   return (
@@ -53,8 +53,8 @@ const TechnicalSample = ({ sample, award, lab, source }) => {
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
-  )
-}
+  );
+};
 
 TechnicalSample.propTypes = {
   // Technical sample to display
@@ -65,18 +65,18 @@ TechnicalSample.propTypes = {
   lab: PropTypes.object.isRequired,
   // Source lab or source for this technical sample
   source: PropTypes.object.isRequired,
-}
+};
 
-export default TechnicalSample
+export default TechnicalSample;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const sample = await request.getObject(`/technical-samples/${params.uuid}/`)
+  const request = new Request(req?.headers?.cookie);
+  const sample = await request.getObject(`/technical-samples/${params.uuid}/`);
   if (sample && sample.status !== "error") {
-    const award = await request.getObject(sample.award)
-    const lab = await request.getObject(sample.lab)
-    const source = await request.getObject(sample.source)
-    const breadcrumbs = await buildBreadcrumbs(sample, "accession")
+    const award = await request.getObject(sample.award);
+    const lab = await request.getObject(sample.lab);
+    const source = await request.getObject(sample.source);
+    const breadcrumbs = await buildBreadcrumbs(sample, "accession");
     return {
       props: {
         sample,
@@ -88,7 +88,7 @@ export const getServerSideProps = async ({ params, req }) => {
         sessionCookie: req?.headers?.cookie,
         uuid: params.uuid,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

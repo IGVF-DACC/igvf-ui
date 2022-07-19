@@ -1,27 +1,27 @@
 // node_modules
-import dayjs from "dayjs"
-import PropTypes from "prop-types"
+import dayjs from "dayjs";
+import PropTypes from "prop-types";
 // components
-import Attribution from "../../components/attribution"
-import Breadcrumbs from "../../components/breadcrumbs"
-import { DonorDataItems } from "../../components/common-data-items"
+import Attribution from "../../components/attribution";
+import Breadcrumbs from "../../components/breadcrumbs";
+import { DonorDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import { DataGridContainer } from "../../components/data-grid"
-import ExternalResources from "../../components/external-resources"
-import PagePreamble from "../../components/page-preamble"
-import SortableGrid from "../../components/sortable-grid"
-import Status from "../../components/status"
-import { EditableItem } from "../../components/edit"
+} from "../../components/data-area";
+import { DataGridContainer } from "../../components/data-grid";
+import ExternalResources from "../../components/external-resources";
+import PagePreamble from "../../components/page-preamble";
+import SortableGrid from "../../components/sortable-grid";
+import Status from "../../components/status";
+import { EditableItem } from "../../components/edit";
 // libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import { formatDateRange } from "../../libs/dates"
-import Request from "../../libs/request"
+import buildBreadcrumbs from "../../libs/breadcrumbs";
+import { formatDateRange } from "../../libs/dates";
+import Request from "../../libs/request";
 
 /**
  * Defines the columns for the health-status table.
@@ -40,7 +40,7 @@ const healthStatusHistoryColumns = [
     title: "Description",
     isSortable: false,
   },
-]
+];
 
 const HumanDonor = ({ donor, award, lab, parents }) => {
   return (
@@ -79,8 +79,8 @@ const HumanDonor = ({ donor, award, lab, parents }) => {
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
-  )
-}
+  );
+};
 
 HumanDonor.propTypes = {
   // Technical sample to display
@@ -91,18 +91,18 @@ HumanDonor.propTypes = {
   lab: PropTypes.object.isRequired,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
-export default HumanDonor
+export default HumanDonor;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const donor = await request.getObject(`/human-donors/${params.uuid}/`)
+  const request = new Request(req?.headers?.cookie);
+  const donor = await request.getObject(`/human-donors/${params.uuid}/`);
   if (donor && donor.status !== "error") {
-    const award = await request.getObject(donor.award)
-    const lab = await request.getObject(donor.lab)
-    const parents = await request.getMultipleObjects(donor.parents)
-    const breadcrumbs = await buildBreadcrumbs(donor, "accession")
+    const award = await request.getObject(donor.award);
+    const lab = await request.getObject(donor.lab);
+    const parents = await request.getMultipleObjects(donor.parents);
+    const breadcrumbs = await buildBreadcrumbs(donor, "accession");
     return {
       props: {
         donor,
@@ -114,7 +114,7 @@ export const getServerSideProps = async ({ params, req }) => {
         sessionCookie: req?.headers?.cookie,
         uuid: params.uuid,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

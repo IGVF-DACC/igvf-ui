@@ -4,13 +4,13 @@
  * dark-mode setting.
  */
 export default class DarkModeManager {
-  #isHandlerInstalled = false
-  #handleDarkModeChange
+  #isHandlerInstalled = false;
+  #handleDarkModeChange;
 
   constructor() {
     // handleDarkModeChangeUnbound gets called by the browser event listener, so we must bind it to
     // `this` to provide the class context when called.
-    this.#handleDarkModeChange = this.#handleDarkModeChangeUnbound.bind(this)
+    this.#handleDarkModeChange = this.#handleDarkModeChangeUnbound.bind(this);
   }
 
   /**
@@ -21,9 +21,9 @@ export default class DarkModeManager {
    */
   #handleDarkModeChangeUnbound(event) {
     if (event.matches) {
-      this.setDarkMode()
+      this.setDarkMode();
     } else {
-      this.setLightMode()
+      this.setLightMode();
     }
   }
 
@@ -31,14 +31,14 @@ export default class DarkModeManager {
    * Sets light mode by removing the Tailwind CSS ".dark" class from the <html> element.
    */
   setLightMode() {
-    document.documentElement.classList.remove("dark")
+    document.documentElement.classList.remove("dark");
   }
 
   /**
    * Sets dark mode by adding the Tailwind CSS ".dark" class to the <html> element.
    */
   setDarkMode() {
-    document.documentElement.classList.add("dark")
+    document.documentElement.classList.add("dark");
   }
 
   /**
@@ -46,9 +46,9 @@ export default class DarkModeManager {
    */
   setCurrentDarkMode() {
     if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-      this.setDarkMode()
+      this.setDarkMode();
     } else {
-      this.setLightMode()
+      this.setLightMode();
     }
   }
 
@@ -60,8 +60,8 @@ export default class DarkModeManager {
     if (!this.#isHandlerInstalled) {
       window
         .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", this.#handleDarkModeChange)
-      this.#isHandlerInstalled = true
+        .addEventListener("change", this.#handleDarkModeChange);
+      this.#isHandlerInstalled = true;
     }
   }
 
@@ -73,8 +73,8 @@ export default class DarkModeManager {
     if (this.#isHandlerInstalled) {
       window
         .matchMedia("(prefers-color-scheme: dark)")
-        .removeEventListener("change", this.#handleDarkModeChange)
-      this.#isHandlerInstalled = false
+        .removeEventListener("change", this.#handleDarkModeChange);
+      this.#isHandlerInstalled = false;
     }
   }
 }

@@ -1,5 +1,5 @@
 // node_modules
-import Link from "next/link"
+import Link from "next/link";
 
 export const Logo = () => {
   return (
@@ -50,8 +50,8 @@ export const Logo = () => {
         d="M125.2,111.6l-13,13v32.1c9.8-2.1,18.7-6.6,26-13v-19.1L125.2,111.6z"
       />
     </svg>
-  )
-}
+  );
+};
 
 const SiteLogo = () => {
   return (
@@ -61,7 +61,7 @@ const SiteLogo = () => {
         <span className="sr-only">Home</span>
       </a>
     </Link>
-  )
-}
+  );
+};
 
-export default SiteLogo
+export default SiteLogo;

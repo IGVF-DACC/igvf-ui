@@ -5,6 +5,6 @@
  */
 export const getCollectionPathFromItemPath = (itemPath) => {
   // Result of split is ["", "collection type", "item identifier", ""]
-  const itemPathElements = itemPath.split("/")
-  return `/${itemPathElements[1]}/`
-}
+  const itemPathElements = itemPath.split("/");
+  return `/${itemPathElements[1]}/`;
+};

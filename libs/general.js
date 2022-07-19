@@ -6,9 +6,9 @@
  * @returns Type of the object this path comes from; or the empty string if no type could be found.
  */
 export const pathToType = (path) => {
-  const matched = path.match(/^\/(.+)\/.+\/$/)
+  const matched = path.match(/^\/(.+)\/.+\/$/);
   if (matched && matched.length === 2) {
-    return matched[1]
+    return matched[1];
   }
-  return ""
-}
+  return "";
+};

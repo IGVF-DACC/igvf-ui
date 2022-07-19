@@ -1,19 +1,19 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
+import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
-} from "../../components/collection"
-import { NoCollectionData } from "../../components/no-content"
-import PagePreamble from "../../components/page-preamble"
+} from "../../components/collection";
+import { NoCollectionData } from "../../components/no-content";
+import PagePreamble from "../../components/page-preamble";
 // libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+import buildBreadcrumbs from "../../libs/breadcrumbs";
+import Request from "../../libs/request";
 
 const AwardList = ({ awards }) => {
   return (
@@ -44,20 +44,20 @@ const AwardList = ({ awards }) => {
         )}
       </Collection>
     </>
-  )
-}
+  );
+};
 
 AwardList.propTypes = {
   // Awards to display in the list
   awards: PropTypes.array.isRequired,
-}
+};
 
-export default AwardList
+export default AwardList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const awards = await request.getCollection("awards")
-  const breadcrumbs = await buildBreadcrumbs(awards, "title")
+  const request = new Request(req?.headers?.cookie);
+  const awards = await request.getCollection("awards");
+  const breadcrumbs = await buildBreadcrumbs(awards, "title");
   return {
     props: {
       awards: awards["@graph"],
@@ -65,5 +65,5 @@ export const getServerSideProps = async ({ req }) => {
       breadcrumbs,
       sessionCookie: req?.headers?.cookie || "",
     },
-  }
-}
+  };
+};

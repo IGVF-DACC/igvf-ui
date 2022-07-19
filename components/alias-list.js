@@ -1,5 +1,5 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 
 /**
  * Display the given aliases as a list, suitable for a value in a <DataArea>.
@@ -13,12 +13,12 @@ const AliasList = ({ aliases }) => {
         </div>
       ))}
     </>
-  )
-}
+  );
+};
 
 AliasList.propTypes = {
   // Aliases to display
   aliases: PropTypes.arrayOf(PropTypes.string).isRequired,
-}
+};
 
-export default AliasList
+export default AliasList;

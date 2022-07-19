@@ -1,21 +1,21 @@
 // node_modules
-import Link from "next/link"
-import PropTypes from "prop-types"
+import Link from "next/link";
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
+import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import PagePreamble from "../../components/page-preamble"
-import SeparatedList from "../../components/separated-list"
-import Status from "../../components/status"
-import { EditableItem } from "../../components/edit"
+} from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
+import Status from "../../components/status";
+import { EditableItem } from "../../components/edit";
 // libs
-import Request from "../../libs/request"
-import buildBreadcrumbs from "../../libs/breadcrumbs"
+import Request from "../../libs/request";
+import buildBreadcrumbs from "../../libs/breadcrumbs";
 
 const Lab = ({ lab, awards, pi }) => {
   return (
@@ -49,8 +49,8 @@ const Lab = ({ lab, awards, pi }) => {
         </DataPanel>
       </EditableItem>
     </>
-  )
-}
+  );
+};
 
 Lab.propTypes = {
   // Data for lab displayed on the page
@@ -62,17 +62,17 @@ Lab.propTypes = {
     // PI full name
     title: PropTypes.string.isRequired,
   }),
-}
+};
 
-export default Lab
+export default Lab;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const lab = await request.getObject(`/labs/${params.name}/`)
+  const request = new Request(req?.headers?.cookie);
+  const lab = await request.getObject(`/labs/${params.name}/`);
   if (lab && lab.status !== "error") {
-    const awards = await request.getMultipleObjects(lab.awards)
-    const pi = await request.getObject(lab.pi)
-    const breadcrumbs = await buildBreadcrumbs(lab, "title")
+    const awards = await request.getMultipleObjects(lab.awards);
+    const pi = await request.getObject(lab.pi);
+    const breadcrumbs = await buildBreadcrumbs(lab, "title");
     return {
       props: {
         lab,
@@ -82,7 +82,7 @@ export const getServerSideProps = async ({ params, req }) => {
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

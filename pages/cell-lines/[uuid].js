@@ -1,23 +1,23 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Attribution from "../../components/attribution"
-import Breadcrumbs from "../../components/breadcrumbs"
-import { BiosampleDataItems } from "../../components/common-data-items"
+import Attribution from "../../components/attribution";
+import Breadcrumbs from "../../components/breadcrumbs";
+import { BiosampleDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import PagePreamble from "../../components/page-preamble"
-import Status from "../../components/status"
-import TreatmentTable from "../../components/treatment-table"
-import { EditableItem } from "../../components/edit"
+} from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
+import TreatmentTable from "../../components/treatment-table";
+import { EditableItem } from "../../components/edit";
 // libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+import buildBreadcrumbs from "../../libs/breadcrumbs";
+import Request from "../../libs/request";
 
 const CellLine = ({
   cellLine,
@@ -68,8 +68,8 @@ const CellLine = ({
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
-  )
-}
+  );
+};
 
 CellLine.propTypes = {
   // Cell-line sample to display
@@ -88,26 +88,26 @@ CellLine.propTypes = {
   biosampleTerm: PropTypes.object,
   // Disease term for this cell line
   diseaseTerm: PropTypes.object,
-}
+};
 
-export default CellLine
+export default CellLine;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const cellLine = await request.getObject(`/cell-lines/${params.uuid}/`)
+  const request = new Request(req?.headers?.cookie);
+  const cellLine = await request.getObject(`/cell-lines/${params.uuid}/`);
   if (cellLine && cellLine.status !== "error") {
-    const award = await request.getObject(cellLine.award)
-    const donors = await request.getMultipleObjects(cellLine.donors)
-    const lab = await request.getObject(cellLine.lab)
-    const source = await request.getObject(cellLine.source)
-    const treatments = await request.getMultipleObjects(cellLine.treatments)
+    const award = await request.getObject(cellLine.award);
+    const donors = await request.getMultipleObjects(cellLine.donors);
+    const lab = await request.getObject(cellLine.lab);
+    const source = await request.getObject(cellLine.source);
+    const treatments = await request.getMultipleObjects(cellLine.treatments);
     const biosampleTerm = cellLine.biosample_term
       ? await request.getObject(cellLine.biosample_term)
-      : null
+      : null;
     const diseaseTerm = cellLine.disease_term
       ? await request.getObject(cellLine.disease_term)
-      : null
-    const breadcrumbs = await buildBreadcrumbs(cellLine, "accession")
+      : null;
+    const breadcrumbs = await buildBreadcrumbs(cellLine, "accession");
     return {
       props: {
         cellLine,
@@ -123,7 +123,7 @@ export const getServerSideProps = async ({ params, req }) => {
         sessionCookie: req?.headers?.cookie,
         uuid: params.uuid,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

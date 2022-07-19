@@ -9,17 +9,17 @@
  */
 
 // node_modules
-import { useAuth0 } from "@auth0/auth0-react"
-import { createContext, useEffect, useRef, useState } from "react"
+import { useAuth0 } from "@auth0/auth0-react";
+import { createContext, useEffect, useRef, useState } from "react";
 // components
-import { useAuthenticated } from "./authentication"
+import { useAuthenticated } from "./authentication";
 // libs
 import {
   getSession,
   loginToServer,
   logoutFromServer,
-} from "../libs/authentication"
-import { BACKEND_URL } from "../libs/constants"
+} from "../libs/authentication";
+import { BACKEND_URL } from "../libs/constants";
 
 /**
  * Establishes the context to hold the back-end session record for the currently signed-in user.
@@ -27,9 +27,9 @@ import { BACKEND_URL } from "../libs/constants"
  */
 const SessionContext = createContext({
   session: {},
-})
+});
 
-export default SessionContext
+export default SessionContext;
 
 /**
  * This only gets used in the <App> component to encapsulate the session context. Place this within
@@ -37,15 +37,15 @@ export default SessionContext
  */
 export const Session = ({ children }) => {
   // Tracks the back-end session object
-  const [session, setSession] = useState(null)
+  const [session, setSession] = useState(null);
   // Auth0 information
-  const { getAccessTokenSilently, logout } = useAuth0()
+  const { getAccessTokenSilently, logout } = useAuth0();
   // Stable authenticated state
-  const isAuthenticated = useAuthenticated()
+  const isAuthenticated = useAuthenticated();
   // Previous authenticated state so we can track transitions
-  const prevAuthenticated = useRef(isAuthenticated)
+  const prevAuthenticated = useRef(isAuthenticated);
   // Set to true once we start the process of signing out of the server
-  const isServerAuthPending = useRef(false)
+  const isServerAuthPending = useRef(false);
 
   // Detects and handles the authorization provider changing from signed out to signed in by
   // signing into the server.
@@ -57,40 +57,40 @@ export const Session = ({ children }) => {
     ) {
       // The authentication provider has just authenticated the user. Send a login request to the
       // server.
-      isServerAuthPending.current = true
-      prevAuthenticated.current = isAuthenticated
+      isServerAuthPending.current = true;
+      prevAuthenticated.current = isAuthenticated;
 
       // Signing into the server requires the signed-out version of the session object, so retrieve
       // that first, then use that to log into the server. We usually can't rely on the session
       // state because the authentication provider reloads the page, erasing the state.
       const serverSessionPromise = session
         ? Promise.resolve(session)
-        : getSession()
+        : getSession();
       serverSessionPromise
         .then((signedOutSession) => {
-          setSession(signedOutSession)
+          setSession(signedOutSession);
           // Initiate the request to sign the user into the server.
-          return loginToServer(signedOutSession, getAccessTokenSilently)
+          return loginToServer(signedOutSession, getAccessTokenSilently);
         })
         .then((sessionProperties) => {
           if (!sessionProperties) {
             // Auth0 authenticated successfully, but we couldn't authenticate with the server.
             // Log back out of Auth0 and go to an error page.
-            logout({ returnTo: `${BACKEND_URL}/auth-error` })
-            isServerAuthPending.current = false
+            logout({ returnTo: `${BACKEND_URL}/auth-error` });
+            isServerAuthPending.current = false;
           } else {
             // Auth0 and the server authenticated successfully. Set the signed-in session object in
             // the session context so that any downstream component can retrieve it without doing a
             // request to /session.
             getSession().then((sessionResponse) => {
-              setSession(sessionResponse)
-              isServerAuthPending.current = false
-            })
+              setSession(sessionResponse);
+              isServerAuthPending.current = false;
+            });
           }
-        })
+        });
     }
     // Once the user has logged into auth0, turn around and log into the server.
-  }, [getAccessTokenSilently, isAuthenticated, logout, session, setSession])
+  }, [getAccessTokenSilently, isAuthenticated, logout, session, setSession]);
 
   // Detects and handles the authorization provider changing from signed in to signed out by
   // signing out of the server.
@@ -98,9 +98,9 @@ export const Session = ({ children }) => {
     if (!isServerAuthPending.current) {
       const serverSessionPromise = session
         ? Promise.resolve(session)
-        : getSession()
+        : getSession();
       serverSessionPromise.then((serverSession) => {
-        setSession(serverSession)
+        setSession(serverSession);
         if (
           serverSession["auth.userid"] &&
           !isAuthenticated &&
@@ -108,24 +108,24 @@ export const Session = ({ children }) => {
         ) {
           // We have a signed-in session object but the authorization provider has signed the user out,
           // so we now need to sign out of the server.
-          isServerAuthPending.current = true
+          isServerAuthPending.current = true;
           logoutFromServer()
             .then(() => {
               // Now signed out of the server. Get the signed-out session object.
-              return getSession()
+              return getSession();
             })
             .then((sessionResponse) => {
-              setSession(sessionResponse)
-              isServerAuthPending.current = false
-            })
+              setSession(sessionResponse);
+              isServerAuthPending.current = false;
+            });
         }
-      })
+      });
     }
-  }, [isAuthenticated, session, setSession])
+  }, [isAuthenticated, session, setSession]);
 
   return (
     <SessionContext.Provider value={{ session }}>
       {children}
     </SessionContext.Provider>
-  )
-}
+  );
+};

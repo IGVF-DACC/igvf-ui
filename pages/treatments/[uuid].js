@@ -1,21 +1,21 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import AliasList from "../../components/alias-list"
-import Breadcrumbs from "../../components/breadcrumbs"
+import AliasList from "../../components/alias-list";
+import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import PagePreamble from "../../components/page-preamble"
-import Status from "../../components/status"
-import { EditableItem } from "../../components/edit"
+} from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
+import { EditableItem } from "../../components/edit";
 // libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import { UC } from "../../libs/constants"
-import Request from "../../libs/request"
+import buildBreadcrumbs from "../../libs/breadcrumbs";
+import { UC } from "../../libs/constants";
+import Request from "../../libs/request";
 
 const Treatment = ({ treatment }) => {
   return (
@@ -91,21 +91,21 @@ const Treatment = ({ treatment }) => {
         </DataPanel>
       </EditableItem>
     </>
-  )
-}
+  );
+};
 
 Treatment.propTypes = {
   // Technical treatment to display
   treatment: PropTypes.object.isRequired,
-}
+};
 
-export default Treatment
+export default Treatment;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const treatment = await request.getObject(`/treatments/${params.uuid}/`)
+  const request = new Request(req?.headers?.cookie);
+  const treatment = await request.getObject(`/treatments/${params.uuid}/`);
   if (treatment && treatment.status !== "error") {
-    const breadcrumbs = await buildBreadcrumbs(treatment, "treatment_term_id")
+    const breadcrumbs = await buildBreadcrumbs(treatment, "treatment_term_id");
     return {
       props: {
         treatment,
@@ -114,7 +114,7 @@ export const getServerSideProps = async ({ params, req }) => {
         sessionCookie: req?.headers?.cookie,
         uuid: params.uuid,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

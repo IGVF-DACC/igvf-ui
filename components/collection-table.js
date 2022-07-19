@@ -1,25 +1,25 @@
 // node_modules
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 import {
   CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ClipboardCopyIcon,
-} from "@heroicons/react/solid"
-import { useRouter } from "next/router"
-import PropTypes from "prop-types"
-import { useContext, useEffect, useMemo, useRef, useState } from "react"
+} from "@heroicons/react/solid";
+import { useRouter } from "next/router";
+import PropTypes from "prop-types";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 // components
-import Button from "./button"
-import Checkbox from "./checkbox"
-import CopyButton from "./copy-button"
-import { DataGridContainer } from "./data-grid"
-import GlobalContext from "./global-context"
-import Icon from "./icon"
-import Instruction from "./instruction"
-import Modal from "./modal"
-import Paragraph from "./paragraph"
-import SortableGrid from "./sortable-grid"
+import Button from "./button";
+import Checkbox from "./checkbox";
+import CopyButton from "./copy-button";
+import { DataGridContainer } from "./data-grid";
+import GlobalContext from "./global-context";
+import Icon from "./icon";
+import Instruction from "./instruction";
+import Modal from "./modal";
+import Paragraph from "./paragraph";
+import SortableGrid from "./sortable-grid";
 // libs
 import {
   clearHiddenColumnsFromUrl,
@@ -31,13 +31,13 @@ import {
   loadStoredHiddenColumns,
   saveStoredHiddenColumns,
   sortColumns,
-} from "../libs/collection-table"
+} from "../libs/collection-table";
 
 /**
  * Displays the buttons to hide or show all columns at once.
  */
 const ChangeAllControls = ({ onChangeAllHiddenColumns }) => {
-  const className = "flex-grow md:flex-grow-0"
+  const className = "flex-grow md:flex-grow-0";
   return (
     <div className="flex gap-1">
       <Button
@@ -53,19 +53,19 @@ const ChangeAllControls = ({ onChangeAllHiddenColumns }) => {
         Hide All Columns
       </Button>
     </div>
-  )
-}
+  );
+};
 
 ChangeAllControls.propTypes = {
   // Called when the user wants to hide or show all columns at once
   onChangeAllHiddenColumns: PropTypes.func.isRequired,
-}
+};
 
 /**
  * Display an icon showing whether any columns are hidden or not.
  */
 const HiddenColumnsIndicator = ({ isAnyColumnHidden }) => {
-  const className = "ml-1.5 h-5 w-5"
+  const className = "ml-1.5 h-5 w-5";
   return (
     <>
       {isAnyColumnHidden ? (
@@ -74,13 +74,13 @@ const HiddenColumnsIndicator = ({ isAnyColumnHidden }) => {
         <Icon.TableColumnsVisible className={className} />
       )}
     </>
-  )
-}
+  );
+};
 
 HiddenColumnsIndicator.propTypes = {
   // True if at least one column is hidden
   isAnyColumnHidden: PropTypes.bool.isRequired,
-}
+};
 
 /**
  * Display the actuator button to display the modal for the user to select which columns to
@@ -93,10 +93,10 @@ const ColumnSelector = ({
   onChangeAllHiddenColumns,
 }) => {
   // True if the column-selection modal is open.
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   // Display the columns sorted by title, except for the ID column.
-  const sortedColumns = sortColumns(columns)
+  const sortedColumns = sortColumns(columns);
 
   return (
     <>
@@ -127,7 +127,7 @@ const ColumnSelector = ({
             <div className="md:flex md:flex-wrap">
               {sortedColumns.map((column) => {
                 if (column.id !== "@id") {
-                  const isHidden = hiddenColumns.includes(column.id)
+                  const isHidden = hiddenColumns.includes(column.id);
                   return (
                     <Checkbox
                       key={column.id}
@@ -138,11 +138,11 @@ const ColumnSelector = ({
                     >
                       {column.title}
                     </Checkbox>
-                  )
+                  );
                 }
 
                 // Don't include @id property; @id is always visible.
-                return null
+                return null;
               })}
             </div>
           </fieldset>
@@ -155,8 +155,8 @@ const ColumnSelector = ({
         </Modal.Footer>
       </Modal>
     </>
-  )
-}
+  );
+};
 
 ColumnSelector.propTypes = {
   // All available columns
@@ -167,7 +167,7 @@ ColumnSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   // Called when the user wants to show or hide all columns at once
   onChangeAllHiddenColumns: PropTypes.func.isRequired,
-}
+};
 
 /**
  * Displays a button to copy the current collection URL along with a hashtag for the currently
@@ -175,15 +175,15 @@ ColumnSelector.propTypes = {
  */
 const ColumnUrlCopy = ({ hiddenColumns }) => {
   // True if the browser URL is available
-  const [isHrefAvailable, setIsHrefAvailable] = useState(false)
+  const [isHrefAvailable, setIsHrefAvailable] = useState(false);
 
   useEffect(() => {
-    setIsHrefAvailable(true)
-  }, [])
+    setIsHrefAvailable(true);
+  }, []);
 
   const hiddenColumnsUrl = isHrefAvailable
     ? generateHiddenColumnsUrl(window.location.href, hiddenColumns)
-    : ""
+    : "";
   return (
     <CopyButton
       target={hiddenColumnsUrl}
@@ -198,16 +198,16 @@ const ColumnUrlCopy = ({ hiddenColumns }) => {
               {isCopied ? <CheckIcon /> : <ClipboardCopyIcon />}
             </div>
           </>
-        )
+        );
       }}
     </CopyButton>
-  )
-}
+  );
+};
 
 ColumnUrlCopy.propTypes = {
   // Array of column IDs of the hidden columns
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
-}
+};
 
 /**
  * Shows and handles the controls to manage the URL columns controls that let the user copy a URL
@@ -218,31 +218,31 @@ const UrlColumnControls = ({
   hiddenColumns,
   onClearedUrlHiddenColumns,
 }) => {
-  const router = useRouter()
+  const router = useRouter();
 
   /**
    * Called to clear the URL columns hashtag and restore the ones from localStorage.
    */
   const clearHashtagHiddenColumns = () => {
-    onClearedUrlHiddenColumns()
+    onClearedUrlHiddenColumns();
     const urlWithoutHiddenColumns = clearHiddenColumnsFromUrl(
       window.location.href
-    )
-    router.push(urlWithoutHiddenColumns)
-  }
+    );
+    router.push(urlWithoutHiddenColumns);
+  };
 
   /**
    * Called when the user clicks the button to save the hashtag-specified hidden columns to
    * localStorage. It also redirects to the same URL without the hashtag.
    */
   const saveHashtagHiddenColumns = () => {
-    saveStoredHiddenColumns(collectionType, hiddenColumns)
-    onClearedUrlHiddenColumns()
+    saveStoredHiddenColumns(collectionType, hiddenColumns);
+    onClearedUrlHiddenColumns();
     const urlWithoutUrlHiddenColumns = clearHiddenColumnsFromUrl(
       window.location.href
-    )
-    router.push(urlWithoutUrlHiddenColumns)
-  }
+    );
+    router.push(urlWithoutUrlHiddenColumns);
+  };
 
   return (
     <>
@@ -263,8 +263,8 @@ const UrlColumnControls = ({
         </Paragraph>
       </Instruction>
     </>
-  )
-}
+  );
+};
 
 UrlColumnControls.propTypes = {
   // Type of collection being displayed
@@ -273,7 +273,7 @@ UrlColumnControls.propTypes = {
   hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
   // Called once the user clears the URL columns
   onClearedUrlHiddenColumns: PropTypes.func.isRequired,
-}
+};
 
 /**
  * Shows and handles the controls to manage the modal to let the user show and hide individual
@@ -285,7 +285,7 @@ const BrowserColumnControls = ({
   onChange,
   onChangeAllHiddenColumns,
 }) => {
-  const className = "mx-1.5 inline h-5 w-5"
+  const className = "mx-1.5 inline h-5 w-5";
   return (
     <>
       <ColumnSelector
@@ -313,8 +313,8 @@ const BrowserColumnControls = ({
         </Paragraph>
       </Instruction>
     </>
-  )
-}
+  );
+};
 
 BrowserColumnControls.propTypes = {
   // All available columns
@@ -325,7 +325,7 @@ BrowserColumnControls.propTypes = {
   onChange: PropTypes.func.isRequired,
   // Called when the user shows or hides all columns at once
   onChangeAllHiddenColumns: PropTypes.func.isRequired,
-}
+};
 
 /**
  * Wraps the table-view column controls, such as the hidden-column selector.
@@ -333,8 +333,8 @@ BrowserColumnControls.propTypes = {
 const ColumnControls = ({ children }) => {
   return (
     <div className="my-1 flex flex-wrap items-center gap-1">{children}</div>
-  )
-}
+  );
+};
 
 /**
  * Renders a single left- or right-pointing scroll indicator that fades out after appearing. Don't
@@ -353,22 +353,22 @@ const ScrollIndicator = ({ direction, children }) => {
     >
       {children}
     </motion.div>
-  )
-}
+  );
+};
 
 ScrollIndicator.propTypes = {
   // Direction of the scroll indicator
   direction: PropTypes.oneOf(["left", "right"]).isRequired,
-}
+};
 
 /**
  * Wrapper around the data grid to show scroll indicators when the table is horizontally scrollable.
  */
 const ScrollIndicators = ({ gridRef, children }) => {
   // True if the table can be scrolled to the right
-  const [isScrollableRight, setIsScrollableRight] = useState(false)
+  const [isScrollableRight, setIsScrollableRight] = useState(false);
   // True if the table can be scrolled to the left
-  const [isScrollableLeft, setIsScrollableLeft] = useState(false)
+  const [isScrollableLeft, setIsScrollableLeft] = useState(false);
 
   /**
    * Called when the mouse enters anywhere in the table. Determines whether the table can be
@@ -378,21 +378,21 @@ const ScrollIndicators = ({ gridRef, children }) => {
     // Determine if any portion of the table exists to the right of the visible portion.
     const isRightScrollable =
       gridRef.current.scrollWidth - Math.round(gridRef.current.scrollLeft) !==
-      gridRef.current.clientWidth
-    setIsScrollableRight(isRightScrollable)
+      gridRef.current.clientWidth;
+    setIsScrollableRight(isRightScrollable);
 
     // Determine if any portion of the table exists to the left of the visible portion.
-    const isLeftScrollable = gridRef.current.scrollLeft > 0
-    setIsScrollableLeft(isLeftScrollable)
-  }
+    const isLeftScrollable = gridRef.current.scrollLeft > 0;
+    setIsScrollableLeft(isLeftScrollable);
+  };
 
   /**
    * Called when the mouse exits the table. Remove the scroll indicators from the DOM.
    */
   const onPointerLeave = () => {
-    setIsScrollableRight(false)
-    setIsScrollableLeft(false)
-  }
+    setIsScrollableRight(false);
+    setIsScrollableLeft(false);
+  };
 
   return (
     <div
@@ -412,32 +412,32 @@ const ScrollIndicators = ({ gridRef, children }) => {
       )}
       {children}
     </div>
-  )
-}
+  );
+};
 
 ScrollIndicators.propTypes = {
   // Ref to the table DOM element
   gridRef: PropTypes.object.isRequired,
-}
+};
 
 /**
  * Displays the table view for a collection page, instead of a list view.
  */
 const CollectionTable = ({ collection }) => {
-  const { profiles } = useContext(GlobalContext)
+  const { profiles } = useContext(GlobalContext);
   // Holds the IDs of the hidden columns
-  const [hiddenColumns, setHiddenColumns] = useState([])
+  const [hiddenColumns, setHiddenColumns] = useState([]);
   // True if hidden columns are determined by hashtag instead of localStorage
-  const [isHiddenColumnsFromUrl, setIsHiddenColumnsFromUrl] = useState(false)
+  const [isHiddenColumnsFromUrl, setIsHiddenColumnsFromUrl] = useState(false);
   // Get the collection type from the first collection item, if any
-  const collectionType = collection[0]?.["@type"][0] || ""
+  const collectionType = collection[0]?.["@type"][0] || "";
   // Unfiltered table columns for the current collection type; memoize for useEffect dependency
   const columns = useMemo(
     () => (profiles ? generateTableColumns(profiles[collectionType]) : []),
     [profiles, collectionType]
-  )
+  );
   // Keep a ref of the scrollable table DOM <div> so we can detect scroll position
-  const gridRef = useRef(null)
+  const gridRef = useRef(null);
 
   /**
    * Called when the user changes which columns are visible and hidden through the column selector.
@@ -445,17 +445,17 @@ const CollectionTable = ({ collection }) => {
    * @param {boolean} isNowHidden True if the column is now hidden; false if it is now visible
    */
   const updateHiddenColumns = (selectedColumnId, isNowHidden) => {
-    let newHiddenColumns = []
+    let newHiddenColumns = [];
     if (isNowHidden) {
-      newHiddenColumns = hiddenColumns.concat(selectedColumnId)
+      newHiddenColumns = hiddenColumns.concat(selectedColumnId);
     } else {
       newHiddenColumns = hiddenColumns.filter(
         (columnId) => columnId !== selectedColumnId
-      )
+      );
     }
-    setHiddenColumns(newHiddenColumns)
-    saveStoredHiddenColumns(collectionType, newHiddenColumns)
-  }
+    setHiddenColumns(newHiddenColumns);
+    saveStoredHiddenColumns(collectionType, newHiddenColumns);
+  };
 
   /**
    * Handle the user selecting all columns to hide or show at once.
@@ -466,34 +466,34 @@ const CollectionTable = ({ collection }) => {
       ? columns
           .filter((column) => column.id !== "@id")
           .map((column) => column.id)
-      : []
-    setHiddenColumns(newHiddenColumns)
-    saveStoredHiddenColumns(collectionType, newHiddenColumns)
-  }
+      : [];
+    setHiddenColumns(newHiddenColumns);
+    saveStoredHiddenColumns(collectionType, newHiddenColumns);
+  };
 
   /**
    * Called when the user clears the URL columns. It clears localStorage which causes all columns
    * to show, but the useEffect below then restores the saved hidden columns, if any.
    */
   const clearUrlColumns = () => {
-    setHiddenColumns([])
-    setIsHiddenColumnsFromUrl(false)
-  }
+    setHiddenColumns([]);
+    setIsHiddenColumnsFromUrl(false);
+  };
 
   useEffect(() => {
     // Determine whether the URL hashtag specifies hidden columns, overriding the hidden columns in
     // localStorage.
     const hashedHiddenColumns = extractHiddenColumnIdsFromUrl(
       window.location.href
-    )
+    );
     if (hashedHiddenColumns?.length >= 0) {
       // Current browser URL has a #hidden= hashtag. Ignore localStorage and use the hidden columns
       // specified here instead.
-      setHiddenColumns(hashedHiddenColumns)
-      setIsHiddenColumnsFromUrl(true)
+      setHiddenColumns(hashedHiddenColumns);
+      setIsHiddenColumnsFromUrl(true);
     } else {
       // Load the hidden columns for the current collection type from localStorage.
-      const storedHiddenColumns = loadStoredHiddenColumns(collectionType)
+      const storedHiddenColumns = loadStoredHiddenColumns(collectionType);
       if (storedHiddenColumns) {
         // Make sure the stored hidden columns are valid for the current collection type. If not,
         // save the valid ones in localStorage. This can happen if the schema changes a property
@@ -502,19 +502,19 @@ const CollectionTable = ({ collection }) => {
           (columnId) =>
             columnId !== "@id" &&
             columns.find((column) => column.id === columnId)
-        )
+        );
         if (validHiddenColumns.length !== storedHiddenColumns.length) {
-          saveStoredHiddenColumns(collectionType, validHiddenColumns)
+          saveStoredHiddenColumns(collectionType, validHiddenColumns);
         }
-        setHiddenColumns(validHiddenColumns)
+        setHiddenColumns(validHiddenColumns);
       }
     }
-  }, [collectionType, columns, isHiddenColumnsFromUrl])
+  }, [collectionType, columns, isHiddenColumnsFromUrl]);
 
   if (collectionType && profiles) {
-    const flattenedCollection = flattenCollection(collection)
-    const filteredColumns = filterHiddenColumns(columns, hiddenColumns)
-    const sortedColumns = sortColumns(filteredColumns)
+    const flattenedCollection = flattenCollection(collection);
+    const filteredColumns = filterHiddenColumns(columns, hiddenColumns);
+    const sortedColumns = sortColumns(filteredColumns);
     return (
       <>
         <ColumnControls>
@@ -539,16 +539,16 @@ const CollectionTable = ({ collection }) => {
           </DataGridContainer>
         </ScrollIndicators>
       </>
-    )
+    );
   }
 
   // Profiles haven't loaded yet, or for some reason we couldn't determine the collection type.
-  return null
-}
+  return null;
+};
 
 CollectionTable.propTypes = {
   // Collection to display in a table
   collection: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
-export default CollectionTable
+export default CollectionTable;

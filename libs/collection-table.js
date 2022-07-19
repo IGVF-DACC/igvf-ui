@@ -1,6 +1,6 @@
 // node_modules
-import _ from "lodash"
-import Link from "next/link"
+import _ from "lodash";
+import Link from "next/link";
 
 /**
  * Clears any hashtag from the URL.
@@ -8,10 +8,10 @@ import Link from "next/link"
  * @returns {string} `url` with any hashtag removed
  */
 export const clearHiddenColumnsFromUrl = (url) => {
-  const parsedUrl = new URL(url)
-  parsedUrl.hash = ""
-  return parsedUrl.toString()
-}
+  const parsedUrl = new URL(url);
+  parsedUrl.hash = "";
+  return parsedUrl.toString();
+};
 
 /**
  * Extract a list of hidden column IDs from the URL. Hidden columns get specified as:
@@ -21,19 +21,19 @@ export const clearHiddenColumnsFromUrl = (url) => {
  * @returns {array} Hidden column IDs; [] if #hidden= present but no columns; null if no #hidden=
  */
 export const extractHiddenColumnIdsFromUrl = (url) => {
-  const hashtag = new URL(url).hash
+  const hashtag = new URL(url).hash;
   if (hashtag) {
-    const columnSpecifiers = hashtag.match(/#hidden=(.*)/)
+    const columnSpecifiers = hashtag.match(/#hidden=(.*)/);
     if (columnSpecifiers) {
       const commaSeparatedColumnIds =
-        columnSpecifiers[1].match(/([a-zA-Z0-9_@]+)/g)
-      return commaSeparatedColumnIds || []
+        columnSpecifiers[1].match(/([a-zA-Z0-9_@]+)/g);
+      return commaSeparatedColumnIds || [];
     }
   }
 
   // URL doesn't have a form of path#hidden=column1,column2,column3
-  return null
-}
+  return null;
+};
 
 /**
  * Copy the columns array intended for <SortableGrid> but with any columns with an `id` property
@@ -44,9 +44,9 @@ export const extractHiddenColumnIdsFromUrl = (url) => {
  */
 export const filterHiddenColumns = (columns, hiddenColumns) => {
   return columns.filter((column) => {
-    return !hiddenColumns.includes(column.id)
-  })
-}
+    return !hiddenColumns.includes(column.id);
+  });
+};
 
 /**
  * Copy the given collection with any non-simple properties of the collection objects converted to
@@ -56,28 +56,28 @@ export const filterHiddenColumns = (columns, hiddenColumns) => {
  */
 export const flattenCollection = (collection) => {
   const flattenedCollection = collection.map((item) => {
-    const flattenedItem = {}
+    const flattenedItem = {};
     Object.keys(item).forEach((key) => {
-      const propType = typeof item[key]
+      const propType = typeof item[key];
       if (propType === "object" && item[key] !== null) {
         // Generally, objects and arrays get stringified.
         if (
           (Array.isArray(item[key]) && item[key].length !== 0) ||
           (!Array.isArray(item[key]) && Object.keys(item[key]).length !== 0)
         ) {
-          flattenedItem[key] = JSON.stringify(item[key])
+          flattenedItem[key] = JSON.stringify(item[key]);
         }
       } else if (propType !== "function" && propType !== "undefined") {
         // Generally, any simple value gets passed through unchanged.
-        flattenedItem[key] = item[key]
+        flattenedItem[key] = item[key];
       }
       // Anything else (function, undefined, null, etc.) gets ignored, as do empty arrays and
       // objects.
-    })
-    return flattenedItem
-  })
-  return flattenedCollection
-}
+    });
+    return flattenedItem;
+  });
+  return flattenedCollection;
+};
 
 /**
  * Generate a URL that includes the hashtag that specifies the hidden columns. If the
@@ -87,11 +87,11 @@ export const flattenCollection = (collection) => {
  * @returns {string} URL with hashtag of hidden columns, if any
  */
 export const generateHiddenColumnsUrl = (url, hiddenColumns) => {
-  const parsedUrl = new URL(url)
+  const parsedUrl = new URL(url);
   parsedUrl.hash =
-    hiddenColumns.length > 0 ? `#hidden=${hiddenColumns.join()}` : ""
-  return parsedUrl.toString()
-}
+    hiddenColumns.length > 0 ? `#hidden=${hiddenColumns.join()}` : "";
+  return parsedUrl.toString();
+};
 
 /**
  * Sort the array of table columns by their titles, except for the column for the @id property.
@@ -103,8 +103,8 @@ export const sortColumns = (columns) => {
   return _.sortBy(columns, [
     (column) => column.id !== "@id",
     (column) => (column.id === "@id" ? 0 : column.title),
-  ])
-}
+  ]);
+};
 
 /**
  * Retrieve the array of hidden columns from localStorage for the given type.
@@ -112,12 +112,12 @@ export const sortColumns = (columns) => {
  * @returns {array} Array of column IDs to hide for the given @type; null if nothing stored
  */
 export const loadStoredHiddenColumns = (type) => {
-  const hiddenColumns = localStorage.getItem(`hidden-columns-${type}`)
+  const hiddenColumns = localStorage.getItem(`hidden-columns-${type}`);
   if (hiddenColumns) {
-    return JSON.parse(hiddenColumns)
+    return JSON.parse(hiddenColumns);
   }
-  return null
-}
+  return null;
+};
 
 /**
  * Save the array of hidden columns to localStorage for the given type.
@@ -125,8 +125,8 @@ export const loadStoredHiddenColumns = (type) => {
  * @param {array} hiddenColumns Array of column ids to hide for the given @type
  */
 export const saveStoredHiddenColumns = (type, hiddenColumns) => {
-  localStorage.setItem(`hidden-columns-${type}`, JSON.stringify(hiddenColumns))
-}
+  localStorage.setItem(`hidden-columns-${type}`, JSON.stringify(hiddenColumns));
+};
 
 /**
  * Generate a list of report columns in a format suitable for <SortableGrid>.
@@ -138,7 +138,7 @@ export const generateTableColumns = (profile) => {
     const column = {
       id: property,
       title: profile.properties[property].title,
-    }
+    };
 
     // @id property should display a link to the object displayed in the collection table.
     if (property === "@id") {
@@ -147,9 +147,9 @@ export const generateTableColumns = (profile) => {
           <Link href={source["@id"]}>
             <a>{source["@id"]}</a>
           </Link>
-        )
-      }
+        );
+      };
     }
-    return column
-  })
-}
+    return column;
+  });
+};
