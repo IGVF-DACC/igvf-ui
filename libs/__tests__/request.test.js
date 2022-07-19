@@ -84,13 +84,13 @@ describe("Test functions to handle requests to the server", () => {
 
   it("request and embed properties", async () => {
     const mockData = {
-      "http://nginx:8000/labs/j-michael-cherry/": {
+      "/labs/j-michael-cherry/": {
         name: "j-michael-cherry",
         "@id": "/labs/j-michael-cherry/",
         "@type": ["Lab", "Item"],
         title: "J. Michael Cherry, Stanford",
       },
-      "http://nginx:8000/labs/jesse-engreitz/": {
+      "/labs/jesse-engreitz/": {
         name: "jesse-engreitz",
         "@id": "/labs/jesse-engreitz/",
         "@type": ["Lab", "Item"],

@@ -68,12 +68,16 @@ const SaveCancelControl = ({
 }) => {
   return (
     <div className="flex space-x-1">
-      <Button.Link href={itemPath} navigationClick={cancelClick}>
+      <Button.Link
+        href={itemPath}
+        type="primary-outline"
+        navigationClick={cancelClick}
+      >
         Cancel
       </Button.Link>
       <Button
         onClick={saveClick}
-        enabled={saveEnabled}
+        disabled={!saveEnabled}
         type={saveEnabled ? "primary" : "info"}
       >
         Save

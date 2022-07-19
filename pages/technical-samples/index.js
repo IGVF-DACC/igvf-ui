@@ -4,11 +4,12 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
+import { NoCollectionData } from "../../components/no-content"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -22,22 +23,25 @@ const TechnicalSampleList = ({ technicalSamples }) => {
       <Collection>
         {technicalSamples.length > 0 ? (
           <>
-            <CollectionCount count={technicalSamples.length} />
-            {technicalSamples.map((sample) => (
-              <CollectionItem
-                key={sample.uuid}
-                href={sample["@id"]}
-                label={`Technical Sample ${sample.title}`}
-                status={sample.status}
-              >
-                <CollectionItemName>
-                  {sample.accession} &mdash; {sample.sample_material}
-                </CollectionItemName>
-                {sample.additional_description && (
-                  <div>{sample.additional_description}</div>
-                )}
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={technicalSamples.length} />
+            <CollectionContent collection={technicalSamples}>
+              {technicalSamples.map((sample) => (
+                <CollectionItem
+                  key={sample.uuid}
+                  testid={sample.uuid}
+                  href={sample["@id"]}
+                  label={`Technical Sample ${sample.title}`}
+                  status={sample.status}
+                >
+                  <CollectionItemName>
+                    {sample.accession} &mdash; {sample.sample_material}
+                  </CollectionItemName>
+                  {sample.additional_description && (
+                    <div>{sample.additional_description}</div>
+                  )}
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />

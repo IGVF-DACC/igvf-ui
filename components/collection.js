@@ -1,9 +1,32 @@
 // node_modules
-import { ChevronDoubleRightIcon } from "@heroicons/react/solid"
+import {
+  ChevronDoubleRightIcon,
+  TableIcon,
+  ViewListIcon,
+} from "@heroicons/react/solid"
 import Link from "next/link"
+import { useRouter } from "next/router"
 import PropTypes from "prop-types"
+import { useContext, useEffect } from "react"
 // components
+import Button from "./button"
+import CollectionTable from "./collection-table"
+import GlobalContext from "./global-context"
+import NoContent from "./no-content"
 import Status from "./status"
+// libs
+import {
+  clearHiddenColumnsFromUrl,
+  extractHiddenColumnIdsFromUrl,
+} from "../libs/collection-table"
+
+/**
+ * States for the collection view display
+ */
+export const COLLECTION_VIEW = {
+  LIST: "list", // Display as a list
+  TABLE: "table", // Display as a table
+}
 
 /**
  * Displays the number of items in a collection.
@@ -28,7 +51,7 @@ CollectionCount.propTypes = {
  * Displays an entire collection of items.
  */
 export const Collection = ({ children }) => {
-  return <div className="overflow-hidden">{children}</div>
+  return <div>{children}</div>
 }
 
 /**
@@ -59,9 +82,18 @@ CollectionItemLink.propTypes = {
 /**
  * Displays a single item in a collection.
  */
-export const CollectionItem = ({ href, label = "", status = "", children }) => {
+export const CollectionItem = ({
+  href,
+  testid,
+  label = "",
+  status = "",
+  children,
+}) => {
   return (
-    <div className="my-0.5 flex border border-data-border bg-data-background">
+    <div
+      className="my-0.5 flex border border-data-border bg-data-background"
+      data-testid={`collection-list-item-${testid}`}
+    >
       <CollectionItemLink href={href} label={label} />
       <div className="grow p-4">{children}</div>
       {status && (
@@ -76,6 +108,8 @@ export const CollectionItem = ({ href, label = "", status = "", children }) => {
 CollectionItem.propTypes = {
   // Path to item this links to
   href: PropTypes.string.isRequired,
+  // Usually same as component key; unique on page
+  testid: PropTypes.string.isRequired,
   // Voice label for item
   label: PropTypes.string,
   // Status of item
@@ -91,4 +125,115 @@ export const CollectionItemName = ({ children }) => {
       {children}
     </div>
   )
+}
+
+/**
+ * Display the buttons to view the collection as a table or list.
+ */
+export const CollectionViewSwitch = () => {
+  // Get the current collection view from the global context.
+  const { collectionView } = useContext(GlobalContext)
+  const router = useRouter()
+
+  const isListSelected =
+    collectionView.currentCollectionView === COLLECTION_VIEW.LIST
+  const isTableSelected =
+    collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
+
+  /**
+   * Called when the user selects the list view to clear any URL-specified hidden columns before
+   * switching to the list view
+   */
+  const onListViewSelect = () => {
+    collectionView.setCurrentCollectionView(COLLECTION_VIEW.LIST)
+    const urlWithoutUrlHiddenColumns = clearHiddenColumnsFromUrl(
+      window.location.href
+    )
+    router.push(urlWithoutUrlHiddenColumns)
+  }
+
+  return (
+    <div className="flex gap-1 pb-2" data-testid="collection-view-switch">
+      <Button.Icon
+        type={isListSelected ? "primary" : "primary-outline"}
+        label={`Select collection list view${
+          isListSelected ? " (selected)" : ""
+        }`}
+        onClick={onListViewSelect}
+      >
+        <ViewListIcon />
+      </Button.Icon>
+      <Button.Icon
+        type={isTableSelected ? "primary" : "primary-outline"}
+        label={`Select collection table view${
+          isTableSelected ? " (selected)" : ""
+        }`}
+        onClick={() =>
+          collectionView.setCurrentCollectionView(COLLECTION_VIEW.TABLE)
+        }
+      >
+        <TableIcon />
+      </Button.Icon>
+    </div>
+  )
+}
+
+/**
+ * Displays information above the collection display.
+ */
+export const CollectionHeader = ({ count }) => {
+  return (
+    <div className="flex justify-between">
+      <CollectionCount count={count} />
+      <CollectionViewSwitch />
+    </div>
+  )
+}
+
+CollectionHeader.propTypes = {
+  // Number of items in the collection
+  count: PropTypes.number.isRequired,
+}
+
+/**
+ * Display either a list or report view of the collection. For a list, the `children` provides the
+ * content. For the table view, the content comes from this use of the <CollectionTable> component,
+ * and `children` isn’t used.
+ */
+export const CollectionContent = ({ collection, children }) => {
+  // Collection view setting and /profiles content
+  const { collectionView } = useContext(GlobalContext)
+  // True if the user has selected the list view
+  const isListView =
+    collectionView.currentCollectionView === COLLECTION_VIEW.LIST
+  // True if the user has selected the table view
+  const isTableView =
+    collectionView.currentCollectionView === COLLECTION_VIEW.TABLE
+
+  useEffect(() => {
+    // If the page loads with a URL that specifies hidden columns, set the table view.
+    const hashedHiddenColumns = extractHiddenColumnIdsFromUrl(
+      window.location.href
+    )
+    if (hashedHiddenColumns?.length >= 0) {
+      collectionView.setCurrentCollectionView(COLLECTION_VIEW.TABLE)
+    }
+  }, [collectionView])
+
+  if (isListView) {
+    // Display list view.
+    return <>{children}</>
+  }
+
+  if (isTableView) {
+    return <CollectionTable collection={collection} />
+  }
+
+  // No profiles loaded or no collection type in the collection data.
+  return <NoContent>No displayable collection data</NoContent>
+}
+
+CollectionContent.propTypes = {
+  // Collection of items to display in a list or table
+  collection: PropTypes.arrayOf(PropTypes.object).isRequired,
 }

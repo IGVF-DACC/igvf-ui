@@ -4,11 +4,12 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
+import { NoCollectionData } from "../../components/no-content"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -22,18 +23,21 @@ const AwardList = ({ awards }) => {
       <Collection>
         {awards.length > 0 ? (
           <>
-            <CollectionCount count={awards.length} />
-            {awards.map((award) => (
-              <CollectionItem
-                key={award.uuid}
-                href={award["@id"]}
-                label={`Award ${award.name}`}
-                status={award.status}
-              >
-                <CollectionItemName>{award.name}</CollectionItemName>
-                <div>{award.title}</div>
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={awards.length} />
+            <CollectionContent collection={awards}>
+              {awards.map((award) => (
+                <CollectionItem
+                  key={award.uuid}
+                  testid={award.uuid}
+                  href={award["@id"]}
+                  label={`Award ${award.name}`}
+                  status={award.status}
+                >
+                  <CollectionItemName>{award.name}</CollectionItemName>
+                  <div>{award.title}</div>
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
@@ -59,7 +63,7 @@ export const getServerSideProps = async ({ req }) => {
       awards: awards["@graph"],
       pageContext: { title: awards.title },
       breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
+      sessionCookie: req?.headers?.cookie || "",
     },
   }
 }

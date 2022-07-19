@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react"
 // libs
 import { onRedirectCallback } from "../libs/authentication"
 import {
+  API_URL,
   AUTH0_AUDIENCE,
   AUTH0_CLIENT_ID,
   AUTH0_ISSUER_BASE_DOMAIN,
@@ -14,15 +15,22 @@ import {
 } from "../libs/constants"
 import DarkModeManager from "../libs/dark-mode-manager"
 // components
+import { COLLECTION_VIEW } from "../components/collection"
 import GlobalContext from "../components/global-context"
-import { Session } from "../components/session-context"
 import NavigationSection from "../components/navigation"
+import { Session } from "../components/session-context"
 // CSS
 import "../styles/globals.css"
 
 const App = ({ Component, pageProps }) => {
   // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("")
+  // Holds the /profiles schemas
+  const [profiles, setProfiles] = useState(null)
+  // Selects between "list" and "table" collection views
+  const [currentCollectionView, setCurrentCollectionView] = useState(
+    COLLECTION_VIEW.LIST
+  )
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
@@ -42,6 +50,21 @@ const App = ({ Component, pageProps }) => {
     }
   }, [pageProps.sessionCookie])
 
+  useEffect(() => {
+    fetch(`${API_URL}/profiles`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        return response.json()
+      })
+      .then((profiles) => {
+        setProfiles(profiles)
+      })
+  }, [])
+
   const globalContext = useMemo(() => {
     return {
       site: {
@@ -49,11 +72,25 @@ const App = ({ Component, pageProps }) => {
       },
       page: {
         title: pageProps.pageContext?.title || "",
+        type: pageProps.pageContext?.type || "",
       },
       breadcrumbs: pageProps.breadcrumbs || [],
       sessionCookie,
+      profiles,
+      collectionView: {
+        currentCollectionView,
+        setCurrentCollectionView,
+      },
     }
-  }, [pageProps.pageContext?.title, pageProps.breadcrumbs, sessionCookie])
+  }, [
+    currentCollectionView,
+    pageProps.breadcrumbs,
+    pageProps.pageContext?.title,
+    pageProps.pageContext?.type,
+    profiles,
+    sessionCookie,
+    setCurrentCollectionView,
+  ])
 
   return (
     <>

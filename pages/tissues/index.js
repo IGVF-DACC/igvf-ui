@@ -4,11 +4,12 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
+import { NoCollectionData } from "../../components/no-content"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -22,21 +23,24 @@ const TissueList = ({ tissues }) => {
       <Collection>
         {tissues.length > 0 ? (
           <>
-            <CollectionCount count={tissues.length} />
-            {tissues.map((tissue) => (
-              <CollectionItem
-                key={tissue.uuid}
-                href={tissue["@id"]}
-                label={`Tissue ${tissue.accession}`}
-                status={tissue.status}
-              >
-                <CollectionItemName>{tissue.accession}</CollectionItemName>
-                {tissue.organism && <div>{tissue.organism}</div>}
-                {tissue.nih_institutional_certification && (
-                  <div>{tissue.nih_institutional_certification}</div>
-                )}
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={tissues.length} />
+            <CollectionContent collection={tissues}>
+              {tissues.map((tissue) => (
+                <CollectionItem
+                  key={tissue.uuid}
+                  testid={tissue.uuid}
+                  href={tissue["@id"]}
+                  label={`Tissue ${tissue.accession}`}
+                  status={tissue.status}
+                >
+                  <CollectionItemName>{tissue.accession}</CollectionItemName>
+                  {tissue.organism && <div>{tissue.organism}</div>}
+                  {tissue.nih_institutional_certification && (
+                    <div>{tissue.nih_institutional_certification}</div>
+                  )}
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
@@ -54,7 +58,7 @@ TissueList.propTypes = {
 export default TissueList
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie)
+  const request = new Request(req?.headers?.cookie || "")
   const tissues = await request.getCollection("tissues")
   const breadcrumbs = await buildBreadcrumbs(tissues, "title")
   return {
@@ -62,7 +66,7 @@ export const getServerSideProps = async ({ req }) => {
       tissues: tissues["@graph"],
       pageContext: { title: tissues.title },
       breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
+      sessionCookie: req?.headers?.cookie || "",
     },
   }
 }

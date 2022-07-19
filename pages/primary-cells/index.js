@@ -4,11 +4,12 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
+import { NoCollectionData } from "../../components/no-content"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -22,21 +23,26 @@ const PrimaryCellList = ({ primaryCells }) => {
       <Collection>
         {primaryCells.length > 0 ? (
           <>
-            <CollectionCount count={primaryCells.length} />
-            {primaryCells.map((primaryCell) => (
-              <CollectionItem
-                key={primaryCell.uuid}
-                href={primaryCell["@id"]}
-                label={`Primary Cell ${primaryCell.accession}`}
-                status={primaryCell.status}
-              >
-                <CollectionItemName>{primaryCell.accession}</CollectionItemName>
-                {primaryCell.organism && <div>{primaryCell.organism}</div>}
-                {primaryCell.nih_institutional_certification && (
-                  <div>{primaryCell.nih_institutional_certification}</div>
-                )}
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={primaryCells.length} />
+            <CollectionContent collection={primaryCells}>
+              {primaryCells.map((primaryCell) => (
+                <CollectionItem
+                  key={primaryCell.uuid}
+                  testid={primaryCell.uuid}
+                  href={primaryCell["@id"]}
+                  label={`Primary Cell ${primaryCell.accession}`}
+                  status={primaryCell.status}
+                >
+                  <CollectionItemName>
+                    {primaryCell.accession}
+                  </CollectionItemName>
+                  {primaryCell.organism && <div>{primaryCell.organism}</div>}
+                  {primaryCell.nih_institutional_certification && (
+                    <div>{primaryCell.nih_institutional_certification}</div>
+                  )}
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />

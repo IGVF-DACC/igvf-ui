@@ -6,6 +6,7 @@
  */
 
 import PropTypes from "prop-types"
+import { forwardRef } from "react"
 
 /**
  * Default data grid cell. Custom data grid cells can use wrap or replace this; whatever they
@@ -25,9 +26,13 @@ export const DefaultCell = ({ children }) => {
  * at the time of writing) from allowing the table to scroll horizontally even if you can see the
  * entire table.
  */
-export const DataGridContainer = ({ className = "", children }) => {
+export const DataGridContainer = forwardRef(function DataGridContainer(
+  { className = "", children },
+  ref
+) {
   return (
     <div
+      ref={ref}
       role="table"
       className={`grid w-full gap-px overflow-x-auto bg-gray-300 text-sm outline outline-1 outline-data-border dark:outline-gray-700 dark:bg-gray-700${
         className ? ` ${className}` : ""
@@ -36,7 +41,7 @@ export const DataGridContainer = ({ className = "", children }) => {
       {children}
     </div>
   )
-}
+})
 
 DataGridContainer.propTypes = {
   // Extra Tailwind CSS classes to apply to the container

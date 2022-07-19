@@ -5,61 +5,108 @@
 // node_modules
 import PropTypes from "prop-types"
 import React, { Children, cloneElement } from "react"
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router"
 
 /**
  * Background colors for each of the button types.
  */
 const buttonTypeClasses = {
-  primary: "bg-button-primary",
-  secondary: "bg-button-secondary",
-  success: "bg-button-success",
-  alert: "bg-button-alert",
-  warning: "bg-button-warning",
-  info: "bg-button-info",
+  primary: "bg-button-primary disabled:bg-button-primary-disabled",
+  secondary: "bg-button-secondary disabled:bg-button-secondary-disabled",
+  tertiary: "bg-button-tertiary disabled:bg-button-tertiary-disabled",
+  error: "bg-button-error disabled:bg-button-error-disabled",
+  warning: "bg-button-warning disabled:bg-button-warning-disabled",
+  success: "bg-button-success disabled:bg-button-success-disabled",
+  info: "bg-button-info disabled:bg-button-info-disabled",
+
+  "primary-outline": "bg-transparent",
+  "secondary-outline": "bg-transparent",
+  "tertiary-outline": "bg-transparent",
+  "error-outline": "bg-transparent",
+  "warning-outline": "bg-transparent",
+  "success-outline": "bg-transparent",
+  "info-outline": "bg-transparent",
 }
 
 /**
  * Border colors for each of the button types.
  */
 const borderTypeClasses = {
-  primary: "border-button-primary",
-  secondary: "border-button-secondary",
-  success: "border-button-success",
-  alert: "border-button-alert",
-  warning: "border-button-warning",
-  info: "border-button-info",
+  primary: "border-button-primary disabled:border-button-primary-disabled",
+  secondary:
+    "border-button-secondary disabled:border-button-secondary-disabled",
+  tertiary: "border-button-tertiary disabled:border-button-tertiary-disabled",
+  error: "border-button-error disabled:border-button-error-disabled",
+  warning: "border-button-warning disabled:border-button-warning-disabled",
+  success: "border-button-success disabled:border-button-success-disabled",
+  info: "border-button-info disabled:border-button-info-disabled",
+
+  "primary-outline":
+    "border-button-primary disabled:border-button-primary-disabled",
+  "secondary-outline":
+    "border-button-secondary disabled:border-button-secondary-disabled",
+  "tertiary-outline":
+    "border-button-tertiary disabled:border-button-tertiary-disabled",
+  "error-outline": "border-button-error disabled:border-button-error-disabled",
+  "warning-outline":
+    "border-button-warning disabled:border-button-warning-disabled",
+  "success-outline":
+    "border-button-success disabled:border-button-success-disabled",
+  "info-outline": "border-button-info disabled:border-button-info-disabled",
 }
 
 /**
- * Text colors for each of the button types.
+ * Text colors for each of the outlined button types.
  */
 const buttonTextTypeClasses = {
-  primary: "text-button-primary",
-  secondary: "text-button-secondary",
-  success: "text-button-success",
-  alert: "text-button-alert",
-  warning: "text-button-warning",
-  info: "text-button-info",
+  primary: "text-white",
+  secondary: "text-white",
+  tertiary: "text-white",
+  error: "text-white",
+  warning: "text-white",
+  success: "text-white",
+  info: "text-white",
+
+  "primary-outline":
+    "text-button-primary disabled:text-button-primary-disabled",
+  "secondary-outline":
+    "text-button-secondary disabled:text-button-secondary-disabled",
+  "tertiary-outline":
+    "text-button-tertiary disabled:text-button-tertiary-disabled",
+  "error-outline": "text-button-error disabled:text-button-error-disabled",
+  "warning-outline":
+    "text-button-warning disabled:text-button-warning-disabled",
+  "success-outline":
+    "text-button-success disabled:text-button-success-disabled",
+  "info-outline": "text-button-info disabled:text-button-info-disabled",
 }
 
 /**
  * SVG fill colors for each of the button types.
  */
 const buttonFillTypeClasses = {
-  primary: "fill-button-primary",
-  secondary: "fill-button-secondary",
-  success: "fill-button-success",
-  alert: "fill-button-alert",
-  warning: "fill-button-warning",
-  info: "fill-button-info",
+  primary: "fill-white",
+  secondary: "fill-white",
+  tertiary: "fill-white",
+  error: "fill-white",
+  warning: "fill-white",
+  success: "fill-white",
+  info: "fill-white",
+
+  "primary-outline": "fill-button-primary",
+  "secondary-outline": "fill-button-secondary",
+  "tertiary-outline": "fill-button-tertiary",
+  "error-outline": "fill-button-error",
+  "warning-outline": "fill-button-warning",
+  "success-outline": "fill-button-success",
+  "info-outline": "fill-button-info",
 }
 
 /**
  * Tailwind CSS classes for each of the button sizes.
  */
 const buttonSizeClasses = {
-  sm: "px-3 py-1 text-xs",
+  sm: "px-2 py-0.5 text-xs",
   md: "px-4 py-1 text-sm",
   lg: "px-6 py-2 text-base",
 }
@@ -78,16 +125,16 @@ const Button = ({
   size = "md",
   label = "",
   className = "",
-  enabled = true,
+  disabled = false,
   children,
 }) => {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`block rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
+      className={`flex items-center justify-center rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
       aria-label={label}
-      disabled={!enabled}
+      disabled={disabled}
     >
       {children}
     </button>
@@ -103,19 +150,25 @@ Button.propTypes = {
   type: PropTypes.oneOf([
     "primary",
     "secondary",
-    "success",
-    "alert",
+    "tertiary",
+    "error",
     "warning",
+    "success",
     "info",
+    "primary-outline",
+    "secondary-outline",
+    "tertiary-outline",
+    "error-outline",
+    "warning-outline",
+    "success-outline",
+    "info-outline",
   ]),
   // Button sizes
   size: PropTypes.oneOf(["sm", "md", "lg"]),
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
-  // If enabled is true then the button is clickable. If disabled (set to false)
-  // then the button cannot be clicked. Corresponds to the `disabled` property
-  // on the React Button component and is set to `!enabled`.
-  enabled: PropTypes.bool,
+  // True to disable the button
+  disabled: PropTypes.bool,
 }
 
 Button.displayName = "Button"
@@ -144,15 +197,15 @@ const Link = ({
   }
 
   return (
-      <Button
-        onClick={onClick}
-        type={type}
-        size={size}
-        label={label}
-        className={className}
-      >
-        {children}
-      </Button>
+    <Button
+      onClick={onClick}
+      type={type}
+      size={size}
+      label={label}
+      className={className}
+    >
+      {children}
+    </Button>
   )
 }
 
@@ -167,10 +220,18 @@ Link.propTypes = {
   type: PropTypes.oneOf([
     "primary",
     "secondary",
-    "success",
-    "alert",
+    "tertiary",
+    "error",
     "warning",
+    "success",
     "info",
+    "primary-outline",
+    "secondary-outline",
+    "tertiary-outline",
+    "error-outline",
+    "warning-outline",
+    "success-outline",
+    "info-outline",
   ]),
   // Button sizes
   size: PropTypes.oneOf(["sm", "md", "lg"]),
@@ -202,7 +263,7 @@ const Icon = ({
     <button
       type="button"
       onClick={onClick}
-      className={`block h-6 w-6 rounded-full border p-1 ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${className}`}
+      className={`block h-6 w-6 rounded-full border p-1 ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonFillTypeClasses[type]} ${className}`}
       aria-label={label}
     >
       {filledChildren}
@@ -219,10 +280,18 @@ Icon.propTypes = {
   type: PropTypes.oneOf([
     "primary",
     "secondary",
-    "success",
-    "alert",
+    "tertiary",
+    "error",
     "warning",
+    "success",
     "info",
+    "primary-outline",
+    "secondary-outline",
+    "tertiary-outline",
+    "error-outline",
+    "warning-outline",
+    "success-outline",
+    "info-outline",
   ]),
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,

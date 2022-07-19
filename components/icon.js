@@ -51,6 +51,30 @@ const Icon = {
       />
     </svg>
   ),
+  TableColumnsHidden: ({ className = null }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <rect x="0" y="7.5" width="6" height="5" />
+      <path d="M12,8.5v3H8v-3H12 M13,7.5H7v5h6V7.5L13,7.5z" />
+      <rect x="14" y="7.5" width="6" height="5" />
+    </svg>
+  ),
+  TableColumnsVisible: ({ className = null }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <rect x="0" y="8" width="6" height="4" />
+      <rect x="7" y="8" width="6" height="4" />
+      <rect x="14" y="8" width="6" height="4" />
+    </svg>
+  ),
   Treatment: ({ className = null }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -78,6 +102,12 @@ Icon.Donor.propTypes = {
   className: PropTypes.string,
 }
 Icon.Sample.propTypes = {
+  className: PropTypes.string,
+}
+Icon.TableColumnsHidden.propTypes = {
+  className: PropTypes.string,
+}
+Icon.TableColumnsVisible.propTypes = {
   className: PropTypes.string,
 }
 Icon.Treatment.propTypes = {

@@ -296,22 +296,29 @@ const SortableGrid = ({
     },
   ]
 
-  // Convert the data (simple array of objects) into a data grid array and render the table.
-  const sortedData = sortData(data, columns, sortBy, sortDirection)
-  const dataRows = convertObjectArrayToDataGrid(sortedData, columns, keyProp)
-  return (
-    <DataGrid
-      data={headerRow.concat(dataRows)}
-      meta={{
-        ...meta,
-        sortBy,
-        columns,
-        sortDirection,
-        handleSortClick,
-        dataLength: dataRows.length,
-      }}
-    />
-  )
+  // Make sure the `sortBy` column actually exists in the columns. Sort by the first column if not.
+  const sortByColumn = columns.find((column) => column.id === sortBy)
+  if (!sortByColumn) {
+    setSortBy(columns[0].id)
+    return null
+  } else {
+    // Convert the data (simple array of objects) into a data grid array and render the table.
+    const sortedData = sortData(data, columns, sortBy, sortDirection)
+    const dataRows = convertObjectArrayToDataGrid(sortedData, columns, keyProp)
+    return (
+      <DataGrid
+        data={headerRow.concat(dataRows)}
+        meta={{
+          ...meta,
+          sortBy,
+          columns,
+          sortDirection,
+          handleSortClick,
+          dataLength: dataRows.length,
+        }}
+      />
+    )
+  }
 }
 
 SortableGrid.propTypes = {

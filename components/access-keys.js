@@ -1,5 +1,10 @@
 // node_modules
-import { RefreshIcon, TrashIcon } from "@heroicons/react/solid"
+import {
+  CheckIcon,
+  ClipboardCopyIcon,
+  RefreshIcon,
+  TrashIcon,
+} from "@heroicons/react/solid"
 import { useRouter } from "next/router"
 import PropTypes from "prop-types"
 import { Fragment, useContext, useState } from "react"
@@ -45,7 +50,11 @@ const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
             <div className="mb-2 flex items-center justify-between last:mb-0 md:mb-0">
               <div className="shrink-1 font-mono">{row.value}</div>
               <div className="ml-2 flex shrink-0 justify-end">
-                <CopyButton target={row.value} label={row.label} />
+                <CopyButton.Icon target={row.value} label={row.label}>
+                  {(isCopied) =>
+                    isCopied ? <CheckIcon /> : <ClipboardCopyIcon />
+                  }
+                </CopyButton.Icon>
               </div>
             </div>
           </Fragment>
@@ -109,7 +118,7 @@ const AccessKeyModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          type="info"
+          type="primary-outline"
           onClick={onClose}
           label={accessKeyModalMessages[createOrReset].close}
         >
@@ -282,7 +291,7 @@ const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
       <AccessKeyControl
         label={`Delete access key ${accessKeyId}`}
         onClick={() => setOpen(true)}
-        type="alert"
+        type="warning"
       >
         <TrashIcon className="fill-white" />
       </AccessKeyControl>
@@ -301,14 +310,14 @@ const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            type="info"
+            type="primary-outline"
             onClick={onCancel}
             label="Cancel deleting access key"
           >
             Cancel
           </Button>
           <Button
-            type="alert"
+            type="error"
             onClick={onDelete}
             label="Confirm deleting access key"
           >

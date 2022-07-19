@@ -1,7 +1,7 @@
 // node_modules
 import { useContext } from "react"
 // components
-import { DataArea } from "./data-area"
+import { DataPanel } from "./data-area"
 import GlobalContext from "./global-context"
 
 /**
@@ -11,9 +11,9 @@ const NoCollectionData = () => {
   const { page } = useContext(GlobalContext)
 
   return (
-    <DataArea>
+    <DataPanel>
       <div className="text-center italic">No {page.title} to display</div>
-    </DataArea>
+    </DataPanel>
   )
 }
 

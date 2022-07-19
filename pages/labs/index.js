@@ -4,11 +4,12 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
+import { NoCollectionData } from "../../components/no-content"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -22,18 +23,21 @@ const LabList = ({ labs }) => {
       <Collection>
         {labs.length > 0 ? (
           <>
-            <CollectionCount count={labs.length} />
-            {labs.map((lab) => (
-              <CollectionItem
-                key={lab.uuid}
-                href={lab["@id"]}
-                label={`Lab ${lab.title}`}
-                status={lab.status}
-              >
-                <CollectionItemName>{lab.title}</CollectionItemName>
-                <div>{lab.institute_label}</div>
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={labs.length} />
+            <CollectionContent collection={labs}>
+              {labs.map((lab) => (
+                <CollectionItem
+                  key={lab.uuid}
+                  testid={lab.uuid}
+                  href={lab["@id"]}
+                  label={`Lab ${lab.title}`}
+                  status={lab.status}
+                >
+                  <CollectionItemName>{lab.title}</CollectionItemName>
+                  <div>{lab.institute_label}</div>
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />

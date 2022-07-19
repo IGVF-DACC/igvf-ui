@@ -9,7 +9,7 @@ import {
   CollectionItemName,
 } from "../components/collection"
 import { DataPanel } from "../components/data-area"
-import NoCollectionData from "../components/no-collection-data"
+import { NoCollectionData } from "../components/no-content"
 import PagePreamble from "../components/page-preamble"
 
 /**
@@ -28,7 +28,11 @@ const FallbackCollection = ({ collection }) => {
       <Collection>
         {collection.length > 0 ? (
           collection.map((item) => (
-            <CollectionItem key={item.uuid} href={item["@id"]}>
+            <CollectionItem
+              key={item.uuid}
+              testid={item.uuid}
+              href={item["@id"]}
+            >
               <CollectionItemName>{extractTitle(item)}</CollectionItemName>
             </CollectionItem>
           ))

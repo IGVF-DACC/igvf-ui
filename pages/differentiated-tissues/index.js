@@ -4,11 +4,12 @@ import PropTypes from "prop-types"
 import Breadcrumbs from "../../components/breadcrumbs"
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
+import { NoCollectionData } from "../../components/no-content"
 import PagePreamble from "../../components/page-preamble"
 // libs
 import buildBreadcrumbs from "../../libs/breadcrumbs"
@@ -22,27 +23,30 @@ const DifferentiatedTissueList = ({ differentiatedTissues }) => {
       <Collection>
         {differentiatedTissues.length > 0 ? (
           <>
-            <CollectionCount count={differentiatedTissues.length} />
-            {differentiatedTissues.map((differentiatedTissue) => (
-              <CollectionItem
-                key={differentiatedTissue.uuid}
-                href={differentiatedTissue["@id"]}
-                label={`Differentiated Tissue ${differentiatedTissue.accession}`}
-                status={differentiatedTissue.status}
-              >
-                <CollectionItemName>
-                  {differentiatedTissue.accession}
-                </CollectionItemName>
-                {differentiatedTissue.organism && (
-                  <div>{differentiatedTissue.organism}</div>
-                )}
-                {differentiatedTissue.nih_institutional_certification && (
-                  <div>
-                    {differentiatedTissue.nih_institutional_certification}
-                  </div>
-                )}
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={differentiatedTissues.length} />
+            <CollectionContent collection={differentiatedTissues}>
+              {differentiatedTissues.map((differentiatedTissue) => (
+                <CollectionItem
+                  key={differentiatedTissue.uuid}
+                  testid={differentiatedTissue.uuid}
+                  href={differentiatedTissue["@id"]}
+                  label={`Differentiated Tissue ${differentiatedTissue.accession}`}
+                  status={differentiatedTissue.status}
+                >
+                  <CollectionItemName>
+                    {differentiatedTissue.accession}
+                  </CollectionItemName>
+                  {differentiatedTissue.organism && (
+                    <div>{differentiatedTissue.organism}</div>
+                  )}
+                  {differentiatedTissue.nih_institutional_certification && (
+                    <div>
+                      {differentiatedTissue.nih_institutional_certification}
+                    </div>
+                  )}
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
