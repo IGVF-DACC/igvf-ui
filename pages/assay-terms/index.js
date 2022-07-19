@@ -12,7 +12,8 @@ import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const AssayOntologyTermList = ({ assayOntologyTerms }) => {
   return (
@@ -26,6 +27,7 @@ const AssayOntologyTermList = ({ assayOntologyTerms }) => {
             {assayOntologyTerms.map((assayOntologyTerm) => (
               <CollectionItem
                 key={assayOntologyTerm.uuid}
+                testid={assayOntologyTerm.uuid}
                 href={assayOntologyTerm["@id"]}
                 label={`Assay term ${assayOntologyTerm.term_id}`}
                 status={assayOntologyTerm.status}
@@ -53,15 +55,17 @@ AssayOntologyTermList.propTypes = {
 export default AssayOntologyTermList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const assayOntologyTerms = await request.getCollection("assay-terms");
-  const breadcrumbs = await buildBreadcrumbs(assayOntologyTerms, "title");
-  return {
-    props: {
-      assayOntologyTerms: assayOntologyTerms["@graph"],
-      pageContext: { title: assayOntologyTerms.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(assayOntologyTerms)) {
+    const breadcrumbs = await buildBreadcrumbs(assayOntologyTerms, "title");
+    return {
+      props: {
+        assayOntologyTerms: assayOntologyTerms["@graph"],
+        pageContext: { title: assayOntologyTerms.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(assayOntologyTerms);
 };

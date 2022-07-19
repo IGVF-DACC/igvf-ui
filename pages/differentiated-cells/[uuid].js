@@ -17,7 +17,8 @@ import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const DifferentiatedCell = ({
   differentiatedCell,
@@ -124,28 +125,39 @@ DifferentiatedCell.propTypes = {
 export default DifferentiatedCell;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const differentiatedCell = await request.getObject(
     `/differentiated-cells/${params.uuid}/`
   );
-  if (differentiatedCell && differentiatedCell.status !== "error") {
-    const award = await request.getObject(differentiatedCell.award);
-    const donors = await request.getMultipleObjects(differentiatedCell.donors);
-    const lab = await request.getObject(differentiatedCell.lab);
-    const source = await request.getObject(differentiatedCell.source);
-    const treatments = await request.getMultipleObjects(
-      differentiatedCell.treatments
+  if (FetchRequest.isResponseSuccess(differentiatedCell)) {
+    const award = await request.getObject(differentiatedCell.award, {});
+    const donors = await request.getMultipleObjects(
+      differentiatedCell.donors,
+      {}
     );
-    const differentiationTreatments = await request.getMultipleObjects(
+    const lab = await request.getObject(differentiatedCell.lab, {});
+    const source = await request.getObject(differentiatedCell.source, {});
+    const treatments = differentiatedCell.treatments
+      ? await request.getMultipleObjects(differentiatedCell.treatments, {})
+      : [];
+    const differentiationTreatments =
       differentiatedCell.differentiation_treatments
-    );
+        ? await request.getMultipleObjects(
+            differentiatedCell.differentiation_treatments,
+            {}
+          )
+        : [];
     const biosampleTerm = differentiatedCell.biosample_term
-      ? await request.getObject(differentiatedCell.biosample_term)
+      ? await request.getObject(differentiatedCell.biosample_term, {})
       : null;
     const diseaseTerm = differentiatedCell.disease_term
-      ? await request.getObject(differentiatedCell.disease_term)
+      ? await request.getObject(differentiatedCell.disease_term, {})
       : null;
-    const breadcrumbs = await buildBreadcrumbs(differentiatedCell, "accession");
+    const breadcrumbs = await buildBreadcrumbs(
+      differentiatedCell,
+      "accession",
+      req.headers.cookie
+    );
     return {
       props: {
         differentiatedCell,
@@ -159,9 +171,8 @@ export const getServerSideProps = async ({ params, req }) => {
         diseaseTerm,
         pageContext: { title: differentiatedCell.accession },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(differentiatedCell);
 };

@@ -1,12 +1,12 @@
 // node_modules
 import { Auth0Provider } from "@auth0/auth0-react";
+import Error from "next/error";
 import Head from "next/head";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 // lib
 import { onRedirectCallback } from "../lib/authentication";
 import {
-  API_URL,
   AUTH0_AUDIENCE,
   AUTH0_CLIENT_ID,
   AUTH0_ISSUER_BASE_DOMAIN,
@@ -14,6 +14,7 @@ import {
   SITE_TITLE,
 } from "../lib/constants";
 import DarkModeManager from "../lib/dark-mode-manager";
+import FetchRequest from "../lib/fetch-request";
 // components
 import { COLLECTION_VIEW } from "../components/collection";
 import GlobalContext from "../components/global-context";
@@ -51,18 +52,12 @@ const App = ({ Component, pageProps }) => {
   }, [pageProps.sessionCookie]);
 
   useEffect(() => {
-    fetch(`${API_URL}/profiles`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((profiles) => {
-        setProfiles(profiles);
-      });
+    // Load in the schemas for all object types. Don't use an authentication token as everyone has
+    // access to the schemas.
+    const request = new FetchRequest();
+    request.getObject("/profiles", null).then((profiles) => {
+      setProfiles(profiles);
+    });
   }, []);
 
   const globalContext = useMemo(() => {
@@ -135,7 +130,14 @@ const App = ({ Component, pageProps }) => {
             <Session>
               <NavigationSection />
               <div className="min-w-0 shrink grow px-8 py-2 text-black dark:text-white">
-                <Component {...pageProps} />
+                {pageProps.serverSideError ? (
+                  <Error
+                    statusCode={pageProps.serverSideError.code}
+                    title={pageProps.serverSideError.description}
+                  />
+                ) : (
+                  <Component {...pageProps} />
+                )}
               </div>
             </Session>
           </GlobalContext.Provider>

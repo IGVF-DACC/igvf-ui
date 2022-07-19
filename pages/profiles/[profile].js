@@ -7,7 +7,8 @@ import PagePreamble from "../../components/page-preamble";
 import { DataPanel, DataAreaTitle } from "../../components/data-area";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const Schema = ({ schema, changelog }) => {
   const html = marked(changelog);
@@ -40,18 +41,23 @@ Schema.propTypes = {
 export default Schema;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const schema = await request.getObject(`/profiles/${params.profile}`);
-  const changelog = await request.getMarkdown(schema.changelog);
-  const breadcrumbs = await buildBreadcrumbs(schema, params.profile);
-
-  return {
-    props: {
+  if (FetchRequest.isResponseSuccess(schema)) {
+    const changelog = await request.getText(schema.changelog, "");
+    const breadcrumbs = await buildBreadcrumbs(
       schema,
-      changelog,
-      pageContext: { title: schema.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+      params.profile,
+      req.headers.cookie
+    );
+    return {
+      props: {
+        schema,
+        changelog,
+        pageContext: { title: schema.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(schema);
 };

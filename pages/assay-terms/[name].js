@@ -13,7 +13,8 @@ import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const AssayOntologyTerm = ({ assayOntologyTerm }) => {
   return (
@@ -50,20 +51,23 @@ AssayOntologyTerm.propTypes = {
 export default AssayOntologyTerm;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const assayOntologyTerm = await request.getObject(
     `/assay-terms/${params.name}/`
   );
-  if (assayOntologyTerm && assayOntologyTerm.status !== "error") {
-    const breadcrumbs = await buildBreadcrumbs(assayOntologyTerm, "term_id");
+  if (FetchRequest.isResponseSuccess(assayOntologyTerm)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      assayOntologyTerm,
+      "term_id",
+      req.headers.cookie
+    );
     return {
       props: {
         assayOntologyTerm,
         pageContext: { title: assayOntologyTerm.term_id },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(assayOntologyTerm);
 };

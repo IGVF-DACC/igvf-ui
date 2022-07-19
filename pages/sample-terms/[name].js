@@ -13,7 +13,8 @@ import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
   return (
@@ -74,20 +75,23 @@ SampleOntologyTerm.propTypes = {
 export default SampleOntologyTerm;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const sampleOntologyTerm = await request.getObject(
     `/sample-terms//${params.name}/`
   );
-  if (sampleOntologyTerm && sampleOntologyTerm.status !== "error") {
-    const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerm, "term_id");
+  if (FetchRequest.isResponseSuccess(sampleOntologyTerm)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      sampleOntologyTerm,
+      "term_id",
+      req.headers.cookie
+    );
     return {
       props: {
         sampleOntologyTerm,
         pageContext: { title: sampleOntologyTerm.term_id },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(sampleOntologyTerm);
 };

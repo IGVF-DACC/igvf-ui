@@ -9,11 +9,12 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
-import { NoCollectionData } from "../../components/no-content";
+import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const DifferentiatedCellList = ({ differentiatedCells }) => {
   return (
@@ -64,17 +65,19 @@ DifferentiatedCellList.propTypes = {
 export default DifferentiatedCellList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const differentiatedCells = await request.getCollection(
     "differentiated-cells"
   );
-  const breadcrumbs = await buildBreadcrumbs(differentiatedCells, "title");
-  return {
-    props: {
-      differentiatedCells: differentiatedCells["@graph"],
-      pageContext: { title: differentiatedCells.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(differentiatedCells)) {
+    const breadcrumbs = await buildBreadcrumbs(differentiatedCells, "title");
+    return {
+      props: {
+        differentiatedCells: differentiatedCells["@graph"],
+        pageContext: { title: differentiatedCells.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(differentiatedCells);
 };

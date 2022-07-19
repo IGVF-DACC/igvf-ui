@@ -15,7 +15,8 @@ import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { UC } from "../../lib/constants";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const Treatment = ({ treatment }) => {
   return (
@@ -79,7 +80,7 @@ const Treatment = ({ treatment }) => {
                 </DataItemValue>
               </>
             )}
-            {treatment.aliases.length > 0 && (
+            {treatment.aliases?.length > 0 && (
               <>
                 <DataItemLabel>Aliases</DataItemLabel>
                 <DataItemValue>
@@ -102,19 +103,21 @@ Treatment.propTypes = {
 export default Treatment;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const treatment = await request.getObject(`/treatments/${params.uuid}/`);
-  if (treatment && treatment.status !== "error") {
-    const breadcrumbs = await buildBreadcrumbs(treatment, "treatment_term_id");
+  if (FetchRequest.isResponseSuccess(treatment)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      treatment,
+      "treatment_term_id",
+      req.headers.cookie
+    );
     return {
       props: {
         treatment,
         pageContext: { title: treatment.treatment_term_id },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
-        uuid: params.uuid,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(treatment);
 };

@@ -1,6 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 // components
 import Button from "./button";
 import EditJson, { EditLink, canEdit } from "./edit-func";
@@ -8,7 +8,7 @@ import SessionContext from "./session-context";
 import { useAuthenticated } from "./authentication";
 import { useRouter } from "next/router";
 // lib
-import Fetch from "../lib/session-fetch";
+import FetchRequest from "../lib/fetch-request";
 
 export const useEditor = (item, viewComponent) => {
   const editing = (url) => {
@@ -130,6 +130,9 @@ SavedErrors.propTypes = {
 };
 
 const EditPage = ({ item }) => {
+  const { session } = useContext(SessionContext);
+  const request = useRef(new FetchRequest({ session }));
+
   const path = item["@id"];
 
   const loggedIn = useAuthenticated();
@@ -150,8 +153,6 @@ const EditPage = ({ item }) => {
       return [err.message];
     }
   };
-
-  const { session } = useContext(SessionContext);
 
   /**
    * The text is the current editor text of the underlying Ace editor component.
@@ -185,17 +186,10 @@ const EditPage = ({ item }) => {
   });
 
   useEffect(() => {
-    const fetch = new Fetch(session);
-    fetch
-      .getObject(`${path}?frame=edit`, "GET")
-      .then((value) => {
-        const json = value.json();
-        return json;
-      })
-      .then((value) => {
-        setText(JSON.stringify(sortedJson(value), null, 4));
-      });
-  }, [path, session]);
+    request.current.getObject(`${path}?frame=edit`).then((value) => {
+      setText(JSON.stringify(sortedJson(value), null, 4));
+    });
+  }, [path]);
 
   const router = useRouter();
 
@@ -218,9 +212,8 @@ const EditPage = ({ item }) => {
       errors: [],
     });
     const value = sortedJson(JSON.parse(text));
-    const fetch = new Fetch(session);
-    fetch.updateObject(path, "PATCH", value).then((response) => {
-      if (response.ok) {
+    request.current.putObject(path, value).then((response) => {
+      if (response.status === "success") {
         setSaveErrors([]);
         router.push(path);
       } else {
@@ -231,7 +224,7 @@ const EditPage = ({ item }) => {
         });
         const errors = response.errors.map((err) => ({
           description: err.description,
-          keys: err.names
+          keys: err.name
             .map((val) => {
               return `\`${val}\``;
             })
