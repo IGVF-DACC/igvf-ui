@@ -346,6 +346,16 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
       </NavigationGroupItem>
       <NavigationHrefItem
+        id="genes"
+        href="/genes"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <Icon.Gene />
+        </NavigationIcon>
+        Genes
+      </NavigationHrefItem>
+      <NavigationHrefItem
         id="labs"
         href="/labs"
         navigationClick={navigationClick}
