@@ -131,10 +131,9 @@ export const getServerSideProps = async ({ params, req }) => {
   );
   if (FetchRequest.isResponseSuccess(differentiatedCell)) {
     const award = await request.getObject(differentiatedCell.award, {});
-    const donors = await request.getMultipleObjects(
-      differentiatedCell.donors,
-      {}
-    );
+    const donors = differentiatedCell.donors
+      ? await request.getMultipleObjects(differentiatedCell.donors, {})
+      : [];
     const lab = await request.getObject(differentiatedCell.lab, {});
     const source = await request.getObject(differentiatedCell.source, {});
     const treatments = differentiatedCell.treatments

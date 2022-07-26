@@ -107,7 +107,9 @@ export const getServerSideProps = async ({ params, req }) => {
   const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(primaryCell)) {
     const award = await request.getObject(primaryCell.award, {});
-    const donors = await request.getMultipleObjects(primaryCell.donors, {});
+    const donors = primaryCell.donors
+      ? await request.getMultipleObjects(primaryCell.donors, {})
+      : [];
     const lab = await request.getObject(primaryCell.lab, {});
     const source = await request.getObject(primaryCell.source, {});
     const treatments = primaryCell.treatments

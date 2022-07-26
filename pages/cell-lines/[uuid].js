@@ -98,7 +98,9 @@ export const getServerSideProps = async ({ params, req }) => {
   const cellLine = await request.getObject(`/cell-lines/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(cellLine)) {
     const award = await request.getObject(cellLine.award, {});
-    const donors = await request.getMultipleObjects(cellLine.donors, {});
+    const donors = cellLine.donors
+      ? await request.getMultipleObjects(cellLine.donors, {})
+      : [];
     const lab = await request.getObject(cellLine.lab, {});
     const source = await request.getObject(cellLine.source, {});
     const treatments = cellLine.treatments

@@ -131,10 +131,9 @@ export const getServerSideProps = async ({ params, req }) => {
   );
   if (FetchRequest.isResponseSuccess(differentiatedTissue)) {
     const award = await request.getObject(differentiatedTissue.award, {});
-    const donors = await request.getMultipleObjects(
-      differentiatedTissue.donors,
-      {}
-    );
+    const donors = differentiatedTissue.donors
+      ? await request.getMultipleObjects(differentiatedTissue.donors, {})
+      : [];
     const lab = await request.getObject(differentiatedTissue.lab, {});
     const source = await request.getObject(differentiatedTissue.source, {});
     const treatments = differentiatedTissue.treatments
