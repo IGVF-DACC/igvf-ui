@@ -1,23 +1,23 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Attribution from "../../components/attribution"
-import Breadcrumbs from "../../components/breadcrumbs"
-import { BiosampleDataItems } from "../../components/common-data-items"
+import Attribution from "../../components/attribution";
+import Breadcrumbs from "../../components/breadcrumbs";
+import { BiosampleDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import PagePreamble from "../../components/page-preamble"
-import Status from "../../components/status"
-import TreatmentTable from "../../components/treatment-table"
-import { EditableItem } from "../../components/edit"
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+} from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
+import TreatmentTable from "../../components/treatment-table";
+import { EditableItem } from "../../components/edit";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const PrimaryCell = ({
   primaryCell,
@@ -26,6 +26,8 @@ const PrimaryCell = ({
   lab,
   source,
   treatments,
+  biosampleTerm = null,
+  diseaseTerm = null,
 }) => {
   return (
     <>
@@ -42,6 +44,8 @@ const PrimaryCell = ({
               biosample={primaryCell}
               source={source}
               donors={donors}
+              biosampleTerm={biosampleTerm}
+              diseaseTerm={diseaseTerm}
               options={{
                 dateObtainedTitle: "Date Harvested",
               }}
@@ -64,8 +68,8 @@ const PrimaryCell = ({
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
-  )
-}
+  );
+};
 
 PrimaryCell.propTypes = {
   // Primary-cell sample to display
@@ -89,20 +93,30 @@ PrimaryCell.propTypes = {
   }).isRequired,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+  // Biosample ontology for this sample
+  biosampleTerm: PropTypes.object,
+  // Disease ontology for this sample
+  diseaseTerm: PropTypes.object,
+};
 
-export default PrimaryCell
+export default PrimaryCell;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`)
+  const request = new Request(req?.headers?.cookie);
+  const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
   if (primaryCell && primaryCell.status !== "error") {
-    const award = await request.getObject(primaryCell.award)
-    const donors = await request.getMultipleObjects(primaryCell.donors)
-    const lab = await request.getObject(primaryCell.lab)
-    const source = await request.getObject(primaryCell.source)
-    const treatments = await request.getMultipleObjects(primaryCell.treatments)
-    const breadcrumbs = await buildBreadcrumbs(primaryCell, "accession")
+    const award = await request.getObject(primaryCell.award);
+    const donors = await request.getMultipleObjects(primaryCell.donors);
+    const lab = await request.getObject(primaryCell.lab);
+    const source = await request.getObject(primaryCell.source);
+    const treatments = await request.getMultipleObjects(primaryCell.treatments);
+    const biosampleTerm = primaryCell.biosample_term
+      ? await request.getObject(primaryCell.biosample_term)
+      : null;
+    const diseaseTerm = primaryCell.disease_term
+      ? await request.getObject(primaryCell.disease_term)
+      : null;
+    const breadcrumbs = await buildBreadcrumbs(primaryCell, "accession");
     return {
       props: {
         primaryCell,
@@ -111,11 +125,13 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
+        biosampleTerm,
+        diseaseTerm,
         pageContext: { title: primaryCell.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

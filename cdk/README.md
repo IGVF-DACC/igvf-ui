@@ -1,6 +1,22 @@
 ## Infrastructure
+Install Node.js 16 using `nvm` (Node Version Manager):
 
-Install CDK toolkit:
+```
+# Install nvm.
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+```
+
+Then in new terminal:
+
+```
+# Install and use node 16.
+$ nvm install 16
+$ nvm use 16
+# Check version.
+$ node --version
+```
+
+Install CDK toolkit (requires Node.js 16.x):
 
 ```
 $ npm install -g aws-cdk@2.21.0

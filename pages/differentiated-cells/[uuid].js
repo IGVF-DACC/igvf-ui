@@ -1,23 +1,23 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Attribution from "../../components/attribution"
-import Breadcrumbs from "../../components/breadcrumbs"
-import { BiosampleDataItems } from "../../components/common-data-items"
+import Attribution from "../../components/attribution";
+import Breadcrumbs from "../../components/breadcrumbs";
+import { BiosampleDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "../../components/data-area"
-import PagePreamble from "../../components/page-preamble"
-import Status from "../../components/status"
-import TreatmentTable from "../../components/treatment-table"
-import { EditableItem } from "../../components/edit"
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+} from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
+import TreatmentTable from "../../components/treatment-table";
+import { EditableItem } from "../../components/edit";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const DifferentiatedCell = ({
   differentiatedCell,
@@ -26,6 +26,9 @@ const DifferentiatedCell = ({
   lab,
   source,
   treatments,
+  differentiationTreatments,
+  biosampleTerm = null,
+  diseaseTerm = null,
 }) => {
   return (
     <>
@@ -42,6 +45,8 @@ const DifferentiatedCell = ({
               biosample={differentiatedCell}
               source={source}
               donors={donors}
+              biosampleTerm={biosampleTerm}
+              diseaseTerm={diseaseTerm}
               options={{
                 dateObtainedTitle: "Date Collected",
               }}
@@ -74,11 +79,17 @@ const DifferentiatedCell = ({
             <TreatmentTable treatments={treatments} />
           </>
         )}
+        {differentiationTreatments.length > 0 && (
+          <>
+            <DataAreaTitle>Differentiation Treatments</DataAreaTitle>
+            <TreatmentTable treatments={differentiationTreatments} />
+          </>
+        )}
         <Attribution award={award} lab={lab} />
-        </EditableItem>
+      </EditableItem>
     </>
-  )
-}
+  );
+};
 
 DifferentiatedCell.propTypes = {
   // Differentiated-cell sample to display
@@ -102,24 +113,39 @@ DifferentiatedCell.propTypes = {
   }).isRequired,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+  // Differentiation treatments associated with the sample
+  differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample ontology for this sample
+  biosampleTerm: PropTypes.object,
+  // Disease ontology for this sample
+  diseaseTerm: PropTypes.object,
+};
 
-export default DifferentiatedCell
+export default DifferentiatedCell;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie)
+  const request = new Request(req?.headers?.cookie);
   const differentiatedCell = await request.getObject(
     `/differentiated-cells/${params.uuid}/`
-  )
+  );
   if (differentiatedCell && differentiatedCell.status !== "error") {
-    const award = await request.getObject(differentiatedCell.award)
-    const donors = await request.getMultipleObjects(differentiatedCell.donors)
-    const lab = await request.getObject(differentiatedCell.lab)
-    const source = await request.getObject(differentiatedCell.source)
+    const award = await request.getObject(differentiatedCell.award);
+    const donors = await request.getMultipleObjects(differentiatedCell.donors);
+    const lab = await request.getObject(differentiatedCell.lab);
+    const source = await request.getObject(differentiatedCell.source);
     const treatments = await request.getMultipleObjects(
       differentiatedCell.treatments
-    )
-    const breadcrumbs = await buildBreadcrumbs(differentiatedCell, "accession")
+    );
+    const differentiationTreatments = await request.getMultipleObjects(
+      differentiatedCell.differentiation_treatments
+    );
+    const biosampleTerm = differentiatedCell.biosample_term
+      ? await request.getObject(differentiatedCell.biosample_term)
+      : null;
+    const diseaseTerm = differentiatedCell.disease_term
+      ? await request.getObject(differentiatedCell.disease_term)
+      : null;
+    const breadcrumbs = await buildBreadcrumbs(differentiatedCell, "accession");
     return {
       props: {
         differentiatedCell,
@@ -128,11 +154,14 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
+        differentiationTreatments,
+        biosampleTerm,
+        diseaseTerm,
         pageContext: { title: differentiatedCell.accession },
         breadcrumbs,
         sessionCookie: req?.headers?.cookie,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

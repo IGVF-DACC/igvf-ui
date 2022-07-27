@@ -1,46 +1,69 @@
 // node_modules
-import { Auth0Provider } from "@auth0/auth0-react"
-import Head from "next/head"
-import PropTypes from "prop-types"
-import { useEffect, useMemo, useState } from "react"
-// libs
-import { onRedirectCallback } from "../libs/authentication"
+import { Auth0Provider } from "@auth0/auth0-react";
+import Head from "next/head";
+import PropTypes from "prop-types";
+import { useEffect, useMemo, useState } from "react";
+// lib
+import { onRedirectCallback } from "../lib/authentication";
 import {
+  API_URL,
   AUTH0_AUDIENCE,
   AUTH0_CLIENT_ID,
   AUTH0_ISSUER_BASE_DOMAIN,
   BRAND_COLOR,
   SITE_TITLE,
-} from "../libs/constants"
-import DarkModeManager from "../libs/dark-mode-manager"
+} from "../lib/constants";
+import DarkModeManager from "../lib/dark-mode-manager";
 // components
-import GlobalContext from "../components/global-context"
-import { Session } from "../components/session-context"
-import NavigationSection from "../components/navigation"
+import { COLLECTION_VIEW } from "../components/collection";
+import GlobalContext from "../components/global-context";
+import NavigationSection from "../components/navigation";
+import { Session } from "../components/session-context";
 // CSS
-import "../styles/globals.css"
+import "../styles/globals.css";
 
 const App = ({ Component, pageProps }) => {
   // Server session cookie.
-  const [sessionCookie, setSessionCookie] = useState("")
+  const [sessionCookie, setSessionCookie] = useState("");
+  // Holds the /profiles schemas
+  const [profiles, setProfiles] = useState(null);
+  // Selects between "list" and "table" collection views
+  const [currentCollectionView, setCurrentCollectionView] = useState(
+    COLLECTION_VIEW.LIST
+  );
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
-    const darkModeManager = new DarkModeManager()
-    darkModeManager.installDarkModeListener()
-    darkModeManager.setCurrentDarkMode()
+    const darkModeManager = new DarkModeManager();
+    darkModeManager.installDarkModeListener();
+    darkModeManager.setCurrentDarkMode();
 
     return () => {
-      darkModeManager.removeDarkModeListener()
-    }
-  }, [])
+      darkModeManager.removeDarkModeListener();
+    };
+  }, []);
 
   useEffect(() => {
     // Set the session cookie if the back end has retrieved one.
     if (pageProps.sessionCookie) {
-      setSessionCookie(pageProps.sessionCookie)
+      setSessionCookie(pageProps.sessionCookie);
     }
-  }, [pageProps.sessionCookie])
+  }, [pageProps.sessionCookie]);
+
+  useEffect(() => {
+    fetch(`${API_URL}/profiles`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((profiles) => {
+        setProfiles(profiles);
+      });
+  }, []);
 
   const globalContext = useMemo(() => {
     return {
@@ -49,11 +72,25 @@ const App = ({ Component, pageProps }) => {
       },
       page: {
         title: pageProps.pageContext?.title || "",
+        type: pageProps.pageContext?.type || "",
       },
       breadcrumbs: pageProps.breadcrumbs || [],
       sessionCookie,
-    }
-  }, [pageProps.pageContext?.title, pageProps.breadcrumbs, sessionCookie])
+      profiles,
+      collectionView: {
+        currentCollectionView,
+        setCurrentCollectionView,
+      },
+    };
+  }, [
+    currentCollectionView,
+    pageProps.breadcrumbs,
+    pageProps.pageContext?.title,
+    pageProps.pageContext?.type,
+    profiles,
+    sessionCookie,
+    setCurrentCollectionView,
+  ]);
 
   return (
     <>
@@ -97,7 +134,7 @@ const App = ({ Component, pageProps }) => {
           <GlobalContext.Provider value={globalContext}>
             <Session>
               <NavigationSection />
-              <div className="shrink grow px-8 py-2 text-black dark:text-white">
+              <div className="min-w-0 shrink grow px-8 py-2 text-black dark:text-white">
                 <Component {...pageProps} />
               </div>
             </Session>
@@ -105,14 +142,14 @@ const App = ({ Component, pageProps }) => {
         </Auth0Provider>
       </div>
     </>
-  )
-}
+  );
+};
 
 App.propTypes = {
   // Component to render for the page, as determined by nextjs router
   Component: PropTypes.elementType.isRequired,
   // Properties associated with the page to pass to `Component`
   pageProps: PropTypes.object.isRequired,
-}
+};
 
-export default App
+export default App;

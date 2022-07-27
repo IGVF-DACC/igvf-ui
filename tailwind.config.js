@@ -23,41 +23,61 @@ module.exports = {
         "data-label": "var(--color-data-label)",
         "data-value": "var(--color-data-value)",
 
-        // Generic button styles
+        // Button background colors
         "button-primary": "var(--color-button-primary)",
         "button-secondary": "var(--color-button-secondary)",
-        "button-success": "var(--color-button-success)",
-        "button-alert": "var(--color-button-alert)",
+        "button-tertiary": "var(--color-button-tertiary)",
+        "button-quaternary": "var(--color-button-quaternary)",
+        "button-error": "var(--color-button-error)",
         "button-warning": "var(--color-button-warning)",
+        "button-success": "var(--color-button-success)",
+        "button-info": "var(--color-button-info)",
+
+        // Disabled button background colors
+        "button-primary-disabled": "var(--color-button-primary-disabled)",
+        "button-secondary-disabled": "var(--color-button-secondary-disabled)",
+        "button-tertiary-disabled": "var(--color-button-tertiary-disabled)",
+        "button-quaternary-disabled": "var(--color-button-quaternary-disabled)",
+        "button-error-disabled": "var(--color-button-error-disabled)",
+        "button-warning-disabled": "var(--color-button-warning-disabled)",
+        "button-success-disabled": "var(--color-button-success-disabled)",
+        "button-info-disabled": "var(--color-button-info-disabled)",
+      },
+      borderColor: {
+        // Outlined button border colors
+        "button-primary": "var(--color-button-primary)",
+        "button-secondary": "var(--color-button-secondary)",
+        "button-tertiary": "var(--color-button-tertiary)",
+        "button-quaternary": "var(--color-button-quaternary)",
+        "button-error": "var(--color-button-error)",
+        "button-warning": "var(--color-button-warning)",
+        "button-success": "var(--color-button-success)",
         "button-info": "var(--color-button-info)",
       },
       textColor: {
-        "button-primary": "#ffffff",
-        "button-secondary": "#ffffff",
-        "button-success": "#000000",
-        "button-alert": "#ffffff",
-        "button-warning": "#000000",
-        "button-info": "var(--color-button-text-info)",
-      },
-      borderColor: {
-        "button-primary": "var(--color-border-primary)",
-        "button-secondary": "var(--color-border-secondary)",
-        "button-success": "var(--color-border-success)",
-        "button-alert": "var(--color-border-alert)",
-        "button-warning": "var(--color-border-warning)",
-        "button-info": "var(--color-border-info)",
+        // Outlined button text colors
+        "button-primary": "var(--color-button-primary)",
+        "button-secondary": "var(--color-button-secondary)",
+        "button-tertiary": "var(--color-button-tertiary)",
+        "button-quaternary": "var(--color-button-quaternary)",
+        "button-error": "var(--color-button-error)",
+        "button-warning": "var(--color-button-warning)",
+        "button-success": "var(--color-button-success)",
+        "button-info": "var(--color-button-info)",
       },
       boxShadow: {
         // Status badges
         status: "0 0 0 1px #a0a0a0",
       },
       fill: {
-        "button-primary": "#ffffff",
-        "button-secondary": "#ffffff",
-        "button-success": "#000000",
-        "button-alert": "#ffffff",
-        "button-warning": "#000000",
-        "button-info": "var(--color-button-text-info)",
+        "button-primary": "var(--color-button-primary)",
+        "button-secondary": "var(--color-button-secondary)",
+        "button-tertiary": "var(--color-button-tertiary)",
+        "button-quaternary": "var(--color-button-quaternary)",
+        "button-error": "var(--color-button-error)",
+        "button-warning": "var(--color-button-warning)",
+        "button-success": "var(--color-button-success)",
+        "button-info": "var(--color-button-info)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
@@ -66,4 +86,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};

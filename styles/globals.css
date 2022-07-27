@@ -34,20 +34,24 @@
   --color-data-value: #000000;
 
   /** Button backgrounds */
-  --color-button-primary: #1779ba;
-  --color-button-secondary: #767676;
-  --color-button-success: #3adb76;
-  --color-button-alert: #cc4b37;
-  --color-button-warning: #ffae00;
-  --color-button-info: #ffffff;
+  --color-button-primary: #465a9a;
+  --color-button-secondary: #6d326d;
+  --color-button-tertiary: #893168;
+  --color-button-quaternary: #ca6680;
+  --color-button-error: #a50104;
+  --color-button-warning: #dd6e42;
+  --color-button-success: #337357;
+  --color-button-info: #487998;
 
-  /** Button borders */
-  --color-border-primary: #0f517c;
-  --color-border-secondary: #4f4f4f;
-  --color-border-success: #248749;
-  --color-border-alert: #8b3325;
-  --color-border-warning: #a26f00;
-  --color-border-info: #808080;
+  /** Disabled button backgrounds */
+  --color-button-primary-disabled: #8a95ba;
+  --color-button-secondary-disabled: #cf734c;
+  --color-button-tertiary-disabled: #ac7e9c;
+  --color-button-quaternary-disabled: #e3d48c;
+  --color-button-error-disabled: #bc6d68;
+  --color-button-warning-disabled: #e0a58b;
+  --color-button-success-disabled: #86a494;
+  --color-button-info-disabled: #90a8ba;
 
   /** Modal borders */
   --color-modal-border: #e5e7eb;
@@ -72,9 +76,6 @@
   --color-data-title: #9ca3af;
   --color-data-label: #9ca3af;
   --color-data-value: #ffffff;
-
-  --color-button-info: #000000;
-  --color-border-info: #ffffff;
 
   /** Modal borders */
   --color-modal-border: #4b5563;

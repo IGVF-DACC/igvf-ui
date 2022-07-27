@@ -1,9 +1,9 @@
 // node_modules
-import dynamic from "next/dynamic"
-import PropTypes from "prop-types"
-import React from "react"
+import dynamic from "next/dynamic";
+import PropTypes from "prop-types";
+import React from "react";
 // components
-import Button from "./button"
+import Button from "./button";
 
 export const canEdit = (item) => {
   if ("actions" in item) {
@@ -11,25 +11,25 @@ export const canEdit = (item) => {
       item.actions.find(
         (act) => act.name == "edit" || act.name == "edit-json"
       ) != undefined
-    )
+    );
   }
-  return false
-}
+  return false;
+};
 
 const Editor = dynamic(
   async () => {
-    const ace = await import("react-ace")
-    require("ace-builds/src-noconflict/mode-json")
-    require("ace-builds/src-noconflict/theme-solarized_light")
-    return ace
+    const ace = await import("react-ace");
+    require("ace-builds/src-noconflict/mode-json");
+    require("ace-builds/src-noconflict/theme-solarized_light");
+    return ace;
   },
   {
     loading: () => {
-      return <div>Loading...</div>
+      return <div>Loading...</div>;
     },
     ssr: false,
   }
-)
+);
 
 const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
   const annotations = errors.map((msg) => ({
@@ -37,7 +37,7 @@ const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
     column: 0,
     text: msg,
     type: "error",
-  }))
+  }));
 
   const editor = (
     <Editor
@@ -65,9 +65,9 @@ const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
         minLines: 24,
       }}
     />
-  )
-  return editor
-}
+  );
+  return editor;
+};
 
 JsonEditor.propTypes = {
   // The text that will be shown in the editor
@@ -81,38 +81,20 @@ JsonEditor.propTypes = {
   // prop and are rendered in the editor component. Array elements are the error
   // messages as strings.
   errors: PropTypes.array,
-}
+};
 
 const ControlButton = ({ onClick, isDisabled = false, children }) => {
   return (
     <Button onClick={onClick} enabled={!isDisabled}>
       {children}
     </Button>
-  )
-}
+  );
+};
 
 ControlButton.propTypes = {
   onClick: PropTypes.func,
   isDisabled: PropTypes.bool,
-}
-
-const SaveCancelControl = ({ cancelClick, saveClick }) => {
-  return (
-    <div>
-      <Button onClick={cancelClick} id="edit-cancel">
-        Cancel
-      </Button>
-      <Button onClick={saveClick} id="edit-save">
-        Save
-      </Button>
-    </div>
-  )
-}
-
-SaveCancelControl.propTypes = {
-  cancelClick: PropTypes.func.isRequired,
-  saveClick: PropTypes.func.isRequired,
-}
+};
 
 const EditJson = ({ text, onChange, enabled = true, errors = [] }) => {
   return (
@@ -124,34 +106,34 @@ const EditJson = ({ text, onChange, enabled = true, errors = [] }) => {
         errors={errors}
       />
     </div>
-  )
-}
+  );
+};
 
 EditJson.propTypes = {
   text: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   enabled: PropTypes.bool,
   errors: PropTypes.array,
-}
+};
 
 export const EditLink = ({ item }) => {
   const removeTrailingSlash = (url) => {
-    return url.endsWith("/") ? url.slice(0, url.length - 1) : url
-  }
+    return url.endsWith("/") ? url.slice(0, url.length - 1) : url;
+  };
 
-  const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`
+  const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
   if (canEdit(item)) {
     return (
       <Button.Link href={editPath} navigationClick={() => {}}>
         Edit JSON
       </Button.Link>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 EditLink.propTypes = {
   item: PropTypes.object.isRequired,
-}
+};
 
-export default EditJson
+export default EditJson;

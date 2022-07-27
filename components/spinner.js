@@ -1,5 +1,5 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 
 /**
  * Loading spinnner by Sam Herbert (@sherb)
@@ -65,12 +65,12 @@ const Spinner = ({ className = "" }) => {
         </g>
       </svg>
     </div>
-  )
-}
+  );
+};
 
 Spinner.propTypes = {
   // Extra Tailwind CSS classes
   className: PropTypes.string,
-}
+};
 
-export default Spinner
+export default Spinner;

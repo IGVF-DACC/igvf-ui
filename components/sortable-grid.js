@@ -6,18 +6,18 @@
  */
 
 // node_modules
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid"
-import _ from "lodash"
-import PropTypes from "prop-types"
-import { Children, cloneElement, useState } from "react"
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
+import _ from "lodash";
+import PropTypes from "prop-types";
+import { Children, cloneElement, useState } from "react";
 // compoonents
-import DataGrid from "./data-grid"
+import DataGrid from "./data-grid";
 
 // enums for the column-sorting directions.
 const SORT_DIRECTIONS = {
   ASC: "asc", // Ascending sort
   DESC: "desc", // Descending sort
-}
+};
 
 /**
  * `SortableGrid` renders an array of objects of a type. This function converts the contents of
@@ -32,18 +32,18 @@ const convertObjectArrayToDataGrid = (items, columns, keyProp) => {
     return {
       id: keyProp ? item[keyProp] : index,
       cells: columns.map((column) => {
-        let content = column.display || item[column.id] || null
+        let content = column.display || item[column.id] || null;
 
         // If the column configuration `value()` specified for the current column, call it to
         // extract the cell's value.
         if (column.value) {
-          content = column.value(item)
+          content = column.value(item);
         }
-        return { id: column.id, content, source: item }
+        return { id: column.id, content, source: item };
       }),
-    }
-  })
-}
+    };
+  });
+};
 
 /**
  * Sort the data according to the provided column and direction.
@@ -53,13 +53,13 @@ const convertObjectArrayToDataGrid = (items, columns, keyProp) => {
  * @returns {array} Sorted copy of incoming array of objects
  */
 const sortData = (data, columns, sortBy, sortDirections) => {
-  const sortedColumnConfig = columns.find((column) => column.id === sortBy)
+  const sortedColumnConfig = columns.find((column) => column.id === sortBy);
   if (sortedColumnConfig.sorter) {
     return _.orderBy(
       data,
       (item) => sortedColumnConfig.sorter(item),
       sortDirections
-    )
+    );
   }
 
   // If the sorted column's configuration includes a `value` transform function, use it to sort
@@ -69,12 +69,12 @@ const sortData = (data, columns, sortBy, sortDirections) => {
       data,
       (item) => sortedColumnConfig.value(item).toString().toLowerCase(),
       [sortDirections]
-    )
+    );
   }
 
   // No `sorter` nor `value` transform function; sort by the primitive data value.
-  return _.orderBy(data, [sortBy], [sortDirections])
-}
+  return _.orderBy(data, [sortBy], [sortDirections]);
+};
 
 /**
  * Display the sorting icon (including a blank icon for currently sorted and non-sortable columns)
@@ -83,7 +83,7 @@ const sortData = (data, columns, sortBy, sortDirections) => {
 const HeaderSortIcon = ({ columnConfiguration, sortBy, sortDirection }) => {
   // Determine the appearance of the sorting icon based on the sort direction.
   const SortIcon =
-    sortDirection === SORT_DIRECTIONS.ASC ? ChevronUpIcon : ChevronDownIcon
+    sortDirection === SORT_DIRECTIONS.ASC ? ChevronUpIcon : ChevronDownIcon;
 
   return (
     <SortIcon
@@ -91,8 +91,8 @@ const HeaderSortIcon = ({ columnConfiguration, sortBy, sortDirection }) => {
         sortBy === columnConfiguration.id ? "" : " invisible"
       }`}
     />
-  )
-}
+  );
+};
 
 HeaderSortIcon.propTypes = {
   // Entry in the column configuration array for the current column
@@ -104,7 +104,7 @@ HeaderSortIcon.propTypes = {
   sortBy: PropTypes.string.isRequired,
   // Direction of the current sort
   sortDirection: PropTypes.oneOf(Object.values(SORT_DIRECTIONS)).isRequired,
-}
+};
 
 /**
  * Renders a sortable table header cell; one that reacts to clicks to sort the column.
@@ -132,8 +132,8 @@ const SortableHeaderCell = ({
         />
       </div>
     </button>
-  )
-}
+  );
+};
 
 SortableHeaderCell.propTypes = {
   // Entry in the column configuration array for the current column
@@ -149,19 +149,19 @@ SortableHeaderCell.propTypes = {
   onClick: PropTypes.func.isRequired,
   // Tailwind CSS classes to apply to the header cell.
   className: PropTypes.string.isRequired,
-}
+};
 
 /**
  * Renders a non-sortable table header cell.
  */
 const NonSortableHeaderCell = ({ className, children }) => {
-  return <div className={className}>{children}</div>
-}
+  return <div className={className}>{children}</div>;
+};
 
 NonSortableHeaderCell.propTypes = {
   // Tailwind CSS classes to apply to the header cell.
   className: PropTypes.string.isRequired,
-}
+};
 
 /**
  * Default renderer for each header cell in a sortable grid, called by `DataGrid`. This gets
@@ -169,7 +169,7 @@ NonSortableHeaderCell.propTypes = {
  */
 const HeaderCell = ({ cells, cellIndex, meta, children }) => {
   // Get the definition for the current column.
-  const columnConfiguration = meta.columns[cellIndex]
+  const columnConfiguration = meta.columns[cellIndex];
 
   // Add potentially useful props to the cell children referencing React components for custom
   // header cell title renderers. A child of type "object" indicates a React component, while
@@ -181,8 +181,8 @@ const HeaderCell = ({ cells, cellIndex, meta, children }) => {
           sortBy: meta.sortBy,
           sortDirection: meta.sortDirection,
         })
-      : child
-  })
+      : child;
+  });
 
   // Determine whether to render a sortable (`isSortable` true or not used) or non-sortable
   // (`isSortable` false) header cell.
@@ -191,7 +191,7 @@ const HeaderCell = ({ cells, cellIndex, meta, children }) => {
       columnConfiguration.isSortable === undefined) &&
     meta.dataLength > 1
       ? SortableHeaderCell
-      : NonSortableHeaderCell
+      : NonSortableHeaderCell;
 
   return (
     <HeaderCellRenderer
@@ -203,8 +203,8 @@ const HeaderCell = ({ cells, cellIndex, meta, children }) => {
     >
       {headerCellChildren}
     </HeaderCellRenderer>
-  )
-}
+  );
+};
 
 HeaderCell.propTypes = {
   // Cell data for the grid header row
@@ -233,7 +233,7 @@ HeaderCell.propTypes = {
     // Number of rows in the grid
     dataLength: PropTypes.number.isRequired,
   }).isRequired,
-}
+};
 
 /**
  * Display a sortable grid of data according to the provided columns. The data has to be an array
@@ -251,11 +251,11 @@ const SortableGrid = ({
   CustomHeaderCell = HeaderCell,
 }) => {
   // id of the currently sorted column
-  const [sortBy, setSortBy] = useState(initialSort.columnId || columns[0].id)
+  const [sortBy, setSortBy] = useState(initialSort.columnId || columns[0].id);
   // Whether the currently sorted column is sorted in ascending or descending order
   const [sortDirection, setSortDirection] = useState(
     initialSort.direction || SORT_DIRECTIONS.ASC
-  )
+  );
 
   /**
    * Called when the user clicks a column header to set its sorting.
@@ -268,13 +268,13 @@ const SortableGrid = ({
         sortDirection === SORT_DIRECTIONS.ASC
           ? SORT_DIRECTIONS.DESC
           : SORT_DIRECTIONS.ASC
-      )
+      );
     } else {
       // Unsorted column clicked; sort by this column ascending.
-      setSortBy(column)
-      setSortDirection(SORT_DIRECTIONS.ASC)
+      setSortBy(column);
+      setSortDirection(SORT_DIRECTIONS.ASC);
     }
-  }
+  };
 
   // Generate the cells within the header row. The column title can contain a string or a React
   // component.
@@ -283,8 +283,8 @@ const SortableGrid = ({
       id: column.id,
       content: column.title,
       role: "columnheader",
-    }
-  })
+    };
+  });
 
   // Generate the header row itself, containing the cells, as well as sorting information and the
   // column configuration.
@@ -294,25 +294,32 @@ const SortableGrid = ({
       cells: headerCells,
       RowComponent: CustomHeaderCell,
     },
-  ]
+  ];
 
-  // Convert the data (simple array of objects) into a data grid array and render the table.
-  const sortedData = sortData(data, columns, sortBy, sortDirection)
-  const dataRows = convertObjectArrayToDataGrid(sortedData, columns, keyProp)
-  return (
-    <DataGrid
-      data={headerRow.concat(dataRows)}
-      meta={{
-        ...meta,
-        sortBy,
-        columns,
-        sortDirection,
-        handleSortClick,
-        dataLength: dataRows.length,
-      }}
-    />
-  )
-}
+  // Make sure the `sortBy` column actually exists in the columns. Sort by the first column if not.
+  const sortByColumn = columns.find((column) => column.id === sortBy);
+  if (!sortByColumn) {
+    setSortBy(columns[0].id);
+    return null;
+  } else {
+    // Convert the data (simple array of objects) into a data grid array and render the table.
+    const sortedData = sortData(data, columns, sortBy, sortDirection);
+    const dataRows = convertObjectArrayToDataGrid(sortedData, columns, keyProp);
+    return (
+      <DataGrid
+        data={headerRow.concat(dataRows)}
+        meta={{
+          ...meta,
+          sortBy,
+          columns,
+          sortDirection,
+          handleSortClick,
+          dataLength: dataRows.length,
+        }}
+      />
+    );
+  }
+};
 
 SortableGrid.propTypes = {
   // Data to display in the sortable grid
@@ -332,6 +339,6 @@ SortableGrid.propTypes = {
   meta: PropTypes.object,
   // Optional component to render a header cell, overriding the default
   CustomHeaderCell: PropTypes.elementType,
-}
+};
 
-export default SortableGrid
+export default SortableGrid;

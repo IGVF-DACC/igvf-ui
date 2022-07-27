@@ -1,7 +1,7 @@
 // node_modules
-import { Popover } from "@headlessui/react"
-import PropTypes from "prop-types"
-import { useState } from "react"
+import { Popover } from "@headlessui/react";
+import PropTypes from "prop-types";
+import { useState } from "react";
 
 /**
  * Prototype version of a Tooltip component. This needs extending to include:
@@ -9,15 +9,15 @@ import { useState } from "react"
  * * allowing specification of position at least above or below the element
  */
 const Tooltip = ({ content, className = "", children }) => {
-  const [isTooltipVisible, setTooltipVisible] = useState(false)
+  const [isTooltipVisible, setTooltipVisible] = useState(false);
 
   const onMouseEnter = () => {
-    setTooltipVisible(true)
-  }
+    setTooltipVisible(true);
+  };
 
   const onMouseLeave = () => {
-    setTooltipVisible(false)
-  }
+    setTooltipVisible(false);
+  };
 
   return (
     <div
@@ -35,14 +35,14 @@ const Tooltip = ({ content, className = "", children }) => {
         </Popover.Panel>
       </Popover>
     </div>
-  )
-}
+  );
+};
 
 Tooltip.propTypes = {
   // Contents of the tooltip
   content: PropTypes.node.isRequired,
   // Tailwind CSS classes to add to the tooltip wrapper element
   className: PropTypes.string,
-}
+};
 
-export default Tooltip
+export default Tooltip;

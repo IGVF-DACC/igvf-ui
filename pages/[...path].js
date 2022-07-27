@@ -1,16 +1,16 @@
 // node_modules
-import PropTypes from "prop-types"
-// libs
-import Request from "../libs/request"
+import PropTypes from "prop-types";
+// lib
+import Request from "../lib/request";
 // components
 import {
   Collection,
   CollectionItem,
   CollectionItemName,
-} from "../components/collection"
-import { DataPanel } from "../components/data-area"
-import NoCollectionData from "../components/no-collection-data"
-import PagePreamble from "../components/page-preamble"
+} from "../components/collection";
+import { DataPanel } from "../components/data-area";
+import { NoCollectionData } from "../components/no-content";
+import PagePreamble from "../components/page-preamble";
 
 /**
  * Extract a reasonable title from a collection or object.
@@ -18,8 +18,8 @@ import PagePreamble from "../components/page-preamble"
  * @returns {string} Reasonable name extracted from generic object
  */
 const extractTitle = (generic) => {
-  return generic.accession || generic.name || generic.title || generic["@id"]
-}
+  return generic.accession || generic.name || generic.title || generic["@id"];
+};
 
 const FallbackCollection = ({ collection }) => {
   return (
@@ -28,7 +28,11 @@ const FallbackCollection = ({ collection }) => {
       <Collection>
         {collection.length > 0 ? (
           collection.map((item) => (
-            <CollectionItem key={item.uuid} href={item["@id"]}>
+            <CollectionItem
+              key={item.uuid}
+              testid={item.uuid}
+              href={item["@id"]}
+            >
               <CollectionItemName>{extractTitle(item)}</CollectionItemName>
             </CollectionItem>
           ))
@@ -37,13 +41,13 @@ const FallbackCollection = ({ collection }) => {
         )}
       </Collection>
     </>
-  )
-}
+  );
+};
 
 FallbackCollection.propTypes = {
   // @graph of collection object to display
   collection: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
 /**
  * Displays the JSON of the specified object or collection for any object or collection that
@@ -53,7 +57,7 @@ const FallbackObject = ({ generic = null }) => {
   if (generic) {
     // Collections get displayed as a semi-formatted list linking to their objects.
     if (generic["@type"].includes("Collection")) {
-      return <FallbackCollection collection={generic["@graph"]} />
+      return <FallbackCollection collection={generic["@graph"]} />;
     }
 
     // Rendering an individual object as JSON.
@@ -66,28 +70,28 @@ const FallbackObject = ({ generic = null }) => {
           </div>
         </DataPanel>
       </>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 FallbackObject.propTypes = {
   // Any object which doesn't have a page defined.
   generic: PropTypes.object,
-}
+};
 
-export default FallbackObject
+export default FallbackObject;
 
 export const getServerSideProps = async ({ req, resolvedUrl }) => {
-  const request = new Request(req?.headers?.cookie)
-  const generic = await request.getObject(resolvedUrl)
+  const request = new Request(req?.headers?.cookie);
+  const generic = await request.getObject(resolvedUrl);
   if (generic && generic.status !== "error") {
     return {
       props: {
         generic,
         sessionCookie: req?.headers?.cookie,
       },
-    }
+    };
   }
-  return { notFound: true }
-}
+  return { notFound: true };
+};

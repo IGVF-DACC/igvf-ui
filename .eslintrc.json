@@ -4,6 +4,7 @@
   },
   "extends": ["next", "prettier", "eslint:recommended"],
   "rules": {
+    "no-useless-constructor": ["error"],
     "comma-dangle": ["error", "always-multiline"],
     "id-length": ["error", { "min": 2, "exceptions": ["_"] }],
     "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
@@ -11,6 +12,6 @@
     "no-trailing-spaces": ["error"],
     "react/no-unused-prop-types": ["error", { "skipShapeProps": true }],
     "react/prop-types": ["error", { "ignore": ["children"] }],
-    "semi": ["error", "never"]
+    "semi": ["error", "always"]
   }
 }

@@ -1,18 +1,19 @@
 // node_modules
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs"
+import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
-} from "../../components/collection"
-import NoCollectionData from "../../components/no-collection-data"
-import PagePreamble from "../../components/page-preamble"
-// libs
-import buildBreadcrumbs from "../../libs/breadcrumbs"
-import Request from "../../libs/request"
+} from "../../components/collection";
+import { NoCollectionData } from "../../components/no-content";
+import PagePreamble from "../../components/page-preamble";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import Request from "../../lib/request";
 
 const LabList = ({ labs }) => {
   return (
@@ -22,38 +23,41 @@ const LabList = ({ labs }) => {
       <Collection>
         {labs.length > 0 ? (
           <>
-            <CollectionCount count={labs.length} />
-            {labs.map((lab) => (
-              <CollectionItem
-                key={lab.uuid}
-                href={lab["@id"]}
-                label={`Lab ${lab.title}`}
-                status={lab.status}
-              >
-                <CollectionItemName>{lab.title}</CollectionItemName>
-                <div>{lab.institute_label}</div>
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={labs.length} />
+            <CollectionContent collection={labs}>
+              {labs.map((lab) => (
+                <CollectionItem
+                  key={lab.uuid}
+                  testid={lab.uuid}
+                  href={lab["@id"]}
+                  label={`Lab ${lab.title}`}
+                  status={lab.status}
+                >
+                  <CollectionItemName>{lab.title}</CollectionItemName>
+                  <div>{lab.institute_label}</div>
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
         )}
       </Collection>
     </>
-  )
-}
+  );
+};
 
 LabList.propTypes = {
   // Labs to display in the list
   labs: PropTypes.array.isRequired,
-}
+};
 
-export default LabList
+export default LabList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie)
-  const labs = await request.getCollection("lab")
-  const breadcrumbs = await buildBreadcrumbs(labs, "title")
+  const request = new Request(req?.headers?.cookie);
+  const labs = await request.getCollection("lab");
+  const breadcrumbs = await buildBreadcrumbs(labs, "title");
   return {
     props: {
       labs: labs["@graph"],
@@ -61,5 +65,5 @@ export const getServerSideProps = async ({ req }) => {
       breadcrumbs,
       sessionCookie: req?.headers?.cookie,
     },
-  }
-}
+  };
+};

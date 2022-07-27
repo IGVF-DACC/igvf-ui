@@ -1,10 +1,10 @@
 // node_modules
-import Link from "next/link"
-import { PropTypes } from "prop-types"
-import { useContext } from "react"
+import Link from "next/link";
+import { PropTypes } from "prop-types";
+import { useContext } from "react";
 // components
-import GlobalContext from "./global-context"
-import SeparatedList from "./separated-list"
+import GlobalContext from "./global-context";
+import SeparatedList from "./separated-list";
 
 /**
  * Render a single breadcrumb element. If no `href` provided, the element only displays its title
@@ -22,7 +22,7 @@ const BreadcrumbElement = ({ href = "", className, id, children }) => {
           {children}
         </a>
       </Link>
-    )
+    );
   }
 
   // Last element doesn't have a link.
@@ -33,8 +33,8 @@ const BreadcrumbElement = ({ href = "", className, id, children }) => {
     >
       {children}
     </div>
-  )
-}
+  );
+};
 
 BreadcrumbElement.propTypes = {
   // Link to navigate to
@@ -43,7 +43,7 @@ BreadcrumbElement.propTypes = {
   className: PropTypes.string.isRequired,
   // Unique ID within the breadcrumb trail
   id: PropTypes.string.isRequired,
-}
+};
 
 /**
  * Static breadcrumb for the home page.
@@ -53,13 +53,13 @@ const homeBreadcrumb = [
     title: "Home",
     href: "/",
   },
-]
+];
 
 /**
  * Render a breadcrumb trail for the current page.
  */
 const Breadcrumbs = () => {
-  const { breadcrumbs } = useContext(GlobalContext)
+  const { breadcrumbs } = useContext(GlobalContext);
 
   return (
     <nav aria-label="breadcrumbs">
@@ -81,11 +81,11 @@ const Breadcrumbs = () => {
             >
               {breadcrumb.title}
             </BreadcrumbElement>
-          )
+          );
         })}
       </SeparatedList>
     </nav>
-  )
-}
+  );
+};
 
-export default Breadcrumbs
+export default Breadcrumbs;

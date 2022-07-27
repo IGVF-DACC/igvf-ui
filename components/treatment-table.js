@@ -1,9 +1,9 @@
 // node_modules
-import Link from "next/link"
-import PropTypes from "prop-types"
+import Link from "next/link";
+import PropTypes from "prop-types";
 // components
-import { DataGridContainer } from "./data-grid"
-import SortableGrid from "./sortable-grid"
+import { DataGridContainer } from "./data-grid";
+import SortableGrid from "./sortable-grid";
 
 const treatmentColumns = [
   {
@@ -14,7 +14,7 @@ const treatmentColumns = [
         <Link href={source["@id"]}>
           <a>{source.treatment_term_id}</a>
         </Link>
-      )
+      );
     },
   },
   {
@@ -29,7 +29,22 @@ const treatmentColumns = [
     id: "purpose",
     title: "Purpose",
   },
-]
+  {
+    id: "amount",
+    title: "Amount",
+    display: ({ source }) => `${source.amount} ${source.amount_units}`,
+  },
+  {
+    id: "duration",
+    title: "Duration",
+    display: ({ source }) =>
+      source.duration !== undefined
+        ? `${source.duration} ${source.duration_units}${
+            source.duration !== 1 ? "s" : ""
+          }`
+        : "",
+  },
+];
 
 /**
  * Display a sortable table of the given treatments.
@@ -43,12 +58,12 @@ const TreatmentTable = ({ treatments }) => {
         keyProp="treatment_term_id"
       />
     </DataGridContainer>
-  )
-}
+  );
+};
 
 TreatmentTable.propTypes = {
   // Treatments to display
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-}
+};
 
-export default TreatmentTable
+export default TreatmentTable;

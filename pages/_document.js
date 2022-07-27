@@ -1,5 +1,5 @@
 // node_modules
-import { Html, Head, Main, NextScript } from "next/document"
+import { Html, Head, Main, NextScript } from "next/document";
 
 const Document = () => {
   return (
@@ -10,7 +10,7 @@ const Document = () => {
         <NextScript />
       </body>
     </Html>
-  )
-}
+  );
+};
 
-export default Document
+export default Document;

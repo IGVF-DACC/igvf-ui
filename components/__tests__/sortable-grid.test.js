@@ -1,6 +1,6 @@
-import { fireEvent, render, screen, within } from "@testing-library/react"
-import { DataGridContainer } from "../data-grid"
-import SortableGrid from "../sortable-grid"
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { DataGridContainer } from "../data-grid";
+import SortableGrid from "../sortable-grid";
 
 const data = [
   {
@@ -36,11 +36,11 @@ const data = [
     status: "released",
     uuid: "74a0dda3-ea39-459b-b309-52b302638cde",
   },
-]
+];
 
 const CustomDescriptionHeader = () => {
-  return <div className="bg-slate-100">Description</div>
-}
+  return <div className="bg-slate-100">Description</div>;
+};
 
 describe("SortableGrid", () => {
   it("renders a two-column sortable table", () => {
@@ -64,92 +64,92 @@ describe("SortableGrid", () => {
         id: "date_obtained",
         title: "Date Obtained",
       },
-    ]
+    ];
 
     render(
       <DataGridContainer>
         <SortableGrid data={data} columns={columns} />
       </DataGridContainer>
-    )
+    );
 
-    let table = screen.getByRole("table")
-    expect(table).toBeInTheDocument()
+    let table = screen.getByRole("table");
+    expect(table).toBeInTheDocument();
 
-    const headers = within(table).getAllByRole("columnheader")
-    expect(headers).toHaveLength(4)
-    let cells = within(table).getAllByRole("cell")
-    expect(cells).toHaveLength(8)
+    const headers = within(table).getAllByRole("columnheader");
+    expect(headers).toHaveLength(4);
+    let cells = within(table).getAllByRole("cell");
+    expect(cells).toHaveLength(8);
 
-    expect(headers[0]).toHaveStyle({ gridRow: "1 / 2", gridColumn: "1 / 2" })
-    expect(headers[1]).toHaveStyle({ gridRow: "1 / 2", gridColumn: "2 / 3" })
-    expect(headers[2]).toHaveStyle({ gridRow: "1 / 2", gridColumn: "3 / 4" })
-    expect(headers[3]).toHaveStyle({ gridRow: "1 / 2", gridColumn: "4 / 5" })
-    expect(cells[0]).toHaveStyle({ gridRow: "2 / 3", gridColumn: "1 / 2" })
-    expect(cells[1]).toHaveStyle({ gridRow: "2 / 3", gridColumn: "2 / 3" })
-    expect(cells[2]).toHaveStyle({ gridRow: "2 / 3", gridColumn: "3 / 4" })
-    expect(cells[3]).toHaveStyle({ gridRow: "2 / 3", gridColumn: "4 / 5" })
-    expect(cells[4]).toHaveStyle({ gridRow: "3 / 4", gridColumn: "1 / 2" })
-    expect(cells[5]).toHaveStyle({ gridRow: "3 / 4", gridColumn: "2 / 3" })
-    expect(cells[6]).toHaveStyle({ gridRow: "3 / 4", gridColumn: "3 / 4" })
-    expect(cells[7]).toHaveStyle({ gridRow: "3 / 4", gridColumn: "4 / 5" })
+    expect(headers[0]).toHaveStyle({ gridRow: "1 / 2", gridColumn: "1 / 2" });
+    expect(headers[1]).toHaveStyle({ gridRow: "1 / 2", gridColumn: "2 / 3" });
+    expect(headers[2]).toHaveStyle({ gridRow: "1 / 2", gridColumn: "3 / 4" });
+    expect(headers[3]).toHaveStyle({ gridRow: "1 / 2", gridColumn: "4 / 5" });
+    expect(cells[0]).toHaveStyle({ gridRow: "2 / 3", gridColumn: "1 / 2" });
+    expect(cells[1]).toHaveStyle({ gridRow: "2 / 3", gridColumn: "2 / 3" });
+    expect(cells[2]).toHaveStyle({ gridRow: "2 / 3", gridColumn: "3 / 4" });
+    expect(cells[3]).toHaveStyle({ gridRow: "2 / 3", gridColumn: "4 / 5" });
+    expect(cells[4]).toHaveStyle({ gridRow: "3 / 4", gridColumn: "1 / 2" });
+    expect(cells[5]).toHaveStyle({ gridRow: "3 / 4", gridColumn: "2 / 3" });
+    expect(cells[6]).toHaveStyle({ gridRow: "3 / 4", gridColumn: "3 / 4" });
+    expect(cells[7]).toHaveStyle({ gridRow: "3 / 4", gridColumn: "4 / 5" });
 
-    const sortableHeaders = within(table).getAllByRole("button")
-    expect(sortableHeaders).toHaveLength(3)
+    const sortableHeaders = within(table).getAllByRole("button");
+    expect(sortableHeaders).toHaveLength(3);
 
     // Before clicking a header cell to change sorting.
-    expect(cells[0]).toHaveTextContent("ENCBS255XED")
-    expect(cells[1]).toHaveTextContent("K562 / cell line")
-    expect(cells[2]).toHaveTextContent("RNA-seq on K562")
-    expect(cells[3]).not.toHaveValue()
-    expect(cells[4]).toHaveTextContent("ENCBS697LCA")
-    expect(cells[5]).toHaveTextContent("HepG2 / cell line")
-    expect(cells[6]).toHaveTextContent("RNA-seq on HepG2")
-    expect(cells[7]).toHaveTextContent("2021-09-15")
+    expect(cells[0]).toHaveTextContent("ENCBS255XED");
+    expect(cells[1]).toHaveTextContent("K562 / cell line");
+    expect(cells[2]).toHaveTextContent("RNA-seq on K562");
+    expect(cells[3]).not.toHaveValue();
+    expect(cells[4]).toHaveTextContent("ENCBS697LCA");
+    expect(cells[5]).toHaveTextContent("HepG2 / cell line");
+    expect(cells[6]).toHaveTextContent("RNA-seq on HepG2");
+    expect(cells[7]).toHaveTextContent("2021-09-15");
 
     // Click the accession header.
-    let headerButton = within(headers[0]).getByRole("button")
-    fireEvent.click(headerButton)
-    cells = within(table).getAllByRole("cell")
+    let headerButton = within(headers[0]).getByRole("button");
+    fireEvent.click(headerButton);
+    cells = within(table).getAllByRole("cell");
 
     // Make sure it now sorts by accession, descending.
-    expect(cells[0]).toHaveTextContent("ENCBS697LCA")
-    expect(cells[1]).toHaveTextContent("HepG2 / cell line")
-    expect(cells[2]).toHaveTextContent("RNA-seq on HepG2")
-    expect(cells[3]).toHaveTextContent("2021-09-15")
-    expect(cells[4]).toHaveTextContent("ENCBS255XED")
-    expect(cells[5]).toHaveTextContent("K562 / cell line")
-    expect(cells[6]).toHaveTextContent("RNA-seq on K562")
-    expect(cells[7]).not.toHaveValue()
+    expect(cells[0]).toHaveTextContent("ENCBS697LCA");
+    expect(cells[1]).toHaveTextContent("HepG2 / cell line");
+    expect(cells[2]).toHaveTextContent("RNA-seq on HepG2");
+    expect(cells[3]).toHaveTextContent("2021-09-15");
+    expect(cells[4]).toHaveTextContent("ENCBS255XED");
+    expect(cells[5]).toHaveTextContent("K562 / cell line");
+    expect(cells[6]).toHaveTextContent("RNA-seq on K562");
+    expect(cells[7]).not.toHaveValue();
 
     // Click the biosample header.
-    headerButton = within(headers[1]).getByRole("button")
-    fireEvent.click(headerButton)
-    cells = within(table).getAllByRole("cell")
+    headerButton = within(headers[1]).getByRole("button");
+    fireEvent.click(headerButton);
+    cells = within(table).getAllByRole("cell");
 
     // Make sure it sorts by biosample, ascending.
-    expect(cells[0]).toHaveTextContent("ENCBS697LCA")
-    expect(cells[1]).toHaveTextContent("HepG2 / cell line")
-    expect(cells[2]).toHaveTextContent("RNA-seq on HepG2")
-    expect(cells[3]).toHaveTextContent("2021-09-15")
-    expect(cells[4]).toHaveTextContent("ENCBS255XED")
-    expect(cells[5]).toHaveTextContent("K562 / cell line")
-    expect(cells[6]).toHaveTextContent("RNA-seq on K562")
-    expect(cells[7]).not.toHaveValue()
+    expect(cells[0]).toHaveTextContent("ENCBS697LCA");
+    expect(cells[1]).toHaveTextContent("HepG2 / cell line");
+    expect(cells[2]).toHaveTextContent("RNA-seq on HepG2");
+    expect(cells[3]).toHaveTextContent("2021-09-15");
+    expect(cells[4]).toHaveTextContent("ENCBS255XED");
+    expect(cells[5]).toHaveTextContent("K562 / cell line");
+    expect(cells[6]).toHaveTextContent("RNA-seq on K562");
+    expect(cells[7]).not.toHaveValue();
 
     // Click the biosample header again.
-    fireEvent.click(headerButton)
-    cells = within(table).getAllByRole("cell")
+    fireEvent.click(headerButton);
+    cells = within(table).getAllByRole("cell");
 
     // Make sure it sorts by biosample, descending.
-    expect(cells[0]).toHaveTextContent("ENCBS255XED")
-    expect(cells[1]).toHaveTextContent("K562 / cell line")
-    expect(cells[2]).toHaveTextContent("RNA-seq on K562")
-    expect(cells[3]).not.toHaveValue()
-    expect(cells[4]).toHaveTextContent("ENCBS697LCA")
-    expect(cells[5]).toHaveTextContent("HepG2 / cell line")
-    expect(cells[6]).toHaveTextContent("RNA-seq on HepG2")
-    expect(cells[7]).toHaveTextContent("2021-09-15")
-  })
+    expect(cells[0]).toHaveTextContent("ENCBS255XED");
+    expect(cells[1]).toHaveTextContent("K562 / cell line");
+    expect(cells[2]).toHaveTextContent("RNA-seq on K562");
+    expect(cells[3]).not.toHaveValue();
+    expect(cells[4]).toHaveTextContent("ENCBS697LCA");
+    expect(cells[5]).toHaveTextContent("HepG2 / cell line");
+    expect(cells[6]).toHaveTextContent("RNA-seq on HepG2");
+    expect(cells[7]).toHaveTextContent("2021-09-15");
+  });
 
   it("renders a table with a custom sorting function", () => {
     const columns = [
@@ -173,44 +173,44 @@ describe("SortableGrid", () => {
         title: "Description",
         isSortable: false,
       },
-    ]
+    ];
 
     render(
       <DataGridContainer>
         <SortableGrid data={data} columns={columns} keyProp="uuid" />
       </DataGridContainer>
-    )
+    );
 
-    let cells = screen.getAllByRole("cell")
-    expect(cells[2]).toHaveTextContent("9")
-    expect(cells[6]).toHaveTextContent("14")
+    let cells = screen.getAllByRole("cell");
+    expect(cells[2]).toHaveTextContent("9");
+    expect(cells[6]).toHaveTextContent("14");
 
     // Click the Age column header.
-    const ageColumnHeader = screen.getByRole("columnheader", { name: "Age" })
-    const ageSortButton = within(ageColumnHeader).getByRole("button")
-    fireEvent.click(ageSortButton)
+    const ageColumnHeader = screen.getByRole("columnheader", { name: "Age" });
+    const ageSortButton = within(ageColumnHeader).getByRole("button");
+    fireEvent.click(ageSortButton);
 
     // Make sure it sorts by age, ascending.
-    cells = screen.getAllByRole("cell")
-    expect(cells[2]).toHaveTextContent("9")
-    expect(cells[6]).toHaveTextContent("14")
+    cells = screen.getAllByRole("cell");
+    expect(cells[2]).toHaveTextContent("9");
+    expect(cells[6]).toHaveTextContent("14");
 
     // Click the Age column header again.
-    fireEvent.click(ageSortButton)
+    fireEvent.click(ageSortButton);
 
     // Make sure it sorts by age, descending.
-    cells = screen.getAllByRole("cell")
-    expect(cells[2]).toHaveTextContent("14")
-    expect(cells[6]).toHaveTextContent("9")
+    cells = screen.getAllByRole("cell");
+    expect(cells[2]).toHaveTextContent("14");
+    expect(cells[6]).toHaveTextContent("9");
 
     // Click the Age column header yet again.
-    fireEvent.click(ageSortButton)
+    fireEvent.click(ageSortButton);
 
     // Make sure it returns to sorting by age, ascending.
-    cells = screen.getAllByRole("cell")
-    expect(cells[2]).toHaveTextContent("9")
-    expect(cells[6]).toHaveTextContent("14")
-  })
+    cells = screen.getAllByRole("cell");
+    expect(cells[2]).toHaveTextContent("9");
+    expect(cells[6]).toHaveTextContent("14");
+  });
 
   it("Renders a custom header component", () => {
     const columns = [
@@ -222,16 +222,21 @@ describe("SortableGrid", () => {
         id: "description",
         title: <CustomDescriptionHeader />,
       },
-    ]
+    ];
 
     render(
       <DataGridContainer>
-        <SortableGrid data={data} columns={columns} keyProp="uuid" />
+        <SortableGrid
+          data={data}
+          columns={columns}
+          keyProp="uuid"
+          initialSort={{ columnId: "doesnt_exist" }}
+        />
       </DataGridContainer>
-    )
+    );
 
-    const headers = screen.getAllByRole("columnheader")
-    const descriptionDiv = within(headers[1]).getByText("Description")
-    expect(descriptionDiv).toHaveClass("bg-slate-100")
-  })
-})
+    const headers = screen.getAllByRole("columnheader");
+    const descriptionDiv = within(headers[1]).getByText("Description");
+    expect(descriptionDiv).toHaveClass("bg-slate-100");
+  });
+});

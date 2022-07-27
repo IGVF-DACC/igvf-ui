@@ -1,7 +1,15 @@
-import "@testing-library/jest-dom"
+import "@testing-library/jest-dom";
 
-import { setConfig } from "next/config"
-import config from "./next.config"
+import { setConfig } from "next/config";
+const config = {
+  reactStrictMode: true,
+  serverRuntimeConfig: {
+    BACKEND_URL: "",
+  },
+  publicRuntimeConfig: {
+    PUBLIC_BACKEND_URL: "",
+  },
+};
 
 // Use runtime config in tests.
-setConfig(config)
+setConfig(config);

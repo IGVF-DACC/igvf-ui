@@ -34,13 +34,13 @@
  * @param {string} password - The password to use for the login.
  */
 Cypress.Commands.add("loginAuth0", (username, password) => {
-  cy.visit("http://localhost:3000/")
-  cy.clearLocalStorage()
+  cy.visit("http://localhost:3000/");
+  cy.clearLocalStorage();
 
-  const client_id = Cypress.env("AUTH_CLIENT_ID")
-  const client_secret = Cypress.env("AUTH_CLIENT_SECRET")
-  const audience = Cypress.env("AUTH_AUDIENCE")
-  const scope = "openid profile email offline_access"
+  const client_id = Cypress.env("AUTH_CLIENT_ID");
+  const client_secret = Cypress.env("AUTH_CLIENT_SECRET");
+  const audience = Cypress.env("AUTH_AUDIENCE");
+  const scope = "openid profile email offline_access";
 
   cy.request({
     method: "POST",
@@ -75,8 +75,8 @@ Cypress.Commands.add("loginAuth0", (username, password) => {
           },
           expiresAt: Math.floor(Date.now() / 1000) + expires_in,
         })
-      )
-      cy.reload()
-    })
-  })
-})
+      );
+      cy.reload();
+    });
+  });
+});
