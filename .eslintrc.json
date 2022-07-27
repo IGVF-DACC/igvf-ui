@@ -6,7 +6,6 @@
   "rules": {
     "no-useless-constructor": ["error"],
     "comma-dangle": ["error", "always-multiline"],
-    "id-length": ["error", { "min": 2, "exceptions": ["_"] }],
     "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
     "object-curly-spacing": ["error", "always"],
     "no-trailing-spaces": ["error"],

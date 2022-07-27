@@ -6,6 +6,7 @@ import {
   ChevronRightIcon,
   ClipboardCopyIcon,
 } from "@heroicons/react/solid";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -18,7 +19,6 @@ import GlobalContext from "./global-context";
 import Icon from "./icon";
 import Instruction from "./instruction";
 import Modal from "./modal";
-import Paragraph from "./paragraph";
 import SortableGrid from "./sortable-grid";
 // lib
 import {
@@ -28,10 +28,15 @@ import {
   flattenCollection,
   generateHiddenColumnsUrl,
   generateTableColumns,
+  generateTsvFromCollection,
   loadStoredHiddenColumns,
   saveStoredHiddenColumns,
   sortColumns,
 } from "../lib/collection-table";
+import { isDarkMode } from "../lib/general";
+// public
+import excelFileOrigin from "../public/img/excel-file-origin.png";
+import excelFileOriginDark from "../public/img/excel-file-origin-dark.png";
 
 /**
  * Displays the buttons to hide or show all columns at once.
@@ -100,7 +105,7 @@ const ColumnSelector = ({
 
   return (
     <>
-      <Button className="grow sm:grow-0" onClick={() => setIsOpen(true)}>
+      <Button className="w-full sm:w-auto" onClick={() => setIsOpen(true)}>
         Show / Hide Columns
         <HiddenColumnsIndicator isAnyColumnHidden={hiddenColumns.length > 0} />
       </Button>
@@ -250,17 +255,20 @@ const UrlColumnControls = ({
         Save URL Columns to Browser
       </Button>
       <Button onClick={clearHashtagHiddenColumns}>Clear URL Columns</Button>
-      <Instruction title="Save and Clear URL Columns">
-        <Paragraph>
+      <Instruction
+        className="prose dark:prose-invert"
+        title="Help for saving and clearing URL columns"
+      >
+        <p>
           <strong>Save URL Columns to Browser</strong> saves the hidden columns
           in your URL to your browser, overwriting any shown and hidden columns
           you had previously saved.
-        </Paragraph>
-        <Paragraph>
+        </p>
+        <p>
           <strong>Clear URL Columns</strong> restores the shown and hidden
           columns you have saved to your browser, clearing the URL of hidden
           columns.
-        </Paragraph>
+        </p>
       </Instruction>
     </>
   );
@@ -295,8 +303,11 @@ const BrowserColumnControls = ({
         onChangeAllHiddenColumns={onChangeAllHiddenColumns}
       />
       <ColumnUrlCopy hiddenColumns={hiddenColumns} />
-      <Instruction title="Show / Hide Columns and Copy URL Columns">
-        <Paragraph>
+      <Instruction
+        className="prose dark:prose-invert"
+        title="Help for viewing and hiding columns, and copying URL columns"
+      >
+        <p>
           <strong>Show / Hide Columns</strong> lets you choose which individual
           columns to show and hide, and lets you show or hide all columns at
           once, except for the <i>ID</i> column. The
@@ -304,13 +315,13 @@ const BrowserColumnControls = ({
           symbol indicates at least one column is hidden. The
           <Icon.TableColumnsVisible className={className} />
           symbol indicates all columns are shown.
-        </Paragraph>
-        <Paragraph>
+        </p>
+        <p>
           <strong>Copy URL Columns</strong> copies a URL with your currently
           hidden columns attached to it. You can share this URL with others so
           they can see this collection with the same columns hidden, or you can
           paste it into another browser.
-        </Paragraph>
+        </p>
       </Instruction>
     </>
   );
@@ -334,6 +345,90 @@ const ColumnControls = ({ children }) => {
   return (
     <div className="my-1 flex flex-wrap items-center gap-1">{children}</div>
   );
+};
+
+/**
+ * Handle the user downloading the table as a TSV file, and render the button to trigger this.
+ * https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side#answer-14966131
+ */
+const DownloadCollectionTrigger = ({ collection, columns, collectionType }) => {
+  // True if the download modal is open
+  const [isDownloadModalVisible, setIsDownloadModalVisible] = useState(false);
+
+  /**
+   * Called when the user clicks the "Download TSV" button in the download modal.
+   */
+  const handleDownload = () => {
+    setIsDownloadModalVisible(false);
+    const encodedTsvContent = generateTsvFromCollection(collection, columns);
+
+    // To download to a specific filename, add a hidden <a> element to the DOM and click it. This element
+    // gets removed with GC.
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedTsvContent);
+    link.setAttribute("download", `${collectionType}.tsv`);
+    document.body.appendChild(link);
+    link.click();
+  };
+
+  return (
+    <>
+      <Button
+        className="w-full lg:ml-auto lg:w-auto"
+        onClick={() => setIsDownloadModalVisible(true)}
+      >
+        Download TSV
+      </Button>
+      <Modal
+        isOpen={isDownloadModalVisible}
+        onClose={() => setIsDownloadModalVisible(false)}
+      >
+        <Modal.Header onClose={() => setIsDownloadModalVisible(false)}>
+          Download as TSV file
+        </Modal.Header>
+        <Modal.Body>
+          <div className="prose dark:prose-invert">
+            <p>
+              The downloaded TSV file includes the same columns currently
+              visible in the table.
+            </p>
+            <p>
+              Most spreadsheet applications (e.g. Google Sheets and Apple
+              Numbers) use UTF-8 character encoding and properly display special
+              characters in the TSV file. For Microsoft Excel, make sure to use
+              the <strong>Unicode (UTF-8)</strong> file origin:
+            </p>
+            <div className="mx-auto mt-3 max-w-2xl">
+              <Image
+                src={isDarkMode() ? excelFileOriginDark : excelFileOrigin}
+                alt="Excel TSV import file origin"
+              />
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            type="primary-outline"
+            onClick={() => setIsDownloadModalVisible(false)}
+          >
+            Close
+          </Button>
+          <Button type="primary" onClick={handleDownload}>
+            Download TSV
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
+
+DownloadCollectionTrigger.propTypes = {
+  // Collection of data to download
+  collection: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // All available columns, not including hidden columns
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Type of collection to download
+  collectionType: PropTypes.string.isRequired,
 };
 
 /**
@@ -424,6 +519,7 @@ ScrollIndicators.propTypes = {
  * Displays the table view for a collection page, instead of a list view.
  */
 const CollectionTable = ({ collection }) => {
+  // All schemas from which we extract the columns for the current collection type
   const { profiles } = useContext(GlobalContext);
   // Holds the IDs of the hidden columns
   const [hiddenColumns, setHiddenColumns] = useState([]);
@@ -532,6 +628,11 @@ const CollectionTable = ({ collection }) => {
               onChangeAllHiddenColumns={changeAllHiddenColumns}
             />
           )}
+          <DownloadCollectionTrigger
+            collection={flattenedCollection}
+            columns={sortedColumns}
+            collectionType={collectionType}
+          />
         </ColumnControls>
         <ScrollIndicators gridRef={gridRef}>
           <DataGridContainer ref={gridRef}>

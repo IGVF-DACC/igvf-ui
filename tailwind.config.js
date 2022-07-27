@@ -83,7 +83,19 @@ module.exports = {
         "min-2": "repeat(2, minmax(0, min-content))",
         "data-item": "fit-content(200px) 1fr",
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            "max-width": "none",
+            p: {
+              "margin-top": "0.5rem",
+              "margin-bottom": "0.5rem",
+              "line-height": "1.375",
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };
