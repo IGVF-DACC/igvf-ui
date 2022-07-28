@@ -9,6 +9,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 // lib
@@ -20,49 +21,51 @@ const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={sampleOntologyTerm.status} />
-          </DataItemValue>
-          <OntologyTermDataItems ontologyTerm={sampleOntologyTerm}>
-            {sampleOntologyTerm.organ_slims.length > 0 && (
-              <>
-                <DataItemLabel>Organs</DataItemLabel>
-                <DataItemValue>
-                  {sampleOntologyTerm.organ_slims.join(", ")}
-                </DataItemValue>
-              </>
-            )}
-            {sampleOntologyTerm.cell_slims.length > 0 && (
-              <>
-                <DataItemLabel>Cells</DataItemLabel>
-                <DataItemValue>
-                  {sampleOntologyTerm.cell_slims.join(", ")}
-                </DataItemValue>
-              </>
-            )}
-            {sampleOntologyTerm.developmental_slims.length > 0 && (
-              <>
-                <DataItemLabel>Developmental Slims</DataItemLabel>
-                <DataItemValue>
-                  {sampleOntologyTerm.developmental_slims.join(", ")}
-                </DataItemValue>
-              </>
-            )}
-            {sampleOntologyTerm.system_slims.length > 0 && (
-              <>
-                <DataItemLabel>System Slims</DataItemLabel>
-                <DataItemValue>
-                  {sampleOntologyTerm.system_slims.join(", ")}
-                </DataItemValue>
-              </>
-            )}
-          </OntologyTermDataItems>
-        </DataArea>
-      </DataPanel>
+      <EditableItem item={sampleOntologyTerm}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={sampleOntologyTerm.status} />
+            </DataItemValue>
+            <OntologyTermDataItems ontologyTerm={sampleOntologyTerm}>
+              {sampleOntologyTerm.organ_slims.length > 0 && (
+                <>
+                  <DataItemLabel>Organs</DataItemLabel>
+                  <DataItemValue>
+                    {sampleOntologyTerm.organ_slims.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+              {sampleOntologyTerm.cell_slims.length > 0 && (
+                <>
+                  <DataItemLabel>Cells</DataItemLabel>
+                  <DataItemValue>
+                    {sampleOntologyTerm.cell_slims.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+              {sampleOntologyTerm.developmental_slims.length > 0 && (
+                <>
+                  <DataItemLabel>Developmental Slims</DataItemLabel>
+                  <DataItemValue>
+                    {sampleOntologyTerm.developmental_slims.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+              {sampleOntologyTerm.system_slims.length > 0 && (
+                <>
+                  <DataItemLabel>System Slims</DataItemLabel>
+                  <DataItemValue>
+                    {sampleOntologyTerm.system_slims.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+            </OntologyTermDataItems>
+          </DataArea>
+        </DataPanel>
+      </EditableItem>
     </>
   );
 };

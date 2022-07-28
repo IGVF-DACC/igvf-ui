@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
@@ -23,21 +24,23 @@ const AssayOntologyTermList = ({ assayOntologyTerms }) => {
       <Collection>
         {assayOntologyTerms.length > 0 ? (
           <>
-            <CollectionCount count={assayOntologyTerms.length} />
-            {assayOntologyTerms.map((assayOntologyTerm) => (
-              <CollectionItem
-                key={assayOntologyTerm.uuid}
-                testid={assayOntologyTerm.uuid}
-                href={assayOntologyTerm["@id"]}
-                label={`Assay term ${assayOntologyTerm.term_id}`}
-                status={assayOntologyTerm.status}
-              >
-                <CollectionItemName>
-                  {assayOntologyTerm.term_id}
-                </CollectionItemName>
-                <div>{assayOntologyTerm.term_name}</div>
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={assayOntologyTerms.length} />
+            <CollectionContent collection={assayOntologyTerms}>
+              {assayOntologyTerms.map((assayOntologyTerm) => (
+                <CollectionItem
+                  key={assayOntologyTerm.uuid}
+                  testid={assayOntologyTerm.uuid}
+                  href={assayOntologyTerm["@id"]}
+                  label={`Assay term ${assayOntologyTerm.term_id}`}
+                  status={assayOntologyTerm.status}
+                >
+                  <CollectionItemName>
+                    {assayOntologyTerm.term_id}
+                  </CollectionItemName>
+                  <div>{assayOntologyTerm.term_name}</div>
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
