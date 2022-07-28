@@ -9,11 +9,12 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
-import { NoCollectionData } from "../../components/no-content";
+import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const HumanDonorsList = ({ donors }) => {
   return (
@@ -54,15 +55,21 @@ HumanDonorsList.propTypes = {
 export default HumanDonorsList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const donors = await request.getCollection("human-donors");
-  const breadcrumbs = await buildBreadcrumbs(donors, "title");
-  return {
-    props: {
-      donors: donors["@graph"],
-      pageContext: { title: donors.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(donors)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      donors,
+      "title",
+      req.headers.cookie
+    );
+    return {
+      props: {
+        donors: donors["@graph"],
+        pageContext: { title: donors.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(donors);
 };

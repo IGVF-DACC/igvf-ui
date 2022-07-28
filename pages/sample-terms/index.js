@@ -12,7 +12,8 @@ import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const SampleOntologyTermList = ({ sampleOntologyTerms }) => {
   return (
@@ -26,6 +27,7 @@ const SampleOntologyTermList = ({ sampleOntologyTerms }) => {
             {sampleOntologyTerms.map((sampleOntologyTerm) => (
               <CollectionItem
                 key={sampleOntologyTerm.uuid}
+                testid={sampleOntologyTerm.uuid}
                 href={sampleOntologyTerm["@id"]}
                 label={`Sample ontology term ${sampleOntologyTerm.term_id}`}
                 status={sampleOntologyTerm.status}
@@ -53,15 +55,21 @@ SampleOntologyTermList.propTypes = {
 export default SampleOntologyTermList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const sampleOntologyTerms = await request.getCollection("sample-terms");
-  const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerms, "title");
-  return {
-    props: {
-      sampleOntologyTerms: sampleOntologyTerms["@graph"],
-      pageContext: { title: sampleOntologyTerms.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(sampleOntologyTerms)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      sampleOntologyTerms,
+      "title",
+      req.headers.cookie
+    );
+    return {
+      props: {
+        sampleOntologyTerms: sampleOntologyTerms["@graph"],
+        pageContext: { title: sampleOntologyTerms.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(sampleOntologyTerms);
 };

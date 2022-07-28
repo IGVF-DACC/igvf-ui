@@ -10,9 +10,11 @@
 
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
+import { useRouter } from "next/router";
 import { createContext, useEffect, useRef, useState } from "react";
 // components
 import { useAuthenticated } from "./authentication";
+import { useSessionStorage } from "./browser-storage";
 // lib
 import {
   getSession,
@@ -38,6 +40,8 @@ export default SessionContext;
 export const Session = ({ children }) => {
   // Tracks the back-end session object
   const [session, setSession] = useState(null);
+  // Tracks the URL to redirect to after signing in
+  const [redirectTo, setRedirectTo] = useSessionStorage("post-signin-path", "");
   // Auth0 information
   const { getAccessTokenSilently, logout } = useAuth0();
   // Stable authenticated state
@@ -46,6 +50,7 @@ export const Session = ({ children }) => {
   const prevAuthenticated = useRef(isAuthenticated);
   // Set to true once we start the process of signing out of the server
   const isServerAuthPending = useRef(false);
+  const router = useRouter();
 
   // Detects and handles the authorization provider changing from signed out to signed in by
   // signing into the server.
@@ -85,12 +90,25 @@ export const Session = ({ children }) => {
             getSession().then((sessionResponse) => {
               setSession(sessionResponse);
               isServerAuthPending.current = false;
+              if (redirectTo) {
+                router.replace(redirectTo);
+                setRedirectTo("");
+              }
             });
           }
         });
     }
     // Once the user has logged into auth0, turn around and log into the server.
-  }, [getAccessTokenSilently, isAuthenticated, logout, session, setSession]);
+  }, [
+    getAccessTokenSilently,
+    isAuthenticated,
+    logout,
+    redirectTo,
+    router,
+    session,
+    setRedirectTo,
+    setSession,
+  ]);
 
   // Detects and handles the authorization provider changing from signed in to signed out by
   // signing out of the server.
@@ -124,7 +142,7 @@ export const Session = ({ children }) => {
   }, [isAuthenticated, session, setSession]);
 
   return (
-    <SessionContext.Provider value={{ session }}>
+    <SessionContext.Provider value={{ session, setRedirectTo }}>
       {children}
     </SessionContext.Provider>
   );

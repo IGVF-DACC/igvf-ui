@@ -12,7 +12,8 @@ import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const User = ({ lab, user }) => {
   return (
@@ -41,20 +42,23 @@ User.propTypes = {
 export default User;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
-
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const user = await request.getObject(`/users/${params.uuid}/`);
-  if (user && user.status !== "error") {
-    const lab = await request.getObject(user.lab);
-    const breadcrumbs = await buildBreadcrumbs(user, "title");
+  if (FetchRequest.isResponseSuccess(user)) {
+    const lab = await request.getObject(user.lab, {});
+    const breadcrumbs = await buildBreadcrumbs(
+      user,
+      "title",
+      req.headers.cookie
+    );
     return {
       props: {
         lab,
         pageContext: { title: user.title },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
-        user: user,
+        user,
       },
     };
   }
+  return errorObjectToProps(user);
 };

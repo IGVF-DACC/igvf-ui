@@ -9,11 +9,12 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
-import { NoCollectionData } from "../../components/no-content";
+import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const TechnicalSampleList = ({ technicalSamples }) => {
   return (
@@ -59,15 +60,21 @@ TechnicalSampleList.propTypes = {
 export default TechnicalSampleList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const technicalSamples = await request.getCollection("technical-samples");
-  const breadcrumbs = await buildBreadcrumbs(technicalSamples, "title");
-  return {
-    props: {
-      technicalSamples: technicalSamples["@graph"],
-      pageContext: { title: technicalSamples.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(technicalSamples)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      technicalSamples,
+      "title",
+      req.headers.cookie
+    );
+    return {
+      props: {
+        technicalSamples: technicalSamples["@graph"],
+        pageContext: { title: technicalSamples.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(technicalSamples);
 };

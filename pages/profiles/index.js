@@ -6,7 +6,8 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const ChildElement = (props) => {
   const schema = props.schemas[props.schemaKey];
@@ -89,15 +90,17 @@ SchemaList.propTypes = {
 export default SchemaList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const schemas = await request.getCollection("profiles");
-  const breadcrumbs = await buildBreadcrumbs(schemas);
-  return {
-    props: {
-      schemas,
-      pageContext: { title: "Schemas" },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(schemas)) {
+    const breadcrumbs = await buildBreadcrumbs(schemas, "", req.headers.cookie);
+    return {
+      props: {
+        schemas,
+        pageContext: { title: "Schemas" },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(schemas);
 };

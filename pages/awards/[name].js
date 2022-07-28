@@ -14,7 +14,8 @@ import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { formatDateRange } from "../../lib/dates";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const Award = ({ award, pis }) => {
   return (
@@ -87,20 +88,23 @@ Award.propTypes = {
 export default Award;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const award = await request.getObject(`/awards/${params.name}/`);
-  if (award && award.status !== "error") {
-    const pis = award.pi ? await request.getMultipleObjects(award.pi) : [];
-    const breadcrumbs = await buildBreadcrumbs(award, "name");
+  if (FetchRequest.isResponseSuccess(award)) {
+    const pis = award.pi ? await request.getMultipleObjects(award.pi, []) : [];
+    const breadcrumbs = await buildBreadcrumbs(
+      award,
+      "name",
+      req.headers.cookie
+    );
     return {
       props: {
         award,
         pis,
         pageContext: { title: award.name },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(award);
 };

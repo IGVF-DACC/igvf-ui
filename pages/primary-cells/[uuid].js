@@ -17,7 +17,8 @@ import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const PrimaryCell = ({
   primaryCell,
@@ -102,21 +103,29 @@ PrimaryCell.propTypes = {
 export default PrimaryCell;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
-  if (primaryCell && primaryCell.status !== "error") {
-    const award = await request.getObject(primaryCell.award);
-    const donors = await request.getMultipleObjects(primaryCell.donors);
-    const lab = await request.getObject(primaryCell.lab);
-    const source = await request.getObject(primaryCell.source);
-    const treatments = await request.getMultipleObjects(primaryCell.treatments);
+  if (FetchRequest.isResponseSuccess(primaryCell)) {
+    const award = await request.getObject(primaryCell.award, {});
+    const donors = primaryCell.donors
+      ? await request.getMultipleObjects(primaryCell.donors, {})
+      : [];
+    const lab = await request.getObject(primaryCell.lab, {});
+    const source = await request.getObject(primaryCell.source, {});
+    const treatments = primaryCell.treatments
+      ? await request.getMultipleObjects(primaryCell.treatments, {})
+      : [];
     const biosampleTerm = primaryCell.biosample_term
-      ? await request.getObject(primaryCell.biosample_term)
+      ? await request.getObject(primaryCell.biosample_term, {})
       : null;
     const diseaseTerm = primaryCell.disease_term
-      ? await request.getObject(primaryCell.disease_term)
+      ? await request.getObject(primaryCell.disease_term, {})
       : null;
-    const breadcrumbs = await buildBreadcrumbs(primaryCell, "accession");
+    const breadcrumbs = await buildBreadcrumbs(
+      primaryCell,
+      "accession",
+      req.headers.cookie
+    );
     return {
       props: {
         primaryCell,
@@ -129,9 +138,8 @@ export const getServerSideProps = async ({ params, req }) => {
         diseaseTerm,
         pageContext: { title: primaryCell.accession },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(primaryCell);
 };

@@ -17,7 +17,8 @@ import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const CellLine = ({
   cellLine,
@@ -93,21 +94,29 @@ CellLine.propTypes = {
 export default CellLine;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const cellLine = await request.getObject(`/cell-lines/${params.uuid}/`);
-  if (cellLine && cellLine.status !== "error") {
-    const award = await request.getObject(cellLine.award);
-    const donors = await request.getMultipleObjects(cellLine.donors);
-    const lab = await request.getObject(cellLine.lab);
-    const source = await request.getObject(cellLine.source);
-    const treatments = await request.getMultipleObjects(cellLine.treatments);
+  if (FetchRequest.isResponseSuccess(cellLine)) {
+    const award = await request.getObject(cellLine.award, {});
+    const donors = cellLine.donors
+      ? await request.getMultipleObjects(cellLine.donors, {})
+      : [];
+    const lab = await request.getObject(cellLine.lab, {});
+    const source = await request.getObject(cellLine.source, {});
+    const treatments = cellLine.treatments
+      ? await request.getMultipleObjects(cellLine.treatments, null)
+      : [];
     const biosampleTerm = cellLine.biosample_term
-      ? await request.getObject(cellLine.biosample_term)
+      ? await request.getObject(cellLine.biosample_term, {})
       : null;
     const diseaseTerm = cellLine.disease_term
-      ? await request.getObject(cellLine.disease_term)
+      ? await request.getObject(cellLine.disease_term, {})
       : null;
-    const breadcrumbs = await buildBreadcrumbs(cellLine, "accession");
+    const breadcrumbs = await buildBreadcrumbs(
+      cellLine,
+      "accession",
+      req.headers.cookie
+    );
     return {
       props: {
         cellLine,
@@ -120,10 +129,8 @@ export const getServerSideProps = async ({ params, req }) => {
         diseaseTerm,
         pageContext: { title: cellLine.accession },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
-        uuid: params.uuid,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(cellLine);
 };

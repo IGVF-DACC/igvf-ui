@@ -12,7 +12,8 @@ import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const PhenotypeOntologyTermList = ({ phenotypeOntologyTerms }) => {
   return (
@@ -26,6 +27,7 @@ const PhenotypeOntologyTermList = ({ phenotypeOntologyTerms }) => {
             {phenotypeOntologyTerms.map((phenotypeOntologyTerm) => (
               <CollectionItem
                 key={phenotypeOntologyTerm.uuid}
+                testid={phenotypeOntologyTerm.uuid}
                 href={phenotypeOntologyTerm["@id"]}
                 label={`Phenotype ontology term ${phenotypeOntologyTerm.term_id}`}
                 status={phenotypeOntologyTerm.status}
@@ -53,15 +55,21 @@ PhenotypeOntologyTermList.propTypes = {
 export default PhenotypeOntologyTermList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const phenotypeOntologyTerms = await request.getCollection("phenotype-terms");
-  const breadcrumbs = await buildBreadcrumbs(phenotypeOntologyTerms, "title");
-  return {
-    props: {
-      phenotypeOntologyTerms: phenotypeOntologyTerms["@graph"],
-      pageContext: { title: phenotypeOntologyTerms.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(phenotypeOntologyTerms)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      phenotypeOntologyTerms,
+      "title",
+      req.headers.cookie
+    );
+    return {
+      props: {
+        phenotypeOntologyTerms: phenotypeOntologyTerms["@graph"],
+        pageContext: { title: phenotypeOntologyTerms.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(phenotypeOntologyTerms);
 };

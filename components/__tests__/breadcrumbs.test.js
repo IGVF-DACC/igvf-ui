@@ -12,7 +12,11 @@ describe("Test the Breadcrumbs React component", () => {
       "@id": "/labs/",
       "@type": ["LabCollection", "Collection"],
     };
-    const breadcrumbs = await buildBreadcrumbs(labCollectionData, "title");
+    const breadcrumbs = await buildBreadcrumbs(
+      labCollectionData,
+      "title",
+      null
+    );
     const context = {
       breadcrumbs,
     };
@@ -43,6 +47,7 @@ describe("Test the Breadcrumbs React component", () => {
     };
     window.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
+        ok: true,
         json: () => Promise.resolve(labCollectionData),
       })
     );

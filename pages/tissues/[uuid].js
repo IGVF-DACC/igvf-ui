@@ -17,7 +17,8 @@ import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const Tissue = ({
   tissue,
@@ -119,21 +120,29 @@ Tissue.propTypes = {
 export default Tissue;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
-  if (tissue && tissue.status !== "error") {
-    const award = await request.getObject(tissue.award);
-    const donors = await request.getMultipleObjects(tissue.donors);
-    const lab = await request.getObject(tissue.lab);
-    const source = await request.getObject(tissue.source);
-    const treatments = await request.getMultipleObjects(tissue.treatments);
+  if (FetchRequest.isResponseSuccess(tissue)) {
+    const award = await request.getObject(tissue.award, {});
+    const donors = tissue.donors
+      ? await request.getMultipleObjects(tissue.donors, {})
+      : [];
+    const lab = await request.getObject(tissue.lab, {});
+    const source = await request.getObject(tissue.source, {});
+    const treatments = tissue.treatments
+      ? await request.getMultipleObjects(tissue.treatments, {})
+      : [];
     const biosampleTerm = tissue.biosample_term
-      ? await request.getObject(tissue.biosample_term)
+      ? await request.getObject(tissue.biosample_term, {})
       : null;
     const diseaseTerm = tissue.disease_term
-      ? await request.getObject(tissue.disease_term)
+      ? await request.getObject(tissue.disease_term, {})
       : null;
-    const breadcrumbs = await buildBreadcrumbs(tissue, "accession");
+    const breadcrumbs = await buildBreadcrumbs(
+      tissue,
+      "accession",
+      req.headers.cookie
+    );
     return {
       props: {
         tissue,
@@ -146,10 +155,8 @@ export const getServerSideProps = async ({ params, req }) => {
         diseaseTerm,
         pageContext: { title: tissue.accession },
         breadcrumbs,
-        uuid: params.uuid,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(tissue);
 };
