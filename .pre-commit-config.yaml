@@ -3,12 +3,13 @@ repos:
     rev: v1.6.0
     hooks:
       - id: autopep8
+        exclude: '^(?!cdk\/)'
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.2.3
-    exclude: '^(?!cdk\/)'
     hooks:
       - id: double-quote-string-fixer
+        exclude: '^(?!cdk\/)'
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: pretty-format-json
