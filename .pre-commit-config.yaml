@@ -6,6 +6,7 @@ repos:
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.2.3
+    exlude: '^(?!cdk\/)'
     hooks:
       - id: double-quote-string-fixer
       - id: trailing-whitespace
@@ -18,3 +19,4 @@ repos:
     rev: v2.7.1
     hooks:
       - id: prettier
+        exclude: "^cdk/"
