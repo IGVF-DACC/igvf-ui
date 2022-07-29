@@ -5,13 +5,13 @@ workflows:
     jobs:
       - jest
       - cypress
-      - cdk-lint
+      - lint
       - cdk-mypy:
           requires:
-            - cdk-lint
+            - lint
       - cdk-pytest:
           requires:
-            - cdk-lint
+            - lint
 
 jobs:
   jest:
@@ -83,15 +83,14 @@ jobs:
       - store_artifacts:
           path: cypress/screenshots
 
-  cdk-lint:
+  lint:
     docker:
       - image: circleci/python:3.9
-    working_directory: ~/igvf-ui/cdk/
+    working_directory: ~/igvf-ui/
     steps:
-      - checkout:
-          path: ~/igvf-ui
+      - checkout
       - run: pip install pre-commit==2.17.0
-      - run: pre-commit run --files $(git ls-files)
+      - run: pre-commit run --all-files
 
   cdk-mypy:
     docker:
