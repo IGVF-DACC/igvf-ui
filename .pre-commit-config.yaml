@@ -18,6 +18,7 @@ repos:
           - "--no-sort-keys"
           - "--indent=4"
           - "--no-ensure-ascii"
+        exclude: '^(?!cdk\/)'
       - id: check-yaml
 
   - repo: https://github.com/pre-commit/mirrors-prettier
