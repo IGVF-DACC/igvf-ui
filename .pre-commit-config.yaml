@@ -3,13 +3,26 @@ repos:
     rev: v1.6.0
     hooks:
       - id: autopep8
+        exclude: '^(?!cdk\/)'
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.2.3
     hooks:
       - id: double-quote-string-fixer
+        exclude: '^(?!cdk\/)'
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: pretty-format-json
-        args: ['--autofix', '--no-sort-keys', '--indent=4', '--no-ensure-ascii']
+        args:
+          - "--autofix"
+          - "--no-sort-keys"
+          - "--indent=4"
+          - "--no-ensure-ascii"
+        exclude: '^(?!cdk\/)'
       - id: check-yaml
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.7.1
+    hooks:
+      - id: prettier
+        exclude: "^cdk/"

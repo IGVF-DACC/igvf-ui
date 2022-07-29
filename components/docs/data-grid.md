@@ -76,7 +76,7 @@ Individual cells can span multiple columns using the `columns` property as a thi
 cells: [
   { id: "normal-cell", content: "1" },
   { id: "three-column-cell", content: "2", columns: 3 },
-]
+];
 ```
 
 <br>
@@ -108,7 +108,7 @@ const dataGridFormat = [
       },
     ],
   },
-]
+];
 ```
 
 This produces a grid that looks like:
@@ -238,5 +238,5 @@ return (
   <DataGridContainer>
     <DataGrid data={data} />
   </DataGridContainer>
-)
+);
 ```
