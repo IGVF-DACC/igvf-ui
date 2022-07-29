@@ -26,7 +26,7 @@ RUN apt-get update && \
 
 RUN git clone https://github.com/cypress-io/cypress.git --depth 1 --branch v${CY_VERSION} \
     && cd /cypress \
-    && yarn \ 
+    && yarn \
     && yarn binary-build --version ${CY_VERSION} myvalue=3
 
 FROM --platform=linux/arm64 node:16-buster-slim

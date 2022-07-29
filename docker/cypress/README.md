@@ -12,4 +12,5 @@ $ docker tag c08cc7711923 public.ecr.aws/p4j3k8v5/cherry-lab:cypress-9.4.1-m1
 # Push to ECR.
 $ docker push public.ecr.aws/p4j3k8v5/cherry-lab:cypress-9.4.1-m1
 ```
+
 The image (e.g. `cypress-9.4.1-m1`) should be publically available to use. Update the `docker-compose.cypress-m1.yml` image specification to use desired tag, e.g.: `public.ecr.aws/p4j3k8v5/cherry-lab:cypress-9.4.1-m1`.
