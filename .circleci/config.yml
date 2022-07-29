@@ -86,7 +86,7 @@ jobs:
   lint:
     docker:
       - image: circleci/python:3.9
-    working_directory: ~/igvf-ui/
+    working_directory: ~/igvf-ui
     steps:
       - checkout
       - run: pip install pre-commit==2.17.0
