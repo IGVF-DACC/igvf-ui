@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -10,12 +11,13 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const User = ({ lab, user }) => {
+const User = ({ user, lab }) => {
   return (
     <>
       <Breadcrumbs />
@@ -23,8 +25,38 @@ const User = ({ lab, user }) => {
         <PagePreamble />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Lab</DataItemLabel>
-            <DataItemValue>{lab.title}</DataItemValue>
+            {user.status && (
+              <>
+                <DataItemLabel>Status</DataItemLabel>
+                <DataItemValue>
+                  <Status status={user.status} />
+                </DataItemValue>
+              </>
+            )}
+            {user.job_title && (
+              <>
+                <DataItemLabel>Job Title</DataItemLabel>
+                <DataItemValue>{user.job_title}</DataItemValue>
+              </>
+            )}
+            {lab.title && (
+              <>
+                <DataItemLabel>Lab</DataItemLabel>
+                <DataItemValue>
+                  <Link href={lab["@id"]}>
+                    <a>{lab.title}</a>
+                  </Link>
+                </DataItemValue>
+              </>
+            )}
+            {user.email && (
+              <>
+                <DataItemLabel>Email</DataItemLabel>
+                <DataItemValue>
+                  <a href={`mailto:${user.email}`}>{user.email}</a>
+                </DataItemValue>
+              </>
+            )}
           </DataArea>
         </DataPanel>
       </EditableItem>
@@ -53,10 +85,10 @@ export const getServerSideProps = async ({ params, req }) => {
     );
     return {
       props: {
+        user,
         lab,
         pageContext: { title: user.title },
         breadcrumbs,
-        user,
       },
     };
   }
