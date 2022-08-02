@@ -59,16 +59,13 @@ const CollectionDownload = ({ collection, columns, collectionType }) => {
             </p>
             <p>
               Most spreadsheet applications (e.g. Google Sheets and Apple
-              Numbers) use UTF-8 character encoding and properly display special
-              characters in the TSV file. For Microsoft Excel, make sure to use
-              the <strong>Unicode (UTF-8)</strong> file origin:
+              Numbers) use UTF-8 character encoding and therefore properly
+              display special characters in the TSV file (“µ” for example). For
+              Microsoft Excel, use the <strong>Unicode (UTF-8)</strong> file
+              origin when importing the TSV file so that special characters
+              display correctly:
             </p>
-            <div className="mx-auto mt-3 max-w-2xl">
-              <Image
-                src={isDarkMode() ? excelFileOriginDark : excelFileOrigin}
-                alt="Excel TSV import file origin"
-              />
-            </div>
+            <div className="my-4 h-0 w-full bg-excel-import bg-contain bg-no-repeat pt-[25.93%] dark:bg-excel-import-dark lg:mx-auto lg:w-10/12 lg:pt-[21.61%]" />
           </div>
         </Modal.Body>
         <Modal.Footer>
