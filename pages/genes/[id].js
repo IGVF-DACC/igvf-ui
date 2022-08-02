@@ -8,6 +8,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
@@ -36,6 +37,17 @@ const Gene = ({ gene }) => {
             <DataItemValue>{gene.symbol}</DataItemValue>
             <DataItemLabel>Taxa</DataItemLabel>
             <DataItemValue>{gene.taxa}</DataItemValue>
+            {gene.dbxrefs?.length > 0 && (
+              <>
+                <DataItemLabel>External Resources</DataItemLabel>
+                <DataItemValue>
+                  <DbxrefList
+                    dbxrefs={gene.dbxrefs}
+                    meta={{ taxa: gene.taxa }}
+                  />
+                </DataItemValue>
+              </>
+            )}
             {gene.name && (
               <>
                 <DataItemLabel>Name</DataItemLabel>
