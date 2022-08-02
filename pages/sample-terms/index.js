@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
@@ -23,21 +24,23 @@ const SampleOntologyTermList = ({ sampleOntologyTerms }) => {
       <Collection>
         {sampleOntologyTerms.length > 0 ? (
           <>
-            <CollectionCount count={sampleOntologyTerms.length} />
-            {sampleOntologyTerms.map((sampleOntologyTerm) => (
-              <CollectionItem
-                key={sampleOntologyTerm.uuid}
-                testid={sampleOntologyTerm.uuid}
-                href={sampleOntologyTerm["@id"]}
-                label={`Sample ontology term ${sampleOntologyTerm.term_id}`}
-                status={sampleOntologyTerm.status}
-              >
-                <CollectionItemName>
-                  {sampleOntologyTerm.term_id}
-                </CollectionItemName>
-                <div>{sampleOntologyTerm.term_name}</div>
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={sampleOntologyTerms.length} />
+            <CollectionContent collection={sampleOntologyTerms}>
+              {sampleOntologyTerms.map((sampleOntologyTerm) => (
+                <CollectionItem
+                  key={sampleOntologyTerm.uuid}
+                  testid={sampleOntologyTerm.uuid}
+                  href={sampleOntologyTerm["@id"]}
+                  label={`Sample ontology term ${sampleOntologyTerm.term_id}`}
+                  status={sampleOntologyTerm.status}
+                >
+                  <CollectionItemName>
+                    {sampleOntologyTerm.term_id}
+                  </CollectionItemName>
+                  <div>{sampleOntologyTerm.term_name}</div>
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />

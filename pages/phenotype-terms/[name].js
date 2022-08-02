@@ -9,6 +9,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { OntologyTermDataItems } from "../../components/common-data-items";
+import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 // lib
@@ -20,16 +21,18 @@ const PhenotypeOntologyTerm = ({ phenotypeOntologyTerm }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={phenotypeOntologyTerm.status} />
-          </DataItemValue>
-          <OntologyTermDataItems ontologyTerm={phenotypeOntologyTerm} />
-        </DataArea>
-      </DataPanel>
+      <EditableItem item={phenotypeOntologyTerm}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={phenotypeOntologyTerm.status} />
+            </DataItemValue>
+            <OntologyTermDataItems ontologyTerm={phenotypeOntologyTerm} />
+          </DataArea>
+        </DataPanel>
+      </EditableItem>
     </>
   );
 };

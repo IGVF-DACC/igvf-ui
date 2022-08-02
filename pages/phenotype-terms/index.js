@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
@@ -23,21 +24,23 @@ const PhenotypeOntologyTermList = ({ phenotypeOntologyTerms }) => {
       <Collection>
         {phenotypeOntologyTerms.length > 0 ? (
           <>
-            <CollectionCount count={phenotypeOntologyTerms.length} />
-            {phenotypeOntologyTerms.map((phenotypeOntologyTerm) => (
-              <CollectionItem
-                key={phenotypeOntologyTerm.uuid}
-                testid={phenotypeOntologyTerm.uuid}
-                href={phenotypeOntologyTerm["@id"]}
-                label={`Phenotype ontology term ${phenotypeOntologyTerm.term_id}`}
-                status={phenotypeOntologyTerm.status}
-              >
-                <CollectionItemName>
-                  {phenotypeOntologyTerm.term_id}
-                </CollectionItemName>
-                <div>{phenotypeOntologyTerm.term_name}</div>
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={phenotypeOntologyTerms.length} />
+            <CollectionContent collection={phenotypeOntologyTerms}>
+              {phenotypeOntologyTerms.map((phenotypeOntologyTerm) => (
+                <CollectionItem
+                  key={phenotypeOntologyTerm.uuid}
+                  testid={phenotypeOntologyTerm.uuid}
+                  href={phenotypeOntologyTerm["@id"]}
+                  label={`Phenotype ontology term ${phenotypeOntologyTerm.term_id}`}
+                  status={phenotypeOntologyTerm.status}
+                >
+                  <CollectionItemName>
+                    {phenotypeOntologyTerm.term_id}
+                  </CollectionItemName>
+                  <div>{phenotypeOntologyTerm.term_name}</div>
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />

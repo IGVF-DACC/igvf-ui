@@ -9,6 +9,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 // lib
@@ -20,25 +21,27 @@ const AssayOntologyTerm = ({ assayOntologyTerm }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={assayOntologyTerm.status} />
-          </DataItemValue>
-          <OntologyTermDataItems ontologyTerm={assayOntologyTerm}>
-            {assayOntologyTerm.category_slims.length > 0 && (
-              <>
-                <DataItemLabel>Assay Category</DataItemLabel>
-                <DataItemValue>
-                  {assayOntologyTerm.category_slims.join(", ")}
-                </DataItemValue>
-              </>
-            )}
-          </OntologyTermDataItems>
-        </DataArea>
-      </DataPanel>
+      <EditableItem item={assayOntologyTerm}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={assayOntologyTerm.status} />
+            </DataItemValue>
+            <OntologyTermDataItems ontologyTerm={assayOntologyTerm}>
+              {assayOntologyTerm.category_slims.length > 0 && (
+                <>
+                  <DataItemLabel>Assay Category</DataItemLabel>
+                  <DataItemValue>
+                    {assayOntologyTerm.category_slims.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+            </OntologyTermDataItems>
+          </DataArea>
+        </DataPanel>
+      </EditableItem>
     </>
   );
 };
