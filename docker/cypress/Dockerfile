@@ -4,7 +4,7 @@
 
 FROM --platform=linux/arm64 node:16.13.0-bullseye as builder
 
-ARG VERSION=9.4.1
+ARG VERSION=10.4.0
 ENV CY_VERSION=$VERSION
 
 # Install build dependencies
