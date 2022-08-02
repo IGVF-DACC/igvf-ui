@@ -9,7 +9,6 @@ module.exports = {
       backgroundImage: {
         "excel-import": "url('/img/excel-file-origin.png')",
         "excel-import-dark": "url('/img/excel-file-origin-dark.png')",
-        "footer-texture": "url('/img/footer-texture.png')",
       },
       colors: {
         background: "var(--color-background)",

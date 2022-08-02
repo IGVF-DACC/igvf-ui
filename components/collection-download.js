@@ -1,16 +1,11 @@
 // node_modules
-import Image from "next/image";
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
 import Button from "./button";
-import { isDarkMode } from "../lib/general";
 import Modal from "./modal";
 // lib
 import { generateTsvFromCollection } from "../lib/collection-table";
-// public
-import excelFileOrigin from "../public/img/excel-file-origin.png";
-import excelFileOriginDark from "../public/img/excel-file-origin-dark.png";
 
 /**
  * Handle the user downloading the table as a TSV file, and render the button to trigger this.
