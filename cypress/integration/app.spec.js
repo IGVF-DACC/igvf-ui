@@ -22,6 +22,10 @@ describe("Navigation", () => {
     cy.get("[data-testid=human-donors]").should("not.exist");
     cy.get("[data-testid=rodent-donors]").should("not.exist");
 
+    cy.get("[data-testid=genes]").click();
+    cy.url().should("include", "/genes");
+    cy.get("[data-testid=collection-view-switch]").should("exist");
+
     cy.get("[data-testid=labs]").click();
     cy.url().should("include", "/labs");
     cy.get("[data-testid=collection-view-switch]").should("exist");

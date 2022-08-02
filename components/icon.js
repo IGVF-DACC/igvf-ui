@@ -38,6 +38,26 @@ const Icon = {
       />
     </svg>
   ),
+  Gene: ({ className = null }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      stroke="currentColor"
+      fill="none"
+    >
+      <g className="stroke-2">
+        <path
+          d="M14.2,1
+	c-2.2,2.2,2.6,7,0.4,9.2c-2.2,2.2-7-2.6-9.2-0.4s2.6,7,0.4,9.2"
+        />
+        <path
+          d="M1,14.2
+	c2.2-2.2,7,2.6,9.2,0.4c2.2-2.2-2.6-7-0.4-9.2s7,2.6,9.2,0.4"
+        />
+      </g>
+    </svg>
+  ),
   Sample: ({ className = null }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -99,6 +119,9 @@ Icon.Award.propTypes = {
   className: PropTypes.string,
 };
 Icon.Donor.propTypes = {
+  className: PropTypes.string,
+};
+Icon.Gene.propTypes = {
   className: PropTypes.string,
 };
 Icon.Sample.propTypes = {
