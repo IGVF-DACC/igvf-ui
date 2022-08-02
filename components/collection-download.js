@@ -47,6 +47,7 @@ const CollectionDownload = ({ collection, columns, collectionType }) => {
       <Modal
         isOpen={isDownloadModalVisible}
         onClose={() => setIsDownloadModalVisible(false)}
+        defaultElementId="download-tsv-action"
       >
         <Modal.Header onClose={() => setIsDownloadModalVisible(false)}>
           Download as TSV file
@@ -75,7 +76,12 @@ const CollectionDownload = ({ collection, columns, collectionType }) => {
           >
             Close
           </Button>
-          <Button type="primary" onClick={handleDownload} autofocus>
+          <Button
+            type="primary"
+            id="download-tsv-action"
+            onClick={handleDownload}
+            autofocus
+          >
             Download TSV
           </Button>
         </Modal.Footer>
