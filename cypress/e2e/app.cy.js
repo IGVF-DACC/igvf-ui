@@ -78,7 +78,7 @@ describe("Navigation", () => {
     // Add a collection-view switch test once the user page has one.
     cy.get("[data-testid=users]").click();
     cy.url().should("include", "/users");
-    cy.get("[data-testid=collection-view-switch]").should("exist");
+
     cy.get("[data-testid=profiles]").click();
     cy.url().should("include", "/profiles");
   });
