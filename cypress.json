@@ -1,6 +1,0 @@
-{
-  "projectId": "3vpsct",
-  "defaultCommandTimeout": 30000,
-  "baseUrl": "http://localhost:3000",
-  "watchForFileChanges": true
-}
