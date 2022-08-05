@@ -99,12 +99,16 @@ export const getServerSideProps = async ({ params, req }) => {
   if (FetchRequest.isResponseSuccess(cellLine)) {
     const award = await request.getObject(cellLine.award, {});
     const donors = cellLine.donors
-      ? await request.getMultipleObjects(cellLine.donors, {})
+      ? await request.getMultipleObjects(cellLine.donors, null, {
+          filterErrors: true,
+        })
       : [];
     const lab = await request.getObject(cellLine.lab, {});
     const source = await request.getObject(cellLine.source, {});
     const treatments = cellLine.treatments
-      ? await request.getMultipleObjects(cellLine.treatments, null)
+      ? await request.getMultipleObjects(cellLine.treatments, null, {
+          filterErrors: true,
+        })
       : [];
     const biosampleTerm = cellLine.biosample_term
       ? await request.getObject(cellLine.biosample_term, {})

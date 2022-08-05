@@ -91,7 +91,9 @@ export const getServerSideProps = async ({ params, req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const award = await request.getObject(`/awards/${params.name}/`);
   if (FetchRequest.isResponseSuccess(award)) {
-    const pis = award.pi ? await request.getMultipleObjects(award.pi, []) : [];
+    const pis = award.pi
+      ? await request.getMultipleObjects(award.pi, null, { filterErrors: true })
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       award,
       "name",

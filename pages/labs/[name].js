@@ -72,7 +72,9 @@ export const getServerSideProps = async ({ params, req }) => {
   const lab = await request.getObject(`/labs/${params.name}/`);
   if (FetchRequest.isResponseSuccess(lab)) {
     const awards = lab.awards
-      ? await request.getMultipleObjects(lab.awards, {})
+      ? await request.getMultipleObjects(lab.awards, null, {
+          filterErrors: true,
+        })
       : [];
     const pi = await request.getObject(lab.pi, {});
     const breadcrumbs = await buildBreadcrumbs(
