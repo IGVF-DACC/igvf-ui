@@ -9,6 +9,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
 import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
@@ -29,6 +30,14 @@ const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
             <DataItemValue>
               <Status status={sampleOntologyTerm.status} />
             </DataItemValue>
+            {sampleOntologyTerm.dbxrefs?.length > 0 && (
+              <>
+                <DataItemLabel>External Resources</DataItemLabel>
+                <DataItemValue>
+                  <DbxrefList dbxrefs={sampleOntologyTerm.dbxrefs} />
+                </DataItemValue>
+              </>
+            )}
             <OntologyTermDataItems ontologyTerm={sampleOntologyTerm}>
               {sampleOntologyTerm.organ_slims.length > 0 && (
                 <>
