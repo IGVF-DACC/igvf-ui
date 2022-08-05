@@ -11,7 +11,12 @@ import { generateTsvFromCollection } from "../lib/collection-table";
  * Handle the user downloading the table as a TSV file, and render the button to trigger this.
  * https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side#answer-14966131
  */
-const CollectionDownload = ({ collection, columns, collectionType }) => {
+const CollectionDownload = ({
+  collection,
+  columns,
+  hiddenColumns,
+  collectionType,
+}) => {
   // True if the download modal is open
   const [isDownloadModalVisible, setIsDownloadModalVisible] = useState(false);
 
@@ -20,13 +25,18 @@ const CollectionDownload = ({ collection, columns, collectionType }) => {
    */
   const handleDownload = () => {
     setIsDownloadModalVisible(false);
-    const encodedTsvContent = generateTsvFromCollection(collection, columns);
+    const { filename, encodedTsvContent } = generateTsvFromCollection(
+      collection,
+      collectionType,
+      columns,
+      hiddenColumns
+    );
 
     // To download to a specific filename, add a hidden <a> element to the DOM and click it. This element
     // gets removed with GC.
     var link = document.createElement("a");
     link.setAttribute("href", encodedTsvContent);
-    link.setAttribute("download", `${collectionType}.tsv`);
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
   };
@@ -61,7 +71,7 @@ const CollectionDownload = ({ collection, columns, collectionType }) => {
               origin when importing the TSV file so that special characters
               display correctly:
             </p>
-            <div className="my-4 h-0 w-full bg-excel-import bg-contain bg-no-repeat pt-[25.93%] dark:bg-excel-import-dark lg:mx-auto lg:w-10/12 lg:pt-[21.61%]" />
+            <div className="my-4 h-0 w-full bg-excel-import bg-contain bg-no-repeat pt-[45.53%] dark:bg-excel-import-dark lg:mx-auto lg:w-10/12 lg:pt-[37.94%]" />
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -90,6 +100,8 @@ CollectionDownload.propTypes = {
   collection: PropTypes.arrayOf(PropTypes.object).isRequired,
   // All available columns, not including hidden columns
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // All currently hidden columns
+  hiddenColumns: PropTypes.arrayOf(PropTypes.string).isRequired,
   // Type of collection to download
   collectionType: PropTypes.string.isRequired,
 };

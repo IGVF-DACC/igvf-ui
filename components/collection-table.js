@@ -542,6 +542,7 @@ const CollectionTable = ({ collection }) => {
           <CollectionDownload
             collection={flattenedCollection}
             columns={sortedColumns}
+            hiddenColumns={hiddenColumns}
             collectionType={collectionType}
           />
         </ColumnControls>
