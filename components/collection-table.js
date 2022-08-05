@@ -15,10 +15,10 @@ import Checkbox from "./checkbox";
 import CollectionDownload from "./collection-download";
 import CopyButton from "./copy-button";
 import { DataGridContainer } from "./data-grid";
-import GlobalContext from "./global-context";
 import Icon from "./icon";
 import Instruction from "./instruction";
 import Modal from "./modal";
+import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
 // lib
 import {
@@ -431,7 +431,7 @@ ScrollIndicators.propTypes = {
  */
 const CollectionTable = ({ collection }) => {
   // All schemas from which we extract the columns for the current collection type
-  const { profiles } = useContext(GlobalContext);
+  const { profiles } = useContext(SessionContext);
   // Holds the IDs of the hidden columns
   const [hiddenColumns, setHiddenColumns] = useState([]);
   // True if hidden columns are determined by hashtag instead of localStorage

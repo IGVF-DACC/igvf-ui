@@ -22,6 +22,7 @@ import {
   logoutFromServer,
 } from "../lib/authentication";
 import { BACKEND_URL } from "../lib/constants";
+import getProfiles from "../lib/profiles";
 
 /**
  * Establishes the context to hold the back-end session record for the currently signed-in user.
@@ -40,6 +41,8 @@ export default SessionContext;
 export const Session = ({ children }) => {
   // Tracks the back-end session object
   const [session, setSession] = useState(null);
+  // Holds the /profiles schemas
+  const [profiles, setProfiles] = useState(null);
   // Tracks the URL to redirect to after signing in
   const [redirectTo, setRedirectTo] = useSessionStorage("post-signin-path", "");
   // Auth0 information
@@ -51,6 +54,15 @@ export const Session = ({ children }) => {
   // Set to true once we start the process of signing out of the server
   const isServerAuthPending = useRef(false);
   const router = useRouter();
+
+  // Loads all the schemas for anyone to use.
+  useEffect(() => {
+    if (session) {
+      getProfiles(session).then((profiles) => {
+        setProfiles(profiles);
+      });
+    }
+  }, [session]);
 
   // Detects and handles the authorization provider changing from signed out to signed in by
   // signing into the server.
@@ -142,7 +154,7 @@ export const Session = ({ children }) => {
   }, [isAuthenticated, session, setSession]);
 
   return (
-    <SessionContext.Provider value={{ session, setRedirectTo }}>
+    <SessionContext.Provider value={{ session, profiles, setRedirectTo }}>
       {children}
     </SessionContext.Provider>
   );

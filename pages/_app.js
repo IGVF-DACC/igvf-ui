@@ -26,8 +26,6 @@ import "../styles/globals.css";
 const App = ({ Component, pageProps }) => {
   // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("");
-  // Holds the /profiles schemas
-  const [profiles, setProfiles] = useState(null);
   // Selects between "list" and "table" collection views
   const [currentCollectionView, setCurrentCollectionView] = useState(
     COLLECTION_VIEW.LIST
@@ -51,15 +49,6 @@ const App = ({ Component, pageProps }) => {
     }
   }, [pageProps.sessionCookie]);
 
-  useEffect(() => {
-    // Load in the schemas for all object types. Don't use an authentication token as everyone has
-    // access to the schemas.
-    const request = new FetchRequest();
-    request.getObject("/profiles", null).then((profiles) => {
-      setProfiles(profiles);
-    });
-  }, []);
-
   const globalContext = useMemo(() => {
     return {
       site: {
@@ -71,7 +60,6 @@ const App = ({ Component, pageProps }) => {
       },
       breadcrumbs: pageProps.breadcrumbs || [],
       sessionCookie,
-      profiles,
       collectionView: {
         currentCollectionView,
         setCurrentCollectionView,
@@ -82,7 +70,6 @@ const App = ({ Component, pageProps }) => {
     pageProps.breadcrumbs,
     pageProps.pageContext?.title,
     pageProps.pageContext?.type,
-    profiles,
     sessionCookie,
     setCurrentCollectionView,
   ]);
