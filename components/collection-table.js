@@ -12,13 +12,13 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 // components
 import Button from "./button";
 import Checkbox from "./checkbox";
+import CollectionDownload from "./collection-download";
 import CopyButton from "./copy-button";
 import { DataGridContainer } from "./data-grid";
 import GlobalContext from "./global-context";
 import Icon from "./icon";
 import Instruction from "./instruction";
 import Modal from "./modal";
-import Paragraph from "./paragraph";
 import SortableGrid from "./sortable-grid";
 // lib
 import {
@@ -100,7 +100,7 @@ const ColumnSelector = ({
 
   return (
     <>
-      <Button className="grow sm:grow-0" onClick={() => setIsOpen(true)}>
+      <Button className="w-full sm:w-auto" onClick={() => setIsOpen(true)}>
         Show / Hide Columns
         <HiddenColumnsIndicator isAnyColumnHidden={hiddenColumns.length > 0} />
       </Button>
@@ -250,17 +250,20 @@ const UrlColumnControls = ({
         Save URL Columns to Browser
       </Button>
       <Button onClick={clearHashtagHiddenColumns}>Clear URL Columns</Button>
-      <Instruction title="Save and Clear URL Columns">
-        <Paragraph>
+      <Instruction
+        className="prose dark:prose-invert"
+        title="Help for saving and clearing URL columns"
+      >
+        <p>
           <strong>Save URL Columns to Browser</strong> saves the hidden columns
           in your URL to your browser, overwriting any shown and hidden columns
           you had previously saved.
-        </Paragraph>
-        <Paragraph>
+        </p>
+        <p>
           <strong>Clear URL Columns</strong> restores the shown and hidden
           columns you have saved to your browser, clearing the URL of hidden
           columns.
-        </Paragraph>
+        </p>
       </Instruction>
     </>
   );
@@ -295,8 +298,11 @@ const BrowserColumnControls = ({
         onChangeAllHiddenColumns={onChangeAllHiddenColumns}
       />
       <ColumnUrlCopy hiddenColumns={hiddenColumns} />
-      <Instruction title="Show / Hide Columns and Copy URL Columns">
-        <Paragraph>
+      <Instruction
+        className="prose dark:prose-invert"
+        title="Help for viewing and hiding columns, and copying URL columns"
+      >
+        <p>
           <strong>Show / Hide Columns</strong> lets you choose which individual
           columns to show and hide, and lets you show or hide all columns at
           once, except for the <i>ID</i> column. The
@@ -304,13 +310,13 @@ const BrowserColumnControls = ({
           symbol indicates at least one column is hidden. The
           <Icon.TableColumnsVisible className={className} />
           symbol indicates all columns are shown.
-        </Paragraph>
-        <Paragraph>
+        </p>
+        <p>
           <strong>Copy URL Columns</strong> copies a URL with your currently
           hidden columns attached to it. You can share this URL with others so
           they can see this collection with the same columns hidden, or you can
           paste it into another browser.
-        </Paragraph>
+        </p>
       </Instruction>
     </>
   );
@@ -424,6 +430,7 @@ ScrollIndicators.propTypes = {
  * Displays the table view for a collection page, instead of a list view.
  */
 const CollectionTable = ({ collection }) => {
+  // All schemas from which we extract the columns for the current collection type
   const { profiles } = useContext(GlobalContext);
   // Holds the IDs of the hidden columns
   const [hiddenColumns, setHiddenColumns] = useState([]);
@@ -532,6 +539,11 @@ const CollectionTable = ({ collection }) => {
               onChangeAllHiddenColumns={changeAllHiddenColumns}
             />
           )}
+          <CollectionDownload
+            collection={flattenedCollection}
+            columns={sortedColumns}
+            collectionType={collectionType}
+          />
         </ColumnControls>
         <ScrollIndicators gridRef={gridRef}>
           <DataGridContainer ref={gridRef}>

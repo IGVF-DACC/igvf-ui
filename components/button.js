@@ -121,9 +121,10 @@ const buttonSizeClasses = {
  */
 const Button = ({
   onClick,
+  label = "",
+  id = null,
   type = "primary",
   size = "md",
-  label = "",
   className = "",
   disabled = false,
   children,
@@ -131,6 +132,7 @@ const Button = ({
   return (
     <button
       type="button"
+      id={id}
       onClick={onClick}
       className={`flex items-center justify-center rounded border font-semibold ${buttonSizeClasses[size]} ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonTextTypeClasses[type]} ${className}`}
       aria-label={label}
@@ -146,6 +148,8 @@ Button.propTypes = {
   onClick: PropTypes.func.isRequired,
   // Accessible label of the button if the button text is not sufficient for screen readers
   label: PropTypes.string,
+  // HTML ID of the button element
+  id: PropTypes.string,
   // Button color type
   type: PropTypes.oneOf([
     "primary",
@@ -183,6 +187,7 @@ Button.displayName = "Button";
 const Link = ({
   href,
   navigationClick,
+  id = null,
   type = "primary",
   size = "md",
   label = "",
@@ -199,6 +204,7 @@ const Link = ({
   return (
     <Button
       onClick={onClick}
+      id={id}
       type={type}
       size={size}
       label={label}
@@ -214,6 +220,8 @@ Link.propTypes = {
   href: PropTypes.string.isRequired,
   // Called when the button is clicked
   navigationClick: PropTypes.func.isRequired,
+  // HTML ID of the button element
+  id: PropTypes.string,
   // Accessible label of the button if the button text is not sufficient for screen readers
   label: PropTypes.string,
   // Button color type
@@ -248,6 +256,7 @@ Link.propTypes = {
 const Icon = ({
   onClick,
   type = "primary",
+  id = null,
   label,
   className = "",
   children,
@@ -262,6 +271,7 @@ const Icon = ({
   return (
     <button
       type="button"
+      id={id}
       onClick={onClick}
       className={`block h-6 w-6 rounded-full border p-1 ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonFillTypeClasses[type]} ${className}`}
       aria-label={label}
@@ -274,6 +284,8 @@ const Icon = ({
 Icon.propTypes = {
   // Called when the button is clicked
   onClick: PropTypes.func.isRequired,
+  // HTML ID of the button element
+  id: PropTypes.string,
   // Accessible label of the button for screen readers
   label: PropTypes.string.isRequired,
   // Button color type
