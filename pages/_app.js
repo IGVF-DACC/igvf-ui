@@ -14,7 +14,6 @@ import {
   SITE_TITLE,
 } from "../lib/constants";
 import DarkModeManager from "../lib/dark-mode-manager";
-import FetchRequest from "../lib/fetch-request";
 // components
 import { COLLECTION_VIEW } from "../components/collection";
 import GlobalContext from "../components/global-context";
