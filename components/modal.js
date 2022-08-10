@@ -22,12 +22,22 @@
 import { Dialog } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/solid";
 import PropTypes from "prop-types";
-import { Children } from "react";
+import { Children, useEffect } from "react";
 
 /**
  * Main component for modal dialogs.
  */
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, defaultElementId = null, children }) => {
+  useEffect(() => {
+    // Focus the default element if it exists.
+    if (isOpen && defaultElementId) {
+      const defaultElement = document.getElementById(defaultElementId);
+      if (defaultElement) {
+        defaultElement.focus();
+      }
+    }
+  }, [isOpen, defaultElementId]);
+
   return (
     <Dialog
       open={isOpen}
@@ -52,6 +62,8 @@ Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   // Called to close the modal on click outside or ESC
   onClose: PropTypes.func.isRequired,
+  // HTML ID of the element to focus when the modal opens
+  defaultElementId: PropTypes.string,
 };
 
 /**
@@ -66,6 +78,7 @@ const HeaderCloseButton = ({ onClose, label }) => {
       aria-label={label}
     >
       <XIcon className="fill-gray-500" />
+      <span className="sr-only">Close</span>
     </button>
   );
 };

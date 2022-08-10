@@ -82,7 +82,9 @@ export const getServerSideProps = async ({ params, req }) => {
     const award = await request.getObject(donor.award, {});
     const lab = await request.getObject(donor.lab, {});
     const parents = donor.parents
-      ? await request.getMultipleObjects(donor.parents, {})
+      ? await request.getMultipleObjects(donor.parents, null, {
+          filterErrors: true,
+        })
       : [];
     const breadcrumbs = await buildBreadcrumbs(
       donor,
