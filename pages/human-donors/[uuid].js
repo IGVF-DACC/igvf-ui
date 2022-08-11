@@ -43,7 +43,7 @@ const healthStatusHistoryColumns = [
   },
 ];
 
-const HumanDonor = ({ donor, award, lab, parents }) => {
+const HumanDonor = ({ donor, award = null, lab = null, parents }) => {
   return (
     <>
       <Breadcrumbs />
@@ -87,9 +87,9 @@ HumanDonor.propTypes = {
   // Technical sample to display
   donor: PropTypes.object.isRequired,
   // Award applied to this technical sample
-  award: PropTypes.object.isRequired,
+  award: PropTypes.object,
   // Lab that submitted this technical sample
-  lab: PropTypes.object.isRequired,
+  lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
@@ -100,8 +100,8 @@ export const getServerSideProps = async ({ params, req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/human-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
-    const award = await request.getObject(donor.award, {});
-    const lab = await request.getObject(donor.lab, {});
+    const award = await request.getObject(donor.award, null);
+    const lab = await request.getObject(donor.lab, null);
     const parents = donor.parents
       ? await request.getMultipleObjects(donor.parents, null, {
           filterErrors: true,
