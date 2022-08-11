@@ -11,7 +11,6 @@ config: Dict[str, Any] = {
     'environment': {
         'demo': {
             'pipeline': 'DemoDeploymentPipelineStack',
-            'backend_url': 'https://igvfd-dev.demo.igvf.org'
         },
         'dev': {
             'pipeline': 'DemoDeploymentPipelineStack',
