@@ -22,14 +22,14 @@ import FetchRequest from "../../lib/fetch-request";
 
 const DifferentiatedTissue = ({
   differentiatedTissue,
-  donors,
-  award,
-  lab,
-  source,
-  treatments,
-  differentiationTreatments,
+  award = null,
   biosampleTerm = null,
-  diseaseTerm = null,
+  differentiationTreatments,
+  diseaseTerms,
+  donors,
+  lab = null,
+  source = null,
+  treatments,
 }) => {
   return (
     <>
@@ -47,7 +47,7 @@ const DifferentiatedTissue = ({
               source={source}
               donors={donors}
               biosampleTerm={biosampleTerm}
-              diseaseTerm={diseaseTerm}
+              diseaseTerms={diseaseTerms}
               options={{
                 dateObtainedTitle: "Date Collected",
               }}
@@ -95,31 +95,22 @@ const DifferentiatedTissue = ({
 DifferentiatedTissue.propTypes = {
   // Differentiated-tissue sample to display
   differentiatedTissue: PropTypes.object.isRequired,
-  // Donors associated with the sample
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Award applied to this sample
-  award: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
-  // Lab that submitted this sample
-  lab: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
-  // Source lab or source for this sample
-  source: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
-  // Treatments associated with the sample
-  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Differentiation treatments associated with the sample
-  differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  award: PropTypes.object,
   // Biosample ontology for this sample
   biosampleTerm: PropTypes.object,
+  // Differentiation treatments associated with the sample
+  differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
-  diseaseTerm: PropTypes.object,
+  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors associated with the sample
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Lab that submitted this sample
+  lab: PropTypes.object,
+  // Source lab or source for this sample
+  source: PropTypes.object,
+  // Treatments associated with the sample
+  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default DifferentiatedTissue;
@@ -130,21 +121,10 @@ export const getServerSideProps = async ({ params, req }) => {
     `/differentiated-tissues/${params.uuid}/`
   );
   if (FetchRequest.isResponseSuccess(differentiatedTissue)) {
-    const award = await request.getObject(differentiatedTissue.award, {});
-    const donors = differentiatedTissue.donors
-      ? await request.getMultipleObjects(differentiatedTissue.donors, null, {
-          filterErrors: true,
-        })
-      : [];
-    const lab = await request.getObject(differentiatedTissue.lab, {});
-    const source = await request.getObject(differentiatedTissue.source, {});
-    const treatments = differentiatedTissue.treatments
-      ? await request.getMultipleObjects(
-          differentiatedTissue.treatments,
-          null,
-          { filterErrors: true }
-        )
-      : [];
+    const award = await request.getObject(differentiatedTissue.award, null);
+    const biosampleTerm = differentiatedTissue.biosample_term
+      ? await request.getObject(differentiatedTissue.biosample_term, null)
+      : null;
     const differentiationTreatments =
       differentiatedTissue.differentiation_treatments
         ? await request.getMultipleObjects(
@@ -153,12 +133,29 @@ export const getServerSideProps = async ({ params, req }) => {
             { filterErrors: true }
           )
         : [];
-    const biosampleTerm = differentiatedTissue.biosample_term
-      ? await request.getObject(differentiatedTissue.biosample_term)
-      : null;
-    const diseaseTerm = differentiatedTissue.disease_term
-      ? await request.getObject(differentiatedTissue.disease_term)
-      : null;
+    const diseaseTerms = differentiatedTissue.disease_terms
+      ? await request.getMultipleObjects(
+          differentiatedTissue.disease_terms,
+          null,
+          {
+            filterErrors: true,
+          }
+        )
+      : [];
+    const donors = differentiatedTissue.donors
+      ? await request.getMultipleObjects(differentiatedTissue.donors, null, {
+          filterErrors: true,
+        })
+      : [];
+    const lab = await request.getObject(differentiatedTissue.lab, null);
+    const source = await request.getObject(differentiatedTissue.source, null);
+    const treatments = differentiatedTissue.treatments
+      ? await request.getMultipleObjects(
+          differentiatedTissue.treatments,
+          null,
+          { filterErrors: true }
+        )
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       differentiatedTissue,
       "accession",
@@ -168,13 +165,13 @@ export const getServerSideProps = async ({ params, req }) => {
       props: {
         differentiatedTissue,
         award,
+        biosampleTerm,
+        differentiationTreatments,
+        diseaseTerms,
         donors,
         lab,
         source,
         treatments,
-        differentiationTreatments,
-        biosampleTerm,
-        diseaseTerm,
         pageContext: { title: differentiatedTissue.accession },
         breadcrumbs,
       },

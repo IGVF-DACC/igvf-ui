@@ -115,16 +115,16 @@ export const getServerSideProps = async ({ params, req }) => {
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(tissue)) {
     const award = await request.getObject(tissue.award, null);
-    const donors = tissue.donors
-      ? await request.getMultipleObjects(tissue.donors, null, {
-          filterErrors: true,
-        })
-      : [];
     const biosampleTerm = tissue.biosample_term
       ? await request.getObject(tissue.biosample_term, null)
       : null;
     const diseaseTerms = tissue.disease_terms
-      ? await request.getMultipleObjects(tissue.disease_term, null, {
+      ? await request.getMultipleObjects(tissue.disease_terms, null, {
+          filterErrors: true,
+        })
+      : [];
+    const donors = tissue.donors
+      ? await request.getMultipleObjects(tissue.donors, null, {
           filterErrors: true,
         })
       : [];

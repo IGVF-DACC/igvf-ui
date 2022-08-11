@@ -18,7 +18,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const Lab = ({ lab, awards, pi }) => {
+const Lab = ({ lab, awards, pi = null }) => {
   return (
     <>
       <Breadcrumbs />
@@ -32,8 +32,12 @@ const Lab = ({ lab, awards, pi }) => {
             </DataItemValue>
             <DataItemLabel>Institute</DataItemLabel>
             <DataItemValue>{lab.institute_label}</DataItemValue>
-            <DataItemLabel>Principal Investigator</DataItemLabel>
-            <DataItemValue>{pi.title}</DataItemValue>
+            {pi && (
+              <>
+                <DataItemLabel>Principal Investigator</DataItemLabel>
+                <DataItemValue>{pi.title}</DataItemValue>
+              </>
+            )}
             {awards.length > 0 && (
               <>
                 <DataItemLabel>Awards</DataItemLabel>
@@ -59,10 +63,7 @@ Lab.propTypes = {
   // Awards associated with `lab`
   awards: PropTypes.array.isRequired,
   // Principal investigator for `lab`
-  pi: PropTypes.shape({
-    // PI full name
-    title: PropTypes.string.isRequired,
-  }),
+  pi: PropTypes.object,
 };
 
 export default Lab;
@@ -76,7 +77,7 @@ export const getServerSideProps = async ({ params, req }) => {
           filterErrors: true,
         })
       : [];
-    const pi = await request.getObject(lab.pi, {});
+    const pi = await request.getObject(lab.pi, null);
     const breadcrumbs = await buildBreadcrumbs(
       lab,
       "title",

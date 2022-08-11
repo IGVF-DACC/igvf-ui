@@ -19,7 +19,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const RodentDonor = ({ donor, award, lab, parents }) => {
+const RodentDonor = ({ donor, award = null, lab = null, parents }) => {
   return (
     <>
       <Breadcrumbs />
@@ -60,15 +60,9 @@ RodentDonor.propTypes = {
   // Technical sample to display
   donor: PropTypes.object.isRequired,
   // Award applied to this technical sample
-  award: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
+  award: PropTypes.object,
   // Lab that submitted this technical sample
-  lab: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
+  lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
@@ -79,8 +73,8 @@ export const getServerSideProps = async ({ params, req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/rodent-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
-    const award = await request.getObject(donor.award, {});
-    const lab = await request.getObject(donor.lab, {});
+    const award = await request.getObject(donor.award, null);
+    const lab = await request.getObject(donor.lab, null);
     const parents = donor.parents
       ? await request.getMultipleObjects(donor.parents, null, {
           filterErrors: true,
