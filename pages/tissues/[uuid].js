@@ -30,6 +30,7 @@ const Tissue = ({
   biosampleTerm = null,
   diseaseTerm = null,
 }) => {
+  console.log("FR %o", diseaseTerm);
   return (
     <>
       <Breadcrumbs />
@@ -142,6 +143,7 @@ export const getServerSideProps = async ({ params, req }) => {
     const diseaseTerm = tissue.disease_term
       ? await request.getObject(tissue.disease_term, {})
       : null;
+    console.log("SSR %s,%o", tissue.disease_term, diseaseTerm);
     const breadcrumbs = await buildBreadcrumbs(
       tissue,
       "accession",
