@@ -85,7 +85,7 @@ class Frontend(Construct):
                 container_port=3000,
                 image=self.application_image,
                 environment={
-                    'NODE_ENV': 'development',
+                    'NODE_ENV': 'production',
                     'BACKEND_URL': self.props.config.backend_url,
                 },
                 log_driver=LogDriver.aws_logs(
