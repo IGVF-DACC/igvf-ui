@@ -11,6 +11,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DocumentTable from "../../components/document-table";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
@@ -24,6 +25,7 @@ const Tissue = ({
   tissue,
   donors,
   award = null,
+  documents,
   lab = null,
   source = null,
   treatments,
@@ -83,6 +85,12 @@ const Tissue = ({
             <TreatmentTable treatments={treatments} />
           </>
         )}
+        {documents.length > 0 && (
+          <>
+            <DataAreaTitle>Documents</DataAreaTitle>
+            <DocumentTable documents={documents} />
+          </>
+        )}
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
@@ -93,7 +101,9 @@ Tissue.propTypes = {
   // Tissue sample to display
   tissue: PropTypes.object.isRequired,
   // Award applied to this sample
-  award: PropTypes.null,
+  award: PropTypes.object,
+  // Documents associated with the cell-line
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Lab that submitted this sample
@@ -123,6 +133,11 @@ export const getServerSideProps = async ({ params, req }) => {
           filterErrors: true,
         })
       : [];
+    const documents = tissue.documents
+      ? await request.getMultipleObjects(tissue.documents, null, {
+          filterErrors: true,
+        })
+      : [];
     const donors = tissue.donors
       ? await request.getMultipleObjects(tissue.donors, null, {
           filterErrors: true,
@@ -144,6 +159,7 @@ export const getServerSideProps = async ({ params, req }) => {
       props: {
         tissue,
         award,
+        documents,
         donors,
         lab,
         source,

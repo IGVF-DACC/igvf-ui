@@ -11,6 +11,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DocumentTable from "../../components/document-table";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
@@ -25,6 +26,7 @@ const CellLine = ({
   award = null,
   biosampleTerm = null,
   diseaseTerms,
+  documents,
   donors,
   lab = null,
   source = null,
@@ -66,6 +68,12 @@ const CellLine = ({
             <TreatmentTable treatments={treatments} />
           </>
         )}
+        {documents.length > 0 && (
+          <>
+            <DataAreaTitle>Documents</DataAreaTitle>
+            <DocumentTable documents={documents} />
+          </>
+        )}
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
@@ -81,6 +89,8 @@ CellLine.propTypes = {
   biosampleTerm: PropTypes.object,
   // Disease term for this cell line
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Documents associated with the cell-line
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the tissue
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Lab that submitted this cell line
@@ -103,6 +113,11 @@ export const getServerSideProps = async ({ params, req }) => {
       : null;
     const diseaseTerms = cellLine.disease_terms
       ? await request.getMultipleObjects(cellLine.disease_terms, null, {
+          filterErrors: true,
+        })
+      : [];
+    const documents = cellLine.documents
+      ? await request.getMultipleObjects(cellLine.documents, null, {
           filterErrors: true,
         })
       : [];
@@ -129,6 +144,7 @@ export const getServerSideProps = async ({ params, req }) => {
         award,
         biosampleTerm,
         diseaseTerms,
+        documents,
         donors,
         lab,
         source,

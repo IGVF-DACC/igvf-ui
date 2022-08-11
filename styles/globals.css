@@ -53,6 +53,16 @@
   --color-button-success-disabled: #86a494;
   --color-button-info-disabled: #90a8ba;
 
+  /** Document tag colors */
+  --color-document-autosql: #ca0032;
+  --color-document-html: #487998;
+  --color-document-json: #6d326d;
+  --color-document-pdf: #b30b00;
+  --color-document-svs: #ca6680;
+  --color-document-txt: #465a9a;
+  --color-document-tiff: #dd6e42;
+  --color-document-tsv: #a50104;
+
   /** Modal borders */
   --color-modal-border: #e5e7eb;
 

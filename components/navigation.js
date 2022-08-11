@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   CodeIcon,
   BeakerIcon,
+  DocumentTextIcon,
   MenuAlt4Icon,
   MinusIcon,
   PlusIcon,
@@ -320,6 +321,16 @@ const Navigation = ({ navigationClick }) => {
           <Icon.Award />
         </NavigationIcon>
         Awards
+      </NavigationHrefItem>
+      <NavigationHrefItem
+        id="documents"
+        href="/documents"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <DocumentTextIcon />
+        </NavigationIcon>
+        Documents
       </NavigationHrefItem>
       <NavigationGroupItem
         id="donors"

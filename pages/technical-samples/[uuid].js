@@ -6,10 +6,12 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import { SampleDataItems } from "../../components/common-data-items";
 import {
   DataArea,
+  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DocumentTable from "../../components/document-table";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
@@ -22,6 +24,7 @@ import FetchRequest from "../../lib/fetch-request";
 const TechnicalSample = ({
   sample,
   award = null,
+  documents,
   lab = null,
   source = null,
 }) => {
@@ -56,6 +59,12 @@ const TechnicalSample = ({
             </SampleDataItems>
           </DataArea>
         </DataPanel>
+        {documents.length > 0 && (
+          <>
+            <DataAreaTitle>Documents</DataAreaTitle>
+            <DocumentTable documents={documents} />
+          </>
+        )}
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
@@ -67,6 +76,8 @@ TechnicalSample.propTypes = {
   sample: PropTypes.object.isRequired,
   // Award applied to this technical sample
   award: PropTypes.object,
+  // Documents associated with the cell-line
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Lab that submitted this technical sample
   lab: PropTypes.object,
   // Source lab or source for this technical sample
@@ -80,6 +91,11 @@ export const getServerSideProps = async ({ params, req }) => {
   const sample = await request.getObject(`/technical-samples/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(sample)) {
     const award = await request.getObject(sample.award, null);
+    const documents = sample.documents
+      ? await request.getMultipleObjects(sample.documents, null, {
+          filterErrors: true,
+        })
+      : [];
     const lab = await request.getObject(sample.lab, null);
     const source = await request.getObject(sample.source, null);
     const breadcrumbs = await buildBreadcrumbs(
@@ -91,6 +107,7 @@ export const getServerSideProps = async ({ params, req }) => {
       props: {
         sample,
         award,
+        documents,
         lab,
         source,
         pageContext: { title: sample.accession },
