@@ -10,7 +10,7 @@ import {
   CollectionItemName,
 } from "../components/collection";
 import { DataPanel } from "../components/data-area";
-import { NoCollectionData } from "../components/no-content";
+import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 
 /**

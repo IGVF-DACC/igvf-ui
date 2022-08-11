@@ -36,7 +36,7 @@ const CellLineList = ({ cellLines }) => {
                   status={sample.status}
                 >
                   <CollectionItemName>{sample.accession}</CollectionItemName>
-                  <SourceProp source={sample.source} />
+                  {sample.source && <SourceProp source={sample.source} />}
                 </CollectionItem>
               ))}
             </CollectionContent>
