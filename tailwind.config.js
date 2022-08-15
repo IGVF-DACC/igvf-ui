@@ -89,7 +89,7 @@ module.exports = {
         "document-json": "var(--color-document-json)",
         "document-pdf": "var(--color-document-pdf)",
         "document-svs": "var(--color-document-svs)",
-        "document-text": "var(--color-document-text)",
+        "document-txt": "var(--color-document-txt)",
         "document-tiff": "var(--color-document-tiff)",
         "document-tsv": "var(--color-document-tsv)",
       },
