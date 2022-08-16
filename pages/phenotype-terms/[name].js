@@ -9,26 +9,30 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { OntologyTermDataItems } from "../../components/common-data-items";
+import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const PhenotypeOntologyTerm = ({ phenotypeOntologyTerm }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={phenotypeOntologyTerm.status} />
-          </DataItemValue>
-          <OntologyTermDataItems ontologyTerm={phenotypeOntologyTerm} />
-        </DataArea>
-      </DataPanel>
+      <EditableItem item={phenotypeOntologyTerm}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={phenotypeOntologyTerm.status} />
+            </DataItemValue>
+            <OntologyTermDataItems ontologyTerm={phenotypeOntologyTerm} />
+          </DataArea>
+        </DataPanel>
+      </EditableItem>
     </>
   );
 };
@@ -41,14 +45,15 @@ PhenotypeOntologyTerm.propTypes = {
 export default PhenotypeOntologyTerm;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const phenotypeOntologyTerm = await request.getObject(
     `/phenotype-terms/${params.name}/`
   );
-  if (phenotypeOntologyTerm && phenotypeOntologyTerm.status !== "error") {
+  if (FetchRequest.isResponseSuccess(phenotypeOntologyTerm)) {
     const breadcrumbs = await buildBreadcrumbs(
       phenotypeOntologyTerm,
-      "term_id"
+      "term_id",
+      req.headers.cookie
     );
     return {
       props: {
@@ -59,5 +64,5 @@ export const getServerSideProps = async ({ params, req }) => {
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(phenotypeOntologyTerm);
 };

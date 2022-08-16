@@ -136,13 +136,13 @@ describe("collection-view tests", () => {
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist");
     cy.get("[role=columnheader]").contains("Lot ID").should("not.exist");
     cy.get("[role=columnheader]").contains("Amount").should("exist");
-    cy.get("[role=columnheader]").contains("Amount units").should("exist");
+    cy.get("[role=columnheader]").contains("Amount Units").should("exist");
 
     cy.contains("Save URL Columns to Browser").click();
     cy.url().should("not.include", "#hidden=aliases,lot_id");
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist");
     cy.get("[role=columnheader]").contains("Lot ID").should("not.exist");
     cy.get("[role=columnheader]").contains("Amount").should("exist");
-    cy.get("[role=columnheader]").contains("Amount units").should("exist");
+    cy.get("[role=columnheader]").contains("Amount Units").should("exist");
   });
 });

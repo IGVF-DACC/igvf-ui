@@ -1,12 +1,12 @@
 // node_modules
 import { Auth0Provider } from "@auth0/auth0-react";
+import Error from "next/error";
 import Head from "next/head";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 // lib
 import { onRedirectCallback } from "../lib/authentication";
 import {
-  API_URL,
   AUTH0_AUDIENCE,
   AUTH0_CLIENT_ID,
   AUTH0_ISSUER_BASE_DOMAIN,
@@ -25,8 +25,6 @@ import "../styles/globals.css";
 const App = ({ Component, pageProps }) => {
   // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("");
-  // Holds the /profiles schemas
-  const [profiles, setProfiles] = useState(null);
   // Selects between "list" and "table" collection views
   const [currentCollectionView, setCurrentCollectionView] = useState(
     COLLECTION_VIEW.LIST
@@ -50,21 +48,6 @@ const App = ({ Component, pageProps }) => {
     }
   }, [pageProps.sessionCookie]);
 
-  useEffect(() => {
-    fetch(`${API_URL}/profiles`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((profiles) => {
-        setProfiles(profiles);
-      });
-  }, []);
-
   const globalContext = useMemo(() => {
     return {
       site: {
@@ -76,7 +59,6 @@ const App = ({ Component, pageProps }) => {
       },
       breadcrumbs: pageProps.breadcrumbs || [],
       sessionCookie,
-      profiles,
       collectionView: {
         currentCollectionView,
         setCurrentCollectionView,
@@ -87,7 +69,6 @@ const App = ({ Component, pageProps }) => {
     pageProps.breadcrumbs,
     pageProps.pageContext?.title,
     pageProps.pageContext?.type,
-    profiles,
     sessionCookie,
     setCurrentCollectionView,
   ]);
@@ -135,7 +116,14 @@ const App = ({ Component, pageProps }) => {
             <Session>
               <NavigationSection />
               <div className="min-w-0 shrink grow px-8 py-2 text-black dark:text-white">
-                <Component {...pageProps} />
+                {pageProps.serverSideError ? (
+                  <Error
+                    statusCode={pageProps.serverSideError.code}
+                    title={pageProps.serverSideError.description}
+                  />
+                ) : (
+                  <Component {...pageProps} />
+                )}
               </div>
             </Session>
           </GlobalContext.Provider>

@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -9,52 +10,92 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
+import NoContent from "../../components/no-content";
 import PagePreamble from "../../components/page-preamble";
+import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
-const User = ({ lab, user }) => {
+const User = ({ user, lab = null }) => {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={user}>
         <PagePreamble />
-        <DataPanel>
-          <DataArea>
-            <DataItemLabel>Lab</DataItemLabel>
-            <DataItemValue>{lab.title}</DataItemValue>
-          </DataArea>
-        </DataPanel>
+        {user.status || user.job_title || lab || user.email ? (
+          <DataPanel>
+            <DataArea>
+              {user.status && (
+                <>
+                  <DataItemLabel>Status</DataItemLabel>
+                  <DataItemValue>
+                    <Status status={user.status} />
+                  </DataItemValue>
+                </>
+              )}
+              {user.job_title && (
+                <>
+                  <DataItemLabel>Job Title</DataItemLabel>
+                  <DataItemValue>{user.job_title}</DataItemValue>
+                </>
+              )}
+              {lab?.title && (
+                <>
+                  <DataItemLabel>Lab</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={lab["@id"]}>
+                      <a>{lab.title}</a>
+                    </Link>
+                  </DataItemValue>
+                </>
+              )}
+              {user.email && (
+                <>
+                  <DataItemLabel>Email</DataItemLabel>
+                  <DataItemValue>
+                    <a href={`mailto:${user.email}`}>{user.email}</a>
+                  </DataItemValue>
+                </>
+              )}
+            </DataArea>
+          </DataPanel>
+        ) : (
+          <NoContent message="No user data to display" />
+        )}
       </EditableItem>
     </>
   );
 };
 
 User.propTypes = {
-  // Lab data associated with `user`
-  lab: PropTypes.object.isRequired,
-  // user object from the server
+  // User object from the server
   user: PropTypes.object.isRequired,
+  // Lab data associated with `user`
+  lab: PropTypes.object,
 };
 
 export default User;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
-
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const user = await request.getObject(`/users/${params.uuid}/`);
-  if (user && user.status !== "error") {
-    const lab = await request.getObject(user.lab);
-    const breadcrumbs = await buildBreadcrumbs(user, "title");
+  if (FetchRequest.isResponseSuccess(user)) {
+    const lab = await request.getObject(user.lab, null);
+    const breadcrumbs = await buildBreadcrumbs(
+      user,
+      "title",
+      req.headers.cookie
+    );
     return {
       props: {
+        user,
         lab,
         pageContext: { title: user.title },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
-        user: user,
       },
     };
   }
+  return errorObjectToProps(user);
 };

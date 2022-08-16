@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
-  CollectionCount,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
@@ -12,7 +13,8 @@ import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const PhenotypeOntologyTermList = ({ phenotypeOntologyTerms }) => {
   return (
@@ -22,20 +24,23 @@ const PhenotypeOntologyTermList = ({ phenotypeOntologyTerms }) => {
       <Collection>
         {phenotypeOntologyTerms.length > 0 ? (
           <>
-            <CollectionCount count={phenotypeOntologyTerms.length} />
-            {phenotypeOntologyTerms.map((phenotypeOntologyTerm) => (
-              <CollectionItem
-                key={phenotypeOntologyTerm.uuid}
-                href={phenotypeOntologyTerm["@id"]}
-                label={`Phenotype ontology term ${phenotypeOntologyTerm.term_id}`}
-                status={phenotypeOntologyTerm.status}
-              >
-                <CollectionItemName>
-                  {phenotypeOntologyTerm.term_id}
-                </CollectionItemName>
-                <div>{phenotypeOntologyTerm.term_name}</div>
-              </CollectionItem>
-            ))}
+            <CollectionHeader count={phenotypeOntologyTerms.length} />
+            <CollectionContent collection={phenotypeOntologyTerms}>
+              {phenotypeOntologyTerms.map((phenotypeOntologyTerm) => (
+                <CollectionItem
+                  key={phenotypeOntologyTerm.uuid}
+                  testid={phenotypeOntologyTerm.uuid}
+                  href={phenotypeOntologyTerm["@id"]}
+                  label={`Phenotype ontology term ${phenotypeOntologyTerm.term_id}`}
+                  status={phenotypeOntologyTerm.status}
+                >
+                  <CollectionItemName>
+                    {phenotypeOntologyTerm.term_id}
+                  </CollectionItemName>
+                  <div>{phenotypeOntologyTerm.term_name}</div>
+                </CollectionItem>
+              ))}
+            </CollectionContent>
           </>
         ) : (
           <NoCollectionData />
@@ -53,15 +58,21 @@ PhenotypeOntologyTermList.propTypes = {
 export default PhenotypeOntologyTermList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const phenotypeOntologyTerms = await request.getCollection("phenotype-terms");
-  const breadcrumbs = await buildBreadcrumbs(phenotypeOntologyTerms, "title");
-  return {
-    props: {
-      phenotypeOntologyTerms: phenotypeOntologyTerms["@graph"],
-      pageContext: { title: phenotypeOntologyTerms.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(phenotypeOntologyTerms)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      phenotypeOntologyTerms,
+      "title",
+      req.headers.cookie
+    );
+    return {
+      props: {
+        phenotypeOntologyTerms: phenotypeOntologyTerms["@graph"],
+        pageContext: { title: phenotypeOntologyTerms.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(phenotypeOntologyTerms);
 };

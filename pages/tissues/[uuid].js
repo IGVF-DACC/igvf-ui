@@ -17,17 +17,18 @@ import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const Tissue = ({
   tissue,
   donors,
-  award,
-  lab,
-  source,
+  award = null,
+  lab = null,
+  source = null,
   treatments,
   biosampleTerm = null,
-  diseaseTerm = null,
+  diseaseTerms,
 }) => {
   return (
     <>
@@ -45,7 +46,7 @@ const Tissue = ({
               source={source}
               donors={donors}
               biosampleTerm={biosampleTerm}
-              diseaseTerm={diseaseTerm}
+              diseaseTerms={diseaseTerms}
               options={{
                 dateObtainedTitle: "Date Harvested",
               }}
@@ -91,49 +92,54 @@ const Tissue = ({
 Tissue.propTypes = {
   // Tissue sample to display
   tissue: PropTypes.object.isRequired,
+  // Award applied to this sample
+  award: PropTypes.null,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Award applied to this sample
-  award: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
   // Lab that submitted this sample
-  lab: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
+  lab: PropTypes.object,
   // Source lab or source for this sample
-  source: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
+  source: PropTypes.object,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample ontology for this sample
   biosampleTerm: PropTypes.object,
   // Disease ontology for this sample
-  diseaseTerm: PropTypes.object,
+  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default Tissue;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
-  if (tissue && tissue.status !== "error") {
-    const award = await request.getObject(tissue.award);
-    const donors = await request.getMultipleObjects(tissue.donors);
-    const lab = await request.getObject(tissue.lab);
-    const source = await request.getObject(tissue.source);
-    const treatments = await request.getMultipleObjects(tissue.treatments);
+  if (FetchRequest.isResponseSuccess(tissue)) {
+    const award = await request.getObject(tissue.award, null);
     const biosampleTerm = tissue.biosample_term
-      ? await request.getObject(tissue.biosample_term)
+      ? await request.getObject(tissue.biosample_term, null)
       : null;
-    const diseaseTerm = tissue.disease_term
-      ? await request.getObject(tissue.disease_term)
-      : null;
-    const breadcrumbs = await buildBreadcrumbs(tissue, "accession");
+    const diseaseTerms = tissue.disease_terms
+      ? await request.getMultipleObjects(tissue.disease_terms, null, {
+          filterErrors: true,
+        })
+      : [];
+    const donors = tissue.donors
+      ? await request.getMultipleObjects(tissue.donors, null, {
+          filterErrors: true,
+        })
+      : [];
+    const lab = await request.getObject(tissue.lab, null);
+    const source = await request.getObject(tissue.source, null);
+    const treatments = tissue.treatments
+      ? await request.getMultipleObjects(tissue.treatments, null, {
+          filterErrors: true,
+        })
+      : [];
+    const breadcrumbs = await buildBreadcrumbs(
+      tissue,
+      "accession",
+      req.headers.cookie
+    );
     return {
       props: {
         tissue,
@@ -143,13 +149,11 @@ export const getServerSideProps = async ({ params, req }) => {
         source,
         treatments,
         biosampleTerm,
-        diseaseTerm,
+        diseaseTerms,
         pageContext: { title: tissue.accession },
         breadcrumbs,
-        uuid: params.uuid,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(tissue);
 };

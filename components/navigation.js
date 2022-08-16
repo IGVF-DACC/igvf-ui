@@ -14,10 +14,11 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
-import React, { Children, isValidElement, useState } from "react";
+import React, { Children, isValidElement, useContext, useState } from "react";
 // components
 import Icon from "./icon";
 import SiteLogo from "./logo";
+import SessionContext from "./session-context";
 // lib
 import { AUTH_ERROR_URI } from "../lib/constants";
 
@@ -113,6 +114,7 @@ NavigationButton.displayName = "NavigationButton";
  */
 const NavigationSignInItem = ({ id, children }) => {
   const { isLoading, loginWithRedirect } = useAuth0();
+  const { setRedirectTo } = useContext(SessionContext);
 
   /**
    * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
@@ -124,15 +126,12 @@ const NavigationSignInItem = ({ id, children }) => {
     // Save the current path in auth0-react appState so we can redirect to it after signin, unless
     // the user is on the authentication-error page, in which case we redirect to the home page
     // after sign-in so the user doesn't see an authentication error after a good sign-in.
-    const returnTo =
+    setRedirectTo(
       window.location.pathname === AUTH_ERROR_URI
         ? "/"
-        : window.location.pathname;
-    loginWithRedirect({
-      appState: {
-        returnTo,
-      },
-    });
+        : window.location.pathname
+    );
+    loginWithRedirect();
   };
 
   return (
@@ -346,6 +345,16 @@ const Navigation = ({ navigationClick }) => {
           Rodent Donors
         </NavigationHrefItem>
       </NavigationGroupItem>
+      <NavigationHrefItem
+        id="genes"
+        href="/genes"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <Icon.Gene />
+        </NavigationIcon>
+        Genes
+      </NavigationHrefItem>
       <NavigationHrefItem
         id="labs"
         href="/labs"

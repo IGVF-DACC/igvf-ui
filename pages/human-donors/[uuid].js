@@ -21,7 +21,8 @@ import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { formatDateRange } from "../../lib/dates";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 /**
  * Defines the columns for the health-status table.
@@ -42,7 +43,7 @@ const healthStatusHistoryColumns = [
   },
 ];
 
-const HumanDonor = ({ donor, award, lab, parents }) => {
+const HumanDonor = ({ donor, award = null, lab = null, parents }) => {
   return (
     <>
       <Breadcrumbs />
@@ -86,9 +87,9 @@ HumanDonor.propTypes = {
   // Technical sample to display
   donor: PropTypes.object.isRequired,
   // Award applied to this technical sample
-  award: PropTypes.object.isRequired,
+  award: PropTypes.object,
   // Lab that submitted this technical sample
-  lab: PropTypes.object.isRequired,
+  lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
@@ -96,13 +97,21 @@ HumanDonor.propTypes = {
 export default HumanDonor;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/human-donors/${params.uuid}/`);
-  if (donor && donor.status !== "error") {
-    const award = await request.getObject(donor.award);
-    const lab = await request.getObject(donor.lab);
-    const parents = await request.getMultipleObjects(donor.parents);
-    const breadcrumbs = await buildBreadcrumbs(donor, "accession");
+  if (FetchRequest.isResponseSuccess(donor)) {
+    const award = await request.getObject(donor.award, null);
+    const lab = await request.getObject(donor.lab, null);
+    const parents = donor.parents
+      ? await request.getMultipleObjects(donor.parents, null, {
+          filterErrors: true,
+        })
+      : [];
+    const breadcrumbs = await buildBreadcrumbs(
+      donor,
+      "accession",
+      req.headers.cookie
+    );
     return {
       props: {
         donor,
@@ -111,10 +120,8 @@ export const getServerSideProps = async ({ params, req }) => {
         parents,
         pageContext: { title: donor.accession },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
-        uuid: params.uuid,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(donor);
 };

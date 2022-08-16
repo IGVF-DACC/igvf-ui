@@ -14,41 +14,46 @@ import {
  * Displays the attribution properties of an item in its own data panel, typically from a data
  * object with a defined schema.
  */
-const Attribution = ({ award, lab }) => {
-  return (
-    <>
-      <DataAreaTitle>Attribution</DataAreaTitle>
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Award</DataItemLabel>
-          <DataItemValue>
-            <Link href={award["@id"]}>
-              <a>{award.name}</a>
-            </Link>
-          </DataItemValue>
-          <DataItemLabel>Lab</DataItemLabel>
-          <DataItemValue>
-            <Link href={lab["@id"]}>
-              <a>{lab.title}</a>
-            </Link>
-          </DataItemValue>
-        </DataArea>
-      </DataPanel>
-    </>
-  );
+const Attribution = ({ award = null, lab = null }) => {
+  if (award || lab) {
+    return (
+      <>
+        <DataAreaTitle>Attribution</DataAreaTitle>
+        <DataPanel>
+          <DataArea>
+            {award && (
+              <>
+                <DataItemLabel>Award</DataItemLabel>
+                <DataItemValue>
+                  <Link href={award["@id"]}>
+                    <a>{award.name}</a>
+                  </Link>
+                </DataItemValue>
+              </>
+            )}
+            {lab && (
+              <>
+                <DataItemLabel>Lab</DataItemLabel>
+                <DataItemValue>
+                  <Link href={lab["@id"]}>
+                    <a>{lab.title}</a>
+                  </Link>
+                </DataItemValue>
+              </>
+            )}
+          </DataArea>
+        </DataPanel>
+      </>
+    );
+  }
+  return null;
 };
 
 Attribution.propTypes = {
   // Award applied to the displayed object
-  award: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
+  award: PropTypes.object,
   // Lab that submitted the displayed object
-  lab: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
+  lab: PropTypes.object,
 };
 
 export default Attribution;

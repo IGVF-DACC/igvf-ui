@@ -9,11 +9,12 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
-import { NoCollectionData } from "../../components/no-content";
+import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const AwardList = ({ awards }) => {
   return (
@@ -55,15 +56,21 @@ AwardList.propTypes = {
 export default AwardList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const awards = await request.getCollection("awards");
-  const breadcrumbs = await buildBreadcrumbs(awards, "title");
-  return {
-    props: {
-      awards: awards["@graph"],
-      pageContext: { title: awards.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie || "",
-    },
-  };
+  if (FetchRequest.isResponseSuccess(awards)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      awards,
+      "title",
+      req.headers.cookie
+    );
+    return {
+      props: {
+        awards: awards["@graph"],
+        pageContext: { title: awards.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(awards);
 };

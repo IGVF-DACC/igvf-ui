@@ -9,59 +9,72 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
+import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
-      <DataPanel>
-        <DataArea>
-          <DataItemLabel>Status</DataItemLabel>
-          <DataItemValue>
-            <Status status={sampleOntologyTerm.status} />
-          </DataItemValue>
-          <OntologyTermDataItems ontologyTerm={sampleOntologyTerm}>
-            {sampleOntologyTerm.organ_slims.length > 0 && (
+      <EditableItem item={sampleOntologyTerm}>
+        <PagePreamble />
+        <DataPanel>
+          <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={sampleOntologyTerm.status} />
+            </DataItemValue>
+            {sampleOntologyTerm.dbxrefs?.length > 0 && (
               <>
-                <DataItemLabel>Organs</DataItemLabel>
+                <DataItemLabel>External Resources</DataItemLabel>
                 <DataItemValue>
-                  {sampleOntologyTerm.organ_slims.join(", ")}
+                  <DbxrefList dbxrefs={sampleOntologyTerm.dbxrefs} />
                 </DataItemValue>
               </>
             )}
-            {sampleOntologyTerm.cell_slims.length > 0 && (
-              <>
-                <DataItemLabel>Cells</DataItemLabel>
-                <DataItemValue>
-                  {sampleOntologyTerm.cell_slims.join(", ")}
-                </DataItemValue>
-              </>
-            )}
-            {sampleOntologyTerm.developmental_slims.length > 0 && (
-              <>
-                <DataItemLabel>Developmental Slims</DataItemLabel>
-                <DataItemValue>
-                  {sampleOntologyTerm.developmental_slims.join(", ")}
-                </DataItemValue>
-              </>
-            )}
-            {sampleOntologyTerm.system_slims.length > 0 && (
-              <>
-                <DataItemLabel>System Slims</DataItemLabel>
-                <DataItemValue>
-                  {sampleOntologyTerm.system_slims.join(", ")}
-                </DataItemValue>
-              </>
-            )}
-          </OntologyTermDataItems>
-        </DataArea>
-      </DataPanel>
+            <OntologyTermDataItems ontologyTerm={sampleOntologyTerm}>
+              {sampleOntologyTerm.organ_slims.length > 0 && (
+                <>
+                  <DataItemLabel>Organs</DataItemLabel>
+                  <DataItemValue>
+                    {sampleOntologyTerm.organ_slims.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+              {sampleOntologyTerm.cell_slims.length > 0 && (
+                <>
+                  <DataItemLabel>Cells</DataItemLabel>
+                  <DataItemValue>
+                    {sampleOntologyTerm.cell_slims.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+              {sampleOntologyTerm.developmental_slims.length > 0 && (
+                <>
+                  <DataItemLabel>Developmental Slims</DataItemLabel>
+                  <DataItemValue>
+                    {sampleOntologyTerm.developmental_slims.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+              {sampleOntologyTerm.system_slims.length > 0 && (
+                <>
+                  <DataItemLabel>System Slims</DataItemLabel>
+                  <DataItemValue>
+                    {sampleOntologyTerm.system_slims.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+            </OntologyTermDataItems>
+          </DataArea>
+        </DataPanel>
+      </EditableItem>
     </>
   );
 };
@@ -74,20 +87,23 @@ SampleOntologyTerm.propTypes = {
 export default SampleOntologyTerm;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const sampleOntologyTerm = await request.getObject(
     `/sample-terms//${params.name}/`
   );
-  if (sampleOntologyTerm && sampleOntologyTerm.status !== "error") {
-    const breadcrumbs = await buildBreadcrumbs(sampleOntologyTerm, "term_id");
+  if (FetchRequest.isResponseSuccess(sampleOntologyTerm)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      sampleOntologyTerm,
+      "term_id",
+      req.headers.cookie
+    );
     return {
       props: {
         sampleOntologyTerm,
         pageContext: { title: sampleOntologyTerm.term_id },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(sampleOntologyTerm);
 };

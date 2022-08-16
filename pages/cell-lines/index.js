@@ -9,12 +9,13 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
-import { NoCollectionData } from "../../components/no-content";
+import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 import SourceProp from "../../components/source-prop";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const CellLineList = ({ cellLines }) => {
   return (
@@ -35,7 +36,7 @@ const CellLineList = ({ cellLines }) => {
                   status={sample.status}
                 >
                   <CollectionItemName>{sample.accession}</CollectionItemName>
-                  <SourceProp source={sample.source} />
+                  {sample.source && <SourceProp source={sample.source} />}
                 </CollectionItem>
               ))}
             </CollectionContent>
@@ -56,16 +57,22 @@ CellLineList.propTypes = {
 export default CellLineList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const cellLines = await request.getCollection("cell-lines");
-  await request.getAndEmbedCollectionObjects(cellLines["@graph"], "source");
-  const breadcrumbs = await buildBreadcrumbs(cellLines, "title");
-  return {
-    props: {
-      cellLines: cellLines["@graph"],
-      pageContext: { title: cellLines.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(cellLines)) {
+    await request.getAndEmbedCollectionObjects(cellLines["@graph"], "source");
+    const breadcrumbs = await buildBreadcrumbs(
+      cellLines,
+      "title",
+      req.headers.cookie
+    );
+    return {
+      props: {
+        cellLines: cellLines["@graph"],
+        pageContext: { title: cellLines.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(cellLines);
 };

@@ -11,7 +11,7 @@ import { DataPanel } from "../components/data-area";
 import PagePreamble from "../components/page-preamble";
 import Spinner from "../components/spinner";
 // lib
-import Request from "../lib/request";
+import FetchRequest from "../lib/fetch-request";
 
 const UserProfile = ({ sessionUser = null }) => {
   const { isLoading, user } = useAuth0();
@@ -58,8 +58,9 @@ export default UserProfile;
 
 export const getServerSideProps = async ({ req }) => {
   // Get the currently logged-in user from the server, then get their user object that includes
-  // their access keys.
-  const request = new Request(req?.headers?.cookie);
+  // their access keys. Can't handle errors in the usual way because the returned object has no
+  // @type.
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const sessionProperties = await request.getObject("/session-properties");
   const sessionUser = sessionProperties.user
     ? await request.getObject(sessionProperties.user["@id"])
@@ -68,7 +69,6 @@ export const getServerSideProps = async ({ req }) => {
     props: {
       sessionUser,
       pageContext: { title: "User Profile" },
-      sessionCookie: req?.headers?.cookie,
     },
   };
 };

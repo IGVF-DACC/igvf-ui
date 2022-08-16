@@ -1,7 +1,8 @@
 // node_modules
 import PropTypes from "prop-types";
 // lib
-import Request from "../lib/request";
+import errorObjectToProps from "../lib/errors";
+import FetchRequest from "../lib/fetch-request";
 // components
 import {
   Collection,
@@ -9,7 +10,7 @@ import {
   CollectionItemName,
 } from "../components/collection";
 import { DataPanel } from "../components/data-area";
-import { NoCollectionData } from "../components/no-content";
+import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 
 /**
@@ -83,15 +84,14 @@ FallbackObject.propTypes = {
 export default FallbackObject;
 
 export const getServerSideProps = async ({ req, resolvedUrl }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const generic = await request.getObject(resolvedUrl);
-  if (generic && generic.status !== "error") {
+  if (FetchRequest.isResponseSuccess(generic)) {
     return {
       props: {
         generic,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(generic);
 };

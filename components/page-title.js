@@ -10,7 +10,11 @@ import GlobalContext from "./global-context";
 const PageTitle = ({ pageTitle = "" }) => {
   const { page } = useContext(GlobalContext);
 
-  return <h1 className="mb-5 text-4xl font-thin">{pageTitle || page.title}</h1>;
+  return (
+    <h1 className="mb-5 text-3xl font-medium text-gray-700">
+      {pageTitle || page.title}
+    </h1>
+  );
 };
 
 PageTitle.propTypes = {

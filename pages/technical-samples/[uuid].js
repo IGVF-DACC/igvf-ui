@@ -16,9 +16,15 @@ import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { formatDate } from "../../lib/dates";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
-const TechnicalSample = ({ sample, award, lab, source }) => {
+const TechnicalSample = ({
+  sample,
+  award = null,
+  lab = null,
+  source = null,
+}) => {
   return (
     <>
       <Breadcrumbs />
@@ -60,23 +66,27 @@ TechnicalSample.propTypes = {
   // Technical sample to display
   sample: PropTypes.object.isRequired,
   // Award applied to this technical sample
-  award: PropTypes.object.isRequired,
+  award: PropTypes.object,
   // Lab that submitted this technical sample
-  lab: PropTypes.object.isRequired,
+  lab: PropTypes.object,
   // Source lab or source for this technical sample
-  source: PropTypes.object.isRequired,
+  source: PropTypes.object,
 };
 
 export default TechnicalSample;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const sample = await request.getObject(`/technical-samples/${params.uuid}/`);
-  if (sample && sample.status !== "error") {
-    const award = await request.getObject(sample.award);
-    const lab = await request.getObject(sample.lab);
-    const source = await request.getObject(sample.source);
-    const breadcrumbs = await buildBreadcrumbs(sample, "accession");
+  if (FetchRequest.isResponseSuccess(sample)) {
+    const award = await request.getObject(sample.award, null);
+    const lab = await request.getObject(sample.lab, null);
+    const source = await request.getObject(sample.source, null);
+    const breadcrumbs = await buildBreadcrumbs(
+      sample,
+      "accession",
+      req.headers.cookie
+    );
     return {
       props: {
         sample,
@@ -85,10 +95,8 @@ export const getServerSideProps = async ({ params, req }) => {
         source,
         pageContext: { title: sample.accession },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
-        uuid: params.uuid,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(sample);
 };

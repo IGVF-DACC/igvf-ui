@@ -9,11 +9,12 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
-import { NoCollectionData } from "../../components/no-content";
+import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const PrimaryCellList = ({ primaryCells }) => {
   return (
@@ -60,15 +61,21 @@ PrimaryCellList.propTypes = {
 export default PrimaryCellList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const primaryCells = await request.getCollection("primary-cells");
-  const breadcrumbs = await buildBreadcrumbs(primaryCells, "title");
-  return {
-    props: {
-      primaryCells: primaryCells["@graph"],
-      pageContext: { title: primaryCells.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(primaryCells)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      primaryCells,
+      "title",
+      req.headers.cookie
+    );
+    return {
+      props: {
+        primaryCells: primaryCells["@graph"],
+        pageContext: { title: primaryCells.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(primaryCells);
 };

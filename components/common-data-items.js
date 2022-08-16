@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
 // components
 import AliasList from "./alias-list";
 import { DataItemLabel, DataItemValue } from "./data-area";
+import DbxrefList from "./dbxref-list";
 import { OntologyTermId } from "./ontology";
 import SeparatedList from "./separated-list";
 import SourceProp from "./source-prop";
@@ -125,6 +126,14 @@ export const SampleDataItems = ({ sample, source = null, children }) => {
           </DataItemValue>
         </>
       )}
+      {sample.dbxrefs?.length > 0 && (
+        <>
+          <DataItemLabel>External Resources</DataItemLabel>
+          <DataItemValue>
+            <DbxrefList dbxrefs={sample.dbxrefs} />
+          </DataItemValue>
+        </>
+      )}
       {children}
       {sample.aliases && (
         <>
@@ -153,7 +162,7 @@ export const BiosampleDataItems = ({
   source = null,
   donors = [],
   biosampleTerm = null,
-  diseaseTerm = null,
+  diseaseTerms,
   options = {
     dateObtainedTitle: "Date Obtained",
   },
@@ -212,13 +221,17 @@ export const BiosampleDataItems = ({
           </DataItemValue>
         </>
       )}
-      {diseaseTerm && (
+      {diseaseTerms.length > 0 && (
         <>
           <DataItemLabel>Disease</DataItemLabel>
           <DataItemValue>
-            <Link href={diseaseTerm["@id"]}>
-              <a>{diseaseTerm.term_id}</a>
-            </Link>
+            <SeparatedList>
+              {diseaseTerms.map((diseaseTerm) => (
+                <Link href={diseaseTerm["@id"]} key={diseaseTerm.uuid}>
+                  <a>{diseaseTerm.term_id}</a>
+                </Link>
+              ))}
+            </SeparatedList>
           </DataItemValue>
         </>
       )}
@@ -259,7 +272,7 @@ BiosampleDataItems.propTypes = {
   // Sample ontology for the biosample
   biosampleTerm: PropTypes.object,
   // Disease ontology for the biosample
-  diseaseTerm: PropTypes.object,
+  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // General options to alter the display of the data items
   options: PropTypes.shape({
     // Title of date_obtained property

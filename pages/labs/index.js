@@ -9,11 +9,12 @@ import {
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
-import { NoCollectionData } from "../../components/no-content";
+import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const LabList = ({ labs }) => {
   return (
@@ -55,15 +56,21 @@ LabList.propTypes = {
 export default LabList;
 
 export const getServerSideProps = async ({ req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const labs = await request.getCollection("lab");
-  const breadcrumbs = await buildBreadcrumbs(labs, "title");
-  return {
-    props: {
-      labs: labs["@graph"],
-      pageContext: { title: labs.title },
-      breadcrumbs,
-      sessionCookie: req?.headers?.cookie,
-    },
-  };
+  if (FetchRequest.isResponseSuccess(labs)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      labs,
+      "title",
+      req.headers.cookie
+    );
+    return {
+      props: {
+        labs: labs["@graph"],
+        pageContext: { title: labs.title },
+        breadcrumbs,
+      },
+    };
+  }
+  return errorObjectToProps(labs);
 };

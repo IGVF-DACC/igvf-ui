@@ -119,11 +119,3 @@ $ pip install -r requirements.txt -r requirements-dev.txt
 $ mypy .
 ```
 Runs in strict mode, excluding `test` folder.
-
-## Automatic linting
-This repo includes configuration for pre-commit hooks. To use pre-commit, install pre-commit, and activate the hooks:
-```bash
-pip install pre-commit==2.17.0
-pre-commit install
-```
-Now every time you run `git commit` the automatic checks are run to check the changes you made.

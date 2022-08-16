@@ -14,10 +14,11 @@ import SeparatedList from "../../components/separated-list";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
 // lib
-import Request from "../../lib/request";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
-const Lab = ({ lab, awards, pi }) => {
+const Lab = ({ lab, awards, pi = null }) => {
   return (
     <>
       <Breadcrumbs />
@@ -31,8 +32,12 @@ const Lab = ({ lab, awards, pi }) => {
             </DataItemValue>
             <DataItemLabel>Institute</DataItemLabel>
             <DataItemValue>{lab.institute_label}</DataItemValue>
-            <DataItemLabel>Principal Investigator</DataItemLabel>
-            <DataItemValue>{pi.title}</DataItemValue>
+            {pi && (
+              <>
+                <DataItemLabel>Principal Investigator</DataItemLabel>
+                <DataItemValue>{pi.title}</DataItemValue>
+              </>
+            )}
             {awards.length > 0 && (
               <>
                 <DataItemLabel>Awards</DataItemLabel>
@@ -58,21 +63,26 @@ Lab.propTypes = {
   // Awards associated with `lab`
   awards: PropTypes.array.isRequired,
   // Principal investigator for `lab`
-  pi: PropTypes.shape({
-    // PI full name
-    title: PropTypes.string.isRequired,
-  }),
+  pi: PropTypes.object,
 };
 
 export default Lab;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const lab = await request.getObject(`/labs/${params.name}/`);
-  if (lab && lab.status !== "error") {
-    const awards = await request.getMultipleObjects(lab.awards);
-    const pi = await request.getObject(lab.pi);
-    const breadcrumbs = await buildBreadcrumbs(lab, "title");
+  if (FetchRequest.isResponseSuccess(lab)) {
+    const awards = lab.awards
+      ? await request.getMultipleObjects(lab.awards, null, {
+          filterErrors: true,
+        })
+      : [];
+    const pi = await request.getObject(lab.pi, null);
+    const breadcrumbs = await buildBreadcrumbs(
+      lab,
+      "title",
+      req.headers.cookie
+    );
     return {
       props: {
         lab,
@@ -80,9 +90,8 @@ export const getServerSideProps = async ({ params, req }) => {
         pi,
         pageContext: { title: lab.title },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(lab);
 };

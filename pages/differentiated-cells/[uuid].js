@@ -17,18 +17,19 @@ import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import Request from "../../lib/request";
+import errorObjectToProps from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 
 const DifferentiatedCell = ({
   differentiatedCell,
+  award = null,
+  biosampleTerm = null,
+  diseaseTerms,
   donors,
-  award,
-  lab,
-  source,
+  lab = null,
+  source = null,
   treatments,
   differentiationTreatments,
-  biosampleTerm = null,
-  diseaseTerm = null,
 }) => {
   return (
     <>
@@ -46,7 +47,7 @@ const DifferentiatedCell = ({
               source={source}
               donors={donors}
               biosampleTerm={biosampleTerm}
-              diseaseTerm={diseaseTerm}
+              diseaseTerms={diseaseTerms}
               options={{
                 dateObtainedTitle: "Date Collected",
               }}
@@ -94,74 +95,85 @@ const DifferentiatedCell = ({
 DifferentiatedCell.propTypes = {
   // Differentiated-cell sample to display
   differentiatedCell: PropTypes.object.isRequired,
-  // Donors associated with the sample
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Award applied to this sample
-  award: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }).isRequired,
-  // Lab that submitted this sample
-  lab: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
-  // Source lab or source for this sample
-  source: PropTypes.shape({
-    "@id": PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }).isRequired,
-  // Treatments associated with the sample
-  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Differentiation treatments associated with the sample
-  differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  award: PropTypes.object,
   // Biosample ontology for this sample
   biosampleTerm: PropTypes.object,
+  // Differentiation treatments associated with the sample
+  differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
-  diseaseTerm: PropTypes.object,
+  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors associated with the sample
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Lab that submitted this sample
+  lab: PropTypes.object,
+  // Source lab or source for this sample
+  source: PropTypes.object,
+  // Treatments associated with the sample
+  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default DifferentiatedCell;
 
 export const getServerSideProps = async ({ params, req }) => {
-  const request = new Request(req?.headers?.cookie);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
   const differentiatedCell = await request.getObject(
     `/differentiated-cells/${params.uuid}/`
   );
-  if (differentiatedCell && differentiatedCell.status !== "error") {
-    const award = await request.getObject(differentiatedCell.award);
-    const donors = await request.getMultipleObjects(differentiatedCell.donors);
-    const lab = await request.getObject(differentiatedCell.lab);
-    const source = await request.getObject(differentiatedCell.source);
-    const treatments = await request.getMultipleObjects(
-      differentiatedCell.treatments
-    );
-    const differentiationTreatments = await request.getMultipleObjects(
-      differentiatedCell.differentiation_treatments
-    );
+  if (FetchRequest.isResponseSuccess(differentiatedCell)) {
+    const award = await request.getObject(differentiatedCell.award, null);
     const biosampleTerm = differentiatedCell.biosample_term
-      ? await request.getObject(differentiatedCell.biosample_term)
+      ? await request.getObject(differentiatedCell.biosample_term, null)
       : null;
-    const diseaseTerm = differentiatedCell.disease_term
-      ? await request.getObject(differentiatedCell.disease_term)
-      : null;
-    const breadcrumbs = await buildBreadcrumbs(differentiatedCell, "accession");
+    const differentiationTreatments =
+      differentiatedCell.differentiation_treatments
+        ? await request.getMultipleObjects(
+            differentiatedCell.differentiation_treatments,
+            null,
+            { filterErrors: true }
+          )
+        : [];
+    const diseaseTerms = differentiatedCell.disease_terms
+      ? await request.getMultipleObjects(
+          differentiatedCell.disease_terms,
+          null,
+          {
+            filterErrors: true,
+          }
+        )
+      : [];
+    const donors = differentiatedCell.donors
+      ? await request.getMultipleObjects(differentiatedCell.donors, null, {
+          filterErrors: true,
+        })
+      : [];
+    const lab = await request.getObject(differentiatedCell.lab, null);
+    const source = await request.getObject(differentiatedCell.source, null);
+    const treatments = differentiatedCell.treatments
+      ? await request.getMultipleObjects(differentiatedCell.treatments, null, {
+          filterErrors: true,
+        })
+      : [];
+    const breadcrumbs = await buildBreadcrumbs(
+      differentiatedCell,
+      "accession",
+      req.headers.cookie
+    );
     return {
       props: {
         differentiatedCell,
         award,
+        biosampleTerm,
+        differentiationTreatments,
+        diseaseTerms,
         donors,
         lab,
         source,
         treatments,
-        differentiationTreatments,
-        biosampleTerm,
-        diseaseTerm,
         pageContext: { title: differentiatedCell.accession },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }
-  return { notFound: true };
+  return errorObjectToProps(differentiatedCell);
 };

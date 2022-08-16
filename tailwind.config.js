@@ -6,6 +6,10 @@ module.exports = {
       center: true,
     },
     extend: {
+      backgroundImage: {
+        "excel-import": "url('/img/excel-file-origin.png')",
+        "excel-import-dark": "url('/img/excel-file-origin-dark.png')",
+      },
       colors: {
         background: "var(--color-background)",
         brand: "var(--color-brand)",
@@ -83,7 +87,19 @@ module.exports = {
         "min-2": "repeat(2, minmax(0, min-content))",
         "data-item": "fit-content(200px) 1fr",
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            "max-width": "none",
+            p: {
+              "margin-top": "0.5rem",
+              "margin-bottom": "0.5rem",
+              "line-height": "1.375",
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };
