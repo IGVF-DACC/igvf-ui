@@ -5,10 +5,12 @@ import AliasList from "../../components/alias-list";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
+  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DocumentTable from "../../components/document-table";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
@@ -18,7 +20,7 @@ import { UC } from "../../lib/constants";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const Treatment = ({ treatment }) => {
+const Treatment = ({ treatment, documents }) => {
   return (
     <>
       <Breadcrumbs />
@@ -90,6 +92,12 @@ const Treatment = ({ treatment }) => {
             )}
           </DataArea>
         </DataPanel>
+        {documents.length > 0 && (
+          <>
+            <DataAreaTitle>Documents</DataAreaTitle>
+            <DocumentTable documents={documents} />
+          </>
+        )}
       </EditableItem>
     </>
   );
@@ -98,6 +106,8 @@ const Treatment = ({ treatment }) => {
 Treatment.propTypes = {
   // Technical treatment to display
   treatment: PropTypes.object.isRequired,
+  // Documents associated with the cell-line
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default Treatment;
@@ -106,6 +116,11 @@ export const getServerSideProps = async ({ params, req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const treatment = await request.getObject(`/treatments/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(treatment)) {
+    const documents = treatment.documents
+      ? await request.getMultipleObjects(treatment.documents, null, {
+          filterErrors: true,
+        })
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       treatment,
       "treatment_term_id",
@@ -114,6 +129,7 @@ export const getServerSideProps = async ({ params, req }) => {
     return {
       props: {
         treatment,
+        documents,
         pageContext: { title: treatment.treatment_term_id },
         breadcrumbs,
       },

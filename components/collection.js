@@ -1,10 +1,5 @@
 // node_modules
-import {
-  ChevronDoubleRightIcon,
-  TableIcon,
-  ViewListIcon,
-} from "@heroicons/react/solid";
-import Link from "next/link";
+import { TableIcon, ViewListIcon } from "@heroicons/react/solid";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useContext, useEffect } from "react";
@@ -12,6 +7,7 @@ import { useContext, useEffect } from "react";
 import Button from "./button";
 import CollectionTable from "./collection-table";
 import GlobalContext from "./global-context";
+import ItemLink from "./item-link";
 import NoContent from "./no-content";
 import Status from "./status";
 // lib
@@ -55,31 +51,6 @@ export const Collection = ({ children }) => {
 };
 
 /**
- * Displays the link in a collection item.
- */
-export const CollectionItemLink = ({ href, label = "" }) => {
-  return (
-    <div className="h-fill flex items-center justify-center pl-2">
-      <Link href={href}>
-        <a
-          className="rounded-full border border-transparent p-2 hover:border-highlight-border hover:bg-highlight"
-          aria-label={label}
-        >
-          <ChevronDoubleRightIcon className="h-5 w-5 fill-gray-700 dark:fill-gray-300" />
-        </a>
-      </Link>
-    </div>
-  );
-};
-
-CollectionItemLink.propTypes = {
-  // Path to item this links to
-  href: PropTypes.string.isRequired,
-  // Voice label for item; treat as required unless you have absolutely nothing
-  label: PropTypes.string,
-};
-
-/**
  * Displays a single item in a collection.
  */
 export const CollectionItem = ({
@@ -91,10 +62,10 @@ export const CollectionItem = ({
 }) => {
   return (
     <div
-      className="my-0.5 flex border border-data-border bg-data-background"
+      className="my-0.5 flex border border-data-border bg-data-background px-2"
       data-testid={`collection-list-item-${testid}`}
     >
-      <CollectionItemLink href={href} label={label} />
+      <ItemLink href={href} label={label} />
       <div className="grow p-4">{children}</div>
       {status && (
         <div className="shrink justify-end self-center p-2">
