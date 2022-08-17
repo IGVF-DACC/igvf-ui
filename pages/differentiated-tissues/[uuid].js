@@ -11,6 +11,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DocumentTable from "../../components/document-table";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
@@ -26,6 +27,7 @@ const DifferentiatedTissue = ({
   biosampleTerm = null,
   differentiationTreatments,
   diseaseTerms,
+  documents,
   donors,
   lab = null,
   source = null,
@@ -86,6 +88,12 @@ const DifferentiatedTissue = ({
             <TreatmentTable treatments={differentiationTreatments} />
           </>
         )}
+        {documents.length > 0 && (
+          <>
+            <DataAreaTitle>Documents</DataAreaTitle>
+            <DocumentTable documents={documents} />
+          </>
+        )}
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
@@ -103,6 +111,8 @@ DifferentiatedTissue.propTypes = {
   differentiationTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Documents associated with the cell-line
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Lab that submitted this sample
@@ -142,6 +152,11 @@ export const getServerSideProps = async ({ params, req }) => {
           }
         )
       : [];
+    const documents = differentiatedTissue.documents
+      ? await request.getMultipleObjects(differentiatedTissue.documents, null, {
+          filterErrors: true,
+        })
+      : [];
     const donors = differentiatedTissue.donors
       ? await request.getMultipleObjects(differentiatedTissue.donors, null, {
           filterErrors: true,
@@ -168,6 +183,7 @@ export const getServerSideProps = async ({ params, req }) => {
         biosampleTerm,
         differentiationTreatments,
         diseaseTerms,
+        documents,
         donors,
         lab,
         source,

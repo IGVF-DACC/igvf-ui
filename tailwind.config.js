@@ -82,6 +82,16 @@ module.exports = {
         "button-warning": "var(--color-button-warning)",
         "button-success": "var(--color-button-success)",
         "button-info": "var(--color-button-info)",
+
+        // Document icon tag colors
+        "document-autosql": "var(--color-document-autosql)",
+        "document-html": "var(--color-document-html)",
+        "document-json": "var(--color-document-json)",
+        "document-pdf": "var(--color-document-pdf)",
+        "document-svs": "var(--color-document-svs)",
+        "document-txt": "var(--color-document-txt)",
+        "document-tiff": "var(--color-document-tiff)",
+        "document-tsv": "var(--color-document-tsv)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",

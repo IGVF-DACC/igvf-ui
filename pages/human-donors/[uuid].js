@@ -13,6 +13,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { DataGridContainer } from "../../components/data-grid";
+import DocumentTable from "../../components/document-table";
 import ExternalResources from "../../components/external-resources";
 import PagePreamble from "../../components/page-preamble";
 import SortableGrid from "../../components/sortable-grid";
@@ -43,7 +44,13 @@ const healthStatusHistoryColumns = [
   },
 ];
 
-const HumanDonor = ({ donor, award = null, lab = null, parents }) => {
+const HumanDonor = ({
+  donor,
+  award = null,
+  documents,
+  lab = null,
+  parents,
+}) => {
   return (
     <>
       <Breadcrumbs />
@@ -77,6 +84,12 @@ const HumanDonor = ({ donor, award = null, lab = null, parents }) => {
             </DataGridContainer>
           </>
         )}
+        {documents.length > 0 && (
+          <>
+            <DataAreaTitle>Documents</DataAreaTitle>
+            <DocumentTable documents={documents} />
+          </>
+        )}
         <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
@@ -88,6 +101,8 @@ HumanDonor.propTypes = {
   donor: PropTypes.object.isRequired,
   // Award applied to this technical sample
   award: PropTypes.object,
+  // Documents associated with the cell-line
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Lab that submitted this technical sample
   lab: PropTypes.object,
   // Parents of this donor
@@ -101,6 +116,11 @@ export const getServerSideProps = async ({ params, req }) => {
   const donor = await request.getObject(`/human-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
     const award = await request.getObject(donor.award, null);
+    const documents = donor.documents
+      ? await request.getMultipleObjects(donor.documents, null, {
+          filterErrors: true,
+        })
+      : [];
     const lab = await request.getObject(donor.lab, null);
     const parents = donor.parents
       ? await request.getMultipleObjects(donor.parents, null, {
@@ -116,6 +136,7 @@ export const getServerSideProps = async ({ params, req }) => {
       props: {
         donor,
         award,
+        documents,
         lab,
         parents,
         pageContext: { title: donor.accession },
