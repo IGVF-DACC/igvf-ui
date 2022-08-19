@@ -19,13 +19,17 @@ def test_config_config_dataclass():
         name='demo',
         branch='xyz-branch',
         pipeline='xyz-pipeline',
-        backend_url='https://test.backend.org'
+        backend_url='https://test.backend.org',
+        tags=[
+            ('test', 'tag'),
+        ]
     )
     assert config.common.organization_name == 'igvf-dacc'
     assert config.common.project_name == 'igvf-ui'
     assert config.branch == 'xyz-branch'
     assert config.pipeline == 'xyz-pipeline'
     assert config.backend_url == 'https://test.backend.org'
+    assert config.tags == [('test', 'tag')]
 
 
 def test_config_build_config_from_name():
@@ -62,6 +66,7 @@ def test_config_build_config_from_name_demo(mocker):
             'pipeline': 'DemoDeploymentPipelineStack',
             'branch': 'my-branch',
             'name': 'demo',
+            'tags': [('time-to-live', '3')]
         }
     )
     config = build_config_from_name(
@@ -108,11 +113,13 @@ def test_config_get_raw_config_from_name_demo():
         branch='my-branch',
         pipeline='my-pipeline',
         backend_url='http://my-specific-endpoint.org',
+        tags=[('abc', '123')]
     )
     assert raw_config['branch'] == 'my-branch'
     assert raw_config['pipeline'] == 'my-pipeline'
     assert raw_config['name'] == 'demo'
     assert raw_config['backend_url'] == 'http://my-specific-endpoint.org'
+    assert raw_config['tags'] == [('abc', '123')]
 
 
 def test_config_maybe_add_backend_url():
@@ -137,6 +144,7 @@ def test_config_fill_in_calculated_config():
         'demo',
         branch='my-branch',
         pipeline='my-pipeline',
+        tags=[('xyz', '123')],
     )
     raw_config.pop('backend_url', None)
     calculated_config = fill_in_calculated_config(raw_config)
@@ -144,7 +152,8 @@ def test_config_fill_in_calculated_config():
         'pipeline': 'my-pipeline',
         'branch': 'my-branch',
         'name': 'demo',
-        'backend_url': 'https://igvfd-my-branch.demo.igvf.org'
+        'backend_url': 'https://igvfd-my-branch.demo.igvf.org',
+        'tags': [('xyz', '123')]
     }
 
 
@@ -158,6 +167,7 @@ def test_config_config_factory_init():
         'branch': 'some-branch',
         'pipeline': 'some-pipeline',
         'backend_url': 'some-backend-url',
+        'tags': [('abc', '123')]
     }
     config = config_factory(**kwargs)
     assert isinstance(config, Config)
