@@ -21,6 +21,7 @@ def test_stages_dev_initialize_dev_stages(config):
         'TestDevelopmentDeployStage-FrontendStack',
     )
     assert stack.tags == {
+        'environment': 'demo',
         'branch': 'some-branch',
         'project': 'igvf-ui',
         'test': 'tag'

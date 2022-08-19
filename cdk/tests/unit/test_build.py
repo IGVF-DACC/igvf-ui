@@ -113,6 +113,10 @@ def test_synth_add_deploy_pipeline_stack_to_app():
                     'Value': 'dev'
                 },
                 {
+                    'Key': 'environment',
+                    'Value': 'dev'
+                },
+                {
                     'Key': 'project',
                     'Value': 'igvf-ui'
                 }
