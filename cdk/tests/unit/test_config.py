@@ -66,7 +66,7 @@ def test_config_build_config_from_name_demo(mocker):
             'pipeline': 'DemoDeploymentPipelineStack',
             'branch': 'my-branch',
             'name': 'demo',
-            'tags': [('time-to-live', '3')]
+            'tags': [('time-to-live-hours', '3')]
         }
     )
     config = build_config_from_name(
