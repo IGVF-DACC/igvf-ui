@@ -184,7 +184,7 @@ export const BiosampleDataItems = ({
       )}
       {biosample.age && (
         <>
-          <DataItemLabel>Age</DataItemLabel>
+          <DataItemLabel>Biosample Collection Age</DataItemLabel>
           <DataItemValue>
             {biosample.age}
             {biosample.age_units ? (
