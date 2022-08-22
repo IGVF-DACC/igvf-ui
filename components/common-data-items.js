@@ -199,6 +199,14 @@ export const BiosampleDataItems = ({
           </DataItemValue>
         </>
       )}
+      {"embryonic" in biosample && (
+        <>
+          <DataItemLabel>Embryonic</DataItemLabel>
+          <DataItemValue>
+            <div className="h-5 w-5">{biosample.embryonic ? "yes" : "no"}</div>
+          </DataItemValue>
+        </>
+      )}
       {biosample.date_obtained && (
         <>
           <DataItemLabel>{options.dateObtainedTitle}</DataItemLabel>
