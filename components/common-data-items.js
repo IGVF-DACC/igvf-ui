@@ -17,6 +17,7 @@ import SeparatedList from "./separated-list";
 import SourceProp from "./source-prop";
 // lib
 import { formatDate } from "../lib/dates";
+import Instruction from "./instruction";
 
 /**
  * Display the data items common to all donor-derived objects.
@@ -184,7 +185,7 @@ export const BiosampleDataItems = ({
       )}
       {biosample.age && (
         <>
-          <DataItemLabel>Biosample Collection Age</DataItemLabel>
+          <DataItemLabel>Age</DataItemLabel>
           <DataItemValue>
             {biosample.age}
             {biosample.age_units ? (
@@ -196,6 +197,7 @@ export const BiosampleDataItems = ({
             ) : (
               ""
             )}
+            <Instruction.Note>at time of sample collection</Instruction.Note>
           </DataItemValue>
         </>
       )}
