@@ -40,3 +40,12 @@ Instruction.propTypes = {
 };
 
 export default Instruction;
+
+/**
+ * Displays a small note to explain something immediately before it.
+ */
+const Note = ({ children }) => {
+  return <div className="text-sm text-gray-500">{children}</div>;
+};
+
+Instruction.Note = Note;
