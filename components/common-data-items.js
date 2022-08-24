@@ -182,12 +182,6 @@ export const BiosampleDataItems = ({
           <DataItemValue>{biosample.sex}</DataItemValue>
         </>
       )}
-      {biosample.life_stage && (
-        <>
-          <DataItemLabel>Life Stage</DataItemLabel>
-          <DataItemValue>{biosample.life_stage}</DataItemValue>
-        </>
-      )}
       {biosample.age && (
         <>
           <DataItemLabel>Age</DataItemLabel>
@@ -197,11 +191,19 @@ export const BiosampleDataItems = ({
               <>
                 {" "}
                 {biosample.age_units}
-                {biosample.age !== 1 ? "s" : ""}
+                {biosample.age !== "1" ? "s" : ""}
               </>
             ) : (
               ""
             )}
+          </DataItemValue>
+        </>
+      )}
+      {"embryonic" in biosample && (
+        <>
+          <DataItemLabel>Embryonic</DataItemLabel>
+          <DataItemValue>
+            <div className="h-5 w-5">{biosample.embryonic ? "yes" : "no"}</div>
           </DataItemValue>
         </>
       )}
