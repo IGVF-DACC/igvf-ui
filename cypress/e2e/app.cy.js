@@ -11,7 +11,6 @@ describe("Navigation", () => {
 
     cy.get("[data-testid=documents]").click();
     cy.url().should("include", "/documents");
-    cy.get("[data-testid=collection-view-switch]").should("exist");
 
     cy.get("[data-testid=donors]").click();
     cy.get("[data-testid=human-donors]").click();

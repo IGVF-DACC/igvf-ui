@@ -4,8 +4,8 @@ import {
   CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ClipboardCopyIcon,
-} from "@heroicons/react/solid";
+  ClipboardIcon,
+} from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -195,7 +195,7 @@ const ColumnUrlCopy = ({ hiddenColumns }) => {
           <>
             Copy URL Columns
             <div className="ml-1 h-4 w-4">
-              {isCopied ? <CheckIcon /> : <ClipboardCopyIcon />}
+              {isCopied ? <CheckIcon /> : <ClipboardIcon />}
             </div>
           </>
         );

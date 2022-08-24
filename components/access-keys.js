@@ -1,10 +1,10 @@
 // node_modules
 import {
   CheckIcon,
-  ClipboardCopyIcon,
-  RefreshIcon,
+  ClipboardIcon,
+  ArrowPathIcon,
   TrashIcon,
-} from "@heroicons/react/solid";
+} from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { Fragment, useContext, useState } from "react";
@@ -51,9 +51,7 @@ const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
               <div className="shrink-1 font-mono">{row.value}</div>
               <div className="ml-2 flex shrink-0 justify-end">
                 <CopyButton.Icon target={row.value} label={row.label}>
-                  {(isCopied) =>
-                    isCopied ? <CheckIcon /> : <ClipboardCopyIcon />
-                  }
+                  {(isCopied) => (isCopied ? <CheckIcon /> : <ClipboardIcon />)}
                 </CopyButton.Icon>
               </div>
             </div>
@@ -243,7 +241,7 @@ export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
         onClick={resetKey}
         type="secondary"
       >
-        <RefreshIcon className="fill-white" />
+        <ArrowPathIcon className="fill-white" />
       </AccessKeyControl>
       {isOpen && (
         <AccessKeyModal

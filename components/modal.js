@@ -20,9 +20,10 @@
 
 // node_modules
 import { Dialog } from "@headlessui/react";
-import { XIcon } from "@heroicons/react/solid";
 import PropTypes from "prop-types";
 import { Children, useEffect } from "react";
+// components
+import CloseButton from "./close-button";
 
 /**
  * Main component for modal dialogs.
@@ -67,30 +68,6 @@ Modal.propTypes = {
 };
 
 /**
- * Displays the close button in the header.
- */
-const HeaderCloseButton = ({ onClose, label }) => {
-  return (
-    <button
-      type="button"
-      className="h-6 w-6 rounded-full bg-gray-100 p-1 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700"
-      onClick={onClose}
-      aria-label={label}
-    >
-      <XIcon className="fill-gray-500" />
-      <span className="sr-only">Close</span>
-    </button>
-  );
-};
-
-HeaderCloseButton.propTypes = {
-  // Called to close the modal on click
-  onClose: PropTypes.func.isRequired,
-  // Accessible label for the close button
-  label: PropTypes.string.isRequired,
-};
-
-/**
  * Displays the header, typically containing a title and an optional close button on the right side
  * if provided. If you supply a string or number as the only child of <Modal.Header>, it gets
  * wrapped in an <h2> tag. If you instead supply JSX elements or React components, they get
@@ -121,9 +98,7 @@ const Header = ({
       className={`flex items-center justify-between border-b border-modal-border p-2 ${className}`}
     >
       {headerChildren}
-      {onClose ? (
-        <HeaderCloseButton label={closeLabel} onClose={onClose} />
-      ) : null}
+      {onClose ? <CloseButton label={closeLabel} onClick={onClose} /> : null}
     </div>
   );
 };

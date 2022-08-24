@@ -60,7 +60,6 @@ export const getServerSideProps = async ({ params, req }) => {
         phenotypeOntologyTerm,
         pageContext: { title: phenotypeOntologyTerm.term_id },
         breadcrumbs,
-        sessionCookie: req?.headers?.cookie,
       },
     };
   }

@@ -16,12 +16,19 @@ import PropTypes from "prop-types";
  * Displays a panel -- typically to display data items for an object, but you can use this for
  * anything that should appear in a panel on the page.
  */
-export const DataPanel = ({ children }) => {
+export const DataPanel = ({ className = "", children }) => {
   return (
-    <div className="border border-data-border bg-data-background p-4">
+    <div
+      className={`border border-data-border bg-data-background p-4 ${className}`}
+    >
       {children}
     </div>
   );
+};
+
+DataPanel.propTypes = {
+  // Additional Tailwind CSS classes to add to the panel
+  className: PropTypes.string,
 };
 
 /**

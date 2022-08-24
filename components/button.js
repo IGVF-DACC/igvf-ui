@@ -197,7 +197,9 @@ const Link = ({
   const router = useRouter();
 
   const onClick = () => {
-    navigationClick();
+    if (navigationClick) {
+      navigationClick();
+    }
     router.push(href);
   };
 
@@ -219,7 +221,7 @@ Link.propTypes = {
   // Link that pressing the button will navigate to
   href: PropTypes.string.isRequired,
   // Called when the button is clicked
-  navigationClick: PropTypes.func.isRequired,
+  navigationClick: PropTypes.func,
   // HTML ID of the button element
   id: PropTypes.string,
   // Accessible label of the button if the button text is not sufficient for screen readers

@@ -11,7 +11,7 @@ const PageTitle = ({ pageTitle = "" }) => {
   const { page } = useContext(GlobalContext);
 
   return (
-    <h1 className="mb-5 text-3xl font-medium text-gray-700">
+    <h1 className="mb-5 text-3xl font-medium text-gray-700 dark:text-gray-300">
       {pageTitle || page.title}
     </h1>
   );

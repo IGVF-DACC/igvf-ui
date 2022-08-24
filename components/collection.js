@@ -1,9 +1,10 @@
 // node_modules
-import { TableIcon, ViewListIcon } from "@heroicons/react/solid";
+import { TableCellsIcon, Bars4Icon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useContext, useEffect } from "react";
 // components
+import AddObjectTrigger from "./add-object-trigger";
 import Button from "./button";
 import CollectionTable from "./collection-table";
 import GlobalContext from "./global-context";
@@ -124,7 +125,7 @@ export const CollectionViewSwitch = () => {
   };
 
   return (
-    <div className="flex gap-1 pb-2" data-testid="collection-view-switch">
+    <div className="flex gap-1" data-testid="collection-view-switch">
       <Button.Icon
         type={isListSelected ? "primary" : "primary-outline"}
         label={`Select collection list view${
@@ -132,7 +133,7 @@ export const CollectionViewSwitch = () => {
         }`}
         onClick={onListViewSelect}
       >
-        <ViewListIcon />
+        <Bars4Icon />
       </Button.Icon>
       <Button.Icon
         type={isTableSelected ? "primary" : "primary-outline"}
@@ -143,7 +144,7 @@ export const CollectionViewSwitch = () => {
           collectionView.setCurrentCollectionView(COLLECTION_VIEW.TABLE)
         }
       >
-        <TableIcon />
+        <TableCellsIcon />
       </Button.Icon>
     </div>
   );
@@ -152,11 +153,14 @@ export const CollectionViewSwitch = () => {
 /**
  * Displays information above the collection display.
  */
-export const CollectionHeader = ({ count }) => {
+export const CollectionHeader = ({ count, addSpec }) => {
   return (
     <div className="flex justify-between">
       <CollectionCount count={count} />
-      <CollectionViewSwitch />
+      <div className="flex items-center gap-1">
+        <AddObjectTrigger addSpec={addSpec} />
+        <CollectionViewSwitch />
+      </div>
     </div>
   );
 };
@@ -164,6 +168,12 @@ export const CollectionHeader = ({ count }) => {
 CollectionHeader.propTypes = {
   // Number of items in the collection
   count: PropTypes.number.isRequired,
+  addSpec: PropTypes.exact({
+    // Object type to append to the Add button label
+    label: PropTypes.string.isRequired,
+    // Path to add the object
+    path: PropTypes.string.isRequired,
+  }),
 };
 
 /**
