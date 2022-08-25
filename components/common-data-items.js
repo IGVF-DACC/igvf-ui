@@ -53,7 +53,7 @@ export const DonorDataItems = ({ donor, parents, children }) => {
         </>
       )}
       {children}
-      {donor.aliases.length > 0 && (
+      {donor.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
           <DataItemValue>
