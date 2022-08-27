@@ -4,17 +4,24 @@ from dataclasses import dataclass
 
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Optional
+from typing import Tuple
 
 
 config: Dict[str, Any] = {
     'environment': {
         'demo': {
             'pipeline': 'DemoDeploymentPipelineStack',
+            'tags': [
+                ('time-to-live-hours', '72'),
+            ],
         },
         'dev': {
             'pipeline': 'DemoDeploymentPipelineStack',
-            'backend_url': 'https://igvfd-dev.demo.igvf.org'
+            'backend_url': 'https://igvfd-dev.demo.igvf.org',
+            'tags': [
+            ],
         },
         'main': {
             'staging': {},
@@ -39,6 +46,7 @@ class Config:
     branch: str
     pipeline: str
     backend_url: str
+    tags: List[Tuple[str, str]]
     common: Common = Common()
 
 

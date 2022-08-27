@@ -17,3 +17,12 @@ def test_stages_dev_initialize_dev_stages(config):
     ] == [
         'TestDevelopmentDeployStage-FrontendStack',
     ]
+    stack = cloud_assembly.get_stack_by_name(
+        'TestDevelopmentDeployStage-FrontendStack',
+    )
+    assert stack.tags == {
+        'environment': 'demo',
+        'branch': 'some-branch',
+        'project': 'igvf-ui',
+        'test': 'tag'
+    }

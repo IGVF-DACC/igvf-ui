@@ -5,7 +5,10 @@ from constructs import Construct
 from infrastructure.constructs.existing import igvf_dev
 
 from infrastructure.config import Config
+
 from infrastructure.stacks.frontend import FrontendStack
+
+from infrastructure.tags import add_tags_to_stack
 
 from typing import Any
 
@@ -28,3 +31,4 @@ class DevelopmentDeployStage(Stage):
             existing_resources_class=igvf_dev.Resources,
             env=igvf_dev.US_WEST_2,
         )
+        add_tags_to_stack(self.frontend_stack, config)
