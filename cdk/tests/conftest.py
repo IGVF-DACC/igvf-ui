@@ -125,4 +125,7 @@ def config():
         branch='some-branch',
         pipeline='xyz',
         backend_url='https://igvfd-some-test-backend.demo.igvf.org',
+        tags=[
+            ('test', 'tag')
+        ],
     )
