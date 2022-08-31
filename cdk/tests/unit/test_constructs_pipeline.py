@@ -24,7 +24,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
         {
             'RoleArn': {
                 'Fn::GetAtt': [
-                    'TestBasicSelfUpdatingPipelineCodePipelineRole19B5B1C6',
+                    'TestBasicSelfUpdatingPipelineRole4F4987A1',
                     'Arn'
                 ]
             },
@@ -51,7 +51,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                             ],
                             'RoleArn': {
                                 'Fn::GetAtt': [
-                                    'TestBasicSelfUpdatingPipelineCodePipelineSourceABCxyzCodePipelineActionRole13A31726',
+                                    'TestBasicSelfUpdatingPipelineSourceABCxyzCodePipelineActionRoleBC7A6C81',
                                     'Arn'
                                 ]
                             },
@@ -71,7 +71,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                             },
                             'Configuration': {
                                 'ProjectName': {
-                                    'Ref': 'TestBasicSelfUpdatingPipelineCodePipelineBuildSynthStepCdkBuildProjectC378F9B9'
+                                    'Ref': 'TestBasicSelfUpdatingPipelineBuildSynthStepCdkBuildProjectFA8DA9FD'
                                 },
                             },
                             'InputArtifacts': [
@@ -87,7 +87,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                             ],
                             'RoleArn': {
                                 'Fn::GetAtt': [
-                                    'TestBasicSelfUpdatingPipelineCodePipelineBuildSynthStepCodePipelineActionRole6ECE61D5',
+                                    'TestBasicSelfUpdatingPipelineBuildSynthStepCodePipelineActionRoleD99CA6BD',
                                     'Arn'
                                 ]
                             },
@@ -118,7 +118,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                             'Name': 'SelfMutate',
                             'RoleArn': {
                                 'Fn::GetAtt': [
-                                    'TestBasicSelfUpdatingPipelineCodePipelineUpdatePipelineSelfMutateCodePipelineActionRole7F53C12C',
+                                    'TestBasicSelfUpdatingPipelineUpdatePipelineSelfMutateCodePipelineActionRole7477355E',
                                     'Arn'
                                 ]
                             },
@@ -130,7 +130,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
             ],
             'ArtifactStore': {
                 'Location': {
-                    'Ref': 'TestBasicSelfUpdatingPipelineCodePipelineArtifactsBucket2E875062'
+                    'Ref': 'TestBasicSelfUpdatingPipelineArtifactsBucketEEE5B598'
                 },
                 'Type': 'S3'
             },
@@ -164,9 +164,12 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
             },
             'ServiceRole': {
                 'Fn::GetAtt': [
-                    'TestBasicSelfUpdatingPipelineCodePipelineBuildSynthStepCdkBuildProjectRole4C3CD640',
+                    'TestBasicSelfUpdatingPipelineBuildSynthStepCdkBuildProjectRoleF66D862F',
                     'Arn'
                 ]
+            },
+            'Source': {
+                'Type': 'CODEPIPELINE'
             },
             'Cache': {
                 'Type': 'NO_CACHE'
@@ -197,7 +200,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                         'Resource': [
                             {
                                 'Fn::GetAtt': [
-                                    'TestBasicSelfUpdatingPipelineCodePipelineArtifactsBucket2E875062',
+                                    'TestBasicSelfUpdatingPipelineArtifactsBucketEEE5B598',
                                     'Arn'
                                 ]
                             },
@@ -207,7 +210,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                                     [
                                         {
                                             'Fn::GetAtt': [
-                                                'TestBasicSelfUpdatingPipelineCodePipelineArtifactsBucket2E875062',
+                                                'TestBasicSelfUpdatingPipelineArtifactsBucketEEE5B598',
                                                 'Arn'
                                             ]
                                         },
@@ -222,7 +225,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                         'Effect': 'Allow',
                         'Resource': {
                             'Fn::GetAtt': [
-                                'TestBasicSelfUpdatingPipelineCodePipelineSourceABCxyzCodePipelineActionRole13A31726',
+                                'TestBasicSelfUpdatingPipelineSourceABCxyzCodePipelineActionRoleBC7A6C81',
                                 'Arn'
                             ]
                         }
@@ -232,7 +235,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                         'Effect': 'Allow',
                         'Resource': {
                             'Fn::GetAtt': [
-                                'TestBasicSelfUpdatingPipelineCodePipelineBuildSynthStepCodePipelineActionRole6ECE61D5',
+                                'TestBasicSelfUpdatingPipelineBuildSynthStepCodePipelineActionRoleD99CA6BD',
                                 'Arn'
                             ]
                         }
@@ -242,7 +245,7 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                         'Effect': 'Allow',
                         'Resource': {
                             'Fn::GetAtt': [
-                                'TestBasicSelfUpdatingPipelineCodePipelineUpdatePipelineSelfMutateCodePipelineActionRole7F53C12C',
+                                'TestBasicSelfUpdatingPipelineUpdatePipelineSelfMutateCodePipelineActionRole7477355E',
                                 'Arn'
                             ]
                         }
@@ -250,10 +253,10 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
                 ],
                 'Version': '2012-10-17'
             },
-            'PolicyName': 'TestBasicSelfUpdatingPipelineCodePipelineRoleDefaultPolicy56CE15DF',
+            'PolicyName': 'TestBasicSelfUpdatingPipelineRoleDefaultPolicyF0137E8F',
             'Roles': [
                 {
-                    'Ref': 'TestBasicSelfUpdatingPipelineCodePipelineRole19B5B1C6'
+                    'Ref': 'TestBasicSelfUpdatingPipelineRole4F4987A1'
                 }
             ]
         }
@@ -303,7 +306,7 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
         {
             'RoleArn': {
                 'Fn::GetAtt': [
-                    'TestDemoDeploymentPipelineCodePipelineRoleCB515531',
+                    'TestDemoDeploymentPipelineRole9CDEC6AA',
                     'Arn'
                 ]
             },
@@ -330,7 +333,7 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
                             ],
                             'RoleArn': {
                                 'Fn::GetAtt': [
-                                    'TestDemoDeploymentPipelineCodePipelineSourceABCxyzCodePipelineActionRoleD5D9A479',
+                                    'TestDemoDeploymentPipelineSourceABCxyzCodePipelineActionRole9842C8B6',
                                     'Arn'
                                 ]
                             },
@@ -350,7 +353,7 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
                             },
                             'Configuration': {
                                 'ProjectName': {
-                                    'Ref': 'TestDemoDeploymentPipelineCodePipelineBuildSynthStepCdkBuildProjectDA98C107'
+                                    'Ref': 'TestDemoDeploymentPipelineBuildSynthStepCdkBuildProject6B563FFC'
                                 },
                             },
                             'InputArtifacts': [
@@ -366,7 +369,7 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
                             ],
                             'RoleArn': {
                                 'Fn::GetAtt': [
-                                    'TestDemoDeploymentPipelineCodePipelineBuildSynthStepCodePipelineActionRole4D5406F5',
+                                    'TestDemoDeploymentPipelineBuildSynthStepCodePipelineActionRole97BB244E',
                                     'Arn'
                                 ]
                             },
@@ -397,7 +400,7 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
                             'Name': 'SelfMutate',
                             'RoleArn': {
                                 'Fn::GetAtt': [
-                                    'TestDemoDeploymentPipelineCodePipelineUpdatePipelineSelfMutateCodePipelineActionRoleEC781919',
+                                    'TestDemoDeploymentPipelineUpdatePipelineSelfMutateCodePipelineActionRole4655BEA5',
                                     'Arn'
                                 ]
                             },
@@ -428,7 +431,7 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
                             'Name': 'DockerAsset1',
                             'RoleArn': {
                                 'Fn::GetAtt': [
-                                    'TestDemoDeploymentPipelineCodePipelineAssetsDockerAsset1CodePipelineActionRole645AE91D',
+                                    'TestDemoDeploymentPipelineAssetsDockerAsset1CodePipelineActionRoleBC091E42',
                                     'Arn'
                                 ]
                             },
@@ -461,6 +464,7 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
                                         ]
                                     ]
                                 },
+                                'TemplateConfiguration': 'SynthStep_Output::assembly-Default-TestDemoDeploymentPipeline-igvf-ui-some-branch-DeployDevelopment/TestDemoDeploymentPipelineigvfuisomebranchDeployDevelopmentFrontendStack0BA56E0B.template.json.config.json',
                                 'ActionMode': 'CHANGE_SET_REPLACE',
                                 'ChangeSetName': 'PipelineChange',
                                 'TemplatePath': 'SynthStep_Output::assembly-Default-TestDemoDeploymentPipeline-igvf-ui-some-branch-DeployDevelopment/TestDemoDeploymentPipelineigvfuisomebranchDeployDevelopmentFrontendStack0BA56E0B.template.json'
@@ -518,7 +522,7 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
             ],
             'ArtifactStore': {
                 'Location': {
-                    'Ref': 'TestDemoDeploymentPipelineCodePipelineArtifactsBucket554B5C12'
+                    'Ref': 'TestDemoDeploymentPipelineArtifactsBucket08F7C193'
                 },
                 'Type': 'S3'
             },

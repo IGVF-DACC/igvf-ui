@@ -25,7 +25,7 @@ def test_stacks_pipeline_demo_deployment_pipeline_stack_initialized(config):
         'AWS::CodePipeline::Pipeline'
     )
     stages = code_pipeline_resource.get(
-        'DemoDeploymentPipelineCodePipeline8A07F2A4'
+        'DemoDeploymentPipelineFF963331'
     ).get(
         'Properties'
     ).get(
