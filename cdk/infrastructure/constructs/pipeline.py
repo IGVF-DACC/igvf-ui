@@ -1,6 +1,11 @@
 from constructs import Construct
 
+from aws_cdk import RemovalPolicy
+
 from aws_cdk.aws_codepipeline import Pipeline
+
+from aws_cdk.aws_s3 import Bucket
+from aws_cdk.aws_s3 import BlockPublicAccess
 
 from aws_cdk.pipelines import CodePipeline
 from aws_cdk.pipelines import CodePipelineSource
@@ -32,6 +37,8 @@ class BasicSelfUpdatingPipeline(Construct):
 
     github: CodePipelineSource
     synth: ShellStep
+    artifact_bucket: Bucket
+    underlying_pipeline: Pipeline
     code_pipeline: CodePipeline
     pipeline: Pipeline
 
@@ -47,6 +54,8 @@ class BasicSelfUpdatingPipeline(Construct):
         self.props = props
         self._define_github_connection()
         self._define_cdk_synth_step()
+        self._define_artifact_bucket()
+        self._define_underlying_pipeline()
         self._make_code_pipeline()
 
     def _define_github_connection(self) -> None:
@@ -83,6 +92,23 @@ class BasicSelfUpdatingPipeline(Construct):
             secret_password_field='DOCKER_SECRET',
         )
 
+    def _define_artifact_bucket(self) -> None:
+        self.artifact_bucket = Bucket(
+            self,
+            'ArtifactsBucket',
+            block_public_access=BlockPublicAccess.BLOCK_ALL,
+            removal_policy=RemovalPolicy.DESTROY,
+            auto_delete_objects=True,
+        )
+
+    def _define_underlying_pipeline(self) -> None:
+        self.underlying_pipeline = Pipeline(
+            self,
+            'Pipeline',
+            restart_execution_on_update=True,
+            artifact_bucket=self.artifact_bucket
+        )
+
     def _make_code_pipeline(self) -> None:
         self.code_pipeline = CodePipeline(
             self,
@@ -92,6 +118,7 @@ class BasicSelfUpdatingPipeline(Construct):
                 self._get_docker_credentials(),
             ],
             docker_enabled_for_synth=True,
+            code_pipeline=self.underlying_pipeline,
         )
 
     def _get_underlying_pipeline(self) -> Pipeline:
