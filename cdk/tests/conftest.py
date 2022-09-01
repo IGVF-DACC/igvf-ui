@@ -107,13 +107,23 @@ def domain(mocker, domain_name, certificate, hosted_zone):
 
 
 @pytest.fixture
-def existing_resources(mocker, domain, network, secret, chatbot):
+def sns_topic(stack):
+    from aws_cdk.aws_sns import Topic
+    return Topic(
+        stack,
+        'TestTopic',
+    )
+
+
+@pytest.fixture
+def existing_resources(mocker, domain, network, secret, chatbot, sns_topic):
     mock = mocker.Mock()
     mock.domain = domain
     mock.network = network
     mock.docker_hub_credentials.secret = secret
     mock.code_star_connection.arn = 'some-code-star-arn'
     mock.notification.encode_dcc_chatbot = chatbot
+    mock.notification.alarm_notification_topic = sns_topic
     return mock
 
 
