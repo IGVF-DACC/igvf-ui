@@ -22,6 +22,9 @@ from aws_cdk.aws_secretsmanager import SecretStringGenerator
 
 from infrastructure.config import Config
 
+from infrastructure.constructs.alarms.frontend import FrontendAlarmsProps
+from infrastructure.constructs.alarms.frontend import FrontendAlarms
+
 from infrastructure.constructs.existing.types import ExistingResources
 
 
@@ -63,6 +66,7 @@ class Frontend(Construct):
         self._add_tags_to_fargate_service()
         self._enable_exec_command()
         self._configure_task_scaling()
+        self._add_alarms()
 
     def _define_docker_assets(self) -> None:
         self.application_image = ContainerImage.from_asset(
@@ -140,4 +144,15 @@ class Frontend(Construct):
             target_group=self.fargate_service.target_group,
             scale_in_cooldown=Duration.seconds(60),
             scale_out_cooldown=Duration.seconds(60),
+        )
+
+    def _add_alarms(self) -> None:
+        FrontendAlarms(
+            self,
+            'FrontendAlarms',
+            props=FrontendAlarmsProps(
+                config=self.props.config,
+                existing_resources=self.props.existing_resources,
+                fargate_service=self.fargate_service
+            )
         )
