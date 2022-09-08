@@ -51,6 +51,7 @@ const HumanDonor = ({
   lab = null,
   parents,
 }) => {
+  console.log(donor);
   return (
     <>
       <Breadcrumbs />
