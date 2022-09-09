@@ -50,6 +50,12 @@ const Lab = ({ lab, awards, pi = null }) => {
                 </SeparatedList>
               </>
             )}
+            {lab.submitter_comment && (
+              <>
+                <DataItemLabel>Submitter Comment</DataItemLabel>
+                <DataItemValue>{lab.submitter_comment}</DataItemValue>
+              </>
+            )}
           </DataArea>
         </DataPanel>
       </EditableItem>

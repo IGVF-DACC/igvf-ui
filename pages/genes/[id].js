@@ -77,6 +77,12 @@ const Gene = ({ gene }) => {
                 </DataItemValue>
               </>
             )}
+            {gene.submitter_comment && (
+              <>
+                <DataItemLabel>Submitter Comment</DataItemLabel>
+                <DataItemValue>{gene.submitter_comment}</DataItemValue>
+              </>
+            )}
           </DataArea>
         </DataPanel>
       </EditableItem>
