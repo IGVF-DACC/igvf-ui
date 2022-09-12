@@ -8,10 +8,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import {
-  DbxrefList,
-  DbxrefItem,
-} from "../../components/dbxref-list";
+import DbxrefList from "../../components/dbxref-list";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
@@ -34,9 +31,9 @@ const Gene = ({ gene }) => {
             </DataItemValue>
             <DataItemLabel>ENSEMBL GeneID</DataItemLabel>
             <DataItemValue>
-              <DbxrefItem
-                dbxref={gene.geneid}
-                meta={gene.taxa}
+              <EnsemblLink
+                geneid={gene.geneid}
+                taxa={gene.taxa}
               />
             </DataItemValue>
             <DataItemLabel>Gene Symbol</DataItemLabel>
@@ -116,3 +113,12 @@ export const getServerSideProps = async ({ params, req }) => {
   }
   return errorObjectToProps(gene);
 };
+
+const EnsemblLink = ({ geneid, taxa }) => {
+  const organism = taxa.replace(/ /g,"_");
+  return (
+    <a href={`http://www.ensembl.org/${organism}/Gene/Summary?g=${geneid}`}>
+      {geneid}
+    </a>
+  );
+}
