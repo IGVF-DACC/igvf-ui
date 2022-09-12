@@ -31,10 +31,7 @@ const Gene = ({ gene }) => {
             </DataItemValue>
             <DataItemLabel>ENSEMBL GeneID</DataItemLabel>
             <DataItemValue>
-              <EnsemblLink
-                geneid={gene.geneid}
-                taxa={gene.taxa}
-              />
+              <EnsemblLink geneid={gene.geneid} taxa={gene.taxa} />
             </DataItemValue>
             <DataItemLabel>Gene Symbol</DataItemLabel>
             <DataItemValue>{gene.symbol}</DataItemValue>
@@ -115,7 +112,7 @@ export const getServerSideProps = async ({ params, req }) => {
 };
 
 const EnsemblLink = ({ geneid, taxa }) => {
-  const organism = taxa.replace(/ /g,"_");
+  const organism = taxa.replace(/ /g, "_");
   return (
     <a href={`http://www.ensembl.org/${organism}/Gene/Summary?g=${geneid}`}>
       {geneid}
@@ -124,7 +121,7 @@ const EnsemblLink = ({ geneid, taxa }) => {
 };
 
 EnsemblLink.propTypes = {
-  // Dbxref to display as a link
+  // GeneID to display as a link
   geneid: PropTypes.string.isRequired,
   // Metadata that affects certain dbxrefs
   taxa: PropTypes.string.isRequired,
