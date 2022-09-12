@@ -8,7 +8,10 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import DbxrefList from "../../components/dbxref-list";
+import {
+  DbxrefList,
+  DbxrefItem,
+} from "../../components/dbxref-list";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
@@ -29,10 +32,13 @@ const Gene = ({ gene }) => {
             <DataItemValue>
               <Status status={gene.status} />
             </DataItemValue>
-            <DataItemLabel>NCBI Entrez GeneID</DataItemLabel>
-            <DataItemValue>{gene.geneid}</DataItemValue>
-            <DataItemLabel>NCBI Entrez Gene Status</DataItemLabel>
-            <DataItemValue>{gene.ncbi_entrez_status}</DataItemValue>
+            <DataItemLabel>ENSEMBL GeneID</DataItemLabel>
+            <DataItemValue>
+              <DbxrefItem
+                dbxref={gene.geneid}
+                meta={{ taxa: gene.taxa }}
+              />
+            </DataItemValue>
             <DataItemLabel>Gene Symbol</DataItemLabel>
             <DataItemValue>{gene.symbol}</DataItemValue>
             <DataItemLabel>Taxa</DataItemLabel>

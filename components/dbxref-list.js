@@ -83,6 +83,9 @@ export const dbxrefPrefixMap = {
       return {};
     },
   },
+  ENTREZ: {
+    pattern: "https://www.ncbi.nlm.nih.gov/gene/{0}",
+  },
   GeneCards: {
     pattern: "http://www.genecards.org/cgi-bin/carddisp.pl?gene={0}",
   },

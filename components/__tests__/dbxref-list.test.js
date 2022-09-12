@@ -34,9 +34,9 @@ describe("Test the conversion of dbxref strings to links", () => {
   });
 
   it("converts mouse ENSEMBL dbxrefs to links correctly", () => {
-    const dbxrefs = ["ENSEMBL:ENSG00000158473"];
+    const dbxrefs = ["ENSEMBL:ENSMUSG00000045345"];
     const expected =
-      "http://www.ensembl.org/Mus_musculus/Gene/Summary?g=ENSG00000158473";
+      "http://www.ensembl.org/Mus_musculus/Gene/Summary?g=ENSMUSG00000045345";
 
     render(<DbxrefList dbxrefs={dbxrefs} meta={{ taxa: "Mus musculus" }} />);
     const dbxrefElements = screen.getAllByRole("link");
