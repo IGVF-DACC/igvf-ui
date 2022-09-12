@@ -121,4 +121,11 @@ const EnsemblLink = ({ geneid, taxa }) => {
       {geneid}
     </a>
   );
-}
+};
+
+EnsemblLink.propTypes = {
+  // Dbxref to display as a link
+  geneid: PropTypes.string.isRequired,
+  // Metadata that affects certain dbxrefs
+  taxa: PropTypes.string.isRequired,
+};
