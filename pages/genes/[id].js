@@ -17,6 +17,22 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
+const EnsemblLink = ({ geneid, taxa }) => {
+  const organism = taxa.replace(/ /g, "_");
+  return (
+    <a href={`http://www.ensembl.org/${organism}/Gene/Summary?g=${geneid}`}>
+      {geneid}
+    </a>
+  );
+};
+
+EnsemblLink.propTypes = {
+  // GeneID to display as a link
+  geneid: PropTypes.string.isRequired,
+  // Metadata that affects certain dbxrefs
+  taxa: PropTypes.string.isRequired,
+};
+
 const Gene = ({ gene }) => {
   return (
     <>
@@ -109,20 +125,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(gene);
-};
-
-const EnsemblLink = ({ geneid, taxa }) => {
-  const organism = taxa.replace(/ /g, "_");
-  return (
-    <a href={`http://www.ensembl.org/${organism}/Gene/Summary?g=${geneid}`}>
-      {geneid}
-    </a>
-  );
-};
-
-EnsemblLink.propTypes = {
-  // GeneID to display as a link
-  geneid: PropTypes.string.isRequired,
-  // Metadata that affects certain dbxrefs
-  taxa: PropTypes.string.isRequired,
 };
