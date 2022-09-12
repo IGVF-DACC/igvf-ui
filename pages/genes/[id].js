@@ -36,7 +36,7 @@ const Gene = ({ gene }) => {
             <DataItemValue>
               <DbxrefItem
                 dbxref={gene.geneid}
-                meta={{ taxa: gene.taxa }}
+                meta={gene.taxa}
               />
             </DataItemValue>
             <DataItemLabel>Gene Symbol</DataItemLabel>
