@@ -981,8 +981,12 @@ const Page = ({
         }
       );
     } else {
-      // User canceled editing. Remove #!edit from the URL which disables edit mode.
-      router.push(`${router.asPath.split("#")[0]}`);
+      if (isNewPage) {
+        router.push("/pages");
+      } else {
+        // User canceled editing. Remove #!edit from the URL which disables edit mode.
+        router.push(`${router.asPath.split("#")[0]}`);
+      }
     }
   };
 
