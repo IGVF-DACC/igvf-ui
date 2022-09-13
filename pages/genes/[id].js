@@ -17,6 +17,22 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
+const EnsemblLink = ({ geneid, taxa }) => {
+  const organism = taxa.replace(/ /g, "_");
+  return (
+    <a href={`http://www.ensembl.org/${organism}/Gene/Summary?g=${geneid}`}>
+      {geneid}
+    </a>
+  );
+};
+
+EnsemblLink.propTypes = {
+  // GeneID to display as a link
+  geneid: PropTypes.string.isRequired,
+  // Metadata that affects certain dbxrefs
+  taxa: PropTypes.string.isRequired,
+};
+
 const Gene = ({ gene }) => {
   return (
     <>
@@ -29,10 +45,10 @@ const Gene = ({ gene }) => {
             <DataItemValue>
               <Status status={gene.status} />
             </DataItemValue>
-            <DataItemLabel>NCBI Entrez GeneID</DataItemLabel>
-            <DataItemValue>{gene.geneid}</DataItemValue>
-            <DataItemLabel>NCBI Entrez Gene Status</DataItemLabel>
-            <DataItemValue>{gene.ncbi_entrez_status}</DataItemValue>
+            <DataItemLabel>ENSEMBL GeneID</DataItemLabel>
+            <DataItemValue>
+              <EnsemblLink geneid={gene.geneid} taxa={gene.taxa} />
+            </DataItemValue>
             <DataItemLabel>Gene Symbol</DataItemLabel>
             <DataItemValue>{gene.symbol}</DataItemValue>
             <DataItemLabel>Taxa</DataItemLabel>
