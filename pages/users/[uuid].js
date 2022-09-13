@@ -59,6 +59,12 @@ const User = ({ user, lab = null }) => {
                   </DataItemValue>
                 </>
               )}
+              {user.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{user.submitter_comment}</DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
         ) : (
