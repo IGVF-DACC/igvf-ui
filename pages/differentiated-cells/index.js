@@ -6,7 +6,6 @@ import {
   Collection,
   CollectionContent,
   CollectionData,
-  CollectionDataLink,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -28,26 +27,27 @@ const DifferentiatedCellList = ({ differentiatedCells }) => {
           <>
             <CollectionHeader count={differentiatedCells.length} />
             <CollectionContent collection={differentiatedCells}>
-              {differentiatedCells.map((differentiatedCell) => (
-                <CollectionItem
-                  key={differentiatedCell.uuid}
-                  testid={differentiatedCell.uuid}
-                  href={differentiatedCell["@id"]}
-                  label={`Differentiated Cell ${differentiatedCell.accession}`}
-                  status={differentiatedCell.status}
-                >
-                  <CollectionItemName>
-                    {differentiatedCell.accession}
-                  </CollectionItemName>
-                  <CollectionData>
-                    <CollectionDataLink
-                      title="Biosample"
-                      value={differentiatedCell.biosample_term.term_name}
-                      href={differentiatedCell.biosample_term["@id"]}
-                    />
-                  </CollectionData>
-                </CollectionItem>
-              ))}
+              {differentiatedCells.map((differentiatedCell) => {
+                const termName = differentiatedCell.biosample_term?.term_name;
+                return (
+                  <CollectionItem
+                    key={differentiatedCell.uuid}
+                    testid={differentiatedCell.uuid}
+                    href={differentiatedCell["@id"]}
+                    label={`Differentiated Cell ${differentiatedCell.accession}`}
+                    status={differentiatedCell.status}
+                  >
+                    <CollectionItemName>
+                      {`${termName ? `${termName} — ` : ""}${
+                        differentiatedCell.accession
+                      }`}
+                    </CollectionItemName>
+                    <CollectionData>
+                      <div>{differentiatedCell.taxa}</div>
+                    </CollectionData>
+                  </CollectionItem>
+                );
+              })}
             </CollectionContent>
           </>
         ) : (

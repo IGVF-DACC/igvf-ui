@@ -6,7 +6,6 @@ import {
   Collection,
   CollectionContent,
   CollectionData,
-  CollectionDataLink,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -28,24 +27,25 @@ const TissueList = ({ tissues }) => {
           <>
             <CollectionHeader count={tissues.length} />
             <CollectionContent collection={tissues}>
-              {tissues.map((tissue) => (
-                <CollectionItem
-                  key={tissue.uuid}
-                  testid={tissue.uuid}
-                  href={tissue["@id"]}
-                  label={`Tissue ${tissue.accession}`}
-                  status={tissue.status}
-                >
-                  <CollectionItemName>{tissue.accession}</CollectionItemName>
-                  <CollectionData>
-                    <CollectionDataLink
-                      title="Biosample"
-                      value={tissue.biosample_term.term_name}
-                      href={tissue.biosample_term["@id"]}
-                    />
-                  </CollectionData>
-                </CollectionItem>
-              ))}
+              {tissues.map((tissue) => {
+                const termName = tissue.biosample_term?.term_name;
+                return (
+                  <CollectionItem
+                    key={tissue.uuid}
+                    testid={tissue.uuid}
+                    href={tissue["@id"]}
+                    label={`Tissue ${tissue.accession}`}
+                    status={tissue.status}
+                  >
+                    <CollectionItemName>
+                      {`${termName ? `${termName} — ` : ""}${tissue.accession}`}
+                    </CollectionItemName>
+                    <CollectionData>
+                      <div>{tissue.taxa}</div>
+                    </CollectionData>
+                  </CollectionItem>
+                );
+              })}
             </CollectionContent>
           </>
         ) : (

@@ -117,7 +117,11 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         technicalSampleTerm,
-        pageContext: { title: sample.accession },
+        pageContext: {
+          title: `${
+            technicalSampleTerm ? `${technicalSampleTerm.term_name} — ` : ""
+          }${sample.accession}`,
+        },
         breadcrumbs,
       },
     };

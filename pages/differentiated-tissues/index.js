@@ -6,7 +6,6 @@ import {
   Collection,
   CollectionContent,
   CollectionData,
-  CollectionDataLink,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -28,26 +27,27 @@ const DifferentiatedTissueList = ({ differentiatedTissues }) => {
           <>
             <CollectionHeader count={differentiatedTissues.length} />
             <CollectionContent collection={differentiatedTissues}>
-              {differentiatedTissues.map((differentiatedTissue) => (
-                <CollectionItem
-                  key={differentiatedTissue.uuid}
-                  testid={differentiatedTissue.uuid}
-                  href={differentiatedTissue["@id"]}
-                  label={`Differentiated Tissue ${differentiatedTissue.accession}`}
-                  status={differentiatedTissue.status}
-                >
-                  <CollectionItemName>
-                    {differentiatedTissue.accession}
-                  </CollectionItemName>
-                  <CollectionData>
-                    <CollectionDataLink
-                      title="Biosample"
-                      value={differentiatedTissue.biosample_term.term_name}
-                      href={differentiatedTissue.biosample_term["@id"]}
-                    />
-                  </CollectionData>
-                </CollectionItem>
-              ))}
+              {differentiatedTissues.map((differentiatedTissue) => {
+                const termName = differentiatedTissue.biosample_term?.term_name;
+                return (
+                  <CollectionItem
+                    key={differentiatedTissue.uuid}
+                    testid={differentiatedTissue.uuid}
+                    href={differentiatedTissue["@id"]}
+                    label={`Differentiated Tissue ${differentiatedTissue.accession}`}
+                    status={differentiatedTissue.status}
+                  >
+                    <CollectionItemName>
+                      {`${termName ? `${termName} — ` : ""}${
+                        differentiatedTissue.accession
+                      }`}
+                    </CollectionItemName>
+                    <CollectionData>
+                      <div>{differentiatedTissue.taxa}</div>
+                    </CollectionData>
+                  </CollectionItem>
+                );
+              })}
             </CollectionContent>
           </>
         ) : (

@@ -6,7 +6,6 @@ import {
   Collection,
   CollectionContent,
   CollectionData,
-  CollectionDataLink,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -28,24 +27,25 @@ const TechnicalSampleList = ({ technicalSamples }) => {
           <>
             <CollectionHeader count={technicalSamples.length} />
             <CollectionContent collection={technicalSamples}>
-              {technicalSamples.map((sample) => (
-                <CollectionItem
-                  key={sample.uuid}
-                  testid={sample.uuid}
-                  href={sample["@id"]}
-                  label={`Technical Sample ${sample.title}`}
-                  status={sample.status}
-                >
-                  <CollectionItemName>{sample.accession}</CollectionItemName>
-                  <CollectionData>
-                    <CollectionDataLink
-                      title="Sample"
-                      value={sample.technical_sample_term.term_name}
-                      href={sample.technical_sample_term["@id"]}
-                    />
-                  </CollectionData>
-                </CollectionItem>
-              ))}
+              {technicalSamples.map((sample) => {
+                const termName = sample.technical_sample_term?.term_name;
+                return (
+                  <CollectionItem
+                    key={sample.uuid}
+                    testid={sample.uuid}
+                    href={sample["@id"]}
+                    label={`Technical Sample ${sample.title}`}
+                    status={sample.status}
+                  >
+                    <CollectionItemName>
+                      {`${termName ? `${termName} — ` : ""}${sample.accession}`}
+                    </CollectionItemName>
+                    <CollectionData>
+                      <div>{sample.sample_material}</div>
+                    </CollectionData>
+                  </CollectionItem>
+                );
+              })}
             </CollectionContent>
           </>
         ) : (

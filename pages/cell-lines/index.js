@@ -27,22 +27,25 @@ const CellLineList = ({ cellLines }) => {
           <>
             <CollectionHeader count={cellLines.length} />
             <CollectionContent collection={cellLines}>
-              {cellLines.map((sample) => (
-                <CollectionItem
-                  key={sample.uuid}
-                  testid={sample.uuid}
-                  href={sample["@id"]}
-                  label={`Cell Line ${sample.title}`}
-                  status={sample.status}
-                >
-                  <CollectionItemName>
-                    {sample.biosample_term.term_name} — {sample.accession}
-                  </CollectionItemName>
-                  <CollectionData>
-                    <div>{sample.taxa}</div>
-                  </CollectionData>
-                </CollectionItem>
-              ))}
+              {cellLines.map((sample) => {
+                const termName = sample.biosample_term?.term_name;
+                return (
+                  <CollectionItem
+                    key={sample.uuid}
+                    testid={sample.uuid}
+                    href={sample["@id"]}
+                    label={`Cell Line ${sample.title}`}
+                    status={sample.status}
+                  >
+                    <CollectionItemName>
+                      {`${termName ? `${termName} — ` : ""}${sample.accession}`}
+                    </CollectionItemName>
+                    <CollectionData>
+                      <div>{sample.taxa}</div>
+                    </CollectionData>
+                  </CollectionItem>
+                );
+              })}
             </CollectionContent>
           </>
         ) : (
