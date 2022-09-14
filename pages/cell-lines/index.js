@@ -6,7 +6,6 @@ import {
   Collection,
   CollectionContent,
   CollectionData,
-  CollectionDataLink,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -36,13 +35,11 @@ const CellLineList = ({ cellLines }) => {
                   label={`Cell Line ${sample.title}`}
                   status={sample.status}
                 >
-                  <CollectionItemName>{sample.accession}</CollectionItemName>
+                  <CollectionItemName>
+                    {sample.biosample_term.term_name} — {sample.accession}
+                  </CollectionItemName>
                   <CollectionData>
-                    <CollectionDataLink
-                      title="Biosample"
-                      value={sample.biosample_term.term_name}
-                      href={sample.biosample_term["@id"]}
-                    />
+                    <div>{sample.taxa}</div>
                   </CollectionData>
                 </CollectionItem>
               ))}

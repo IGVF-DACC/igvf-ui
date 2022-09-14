@@ -235,7 +235,7 @@ export const CollectionData = ({ children }) => {
           <Icon.Circle className="fill-gray-300 dark:fill-gray-500" />
         </div>
       }
-      className="flex flex-wrap [&>*]:text-gray-500 [&>*]:dark:text-gray-400"
+      className="flex flex-wrap text-sm [&>*]:text-gray-500 [&>*]:dark:text-gray-400"
     >
       {children}
     </SeparatedList>
