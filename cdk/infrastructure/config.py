@@ -15,6 +15,7 @@ config: Dict[str, Any] = {
             'pipeline': 'DemoDeploymentPipelineStack',
             'tags': [
                 ('time-to-live-hours', '72'),
+                ('turn-off-on-friday-night', 'yes'),
             ],
         },
         'dev': {
