@@ -19,8 +19,6 @@ def test_constructs_pipeline_initialize_basic_self_updating_pipeline_construct(s
         )
     )
     template = Template.from_stack(stack)
-    import json
-    print(json.dumps(template.to_json()))
     template.has_resource_properties(
         'AWS::CodePipeline::Pipeline',
         {
