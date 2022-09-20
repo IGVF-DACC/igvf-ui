@@ -1,5 +1,5 @@
 // node_modules
-import { QuestionMarkCircleIcon } from "@heroicons/react/solid";
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components

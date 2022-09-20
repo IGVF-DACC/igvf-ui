@@ -6,7 +6,7 @@
  */
 
 // node_modules
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import { Children, cloneElement, useState } from "react";

@@ -2,16 +2,18 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CodeIcon,
+  CodeBracketIcon,
+  Bars2Icon,
   BeakerIcon,
+  DocumentIcon,
   DocumentTextIcon,
-  MenuAlt4Icon,
   MinusIcon,
   PlusIcon,
+  QuestionMarkCircleIcon,
   TagIcon,
   UserGroupIcon,
   UserIcon,
-} from "@heroicons/react/solid";
+} from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
@@ -376,6 +378,16 @@ const Navigation = ({ navigationClick }) => {
         </NavigationIcon>
         Labs
       </NavigationHrefItem>
+      <NavigationHrefItem
+        id="pages"
+        href="/pages"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <DocumentIcon />
+        </NavigationIcon>
+        Pages
+      </NavigationHrefItem>
       <NavigationGroupItem
         id="ontologies"
         title="Ontologies"
@@ -465,6 +477,16 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
       </NavigationGroupItem>
       <NavigationHrefItem
+        id="profiles"
+        href="/profiles"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <CodeBracketIcon />
+        </NavigationIcon>
+        Schemas
+      </NavigationHrefItem>
+      <NavigationHrefItem
         id="treatments"
         href="/treatments"
         navigationClick={navigationClick}
@@ -483,16 +505,6 @@ const Navigation = ({ navigationClick }) => {
           <UserGroupIcon />
         </NavigationIcon>
         Users
-      </NavigationHrefItem>
-      <NavigationHrefItem
-        id="profiles"
-        href="/profiles"
-        navigationClick={navigationClick}
-      >
-        <NavigationIcon>
-          <CodeIcon />
-        </NavigationIcon>
-        Schemas
       </NavigationHrefItem>
       {isAuthenticated && !isLoading ? (
         <NavigationGroupItem
@@ -520,6 +532,16 @@ const Navigation = ({ navigationClick }) => {
           Sign In
         </NavigationSignInItem>
       )}
+      <NavigationHrefItem
+        id="help"
+        href="/help"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <QuestionMarkCircleIcon />
+        </NavigationIcon>
+        Help
+      </NavigationHrefItem>
     </NavigationList>
   );
 };
@@ -552,7 +574,7 @@ const NavigationSection = () => {
           className="stroke-white md:hidden"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          <MenuAlt4Icon className="h-5 w-5 fill-white" />
+          <Bars2Icon className="h-5 w-5 fill-white" />
         </button>
         <div className="hidden md:block">
           <Navigation navigationClick={navigationClick} />

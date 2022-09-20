@@ -11,7 +11,7 @@ const NoCollectionData = () => {
   const { page } = useContext(GlobalContext);
 
   return (
-    <DataPanel>
+    <DataPanel className="my-0.5">
       <div className="text-center italic">No {page.title} to display</div>
     </DataPanel>
   );
