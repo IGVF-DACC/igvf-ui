@@ -5,13 +5,14 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
+  CollectionDataLink,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
 import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
-import SourceProp from "../../components/source-prop";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -36,7 +37,13 @@ const CellLineList = ({ cellLines }) => {
                   status={sample.status}
                 >
                   <CollectionItemName>{sample.accession}</CollectionItemName>
-                  {sample.source && <SourceProp source={sample.source} />}
+                  <CollectionData>
+                    <CollectionDataLink
+                      title="Biosample"
+                      value={sample.biosample_term.term_name}
+                      href={sample.biosample_term["@id"]}
+                    />
+                  </CollectionData>
                 </CollectionItem>
               ))}
             </CollectionContent>
@@ -61,6 +68,10 @@ export const getServerSideProps = async ({ req }) => {
   const cellLines = await request.getCollection("cell-lines");
   if (FetchRequest.isResponseSuccess(cellLines)) {
     await request.getAndEmbedCollectionObjects(cellLines["@graph"], "source");
+    await request.getAndEmbedCollectionObjects(
+      cellLines["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(
       cellLines,
       "title",

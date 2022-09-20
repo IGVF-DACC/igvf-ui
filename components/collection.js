@@ -1,5 +1,6 @@
 // node_modules
 import { TableCellsIcon, Bars4Icon } from "@heroicons/react/20/solid";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useContext, useEffect } from "react";
@@ -8,8 +9,10 @@ import AddObjectTrigger from "./add-object-trigger";
 import Button from "./button";
 import CollectionTable from "./collection-table";
 import GlobalContext from "./global-context";
+import Icon from "./icon";
 import ItemLink from "./item-link";
 import NoContent from "./no-content";
+import SeparatedList from "./separated-list";
 import Status from "./status";
 // lib
 import {
@@ -67,12 +70,14 @@ export const CollectionItem = ({
       data-testid={`collection-list-item-${testid}`}
     >
       <ItemLink href={href} label={label} />
-      <div className="grow p-4">{children}</div>
-      {status && (
-        <div className="shrink justify-end self-center p-2">
-          <Status status={status} />
-        </div>
-      )}
+      <div className="grow sm:flex">
+        <div className="grow p-4">{children}</div>
+        {status && (
+          <div className="shrink justify-end self-center p-2">
+            <Status status={status} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -217,4 +222,45 @@ export const CollectionContent = ({ collection, children }) => {
 CollectionContent.propTypes = {
   // Collection of items to display in a list or table
   collection: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+
+/**
+ * Displays the data line below the name in a collection item.
+ */
+export const CollectionData = ({ children }) => {
+  return (
+    <SeparatedList
+      separator={
+        <div className="mx-2 h-1.5 w-1.5 self-center">
+          <Icon.Circle className="fill-gray-300 dark:fill-gray-500" />
+        </div>
+      }
+      className="flex flex-wrap [&>*]:text-gray-500 [&>*]:dark:text-gray-400"
+    >
+      {children}
+    </SeparatedList>
+  );
+};
+
+/**
+ * Displays one linked item in the collection data line.
+ */
+export const CollectionDataLink = ({ title = "", value, href }) => {
+  return (
+    <div key="term_name">
+      {title && <span>{title} </span>}
+      <Link href={href}>
+        <a>{value}</a>
+      </Link>
+    </div>
+  );
+};
+
+CollectionDataLink.propTypes = {
+  // Title of the data item
+  title: PropTypes.string,
+  // Value of the data item
+  value: PropTypes.string.isRequired,
+  // Link to the data item
+  href: PropTypes.string.isRequired,
 };

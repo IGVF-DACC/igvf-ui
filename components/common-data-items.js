@@ -239,22 +239,22 @@ export const BiosampleDataItems = ({
       )}
       {biosampleTerm && (
         <>
-          <DataItemLabel>Biosample</DataItemLabel>
+          <DataItemLabel>Biosample Term</DataItemLabel>
           <DataItemValue>
             <Link href={biosampleTerm["@id"]}>
-              <a>{biosampleTerm.term_id}</a>
+              <a>{biosampleTerm.term_name}</a>
             </Link>
           </DataItemValue>
         </>
       )}
       {diseaseTerms.length > 0 && (
         <>
-          <DataItemLabel>Disease</DataItemLabel>
+          <DataItemLabel>Disease Terms</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {diseaseTerms.map((diseaseTerm) => (
                 <Link href={diseaseTerm["@id"]} key={diseaseTerm.uuid}>
-                  <a>{diseaseTerm.term_id}</a>
+                  <a>{diseaseTerm.term_name}</a>
                 </Link>
               ))}
             </SeparatedList>

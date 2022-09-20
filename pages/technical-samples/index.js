@@ -5,6 +5,8 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
+  CollectionDataLink,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -34,12 +36,14 @@ const TechnicalSampleList = ({ technicalSamples }) => {
                   label={`Technical Sample ${sample.title}`}
                   status={sample.status}
                 >
-                  <CollectionItemName>
-                    {sample.accession} &mdash; {sample.sample_material}
-                  </CollectionItemName>
-                  {sample.additional_description && (
-                    <div>{sample.additional_description}</div>
-                  )}
+                  <CollectionItemName>{sample.accession}</CollectionItemName>
+                  <CollectionData>
+                    <CollectionDataLink
+                      title="Sample"
+                      value={sample.technical_sample_term.term_name}
+                      href={sample.technical_sample_term["@id"]}
+                    />
+                  </CollectionData>
                 </CollectionItem>
               ))}
             </CollectionContent>
@@ -63,6 +67,10 @@ export const getServerSideProps = async ({ req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const technicalSamples = await request.getCollection("technical-samples");
   if (FetchRequest.isResponseSuccess(technicalSamples)) {
+    await request.getAndEmbedCollectionObjects(
+      technicalSamples["@graph"],
+      "technical_sample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(
       technicalSamples,
       "title",

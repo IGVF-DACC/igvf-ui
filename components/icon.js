@@ -25,6 +25,16 @@ const Icon = {
       <polygon points="10,3.6 11.4,6.5 14.4,6.9 12.2,9 12.7,12.1 10,10.6 7.3,12.1 7.8,9 5.6,6.9 8.6,6.5 " />
     </svg>
   ),
+  Circle: ({ className = null }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <circle cx="10" cy="10" r="10" />
+    </svg>
+  ),
   Donor: ({ className = null }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -137,6 +147,9 @@ const Icon = {
  * List all icon PropTypes here.
  */
 Icon.Award.propTypes = {
+  className: PropTypes.string,
+};
+Icon.Circle.propTypes = {
   className: PropTypes.string,
 };
 Icon.Donor.propTypes = {

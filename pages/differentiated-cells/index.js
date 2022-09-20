@@ -5,6 +5,8 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
+  CollectionDataLink,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -37,14 +39,13 @@ const DifferentiatedCellList = ({ differentiatedCells }) => {
                   <CollectionItemName>
                     {differentiatedCell.accession}
                   </CollectionItemName>
-                  {differentiatedCell.organism && (
-                    <div>{differentiatedCell.organism}</div>
-                  )}
-                  {differentiatedCell.nih_institutional_certification && (
-                    <div>
-                      {differentiatedCell.nih_institutional_certification}
-                    </div>
-                  )}
+                  <CollectionData>
+                    <CollectionDataLink
+                      title="Biosample"
+                      value={differentiatedCell.biosample_term.term_name}
+                      href={differentiatedCell.biosample_term["@id"]}
+                    />
+                  </CollectionData>
                 </CollectionItem>
               ))}
             </CollectionContent>
@@ -70,6 +71,10 @@ export const getServerSideProps = async ({ req }) => {
     "differentiated-cells"
   );
   if (FetchRequest.isResponseSuccess(differentiatedCells)) {
+    await request.getAndEmbedCollectionObjects(
+      differentiatedCells["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(differentiatedCells, "title");
     return {
       props: {

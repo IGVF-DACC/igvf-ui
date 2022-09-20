@@ -5,6 +5,8 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
+  CollectionDataLink,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -35,10 +37,13 @@ const TissueList = ({ tissues }) => {
                   status={tissue.status}
                 >
                   <CollectionItemName>{tissue.accession}</CollectionItemName>
-                  {tissue.organism && <div>{tissue.organism}</div>}
-                  {tissue.nih_institutional_certification && (
-                    <div>{tissue.nih_institutional_certification}</div>
-                  )}
+                  <CollectionData>
+                    <CollectionDataLink
+                      title="Biosample"
+                      value={tissue.biosample_term.term_name}
+                      href={tissue.biosample_term["@id"]}
+                    />
+                  </CollectionData>
                 </CollectionItem>
               ))}
             </CollectionContent>
@@ -62,6 +67,10 @@ export const getServerSideProps = async ({ req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissues = await request.getCollection("tissues");
   if (FetchRequest.isResponseSuccess(tissues)) {
+    await request.getAndEmbedCollectionObjects(
+      tissues["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(
       tissues,
       "title",
