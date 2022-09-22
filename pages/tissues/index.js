@@ -5,6 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -26,21 +27,25 @@ const TissueList = ({ tissues }) => {
           <>
             <CollectionHeader count={tissues.length} />
             <CollectionContent collection={tissues}>
-              {tissues.map((tissue) => (
-                <CollectionItem
-                  key={tissue.uuid}
-                  testid={tissue.uuid}
-                  href={tissue["@id"]}
-                  label={`Tissue ${tissue.accession}`}
-                  status={tissue.status}
-                >
-                  <CollectionItemName>{tissue.accession}</CollectionItemName>
-                  {tissue.organism && <div>{tissue.organism}</div>}
-                  {tissue.nih_institutional_certification && (
-                    <div>{tissue.nih_institutional_certification}</div>
-                  )}
-                </CollectionItem>
-              ))}
+              {tissues.map((tissue) => {
+                const termName = tissue.biosample_term?.term_name;
+                return (
+                  <CollectionItem
+                    key={tissue.uuid}
+                    testid={tissue.uuid}
+                    href={tissue["@id"]}
+                    label={`Tissue ${tissue.accession}`}
+                    status={tissue.status}
+                  >
+                    <CollectionItemName>
+                      {`${termName ? `${termName} — ` : ""}${tissue.accession}`}
+                    </CollectionItemName>
+                    <CollectionData>
+                      <div>{tissue.taxa}</div>
+                    </CollectionData>
+                  </CollectionItem>
+                );
+              })}
             </CollectionContent>
           </>
         ) : (
@@ -62,6 +67,10 @@ export const getServerSideProps = async ({ req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissues = await request.getCollection("tissues");
   if (FetchRequest.isResponseSuccess(tissues)) {
+    await request.getAndEmbedCollectionObjects(
+      tissues["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(
       tissues,
       "title",

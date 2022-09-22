@@ -5,6 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -26,27 +27,27 @@ const DifferentiatedCellList = ({ differentiatedCells }) => {
           <>
             <CollectionHeader count={differentiatedCells.length} />
             <CollectionContent collection={differentiatedCells}>
-              {differentiatedCells.map((differentiatedCell) => (
-                <CollectionItem
-                  key={differentiatedCell.uuid}
-                  testid={differentiatedCell.uuid}
-                  href={differentiatedCell["@id"]}
-                  label={`Differentiated Cell ${differentiatedCell.accession}`}
-                  status={differentiatedCell.status}
-                >
-                  <CollectionItemName>
-                    {differentiatedCell.accession}
-                  </CollectionItemName>
-                  {differentiatedCell.organism && (
-                    <div>{differentiatedCell.organism}</div>
-                  )}
-                  {differentiatedCell.nih_institutional_certification && (
-                    <div>
-                      {differentiatedCell.nih_institutional_certification}
-                    </div>
-                  )}
-                </CollectionItem>
-              ))}
+              {differentiatedCells.map((differentiatedCell) => {
+                const termName = differentiatedCell.biosample_term?.term_name;
+                return (
+                  <CollectionItem
+                    key={differentiatedCell.uuid}
+                    testid={differentiatedCell.uuid}
+                    href={differentiatedCell["@id"]}
+                    label={`Differentiated Cell ${differentiatedCell.accession}`}
+                    status={differentiatedCell.status}
+                  >
+                    <CollectionItemName>
+                      {`${termName ? `${termName} — ` : ""}${
+                        differentiatedCell.accession
+                      }`}
+                    </CollectionItemName>
+                    <CollectionData>
+                      <div>{differentiatedCell.taxa}</div>
+                    </CollectionData>
+                  </CollectionItem>
+                );
+              })}
             </CollectionContent>
           </>
         ) : (
@@ -70,6 +71,10 @@ export const getServerSideProps = async ({ req }) => {
     "differentiated-cells"
   );
   if (FetchRequest.isResponseSuccess(differentiatedCells)) {
+    await request.getAndEmbedCollectionObjects(
+      differentiatedCells["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(differentiatedCells, "title");
     return {
       props: {

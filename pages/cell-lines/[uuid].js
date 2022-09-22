@@ -149,7 +149,11 @@ export const getServerSideProps = async ({ params, req }) => {
         lab,
         source,
         treatments,
-        pageContext: { title: cellLine.accession },
+        pageContext: {
+          title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
+            cellLine.accession
+          }`,
+        },
         breadcrumbs,
       },
     };

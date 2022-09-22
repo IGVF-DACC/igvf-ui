@@ -5,6 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -26,22 +27,25 @@ const TechnicalSampleList = ({ technicalSamples }) => {
           <>
             <CollectionHeader count={technicalSamples.length} />
             <CollectionContent collection={technicalSamples}>
-              {technicalSamples.map((sample) => (
-                <CollectionItem
-                  key={sample.uuid}
-                  testid={sample.uuid}
-                  href={sample["@id"]}
-                  label={`Technical Sample ${sample.title}`}
-                  status={sample.status}
-                >
-                  <CollectionItemName>
-                    {sample.accession} &mdash; {sample.sample_material}
-                  </CollectionItemName>
-                  {sample.additional_description && (
-                    <div>{sample.additional_description}</div>
-                  )}
-                </CollectionItem>
-              ))}
+              {technicalSamples.map((sample) => {
+                const termName = sample.technical_sample_term?.term_name;
+                return (
+                  <CollectionItem
+                    key={sample.uuid}
+                    testid={sample.uuid}
+                    href={sample["@id"]}
+                    label={`Technical Sample ${sample.title}`}
+                    status={sample.status}
+                  >
+                    <CollectionItemName>
+                      {`${termName ? `${termName} — ` : ""}${sample.accession}`}
+                    </CollectionItemName>
+                    <CollectionData>
+                      <div>{sample.sample_material}</div>
+                    </CollectionData>
+                  </CollectionItem>
+                );
+              })}
             </CollectionContent>
           </>
         ) : (
@@ -63,6 +67,10 @@ export const getServerSideProps = async ({ req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const technicalSamples = await request.getCollection("technical-samples");
   if (FetchRequest.isResponseSuccess(technicalSamples)) {
+    await request.getAndEmbedCollectionObjects(
+      technicalSamples["@graph"],
+      "technical_sample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(
       technicalSamples,
       "title",
