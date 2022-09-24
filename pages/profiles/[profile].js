@@ -25,9 +25,10 @@ const Schema = ({ schema, changelog }) => {
       </DataPanel>
       <DataAreaTitle>Changelog</DataAreaTitle>
       <DataPanel>
-        <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
-          <div dangerouslySetInnerHTML={{ __html: html }} />
-        </div>
+        <div
+          className="prose dark:prose-invert"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       </DataPanel>
     </>
   );
