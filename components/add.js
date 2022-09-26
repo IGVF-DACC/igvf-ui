@@ -53,7 +53,7 @@ function sortedJson(obj) {
 }
 
 const convertOptionalIntoRequiredSchema = (schema) => {
-  const topProperties = Object.keys(schema["properties"]).filter((k) => { return k != "uuid"; });
+  const topProperties = Object.keys(schema["properties"]).filter((k) => { return !["@type", "uuid", "@id", "schema_version"].includes(k); });
   const newschema = schema;
   newschema.required = topProperties;
   return newschema;
