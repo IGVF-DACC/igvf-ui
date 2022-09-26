@@ -9,7 +9,6 @@ import { DataPanel, DataAreaTitle } from "../../components/data-area";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { AddLink } from "../../components/add";
 
 const Schema = ({ schema, changelog }) => {
   console.log(schema);
@@ -18,7 +17,6 @@ const Schema = ({ schema, changelog }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <AddLink schema={schema}/>
       <DataPanel>
         <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
           <pre className="overflow-x-scroll p-1">

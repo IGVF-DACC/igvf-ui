@@ -10,10 +10,10 @@ import { useRouter } from "next/router";
 // lib
 import FetchRequest from "../lib/fetch-request";
 
-export const useEditor = (item, viewComponent) => {
-  const editing = (url) => {
-    return url.endsWith("#!edit");
-  };
+export const useEditor = (item, viewComponent, action = "edit") => {
+  // const editing = (url) => {
+  //   return url.endsWith(`#!${action}`);
+  // };
 
   /**
    * Represents whether the Editor component can be actively typed in or saved.
@@ -25,7 +25,7 @@ export const useEditor = (item, viewComponent) => {
   const router = useRouter();
 
   useEffect(() => {
-    const isEdit = editing(document.URL);
+    const isEdit = document.URL.endsWith(`#!${action}`);
     // If the URL says edit but we aren't editing yet, set the state
     if (isEdit && !edit) {
       setEditing(true);
@@ -36,7 +36,7 @@ export const useEditor = (item, viewComponent) => {
       setEditing(false);
       router.replace(router.asPath);
     }
-  }, [edit, router]);
+  }, [edit, router, action]);
 
   const editpage = <EditPage item={item} />;
   const editlink = <EditLink item={item} />;
@@ -60,7 +60,7 @@ EditableItem.propTypes = {
   item: PropTypes.object.isRequired,
 };
 
-const SaveCancelControl = ({
+export const SaveCancelControl = ({
   cancelClick,
   saveClick,
   itemPath,
@@ -110,7 +110,7 @@ function sortedJson(obj) {
   return obj;
 }
 
-const SavedErrors = ({ errors = [] }) => {
+export const SavedErrors = ({ errors = [] }) => {
   return (
     <div>
       <p className="text-lg text-rose-600">Errors from Save:</p>

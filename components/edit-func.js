@@ -5,11 +5,11 @@ import React from "react";
 // components
 import Button from "./button";
 
-export const canEdit = (item) => {
+export const canEdit = (item, actions = ["edit", "edit-json"]) => {
   if ("actions" in item) {
     return (
       item.actions.find(
-        (act) => act.name == "edit" || act.name == "edit-json"
+        (act) => actions.includes(act.name)
       ) != undefined
     );
   }
