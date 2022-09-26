@@ -15,44 +15,48 @@ import PagePreamble from "../../components/page-preamble";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { AddableItem } from '../../components/add';
 
-const HumanDonorsList = ({ donors }) => {
+const HumanDonorsList = ({ donors, donors_obj }) => {
+  console.log(donors_obj);
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={donors}>
-        {({ pageItems: pageDonors, pagerStatus, pagerAction }) => {
-          if (donors.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={donors}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageDonors.map((donor) => (
-                    <CollectionItem
-                      key={donor.uuid}
-                      testid={donor.uuid}
-                      href={donor["@id"]}
-                      label={`Human Donor ${donor.accession}`}
-                      status={donor.status}
-                    >
-                      <CollectionItemName>{donor.accession}</CollectionItemName>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={donors_obj}>
+        <Collection items={donors}>
+          {({ pageItems: pageDonors, pagerStatus, pagerAction }) => {
+            if (donors.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={donors}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageDonors.map((donor) => (
+                      <CollectionItem
+                        key={donor.uuid}
+                        testid={donor.uuid}
+                        href={donor["@id"]}
+                        label={`Human Donor ${donor.accession}`}
+                        status={donor.status}
+                      >
+                        <CollectionItemName>{donor.accession}</CollectionItemName>
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
@@ -60,6 +64,7 @@ const HumanDonorsList = ({ donors }) => {
 HumanDonorsList.propTypes = {
   // Technical samples to display in the list
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  donors_obj: PropTypes.object.isRequired,
 };
 
 export default HumanDonorsList;
@@ -67,6 +72,7 @@ export default HumanDonorsList;
 export const getServerSideProps = async ({ req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donors = await request.getCollection("human-donors");
+  const donors_obj = await request.getObject("/human-donors/?limit=0");
   if (FetchRequest.isResponseSuccess(donors)) {
     const breadcrumbs = await buildBreadcrumbs(
       donors,
@@ -78,6 +84,7 @@ export const getServerSideProps = async ({ req }) => {
         donors: donors["@graph"],
         pageContext: { title: donors.title },
         breadcrumbs,
+        donors_obj: donors_obj,
       },
     };
   }
