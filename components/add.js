@@ -5,7 +5,6 @@ import { useContext } from 'react';
 import FetchRequest from "../lib/fetch-request";
 import { useAuthenticated } from './authentication';
 import EditJson, { canEdit } from './edit-func';
-import { useRef } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { SaveCancelControl, SavedErrors } from "./edit";
@@ -127,10 +126,11 @@ AddLink.propTypes = {
 
 export const AddInstancePage = ({ collection }) => {
   const { session } = useContext(SessionContext);
-  const request = useRef(new FetchRequest({ session }));
-  console.log(request.current.isServer);
+  // const request = useMemo(() => { return new FetchRequest(session); }, [session]);
   const loggedIn = useAuthenticated();
 
+  console.log("Render!");
+  console.log(session);
   /**
    * The text is the current editor text of the underlying Ace editor component.
    */
@@ -180,15 +180,16 @@ export const AddInstancePage = ({ collection }) => {
     errors: [],
   });
 
+  const profilePath = actionProfile(collection, "add");
+
   useEffect(() => {
-    const profilePath = actionProfile(collection, "add");
-    request.current.getObject(profilePath).then((schema) => {
+    new FetchRequest(session).getObject(profilePath).then((schema) => {
       // We have the schema, so produce a dummy json from the schema
       const biggerSchema = convertOptionalIntoRequiredSchema(schema);
       const basic = empty(biggerSchema);
       setText(JSON.stringify(basic, null, 4));
     });
-  }, [collection]);
+  }, [profilePath, session]);
 
   const onChange = (newValue) => {
     setText(newValue);
@@ -203,14 +204,18 @@ export const AddInstancePage = ({ collection }) => {
   };
 
   const save = () => {
+    console.log("SAVING!");
     setEditorStatus({
       canEdit: false,
       canSave: false,
       errors: [],
     });
+
     const value = sortedJson(JSON.parse(text));
     const collectionPath = collectionPathWithoutLimit(collection);
-    request.current.postObject(collectionPath, value).then((response) => {
+    console.log("SESSION before POST!");
+    console.log(session);
+    new FetchRequest(session).postObject(collectionPath, value).then((response) => {
       if (response.status === "success") {
         setSaveErrors([]);
         router.push(collectionPath);
