@@ -2,10 +2,10 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
-import Button from "./button";
-import Modal from "./modal";
+import Button from "../button";
+import Modal from "../modal";
 // lib
-import { generateTsvFromCollection } from "../lib/collection-table";
+import { generateTsvFromCollection } from "../../lib/collection-table";
 
 /**
  * Handle the user downloading the table as a TSV file, and render the button to trigger this.

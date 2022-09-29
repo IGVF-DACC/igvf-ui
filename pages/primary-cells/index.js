@@ -22,37 +22,47 @@ const PrimaryCellList = ({ primaryCells }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {primaryCells.length > 0 ? (
-          <>
-            <CollectionHeader count={primaryCells.length} />
-            <CollectionContent collection={primaryCells}>
-              {primaryCells.map((primaryCell) => {
-                const termName = primaryCell.biosample_term?.term_name;
-                return (
-                  <CollectionItem
-                    key={primaryCell.uuid}
-                    testid={primaryCell.uuid}
-                    href={primaryCell["@id"]}
-                    label={`Primary Cell ${primaryCell.accession}`}
-                    status={primaryCell.status}
-                  >
-                    <CollectionItemName>
-                      {`${termName ? `${termName} — ` : ""}${
-                        primaryCell.accession
-                      }`}
-                    </CollectionItemName>
-                    <CollectionData>
-                      <div>{primaryCell.taxa}</div>
-                    </CollectionData>
-                  </CollectionItem>
-                );
-              })}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+      <Collection items={primaryCells}>
+        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+          if (primaryCells.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={primaryCells}
+                  pagerStatus={pagerStatus}
+                >
+                  {pageSamples.map((primaryCell) => {
+                    const termName = primaryCell.biosample_term?.term_name;
+                    return (
+                      <CollectionItem
+                        key={primaryCell.uuid}
+                        testid={primaryCell.uuid}
+                        href={primaryCell["@id"]}
+                        label={`Primary Cell ${primaryCell.accession}`}
+                        status={primaryCell.status}
+                      >
+                        <CollectionItemName>
+                          {`${termName ? `${termName} — ` : ""}${
+                            primaryCell.accession
+                          }`}
+                        </CollectionItemName>
+                        <CollectionData>
+                          <div>{primaryCell.taxa}</div>
+                        </CollectionData>
+                      </CollectionItem>
+                    );
+                  })}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

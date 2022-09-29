@@ -22,32 +22,39 @@ const UserList = ({ users }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {users.length > 0 ? (
-          <>
-            <CollectionHeader count={users.length} />
-            <CollectionContent collection={users}>
-              {users.map((user) => (
-                <CollectionItem
-                  key={user.uuid}
-                  testid={user.uuid}
-                  href={user["@id"]}
-                  label={`User ${user.name}`}
-                  status={user.status}
-                >
-                  <CollectionItemName>{user.title}</CollectionItemName>
-                  {user.lab && (
-                    <Link href={user.lab["@id"]}>
-                      <a>{user.lab.title}</a>
-                    </Link>
-                  )}
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+      <Collection items={users}>
+        {({ pageItems: pageUsers, pagerStatus, pagerAction }) => {
+          if (users.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent collection={users} pagerStatus={pagerStatus}>
+                  {pageUsers.map((user) => (
+                    <CollectionItem
+                      key={user.uuid}
+                      testid={user.uuid}
+                      href={user["@id"]}
+                      label={`User ${user.name}`}
+                      status={user.status}
+                    >
+                      <CollectionItemName>{user.title}</CollectionItemName>
+                      {user.lab && (
+                        <Link href={user.lab["@id"]}>
+                          <a>{user.lab.title}</a>
+                        </Link>
+                      )}
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

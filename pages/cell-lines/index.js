@@ -22,35 +22,47 @@ const CellLineList = ({ cellLines }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {cellLines.length > 0 ? (
-          <>
-            <CollectionHeader count={cellLines.length} />
-            <CollectionContent collection={cellLines}>
-              {cellLines.map((sample) => {
-                const termName = sample.biosample_term?.term_name;
-                return (
-                  <CollectionItem
-                    key={sample.uuid}
-                    testid={sample.uuid}
-                    href={sample["@id"]}
-                    label={`Cell Line ${sample.title}`}
-                    status={sample.status}
-                  >
-                    <CollectionItemName>
-                      {`${termName ? `${termName} — ` : ""}${sample.accession}`}
-                    </CollectionItemName>
-                    <CollectionData>
-                      <div>{sample.taxa}</div>
-                    </CollectionData>
-                  </CollectionItem>
-                );
-              })}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+      <Collection items={cellLines}>
+        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+          if (cellLines.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={cellLines}
+                  pagerStatus={pagerStatus}
+                >
+                  {pageSamples.map((sample) => {
+                    const termName = sample.biosample_term?.term_name;
+                    return (
+                      <CollectionItem
+                        key={sample.uuid}
+                        testid={sample.uuid}
+                        href={sample["@id"]}
+                        label={`Cell Line ${sample.title}`}
+                        status={sample.status}
+                      >
+                        <CollectionItemName>
+                          {`${termName ? `${termName} — ` : ""}${
+                            sample.accession
+                          }`}
+                        </CollectionItemName>
+                        <CollectionData>
+                          <div>{sample.taxa}</div>
+                        </CollectionData>
+                      </CollectionItem>
+                    );
+                  })}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

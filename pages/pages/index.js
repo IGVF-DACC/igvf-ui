@@ -27,33 +27,41 @@ const PagesList = ({ pages }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {pages.length > 0 ? (
-          <>
-            <CollectionHeader
-              count={pages.length}
-              addSpec={{ path: "add-page", label: "Page" }}
-            />
-            <CollectionContent collection={pages}>
-              {pages.map((page) => (
-                <CollectionItem
-                  key={page.uuid}
-                  testid={page.uuid}
-                  href={page["@id"]}
-                  label={`Page ${page.title}`}
-                  status={page.status}
-                >
-                  <CollectionItemName>{page.title}</CollectionItemName>
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <>
-            <AddObjectTrigger addSpec={{ path: "/add-page", label: "Page" }} />
-            <NoCollectionData />
-          </>
-        )}
+      <Collection items={pages}>
+        {({ pageItems: pagePages, pagerStatus, pagerAction }) => {
+          if (pages.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                  addSpec={{ path: "add-page", label: "Page" }}
+                />
+                <CollectionContent collection={pages} pagerStatus={pagerStatus}>
+                  {pagePages.map((page) => (
+                    <CollectionItem
+                      key={page.uuid}
+                      testid={page.uuid}
+                      href={page["@id"]}
+                      label={`Page ${page.title}`}
+                      status={page.status}
+                    >
+                      <CollectionItemName>{page.title}</CollectionItemName>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+          return (
+            <>
+              <AddObjectTrigger
+                addSpec={{ path: "/add-page", label: "Page" }}
+              />
+              <NoCollectionData />
+            </>
+          );
+        }}
       </Collection>
     </>
   );

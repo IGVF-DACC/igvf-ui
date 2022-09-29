@@ -22,37 +22,48 @@ const DifferentiatedTissueList = ({ differentiatedTissues }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {differentiatedTissues.length > 0 ? (
-          <>
-            <CollectionHeader count={differentiatedTissues.length} />
-            <CollectionContent collection={differentiatedTissues}>
-              {differentiatedTissues.map((differentiatedTissue) => {
-                const termName = differentiatedTissue.biosample_term?.term_name;
-                return (
-                  <CollectionItem
-                    key={differentiatedTissue.uuid}
-                    testid={differentiatedTissue.uuid}
-                    href={differentiatedTissue["@id"]}
-                    label={`Differentiated Tissue ${differentiatedTissue.accession}`}
-                    status={differentiatedTissue.status}
-                  >
-                    <CollectionItemName>
-                      {`${termName ? `${termName} — ` : ""}${
-                        differentiatedTissue.accession
-                      }`}
-                    </CollectionItemName>
-                    <CollectionData>
-                      <div>{differentiatedTissue.taxa}</div>
-                    </CollectionData>
-                  </CollectionItem>
-                );
-              })}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+      <Collection items={differentiatedTissues}>
+        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+          if (differentiatedTissues.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={differentiatedTissues}
+                  pagerStatus={pagerStatus}
+                >
+                  {pageSamples.map((differentiatedTissue) => {
+                    const termName =
+                      differentiatedTissue.biosample_term?.term_name;
+                    return (
+                      <CollectionItem
+                        key={differentiatedTissue.uuid}
+                        testid={differentiatedTissue.uuid}
+                        href={differentiatedTissue["@id"]}
+                        label={`Differentiated Tissue ${differentiatedTissue.accession}`}
+                        status={differentiatedTissue.status}
+                      >
+                        <CollectionItemName>
+                          {`${termName ? `${termName} — ` : ""}${
+                            differentiatedTissue.accession
+                          }`}
+                        </CollectionItemName>
+                        <CollectionData>
+                          <div>{differentiatedTissue.taxa}</div>
+                        </CollectionData>
+                      </CollectionItem>
+                    );
+                  })}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );
