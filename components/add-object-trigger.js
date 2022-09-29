@@ -17,8 +17,8 @@ const AddObjectTrigger = ({ addSpec = null }) => {
           <Button.Link
             href={`${addSpec.path}#!edit`}
             type="success-outline"
-            size="sm"
-            className="ml-auto"
+            size="md"
+            className="self-stretch"
           >
             {`Add ${addSpec.label}`}
           </Button.Link>

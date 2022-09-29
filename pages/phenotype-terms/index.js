@@ -21,30 +21,40 @@ const PhenotypeOntologyTermList = ({ phenotypeOntologyTerms }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {phenotypeOntologyTerms.length > 0 ? (
-          <>
-            <CollectionHeader count={phenotypeOntologyTerms.length} />
-            <CollectionContent collection={phenotypeOntologyTerms}>
-              {phenotypeOntologyTerms.map((phenotypeOntologyTerm) => (
-                <CollectionItem
-                  key={phenotypeOntologyTerm.uuid}
-                  testid={phenotypeOntologyTerm.uuid}
-                  href={phenotypeOntologyTerm["@id"]}
-                  label={`Phenotype ontology term ${phenotypeOntologyTerm.term_id}`}
-                  status={phenotypeOntologyTerm.status}
+      <Collection items={phenotypeOntologyTerms}>
+        {({ pageItems: pageTerms, pagerStatus, pagerAction }) => {
+          if (phenotypeOntologyTerms.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={phenotypeOntologyTerms}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>
-                    {phenotypeOntologyTerm.term_id}
-                  </CollectionItemName>
-                  <div>{phenotypeOntologyTerm.term_name}</div>
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageTerms.map((phenotypeOntologyTerm) => (
+                    <CollectionItem
+                      key={phenotypeOntologyTerm.uuid}
+                      testid={phenotypeOntologyTerm.uuid}
+                      href={phenotypeOntologyTerm["@id"]}
+                      label={`Phenotype ontology term ${phenotypeOntologyTerm.term_id}`}
+                      status={phenotypeOntologyTerm.status}
+                    >
+                      <CollectionItemName>
+                        {phenotypeOntologyTerm.term_id}
+                      </CollectionItemName>
+                      <div>{phenotypeOntologyTerm.term_name}</div>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

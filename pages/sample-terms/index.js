@@ -21,30 +21,40 @@ const SampleOntologyTermList = ({ sampleOntologyTerms }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {sampleOntologyTerms.length > 0 ? (
-          <>
-            <CollectionHeader count={sampleOntologyTerms.length} />
-            <CollectionContent collection={sampleOntologyTerms}>
-              {sampleOntologyTerms.map((sampleOntologyTerm) => (
-                <CollectionItem
-                  key={sampleOntologyTerm.uuid}
-                  testid={sampleOntologyTerm.uuid}
-                  href={sampleOntologyTerm["@id"]}
-                  label={`Sample ontology term ${sampleOntologyTerm.term_id}`}
-                  status={sampleOntologyTerm.status}
+      <Collection items={sampleOntologyTerms}>
+        {({ pageItems: pageTerms, pagerStatus, pagerAction }) => {
+          if (sampleOntologyTerms.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={sampleOntologyTerms}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>
-                    {sampleOntologyTerm.term_id}
-                  </CollectionItemName>
-                  <div>{sampleOntologyTerm.term_name}</div>
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageTerms.map((sampleOntologyTerm) => (
+                    <CollectionItem
+                      key={sampleOntologyTerm.uuid}
+                      testid={sampleOntologyTerm.uuid}
+                      href={sampleOntologyTerm["@id"]}
+                      label={`Sample ontology term ${sampleOntologyTerm.term_id}`}
+                      status={sampleOntologyTerm.status}
+                    >
+                      <CollectionItemName>
+                        {sampleOntologyTerm.term_id}
+                      </CollectionItemName>
+                      <div>{sampleOntologyTerm.term_name}</div>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

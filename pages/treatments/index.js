@@ -21,33 +21,43 @@ const TreatmentList = ({ treatments }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {treatments.length > 0 ? (
-          <>
-            <CollectionHeader count={treatments.length} />
-            <CollectionContent collection={treatments}>
-              {treatments.map((treatment) => (
-                <CollectionItem
-                  key={treatment.uuid}
-                  testid={treatment.uuid}
-                  href={treatment["@id"]}
-                  label={`Treatment ${treatment.treatment_term_id}`}
-                  status={treatment.status}
+      <Collection items={treatments}>
+        {({ pageItems: pageTreatments, pagerStatus, pagerAction }) => {
+          if (treatments.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={treatments}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>
-                    {treatment.treatment_term_id}
-                  </CollectionItemName>
-                  {treatment.purpose && <div>{treatment.purpose}</div>}
-                  {treatment.treatment_term_name && (
-                    <div>{treatment.treatment_term_name}</div>
-                  )}
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageTreatments.map((treatment) => (
+                    <CollectionItem
+                      key={treatment.uuid}
+                      testid={treatment.uuid}
+                      href={treatment["@id"]}
+                      label={`Treatment ${treatment.treatment_term_id}`}
+                      status={treatment.status}
+                    >
+                      <CollectionItemName>
+                        {treatment.treatment_term_id}
+                      </CollectionItemName>
+                      {treatment.purpose && <div>{treatment.purpose}</div>}
+                      {treatment.treatment_term_name && (
+                        <div>{treatment.treatment_term_name}</div>
+                      )}
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

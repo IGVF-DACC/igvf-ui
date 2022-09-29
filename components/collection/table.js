@@ -4,22 +4,24 @@ import {
   CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ClipboardIcon,
+  ClipboardDocumentCheckIcon,
 } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 // components
-import Button from "./button";
-import Checkbox from "./checkbox";
-import CollectionDownload from "./collection-download";
-import CopyButton from "./copy-button";
-import { DataGridContainer } from "./data-grid";
-import Icon from "./icon";
-import Instruction from "./instruction";
-import Modal from "./modal";
-import SessionContext from "./session-context";
-import SortableGrid from "./sortable-grid";
+import Button from "../button";
+import Checkbox from "../checkbox";
+import CopyButton from "../copy-button";
+import { DataGridContainer } from "../data-grid";
+import Icon from "../icon";
+import Instruction from "../instruction";
+import Modal from "../modal";
+import SessionContext from "../session-context";
+import SortableGrid from "../sortable-grid";
+// components/collection
+import CollectionCount from "./count";
+import CollectionDownload from "./download";
 // lib
 import {
   clearHiddenColumnsFromUrl,
@@ -31,7 +33,7 @@ import {
   loadStoredHiddenColumns,
   saveStoredHiddenColumns,
   sortColumns,
-} from "../lib/collection-table";
+} from "../../lib/collection-table";
 
 /**
  * Displays the buttons to hide or show all columns at once.
@@ -195,7 +197,7 @@ const ColumnUrlCopy = ({ hiddenColumns }) => {
           <>
             Copy URL Columns
             <div className="ml-1 h-4 w-4">
-              {isCopied ? <CheckIcon /> : <ClipboardIcon />}
+              {isCopied ? <CheckIcon /> : <ClipboardDocumentCheckIcon />}
             </div>
           </>
         );
@@ -429,7 +431,7 @@ ScrollIndicators.propTypes = {
 /**
  * Displays the table view for a collection page, instead of a list view.
  */
-const CollectionTable = ({ collection }) => {
+const CollectionTable = ({ collection, pagerStatus }) => {
   // All schemas from which we extract the columns for the current collection type
   const { profiles } = useContext(SessionContext);
   // Holds the IDs of the hidden columns
@@ -445,6 +447,18 @@ const CollectionTable = ({ collection }) => {
   );
   // Keep a ref of the scrollable table DOM <div> so we can detect scroll position
   const gridRef = useRef(null);
+
+  // Calculate the start and end index of the items to display based on the pager status. Show all
+  // items if the items per page is zero (view all items).
+  let startIndex = 0;
+  let endIndex = collection.length;
+  if (pagerStatus.itemsPerPage > 0) {
+    startIndex =
+      pagerStatus.itemsPerPage > 0
+        ? (pagerStatus.pageIndex - 1) * pagerStatus.itemsPerPage
+        : 1;
+    endIndex = startIndex + pagerStatus.itemsPerPage;
+  }
 
   /**
    * Called when the user changes which columns are visible and hidden through the column selector.
@@ -546,9 +560,15 @@ const CollectionTable = ({ collection }) => {
             collectionType={collectionType}
           />
         </ColumnControls>
+        <CollectionCount count={collection.length} />
         <ScrollIndicators gridRef={gridRef}>
           <DataGridContainer ref={gridRef}>
-            <SortableGrid data={flattenedCollection} columns={sortedColumns} />
+            <SortableGrid
+              data={flattenedCollection}
+              columns={sortedColumns}
+              startIndex={startIndex}
+              endIndex={endIndex}
+            />
           </DataGridContainer>
         </ScrollIndicators>
       </>
@@ -562,6 +582,13 @@ const CollectionTable = ({ collection }) => {
 CollectionTable.propTypes = {
   // Collection to display in a table
   collection: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Collection pager status
+  pagerStatus: PropTypes.exact({
+    // Number of items per page
+    itemsPerPage: PropTypes.number.isRequired,
+    // Index of the page of items to display
+    pageIndex: PropTypes.number.isRequired,
+  }).isRequired,
 };
 
 export default CollectionTable;

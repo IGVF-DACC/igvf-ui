@@ -21,30 +21,40 @@ const AssayOntologyTermList = ({ assayOntologyTerms }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {assayOntologyTerms.length > 0 ? (
-          <>
-            <CollectionHeader count={assayOntologyTerms.length} />
-            <CollectionContent collection={assayOntologyTerms}>
-              {assayOntologyTerms.map((assayOntologyTerm) => (
-                <CollectionItem
-                  key={assayOntologyTerm.uuid}
-                  testid={assayOntologyTerm.uuid}
-                  href={assayOntologyTerm["@id"]}
-                  label={`Assay term ${assayOntologyTerm.term_id}`}
-                  status={assayOntologyTerm.status}
+      <Collection items={assayOntologyTerms}>
+        {({ pageItems: pageTerms, pagerStatus, pagerAction }) => {
+          if (assayOntologyTerms.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={assayOntologyTerms}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>
-                    {assayOntologyTerm.term_id}
-                  </CollectionItemName>
-                  <div>{assayOntologyTerm.term_name}</div>
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageTerms.map((assayOntologyTerm) => (
+                    <CollectionItem
+                      key={assayOntologyTerm.uuid}
+                      testid={assayOntologyTerm.uuid}
+                      href={assayOntologyTerm["@id"]}
+                      label={`Assay term ${assayOntologyTerm.term_id}`}
+                      status={assayOntologyTerm.status}
+                    >
+                      <CollectionItemName>
+                        {assayOntologyTerm.term_id}
+                      </CollectionItemName>
+                      <div>{assayOntologyTerm.term_name}</div>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

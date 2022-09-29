@@ -21,28 +21,35 @@ const GeneList = ({ genes }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {genes.length > 0 ? (
-          <>
-            <CollectionHeader count={genes.length} />
-            <CollectionContent collection={genes}>
-              {genes.map((gene) => (
-                <CollectionItem
-                  key={gene.uuid}
-                  testid={gene.uuid}
-                  href={gene["@id"]}
-                  label={`Lab ${gene.title}`}
-                  status={gene.status}
-                >
-                  <CollectionItemName>{gene.title}</CollectionItemName>
-                  <div>{gene.geneid}</div>
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+      <Collection items={genes}>
+        {({ pageItems: pageGenes, pagerStatus, pagerAction }) => {
+          if (genes.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent collection={genes} pagerStatus={pagerStatus}>
+                  {pageGenes.map((gene) => (
+                    <CollectionItem
+                      key={gene.uuid}
+                      testid={gene.uuid}
+                      href={gene["@id"]}
+                      label={`Lab ${gene.title}`}
+                      status={gene.status}
+                    >
+                      <CollectionItemName>{gene.title}</CollectionItemName>
+                      <div>{gene.geneid}</div>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

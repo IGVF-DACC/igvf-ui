@@ -34,7 +34,7 @@ export const DataGridContainer = forwardRef(function DataGridContainer(
     <div
       ref={ref}
       role="table"
-      className={`grid w-full gap-px overflow-x-auto bg-gray-300 text-sm outline outline-1 outline-data-border dark:outline-gray-700 dark:bg-gray-700${
+      className={`border-1 grid w-full gap-px overflow-x-auto border border-data-border bg-gray-300 text-sm dark:outline-gray-700 dark:bg-gray-700${
         className ? ` ${className}` : ""
       }`}
     >

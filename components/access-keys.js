@@ -1,7 +1,7 @@
 // node_modules
 import {
   CheckIcon,
-  ClipboardIcon,
+  ClipboardDocumentCheckIcon,
   ArrowPathIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
@@ -51,7 +51,9 @@ const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
               <div className="shrink-1 font-mono">{row.value}</div>
               <div className="ml-2 flex shrink-0 justify-end">
                 <CopyButton.Icon target={row.value} label={row.label}>
-                  {(isCopied) => (isCopied ? <CheckIcon /> : <ClipboardIcon />)}
+                  {(isCopied) =>
+                    isCopied ? <CheckIcon /> : <ClipboardDocumentCheckIcon />
+                  }
                 </CopyButton.Icon>
               </div>
             </div>
