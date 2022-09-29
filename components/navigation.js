@@ -87,7 +87,7 @@ const NavigationButton = React.forwardRef(
         onClick={onClick}
         data-testid={id}
         disabled={isDisabled}
-        className={`flex w-full items-center rounded-sm border border-transparent px-2 py-1 text-left text-white no-underline hover:bg-nav-highlight disabled:text-gray-500 md:text-black md:hover:border md:hover:border-highlight-border md:hover:bg-highlight md:dark:text-gray-200 ${
+        className={`flex w-full items-center rounded-full border border-transparent px-2 py-1 text-left text-white no-underline hover:bg-nav-highlight disabled:text-gray-500 md:text-black md:hover:border md:hover:border-nav-border md:hover:bg-nav-highlight md:dark:text-gray-200 ${
           isChildItem ? "text-sm font-normal" : "text-base font-medium"
         }`}
         ref={ref}

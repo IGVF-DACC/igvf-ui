@@ -16,7 +16,7 @@
  * label=Sample Count
  * color=gray
  *
- * If the `pluginMap` object maps "SAMPLE COUNT" to the React component <SampleCount>, then that
+ * If the `componentMap` object maps "SAMPLE COUNT" to the React component <SampleCount>, then that
  * component gets called like this:
  *
  * <SampleCount label="Sample Count" color="gray" />
@@ -29,8 +29,11 @@
 
 // node_modules
 import PropTypes from "prop-types";
-// compnents/page-plugin
+// compnents/page-components
+import ImageAligned from "./image-aligned";
+import PageNavigation from "./page-navigation";
 import SampleCount from "./sample-count";
+import VideoYouTube from "./video-youtube";
 
 /**
  * When adding new page plugin components, define the corresponding React components in this
@@ -38,23 +41,26 @@ import SampleCount from "./sample-count";
  * content creator can use to reference the component and map it to the actual component name in
  * this object.
  */
-const pluginMap = {
+const componentMap = {
+  IMAGE_ALIGNED: ImageAligned,
+  PAGE_NAV: PageNavigation,
   SAMPLE_COUNT: SampleCount,
+  VIDEO_YOUTUBE: VideoYouTube,
 };
 
 /**
  * Entry point to all page plugin components. `spec` contains the entire contents of a "Component"
  * block in the page editor. The first line of `spec` contains the component label, and the rest of
- * the lines contain properties to pass to the page plugin component.
+ * the lines contain properties to pass to the actual page component.
  */
-const PagePlugin = ({ spec }) => {
+const PageComponent = ({ spec }) => {
   // Extract the component label and its properties from the spec.
   const specParts = spec.split("\n");
   const componentLabel = specParts.splice(0, 1)[0];
 
   // Map the component label to the matching page plugin component.
   if (componentLabel.match(/^[A-Z0-9_]+$/) !== null) {
-    const Component = pluginMap[componentLabel];
+    const Component = componentMap[componentLabel];
 
     // Build an object from the key/value pairs in the spec and pass these to the mapped page
     // plugin component.
@@ -71,9 +77,9 @@ const PagePlugin = ({ spec }) => {
   return null;
 };
 
-PagePlugin.propTypes = {
+PageComponent.propTypes = {
   // React component specification from a "Component" block on a page
   spec: PropTypes.string.isRequired,
 };
 
-export default PagePlugin;
+export default PageComponent;

@@ -53,6 +53,7 @@ describe("Content-Change Tests", () => {
     cy.get("#title").clear().type("Updated Subpage Title");
     cy.get("#status").select("Released");
     cy.get(`[aria-label="Save edits to page"]`).click();
+    cy.wait(1000);
     cy.visit("/pages/");
     cy.get(
       `[data-testid="collection-list-item-83173355-31ff-4ca7-a259-e4af0f3a0169"]`
