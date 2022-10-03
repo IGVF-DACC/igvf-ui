@@ -239,14 +239,18 @@ export const AddInstancePage = ({ collection }) => {
           canSave: true,
           errors: [],
         });
-        const errors = response.errors.map((err) => ({
+
+        const errors = response.errors ? response.errors.map((err) => ({
           description: err.description,
           keys: err.name
             .map((val) => {
               return `\`${val}\``;
             })
             .join(", "),
-        }));
+        })) : [{
+          description: "Error saving new item, ensure the fields are filled out correctly",
+          keys: "Generic Error",
+        }];
         setSaveErrors(errors);
       }
     });
