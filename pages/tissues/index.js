@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -18,59 +19,62 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const TissueList = ({ tissues }) => {
+  const tissuesList = tissues["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={tissues}>
-        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
-          if (tissues.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={tissues}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageSamples.map((tissue) => {
-                    const termName = tissue.biosample_term?.term_name;
-                    return (
-                      <CollectionItem
-                        key={tissue.uuid}
-                        testid={tissue.uuid}
-                        href={tissue["@id"]}
-                        label={`Tissue ${tissue.accession}`}
-                        status={tissue.status}
-                      >
-                        <CollectionItemName>
-                          {`${termName ? `${termName} — ` : ""}${
-                            tissue.accession
-                          }`}
-                        </CollectionItemName>
-                        <CollectionData>
-                          <div>{tissue.taxa}</div>
-                        </CollectionData>
-                      </CollectionItem>
-                    );
-                  })}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={tissues}>
+        <Collection items={tissuesList}>
+          {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+            if (tissuesList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={tissuesList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageSamples.map((tissue) => {
+                      const termName = tissue.biosample_term?.term_name;
+                      return (
+                        <CollectionItem
+                          key={tissue.uuid}
+                          testid={tissue.uuid}
+                          href={tissue["@id"]}
+                          label={`Tissue ${tissue.accession}`}
+                          status={tissue.status}
+                        >
+                          <CollectionItemName>
+                            {`${termName ? `${termName} — ` : ""}${
+                              tissue.accession
+                            }`}
+                          </CollectionItemName>
+                          <CollectionData>
+                            <div>{tissue.taxa}</div>
+                          </CollectionData>
+                        </CollectionItem>
+                      );
+                    })}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 TissueList.propTypes = {
   // Tissue samples to display in the list
-  tissues: PropTypes.arrayOf(PropTypes.object).isRequired,
+  tissues: PropTypes.object.isRequired,
 };
 
 export default TissueList;
@@ -90,7 +94,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        tissues: tissues["@graph"],
+        tissues: tissues,
         pageContext: { title: tissues.title },
         breadcrumbs,
       },

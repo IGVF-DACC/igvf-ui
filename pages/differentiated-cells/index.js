@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -18,60 +19,63 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const DifferentiatedCellList = ({ differentiatedCells }) => {
+  const differentiatedCellList = differentiatedCells["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={differentiatedCells}>
-        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
-          if (differentiatedCells.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={differentiatedCells}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageSamples.map((differentiatedCell) => {
-                    const termName =
-                      differentiatedCell.biosample_term?.term_name;
-                    return (
-                      <CollectionItem
-                        key={differentiatedCell.uuid}
-                        testid={differentiatedCell.uuid}
-                        href={differentiatedCell["@id"]}
-                        label={`Differentiated Cell ${differentiatedCell.accession}`}
-                        status={differentiatedCell.status}
-                      >
-                        <CollectionItemName>
-                          {`${termName ? `${termName} — ` : ""}${
-                            differentiatedCell.accession
-                          }`}
-                        </CollectionItemName>
-                        <CollectionData>
-                          <div>{differentiatedCell.taxa}</div>
-                        </CollectionData>
-                      </CollectionItem>
-                    );
-                  })}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={differentiatedCells}>
+        <Collection items={differentiatedCellList}>
+          {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+            if (differentiatedCellList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={differentiatedCellList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageSamples.map((differentiatedCell) => {
+                      const termName =
+                        differentiatedCell.biosample_term?.term_name;
+                      return (
+                        <CollectionItem
+                          key={differentiatedCell.uuid}
+                          testid={differentiatedCell.uuid}
+                          href={differentiatedCell["@id"]}
+                          label={`Differentiated Cell ${differentiatedCell.accession}`}
+                          status={differentiatedCell.status}
+                        >
+                          <CollectionItemName>
+                            {`${termName ? `${termName} — ` : ""}${
+                              differentiatedCell.accession
+                            }`}
+                          </CollectionItemName>
+                          <CollectionData>
+                            <div>{differentiatedCell.taxa}</div>
+                          </CollectionData>
+                        </CollectionItem>
+                      );
+                    })}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 DifferentiatedCellList.propTypes = {
   // Differentiated cells list to display
-  differentiatedCells: PropTypes.arrayOf(PropTypes.object).isRequired,
+  differentiatedCells: PropTypes.object.isRequired,
 };
 
 export default DifferentiatedCellList;
@@ -89,7 +93,7 @@ export const getServerSideProps = async ({ req }) => {
     const breadcrumbs = await buildBreadcrumbs(differentiatedCells, "title");
     return {
       props: {
-        differentiatedCells: differentiatedCells["@graph"],
+        differentiatedCells: differentiatedCells,
         pageContext: { title: differentiatedCells.title },
         breadcrumbs,
       },

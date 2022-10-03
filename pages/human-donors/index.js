@@ -17,16 +17,16 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { AddableItem } from '../../components/add';
 
-const HumanDonorsList = ({ donors, donors_obj }) => {
-  console.log(donors_obj);
+const HumanDonorsList = ({ donors }) => {
+  const donorsList  = donors["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <AddableItem collection={donors_obj}>
-        <Collection items={donors}>
+      <AddableItem collection={donors}>
+        <Collection items={donorsList}>
           {({ pageItems: pageDonors, pagerStatus, pagerAction }) => {
-            if (donors.length > 0) {
+            if (donorsList.length > 0) {
               return (
                 <>
                   <CollectionHeader
@@ -34,7 +34,7 @@ const HumanDonorsList = ({ donors, donors_obj }) => {
                     pagerAction={pagerAction}
                   />
                   <CollectionContent
-                    collection={donors}
+                    collection={donorsList}
                     pagerStatus={pagerStatus}
                   >
                     {pageDonors.map((donor) => (
@@ -63,8 +63,7 @@ const HumanDonorsList = ({ donors, donors_obj }) => {
 
 HumanDonorsList.propTypes = {
   // Technical samples to display in the list
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  donors_obj: PropTypes.object.isRequired,
+  donors: PropTypes.object.isRequired,
 };
 
 export default HumanDonorsList;
@@ -72,7 +71,6 @@ export default HumanDonorsList;
 export const getServerSideProps = async ({ req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donors = await request.getCollection("human-donors");
-  const donors_obj = await request.getObject("/human-donors/?limit=0");
   if (FetchRequest.isResponseSuccess(donors)) {
     const breadcrumbs = await buildBreadcrumbs(
       donors,
@@ -81,10 +79,9 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        donors: donors["@graph"],
+        donors: donors,
         pageContext: { title: donors.title },
         breadcrumbs,
-        donors_obj: donors_obj,
       },
     };
   }

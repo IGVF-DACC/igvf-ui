@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -17,52 +18,55 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const SampleOntologyTermList = ({ sampleOntologyTerms }) => {
+  const termsList = sampleOntologyTerms["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={sampleOntologyTerms}>
-        {({ pageItems: pageTerms, pagerStatus, pagerAction }) => {
-          if (sampleOntologyTerms.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={sampleOntologyTerms}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageTerms.map((sampleOntologyTerm) => (
-                    <CollectionItem
-                      key={sampleOntologyTerm.uuid}
-                      testid={sampleOntologyTerm.uuid}
-                      href={sampleOntologyTerm["@id"]}
-                      label={`Sample ontology term ${sampleOntologyTerm.term_id}`}
-                      status={sampleOntologyTerm.status}
-                    >
-                      <CollectionItemName>
-                        {sampleOntologyTerm.term_id}
-                      </CollectionItemName>
-                      <div>{sampleOntologyTerm.term_name}</div>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={sampleOntologyTerms}>
+        <Collection items={termsList}>
+          {({ pageItems: pageTerms, pagerStatus, pagerAction }) => {
+            if (termsList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={termsList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageTerms.map((sampleOntologyTerm) => (
+                      <CollectionItem
+                        key={sampleOntologyTerm.uuid}
+                        testid={sampleOntologyTerm.uuid}
+                        href={sampleOntologyTerm["@id"]}
+                        label={`Sample ontology term ${sampleOntologyTerm.term_id}`}
+                        status={sampleOntologyTerm.status}
+                      >
+                        <CollectionItemName>
+                          {sampleOntologyTerm.term_id}
+                        </CollectionItemName>
+                        <div>{sampleOntologyTerm.term_name}</div>
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 SampleOntologyTermList.propTypes = {
   // Sample ontology terms to display in the list
-  sampleOntologyTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  sampleOntologyTerms: PropTypes.object.isRequired,
 };
 
 export default SampleOntologyTermList;
@@ -78,7 +82,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        sampleOntologyTerms: sampleOntologyTerms["@graph"],
+        sampleOntologyTerms: sampleOntologyTerms,
         pageContext: { title: sampleOntologyTerms.title },
         breadcrumbs,
       },

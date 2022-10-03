@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -17,45 +18,48 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const PhenotypeOntologyTermList = ({ phenotypeOntologyTerms }) => {
+  const ontologyTerms = phenotypeOntologyTerms["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={phenotypeOntologyTerms}>
-        {({ pageItems: pageTerms, pagerStatus, pagerAction }) => {
-          if (phenotypeOntologyTerms.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={phenotypeOntologyTerms}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageTerms.map((phenotypeOntologyTerm) => (
-                    <CollectionItem
-                      key={phenotypeOntologyTerm.uuid}
-                      testid={phenotypeOntologyTerm.uuid}
-                      href={phenotypeOntologyTerm["@id"]}
-                      label={`Phenotype ontology term ${phenotypeOntologyTerm.term_id}`}
-                      status={phenotypeOntologyTerm.status}
-                    >
-                      <CollectionItemName>
-                        {phenotypeOntologyTerm.term_id}
-                      </CollectionItemName>
-                      <div>{phenotypeOntologyTerm.term_name}</div>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={phenotypeOntologyTerms}>
+        <Collection items={ontologyTerms}>
+          {({ pageItems: pageTerms, pagerStatus, pagerAction }) => {
+            if (ontologyTerms.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={ontologyTerms}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageTerms.map((phenotypeOntologyTerm) => (
+                      <CollectionItem
+                        key={phenotypeOntologyTerm.uuid}
+                        testid={phenotypeOntologyTerm.uuid}
+                        href={phenotypeOntologyTerm["@id"]}
+                        label={`Phenotype ontology term ${phenotypeOntologyTerm.term_id}`}
+                        status={phenotypeOntologyTerm.status}
+                      >
+                        <CollectionItemName>
+                          {phenotypeOntologyTerm.term_id}
+                        </CollectionItemName>
+                        <div>{phenotypeOntologyTerm.term_name}</div>
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
@@ -78,7 +82,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        phenotypeOntologyTerms: phenotypeOntologyTerms["@graph"],
+        phenotypeOntologyTerms: phenotypeOntologyTerms,
         pageContext: { title: phenotypeOntologyTerms.title },
         breadcrumbs,
       },

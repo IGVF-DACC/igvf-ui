@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -17,47 +18,50 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const GeneList = ({ genes }) => {
+  const genesList = genes["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={genes}>
-        {({ pageItems: pageGenes, pagerStatus, pagerAction }) => {
-          if (genes.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent collection={genes} pagerStatus={pagerStatus}>
-                  {pageGenes.map((gene) => (
-                    <CollectionItem
-                      key={gene.uuid}
-                      testid={gene.uuid}
-                      href={gene["@id"]}
-                      label={`Lab ${gene.title}`}
-                      status={gene.status}
-                    >
-                      <CollectionItemName>{gene.title}</CollectionItemName>
-                      <div>{gene.geneid}</div>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={genes}>
+        <Collection items={genesList}>
+          {({ pageItems: pageGenes, pagerStatus, pagerAction }) => {
+            if (genesList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent collection={genesList} pagerStatus={pagerStatus}>
+                    {pageGenes.map((gene) => (
+                      <CollectionItem
+                        key={gene.uuid}
+                        testid={gene.uuid}
+                        href={gene["@id"]}
+                        label={`Lab ${gene.title}`}
+                        status={gene.status}
+                      >
+                        <CollectionItemName>{gene.title}</CollectionItemName>
+                        <div>{gene.geneid}</div>
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 GeneList.propTypes = {
   // Genes to display in the list
-  genes: PropTypes.array.isRequired,
+  genes: PropTypes.object.isRequired,
 };
 
 export default GeneList;
@@ -73,7 +77,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        genes: genes["@graph"],
+        genes: genes,
         pageContext: { title: genes.title },
         breadcrumbs,
       },
