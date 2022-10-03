@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -18,59 +19,62 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const PrimaryCellList = ({ primaryCells }) => {
+  const cellsList =  primaryCells["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={primaryCells}>
-        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
-          if (primaryCells.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={primaryCells}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageSamples.map((primaryCell) => {
-                    const termName = primaryCell.biosample_term?.term_name;
-                    return (
-                      <CollectionItem
-                        key={primaryCell.uuid}
-                        testid={primaryCell.uuid}
-                        href={primaryCell["@id"]}
-                        label={`Primary Cell ${primaryCell.accession}`}
-                        status={primaryCell.status}
-                      >
-                        <CollectionItemName>
-                          {`${termName ? `${termName} — ` : ""}${
-                            primaryCell.accession
-                          }`}
-                        </CollectionItemName>
-                        <CollectionData>
-                          <div>{primaryCell.taxa}</div>
-                        </CollectionData>
-                      </CollectionItem>
-                    );
-                  })}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={primaryCells}>
+        <Collection items={cellsList}>
+          {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+            if (cellsList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={cellsList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageSamples.map((primaryCell) => {
+                      const termName = primaryCell.biosample_term?.term_name;
+                      return (
+                        <CollectionItem
+                          key={primaryCell.uuid}
+                          testid={primaryCell.uuid}
+                          href={primaryCell["@id"]}
+                          label={`Primary Cell ${primaryCell.accession}`}
+                          status={primaryCell.status}
+                        >
+                          <CollectionItemName>
+                            {`${termName ? `${termName} — ` : ""}${
+                              primaryCell.accession
+                            }`}
+                          </CollectionItemName>
+                          <CollectionData>
+                            <div>{primaryCell.taxa}</div>
+                          </CollectionData>
+                        </CollectionItem>
+                      );
+                    })}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 PrimaryCellList.propTypes = {
   // Primary cells list to display
-  primaryCells: PropTypes.arrayOf(PropTypes.object).isRequired,
+  primaryCells: PropTypes.object.isRequired,
 };
 
 export default PrimaryCellList;
@@ -90,7 +94,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        primaryCells: primaryCells["@graph"],
+        primaryCells: primaryCells,
         pageContext: { title: primaryCells.title },
         breadcrumbs,
       },

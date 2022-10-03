@@ -10,13 +10,10 @@ import { useEffect } from 'react';
 import { SaveCancelControl, SavedErrors } from "./edit";
 import { useRouter } from 'next/router';
 import { empty } from 'empty-schema';
+import { PROFILE_COLLECTIONS } from '../lib/profiles';
 
 export const collectionPath = (schema) => {
-  // Something like "/profiles/human_donor.json"
-  const schema_id = removeJsonExtension(schema["$id"]);
-  // Go from "/profiles/human_donor" to "human_donor"
-  const collection = schema_id.split("/").pop();
-  return `/${collection}`;
+  return PROFILE_COLLECTIONS[schema["$id"]];
 };
 
 const actionProfile = (item, actions) => {
@@ -51,17 +48,32 @@ function sortedJson(obj) {
   return obj;
 }
 
+/**
+ * This takes a schema object and adds to the required properties
+ * in order for the blank template library to autogenerate stubs
+ * for as many fields as makes sense
+ *
+ * We eliminate properties that have permission requirements, not
+ * submittable, commented with "Do not submit", or arrays/objects.
+ */
 const convertOptionalIntoRequiredSchema = (schema) => {
-  const topProperties = Object.keys(schema["properties"]).filter((k) => { return !["@type", "uuid", "@id", "schema_version"].includes(k); });
+  const topProperties = Object.entries(schema.properties).filter(([, p]) => {
+    return p.comment ? !p.comment.includes("Do not submit") : true;
+  }).filter(([, p]) => {
+    return !p.permission;
+  }).filter(([, p]) => {
+    return p.notSubmittable ? !p.notSubmittable : true;
+  }).filter(([, p]) => {
+    return !["array", "object"].includes(p.type);
+  }).map(([k]) => {
+    return k;
+  });
   const newschema = schema;
-  newschema.required = topProperties;
+  newschema.required = [...topProperties, ...schema.required];
   return newschema;
 };
 
 export const useEditor = (collection, viewComponent, action = "edit") => {
-  // const editing = (url) => {
-  //   return url.endsWith(`#!${action}`);
-  // };
 
   /**
    * Represents whether the Editor component can be actively typed in or saved.
@@ -87,50 +99,55 @@ export const useEditor = (collection, viewComponent, action = "edit") => {
   }, [edit, router, action]);
 
   const addpage = <AddInstancePage collection={collection} />;
-  const addlink = <AddLink collection={collection} />;
 
   const componentToShow = edit ? (
     addpage
   ) : (
     <>
       {viewComponent}
-      {addlink}
     </>
   );
   return componentToShow;
 };
 
-const removeJsonExtension = (url) => {
-  return url.endsWith(".json") ? url.split(".").slice(0, -1).join(".") : url;
-};
-
+/**
+ * Strips off the url paramters from the url path
+ */
 const collectionPathWithoutLimit = (collection) => {
   return collection["@id"].split("?")[0];
 };
 
-export const AddLink = ({ collection }) => {
-  // const addPath = `${removeJsonExtension(schema["$id"])}/#!add`;
-  if (canEdit(collection, ["add"])) {
-    const collectPath = collectionPathWithoutLimit(collection);
-    return (
+export const AddLink = ({ collection, label = "Add Instance" }) => {
+  const collectPath = collectionPathWithoutLimit(collection);
+  return (
+    <ActionCanDisplay collection={collection}>
       <Button.Link href={`${collectPath}/#!add`} navigationClick={() => {}}>
-        Add Instance
+        {label}
       </Button.Link>
-    );
-  }
+    </ActionCanDisplay>
+  );
 };
 
 AddLink.propTypes = {
   collection: PropTypes.object.isRequired,
+  label: PropTypes.string,
+};
+
+export const ActionCanDisplay = ({ collection, children }) => {
+  if (canEdit(collection, ["add"])) {
+    return children;
+  }
+};
+
+ActionCanDisplay.propTypes = {
+  collection: PropTypes.object.isRequired,
+  children: PropTypes.object.isRequired,
 };
 
 export const AddInstancePage = ({ collection }) => {
   const { session } = useContext(SessionContext);
-  // const request = useMemo(() => { return new FetchRequest(session); }, [session]);
   const loggedIn = useAuthenticated();
 
-  console.log("Render!");
-  console.log(session);
   /**
    * The text is the current editor text of the underlying Ace editor component.
    */
@@ -183,7 +200,7 @@ export const AddInstancePage = ({ collection }) => {
   const profilePath = actionProfile(collection, "add");
 
   useEffect(() => {
-    new FetchRequest(session).getObject(profilePath).then((schema) => {
+    new FetchRequest({ session }).getObject(profilePath).then((schema) => {
       // We have the schema, so produce a dummy json from the schema
       const biggerSchema = convertOptionalIntoRequiredSchema(schema);
       const basic = empty(biggerSchema);
@@ -197,14 +214,13 @@ export const AddInstancePage = ({ collection }) => {
     const isAddable = addable(collection);
     const status = {
       canEdit: isAddable,
-      canSave: true,
+      canSave: errors.length == 0 && isAddable,
       errors,
     };
     setEditorStatus(status);
   };
 
   const save = () => {
-    console.log("SAVING!");
     setEditorStatus({
       canEdit: false,
       canSave: false,
@@ -213,9 +229,7 @@ export const AddInstancePage = ({ collection }) => {
 
     const value = sortedJson(JSON.parse(text));
     const collectionPath = collectionPathWithoutLimit(collection);
-    console.log("SESSION before POST!");
-    console.log(session);
-    new FetchRequest(session).postObject(collectionPath, value).then((response) => {
+          new FetchRequest({ session }).postObject(collectionPath, value).then((response) => {
       if (response.status === "success") {
         setSaveErrors([]);
         router.push(collectionPath);
@@ -238,6 +252,10 @@ export const AddInstancePage = ({ collection }) => {
     });
   };
 
+  const cancel = () => {
+    router.back();
+  };
+
   return (
     <div className="space-y-1">
       <EditJson
@@ -248,7 +266,7 @@ export const AddInstancePage = ({ collection }) => {
       />
       <div>
         <SaveCancelControl
-          cancelClick={() => ({})}
+          cancelClick={cancel}
           saveClick={save}
           itemPath={collectionPathWithoutLimit(collection)}
           saveEnabled={editorStatus.canSave}
@@ -265,4 +283,27 @@ AddInstancePage.propTypes = {
 
 export const AddableItem = ({ collection, children }) => {
   return useEditor(collection, children, "add");
+};
+
+export const AddItemFromSchema = ({ schema, label = "Add Instance" }) => {
+  const { session } = useContext(SessionContext);
+  const request = new FetchRequest(session);
+  const collectPath = collectionPath(schema);
+
+  const [link, setLink] = useState(null);
+
+  useEffect(() => {
+    if (!link) {
+      request.getCollection(collectPath).then(collection => {
+        setLink(<AddLink collection={collection} label={label}/>);
+      });
+    }
+  });
+
+  return link;
+};
+
+AddItemFromSchema.propTypes = {
+  schema: PropTypes.object.isRequired,
+  label: PropTypes.string,
 };

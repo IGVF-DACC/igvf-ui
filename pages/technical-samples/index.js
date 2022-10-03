@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -18,59 +19,62 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const TechnicalSampleList = ({ technicalSamples }) => {
+  const sampleList = technicalSamples["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={technicalSamples}>
-        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
-          if (technicalSamples.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={technicalSamples}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageSamples.map((sample) => {
-                    const termName = sample.technical_sample_term?.term_name;
-                    return (
-                      <CollectionItem
-                        key={sample.uuid}
-                        testid={sample.uuid}
-                        href={sample["@id"]}
-                        label={`Technical Sample ${sample.title}`}
-                        status={sample.status}
-                      >
-                        <CollectionItemName>
-                          {`${termName ? `${termName} — ` : ""}${
-                            sample.accession
-                          }`}
-                        </CollectionItemName>
-                        <CollectionData>
-                          <div>{sample.sample_material}</div>
-                        </CollectionData>
-                      </CollectionItem>
-                    );
-                  })}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={technicalSamples}>
+        <Collection items={sampleList}>
+          {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+            if (sampleList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={sampleList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageSamples.map((sample) => {
+                      const termName = sample.technical_sample_term?.term_name;
+                      return (
+                        <CollectionItem
+                          key={sample.uuid}
+                          testid={sample.uuid}
+                          href={sample["@id"]}
+                          label={`Technical Sample ${sample.title}`}
+                          status={sample.status}
+                        >
+                          <CollectionItemName>
+                            {`${termName ? `${termName} — ` : ""}${
+                              sample.accession
+                            }`}
+                          </CollectionItemName>
+                          <CollectionData>
+                            <div>{sample.sample_material}</div>
+                          </CollectionData>
+                        </CollectionItem>
+                      );
+                    })}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 TechnicalSampleList.propTypes = {
   // Technical samples to display in the list
-  technicalSamples: PropTypes.array.isRequired,
+  technicalSamples: PropTypes.object.isRequired,
 };
 
 export default TechnicalSampleList;
@@ -90,7 +94,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        technicalSamples: technicalSamples["@graph"],
+        technicalSamples: technicalSamples,
         pageContext: { title: technicalSamples.title },
         breadcrumbs,
       },

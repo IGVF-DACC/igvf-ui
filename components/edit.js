@@ -66,6 +66,7 @@ export const SaveCancelControl = ({
   itemPath,
   saveEnabled,
 }) => {
+  // const router = useRouter();
   return (
     <div className="flex space-x-1">
       <Button.Link
@@ -117,7 +118,7 @@ export const SavedErrors = ({ errors = [] }) => {
       <ul className="list-disc">
         {errors.map((error) => (
           <li key={error.description} className="text-base text-rose-600">
-            {error.description}
+            {error.keys}: {error.description}
           </li>
         ))}
       </ul>

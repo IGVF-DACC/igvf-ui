@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -17,55 +18,58 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const TreatmentList = ({ treatments }) => {
+  const treatmentList = treatments["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={treatments}>
-        {({ pageItems: pageTreatments, pagerStatus, pagerAction }) => {
-          if (treatments.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={treatments}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageTreatments.map((treatment) => (
-                    <CollectionItem
-                      key={treatment.uuid}
-                      testid={treatment.uuid}
-                      href={treatment["@id"]}
-                      label={`Treatment ${treatment.treatment_term_id}`}
-                      status={treatment.status}
-                    >
-                      <CollectionItemName>
-                        {treatment.treatment_term_id}
-                      </CollectionItemName>
-                      {treatment.purpose && <div>{treatment.purpose}</div>}
-                      {treatment.treatment_term_name && (
-                        <div>{treatment.treatment_term_name}</div>
-                      )}
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={treatments}>
+        <Collection items={treatmentList}>
+          {({ pageItems: pageTreatments, pagerStatus, pagerAction }) => {
+            if (treatmentList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={treatmentList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageTreatments.map((treatment) => (
+                      <CollectionItem
+                        key={treatment.uuid}
+                        testid={treatment.uuid}
+                        href={treatment["@id"]}
+                        label={`Treatment ${treatment.treatment_term_id}`}
+                        status={treatment.status}
+                      >
+                        <CollectionItemName>
+                          {treatment.treatment_term_id}
+                        </CollectionItemName>
+                        {treatment.purpose && <div>{treatment.purpose}</div>}
+                        {treatment.treatment_term_name && (
+                          <div>{treatment.treatment_term_name}</div>
+                        )}
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 TreatmentList.propTypes = {
   // Technical samples to display in the list
-  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  treatments: PropTypes.object.isRequired,
 };
 
 export default TreatmentList;
@@ -81,7 +85,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        treatments: treatments["@graph"],
+        treatments: treatments,
         pageContext: { title: treatments.title },
         breadcrumbs,
       },

@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -17,52 +18,55 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const AssayOntologyTermList = ({ assayOntologyTerms }) => {
+  const assayTerms = assayOntologyTerms["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={assayOntologyTerms}>
-        {({ pageItems: pageTerms, pagerStatus, pagerAction }) => {
-          if (assayOntologyTerms.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={assayOntologyTerms}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageTerms.map((assayOntologyTerm) => (
-                    <CollectionItem
-                      key={assayOntologyTerm.uuid}
-                      testid={assayOntologyTerm.uuid}
-                      href={assayOntologyTerm["@id"]}
-                      label={`Assay term ${assayOntologyTerm.term_id}`}
-                      status={assayOntologyTerm.status}
-                    >
-                      <CollectionItemName>
-                        {assayOntologyTerm.term_id}
-                      </CollectionItemName>
-                      <div>{assayOntologyTerm.term_name}</div>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={assayOntologyTerms}>
+        <Collection items={assayTerms}>
+          {({ pageItems: pageTerms, pagerStatus, pagerAction }) => {
+            if (assayTerms.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={assayTerms}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageTerms.map((assayOntologyTerm) => (
+                      <CollectionItem
+                        key={assayOntologyTerm.uuid}
+                        testid={assayOntologyTerm.uuid}
+                        href={assayOntologyTerm["@id"]}
+                        label={`Assay term ${assayOntologyTerm.term_id}`}
+                        status={assayOntologyTerm.status}
+                      >
+                        <CollectionItemName>
+                          {assayOntologyTerm.term_id}
+                        </CollectionItemName>
+                        <div>{assayOntologyTerm.term_name}</div>
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 AssayOntologyTermList.propTypes = {
   // Assay terms to display in the list
-  assayOntologyTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  assayOntologyTerms: PropTypes.object.isRequired,
 };
 
 export default AssayOntologyTermList;
@@ -74,7 +78,7 @@ export const getServerSideProps = async ({ req }) => {
     const breadcrumbs = await buildBreadcrumbs(assayOntologyTerms, "title");
     return {
       props: {
-        assayOntologyTerms: assayOntologyTerms["@graph"],
+        assayOntologyTerms: assayOntologyTerms,
         pageContext: { title: assayOntologyTerms.title },
         breadcrumbs,
       },
