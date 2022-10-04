@@ -5,6 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -21,31 +22,47 @@ const TissueList = ({ tissues }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {tissues.length > 0 ? (
-          <>
-            <CollectionHeader count={tissues.length} />
-            <CollectionContent collection={tissues}>
-              {tissues.map((tissue) => (
-                <CollectionItem
-                  key={tissue.uuid}
-                  testid={tissue.uuid}
-                  href={tissue["@id"]}
-                  label={`Tissue ${tissue.accession}`}
-                  status={tissue.status}
+      <Collection items={tissues}>
+        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+          if (tissues.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={tissues}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>{tissue.accession}</CollectionItemName>
-                  {tissue.organism && <div>{tissue.organism}</div>}
-                  {tissue.nih_institutional_certification && (
-                    <div>{tissue.nih_institutional_certification}</div>
-                  )}
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageSamples.map((tissue) => {
+                    const termName = tissue.biosample_term?.term_name;
+                    return (
+                      <CollectionItem
+                        key={tissue.uuid}
+                        testid={tissue.uuid}
+                        href={tissue["@id"]}
+                        label={`Tissue ${tissue.accession}`}
+                        status={tissue.status}
+                      >
+                        <CollectionItemName>
+                          {`${termName ? `${termName} — ` : ""}${
+                            tissue.accession
+                          }`}
+                        </CollectionItemName>
+                        <CollectionData>
+                          <div>{tissue.taxa}</div>
+                        </CollectionData>
+                      </CollectionItem>
+                    );
+                  })}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );
@@ -62,6 +79,10 @@ export const getServerSideProps = async ({ req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissues = await request.getCollection("tissues");
   if (FetchRequest.isResponseSuccess(tissues)) {
+    await request.getAndEmbedCollectionObjects(
+      tissues["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(
       tissues,
       "title",

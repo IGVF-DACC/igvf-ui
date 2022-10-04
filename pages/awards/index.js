@@ -21,28 +21,38 @@ const AwardList = ({ awards }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {awards.length > 0 ? (
-          <>
-            <CollectionHeader count={awards.length} />
-            <CollectionContent collection={awards}>
-              {awards.map((award) => (
-                <CollectionItem
-                  key={award.uuid}
-                  testid={award.uuid}
-                  href={award["@id"]}
-                  label={`Award ${award.name}`}
-                  status={award.status}
+      <Collection items={awards}>
+        {({ pageItems: pageAwards, pagerStatus, pagerAction }) => {
+          if (awards.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={awards}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>{award.name}</CollectionItemName>
-                  <div>{award.title}</div>
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageAwards.map((award) => (
+                    <CollectionItem
+                      key={award.uuid}
+                      testid={award.uuid}
+                      href={award["@id"]}
+                      label={`Award ${award.name}`}
+                      status={award.status}
+                    >
+                      <CollectionItemName>{award.name}</CollectionItemName>
+                      <div>{award.title}</div>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

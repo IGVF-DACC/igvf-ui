@@ -5,13 +5,13 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../../components/collection";
 import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
-import SourceProp from "../../components/source-prop";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -22,28 +22,47 @@ const CellLineList = ({ cellLines }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {cellLines.length > 0 ? (
-          <>
-            <CollectionHeader count={cellLines.length} />
-            <CollectionContent collection={cellLines}>
-              {cellLines.map((sample) => (
-                <CollectionItem
-                  key={sample.uuid}
-                  testid={sample.uuid}
-                  href={sample["@id"]}
-                  label={`Cell Line ${sample.title}`}
-                  status={sample.status}
+      <Collection items={cellLines}>
+        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+          if (cellLines.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={cellLines}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>{sample.accession}</CollectionItemName>
-                  {sample.source && <SourceProp source={sample.source} />}
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageSamples.map((sample) => {
+                    const termName = sample.biosample_term?.term_name;
+                    return (
+                      <CollectionItem
+                        key={sample.uuid}
+                        testid={sample.uuid}
+                        href={sample["@id"]}
+                        label={`Cell Line ${sample.title}`}
+                        status={sample.status}
+                      >
+                        <CollectionItemName>
+                          {`${termName ? `${termName} — ` : ""}${
+                            sample.accession
+                          }`}
+                        </CollectionItemName>
+                        <CollectionData>
+                          <div>{sample.taxa}</div>
+                        </CollectionData>
+                      </CollectionItem>
+                    );
+                  })}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );
@@ -61,6 +80,10 @@ export const getServerSideProps = async ({ req }) => {
   const cellLines = await request.getCollection("cell-lines");
   if (FetchRequest.isResponseSuccess(cellLines)) {
     await request.getAndEmbedCollectionObjects(cellLines["@graph"], "source");
+    await request.getAndEmbedCollectionObjects(
+      cellLines["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(
       cellLines,
       "title",

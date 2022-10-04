@@ -24,6 +24,7 @@
   --color-brand-accent: #666666;
   --color-brand-highlight: #2a6270;
   --color-data-background: #ffffff;
+  --color-data-header-background: #e0e0e0;
   --color-data-border: #c0c0c0;
   --color-highlight: #c0c0c0;
   --color-highlight-border: #a0a0a0;
@@ -66,6 +67,10 @@
   /** Modal borders */
   --color-modal-border: #e5e7eb;
 
+  /** Typography */
+  --color-code-background: #e0e0e0;
+  --color-code-text: #1e1e1f;
+
   --color-button-text-info: #000000;
 }
 
@@ -78,6 +83,7 @@
   --color-brand-accent: #444444;
   --color-brand-highlight: #860f2d;
   --color-data-background: #0b0f19;
+  --color-data-header-background: #192339;
   --color-data-border: #2c3f66;
   --color-highlight: #2c3f66;
   --color-highlight-border: #45629f;
@@ -87,6 +93,10 @@
   --color-data-label: #9ca3af;
   --color-data-value: #ffffff;
 
+  /** Typography */
+  --color-code-background: #192339;
+  --color-code-text: #e5e7eb;
+
   /** Modal borders */
   --color-modal-border: #4b5563;
 
@@ -95,4 +105,12 @@
 
 a {
   @apply underline;
+}
+
+#page-content table {
+  border: 1px solid gray;
+}
+
+#page-content table th {
+  background-color: #c0d0f0;
 }

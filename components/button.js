@@ -197,7 +197,9 @@ const Link = ({
   const router = useRouter();
 
   const onClick = () => {
-    navigationClick();
+    if (navigationClick) {
+      navigationClick();
+    }
     router.push(href);
   };
 
@@ -219,7 +221,7 @@ Link.propTypes = {
   // Link that pressing the button will navigate to
   href: PropTypes.string.isRequired,
   // Called when the button is clicked
-  navigationClick: PropTypes.func.isRequired,
+  navigationClick: PropTypes.func,
   // HTML ID of the button element
   id: PropTypes.string,
   // Accessible label of the button if the button text is not sufficient for screen readers
@@ -258,6 +260,7 @@ const Icon = ({
   type = "primary",
   id = null,
   label,
+  isDisabled = false,
   className = "",
   children,
 }) => {
@@ -275,6 +278,7 @@ const Icon = ({
       onClick={onClick}
       className={`block h-6 w-6 rounded-full border p-1 ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonFillTypeClasses[type]} ${className}`}
       aria-label={label}
+      disabled={isDisabled}
     >
       {filledChildren}
     </button>
@@ -305,6 +309,8 @@ Icon.propTypes = {
     "success-outline",
     "info-outline",
   ]),
+  // True to disable the button
+  isDisabled: PropTypes.bool,
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
 };

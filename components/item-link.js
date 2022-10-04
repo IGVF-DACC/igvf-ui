@@ -1,5 +1,5 @@
 // node_modules
-import { ChevronDoubleRightIcon } from "@heroicons/react/solid";
+import { ChevronDoubleRightIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
 
@@ -11,7 +11,7 @@ const ItemLink = ({ href, label = "" }) => {
     <div className="mx-auto flex items-center justify-center">
       <Link href={href}>
         <a
-          className="rounded-full border border-transparent p-2 hover:border-highlight-border hover:bg-highlight"
+          className="rounded-full border border-transparent px-0 py-2 hover:border-highlight-border hover:bg-highlight sm:px-2"
           aria-label={label}
         >
           <ChevronDoubleRightIcon className="h-5 w-5 fill-gray-700 dark:fill-gray-300" />

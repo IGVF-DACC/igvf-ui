@@ -22,32 +22,42 @@ const DocumentList = ({ documents }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {documents.length > 0 ? (
-          <>
-            <CollectionHeader count={documents.length} />
-            <CollectionContent collection={documents}>
-              {documents.map((document) => (
-                <CollectionItem
-                  key={document.uuid}
-                  testid={document.uuid}
-                  href={document["@id"]}
-                  label={`Document ${document.description}`}
-                  status={document.status}
+      <Collection items={documents}>
+        {({ pageItems: pageDocuments, pagerStatus, pagerAction }) => {
+          if (documents.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={documents}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>
-                    {document.description}
-                  </CollectionItemName>
-                  <div>
-                    <DocumentAttachmentLink document={document} />
-                  </div>
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageDocuments.map((document) => (
+                    <CollectionItem
+                      key={document.uuid}
+                      testid={document.uuid}
+                      href={document["@id"]}
+                      label={`Document ${document.description}`}
+                      status={document.status}
+                    >
+                      <CollectionItemName>
+                        {document.description}
+                      </CollectionItemName>
+                      <div>
+                        <DocumentAttachmentLink document={document} />
+                      </div>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

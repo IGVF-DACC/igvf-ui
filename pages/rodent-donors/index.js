@@ -21,27 +21,37 @@ const RodentDonorsList = ({ donors }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {donors.length > 0 ? (
-          <>
-            <CollectionHeader count={donors.length} />
-            <CollectionContent collection={donors}>
-              {donors.map((donor) => (
-                <CollectionItem
-                  key={donor.uuid}
-                  testid={donor.uuid}
-                  href={donor["@id"]}
-                  label={`Human Donor ${donor.accession}`}
-                  status={donor.status}
+      <Collection items={donors}>
+        {({ pageItems: pageDonors, pagerStatus, pagerAction }) => {
+          if (donors.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={donors}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>{donor.accession}</CollectionItemName>
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageDonors.map((donor) => (
+                    <CollectionItem
+                      key={donor.uuid}
+                      testid={donor.uuid}
+                      href={donor["@id"]}
+                      label={`Human Donor ${donor.accession}`}
+                      status={donor.status}
+                    >
+                      <CollectionItemName>{donor.accession}</CollectionItemName>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

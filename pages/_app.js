@@ -15,7 +15,7 @@ import {
 } from "../lib/constants";
 import DarkModeManager from "../lib/dark-mode-manager";
 // components
-import { COLLECTION_VIEW } from "../components/collection";
+import { COLLECTION_VIEW_LIST } from "../components/collection";
 import GlobalContext from "../components/global-context";
 import NavigationSection from "../components/navigation";
 import { Session } from "../components/session-context";
@@ -26,9 +26,8 @@ const App = ({ Component, pageProps }) => {
   // Server session cookie.
   const [sessionCookie, setSessionCookie] = useState("");
   // Selects between "list" and "table" collection views
-  const [currentCollectionView, setCurrentCollectionView] = useState(
-    COLLECTION_VIEW.LIST
-  );
+  const [currentCollectionView, setCurrentCollectionView] =
+    useState(COLLECTION_VIEW_LIST);
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
@@ -102,7 +101,7 @@ const App = ({ Component, pageProps }) => {
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="msapplication-TileColor" content="#da532c" />
       </Head>
-      <div className="h-screen md:container md:flex">
+      <div className="pt-0 pr-2 pb-8 pl-2 md:container md:flex">
         <Auth0Provider
           domain={AUTH0_ISSUER_BASE_DOMAIN}
           clientId={AUTH0_CLIENT_ID}

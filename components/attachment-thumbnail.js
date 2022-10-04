@@ -9,11 +9,11 @@
 
 // node_modules
 import { Dialog } from "@headlessui/react";
-import { XIcon } from "@heroicons/react/solid";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
-import Button from "./button";
+import CloseButton from "./close-button";
 // lib
 import { attachmentToServerHref } from "../lib/attachment";
 
@@ -495,14 +495,13 @@ const ImageThumbnailAndPreview = ({ attachment, ownerPath, alt, size }) => {
           className="fixed inset-0 bg-white/80 dark:bg-white/40"
         />
         <div className="fixed inset-0 overflow-y-auto py-8 px-3 text-center">
-          <Button.Icon
-            type="info-outline"
+          <CloseButton
             className="absolute top-1 right-1"
             onClick={() => setIsPreviewOpen(false)}
             label="Close the full-size preview image"
           >
-            <XIcon />
-          </Button.Icon>
+            <XMarkIcon />
+          </CloseButton>
           <Dialog.Panel className="mx-auto inline-block max-w-3xl">
             <picture className="block border border-gray-200">
               <img

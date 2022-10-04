@@ -15,6 +15,7 @@ config: Dict[str, Any] = {
             'pipeline': 'DemoDeploymentPipelineStack',
             'tags': [
                 ('time-to-live-hours', '72'),
+                ('turn-off-on-friday-night', 'yes'),
             ],
         },
         'dev': {
@@ -37,7 +38,7 @@ class Common:
     organization_name: str = 'igvf-dacc'
     project_name: str = 'igvf-ui'
     default_region: str = 'us-west-2'
-    aws_cdk_version: str = '2.21.0'
+    aws_cdk_version: str = '2.43.1'
 
 
 @dataclass

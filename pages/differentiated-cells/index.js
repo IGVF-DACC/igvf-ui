@@ -5,6 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -21,37 +22,48 @@ const DifferentiatedCellList = ({ differentiatedCells }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {differentiatedCells.length > 0 ? (
-          <>
-            <CollectionHeader count={differentiatedCells.length} />
-            <CollectionContent collection={differentiatedCells}>
-              {differentiatedCells.map((differentiatedCell) => (
-                <CollectionItem
-                  key={differentiatedCell.uuid}
-                  testid={differentiatedCell.uuid}
-                  href={differentiatedCell["@id"]}
-                  label={`Differentiated Cell ${differentiatedCell.accession}`}
-                  status={differentiatedCell.status}
+      <Collection items={differentiatedCells}>
+        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+          if (differentiatedCells.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={differentiatedCells}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>
-                    {differentiatedCell.accession}
-                  </CollectionItemName>
-                  {differentiatedCell.organism && (
-                    <div>{differentiatedCell.organism}</div>
-                  )}
-                  {differentiatedCell.nih_institutional_certification && (
-                    <div>
-                      {differentiatedCell.nih_institutional_certification}
-                    </div>
-                  )}
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageSamples.map((differentiatedCell) => {
+                    const termName =
+                      differentiatedCell.biosample_term?.term_name;
+                    return (
+                      <CollectionItem
+                        key={differentiatedCell.uuid}
+                        testid={differentiatedCell.uuid}
+                        href={differentiatedCell["@id"]}
+                        label={`Differentiated Cell ${differentiatedCell.accession}`}
+                        status={differentiatedCell.status}
+                      >
+                        <CollectionItemName>
+                          {`${termName ? `${termName} — ` : ""}${
+                            differentiatedCell.accession
+                          }`}
+                        </CollectionItemName>
+                        <CollectionData>
+                          <div>{differentiatedCell.taxa}</div>
+                        </CollectionData>
+                      </CollectionItem>
+                    );
+                  })}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );
@@ -70,6 +82,10 @@ export const getServerSideProps = async ({ req }) => {
     "differentiated-cells"
   );
   if (FetchRequest.isResponseSuccess(differentiatedCells)) {
+    await request.getAndEmbedCollectionObjects(
+      differentiatedCells["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(differentiatedCells, "title");
     return {
       props: {

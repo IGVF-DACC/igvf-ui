@@ -5,6 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -21,33 +22,47 @@ const PrimaryCellList = ({ primaryCells }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {primaryCells.length > 0 ? (
-          <>
-            <CollectionHeader count={primaryCells.length} />
-            <CollectionContent collection={primaryCells}>
-              {primaryCells.map((primaryCell) => (
-                <CollectionItem
-                  key={primaryCell.uuid}
-                  testid={primaryCell.uuid}
-                  href={primaryCell["@id"]}
-                  label={`Primary Cell ${primaryCell.accession}`}
-                  status={primaryCell.status}
+      <Collection items={primaryCells}>
+        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+          if (primaryCells.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={primaryCells}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>
-                    {primaryCell.accession}
-                  </CollectionItemName>
-                  {primaryCell.organism && <div>{primaryCell.organism}</div>}
-                  {primaryCell.nih_institutional_certification && (
-                    <div>{primaryCell.nih_institutional_certification}</div>
-                  )}
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageSamples.map((primaryCell) => {
+                    const termName = primaryCell.biosample_term?.term_name;
+                    return (
+                      <CollectionItem
+                        key={primaryCell.uuid}
+                        testid={primaryCell.uuid}
+                        href={primaryCell["@id"]}
+                        label={`Primary Cell ${primaryCell.accession}`}
+                        status={primaryCell.status}
+                      >
+                        <CollectionItemName>
+                          {`${termName ? `${termName} — ` : ""}${
+                            primaryCell.accession
+                          }`}
+                        </CollectionItemName>
+                        <CollectionData>
+                          <div>{primaryCell.taxa}</div>
+                        </CollectionData>
+                      </CollectionItem>
+                    );
+                  })}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );
@@ -64,6 +79,10 @@ export const getServerSideProps = async ({ req }) => {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const primaryCells = await request.getCollection("primary-cells");
   if (FetchRequest.isResponseSuccess(primaryCells)) {
+    await request.getAndEmbedCollectionObjects(
+      primaryCells["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(
       primaryCells,
       "title",

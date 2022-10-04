@@ -44,6 +44,12 @@ const Document = ({ document, award = null, lab = null }) => {
                 </DataItemValue>
               </>
             )}
+            {document.submitter_comment && (
+              <>
+                <DataItemLabel>Submitter Comment</DataItemLabel>
+                <DataItemValue>{document.submitter_comment}</DataItemValue>
+              </>
+            )}
             {document.aliases?.length > 0 && (
               <>
                 <DataItemLabel>Aliases</DataItemLabel>

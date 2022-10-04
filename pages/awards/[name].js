@@ -61,6 +61,12 @@ const Award = ({ award, pis }) => {
                 </DataItemValue>
               </>
             )}
+            {award.submitter_comment && (
+              <>
+                <DataItemLabel>Submitter Comment</DataItemLabel>
+                <DataItemValue>{award.submitter_comment}</DataItemValue>
+              </>
+            )}
             {award.url && (
               <>
                 <DataItemLabel>Additional Information</DataItemLabel>

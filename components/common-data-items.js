@@ -53,6 +53,18 @@ export const DonorDataItems = ({ donor, parents, children }) => {
         </>
       )}
       {children}
+      {donor.submitter_comment && (
+        <>
+          <DataItemLabel>Submitter Comment</DataItemLabel>
+          <DataItemValue>{donor.submitter_comment}</DataItemValue>
+        </>
+      )}
+      {donor.revoke_detail && (
+        <>
+          <DataItemLabel>Revoke Detail</DataItemLabel>
+          <DataItemValue>{donor.revoke_detail}</DataItemValue>
+        </>
+      )}
       {donor.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
@@ -135,6 +147,18 @@ export const SampleDataItems = ({ sample, source = null, children }) => {
         </>
       )}
       {children}
+      {sample.submitter_comment && (
+        <>
+          <DataItemLabel>Submitter Comment</DataItemLabel>
+          <DataItemValue>{sample.submitter_comment}</DataItemValue>
+        </>
+      )}
+      {sample.revoke_detail && (
+        <>
+          <DataItemLabel>Revoke Detail</DataItemLabel>
+          <DataItemValue>{sample.revoke_detail}</DataItemValue>
+        </>
+      )}
       {sample.aliases && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
@@ -215,22 +239,22 @@ export const BiosampleDataItems = ({
       )}
       {biosampleTerm && (
         <>
-          <DataItemLabel>Biosample</DataItemLabel>
+          <DataItemLabel>Biosample Term</DataItemLabel>
           <DataItemValue>
             <Link href={biosampleTerm["@id"]}>
-              <a>{biosampleTerm.term_id}</a>
+              <a>{biosampleTerm.term_name}</a>
             </Link>
           </DataItemValue>
         </>
       )}
       {diseaseTerms.length > 0 && (
         <>
-          <DataItemLabel>Disease</DataItemLabel>
+          <DataItemLabel>Disease Terms</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {diseaseTerms.map((diseaseTerm) => (
                 <Link href={diseaseTerm["@id"]} key={diseaseTerm.uuid}>
-                  <a>{diseaseTerm.term_id}</a>
+                  <a>{diseaseTerm.term_name}</a>
                 </Link>
               ))}
             </SeparatedList>
@@ -301,6 +325,12 @@ export const OntologyTermDataItems = ({ ontologyTerm, children }) => {
         </>
       )}
       {children}
+      {ontologyTerm.submitter_comment && (
+        <>
+          <DataItemLabel>Submitter Comment</DataItemLabel>
+          <DataItemValue>{ontologyTerm.submitter_comment}</DataItemValue>
+        </>
+      )}
     </>
   );
 };

@@ -21,28 +21,35 @@ const LabList = ({ labs }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {labs.length > 0 ? (
-          <>
-            <CollectionHeader count={labs.length} />
-            <CollectionContent collection={labs}>
-              {labs.map((lab) => (
-                <CollectionItem
-                  key={lab.uuid}
-                  testid={lab.uuid}
-                  href={lab["@id"]}
-                  label={`Lab ${lab.title}`}
-                  status={lab.status}
-                >
-                  <CollectionItemName>{lab.title}</CollectionItemName>
-                  <div>{lab.institute_label}</div>
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+      <Collection items={labs}>
+        {({ pageItems: pageLabs, pagerStatus, pagerAction }) => {
+          if (labs.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent collection={labs} pagerStatus={pagerStatus}>
+                  {pageLabs.map((lab) => (
+                    <CollectionItem
+                      key={lab.uuid}
+                      testid={lab.uuid}
+                      href={lab["@id"]}
+                      label={`Lab ${lab.title}`}
+                      status={lab.status}
+                    >
+                      <CollectionItemName>{lab.title}</CollectionItemName>
+                      <div>{lab.institute_label}</div>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );

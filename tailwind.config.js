@@ -6,9 +6,16 @@ module.exports = {
       center: true,
     },
     extend: {
+      aspectRatio: {
+        hd: "16 / 9",
+        cinema: "21 / 9",
+        ultra: "32 / 9",
+      },
       backgroundImage: {
         "excel-import": "url('/img/excel-file-origin.png')",
         "excel-import-dark": "url('/img/excel-file-origin-dark.png')",
+        "help-banner": "url('/img/help-banner.jpg')",
+        "help-banner-dark": "url('/img/help-banner-dark.jpg')",
       },
       colors: {
         background: "var(--color-background)",
@@ -101,10 +108,88 @@ module.exports = {
         DEFAULT: {
           css: {
             "max-width": "none",
+            h1: {
+              "font-weight": 600,
+              "margin-bottom": "1rem",
+            },
+            h2: {
+              "font-weight": 600,
+              "font-size": "1.7rem",
+              "margin-top": "2rem",
+              "margin-bottom": "1rem",
+            },
+            h3: {
+              "font-weight": 600,
+              "font-size": "1.4rem",
+              "margin-top": "1.8rem",
+              "margin-bottom": "0.9rem",
+            },
+            h4: {
+              "font-weight": 600,
+              "font-size": "1.2rem",
+              "margin-top": "1.6rem",
+              "margin-bottom": "0.8rem",
+            },
+            h5: {
+              "font-weight": 500,
+              "font-size": "1.2rem",
+              "margin-top": "1.5rem",
+              "margin-bottom": "0.6rem",
+            },
+            h6: {
+              "font-weight": 500,
+              "font-size": "1rem",
+              "margin-top": "1.3rem",
+              "margin-bottom": "0.4rem",
+            },
             p: {
               "margin-top": "0.5rem",
               "margin-bottom": "0.5rem",
               "line-height": "1.375",
+            },
+            "p:first-child": {
+              "margin-top": "0",
+            },
+            "p:last-child": {
+              "margin-bottom": "0",
+            },
+            li: {
+              "margin-top": "0.4rem",
+              "margin-bottom": "0.4rem",
+            },
+            blockquote: {
+              "font-style": "normal",
+              "font-weight": "normal",
+            },
+            td: {
+              padding: "0.2rem 0.4rem",
+              "border-color": "var(--color-data-border)",
+              "border-width": "1px",
+              "border-style": "solid",
+            },
+            th: {
+              padding: "0.2rem 0.4rem",
+              "border-color": "var(--color-data-border)",
+              "border-width": "1px",
+              "border-style": "solid",
+              "background-color": "var(--color-data-header-background)",
+            },
+            pre: {
+              "background-color": "var(--color-code-background)",
+              color: "var(--color-code-text)",
+            },
+            code: {
+              "background-color": "var(--color-code-background)",
+              padding: "0.1rem 0.4rem",
+              "border-radius": "0.2rem",
+              "font-weight": "normal",
+            },
+            // Removes the backticks from code blocks
+            "code::before": {
+              content: '""',
+            },
+            "code::after": {
+              content: '""',
             },
           },
         },

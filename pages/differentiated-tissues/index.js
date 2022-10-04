@@ -5,6 +5,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,
   CollectionContent,
+  CollectionData,
   CollectionHeader,
   CollectionItem,
   CollectionItemName,
@@ -21,37 +22,48 @@ const DifferentiatedTissueList = ({ differentiatedTissues }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection>
-        {differentiatedTissues.length > 0 ? (
-          <>
-            <CollectionHeader count={differentiatedTissues.length} />
-            <CollectionContent collection={differentiatedTissues}>
-              {differentiatedTissues.map((differentiatedTissue) => (
-                <CollectionItem
-                  key={differentiatedTissue.uuid}
-                  testid={differentiatedTissue.uuid}
-                  href={differentiatedTissue["@id"]}
-                  label={`Differentiated Tissue ${differentiatedTissue.accession}`}
-                  status={differentiatedTissue.status}
+      <Collection items={differentiatedTissues}>
+        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+          if (differentiatedTissues.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={differentiatedTissues}
+                  pagerStatus={pagerStatus}
                 >
-                  <CollectionItemName>
-                    {differentiatedTissue.accession}
-                  </CollectionItemName>
-                  {differentiatedTissue.organism && (
-                    <div>{differentiatedTissue.organism}</div>
-                  )}
-                  {differentiatedTissue.nih_institutional_certification && (
-                    <div>
-                      {differentiatedTissue.nih_institutional_certification}
-                    </div>
-                  )}
-                </CollectionItem>
-              ))}
-            </CollectionContent>
-          </>
-        ) : (
-          <NoCollectionData />
-        )}
+                  {pageSamples.map((differentiatedTissue) => {
+                    const termName =
+                      differentiatedTissue.biosample_term?.term_name;
+                    return (
+                      <CollectionItem
+                        key={differentiatedTissue.uuid}
+                        testid={differentiatedTissue.uuid}
+                        href={differentiatedTissue["@id"]}
+                        label={`Differentiated Tissue ${differentiatedTissue.accession}`}
+                        status={differentiatedTissue.status}
+                      >
+                        <CollectionItemName>
+                          {`${termName ? `${termName} — ` : ""}${
+                            differentiatedTissue.accession
+                          }`}
+                        </CollectionItemName>
+                        <CollectionData>
+                          <div>{differentiatedTissue.taxa}</div>
+                        </CollectionData>
+                      </CollectionItem>
+                    );
+                  })}
+                </CollectionContent>
+              </>
+            );
+          }
+
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );
@@ -70,6 +82,10 @@ export const getServerSideProps = async ({ req }) => {
     "differentiated-tissues"
   );
   if (FetchRequest.isResponseSuccess(differentiatedTissues)) {
+    await request.getAndEmbedCollectionObjects(
+      differentiatedTissues["@graph"],
+      "biosample_term"
+    );
     const breadcrumbs = await buildBreadcrumbs(differentiatedTissues, "title");
     return {
       props: {

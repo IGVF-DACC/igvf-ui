@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
@@ -27,6 +28,7 @@ const TechnicalSample = ({
   documents,
   lab = null,
   source = null,
+  technicalSampleTerm,
 }) => {
   return (
     <>
@@ -48,14 +50,12 @@ const TechnicalSample = ({
               )}
               <DataItemLabel>Sample Material</DataItemLabel>
               <DataItemValue>{sample.sample_material}</DataItemValue>
-              {sample.technical_sample_ontology && (
-                <>
-                  <DataItemLabel>Ontology</DataItemLabel>
-                  <DataItemValue>
-                    {sample.technical_sample_ontology}
-                  </DataItemValue>
-                </>
-              )}
+              <DataItemLabel>Technical Sample Term</DataItemLabel>
+              <DataItemValue>
+                <Link href={technicalSampleTerm["@id"]}>
+                  <a>{technicalSampleTerm.term_name}</a>
+                </Link>
+              </DataItemValue>
             </SampleDataItems>
           </DataArea>
         </DataPanel>
@@ -82,6 +82,8 @@ TechnicalSample.propTypes = {
   lab: PropTypes.object,
   // Source lab or source for this technical sample
   source: PropTypes.object,
+  // Tehnical sample ontology for the technical sample
+  technicalSampleTerm: PropTypes.object.isRequired,
 };
 
 export default TechnicalSample;
@@ -98,6 +100,10 @@ export const getServerSideProps = async ({ params, req }) => {
       : [];
     const lab = await request.getObject(sample.lab, null);
     const source = await request.getObject(sample.source, null);
+    const technicalSampleTerm = await request.getObject(
+      sample.technical_sample_term,
+      null
+    );
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       "accession",
@@ -110,7 +116,12 @@ export const getServerSideProps = async ({ params, req }) => {
         documents,
         lab,
         source,
-        pageContext: { title: sample.accession },
+        technicalSampleTerm,
+        pageContext: {
+          title: `${
+            technicalSampleTerm ? `${technicalSampleTerm.term_name} — ` : ""
+          }${sample.accession}`,
+        },
         breadcrumbs,
       },
     };

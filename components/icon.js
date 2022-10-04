@@ -25,6 +25,16 @@ const Icon = {
       <polygon points="10,3.6 11.4,6.5 14.4,6.9 12.2,9 12.7,12.1 10,10.6 7.3,12.1 7.8,9 5.6,6.9 8.6,6.5 " />
     </svg>
   ),
+  Circle: ({ className = null }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <circle cx="10" cy="10" r="10" />
+    </svg>
+  ),
   Donor: ({ className = null }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -68,6 +78,27 @@ const Icon = {
       <path
         d="M16.6,0h-1.5H5.3H3.8v1.2h1.5v3.7V11v4.1c0,2.7,2.2,4.9,4.9,4.9s4.9-2.2,4.9-4.9V11V4.9V1.2h1.5V0z M13.7,7H6.6
       V1.2h7.1V7z"
+      />
+    </svg>
+  ),
+  Splat: ({ className = null }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        d="M19,14c0,0.6-0.2,1.1-0.6,1.4C18,15.8,17.5,16,17,16c-0.6,0-1.1-0.2-1.6-0.5c-0.5-0.3-1.2-1-2.2-2
+		c-1.1-1.1-1.9-1.9-2.5-2.2c0,0.6,0.2,1.7,0.6,3.1c0.4,1.5,0.6,2.5,0.6,3.2c0,0.7-0.2,1.3-0.6,1.7C11.1,19.8,10.6,20,10,20
+		c-0.6,0-1.1-0.2-1.5-0.7c-0.4-0.4-0.6-1-0.6-1.7c0-0.6,0.2-1.7,0.6-3.2C9,13,9.2,12,9.2,11.4c-0.5,0.3-1.4,1-2.5,2.2
+		c-1,1-1.7,1.7-2.2,2C4.1,15.8,3.6,16,3,16c-0.5,0-1-0.2-1.4-0.6C1.2,15,1,14.5,1,14c0-0.6,0.2-1.1,0.7-1.6C2.3,12,3.5,11.5,5.4,11
+		c1.5-0.4,2.5-0.7,3-1c-0.5-0.3-1.5-0.6-3-1C3.6,8.6,2.4,8.1,1.8,7.6C1.3,7.1,1,6.6,1,6c0-0.6,0.2-1,0.6-1.4C2,4.2,2.5,4,3,4
+		c0.5,0,1,0.2,1.5,0.5c0.5,0.3,1.3,1,2.3,2.1c1.1,1.1,1.9,1.8,2.4,2.1C9.2,8.1,9,7,8.6,5.5C8.1,4,7.9,3,7.9,2.4
+		c0-0.7,0.2-1.3,0.6-1.7C8.9,0.2,9.4,0,10,0c0.6,0,1.1,0.2,1.5,0.6c0.4,0.4,0.6,1,0.6,1.7c0,0.6-0.2,1.7-0.6,3.2
+		C11,7,10.8,8.1,10.8,8.7c0.5-0.3,1.3-1,2.4-2.1c1-1.1,1.8-1.8,2.3-2.1S16.5,4,17,4c0.5,0,1,0.2,1.4,0.6S19,5.4,19,6
+		c0,0.6-0.3,1.2-0.8,1.6c-0.5,0.5-1.7,0.9-3.6,1.4c-1.5,0.4-2.5,0.7-3,1c0.5,0.3,1.5,0.6,3.1,1c1.9,0.5,3.1,0.9,3.6,1.4
+		C18.7,12.9,19,13.4,19,14z"
       />
     </svg>
   ),
@@ -118,6 +149,9 @@ const Icon = {
 Icon.Award.propTypes = {
   className: PropTypes.string,
 };
+Icon.Circle.propTypes = {
+  className: PropTypes.string,
+};
 Icon.Donor.propTypes = {
   className: PropTypes.string,
 };
@@ -125,6 +159,9 @@ Icon.Gene.propTypes = {
   className: PropTypes.string,
 };
 Icon.Sample.propTypes = {
+  className: PropTypes.string,
+};
+Icon.Splat.propTypes = {
   className: PropTypes.string,
 };
 Icon.TableColumnsHidden.propTypes = {

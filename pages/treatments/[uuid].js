@@ -82,6 +82,12 @@ const Treatment = ({ treatment, documents }) => {
                 </DataItemValue>
               </>
             )}
+            {treatment.submitter_comment && (
+              <>
+                <DataItemLabel>Submitter Comment</DataItemLabel>
+                <DataItemValue>{treatment.submitter_comment}</DataItemValue>
+              </>
+            )}
             {treatment.aliases?.length > 0 && (
               <>
                 <DataItemLabel>Aliases</DataItemLabel>

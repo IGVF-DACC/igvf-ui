@@ -19,7 +19,7 @@ $ node --version
 Install CDK toolkit (requires Node.js 16.x):
 
 ```
-$ npm install -g aws-cdk@2.21.0
+$ npm install -g aws-cdk@2.43.1
 ```
 
 Create virtual Python 3.9 environment and install requirements:
@@ -91,6 +91,17 @@ $ python commands/cdk_destroy_all_stacks.py -c branch=IGVF-1234-my-feature-branc
 ```
 
 Pass the `--force` flag to bypass the confirmation prompts.
+
+### Automatic clean up
+
+By default demo stacks have a lifetime of 72 hours, after which they get destroyed. Additionally, by default the demo stacks will be deleted during the Friday night (Friday night means 0000-0659 hours on Saturday, US/Pacific timezone). This behavior is configured in `cdk/infrastructure/config.py`. Altering the default behavior can be done by editing and committing changes to values in
+```
+'tags': [
+    ('time-to-live-hours', '72'),
+    ('turn-off-on-friday-night', 'yes'),
+],
+```
+In `turn-off-on-friday-night` tag, any value other than `yes` is interpreted as a negative (as well as the absence of the tag).
 
 ## Notes on demos
 

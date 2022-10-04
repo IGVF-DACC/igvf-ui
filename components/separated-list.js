@@ -52,7 +52,7 @@ const SeparatedList = ({ separator = ", ", className = "", children }) => {
       </div>
     );
   }
-  return <>{children}</>;
+  return <div className={className || ""}>{children}</div>;
 };
 
 SeparatedList.propTypes = {
