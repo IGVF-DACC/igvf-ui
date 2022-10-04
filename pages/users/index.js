@@ -34,7 +34,10 @@ const UserList = ({ users }) => {
                     pagerStatus={pagerStatus}
                     pagerAction={pagerAction}
                   />
-                  <CollectionContent collection={usersList} pagerStatus={pagerStatus}>
+                  <CollectionContent
+                    collection={usersList}
+                    pagerStatus={pagerStatus}
+                  >
                     {pageUsers.map((user) => (
                       <CollectionItem
                         key={user.uuid}

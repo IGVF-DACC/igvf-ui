@@ -1,16 +1,16 @@
 import Button from "./button";
-import { PropTypes } from 'prop-types';
-import SessionContext from './session-context';
-import { useContext } from 'react';
+import { PropTypes } from "prop-types";
+import SessionContext from "./session-context";
+import { useContext } from "react";
 import FetchRequest from "../lib/fetch-request";
-import { useAuthenticated } from './authentication';
-import EditJson, { canEdit } from './edit-func';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useAuthenticated } from "./authentication";
+import EditJson, { canEdit } from "./edit-func";
+import { useState } from "react";
+import { useEffect } from "react";
 import { SaveCancelControl, SavedErrors } from "./edit";
-import { useRouter } from 'next/router';
-import { empty } from 'empty-schema';
-import { PROFILE_COLLECTIONS } from '../lib/profiles';
+import { useRouter } from "next/router";
+import { empty } from "empty-schema";
+import { PROFILE_COLLECTIONS } from "../lib/profiles";
 
 export const collectionPath = (schema) => {
   return PROFILE_COLLECTIONS[schema["$id"]];
@@ -18,9 +18,7 @@ export const collectionPath = (schema) => {
 
 const actionProfile = (item, actions) => {
   if ("actions" in item) {
-    const act = item.actions.find(
-      (act) => actions.includes(act.name)
-    );
+    const act = item.actions.find((act) => actions.includes(act.name));
     if (act != null) {
       return act.profile;
     } else {
@@ -57,24 +55,28 @@ function sortedJson(obj) {
  * submittable, commented with "Do not submit", or arrays/objects.
  */
 const convertOptionalIntoRequiredSchema = (schema) => {
-  const topProperties = Object.entries(schema.properties).filter(([, p]) => {
-    return p.comment ? !p.comment.includes("Do not submit") : true;
-  }).filter(([, p]) => {
-    return !p.permission;
-  }).filter(([, p]) => {
-    return p.notSubmittable ? !p.notSubmittable : true;
-  }).filter(([, p]) => {
-    return !["array", "object"].includes(p.type);
-  }).map(([k]) => {
-    return k;
-  });
+  const topProperties = Object.entries(schema.properties)
+    .filter(([, p]) => {
+      return p.comment ? !p.comment.includes("Do not submit") : true;
+    })
+    .filter(([, p]) => {
+      return !p.permission;
+    })
+    .filter(([, p]) => {
+      return p.notSubmittable ? !p.notSubmittable : true;
+    })
+    .filter(([, p]) => {
+      return !["array", "object"].includes(p.type);
+    })
+    .map(([k]) => {
+      return k;
+    });
   const newschema = schema;
   newschema.required = [...topProperties, ...schema.required];
   return newschema;
 };
 
 export const useEditor = (collection, viewComponent, action = "edit") => {
-
   /**
    * Represents whether the Editor component can be actively typed in or saved.
    * This is determined by the logged in status of the user and if the user has
@@ -100,13 +102,7 @@ export const useEditor = (collection, viewComponent, action = "edit") => {
 
   const addpage = <AddInstancePage collection={collection} />;
 
-  const componentToShow = edit ? (
-    addpage
-  ) : (
-    <>
-      {viewComponent}
-    </>
-  );
+  const componentToShow = edit ? addpage : <>{viewComponent}</>;
   return componentToShow;
 };
 
@@ -191,7 +187,7 @@ export const AddInstancePage = ({ collection }) => {
    * If there are errors the text should not be saveable. If the user has insufficient
    * permissions both saving and editing should be disabled.
    */
-   const [editorStatus, setEditorStatus] = useState({
+  const [editorStatus, setEditorStatus] = useState({
     canEdit: isAddable,
     canSave: isAddable,
     errors: [],
@@ -229,31 +225,38 @@ export const AddInstancePage = ({ collection }) => {
 
     const value = sortedJson(JSON.parse(text));
     const collectionPath = collectionPathWithoutLimit(collection);
-          new FetchRequest({ session }).postObject(collectionPath, value).then((response) => {
-      if (response.status === "success") {
-        setSaveErrors([]);
-        router.push(collectionPath);
-      } else {
-        setEditorStatus({
-          canEdit: true,
-          canSave: true,
-          errors: [],
-        });
+    new FetchRequest({ session })
+      .postObject(collectionPath, value)
+      .then((response) => {
+        if (response.status === "success") {
+          setSaveErrors([]);
+          router.push(collectionPath);
+        } else {
+          setEditorStatus({
+            canEdit: true,
+            canSave: true,
+            errors: [],
+          });
 
-        const errors = response.errors ? response.errors.map((err) => ({
-          description: err.description,
-          keys: err.name
-            .map((val) => {
-              return `\`${val}\``;
-            })
-            .join(", "),
-        })) : [{
-          description: "Error saving new item, ensure the fields are filled out correctly",
-          keys: "Generic Error",
-        }];
-        setSaveErrors(errors);
-      }
-    });
+          const errors = response.errors
+            ? response.errors.map((err) => ({
+                description: err.description,
+                keys: err.name
+                  .map((val) => {
+                    return `\`${val}\``;
+                  })
+                  .join(", "),
+              }))
+            : [
+                {
+                  description:
+                    "Error saving new item, ensure the fields are filled out correctly",
+                  keys: "Generic Error",
+                },
+              ];
+          setSaveErrors(errors);
+        }
+      });
   };
 
   const cancel = () => {
@@ -275,7 +278,7 @@ export const AddInstancePage = ({ collection }) => {
           itemPath={collectionPathWithoutLimit(collection)}
           saveEnabled={editorStatus.canSave}
         />
-        {saveErrors.length > 0 && <SavedErrors errors={saveErrors}/>}
+        {saveErrors.length > 0 && <SavedErrors errors={saveErrors} />}
       </div>
     </div>
   );
@@ -298,8 +301,8 @@ export const AddItemFromSchema = ({ schema, label = "Add Instance" }) => {
   useEffect(() => {
     if (!link) {
       const request = new FetchRequest(session);
-      request.getObject(`/${collectPath}/?limit=0`).then(collection => {
-        setLink(<AddLink collection={collection} label={label}/>);
+      request.getObject(`/${collectPath}/?limit=0`).then((collection) => {
+        setLink(<AddLink collection={collection} label={label} />);
       });
     }
   }, [link, collectPath, label, session]);

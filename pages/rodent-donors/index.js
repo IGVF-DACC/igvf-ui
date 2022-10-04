@@ -45,7 +45,9 @@ const RodentDonorsList = ({ donors }) => {
                         label={`Human Donor ${donor.accession}`}
                         status={donor.status}
                       >
-                        <CollectionItemName>{donor.accession}</CollectionItemName>
+                        <CollectionItemName>
+                          {donor.accession}
+                        </CollectionItemName>
                       </CollectionItem>
                     ))}
                   </CollectionContent>

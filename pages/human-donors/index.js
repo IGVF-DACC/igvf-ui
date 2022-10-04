@@ -15,10 +15,10 @@ import PagePreamble from "../../components/page-preamble";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { AddableItem } from '../../components/add';
+import { AddableItem } from "../../components/add";
 
 const HumanDonorsList = ({ donors }) => {
-  const donorsList  = donors["@graph"];
+  const donorsList = donors["@graph"];
   return (
     <>
       <Breadcrumbs />
@@ -45,7 +45,9 @@ const HumanDonorsList = ({ donors }) => {
                         label={`Human Donor ${donor.accession}`}
                         status={donor.status}
                       >
-                        <CollectionItemName>{donor.accession}</CollectionItemName>
+                        <CollectionItemName>
+                          {donor.accession}
+                        </CollectionItemName>
                       </CollectionItem>
                     ))}
                   </CollectionContent>

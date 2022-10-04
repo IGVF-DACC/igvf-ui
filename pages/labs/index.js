@@ -33,7 +33,10 @@ const LabList = ({ labs }) => {
                     pagerStatus={pagerStatus}
                     pagerAction={pagerAction}
                   />
-                  <CollectionContent collection={labsList} pagerStatus={pagerStatus}>
+                  <CollectionContent
+                    collection={labsList}
+                    pagerStatus={pagerStatus}
+                  >
                     {pageLabs.map((lab) => (
                       <CollectionItem
                         key={lab.uuid}

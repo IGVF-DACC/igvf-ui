@@ -19,7 +19,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const PrimaryCellList = ({ primaryCells }) => {
-  const cellsList =  primaryCells["@graph"];
+  const cellsList = primaryCells["@graph"];
   return (
     <>
       <Breadcrumbs />

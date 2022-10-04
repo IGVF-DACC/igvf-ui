@@ -33,7 +33,10 @@ const GeneList = ({ genes }) => {
                     pagerStatus={pagerStatus}
                     pagerAction={pagerAction}
                   />
-                  <CollectionContent collection={genesList} pagerStatus={pagerStatus}>
+                  <CollectionContent
+                    collection={genesList}
+                    pagerStatus={pagerStatus}
+                  >
                     {pageGenes.map((gene) => (
                       <CollectionItem
                         key={gene.uuid}

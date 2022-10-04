@@ -7,11 +7,7 @@ import Button from "./button";
 
 export const canEdit = (item, actions = ["edit", "edit-json"]) => {
   if ("actions" in item) {
-    return (
-      item.actions.find(
-        (act) => actions.includes(act.name)
-      ) != undefined
-    );
+    return item.actions.find((act) => actions.includes(act.name)) != undefined;
   }
   return false;
 };
