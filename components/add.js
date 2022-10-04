@@ -121,7 +121,7 @@ export const AddLink = ({ collection, label = "Add Instance" }) => {
   const collectPath = collectionPathWithoutLimit(collection);
   return (
     <ActionCanDisplay collection={collection}>
-      <Button.Link href={`${collectPath}/#!add`} navigationClick={() => {}}>
+      <Button.Link href={`${collectPath}#!add`} navigationClick={() => {}}>
         {label}
       </Button.Link>
     </ActionCanDisplay>
@@ -291,19 +291,18 @@ export const AddableItem = ({ collection, children }) => {
 
 export const AddItemFromSchema = ({ schema, label = "Add Instance" }) => {
   const { session } = useContext(SessionContext);
-  const request = new FetchRequest(session);
   const collectPath = collectionPath(schema);
 
   const [link, setLink] = useState(null);
 
   useEffect(() => {
     if (!link) {
-      request.getCollection(collectPath).then(collection => {
+      const request = new FetchRequest(session);
+      request.getObject(`/${collectPath}/?limit=0`).then(collection => {
         setLink(<AddLink collection={collection} label={label}/>);
       });
     }
-  });
-
+  }, [link, collectPath, label, session]);
   return link;
 };
 
