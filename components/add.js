@@ -7,15 +7,29 @@ import { useAuthenticated } from "./authentication";
 import EditJson, { canEdit } from "./edit-func";
 import { useState } from "react";
 import { useEffect } from "react";
-import { SaveCancelControl, SavedErrors } from "./edit";
+import { SaveCancelControl, SavedErrors, sortedJson } from "./edit";
 import { useRouter } from "next/router";
 import { empty } from "empty-schema";
 import { PROFILE_COLLECTIONS } from "../lib/profiles";
 
+/**
+ *
+ * Given the schema ID, fetch the corresponding collection
+ * name. Example: schema id /profiles/human_donor.json maps
+ * to "human-donors"
+ */
 export const collectionPath = (schema) => {
   return PROFILE_COLLECTIONS[schema["$id"]];
 };
 
+/**
+ * Looks for an action in the item with a name in the list of given actions
+ * and returns the profile path of the first one found, or null if none are found.
+ * @param {*} item snovault object
+ * @param {*} actions list of actions to find from which to grab
+ * the profile path
+ * @returns the profile path corresponding to an action
+ */
 const actionProfile = (item, actions) => {
   if ("actions" in item) {
     const act = item.actions.find((act) => actions.includes(act.name));
@@ -28,23 +42,6 @@ const actionProfile = (item, actions) => {
     return null;
   }
 };
-
-function sortedJson(obj) {
-  if (Array.isArray(obj)) {
-    return obj.map((value) => sortedJson(value));
-  }
-  // We know it's not an array if we're here because the above `if`
-  if (typeof obj == "object") {
-    const sorted = {};
-    Object.keys(obj)
-      .sort()
-      .forEach((key) => {
-        sorted[key] = obj[key];
-      });
-    return sorted;
-  }
-  return obj;
-}
 
 /**
  * This takes a schema object and adds to the required properties
@@ -113,6 +110,10 @@ const collectionPathWithoutLimit = (collection) => {
   return collection["@id"].split("?")[0];
 };
 
+/**
+ * Generates a button link to the #!add url for the given collection.
+ * A custom label can be suplied with the `label` prop.
+ */
 export const AddLink = ({ collection, label = "Add Instance" }) => {
   const collectPath = collectionPathWithoutLimit(collection);
   return (
@@ -129,6 +130,9 @@ AddLink.propTypes = {
   label: PropTypes.string,
 };
 
+/**
+ * Returns the children props if the given collections allows an "add" action
+ */
 export const ActionCanDisplay = ({ collection, children }) => {
   if (canEdit(collection, ["add"])) {
     return children;
@@ -193,9 +197,11 @@ export const AddInstancePage = ({ collection }) => {
     errors: [],
   });
 
+  // Profile Path for the "add" action in this collection
   const profilePath = actionProfile(collection, "add");
 
   useEffect(() => {
+    // Grab the schema from profilePath so we can make an empty object template
     new FetchRequest({ session }).getObject(profilePath).then((schema) => {
       // We have the schema, so produce a dummy json from the schema
       const biggerSchema = convertOptionalIntoRequiredSchema(schema);
@@ -292,6 +298,16 @@ export const AddableItem = ({ collection, children }) => {
   return useEditor(collection, children, "add");
 };
 
+AddableItem.propTypes = {
+  collection: PropTypes.object.isRequired,
+};
+
+/**
+ * Given a schema, if the present user has sufficient permissions a
+ * button is produced which points to the corresponding collection #!add
+ * URL, allowing the user to Add an object of the schema type to the
+ * collection.
+ */
 export const AddItemFromSchema = ({ schema, label = "Add Instance" }) => {
   const { session } = useContext(SessionContext);
   const collectPath = collectionPath(schema);

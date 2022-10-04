@@ -94,7 +94,7 @@ SaveCancelControl.propTypes = {
   saveEnabled: PropTypes.bool.isRequired,
 };
 
-function sortedJson(obj) {
+export function sortedJson(obj) {
   if (Array.isArray(obj)) {
     return obj.map((value) => sortedJson(value));
   }
