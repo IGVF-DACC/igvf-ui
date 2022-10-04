@@ -25,43 +25,43 @@ const DocumentList = ({ documents }) => {
       <Breadcrumbs />
       <PagePreamble />
       <AddableItem collection={documents}>
-      <Collection items={documentsList}>
-        {({ pageItems: pageDocuments, pagerStatus, pagerAction }) => {
-          if (documentsList.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={documentsList}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageDocuments.map((document) => (
-                    <CollectionItem
-                      key={document.uuid}
-                      testid={document.uuid}
-                      href={document["@id"]}
-                      label={`Document ${document.description}`}
-                      status={document.status}
-                    >
-                      <CollectionItemName>
-                        {document.description}
-                      </CollectionItemName>
-                      <div>
-                        <DocumentAttachmentLink document={document} />
-                      </div>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+        <Collection items={documentsList}>
+          {({ pageItems: pageDocuments, pagerStatus, pagerAction }) => {
+            if (documentsList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={documentsList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageDocuments.map((document) => (
+                      <CollectionItem
+                        key={document.uuid}
+                        testid={document.uuid}
+                        href={document["@id"]}
+                        label={`Document ${document.description}`}
+                        status={document.status}
+                      >
+                        <CollectionItemName>
+                          {document.description}
+                        </CollectionItemName>
+                        <div>
+                          <DocumentAttachmentLink document={document} />
+                        </div>
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
       </AddableItem>
     </>
   );
