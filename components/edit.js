@@ -10,10 +10,7 @@ import { useRouter } from "next/router";
 // lib
 import FetchRequest from "../lib/fetch-request";
 
-export const useEditor = (item, viewComponent, action = "edit") => {
-  // const editing = (url) => {
-  //   return url.endsWith(`#!${action}`);
-  // };
+export const useEditor = (action) => {
 
   /**
    * Represents whether the Editor component can be actively typed in or saved.
@@ -38,22 +35,18 @@ export const useEditor = (item, viewComponent, action = "edit") => {
     }
   }, [edit, router, action]);
 
-  const editpage = <EditPage item={item} />;
-  const editlink = <EditLink item={item} />;
-
-  const componentToShow = edit ? (
-    editpage
-  ) : (
-    <>
-      {viewComponent}
-      {editlink}
-    </>
-  );
-  return componentToShow;
+  return edit;
 };
 
 export const EditableItem = ({ item, children }) => {
-  return useEditor(item, children);
+  const editing = useEditor("edit");
+  return editing ?
+    <EditPage item={item}/> : (
+      <>
+        {children}
+        <EditLink item={item}/>
+      </>
+    );
 };
 
 EditableItem.propTypes = {
@@ -66,7 +59,6 @@ export const SaveCancelControl = ({
   itemPath,
   saveEnabled,
 }) => {
-  // const router = useRouter();
   return (
     <div className="flex space-x-1">
       <Button.Link

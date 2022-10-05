@@ -186,7 +186,7 @@ Button.displayName = "Button";
  */
 const Link = ({
   href,
-  navigationClick,
+  navigationClick = () => {},
   id = null,
   type = "primary",
   size = "md",
