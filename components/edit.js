@@ -11,7 +11,6 @@ import { useRouter } from "next/router";
 import FetchRequest from "../lib/fetch-request";
 
 export const useEditor = (action) => {
-
   /**
    * Represents whether the Editor component can be actively typed in or saved.
    * This is determined by the logged in status of the user and if the user has
@@ -40,13 +39,14 @@ export const useEditor = (action) => {
 
 export const EditableItem = ({ item, children }) => {
   const editing = useEditor("edit");
-  return editing ?
-    <EditPage item={item}/> : (
-      <>
-        {children}
-        <EditLink item={item}/>
-      </>
-    );
+  return editing ? (
+    <EditPage item={item} />
+  ) : (
+    <>
+      {children}
+      <EditLink item={item} />
+    </>
+  );
 };
 
 EditableItem.propTypes = {
