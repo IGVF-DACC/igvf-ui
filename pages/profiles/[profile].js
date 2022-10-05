@@ -12,7 +12,6 @@ import FetchRequest from "../../lib/fetch-request";
 import { AddItemFromSchema } from "../../components/add";
 
 const Schema = ({ schema, changelog }) => {
-  console.log(schema);
   const html = marked(changelog);
   return (
     <>
