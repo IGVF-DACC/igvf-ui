@@ -20,7 +20,6 @@ import { urlWithoutParams } from "../lib/general";
  * to "human-donors"
  */
 export const collectionPath = (schema) => {
-
   return PROFILE_COLLECTIONS[schema["$id"]];
 };
 
@@ -87,11 +86,7 @@ export const AddLink = ({ collection, label = "Add Instance" }) => {
   const collectPath = urlWithoutParams(collection["@id"]);
 
   if (canEdit(collection, ["add"])) {
-    return (
-      <Button.Link href={`${collectPath}#!add`}>
-        {label}
-      </Button.Link>
-    );
+    return <Button.Link href={`${collectPath}#!add`}>{label}</Button.Link>;
   }
 };
 
@@ -253,11 +248,10 @@ AddInstancePage.propTypes = {
 export const AddableItem = ({ collection, children }) => {
   // return useEditor(collection, children, "add");
   const editing = useEditor("add");
-  return editing ?
-    <AddInstancePage collection={collection} /> :(
-    <>
-      {children};
-    </>
+  return editing ? (
+    <AddInstancePage collection={collection} />
+  ) : (
+    <>{children};</>
   );
 };
 
