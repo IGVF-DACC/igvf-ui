@@ -13,8 +13,9 @@ config: Dict[str, Any] = {
     'environment': {
         'demo': {
             'pipeline': 'DemoDeploymentPipelineStack',
+            'backend_url': 'https://igvfd-dev.demo.igvf.org',
             'tags': [
-                ('time-to-live-hours', '72'),
+                ('time-to-live-hours', '24'),
                 ('turn-off-on-friday-night', 'yes'),
             ],
         },
