@@ -102,9 +102,7 @@ export const AddInstancePage = ({ collection }) => {
   /**
    * The text is the current editor text of the underlying Ace editor component.
    */
-  const [text, setText] = useState(() => {
-    JSON.stringify({}, null, 4);
-  });
+  const [text, setText] = useState(() => JSON.stringify({}, null, 4));
 
   const router = useRouter();
 
@@ -246,12 +244,11 @@ AddInstancePage.propTypes = {
 };
 
 export const AddableItem = ({ collection, children }) => {
-  // return useEditor(collection, children, "add");
   const editing = useEditor("add");
   return editing ? (
     <AddInstancePage collection={collection} />
   ) : (
-    <>{children};</>
+    <>{children}</>
   );
 };
 
