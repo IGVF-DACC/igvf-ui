@@ -82,7 +82,7 @@ Select.propTypes = {
   // Name of the select element
   name: PropTypes.string.isRequired,
   // Value of the select element
-  value: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   // Function to call when the select element is changed
   onChange: PropTypes.func.isRequired,
   // Called when the text field loses focus

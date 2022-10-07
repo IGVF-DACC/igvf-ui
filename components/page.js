@@ -33,7 +33,7 @@ import { Select, TextField } from "./form";
 import ListSelect from "./list-select";
 import Markdown from "./markdown";
 import Modal from "./modal";
-import PagePlugin from "./page-plugin";
+import PageComponent from "./page-component";
 import PagePreamble from "./page-preamble";
 import SessionContext from "./session-context";
 // lib
@@ -1014,7 +1014,7 @@ const Page = ({
         <>
           {isAuthenticated && <EditPageTrigger href={router.asPath} />}
           <DataPanel>
-            <div className="prose dark:prose-invert">
+            <div data-testid="page-blocks" className="prose dark:prose-invert">
               {editableBlocks.map((block) => {
                 if (block["@type"] === BLOCK_TYPE_MARKDOWN) {
                   return (
@@ -1026,7 +1026,7 @@ const Page = ({
                   );
                 }
                 if (block["@type"] === BLOCK_TYPE_COMPONENT) {
-                  return <PagePlugin key={block["@id"]} spec={block.body} />;
+                  return <PageComponent key={block["@id"]} spec={block.body} />;
                 }
               })}
             </div>

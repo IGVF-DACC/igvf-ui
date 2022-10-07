@@ -21,7 +21,8 @@ module.exports = {
         background: "var(--color-background)",
         brand: "var(--color-brand)",
         "brand-accent": "var(--color-brand-accent)",
-        "nav-highlight": "var(--color-brand-highlight)",
+        "nav-highlight": "var(--color-nav-highlight)",
+        "nav-border": "var(--color-nav-border)",
         "title-border": "var(--color-title-border)",
         "data-background": "var(--color-data-background)",
         "data-border": "var(--color-data-border)",
@@ -117,6 +118,9 @@ module.exports = {
               "font-size": "1.7rem",
               "margin-top": "2rem",
               "margin-bottom": "1rem",
+              "&:first-child": {
+                "margin-top": "0",
+              },
             },
             h3: {
               "font-weight": 600,
@@ -146,12 +150,12 @@ module.exports = {
               "margin-top": "0.5rem",
               "margin-bottom": "0.5rem",
               "line-height": "1.375",
-            },
-            "p:first-child": {
-              "margin-top": "0",
-            },
-            "p:last-child": {
-              "margin-bottom": "0",
+              "&:first-child": {
+                "margin-top": "0.5rem",
+              },
+              "&:last-child": {
+                "margin-bottom": "0.5rem",
+              },
             },
             li: {
               "margin-top": "0.4rem",

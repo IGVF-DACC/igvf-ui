@@ -30,6 +30,9 @@
   --color-highlight-border: #a0a0a0;
   --color-title-border: #6b7280;
 
+  --color-nav-highlight: #e0e0e0;
+  --color-nav-border: #d0d0d0;
+
   --color-data-title: #6b7280;
   --color-data-label: #6b7280;
   --color-data-value: #000000;
@@ -88,6 +91,9 @@
   --color-highlight: #2c3f66;
   --color-highlight-border: #45629f;
   --color-title-border: #6b7280;
+
+  --color-nav-highlight: #303030;
+  --color-nav-border: #404040;
 
   --color-data-title: #9ca3af;
   --color-data-label: #9ca3af;
