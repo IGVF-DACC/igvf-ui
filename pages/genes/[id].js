@@ -79,7 +79,7 @@ const Gene = ({ gene }) => {
             )}
             {gene.locations?.length > 0 && (
               <>
-                <DataItemLabel>Gene GeneLocations</DataItemLabel>
+                <DataItemLabel>Gene Locations</DataItemLabel>
                 <DataItemValue>
                   <ChromosomeLocations locations={gene.locations} />
                 </DataItemValue>
