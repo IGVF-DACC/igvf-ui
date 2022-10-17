@@ -82,17 +82,19 @@ const convertOptionalIntoRequiredSchema = (schema) => {
  * Generates a button link to the #!add url for the given collection.
  * A custom label can be suplied with the `label` prop.
  */
-export const AddLink = ({ collection, label = "Add Instance" }) => {
+export const AddLink = ({ collection, label = "Add Instance", type = "primary", size = "sm" }) => {
   const collectPath = urlWithoutParams(collection["@id"]);
 
   if (canEdit(collection, ["add"])) {
-    return <Button.Link href={`${collectPath}#!add`}>{label}</Button.Link>;
+    return <Button.Link type={type} size={size} href={`${collectPath}#!add`}>{label}</Button.Link>;
   }
 };
 
 AddLink.propTypes = {
   collection: PropTypes.object.isRequired,
   label: PropTypes.string,
+  type: PropTypes.string,
+  size: PropTypes.string,
 };
 
 export const AddInstancePage = ({ collection }) => {
@@ -262,7 +264,7 @@ AddableItem.propTypes = {
  * URL, allowing the user to Add an object of the schema type to the
  * collection.
  */
-export const AddItemFromSchema = ({ schema, label = "Add Instance" }) => {
+export const AddItemFromSchema = ({ schema, label = "Add Instance", type = "primary", size = "sm" }) => {
   const { session } = useContext(SessionContext);
   const collectPath = collectionPath(schema);
 
@@ -276,11 +278,13 @@ export const AddItemFromSchema = ({ schema, label = "Add Instance" }) => {
   }, [session, collectPath]);
 
   if (collection) {
-    return <AddLink collection={collection} label={label} />;
+    return <AddLink collection={collection} label={label} type={type} size={size}/>;
   }
 };
 
 AddItemFromSchema.propTypes = {
   schema: PropTypes.object.isRequired,
   label: PropTypes.string,
+  type: PropTypes.string,
+  size: PropTypes.string,
 };

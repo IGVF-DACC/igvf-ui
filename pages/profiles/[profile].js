@@ -17,7 +17,7 @@ const Schema = ({ schema, changelog }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <AddItemFromSchema schema={schema} label="Add" />
+      <AddItemFromSchema schema={schema} label="Add" size="md"/>
       <DataPanel>
         <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
           <pre className="overflow-x-scroll p-1">
