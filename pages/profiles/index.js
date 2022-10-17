@@ -18,7 +18,12 @@ const ChildElement = (props) => {
         <Link href={`${schema["$id"].replace(".json", "")}`} key={props.title}>
           <a className="block">{props.title}</a>
         </Link>
-        <AddItemFromSchema schema={schema} label="add" type="primary-outline" size="sm"/>
+        <AddItemFromSchema
+          schema={schema}
+          label="add"
+          type="primary-outline"
+          size="sm"
+        />
       </div>
     );
   } else if (Object.keys(props.child).length > 0) {
