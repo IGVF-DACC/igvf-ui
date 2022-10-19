@@ -9,6 +9,7 @@ import { useAuthenticated } from "./authentication";
 import { useRouter } from "next/router";
 // lib
 import FetchRequest from "../lib/fetch-request";
+import FlashMessage from './flash-message';
 
 export const useEditor = (action) => {
   /**
@@ -243,7 +244,18 @@ const EditPage = ({ item }) => {
           itemPath={path}
           saveEnabled={editorStatus.canSave}
         />
-        {saveErrors.length > 0 && <SavedErrors errors={saveErrors} />}
+        {saveErrors.length > 0 &&
+          saveErrors.map((error) =>
+            <FlashMessage
+              key={error.description}
+              message={error.keys ? `${error.keys}: ${error.description}` : `${error.description}`}
+              onClose={() => {
+                const filteredErrors = saveErrors.filter((e) => e.description != error.description);
+                setSaveErrors(filteredErrors);
+              }}
+            />
+          )
+        }
       </div>
     </div>
   );
