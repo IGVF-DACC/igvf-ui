@@ -276,7 +276,7 @@ AddableItem.propTypes = {
 export const AddItemFromSchema = ({
   schema,
   label = "Add Instance",
-  type = "primary",
+  type = "primary-outline",
   size = "sm",
 }) => {
   const { session } = useContext(SessionContext);
