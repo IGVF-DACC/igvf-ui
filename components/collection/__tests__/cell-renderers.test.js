@@ -380,13 +380,13 @@ describe("Test cell renderers in a <CollectionTable>", () => {
       ).getAllByTestId("health-status-history");
       expect(histories).toHaveLength(2);
       expect(histories[0]).toHaveTextContent(
-        "January 4, 2022 – January 10, 2022"
+        "January 4, 2022 - January 10, 2022"
       );
       expect(histories[1]).toHaveTextContent(
         "Running fever 103F, feeling tired"
       );
       expect(histories[1]).toHaveTextContent(
-        "December 3, 2021 – January 10, 2022"
+        "December 3, 2021 - January 10, 2022"
       );
       expect(histories[1]).toHaveTextContent(
         "Running fever 103F, feeling tired"
