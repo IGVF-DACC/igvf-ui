@@ -76,6 +76,23 @@ Attachment.propTypes = {
 };
 
 /**
+ * Display a generic boolean as a "yes" or "no" string.
+ */
+const Boolean = ({ id, source }) => {
+  if (source[id]) {
+    return <>{source[id] ? "Yes" : "No"}</>;
+  }
+  return null;
+};
+
+Boolean.propTypes = {
+  // Name of the property displayed in a cell
+  id: PropTypes.string.isRequired,
+  // Object displayed in a row
+  source: PropTypes.object.isRequired,
+};
+
+/**
  * Display the `external_resources` property of a donor object. This takes care of those both with
  * and without a `resource_url` property, displaying a link to an external site if the external
  * resource includes `resource_url`.
@@ -402,6 +419,7 @@ export const typeRenderers = {
   "path-array": PathArray, // Array of paths
   "simple-array": SimpleArray, // Array of strings or numbers
   simple: null, // String, number, boolean, or null get default renderer
+  boolean: Boolean, // Boolean value
   unknown: UnknownObject, // Complex array or object with no dedicated renderer
   url: Url, // External URL string
 };
@@ -453,11 +471,13 @@ export const detectPropertyTypes = (property, profile) => {
       }
     } else if (
       propertyDefinition.type === "number" ||
-      propertyDefinition.type === "integer" ||
-      propertyDefinition.type === "boolean"
+      propertyDefinition.type === "integer"
     ) {
-      // Individual number or boolean.
+      // Individual number.
       propertyType = "simple";
+    } else if (propertyDefinition.type === "boolean") {
+      // Boolean value.
+      propertyType = "boolean";
     } else {
       // Unknown type; display as JSON.
       propertyType = "unknown";
