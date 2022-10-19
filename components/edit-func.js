@@ -1,4 +1,5 @@
 // node_modules
+import { PencilSquareIcon } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
 import React from "react";
@@ -120,8 +121,8 @@ export const EditLink = ({ item }) => {
   const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
   if (canEdit(item)) {
     return (
-      <Button.Link href={editPath} navigationClick={() => {}}>
-        Edit JSON
+      <Button.Link href={editPath} className="w-12 mt-2">
+        <PencilSquareIcon title="Edit"/>
       </Button.Link>
     );
   }
