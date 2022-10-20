@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -18,60 +19,63 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const DifferentiatedTissueList = ({ differentiatedTissues }) => {
+  const tissuesList = differentiatedTissues["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={differentiatedTissues}>
-        {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
-          if (differentiatedTissues.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={differentiatedTissues}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageSamples.map((differentiatedTissue) => {
-                    const termName =
-                      differentiatedTissue.biosample_term?.term_name;
-                    return (
-                      <CollectionItem
-                        key={differentiatedTissue.uuid}
-                        testid={differentiatedTissue.uuid}
-                        href={differentiatedTissue["@id"]}
-                        label={`Differentiated Tissue ${differentiatedTissue.accession}`}
-                        status={differentiatedTissue.status}
-                      >
-                        <CollectionItemName>
-                          {`${termName ? `${termName} — ` : ""}${
-                            differentiatedTissue.accession
-                          }`}
-                        </CollectionItemName>
-                        <CollectionData>
-                          <div>{differentiatedTissue.taxa}</div>
-                        </CollectionData>
-                      </CollectionItem>
-                    );
-                  })}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={differentiatedTissues}>
+        <Collection items={tissuesList}>
+          {({ pageItems: pageSamples, pagerStatus, pagerAction }) => {
+            if (tissuesList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={tissuesList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageSamples.map((differentiatedTissue) => {
+                      const termName =
+                        differentiatedTissue.biosample_term?.term_name;
+                      return (
+                        <CollectionItem
+                          key={differentiatedTissue.uuid}
+                          testid={differentiatedTissue.uuid}
+                          href={differentiatedTissue["@id"]}
+                          label={`Differentiated Tissue ${differentiatedTissue.accession}`}
+                          status={differentiatedTissue.status}
+                        >
+                          <CollectionItemName>
+                            {`${termName ? `${termName} — ` : ""}${
+                              differentiatedTissue.accession
+                            }`}
+                          </CollectionItemName>
+                          <CollectionData>
+                            <div>{differentiatedTissue.taxa}</div>
+                          </CollectionData>
+                        </CollectionItem>
+                      );
+                    })}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 DifferentiatedTissueList.propTypes = {
   // Differentiated tissue list to display
-  differentiatedTissues: PropTypes.arrayOf(PropTypes.object).isRequired,
+  differentiatedTissues: PropTypes.object.isRequired,
 };
 
 export default DifferentiatedTissueList;
@@ -89,7 +93,7 @@ export const getServerSideProps = async ({ req }) => {
     const breadcrumbs = await buildBreadcrumbs(differentiatedTissues, "title");
     return {
       props: {
-        differentiatedTissues: differentiatedTissues["@graph"],
+        differentiatedTissues: differentiatedTissues,
         pageContext: { title: differentiatedTissues.title },
         breadcrumbs,
       },

@@ -1,6 +1,7 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -18,51 +19,57 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const UserList = ({ users }) => {
+  const usersList = users["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={users}>
-        {({ pageItems: pageUsers, pagerStatus, pagerAction }) => {
-          if (users.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent collection={users} pagerStatus={pagerStatus}>
-                  {pageUsers.map((user) => (
-                    <CollectionItem
-                      key={user.uuid}
-                      testid={user.uuid}
-                      href={user["@id"]}
-                      label={`User ${user.name}`}
-                      status={user.status}
-                    >
-                      <CollectionItemName>{user.title}</CollectionItemName>
-                      {user.lab && (
-                        <Link href={user.lab["@id"]}>
-                          <a>{user.lab.title}</a>
-                        </Link>
-                      )}
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={users}>
+        <Collection items={usersList}>
+          {({ pageItems: pageUsers, pagerStatus, pagerAction }) => {
+            if (usersList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={usersList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageUsers.map((user) => (
+                      <CollectionItem
+                        key={user.uuid}
+                        testid={user.uuid}
+                        href={user["@id"]}
+                        label={`User ${user.name}`}
+                        status={user.status}
+                      >
+                        <CollectionItemName>{user.title}</CollectionItemName>
+                        {user.lab && (
+                          <Link href={user.lab["@id"]}>
+                            <a>{user.lab.title}</a>
+                          </Link>
+                        )}
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 UserList.propTypes = {
   // Users to display in the list
-  users: PropTypes.array.isRequired,
+  users: PropTypes.object.isRequired,
 };
 
 export default UserList;
@@ -79,7 +86,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        users: users["@graph"],
+        users: users,
         pageContext: { title: users.title },
         breadcrumbs,
       },

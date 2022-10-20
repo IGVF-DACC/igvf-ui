@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -18,54 +19,57 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const DocumentList = ({ documents }) => {
+  const documentsList = documents["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={documents}>
-        {({ pageItems: pageDocuments, pagerStatus, pagerAction }) => {
-          if (documents.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={documents}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageDocuments.map((document) => (
-                    <CollectionItem
-                      key={document.uuid}
-                      testid={document.uuid}
-                      href={document["@id"]}
-                      label={`Document ${document.description}`}
-                      status={document.status}
-                    >
-                      <CollectionItemName>
-                        {document.description}
-                      </CollectionItemName>
-                      <div>
-                        <DocumentAttachmentLink document={document} />
-                      </div>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={documents}>
+        <Collection items={documentsList}>
+          {({ pageItems: pageDocuments, pagerStatus, pagerAction }) => {
+            if (documentsList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={documentsList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageDocuments.map((document) => (
+                      <CollectionItem
+                        key={document.uuid}
+                        testid={document.uuid}
+                        href={document["@id"]}
+                        label={`Document ${document.description}`}
+                        status={document.status}
+                      >
+                        <CollectionItemName>
+                          {document.description}
+                        </CollectionItemName>
+                        <div>
+                          <DocumentAttachmentLink document={document} />
+                        </div>
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 DocumentList.propTypes = {
   // Documents to display in the list
-  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  documents: PropTypes.object.isRequired,
 };
 
 export default DocumentList;
@@ -81,7 +85,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        documents: documents["@graph"],
+        documents: documents,
         pageContext: { title: documents.title },
         breadcrumbs,
       },

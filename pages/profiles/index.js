@@ -1,6 +1,7 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { AddItemFromSchema } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import PagePreamble from "../../components/page-preamble";
@@ -13,10 +14,16 @@ const ChildElement = (props) => {
   const schema = props.schemas[props.schemaKey];
   if (schema && schema.title) {
     return (
-      <div className={`px-${props.indentation}`}>
+      <div className={`px-${props.indentation} flex space-x-1 my-1`}>
         <Link href={`${schema["$id"].replace(".json", "")}`} key={props.title}>
           <a className="block">{props.title}</a>
         </Link>
+        <AddItemFromSchema
+          schema={schema}
+          label="Add"
+          type="primary-outline"
+          size="sm"
+        />
       </div>
     );
   } else if (Object.keys(props.child).length > 0) {

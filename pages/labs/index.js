@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -17,47 +18,53 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const LabList = ({ labs }) => {
+  const labsList = labs["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={labs}>
-        {({ pageItems: pageLabs, pagerStatus, pagerAction }) => {
-          if (labs.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent collection={labs} pagerStatus={pagerStatus}>
-                  {pageLabs.map((lab) => (
-                    <CollectionItem
-                      key={lab.uuid}
-                      testid={lab.uuid}
-                      href={lab["@id"]}
-                      label={`Lab ${lab.title}`}
-                      status={lab.status}
-                    >
-                      <CollectionItemName>{lab.title}</CollectionItemName>
-                      <div>{lab.institute_label}</div>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={labs}>
+        <Collection items={labsList}>
+          {({ pageItems: pageLabs, pagerStatus, pagerAction }) => {
+            if (labsList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={labsList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageLabs.map((lab) => (
+                      <CollectionItem
+                        key={lab.uuid}
+                        testid={lab.uuid}
+                        href={lab["@id"]}
+                        label={`Lab ${lab.title}`}
+                        status={lab.status}
+                      >
+                        <CollectionItemName>{lab.title}</CollectionItemName>
+                        <div>{lab.institute_label}</div>
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 LabList.propTypes = {
   // Labs to display in the list
-  labs: PropTypes.array.isRequired,
+  labs: PropTypes.object.isRequired,
 };
 
 export default LabList;
@@ -73,7 +80,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        labs: labs["@graph"],
+        labs: labs,
         pageContext: { title: labs.title },
         breadcrumbs,
       },

@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { AddableItem } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -17,50 +18,53 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
 const AwardList = ({ awards }) => {
+  const awardsList = awards["@graph"];
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <Collection items={awards}>
-        {({ pageItems: pageAwards, pagerStatus, pagerAction }) => {
-          if (awards.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={awards}
-                  pagerStatus={pagerStatus}
-                >
-                  {pageAwards.map((award) => (
-                    <CollectionItem
-                      key={award.uuid}
-                      testid={award.uuid}
-                      href={award["@id"]}
-                      label={`Award ${award.name}`}
-                      status={award.status}
-                    >
-                      <CollectionItemName>{award.name}</CollectionItemName>
-                      <div>{award.title}</div>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
+      <AddableItem collection={awards}>
+        <Collection items={awardsList}>
+          {({ pageItems: pageAwards, pagerStatus, pagerAction }) => {
+            if (awardsList.length > 0) {
+              return (
+                <>
+                  <CollectionHeader
+                    pagerStatus={pagerStatus}
+                    pagerAction={pagerAction}
+                  />
+                  <CollectionContent
+                    collection={awardsList}
+                    pagerStatus={pagerStatus}
+                  >
+                    {pageAwards.map((award) => (
+                      <CollectionItem
+                        key={award.uuid}
+                        testid={award.uuid}
+                        href={award["@id"]}
+                        label={`Award ${award.name}`}
+                        status={award.status}
+                      >
+                        <CollectionItemName>{award.name}</CollectionItemName>
+                        <div>{award.title}</div>
+                      </CollectionItem>
+                    ))}
+                  </CollectionContent>
+                </>
+              );
+            }
 
-          return <NoCollectionData />;
-        }}
-      </Collection>
+            return <NoCollectionData />;
+          }}
+        </Collection>
+      </AddableItem>
     </>
   );
 };
 
 AwardList.propTypes = {
   // Awards to display in the list
-  awards: PropTypes.array.isRequired,
+  awards: PropTypes.object.isRequired,
 };
 
 export default AwardList;
@@ -76,7 +80,7 @@ export const getServerSideProps = async ({ req }) => {
     );
     return {
       props: {
-        awards: awards["@graph"],
+        awards: awards,
         pageContext: { title: awards.title },
         breadcrumbs,
       },
