@@ -9,7 +9,7 @@ import { useAuthenticated } from "./authentication";
 import { useRouter } from "next/router";
 // lib
 import FetchRequest from "../lib/fetch-request";
-import FlashMessage from './flash-message';
+import FlashMessage from "./flash-message";
 
 export const useEditor = (action) => {
   /**
@@ -216,19 +216,21 @@ const EditPage = ({ item }) => {
           canSave: true,
           errors: [],
         });
-        const errors = response.errors ?
-          response.errors.map((err) => ({
-            description: err.description,
-            keys: err.name
-              .map((val) => {
-                return `\`${val}\``;
-              })
-              .join(", "),
-          })) :
-          [{
-            keys: null,
-            description: "General error when trying to save",
-          }];
+        const errors = response.errors
+          ? response.errors.map((err) => ({
+              description: err.description,
+              keys: err.name
+                .map((val) => {
+                  return `\`${val}\``;
+                })
+                .join(", "),
+            }))
+          : [
+              {
+                keys: null,
+                description: "General error when trying to save",
+              },
+            ];
         setSaveErrors(errors);
       }
     });
@@ -250,17 +252,22 @@ const EditPage = ({ item }) => {
           saveEnabled={editorStatus.canSave}
         />
         {saveErrors.length > 0 &&
-          saveErrors.map((error) =>
+          saveErrors.map((error) => (
             <FlashMessage
               key={error.description}
-              message={error.keys ? `${error.keys}: ${error.description}` : `${error.description}`}
+              message={
+                error.keys
+                  ? `${error.keys}: ${error.description}`
+                  : `${error.description}`
+              }
               onClose={() => {
-                const filteredErrors = saveErrors.filter((e) => e.description != error.description);
+                const filteredErrors = saveErrors.filter(
+                  (e) => e.description != error.description
+                );
                 setSaveErrors(filteredErrors);
               }}
             />
-          )
-        }
+          ))}
       </div>
     </div>
   );
