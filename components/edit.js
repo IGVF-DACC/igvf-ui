@@ -216,14 +216,19 @@ const EditPage = ({ item }) => {
           canSave: true,
           errors: [],
         });
-        const errors = response.errors.map((err) => ({
-          description: err.description,
-          keys: err.name
-            .map((val) => {
-              return `\`${val}\``;
-            })
-            .join(", "),
-        }));
+        const errors = response.errors ?
+          response.errors.map((err) => ({
+            description: err.description,
+            keys: err.name
+              .map((val) => {
+                return `\`${val}\``;
+              })
+              .join(", "),
+          })) :
+          [{
+            keys: null,
+            description: "General error when trying to save",
+          }];
         setSaveErrors(errors);
       }
     });
