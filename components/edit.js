@@ -45,7 +45,9 @@ export const EditableItem = ({ item, children }) => {
   ) : (
     <>
       {children}
-      <EditLink item={item} />
+      <div className="float-right">
+        <EditLink item={item} />
+      </div>
     </>
   );
 };
