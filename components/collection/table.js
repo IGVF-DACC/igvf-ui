@@ -20,6 +20,7 @@ import Modal from "../modal";
 import SessionContext from "../session-context";
 import SortableGrid from "../sortable-grid";
 // components/collection
+import generateTableColumns from "./generate-table-columns";
 import CollectionCount from "./count";
 import CollectionDownload from "./download";
 // lib
@@ -27,9 +28,8 @@ import {
   clearHiddenColumnsFromUrl,
   extractHiddenColumnIdsFromUrl,
   filterHiddenColumns,
-  flattenCollection,
   generateHiddenColumnsUrl,
-  generateTableColumns,
+  getCollectionType,
   loadStoredHiddenColumns,
   saveStoredHiddenColumns,
   sortColumns,
@@ -439,10 +439,10 @@ const CollectionTable = ({ collection, pagerStatus }) => {
   // True if hidden columns are determined by hashtag instead of localStorage
   const [isHiddenColumnsFromUrl, setIsHiddenColumnsFromUrl] = useState(false);
   // Get the collection type from the first collection item, if any
-  const collectionType = collection[0]?.["@type"][0] || "";
+  const collectionType = getCollectionType(collection);
   // Unfiltered table columns for the current collection type; memoize for useEffect dependency
   const columns = useMemo(
-    () => (profiles ? generateTableColumns(profiles[collectionType]) : []),
+    () => (profiles ? generateTableColumns(profiles, collectionType) : []),
     [profiles, collectionType]
   );
   // Keep a ref of the scrollable table DOM <div> so we can detect scroll position
@@ -533,7 +533,6 @@ const CollectionTable = ({ collection, pagerStatus }) => {
   }, [collectionType, columns, isHiddenColumnsFromUrl]);
 
   if (collectionType && profiles) {
-    const flattenedCollection = flattenCollection(collection);
     const filteredColumns = filterHiddenColumns(columns, hiddenColumns);
     const sortedColumns = sortColumns(filteredColumns);
     return (
@@ -554,7 +553,7 @@ const CollectionTable = ({ collection, pagerStatus }) => {
             />
           )}
           <CollectionDownload
-            collection={flattenedCollection}
+            collection={collection}
             columns={sortedColumns}
             hiddenColumns={hiddenColumns}
             collectionType={collectionType}
@@ -564,7 +563,7 @@ const CollectionTable = ({ collection, pagerStatus }) => {
         <ScrollIndicators gridRef={gridRef}>
           <DataGridContainer ref={gridRef}>
             <SortableGrid
-              data={flattenedCollection}
+              data={collection}
               columns={sortedColumns}
               startIndex={startIndex}
               endIndex={endIndex}
@@ -583,7 +582,7 @@ CollectionTable.propTypes = {
   // Collection to display in a table
   collection: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Collection pager status
-  pagerStatus: PropTypes.exact({
+  pagerStatus: PropTypes.shape({
     // Number of items per page
     itemsPerPage: PropTypes.number.isRequired,
     // Index of the page of items to display

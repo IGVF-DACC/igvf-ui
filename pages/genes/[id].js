@@ -9,6 +9,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
+import ChromosomeLocations from "../../components/chromosome-locations";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
@@ -80,16 +81,7 @@ const Gene = ({ gene }) => {
               <>
                 <DataItemLabel>Gene Locations</DataItemLabel>
                 <DataItemValue>
-                  <ul>
-                    {gene.locations.map((location, index) => (
-                      <li key={index} className="flex items-center">
-                        {`${location.chromosome}:${location.start}-${location.end}`}
-                        <div className="ml-2 bg-gray-300 px-1.5 text-xs font-semibold dark:bg-gray-700">
-                          {location.assembly}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  <ChromosomeLocations locations={gene.locations} />
                 </DataItemValue>
               </>
             )}
