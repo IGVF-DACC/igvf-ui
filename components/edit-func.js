@@ -121,9 +121,9 @@ export const EditLink = ({ item }) => {
   const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
   if (canEdit(item)) {
     return (
-      <Button.Link href={editPath} className="w-12 mt-2">
+      <Button.Icon href={editPath} className="mt-2 hover:bg-button-primary">
         <PencilSquareIcon title="Edit"/>
-      </Button.Link>
+      </Button.Icon>
     );
   }
   return null;

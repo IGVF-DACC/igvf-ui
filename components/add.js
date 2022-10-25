@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { empty } from "empty-schema";
 import { PROFILE_COLLECTIONS } from "../lib/profiles";
 import { urlWithoutParams } from "../lib/general";
+import { DocumentPlusIcon } from "@heroicons/react/20/solid";
 
 /**
  *
@@ -84,26 +85,22 @@ const convertOptionalIntoRequiredSchema = (schema) => {
  */
 export const AddLink = ({
   collection,
-  label = "Add Instance",
-  type = "primary",
-  size = "sm",
+  type = "primary-outline",
 }) => {
   const collectPath = urlWithoutParams(collection["@id"]);
 
   if (canEdit(collection, ["add"])) {
     return (
-      <Button.Link type={type} size={size} href={`${collectPath}#!add`}>
-        {label}
-      </Button.Link>
+      <Button.Icon type={type} hasBorder={false} href={`${collectPath}#!add`}>
+        <DocumentPlusIcon  title="Add"/>
+      </Button.Icon>
     );
   }
 };
 
 AddLink.propTypes = {
   collection: PropTypes.object.isRequired,
-  label: PropTypes.string,
   type: PropTypes.string,
-  size: PropTypes.string,
 };
 
 export const AddInstancePage = ({ collection }) => {
@@ -276,8 +273,7 @@ AddableItem.propTypes = {
 export const AddItemFromSchema = ({
   schema,
   label = "Add Instance",
-  type = "primary-outline",
-  size = "sm",
+  type = "primary",
 }) => {
   const { session } = useContext(SessionContext);
   const collectPath = collectionPath(schema);
@@ -293,7 +289,7 @@ export const AddItemFromSchema = ({
 
   if (collection) {
     return (
-      <AddLink collection={collection} label={label} type={type} size={size} />
+      <AddLink collection={collection} label={label} type={type} />
     );
   }
 };
@@ -302,5 +298,4 @@ AddItemFromSchema.propTypes = {
   schema: PropTypes.object.isRequired,
   label: PropTypes.string,
   type: PropTypes.string,
-  size: PropTypes.string,
 };

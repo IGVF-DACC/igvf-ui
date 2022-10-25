@@ -21,7 +21,7 @@ const ChildElement = (props) => {
         <AddItemFromSchema
           schema={schema}
           label="Add"
-          type="primary-outline"
+          type="primary"
           size="sm"
         />
       </div>
