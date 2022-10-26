@@ -1,10 +1,11 @@
 // node_modules
 import PropTypes from "prop-types";
 import { marked } from "marked";
+import { useEffect, useState } from "react";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
-import PagePreamble from "../../components/page-preamble";
 import { DataPanel, DataAreaTitle } from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -12,6 +13,22 @@ import FetchRequest from "../../lib/fetch-request";
 import { AddItemFromSchema } from "../../components/add";
 
 const Schema = ({ schema, changelog }) => {
+  const [profileType, setProfileType] = useState("");
+  console.log("SCHEMA %o", schema);
+
+  useEffect(() => {
+    const request = new FetchRequest({ backend: true });
+    const schemaId = schema["$id"].match(/^\/profiles\/(.+).json$/)[1];
+    request
+      .getObject(`/api/mapprofile?profile=${schemaId}`)
+      .then((response) => {
+        setProfileType(response.profile_type);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [schema]);
+
   const html = marked(changelog);
   return (
     <>
