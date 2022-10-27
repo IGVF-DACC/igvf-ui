@@ -11,6 +11,7 @@ import { SaveCancelControl, SavedErrors, sortedJson, useEditor } from "./edit";
 import { useRouter } from "next/router";
 import { empty } from "empty-schema";
 import { urlWithoutParams } from "../lib/general";
+import ProfileMapContext from "./profile-map";
 
 /**
  * Looks for an action in the item with a name in the list of given actions
@@ -268,22 +269,16 @@ export const AddItemFromSchema = ({
   type = "primary-outline",
   size = "sm",
 }) => {
-  const { session } = useContext(SessionContext);
+
+  const { profileMap } = useContext(ProfileMapContext);
 
   const [collection, setCollection] = useState(null);
 
   useEffect(() => {
     const schemaId = schema["$id"].match(/^\/profiles\/(.+).json$/)[1];
-    const request = new FetchRequest({ backend: true });
-    request
-      .getObject(`/api/mapprofile?profile=${schemaId}`)
-      .then((response) => {
-        setCollection(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [session, schema]);
+
+    setCollection(profileMap[schemaId]);
+  }, [profileMap, schema]);
 
   if (collection) {
     return (

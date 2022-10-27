@@ -21,6 +21,7 @@ import NavigationSection from "../components/navigation";
 import { Session } from "../components/session-context";
 // CSS
 import "../styles/globals.css";
+import { ProfileMap } from "../components/profile-map";
 
 const App = ({ Component, pageProps }) => {
   // Server session cookie.
@@ -113,17 +114,19 @@ const App = ({ Component, pageProps }) => {
         >
           <GlobalContext.Provider value={globalContext}>
             <Session>
-              <NavigationSection />
-              <div className="min-w-0 shrink grow px-8 py-2 text-black dark:text-white">
-                {pageProps.serverSideError ? (
-                  <Error
-                    statusCode={pageProps.serverSideError.code}
-                    title={pageProps.serverSideError.description}
-                  />
-                ) : (
-                  <Component {...pageProps} />
-                )}
-              </div>
+              <ProfileMap>
+                <NavigationSection />
+                <div className="min-w-0 shrink grow px-8 py-2 text-black dark:text-white">
+                  {pageProps.serverSideError ? (
+                    <Error
+                      statusCode={pageProps.serverSideError.code}
+                      title={pageProps.serverSideError.description}
+                    />
+                  ) : (
+                    <Component {...pageProps} />
+                  )}
+                </div>
+              </ProfileMap>
             </Session>
           </GlobalContext.Provider>
         </Auth0Provider>
