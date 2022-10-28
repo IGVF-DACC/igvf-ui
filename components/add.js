@@ -269,7 +269,6 @@ export const AddItemFromSchema = ({
   type = "primary-outline",
   size = "sm",
 }) => {
-
   const { profileMap } = useContext(ProfileMapContext);
 
   const [collection, setCollection] = useState(null);
