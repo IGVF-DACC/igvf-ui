@@ -6,6 +6,28 @@ const ProfileMapContext = createContext({
   profileMap: {},
 });
 
+/**
+ * This component is used in _App to generate the mappings between schemas
+ * and their corresponding collection in the backend.
+ *
+ * Schemas define what types of objects can go inside a collection, so
+ * there's a natural correspondence between schemas and collections.
+ * For example the schema for /profiles/human_donor/ has a corresponding
+ * collection /human-donors/. If a component needs to know what
+ * collection corresponds to a given schema, it can use the ProfileMapContext
+ * with:
+ *
+ * const { profileMap } = useContext(ProfileMapContext);
+ *
+ * Then the mapping can be accessed with `profileMap[schemaId]` where
+ * schemaId is something like "human_donor", like above.
+ *
+ * This works by going through the nextjs api in the pages/api/mapprofile.js
+ * which provides the actual mapping.
+ *
+ * @returns A ProfileMapContext provided with all the mappings between
+ * schemas and collections
+ */
 export const ProfileMap = ({ children }) => {
   const [mapping, setMapping] = useState({});
 
