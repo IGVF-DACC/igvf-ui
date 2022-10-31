@@ -23,7 +23,12 @@ const Instruction = ({ title, className = null, children }) => {
         <QuestionMarkCircleIcon />
       </Button.Icon>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <Modal.Header onClose={() => setIsOpen(false)}>{title}</Modal.Header>
+        <Modal.Header
+          closeLabel="Close instructions"
+          onClose={() => setIsOpen(false)}
+        >
+          {title}
+        </Modal.Header>
         <Modal.Body>
           <div className={className}>{children}</div>
         </Modal.Body>
@@ -40,12 +45,3 @@ Instruction.propTypes = {
 };
 
 export default Instruction;
-
-/**
- * Displays a small note to explain something immediately before it.
- */
-const Note = ({ children }) => {
-  return <div className="text-sm text-gray-500">{children}</div>;
-};
-
-Instruction.Note = Note;

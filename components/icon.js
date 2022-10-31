@@ -4,14 +4,16 @@
  */
 
 import PropTypes from "prop-types";
+/* istanbul ignore file */
 
 const Icon = {
-  Award: ({ className = null }) => (
+  Award: ({ className = null, testid = "icon-award" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
+      data-testid={testid}
     >
       <path
         d="M18.3,7.5l-1-1.3c-0.1-0.2-0.2-0.4-0.2-0.7V3.8c0-0.5-0.3-0.9-0.8-1.1l-1.6-0.5c-0.2-0.1-0.4-0.2-0.6-0.4
@@ -25,22 +27,24 @@ const Icon = {
       <polygon points="10,3.6 11.4,6.5 14.4,6.9 12.2,9 12.7,12.1 10,10.6 7.3,12.1 7.8,9 5.6,6.9 8.6,6.5 " />
     </svg>
   ),
-  Circle: ({ className = null }) => (
+  Circle: ({ className = null, testid = "icon-circle" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
+      data-testid={testid}
     >
       <circle cx="10" cy="10" r="10" />
     </svg>
   ),
-  Donor: ({ className = null }) => (
+  Donor: ({ className = null, testid = "icon-donor" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
+      data-testid={testid}
     >
       <path
         d="M15,1.4H5L0,10l5,8.6h10l5-8.6L15,1.4z M13.3,12.1l-0.7,0.6v4.9H7.5v-4.9L6.7,12V7.8c0-0.9,0.7-1.6,1.6-1.6H10
@@ -48,13 +52,14 @@ const Icon = {
       />
     </svg>
   ),
-  Gene: ({ className = null }) => (
+  Gene: ({ className = null, testid = "icon-gene" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       stroke="currentColor"
       fill="none"
+      data-testid={testid}
     >
       <g className="stroke-2">
         <path
@@ -68,12 +73,13 @@ const Icon = {
       </g>
     </svg>
   ),
-  Sample: ({ className = null }) => (
+  Sample: ({ className = null, testid = "icon-sample" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
+      data-testid={testid}
     >
       <path
         d="M16.6,0h-1.5H5.3H3.8v1.2h1.5v3.7V11v4.1c0,2.7,2.2,4.9,4.9,4.9s4.9-2.2,4.9-4.9V11V4.9V1.2h1.5V0z M13.7,7H6.6
@@ -81,12 +87,13 @@ const Icon = {
       />
     </svg>
   ),
-  Splat: ({ className = null }) => (
+  Splat: ({ className = null, testid = "icon-splat" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
+      data-testid={testid}
     >
       <path
         d="M19,14c0,0.6-0.2,1.1-0.6,1.4C18,15.8,17.5,16,17,16c-0.6,0-1.1-0.2-1.6-0.5c-0.5-0.3-1.2-1-2.2-2
@@ -102,36 +109,45 @@ const Icon = {
       />
     </svg>
   ),
-  TableColumnsHidden: ({ className = null }) => (
+  TableColumnsHidden: ({
+    className = null,
+    testid = "icon-table-columns-hidden",
+  }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
+      data-testid={testid}
     >
       <rect x="0" y="7.5" width="6" height="5" />
       <path d="M12,8.5v3H8v-3H12 M13,7.5H7v5h6V7.5L13,7.5z" />
       <rect x="14" y="7.5" width="6" height="5" />
     </svg>
   ),
-  TableColumnsVisible: ({ className = null }) => (
+  TableColumnsVisible: ({
+    className = null,
+    testid = "icon-table-columns-visible",
+  }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
+      data-testid={testid}
     >
       <rect x="0" y="8" width="6" height="4" />
       <rect x="7" y="8" width="6" height="4" />
       <rect x="14" y="8" width="6" height="4" />
     </svg>
   ),
-  Treatment: ({ className = null }) => (
+  Treatment: ({ className = null, testid = "icon-treatment" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
+      data-testid={testid}
     >
       <path d="M3.4,19.4c-0.8,0.8-2,0.8-2.8,0c-0.8-0.8-0.8-2,0-2.8s3.8-1,4.6-1.9C4.4,15.6,4.1,18.7,3.4,19.4z" />
       <path d="M18.9,1.1c-1.5-1.5-3.8-1.5-5.3,0l-3.2,3.2l5.3,5.3l3.2-3.2C20.4,4.9,20.4,2.6,18.9,1.1z" />
@@ -148,30 +164,39 @@ const Icon = {
  */
 Icon.Award.propTypes = {
   className: PropTypes.string,
+  testid: PropTypes.string,
 };
 Icon.Circle.propTypes = {
   className: PropTypes.string,
+  testid: PropTypes.string,
 };
 Icon.Donor.propTypes = {
   className: PropTypes.string,
+  testid: PropTypes.string,
 };
 Icon.Gene.propTypes = {
   className: PropTypes.string,
+  testid: PropTypes.string,
 };
 Icon.Sample.propTypes = {
   className: PropTypes.string,
+  testid: PropTypes.string,
 };
 Icon.Splat.propTypes = {
   className: PropTypes.string,
+  testid: PropTypes.string,
 };
 Icon.TableColumnsHidden.propTypes = {
   className: PropTypes.string,
+  testid: PropTypes.string,
 };
 Icon.TableColumnsVisible.propTypes = {
   className: PropTypes.string,
+  testid: PropTypes.string,
 };
 Icon.Treatment.propTypes = {
   className: PropTypes.string,
+  testid: PropTypes.string,
 };
 
 export default Icon;

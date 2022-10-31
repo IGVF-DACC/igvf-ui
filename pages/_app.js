@@ -5,7 +5,7 @@ import Head from "next/head";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 // lib
-import { onRedirectCallback } from "../lib/authentication";
+import onRedirectCallback from "../lib/authentication-redirect";
 import {
   AUTH0_AUDIENCE,
   AUTH0_CLIENT_ID,

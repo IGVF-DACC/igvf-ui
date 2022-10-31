@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
  */
 export const useAuthenticated = () => {
   const { isLoading, isAuthenticated } = useAuth0();
+
   // Caches the value of `isAuthenticated` the last time `isLoading` was false.
   const [stableAuthenticated, setStableAuthenticated] = useState(() =>
     isLoading ? false : isAuthenticated

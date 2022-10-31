@@ -104,6 +104,16 @@ $ docker compose down -v
 
 This project uses the [React Testing Library (RTL)](https://testing-library.com/docs/react-testing-library/intro/). Next.js provides a [primer on creating your own Jest tests](https://nextjs.org/docs/testing#jest-and-react-testing-library). You need to use [RTL queries](https://testing-library.com/docs/react-testing-library/cheatsheet/#queries) to extract portions of the DOM to test. You then need a combination of the [Jest matchers](https://jestjs.io/docs/expect) and [RTL matchers](https://github.com/testing-library/jest-dom#table-of-contents) to perform the tests.
 
+Jest tests use the [coveralls](https://coveralls.io/) code coverage service. We must strive to get 100% code coverage with Jest tests, or make separate tickets to get to 100% coverage if doing so in a primary ticket would cause too much code review churn.
+
+##### Excluding Files From Coveralls
+
+In extremely rare cases, some Javascript files might not make sense to write Jest tests for. In this case, you can exclude the file from coveralls coverage by including the following comment after the import lines:
+
+```
+/* istanbul ignore file */
+```
+
 ### Cypress Tests
 
 Use [Cypress](https://www.cypress.io) for end-to-end integration testing, such as testing entire pages, interacting with those pages as a user would, and testing navigation between pages.

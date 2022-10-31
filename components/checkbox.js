@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
  */
 const Checkbox = ({ checked, name, onChange, className = "", children }) => {
   return (
-    <label className={className}>
+    <label data-testid="checkbox-label" className={className}>
       <input
         className="mr-1"
         type="checkbox"

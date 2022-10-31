@@ -165,6 +165,58 @@ describe("Test cell renderers in a <CollectionTable>", () => {
     });
   });
 
+  describe("Boolean cell-rendering tests", () => {
+    it("renders a boolean value", () => {
+      const COLUMN_EMBRYONIC = 2;
+      const COLUMN_COUNT = 3;
+
+      const collection = [
+        {
+          "@id": "/biosamples/8183c760-0304-11ed-b939-0242ac120002",
+          "@type": ["Biosample", "Item"],
+          embryonic: true,
+        },
+        {
+          "@id": "/biosamples/467c72a2-4f84-2c8f-96b0-ec8715e18185",
+          "@type": ["Biosample", "Item"],
+          embryonic: false,
+        },
+        {
+          "@id": "/biosamples/467c72a2-4f84-2c8f-96b0-ec8715e18185",
+          "@type": ["Biosample", "Item"],
+        },
+      ];
+
+      render(
+        <SessionContext.Provider value={{ profiles }}>
+          <CollectionTable
+            collection={collection}
+            pagerStatus={{ itemsPerPage: 10, pageIndex: 1, totalPages: 1 }}
+          />
+        </SessionContext.Provider>
+      );
+      const cells = screen.getAllByRole("cell");
+
+      // Test a true embryonic value.
+      let embryonicCell = cells[COLUMN_EMBRYONIC + 0 * COLUMN_COUNT];
+      let embryonicCellContent =
+        within(embryonicCell).queryByTestId("cell-type-boolean");
+      expect(embryonicCellContent).toBeInTheDocument();
+
+      // Test a false embryonic value.
+      embryonicCell = cells[COLUMN_EMBRYONIC + 1 * COLUMN_COUNT];
+      embryonicCellContent =
+        within(embryonicCell).queryByTestId("cell-type-boolean");
+      expect(embryonicCellContent).toBeInTheDocument();
+
+      // Test a non-existent embryonic value.
+      embryonicCell = cells[COLUMN_EMBRYONIC + 2 * COLUMN_COUNT];
+      embryonicCellContent =
+        within(embryonicCell).queryByTestId("cell-type-boolean");
+      expect(embryonicCellContent).toBeNull();
+    });
+  });
+
   describe("`attachment` cell rendering tests", () => {
     const COLUMN_ATTACHMENT = 1;
 
@@ -582,7 +634,7 @@ describe("Test cell renderers in a <CollectionTable>", () => {
 
       // Layout should show truncated JSON.
       const unknown = within(cells[COLUMN_LAYOUT]).getByTestId(
-        "unknown-object"
+        "cell-type-unknown-object"
       );
       expect(unknown).toHaveTextContent(
         '{"blocks":[{"@id":"#block1","body":"# Donor Help This is some help text about donors.","@type":"mark...'

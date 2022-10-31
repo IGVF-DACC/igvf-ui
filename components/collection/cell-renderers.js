@@ -30,7 +30,7 @@ const MAX_CELL_JSON_LENGTH = 100;
 const AtId = ({ source }) => {
   return (
     <Link href={source["@id"]}>
-      <a>{source["@id"]}</a>
+      <a data-testid="cell-type-atid">{source["@id"]}</a>
     </Link>
   );
 };
@@ -55,6 +55,7 @@ const Attachment = ({ source }) => {
         target="_blank"
         rel="noreferrer"
         aria-label={`Download ${source.attachment.download}`}
+        data-testid="cell-type-attachment"
       >
         {source.attachment.download}
       </a>
@@ -79,8 +80,10 @@ Attachment.propTypes = {
  * Display a generic boolean as a "yes" or "no" string.
  */
 const Boolean = ({ id, source }) => {
-  if (source[id]) {
-    return <>{source[id] ? "Yes" : "No"}</>;
+  if (source[id] !== undefined) {
+    return (
+      <div data-testid="cell-type-boolean">{source[id] ? "Yes" : "No"}</div>
+    );
   }
   return null;
 };
@@ -100,7 +103,7 @@ Boolean.propTypes = {
 const ExternalResources = ({ source }) => {
   if (source.external_resources?.length > 0) {
     return (
-      <SeparatedList>
+      <SeparatedList testid="cell-type-external-resources">
         {source.external_resources.map((resource, index) => (
           <div key={index} className="my-2 first:mt-0 last:mb-0">
             {resource.resource_url ? (
@@ -147,7 +150,12 @@ ExternalResources.propTypes = {
  */
 const GeneLocations = ({ source }) => {
   if (source.locations?.length > 0) {
-    return <ChromosomeLocations locations={source.locations} />;
+    return (
+      <ChromosomeLocations
+        locations={source.locations}
+        testid="cell-type-gene-locations"
+      />
+    );
   }
   return null;
 };
@@ -167,7 +175,7 @@ GeneLocations.propTypes = {
 const HealthStatusHistory = ({ source }) => {
   if (source.health_status_history?.length > 0) {
     return (
-      <div>
+      <div data-testid="cell-type-health-status-history">
         {source.health_status_history.map((healthStatus, index) => (
           <div
             key={index}
@@ -209,9 +217,11 @@ HealthStatusHistory.propTypes = {
 const PageParent = ({ source }) => {
   if (source.parent) {
     return (
-      <Link href={source.parent}>
-        <a>{source.parent}</a>
-      </Link>
+      <div data-testid="cell-type-page-parent">
+        <Link href={source.parent}>
+          <a>{source.parent}</a>
+        </Link>
+      </div>
     );
   }
   return null;
@@ -235,9 +245,11 @@ const Path = ({ id, source }) => {
     // property. So if this path property has an object, get its @id and use that as the link.
     const resolvedPath = typeof path === "object" ? path["@id"] : path;
     return (
-      <Link href={resolvedPath}>
-        <a>{resolvedPath}</a>
-      </Link>
+      <div data-testid="cell-type-path">
+        <Link href={resolvedPath}>
+          <a>{resolvedPath}</a>
+        </Link>
+      </div>
     );
   }
   return null;
@@ -257,7 +269,7 @@ const PathArray = ({ id, source }) => {
   const paths = source[id];
   if (paths?.length > 0) {
     return (
-      <div>
+      <div data-testid="path-array">
         {paths.map((path, index) => {
           // The collection page's `getServerSideProps()` might have embedded the linked object in
           // this property. So if this path property has an object instead of a path string, get
@@ -289,7 +301,11 @@ PathArray.propTypes = {
 const SimpleArray = ({ id, source }) => {
   const arrayProperty = source[id];
   if (arrayProperty) {
-    return <span>{arrayProperty.join(", ")}</span>;
+    return (
+      <span data-testid="cell-type-simple-array">
+        {arrayProperty.join(", ")}
+      </span>
+    );
   }
   return null;
 };
@@ -319,7 +335,7 @@ const UnknownObject = ({ id, source }) => {
         : json;
 
     return (
-      <div data-testid="unknown-object">
+      <div data-testid="cell-type-unknown-object">
         {displayJson}
         <Button size="sm" onClick={() => setJsonModalOpen(true)}>
           View JSON
@@ -357,7 +373,12 @@ const Url = ({ id, source }) => {
   const urlProperty = source[id];
   if (urlProperty) {
     return (
-      <a href={urlProperty} target="_blank" rel="noreferrer">
+      <a
+        href={urlProperty}
+        target="_blank"
+        rel="noreferrer"
+        data-testid="cell-type-url"
+      >
         {urlProperty}
       </a>
     );

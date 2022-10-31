@@ -30,9 +30,13 @@ ChromosomeLocation.propTypes = {
 /**
  * Display an array of gene locations and assemblies.
  */
-const ChromosomeLocations = ({ locations, className = null }) => {
+const ChromosomeLocations = ({
+  locations,
+  className = null,
+  testid = null,
+}) => {
   return (
-    <ul className={className}>
+    <ul className={className} data-testid={testid}>
       {locations.map((location, index) => (
         <li key={index} className="[&>div]:flex [&>div]:items-center">
           <ChromosomeLocation location={location} />
@@ -47,6 +51,8 @@ ChromosomeLocations.propTypes = {
   locations: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Tailwind CSS class name to apply to the wrapper around the gene location array display
   className: PropTypes.string,
+  // Test ID for wrapper element
+  testid: PropTypes.string,
 };
 
 export default ChromosomeLocations;
