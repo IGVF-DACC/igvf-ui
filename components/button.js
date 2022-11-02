@@ -259,10 +259,8 @@ const Icon = ({
   onClick,
   type = "primary",
   id = null,
-  size = "6",
   label,
   isDisabled = false,
-  hasBorder = true,
   className = "",
   children,
 }) => {
@@ -273,14 +271,12 @@ const Icon = ({
     });
   });
 
-  const borderClass = hasBorder ? "border" : "";
-
   return (
     <button
       type="button"
       id={id}
       onClick={onClick}
-      className={`block h-${size} w-${size} rounded-full ${borderClass} p-1 ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonFillTypeClasses[type]} ${className}`}
+      className={`block h-6 w-6 rounded-full border p-1 ${buttonTypeClasses[type]} ${borderTypeClasses[type]} ${buttonFillTypeClasses[type]} ${className}`}
       aria-label={label}
       disabled={isDisabled}
     >
@@ -294,8 +290,6 @@ Icon.propTypes = {
   onClick: PropTypes.func.isRequired,
   // HTML ID of the button element
   id: PropTypes.string,
-  // Size of the icon, default "6"
-  size: PropTypes.string,
   // Accessible label of the button for screen readers
   label: PropTypes.string.isRequired,
   // Button color type
@@ -319,8 +313,6 @@ Icon.propTypes = {
   isDisabled: PropTypes.bool,
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
-  // If Icon has a border or not
-  hasBorder: PropTypes.bool,
 };
 
 Button.Icon = Icon;
