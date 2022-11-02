@@ -17,8 +17,8 @@ const Schema = ({ schema, changelog }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <div className="mb-2">
-        <AddItemFromSchema schema={schema} label="Add" size="md" />
+      <div className="mb-2 flex flex-row-reverse">
+        <AddItemFromSchema type="primary-outline" schema={schema} label="Add" />
       </div>
       <DataPanel>
         <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
