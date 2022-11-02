@@ -75,7 +75,6 @@ const convertOptionalIntoRequiredSchema = (schema) => {
  * A custom label can be suplied with the `label` prop.
  */
 export const AddLink = ({ collection, type = "primary-outline" }) => {
-  console.log(collection);
   if (collection.status == "error") {
     return;
   }
