@@ -9,6 +9,8 @@ import { useAuthenticated } from "./authentication";
 import { useRouter } from "next/router";
 // lib
 import FetchRequest from "../lib/fetch-request";
+import FlashMessage from "./flash-message";
+import PagePreamble from "./page-preamble";
 
 export const useEditor = (action) => {
   /**
@@ -43,8 +45,10 @@ export const EditableItem = ({ item, children }) => {
     <EditPage item={item} />
   ) : (
     <>
+      <div className="float-right">
+        <EditLink item={item} />
+      </div>
       {children}
-      <EditLink item={item} />
     </>
   );
 };
@@ -63,7 +67,7 @@ export const SaveCancelControl = ({
     <div className="flex space-x-1">
       <Button.Link
         href={itemPath}
-        type="primary-outline"
+        type="secondary-outline"
         navigationClick={cancelClick}
       >
         Cancel
@@ -215,36 +219,70 @@ const EditPage = ({ item }) => {
           canSave: true,
           errors: [],
         });
-        const errors = response.errors.map((err) => ({
-          description: err.description,
-          keys: err.name
-            .map((val) => {
-              return `\`${val}\``;
+        const errors = response.errors
+          ? response.errors.map((err) => {
+              // Surround each err name with ``, and separate by comma
+              const keys = err.name
+                .map((val) => {
+                  return `\`${val}\``;
+                })
+                .join(", ");
+              // Unique identifier for this error object
+              const key = `${keys}${err.description}`;
+              return {
+                description: err.description,
+                keys: keys,
+                key: key,
+              };
             })
-            .join(", "),
-        }));
-        setSaveErrors(errors);
+          : [
+              {
+                description:
+                  "Error saving new item, ensure the fields are filled out correctly",
+                keys: "Generic Error",
+                key: "Generic ErrorError saving new item, ensure the fields are filled out correctly",
+              },
+            ];
+        setSaveErrors([...new Set(errors)]);
       }
     });
   };
 
   return (
     <div className="space-y-1">
+      <PagePreamble pageTitle={`Editing ${item["name"]}`} />
       <EditJson
+        title=""
         text={text}
         onChange={onChange}
         enabled={editorStatus.canEdit}
         errors={editorStatus.errors}
       />
-      <div>
+      <div className="flex flex-row-reverse">
         <SaveCancelControl
           cancelClick={() => ({})}
           saveClick={save}
           itemPath={path}
           saveEnabled={editorStatus.canSave}
         />
-        {saveErrors.length > 0 && <SavedErrors errors={saveErrors} />}
       </div>
+      {saveErrors.length > 0 &&
+        saveErrors.map((error) => (
+          <FlashMessage
+            key={error.description}
+            message={
+              error.keys
+                ? `${error.keys}: ${error.description}`
+                : `${error.description}`
+            }
+            onClose={() => {
+              const filteredErrors = saveErrors.filter(
+                (e) => e.description != error.description
+              );
+              setSaveErrors(filteredErrors);
+            }}
+          />
+        ))}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import Button from "./button";
 import { PropTypes } from "prop-types";
 import SessionContext from "./session-context";
 import { useContext } from "react";
@@ -7,11 +6,14 @@ import { useAuthenticated } from "./authentication";
 import EditJson, { canEdit } from "./edit-func";
 import { useState } from "react";
 import { useEffect } from "react";
-import { SaveCancelControl, SavedErrors, sortedJson, useEditor } from "./edit";
+import { SaveCancelControl, sortedJson, useEditor } from "./edit";
 import { useRouter } from "next/router";
 import { empty } from "empty-schema";
 import { PROFILE_COLLECTIONS } from "../lib/profiles";
 import { urlWithoutParams } from "../lib/general";
+import { DocumentPlusIcon } from "@heroicons/react/20/solid";
+import { LinkIcon } from "./link-icon";
+import FlashMessage from "./flash-message";
 
 /**
  *
@@ -82,28 +84,31 @@ const convertOptionalIntoRequiredSchema = (schema) => {
  * Generates a button link to the #!add url for the given collection.
  * A custom label can be suplied with the `label` prop.
  */
-export const AddLink = ({
-  collection,
-  label = "Add Instance",
-  type = "primary",
-  size = "sm",
-}) => {
+export const AddLink = ({ collection, type = "primary-outline" }) => {
+  console.log(collection);
+  if (collection.status == "error") {
+    return;
+  }
   const collectPath = urlWithoutParams(collection["@id"]);
 
   if (canEdit(collection, ["add"])) {
     return (
-      <Button.Link type={type} size={size} href={`${collectPath}#!add`}>
-        {label}
-      </Button.Link>
+      <LinkIcon
+        type={type}
+        label="Add"
+        hasBorder={false}
+        href={`${collectPath}#!add`}
+        size="8"
+      >
+        <DocumentPlusIcon title="Add" />
+      </LinkIcon>
     );
   }
 };
 
 AddLink.propTypes = {
   collection: PropTypes.object.isRequired,
-  label: PropTypes.string,
   type: PropTypes.string,
-  size: PropTypes.string,
 };
 
 export const AddInstancePage = ({ collection }) => {
@@ -205,22 +210,30 @@ export const AddInstancePage = ({ collection }) => {
           });
 
           const errors = response.errors
-            ? response.errors.map((err) => ({
-                description: err.description,
-                keys: err.name
+            ? response.errors.map((err) => {
+                // Surround each err name with ``, and separate by comma
+                const keys = err.name
                   .map((val) => {
                     return `\`${val}\``;
                   })
-                  .join(", "),
-              }))
+                  .join(", ");
+                // Unique identifier for this error object
+                const key = `${keys}${err.description}`;
+                return {
+                  description: err.description,
+                  keys: keys,
+                  key: key,
+                };
+              })
             : [
                 {
                   description:
                     "Error saving new item, ensure the fields are filled out correctly",
                   keys: "Generic Error",
+                  key: "Generic ErrorError saving new item, ensure the fields are filled out correctly",
                 },
               ];
-          setSaveErrors(errors);
+          setSaveErrors([...new Set(errors)]);
         }
       });
   };
@@ -237,15 +250,31 @@ export const AddInstancePage = ({ collection }) => {
         enabled={editorStatus.canEdit}
         errors={editorStatus.errors}
       />
-      <div>
+      <div className="flex flex-row-reverse">
         <SaveCancelControl
           cancelClick={cancel}
           saveClick={save}
           itemPath={urlWithoutParams(collection["@id"])}
           saveEnabled={editorStatus.canSave}
         />
-        {saveErrors.length > 0 && <SavedErrors errors={saveErrors} />}
       </div>
+      {saveErrors.length > 0 &&
+        saveErrors.map((error) => (
+          <FlashMessage
+            key={`${error.key}`}
+            message={
+              error.keys
+                ? `${error.keys}: ${error.description}`
+                : `${error.description}`
+            }
+            onClose={() => {
+              const filteredErrors = saveErrors.filter(
+                (e) => e.key != error.key
+              );
+              setSaveErrors(filteredErrors);
+            }}
+          />
+        ))}
     </div>
   );
 };
@@ -276,8 +305,7 @@ AddableItem.propTypes = {
 export const AddItemFromSchema = ({
   schema,
   label = "Add Instance",
-  type = "primary-outline",
-  size = "sm",
+  type = "primary",
 }) => {
   const { session } = useContext(SessionContext);
   const collectPath = collectionPath(schema);
@@ -292,9 +320,7 @@ export const AddItemFromSchema = ({
   }, [session, collectPath]);
 
   if (collection) {
-    return (
-      <AddLink collection={collection} label={label} type={type} size={size} />
-    );
+    return <AddLink collection={collection} label={label} type={type} />;
   }
 };
 
@@ -302,5 +328,4 @@ AddItemFromSchema.propTypes = {
   schema: PropTypes.object.isRequired,
   label: PropTypes.string,
   type: PropTypes.string,
-  size: PropTypes.string,
 };
