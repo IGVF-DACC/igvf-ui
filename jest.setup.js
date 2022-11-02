@@ -7,6 +7,7 @@ const config = {
     BACKEND_URL: "",
   },
   publicRuntimeConfig: {
+    SERVER_URL: "",
     PUBLIC_BACKEND_URL: "",
   },
 };

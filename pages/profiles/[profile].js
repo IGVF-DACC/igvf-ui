@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { marked } from "marked";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
-import PagePreamble from "../../components/page-preamble";
 import { DataPanel, DataAreaTitle } from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";

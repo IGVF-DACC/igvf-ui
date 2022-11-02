@@ -10,18 +10,8 @@ import { useEffect } from "react";
 import { SaveCancelControl, SavedErrors, sortedJson, useEditor } from "./edit";
 import { useRouter } from "next/router";
 import { empty } from "empty-schema";
-import { PROFILE_COLLECTIONS } from "../lib/profiles";
 import { urlWithoutParams } from "../lib/general";
-
-/**
- *
- * Given the schema ID, fetch the corresponding collection
- * name. Example: schema id /profiles/human_donor.json maps
- * to "human-donors"
- */
-export const collectionPath = (schema) => {
-  return PROFILE_COLLECTIONS[schema["$id"]];
-};
+import ProfileMapContext from "./profile-map";
 
 /**
  * Looks for an action in the item with a name in the list of given actions
@@ -279,17 +269,15 @@ export const AddItemFromSchema = ({
   type = "primary-outline",
   size = "sm",
 }) => {
-  const { session } = useContext(SessionContext);
-  const collectPath = collectionPath(schema);
+  const { profileMap } = useContext(ProfileMapContext);
 
   const [collection, setCollection] = useState(null);
 
   useEffect(() => {
-    const request = new FetchRequest({ session });
-    request.getObject(`/${collectPath}/?limit=0`).then((collection) => {
-      setCollection(collection);
-    });
-  }, [session, collectPath]);
+    const schemaId = schema["$id"].match(/^\/profiles\/(.+).json$/)[1];
+
+    setCollection(profileMap[schemaId]);
+  }, [profileMap, schema]);
 
   if (collection) {
     return (

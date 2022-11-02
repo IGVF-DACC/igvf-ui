@@ -13,6 +13,7 @@ services:
     command: npm test -- --coverage
     environment:
       - NODE_ENV=test
+      - SERVER_URL=http://localhost:3000
       - BACKEND_URL=http://nginx:8000
       - PUBLIC_BACKEND_URL=http://localhost:8000
     ports:
