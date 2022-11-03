@@ -12,8 +12,8 @@ import { empty } from "empty-schema";
 import { urlWithoutParams } from "../lib/general";
 import ProfileMapContext from "./profile-map";
 import { DocumentPlusIcon } from "@heroicons/react/20/solid";
-import { LinkIcon } from "./link-icon";
 import FlashMessage from "./flash-message";
+import Button from "./button";
 
 /**
  * Looks for an action in the item with a name in the list of given actions
@@ -75,22 +75,21 @@ const convertOptionalIntoRequiredSchema = (schema) => {
  * A custom label can be suplied with the `label` prop.
  */
 export const AddLink = ({ collection, type = "primary-outline" }) => {
-  if (collection.status == "error") {
+  if (collection.status === "error") {
     return;
   }
   const collectPath = urlWithoutParams(collection["@id"]);
 
   if (canEdit(collection, ["add"])) {
     return (
-      <LinkIcon
+      <Button.LinkIcon
         type={type}
         label="Add"
-        hasBorder={false}
         href={`${collectPath}#!add`}
-        size="8"
+        size="6"
       >
         <DocumentPlusIcon title="Add" />
-      </LinkIcon>
+      </Button.LinkIcon>
     );
   }
 };
@@ -198,6 +197,8 @@ export const AddInstancePage = ({ collection }) => {
             errors: [],
           });
 
+          const defaultDescription = "Error saving new item, ensure the fields are filled out correctly";
+          const defaultKeys = "Generic Error";
           const errors = response.errors
             ? response.errors.map((err) => {
                 // Surround each err name with ``, and separate by comma
@@ -216,10 +217,9 @@ export const AddInstancePage = ({ collection }) => {
               })
             : [
                 {
-                  description:
-                    "Error saving new item, ensure the fields are filled out correctly",
-                  keys: "Generic Error",
-                  key: "Generic ErrorError saving new item, ensure the fields are filled out correctly",
+                  description: defaultDescription,
+                  keys: defaultKeys,
+                  key: `${defaultKeys}${defaultDescription}`,
                 },
               ];
           setSaveErrors([...new Set(errors)]);
@@ -239,7 +239,7 @@ export const AddInstancePage = ({ collection }) => {
         enabled={editorStatus.canEdit}
         errors={editorStatus.errors}
       />
-      <div className="flex flex-row-reverse">
+      <div className="flex justify-end">
         <SaveCancelControl
           cancelClick={cancel}
           saveClick={save}
@@ -293,7 +293,6 @@ AddableItem.propTypes = {
  */
 export const AddItemFromSchema = ({
   schema,
-  label = "Add Instance",
   type = "primary",
 }) => {
   const { profileMap } = useContext(ProfileMapContext);
@@ -307,12 +306,11 @@ export const AddItemFromSchema = ({
   }, [profileMap, schema]);
 
   if (collection) {
-    return <AddLink collection={collection} label={label} type={type} />;
+    return <AddLink collection={collection} type={type} />;
   }
 };
 
 AddItemFromSchema.propTypes = {
   schema: PropTypes.object.isRequired,
-  label: PropTypes.string,
   type: PropTypes.string,
 };

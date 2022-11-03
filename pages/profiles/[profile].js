@@ -17,7 +17,7 @@ const Schema = ({ schema, changelog }) => {
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <div className="mb-2 flex flex-row-reverse">
+      <div className="mb-2 flex justify-end">
         <AddItemFromSchema type="primary-outline" schema={schema} label="Add" />
       </div>
       <DataPanel>

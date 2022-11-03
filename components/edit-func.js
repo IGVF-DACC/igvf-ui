@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import React from "react";
 // components
 import Button from "./button";
-import { LinkIcon } from "./link-icon";
 
 export const canEdit = (item, actions = ["edit", "edit-json"]) => {
   if ("actions" in item) {
@@ -29,7 +28,7 @@ const Editor = dynamic(
   }
 );
 
-const JsonEditor = ({ text = "", onChange, enabled, errors = [] }) => {
+const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
   const annotations = errors.map((msg) => ({
     row: 0,
     column: 0,
@@ -93,7 +92,7 @@ ControlButton.propTypes = {
   isDisabled: PropTypes.bool,
 };
 
-const EditJson = ({ text = "", onChange, enabled = true, errors = [] }) => {
+const EditJson = ({ text, onChange, enabled = true, errors = [] }) => {
   return (
     <div className="relative m-px w-full border-2 border-solid border-slate-300">
       <JsonEditor
@@ -121,15 +120,15 @@ export const EditLink = ({ item }) => {
   const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
   if (canEdit(item)) {
     return (
-      <LinkIcon
+      <Button.LinkIcon
         label="Edit"
         href={editPath}
         className="mt-2"
-        size="8"
+        size="6"
         type="primary-outline"
       >
         <PencilSquareIcon title="Edit" />
-      </LinkIcon>
+      </Button.LinkIcon>
     );
   }
   return null;

@@ -45,7 +45,7 @@ export const EditableItem = ({ item, children }) => {
     <EditPage item={item} />
   ) : (
     <>
-      <div className="float-right">
+      <div className="flex justify-end">
         <EditLink item={item} />
       </div>
       {children}
@@ -219,6 +219,9 @@ const EditPage = ({ item }) => {
           canSave: true,
           errors: [],
         });
+
+        const defaultDescription = "Error saving new item, ensure the fields are filled out correctly";
+        const defaultKeys = "Generic Error";
         const errors = response.errors
           ? response.errors.map((err) => {
               // Surround each err name with ``, and separate by comma
@@ -237,10 +240,9 @@ const EditPage = ({ item }) => {
             })
           : [
               {
-                description:
-                  "Error saving new item, ensure the fields are filled out correctly",
-                keys: "Generic Error",
-                key: "Generic ErrorError saving new item, ensure the fields are filled out correctly",
+                description: defaultDescription,
+                keys: defaultKeys,
+                key: `${defaultKeys}${defaultDescription}`,
               },
             ];
         setSaveErrors([...new Set(errors)]);
@@ -252,7 +254,6 @@ const EditPage = ({ item }) => {
     <div className="space-y-1">
       <PagePreamble pageTitle={`Editing ${item["name"]}`} />
       <EditJson
-        title=""
         text={text}
         onChange={onChange}
         enabled={editorStatus.canEdit}
