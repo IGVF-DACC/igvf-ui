@@ -197,7 +197,8 @@ export const AddInstancePage = ({ collection }) => {
             errors: [],
           });
 
-          const defaultDescription = "Error saving new item, ensure the fields are filled out correctly";
+          const defaultDescription =
+            "Error saving new item, ensure the fields are filled out correctly";
           const defaultKeys = "Generic Error";
           const errors = response.errors
             ? response.errors.map((err) => {
@@ -291,10 +292,7 @@ AddableItem.propTypes = {
  * URL, allowing the user to Add an object of the schema type to the
  * collection.
  */
-export const AddItemFromSchema = ({
-  schema,
-  type = "primary",
-}) => {
+export const AddItemFromSchema = ({ schema, type = "primary" }) => {
   const { profileMap } = useContext(ProfileMapContext);
 
   const [collection, setCollection] = useState(null);

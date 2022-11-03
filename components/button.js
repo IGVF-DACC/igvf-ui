@@ -326,7 +326,7 @@ Icon.propTypes = {
 /**
  * This is acts like a link like Button.Link but uses an icon like Button.Icon
  */
- const LinkIcon = ({
+const LinkIcon = ({
   href,
   navigationClick = () => {},
   type = "primary",

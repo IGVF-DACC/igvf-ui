@@ -220,7 +220,8 @@ const EditPage = ({ item }) => {
           errors: [],
         });
 
-        const defaultDescription = "Error saving new item, ensure the fields are filled out correctly";
+        const defaultDescription =
+          "Error saving new item, ensure the fields are filled out correctly";
         const defaultKeys = "Generic Error";
         const errors = response.errors
           ? response.errors.map((err) => {
