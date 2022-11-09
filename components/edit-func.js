@@ -1,4 +1,5 @@
 // node_modules
+import { PencilSquareIcon } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
 import React from "react";
@@ -35,7 +36,7 @@ const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
     type: "error",
   }));
 
-  const editor = (
+  return (
     <Editor
       value={text}
       mode="json"
@@ -62,7 +63,6 @@ const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
       }}
     />
   );
-  return editor;
 };
 
 JsonEditor.propTypes = {
@@ -120,9 +120,15 @@ export const EditLink = ({ item }) => {
   const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
   if (canEdit(item)) {
     return (
-      <Button.Link href={editPath} navigationClick={() => {}}>
-        Edit JSON
-      </Button.Link>
+      <Button.LinkIcon
+        label="Edit"
+        href={editPath}
+        className="mt-2"
+        size="6"
+        type="primary-outline"
+      >
+        <PencilSquareIcon title="Edit" />
+      </Button.LinkIcon>
     );
   }
   return null;
