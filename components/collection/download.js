@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
-import Button from "../button";
+import { Button } from "../form-elements";
 import Modal from "../modal";
 // lib
 import { generateTsvFromCollection } from "../../lib/collection-table";
@@ -76,7 +76,7 @@ const CollectionDownload = ({
         </Modal.Body>
         <Modal.Footer>
           <Button
-            type="primary-outline"
+            type="primary"
             onClick={() => setIsDownloadModalVisible(false)}
           >
             Close

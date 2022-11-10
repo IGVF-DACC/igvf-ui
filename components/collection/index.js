@@ -72,7 +72,7 @@ const CollectionItem = ({
 }) => {
   return (
     <div
-      className="my-0.5 flex border border-data-border bg-data-background px-2 first:mt-0 last:mb-0"
+      className="my-0.5 flex border border-panel bg-panel px-2 first:mt-0 last:mb-0"
       data-testid={`collection-list-item-${testid}`}
     >
       <ItemLink href={href} label={label} />

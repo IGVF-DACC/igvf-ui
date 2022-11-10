@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
-import AddObjectTrigger from "../../components/add-object-trigger";
 // components
+import AddObjectTrigger from "../../components/add-object-trigger";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   Collection,

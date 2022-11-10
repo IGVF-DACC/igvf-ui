@@ -58,7 +58,7 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { Children, cloneElement, isValidElement } from "react";
 // components
-import { FormLabel } from "./form";
+import { FormLabel } from ".";
 
 /**
  * This is the parent component that wraps the list of options.
@@ -67,7 +67,7 @@ const ListSelect = ({
   label = "",
   value,
   onChange,
-  multiple = false,
+  isMultiple = false,
   className = "",
   children,
 }) => {
@@ -77,7 +77,7 @@ const ListSelect = ({
    * @param {string,number} itemId Client's id for the clicked item
    */
   const onClickItem = (itemId) => {
-    if (multiple) {
+    if (isMultiple) {
       // Add or remove the item from the list of selected items.
       const newValue = [...value];
       if (newValue.includes(itemId)) {
@@ -98,22 +98,22 @@ const ListSelect = ({
     if (isValidElement(child)) {
       return cloneElement(child, {
         onClick: onClickItem,
-        selected: multiple
+        selected: isMultiple
           ? value.includes(child.props.id)
           : value === child.props.id,
-        multiple,
+        isMultiple,
         parentLabel: label,
       });
     }
 
-    // Not React compnent, so don't add props to the child.
+    // Not React component, so don't add props to the child.
     return child;
   });
 
   return (
-    <div className={`my-3 ${className}`}>
+    <div className={className}>
       {label && <FormLabel>{label}</FormLabel>}
-      <div className="flex rounded border border-data-border bg-data-background">
+      <div className="flex rounded border border-panel bg-panel">
         <div className="w-full overflow-y-scroll p-2">{clonedChildren}</div>
       </div>
     </div>
@@ -123,7 +123,7 @@ const ListSelect = ({
 ListSelect.propTypes = {
   // Label to display above the list
   label: PropTypes.string,
-  // ID of selected item, or array of IDs of selected items if `multiple` set
+  // ID of selected item, or array of IDs of selected items if `isMultiple` set
   value: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
@@ -134,7 +134,7 @@ ListSelect.propTypes = {
   // Function to call when the selected element(s) changed; client passes state-selection function
   onChange: PropTypes.func.isRequired,
   // True to allow multiple item selections
-  multiple: PropTypes.bool,
+  isMultiple: PropTypes.bool,
   // Tailwind CSS classes to apply to the wrapper element
   className: PropTypes.string,
 };
@@ -147,22 +147,22 @@ export const Option = ({
   id,
   label,
   selected,
-  multiple,
+  isMultiple,
   onClick,
   parentLabel,
   children,
 }) => {
   const selectedButtonStyle = selected ? "bg-slate-200 dark:bg-slate-800" : "";
-  const roundedCheckStyle = multiple ? "rounded-sm" : "rounded-full";
+  const roundedCheckStyle = isMultiple ? "rounded-sm" : "rounded-full";
   const selectedCheckStyle = selected
     ? "bg-slate-500"
-    : "border border-data-border";
+    : "border border-form-element";
 
   return (
     <button
       onClick={() => onClick(id)}
       className={`my-0.5 flex w-full items-center rounded p-1 px-2 ${selectedButtonStyle}`}
-      aria-label={`${parentLabel} ${label}${
+      aria-label={`${parentLabel ? `${parentLabel} ` : ""}${label}${
         selected ? " selected" : ""
       } list item`}
     >
@@ -186,10 +186,11 @@ Option.propTypes = {
   // Parent's label displayed above this list; required, but passed by <ListSelect>
   parentLabel: PropTypes.string,
   // True if <ListSelect> is in multiple selection mode
-  multiple: PropTypes.bool,
+  isMultiple: PropTypes.bool,
   // Client function to call when option is clicked
   onClick: PropTypes.func,
 };
 
 ListSelect.Option = Option;
+
 export default ListSelect;

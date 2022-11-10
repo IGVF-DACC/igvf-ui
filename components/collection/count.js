@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 const CollectionCount = ({ count }) => {
   if (count > 0) {
     return (
-      <div className="border-t border-r border-l border-data-border bg-gray-300 py-1 text-center text-xs dark:bg-gray-700">
+      <div className="border-t border-r border-l border-panel bg-gray-300 py-1 text-center text-xs dark:bg-gray-700">
         {count} {count === 1 ? "item" : "items"}
       </div>
     );

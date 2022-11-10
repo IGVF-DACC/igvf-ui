@@ -1,19 +1,20 @@
-import { PropTypes } from "prop-types";
-import SessionContext from "./session-context";
-import { useContext } from "react";
-import FetchRequest from "../lib/fetch-request";
-import { useAuthenticated } from "./authentication";
-import EditJson, { canEdit } from "./edit-func";
-import { useState } from "react";
-import { useEffect } from "react";
-import { SaveCancelControl, sortedJson, useEditor } from "./edit";
-import { useRouter } from "next/router";
+// node_modules
 import { empty } from "empty-schema";
-import { urlWithoutParams } from "../lib/general";
-import ProfileMapContext from "./profile-map";
-import { DocumentPlusIcon } from "@heroicons/react/20/solid";
+import { PlusIcon } from "@heroicons/react/20/solid";
+import { useRouter } from "next/router";
+import { PropTypes } from "prop-types";
+import { useContext, useState, useEffect } from "react";
+// components
+import { useAuthenticated } from "./authentication";
+import { SaveCancelControl, sortedJson, useEditor } from "./edit";
+import EditJson, { canEdit } from "./edit-func";
 import FlashMessage from "./flash-message";
-import Button from "./button";
+import { ButtonLink } from "./form-elements";
+import ProfileMapContext from "./profile-map";
+import SessionContext from "./session-context";
+// lib
+import FetchRequest from "../lib/fetch-request";
+import { urlWithoutParams } from "../lib/general";
 
 /**
  * Looks for an action in the item with a name in the list of given actions
@@ -74,7 +75,7 @@ const convertOptionalIntoRequiredSchema = (schema) => {
  * Generates a button link to the #!add url for the given collection.
  * A custom label can be suplied with the `label` prop.
  */
-export const AddLink = ({ collection, type = "primary-outline" }) => {
+export const AddLink = ({ collection }) => {
   if (collection.status === "error") {
     return;
   }
@@ -82,21 +83,21 @@ export const AddLink = ({ collection, type = "primary-outline" }) => {
 
   if (canEdit(collection, ["add"])) {
     return (
-      <Button.LinkIcon
-        type={type}
+      <ButtonLink
         label="Add"
         href={`${collectPath}#!add`}
-        size="6"
+        size="sm"
+        type="secondary"
+        hasIconOnly
       >
-        <DocumentPlusIcon title="Add" />
-      </Button.LinkIcon>
+        <PlusIcon title="Add" />
+      </ButtonLink>
     );
   }
 };
 
 AddLink.propTypes = {
   collection: PropTypes.object.isRequired,
-  type: PropTypes.string,
 };
 
 export const AddInstancePage = ({ collection }) => {
@@ -292,23 +293,16 @@ AddableItem.propTypes = {
  * URL, allowing the user to Add an object of the schema type to the
  * collection.
  */
-export const AddItemFromSchema = ({ schema, type = "primary" }) => {
+export const AddItemFromSchema = ({ schema }) => {
   const { profileMap } = useContext(ProfileMapContext);
-
-  const [collection, setCollection] = useState(null);
-
-  useEffect(() => {
-    const schemaId = schema["$id"].match(/^\/profiles\/(.+).json$/)[1];
-
-    setCollection(profileMap[schemaId]);
-  }, [profileMap, schema]);
+  const schemaId = schema["$id"].match(/^\/profiles\/(.+).json$/)[1];
+  const collection = profileMap[schemaId];
 
   if (collection) {
-    return <AddLink collection={collection} type={type} />;
+    return <AddLink collection={collection} />;
   }
 };
 
 AddItemFromSchema.propTypes = {
   schema: PropTypes.object.isRequired,
-  type: PropTypes.string,
 };

@@ -21,8 +21,8 @@ const Award = ({ award, pis }) => {
   return (
     <>
       <Breadcrumbs />
+      <PagePreamble />
       <EditableItem item={award}>
-        <PagePreamble />
         <DataPanel>
           <DataArea>
             <DataItemLabel>Status</DataItemLabel>

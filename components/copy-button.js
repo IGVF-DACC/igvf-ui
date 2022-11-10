@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
-import Button from "./button";
+import { Button } from "./form-elements";
 
 /**
  * This hook copies the given text to the clipboard. To trigger the copy action, call
@@ -58,7 +58,7 @@ const CopyButton = ({
   return (
     <Button
       onClick={initiateCopy}
-      disabled={disabled}
+      isDisabled={disabled}
       className={className}
       label={label}
     >
@@ -87,9 +87,14 @@ const Icon = ({ target, label, className = "", children }) => {
   const { isCopied, initiateCopy } = useCopyAction(target);
 
   return (
-    <Button.Icon onClick={initiateCopy} className={className} label={label}>
+    <Button
+      onClick={initiateCopy}
+      className={className}
+      label={label}
+      hasIconOnly
+    >
       {children(isCopied)}
-    </Button.Icon>
+    </Button>
   );
 };
 

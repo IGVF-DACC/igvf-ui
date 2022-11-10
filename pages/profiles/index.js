@@ -14,7 +14,9 @@ const ChildElement = (props) => {
   const schema = props.schemas[props.schemaKey];
   if (schema && schema.title) {
     return (
-      <div className={`px-${props.indentation} my-1 flex space-x-1`}>
+      <div
+        className={`px-${props.indentation} my-1 flex items-center space-x-1`}
+      >
         <Link
           href={`${schema["$id"].replace(".json", "")}`}
           key={props.title}
@@ -22,7 +24,7 @@ const ChildElement = (props) => {
         >
           {props.title}
         </Link>
-        <AddItemFromSchema schema={schema} label="Add" type="primary-outline" />
+        <AddItemFromSchema schema={schema} label="Add" type="primary" />
       </div>
     );
   } else if (Object.keys(props.child).length > 0) {

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
 import React from "react";
 // components
-import Button from "./button";
+import { Button, ButtonLink } from "./form-elements";
 
 export const canEdit = (item, actions = ["edit", "edit-json"]) => {
   if ("actions" in item) {
@@ -81,7 +81,7 @@ JsonEditor.propTypes = {
 
 const ControlButton = ({ onClick, isDisabled = false, children }) => {
   return (
-    <Button onClick={onClick} enabled={!isDisabled}>
+    <Button onClick={onClick} isDisabled={isDisabled}>
       {children}
     </Button>
   );
@@ -120,15 +120,15 @@ export const EditLink = ({ item }) => {
   const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
   if (canEdit(item)) {
     return (
-      <Button.LinkIcon
+      <ButtonLink
         label="Edit"
         href={editPath}
-        className="mt-2"
-        size="6"
-        type="primary-outline"
+        type="secondary"
+        size="sm"
+        hasIconOnly
       >
         <PencilSquareIcon title="Edit" />
-      </Button.LinkIcon>
+      </ButtonLink>
     );
   }
   return null;

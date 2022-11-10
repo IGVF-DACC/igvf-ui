@@ -7,7 +7,7 @@ import {
 import _ from "lodash";
 import PropTypes from "prop-types";
 // components
-import Button from "./button";
+import { Button } from "./form-elements";
 
 /**
  * Displays a pager control that lets the user choose a page of data to view, with ellipses
@@ -103,15 +103,16 @@ const Pager = ({ currentPage, totalPages, onClick, className }) => {
     <nav aria-label="Pagination" className={className}>
       <ul className="flex shrink">
         <li>
-          <Button.Icon
+          <Button
             type="primary"
             onClick={prevClick}
-            className="mr-1 h-8 w-8 sm:h-6 sm:w-6"
+            className="mr-1"
             label="Previous page"
             isDisabled={currentPage === 1}
+            hasIconOnly
           >
             <ChevronLeftIcon />
-          </Button.Icon>
+          </Button>
         </li>
         {pageNumbers.map((pageNumber) => {
           // Ellipses pages.
@@ -152,15 +153,16 @@ const Pager = ({ currentPage, totalPages, onClick, className }) => {
           );
         })}
         <li>
-          <Button.Icon
+          <Button
             type="primary"
-            className="ml-1 h-8 w-8 sm:h-6 sm:w-6"
+            className="ml-1"
             onClick={nextClick}
             label="Next page"
             isDisabled={currentPage === totalPages}
+            hasIconOnly
           >
             <ChevronRightIcon />
-          </Button.Icon>
+          </Button>
         </li>
       </ul>
     </nav>

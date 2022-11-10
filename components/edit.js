@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import React, { useContext, useRef, useState, useEffect } from "react";
 // components
-import Button from "./button";
+import { Button, ButtonLink } from "./form-elements";
 import EditJson, { EditLink, canEdit } from "./edit-func";
 import SessionContext from "./session-context";
 import { useAuthenticated } from "./authentication";
@@ -45,7 +45,7 @@ export const EditableItem = ({ item, children }) => {
     <EditPage item={item} />
   ) : (
     <>
-      <div className="flex justify-end">
+      <div className="mb-1 flex justify-end">
         <EditLink item={item} />
       </div>
       {children}
@@ -65,18 +65,14 @@ export const SaveCancelControl = ({
 }) => {
   return (
     <div className="flex space-x-1">
-      <Button.Link
+      <ButtonLink
         href={itemPath}
-        type="secondary-outline"
+        type="secondary"
         navigationClick={cancelClick}
       >
         Cancel
-      </Button.Link>
-      <Button
-        onClick={saveClick}
-        disabled={!saveEnabled}
-        type={saveEnabled ? "primary" : "info"}
-      >
+      </ButtonLink>
+      <Button onClick={saveClick} isDisabled={!saveEnabled} type="primary">
         Save
       </Button>
     </div>
