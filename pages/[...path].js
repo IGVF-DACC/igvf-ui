@@ -7,6 +7,8 @@ import FetchRequest from "../lib/fetch-request";
 // components
 import {
   Collection,
+  CollectionContent,
+  CollectionHeader,
   CollectionItem,
   CollectionItemName,
 } from "../components/collection";
@@ -28,20 +30,36 @@ const FallbackCollection = ({ collection }) => {
   return (
     <>
       <PagePreamble />
-      <Collection>
-        {collection.length > 0 ? (
-          collection.map((item) => (
-            <CollectionItem
-              key={item.uuid}
-              testid={item.uuid}
-              href={item["@id"]}
-            >
-              <CollectionItemName>{extractTitle(item)}</CollectionItemName>
-            </CollectionItem>
-          ))
-        ) : (
-          <NoCollectionData />
-        )}
+      <Collection items={collection}>
+        {({ pageItems, pagerStatus, pagerAction }) => {
+          if (collection.length > 0) {
+            return (
+              <>
+                <CollectionHeader
+                  pagerStatus={pagerStatus}
+                  pagerAction={pagerAction}
+                />
+                <CollectionContent
+                  collection={pageItems}
+                  pagerStatus={pagerStatus}
+                >
+                  {collection.map((item) => (
+                    <CollectionItem
+                      key={item.uuid}
+                      testid={item.uuid}
+                      href={item["@id"]}
+                    >
+                      <CollectionItemName>
+                        {extractTitle(item)}
+                      </CollectionItemName>
+                    </CollectionItem>
+                  ))}
+                </CollectionContent>
+              </>
+            );
+          }
+          return <NoCollectionData />;
+        }}
       </Collection>
     </>
   );
@@ -123,9 +141,9 @@ export const getServerSideProps = async ({ req, resolvedUrl }) => {
     return {
       props: {
         generic,
-        awards: awards?.["@graph"],
-        labs: labs?.["@graph"],
-        pages: pages?.["@graph"],
+        awards: awards ? awards["@graph"] : null,
+        labs: labs ? labs["@graph"] : null,
+        pages: pages ? pages["@graph"] : null,
         pageContext: { title: extractTitle(generic) },
         breadcrumbs,
       },
