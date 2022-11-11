@@ -2,20 +2,46 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import Image from "next/image";
 import PropTypes from "prop-types";
+import { useContext, useState } from "react";
 // components
 import {
+  AccessKeyItem,
   AccessKeyList,
   CreateAccessKeyTrigger,
 } from "../components/access-keys";
 import { DataPanel } from "../components/data-area";
 import PagePreamble from "../components/page-preamble";
+import SessionContext from "../components/session-context";
 import Spinner from "../components/spinner";
 // lib
 import FetchRequest from "../lib/fetch-request";
 
 const UserProfile = ({ sessionUser = null }) => {
+  // Keeps a current copy of the access keys for handling adds/deletes w/o relying on indexing.
+  const [accessKeys, setAccessKeys] = useState(
+    sessionUser ? sessionUser.access_keys : []
+  );
+  const { session } = useContext(SessionContext);
+
   const { isLoading, user } = useAuth0();
 
+  /**
+   * Called when the user adds a new access key.
+   */
+  const onAccessKeyChange = () => {
+    if (sessionUser) {
+      const request = new FetchRequest({ session });
+      request
+        .getObject(sessionUser["@id"], undefined, { isDbRequest: true })
+        .then((user) => {
+          if (FetchRequest.isResponseSuccess(user)) {
+            setAccessKeys(user.access_keys);
+          }
+        });
+    }
+  };
+
+  console.log("LENGTH %s", accessKeys.length);
   return (
     <>
       <PagePreamble />
@@ -35,9 +61,19 @@ const UserProfile = ({ sessionUser = null }) => {
                   />
                   <div className="ml-2">{user.name}</div>
                 </div>
-                <CreateAccessKeyTrigger />
-                {sessionUser && (
-                  <AccessKeyList accessKeys={sessionUser.access_keys} />
+                <CreateAccessKeyTrigger onAccessKeyChange={onAccessKeyChange} />
+                {accessKeys.length > 0 && (
+                  <AccessKeyList>
+                    {accessKeys.map((accessKey) => {
+                      return (
+                        <AccessKeyItem
+                          key={accessKey.uuid}
+                          accessKey={accessKey}
+                          onAccessKeyChange={onAccessKeyChange}
+                        />
+                      );
+                    })}
+                  </AccessKeyList>
                 )}
               </>
             ) : (
