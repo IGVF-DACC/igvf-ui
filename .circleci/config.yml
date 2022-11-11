@@ -39,7 +39,6 @@ jobs:
   cypress:
     machine:
       image: ubuntu-2004:202111-02
-      docker_layer_caching: true
     resource_class: large
     working_directory: ~/igvf-ui
     steps:
@@ -47,7 +46,7 @@ jobs:
       - run:
           name: Clone igvfd
           environment:
-            - IGVFD_BRANCH: dev
+            - IGVFD_BRANCH: try-deploy-indexer-to-cloud
           command: |
             git clone https://github.com/IGVF-DACC/igvfd.git --branch $IGVFD_BRANCH
       - run:
