@@ -29,6 +29,7 @@ describe("Content-Change Tests", () => {
     cy.get("#block2-type").select("Component");
     cy.get("#block2").type("SAMPLE_COUNT{enter}label=Sample Count");
     cy.get(`[aria-label="Save edits to page"]`).click();
+    cy.wait(1000);
     cy.contains("Updated content.");
     cy.contains("Sample Count");
 
@@ -40,6 +41,7 @@ describe("Content-Change Tests", () => {
     cy.get("textarea").should("have.length", 1);
     cy.get(`[aria-label="Delete block"]`).should("not.exist");
     cy.get(`[aria-label="Save edits to page"]`).click();
+    cy.wait(1000);
     cy.contains("Sample Count").should("not.exist");
   });
 
@@ -73,12 +75,14 @@ describe("Content-Change Tests", () => {
     cy.visit("/test-section/subpage#!edit");
     cy.get("#name").clear().type("new-subpage");
     cy.get(`[aria-label="Save edits to page"]`).click();
+    cy.wait(1000);
     cy.url().should("include", "/test-section/new-subpage");
 
     // Change the page's parent and verify its URL changes.
     cy.contains("Edit Page").click();
     cy.get(`[aria-label="Parent testpage list item"]`).click();
     cy.get(`[aria-label="Save edits to page"]`).click();
+    cy.wait(1000);
     cy.url().should("include", "/testpage/new-subpage");
   });
 
@@ -96,6 +100,7 @@ describe("Content-Change Tests", () => {
     cy.get("#title").type("Test Help Category");
     cy.get(`[aria-label="Parent help list item"]`).click();
     cy.get(`[aria-label="Save edits to page"]`).click();
+    cy.wait(1000);
 
     // Make sure the new top-level help page appears as a category on the help page.
     cy.get(`[data-testid="help"]`).click();
@@ -109,6 +114,7 @@ describe("Content-Change Tests", () => {
     cy.get("#title").type("Help Content");
     cy.get(`[aria-label="Parent test-help-category list item"]`).click();
     cy.get(`[aria-label="Save edits to page"]`).click();
+    cy.wait(1000);
 
     // Make sure the new help page appears as a regular help page.
     cy.get(`[data-testid="help"]`).click();
