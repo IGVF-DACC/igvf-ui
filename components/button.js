@@ -186,7 +186,7 @@ Button.displayName = "Button";
  */
 const Link = ({
   href,
-  navigationClick = () => {},
+  navigationClick = null,
   id = null,
   type = "primary",
   size = "md",
@@ -328,7 +328,7 @@ Icon.propTypes = {
  */
 const LinkIcon = ({
   href,
-  navigationClick = () => {},
+  navigationClick = null,
   type = "primary",
   id = null,
   size = "6",

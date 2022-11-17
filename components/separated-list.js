@@ -38,10 +38,15 @@ import React from "react";
  * </SeparatedList>
  * // Expected output: "First component, Second component LINK Third component, Fourth component"
  */
-const SeparatedList = ({ separator = ", ", className = "", children }) => {
+const SeparatedList = ({
+  separator = ", ",
+  className = "",
+  testid = null,
+  children,
+}) => {
   if (children.length > 0) {
     return (
-      <div className={className || ""}>
+      <div className={className || ""} data-testid={testid}>
         {children
           .map((item) => <React.Fragment key={item.key}>{item}</React.Fragment>)
           .reduce((combined, curr, index) => [
@@ -60,6 +65,8 @@ SeparatedList.propTypes = {
   separator: PropTypes.node,
   // Additional classes for wrapper element
   className: PropTypes.string,
+  // Test ID for wrapper element
+  testid: PropTypes.string,
 };
 
 export default SeparatedList;

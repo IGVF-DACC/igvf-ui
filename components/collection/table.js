@@ -1,9 +1,6 @@
 // node_modules
-import { motion } from "framer-motion";
 import {
   CheckIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   ClipboardDocumentCheckIcon,
 } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
@@ -23,6 +20,7 @@ import SortableGrid from "../sortable-grid";
 import generateTableColumns from "./generate-table-columns";
 import CollectionCount from "./count";
 import CollectionDownload from "./download";
+import ScrollIndicators from "./scroll-indicators";
 // lib
 import {
   clearHiddenColumnsFromUrl,
@@ -197,7 +195,11 @@ const ColumnUrlCopy = ({ hiddenColumns }) => {
           <>
             Copy URL Columns
             <div className="ml-1 h-4 w-4">
-              {isCopied ? <CheckIcon /> : <ClipboardDocumentCheckIcon />}
+              {isCopied ? (
+                <CheckIcon data-testid="icon-check" />
+              ) : (
+                <ClipboardDocumentCheckIcon data-testid="icon-clipboard-document-check" />
+              )}
             </div>
           </>
         );
@@ -345,90 +347,6 @@ const ColumnControls = ({ children }) => {
 };
 
 /**
- * Renders a single left- or right-pointing scroll indicator that fades out after appearing. Don't
- * attempt to compose the left-5 and right-5 Tailwind CSS classes or they'll get tree shaken.
- */
-const ScrollIndicator = ({ direction, children }) => {
-  return (
-    <motion.div
-      initial="visible"
-      animate="hidden"
-      variants={{ visible: { opacity: 1 }, hidden: { opacity: 0 } }}
-      transition={{ duration: 2 }}
-      className={`absolute top-5 h-10 w-10 bg-slate-500 ${
-        direction === "left" ? "left-5" : "right-5"
-      }`}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-ScrollIndicator.propTypes = {
-  // Direction of the scroll indicator
-  direction: PropTypes.oneOf(["left", "right"]).isRequired,
-};
-
-/**
- * Wrapper around the data grid to show scroll indicators when the table is horizontally scrollable.
- */
-const ScrollIndicators = ({ gridRef, children }) => {
-  // True if the table can be scrolled to the right
-  const [isScrollableRight, setIsScrollableRight] = useState(false);
-  // True if the table can be scrolled to the left
-  const [isScrollableLeft, setIsScrollableLeft] = useState(false);
-
-  /**
-   * Called when the mouse enters anywhere in the table. Determines whether the table can be
-   * scrolled to the right or left.
-   */
-  const onPointerEnter = () => {
-    // Determine if any portion of the table exists to the right of the visible portion.
-    const isRightScrollable =
-      gridRef.current.scrollWidth - Math.round(gridRef.current.scrollLeft) !==
-      gridRef.current.clientWidth;
-    setIsScrollableRight(isRightScrollable);
-
-    // Determine if any portion of the table exists to the left of the visible portion.
-    const isLeftScrollable = gridRef.current.scrollLeft > 0;
-    setIsScrollableLeft(isLeftScrollable);
-  };
-
-  /**
-   * Called when the mouse exits the table. Remove the scroll indicators from the DOM.
-   */
-  const onPointerLeave = () => {
-    setIsScrollableRight(false);
-    setIsScrollableLeft(false);
-  };
-
-  return (
-    <div
-      className="relative"
-      onPointerEnter={onPointerEnter}
-      onPointerLeave={onPointerLeave}
-    >
-      {isScrollableLeft && (
-        <ScrollIndicator direction="left">
-          <ChevronLeftIcon className="fill-white" />
-        </ScrollIndicator>
-      )}
-      {isScrollableRight && (
-        <ScrollIndicator direction="right">
-          <ChevronRightIcon className="fill-white" />
-        </ScrollIndicator>
-      )}
-      {children}
-    </div>
-  );
-};
-
-ScrollIndicators.propTypes = {
-  // Ref to the table DOM element
-  gridRef: PropTypes.object.isRequired,
-};
-
-/**
  * Displays the table view for a collection page, instead of a list view.
  */
 const CollectionTable = ({ collection, pagerStatus }) => {
@@ -453,10 +371,7 @@ const CollectionTable = ({ collection, pagerStatus }) => {
   let startIndex = 0;
   let endIndex = collection.length;
   if (pagerStatus.itemsPerPage > 0) {
-    startIndex =
-      pagerStatus.itemsPerPage > 0
-        ? (pagerStatus.pageIndex - 1) * pagerStatus.itemsPerPage
-        : 1;
+    startIndex = (pagerStatus.pageIndex - 1) * pagerStatus.itemsPerPage;
     endIndex = startIndex + pagerStatus.itemsPerPage;
   }
 

@@ -5,12 +5,14 @@ import { useState } from "react";
 import Button from "./button";
 
 /**
- *
+ * This hook copies the given text to the clipboard. To trigger the copy action, call
+ * `initiateCopy`, usually when the user clicks a button. The `isCopied` state is set to true for
+ * two seconds after after you call `initiateCopy`. This lets you temporarily display an indicator
+ * to the user that the copy was successful.
  * @param {string} target The text to copy to the clipboard.
- * @returns {object} {
- *   - isCopied {boolean} True if the user clicked the button within the last two seconds
- *   - initiateCopy {function} Call when the user clicks the button to initiate the copy action
- * }
+ * @returns {object}
+ * @returns {boolean} isCopied True if the user clicked the button within the last two seconds
+ * @returns {function} initiateCopy Call when the user clicks the button to initiate the copy action
  */
 export const useCopyAction = (target) => {
   // True if the user has clicked the copy button within the last two seconds

@@ -23,6 +23,7 @@ import {
 } from "../lib/authentication";
 import { BACKEND_URL } from "../lib/constants";
 import getProfiles from "../lib/profiles";
+/* istanbul ignore file */
 
 /**
  * Establishes the context to hold the back-end session record for the currently signed-in user.

@@ -80,6 +80,40 @@ const profiles = {
     },
   },
 
+  Biosample: {
+    title: "Biosample",
+    $id: "/profiles/biosample.json",
+    required: ["award", "lab", "source", "donors", "taxa", "biosample_term"],
+    properties: {
+      biosample_term: {
+        title: "Biosample Term",
+        description: "Ontology term identifying a biosample.",
+        type: "string",
+        linkTo: "SampleTerm",
+      },
+      donors: {
+        title: "Donors",
+        description: "Donor(s). Any contributing donor.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Donor",
+          description: "Donor(s).",
+          comment:
+            "See concrete class human_donor.json or rodent_donor.json for available identifiers.",
+          type: "string",
+          linkTo: "Donor",
+        },
+      },
+      embryonic: {
+        title: "Embryonic",
+        description: "Biosample is embryonic.",
+        type: "boolean",
+      },
+    },
+  },
+
   Document: {
     title: "Document",
     $id: "/profiles/document.json",

@@ -76,7 +76,7 @@ Modal.propTypes = {
  */
 const Header = ({
   onClose = null,
-  closeLabel = "",
+  closeLabel = "Close dialog",
   className = "",
   children,
 }) => {

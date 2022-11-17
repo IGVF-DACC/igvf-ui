@@ -349,12 +349,19 @@ describe("Button.Link component", () => {
     expect(container.firstChild).toHaveClass("border-button-info");
     expect(container.firstChild).toHaveClass("text-button-info");
   });
+
+  it("renders a primary link button with the correct classes with no navigationClick", () => {
+    const { container } = render(
+      <Button.Link href="/path">Primary</Button.Link>
+    );
+    expect(container.firstChild).toHaveClass("bg-button-primary");
+    expect(container.firstChild).toHaveClass("border-button-primary");
+    expect(container.firstChild).toHaveClass("text-white");
+  });
 });
 
 describe("Button.Icon component", () => {
-  const onClick = () => {
-    // Don't need anything.
-  };
+  const onClick = jest.fn();
 
   const Icon = () => {
     return (
@@ -550,5 +557,78 @@ describe("Button.Icon component", () => {
     expect(container.firstChild).toHaveClass("bg-transparent");
     expect(container.firstChild).toHaveClass("border-button-info");
     expect(container.firstChild).toHaveClass("fill-button-info");
+  });
+
+  it("renders an icon button that has no border class", () => {
+    const { container } = render(
+      <Button.Icon
+        onClick={onClick}
+        type="secondary"
+        label="secondary button"
+        hasBorder={false}
+      >
+        <Icon />
+      </Button.Icon>
+    );
+
+    expect(container.firstChild).toHaveClass("bg-button-secondary");
+    expect(container.firstChild).toHaveClass("border-button-secondary");
+    expect(container.firstChild).toHaveClass("fill-white");
+    expect(container.firstChild).not.toHaveClass("border");
+  });
+});
+
+describe("Button.LinkIcon component", () => {
+  const Icon = () => {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
+      </svg>
+    );
+  };
+
+  it("renders a link button for an icon that reacts to a custom click handler", () => {
+    const onClick = jest.fn();
+
+    const { container } = render(
+      <Button.LinkIcon
+        href="#"
+        navigationClick={onClick}
+        label="secondary button"
+      >
+        <Icon />
+      </Button.LinkIcon>
+    );
+
+    expect(container.firstChild).toHaveClass("bg-button-primary");
+    expect(container.firstChild).toHaveClass("border-button-primary");
+    expect(container.firstChild).toHaveClass("fill-white");
+    expect(container.firstChild).toHaveClass("border");
+    fireEvent.click(container.firstChild);
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders a link button for an icon that has no custom click handler", () => {
+    const { container } = render(
+      <Button.LinkIcon
+        href="#"
+        type="secondary"
+        label="secondary button"
+        borderClass
+      >
+        <Icon />
+      </Button.LinkIcon>
+    );
+
+    expect(container.firstChild).toHaveClass("bg-button-secondary");
+    expect(container.firstChild).toHaveClass("border-button-secondary");
+    expect(container.firstChild).toHaveClass("fill-white");
+    expect(container.firstChild).toHaveClass("border");
   });
 });
