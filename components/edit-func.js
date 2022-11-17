@@ -37,31 +37,35 @@ function JsonEditor({ text, onChange, enabled, errors = [] }) {
   }));
 
   return (
-    <Editor
-      value={text}
-      mode="json"
-      theme="solarized_light"
-      name="JSON Editor"
-      onLoad={() => ({})}
-      onChange={onChange}
-      fontSize={14}
-      showPrintMargin={true}
-      showGutter={true}
-      highlightActiveLine={true}
-      annotations={annotations}
-      width="100%"
-      readOnly={!enabled}
-      setOptions={{
-        enableBasicAutocompletion: true,
-        enableLiveAutocompletion: false,
-        enableSnippets: false,
-        showLineNumbers: true,
-        useWorker: false,
-        tabSize: 4,
-        maxLines: 1000,
-        minLines: 24,
-      }}
-    />
+    <>
+      <div className="relative m-px w-full border-2 border-solid border-slate-300">
+        <Editor
+          value={text}
+          mode="json"
+          theme="solarized_light"
+          name="JSON Editor"
+          onLoad={() => ({})}
+          onChange={onChange}
+          fontSize={14}
+          showPrintMargin={true}
+          showGutter={true}
+          highlightActiveLine={true}
+          annotations={annotations}
+          width="100%"
+          readOnly={!enabled}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: false,
+            enableSnippets: false,
+            showLineNumbers: true,
+            useWorker: false,
+            tabSize: 4,
+            maxLines: 1000,
+            minLines: 24,
+          }}
+        />
+      </div>
+    </>
   );
 }
 
@@ -72,7 +76,7 @@ JsonEditor.propTypes = {
   onChange: PropTypes.func.isRequired,
   // When false, the text field on the editor cannot be changed, and when true
   // editing is allowed
-  enabled: PropTypes.bool.isRequired,
+  enabled: PropTypes.bool,
   // If there are any errors in the text, these are passed on to the react-ace `annotations`
   // prop and are rendered in the editor component. Array elements are the error
   // messages as strings.

@@ -23,7 +23,7 @@ export function useEditor(action) {
   const router = useRouter();
 
   useEffect(() => {
-    const isEdit = document.URL.endsWith(`#!${action}`);
+    const isEdit = router.asPath.endsWith(`#!${action}`);
     // If the URL says edit but we aren't editing yet, set the state
     if (isEdit && !edit) {
       setEditing(true);
