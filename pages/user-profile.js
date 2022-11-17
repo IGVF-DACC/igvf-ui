@@ -41,7 +41,6 @@ const UserProfile = ({ sessionUser = null }) => {
     }
   };
 
-  console.log("LENGTH %s", accessKeys.length);
   return (
     <>
       <PagePreamble />
