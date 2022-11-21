@@ -40,7 +40,7 @@ jobs:
     machine:
       image: ubuntu-2004:202111-02
       docker_layer_caching: true
-    resource_class: large
+    resource_class: xlarge
     working_directory: ~/igvf-ui
     steps:
       - checkout
@@ -60,6 +60,7 @@ jobs:
           command: |
             cd igvfd
             docker-compose up -d
+            sleep 60 # Wait for infrastructure and indexing
       - run:
           name: Build igvf-ui
           command: |
@@ -70,6 +71,7 @@ jobs:
             # Match mounted volume to Docker user.
             sudo chown root:root -R .
             docker-compose up -d
+            sleep 60 # Wait for frontend to build and render
       - run:
           name: Run Cypress
           command: |

@@ -65,6 +65,7 @@ describe("collection-view tests", () => {
     cy.get("[role=columnheader]").contains("Award").should("exist");
     cy.get("input[name=aliases]").uncheck();
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist");
+    cy.wait(1000);
 
     cy.reload();
     cy.wait(1000);
@@ -94,6 +95,7 @@ describe("collection-view tests", () => {
     cy.get("input[name=aliases]").uncheck();
     cy.get("input[name=lot_id]").uncheck();
     cy.contains("Close").click();
+    cy.wait(1000);
     cy.contains("Copy URL Columns").click();
     cy.window().then((win) => {
       win.navigator.clipboard.readText().then((text) => {
@@ -129,6 +131,7 @@ describe("collection-view tests", () => {
 
     cy.get("input[name=amount]").uncheck();
     cy.get("input[name=amount_units]").uncheck();
+    cy.wait(1000);
 
     cy.visit("/treatments#hidden=aliases,lot_id");
     cy.reload();

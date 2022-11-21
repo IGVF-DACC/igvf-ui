@@ -5,7 +5,6 @@ import {
   ArrowPathIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
-import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { Fragment, useContext, useState } from "react";
 // components
@@ -143,7 +142,7 @@ AccessKeyModal.propTypes = {
 /**
  * Displays a button and modal to create a new access key.
  */
-export const CreateAccessKeyTrigger = () => {
+export const CreateAccessKeyTrigger = ({ onAccessKeyChange }) => {
   // True if modal displaying newly created access-keys is open
   const [isOpen, setOpen] = useState(false);
   // Access key ID
@@ -151,7 +150,6 @@ export const CreateAccessKeyTrigger = () => {
   // Access key secret
   const [accessKeySecret, setAccessKeySecret] = useState("");
 
-  const router = useRouter();
   const { session } = useContext(SessionContext);
 
   /**
@@ -163,9 +161,9 @@ export const CreateAccessKeyTrigger = () => {
       setAccessKeyId(response.access_key_id);
       setAccessKeySecret(response.secret_access_key);
 
-      // Rerender the page with the new access keys and with the modal showing the new access keys
-      // open.
-      router.replace(router.asPath);
+      // Tell the parent component that the access key list has changed. Open the modal to show the
+      // new access key to the user so they can copy it.
+      onAccessKeyChange();
       setOpen(true);
     });
   };
@@ -189,6 +187,11 @@ export const CreateAccessKeyTrigger = () => {
       )}
     </>
   );
+};
+
+CreateAccessKeyTrigger.propTypes = {
+  // Callback to tell the parent about the new access keys
+  onAccessKeyChange: PropTypes.func.isRequired,
 };
 
 /**
@@ -265,11 +268,10 @@ ResetAccessKeyTrigger.propTypes = {
 /**
  * Displays a button and warning modal to delete an access key.
  */
-const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
+const DeleteAccessKeyTrigger = ({ accessKeyId, onAccessKeyChange }) => {
   // True if access key delete warning modal is visible.
   const [isOpen, setOpen] = useState(false);
 
-  const router = useRouter();
   const { session } = useContext(SessionContext);
 
   /**
@@ -278,7 +280,7 @@ const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
   const onDelete = () => {
     deleteAccessKey(accessKeyId, session).then(() => {
       // Rerender the page with the deleted access key removed.
-      router.replace(router.asPath);
+      onAccessKeyChange();
     });
   };
 
@@ -332,19 +334,24 @@ const DeleteAccessKeyTrigger = ({ accessKeyId }) => {
 DeleteAccessKeyTrigger.propTypes = {
   // ID of access key to delete
   accessKeyId: PropTypes.string.isRequired,
+  // Callback to tell the parent the access key list has changed
+  onAccessKeyChange: PropTypes.func.isRequired,
 };
 
 /**
  * Displays a single access key and its associated controls.
  */
-const AccessKeyItem = ({ accessKey }) => {
+export const AccessKeyItem = ({ accessKey, onAccessKeyChange }) => {
   return (
     <>
       <div className="flex items-center justify-between border border-data-border px-3 py-2 md:px-2 md:py-1">
         <div className="font-mono">{accessKey.access_key_id}</div>
         <div className="flex gap-1">
           <ResetAccessKeyTrigger accessKeyId={accessKey.access_key_id} />
-          <DeleteAccessKeyTrigger accessKeyId={accessKey.access_key_id} />
+          <DeleteAccessKeyTrigger
+            accessKeyId={accessKey.access_key_id}
+            onAccessKeyChange={onAccessKeyChange}
+          />
         </div>
       </div>
     </>
@@ -354,25 +361,17 @@ const AccessKeyItem = ({ accessKey }) => {
 AccessKeyItem.propTypes = {
   // Array of access keys from the session user object
   accessKey: PropTypes.shape({ access_key_id: PropTypes.string }).isRequired,
+  // Callback to tell the parent the access key list has changed
+  onAccessKeyChange: PropTypes.func.isRequired,
 };
 
 /**
  * Displays a list of access keys and their associated controls.
  */
-export const AccessKeyList = ({ accessKeys }) => {
-  if (accessKeys.length > 0) {
-    return (
-      <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {accessKeys.map((accessKey) => {
-          return <AccessKeyItem key={accessKey.uuid} accessKey={accessKey} />;
-        })}
-      </div>
-    );
-  }
-  return null;
-};
-
-AccessKeyList.propTypes = {
-  // Array of access keys from user object
-  accessKeys: PropTypes.arrayOf(PropTypes.object).isRequired,
+export const AccessKeyList = ({ children }) => {
+  return (
+    <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {children}
+    </div>
+  );
 };
