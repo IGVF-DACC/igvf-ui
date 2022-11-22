@@ -18,11 +18,7 @@ const SourceProp = ({ source }) => {
     );
   }
   if (sourceType === "labs") {
-    return (
-      <Link href={source["@id"]}>
-        <a>{source.title}</a>
-      </Link>
-    );
+    return <Link href={source["@id"]}>{source.title}</Link>;
   }
   return null;
 };

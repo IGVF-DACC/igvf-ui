@@ -25,9 +25,7 @@ const Attribution = ({ award = null, lab = null }) => {
               <>
                 <DataItemLabel>Award</DataItemLabel>
                 <DataItemValue>
-                  <Link href={award["@id"]}>
-                    <a>{award.name}</a>
-                  </Link>
+                  <Link href={award["@id"]}>{award.name}</Link>
                 </DataItemValue>
               </>
             )}
@@ -35,9 +33,7 @@ const Attribution = ({ award = null, lab = null }) => {
               <>
                 <DataItemLabel>Lab</DataItemLabel>
                 <DataItemValue>
-                  <Link href={lab["@id"]}>
-                    <a>{lab.title}</a>
-                  </Link>
+                  <Link href={lab["@id"]}>{lab.title}</Link>
                 </DataItemValue>
               </>
             )}

@@ -35,8 +35,8 @@ const PageNavigation = (items) => {
                     {itemTitle}
                   </a>
                 ) : (
-                  <Link href={href}>
-                    <a className={className}>{itemTitle}</a>
+                  <Link href={href} className={className}>
+                    {itemTitle}
                   </Link>
                 )}
               </li>

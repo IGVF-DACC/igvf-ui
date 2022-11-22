@@ -10,11 +10,7 @@ const treatmentColumns = [
     id: "treatment_term_id",
     title: "Term ID",
     display: ({ source }) => {
-      return (
-        <Link href={source["@id"]}>
-          <a>{source.treatment_term_id}</a>
-        </Link>
-      );
+      return <Link href={source["@id"]}>{source.treatment_term_id}</Link>;
     },
   },
   {

@@ -14,13 +14,12 @@ const BreadcrumbElement = ({ href = "", className, id, children }) => {
   // For all but the last element...
   if (href) {
     return (
-      <Link href={href}>
-        <a
-          data-testid={id}
-          className={`${className} text-gray-600 dark:text-gray-400`}
-        >
-          {children}
-        </a>
+      <Link
+        href={href}
+        className={`${className} text-gray-600 dark:text-gray-400`}
+        data-testid={id}
+      >
+        {children}
       </Link>
     );
   }

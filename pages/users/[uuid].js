@@ -45,9 +45,7 @@ const User = ({ user, lab = null }) => {
                 <>
                   <DataItemLabel>Lab</DataItemLabel>
                   <DataItemValue>
-                    <Link href={lab["@id"]}>
-                      <a>{lab.title}</a>
-                    </Link>
+                    <Link href={lab["@id"]}>{lab.title}</Link>
                   </DataItemValue>
                 </>
               )}

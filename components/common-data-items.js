@@ -42,10 +42,12 @@ export const DonorDataItems = ({ donor, parents, children }) => {
           <DataItemValue>
             <SeparatedList>
               {parents.map((parent) => (
-                <Link href={parent["@id"]} key={parent.uuid}>
-                  <a aria-label={`Parent Donor ${parent.accession}`}>
-                    {parent.accession}
-                  </a>
+                <Link
+                  href={parent["@id"]}
+                  key={parent.uuid}
+                  aria-label={`Parent Donor ${parent.accession}`}
+                >
+                  {parent.accession}
                 </Link>
               ))}
             </SeparatedList>
@@ -241,9 +243,7 @@ export const BiosampleDataItems = ({
         <>
           <DataItemLabel>Biosample Term</DataItemLabel>
           <DataItemValue>
-            <Link href={biosampleTerm["@id"]}>
-              <a>{biosampleTerm.term_name}</a>
-            </Link>
+            <Link href={biosampleTerm["@id"]}>{biosampleTerm.term_name}</Link>
           </DataItemValue>
         </>
       )}
@@ -254,7 +254,7 @@ export const BiosampleDataItems = ({
             <SeparatedList>
               {diseaseTerms.map((diseaseTerm) => (
                 <Link href={diseaseTerm["@id"]} key={diseaseTerm.uuid}>
-                  <a>{diseaseTerm.term_name}</a>
+                  {diseaseTerm.term_name}
                 </Link>
               ))}
             </SeparatedList>
@@ -276,7 +276,7 @@ export const BiosampleDataItems = ({
             <SeparatedList>
               {donors.map((donor) => (
                 <Link href={donor["@id"]} key={donor.uuid}>
-                  <a>{donor.accession}</a>
+                  {donor.accession}
                 </Link>
               ))}
             </SeparatedList>

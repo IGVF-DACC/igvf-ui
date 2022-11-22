@@ -53,7 +53,7 @@ const TechnicalSample = ({
               <DataItemLabel>Technical Sample Term</DataItemLabel>
               <DataItemValue>
                 <Link href={technicalSampleTerm["@id"]}>
-                  <a>{technicalSampleTerm.term_name}</a>
+                  {technicalSampleTerm.term_name}
                 </Link>
               </DataItemValue>
             </SampleDataItems>

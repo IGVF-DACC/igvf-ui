@@ -55,11 +55,9 @@ export const Logo = () => {
 
 const SiteLogo = () => {
   return (
-    <Link href="/">
-      <a className="block w-32 py-2 md:h-24 md:w-auto md:px-8">
-        <Logo />
-        <span className="sr-only">Home</span>
-      </a>
+    <Link href="/" className="block w-32 py-2 md:h-24 md:w-auto md:px-8">
+      <Logo />
+      <span className="sr-only">Home</span>
     </Link>
   );
 };

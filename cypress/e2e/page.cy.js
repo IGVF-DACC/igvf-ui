@@ -101,6 +101,7 @@ describe("Content-Change Tests", () => {
     cy.get(`[aria-label="Parent help list item"]`).click();
     cy.get(`[aria-label="Save edits to page"]`).click();
     cy.wait(1500);
+    cy.get(`[aria-label="Save edits to page"]`).should("not.exist");
 
     // Make sure the new top-level help page appears as a category on the help page.
     cy.get(`[data-testid="help"]`).click();
@@ -115,6 +116,7 @@ describe("Content-Change Tests", () => {
     cy.get(`[aria-label="Parent test-help-category list item"]`).click();
     cy.get(`[aria-label="Save edits to page"]`).click();
     cy.wait(1500);
+    cy.get(`[aria-label="Save edits to page"]`).should("not.exist");
 
     // Make sure the new help page appears as a regular help page.
     cy.get(`[data-testid="help"]`).click();
