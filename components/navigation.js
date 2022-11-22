@@ -14,7 +14,6 @@ import {
   UserGroupIcon,
   UserIcon,
 } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import React, { Children, isValidElement, useContext, useState } from "react";
@@ -203,11 +202,9 @@ const NavigationHrefItem = ({
 
   return (
     <li>
-      <Link href={href} passHref>
-        <NavigationButton id={id} onClick={onClick} isChildItem={isChildItem}>
-          {children}
-        </NavigationButton>
-      </Link>
+      <NavigationButton id={id} onClick={onClick} isChildItem={isChildItem}>
+        {children}
+      </NavigationButton>
     </li>
   );
 };

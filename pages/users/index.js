@@ -48,9 +48,7 @@ const UserList = ({ users }) => {
                       >
                         <CollectionItemName>{user.title}</CollectionItemName>
                         {user.lab && (
-                          <Link href={user.lab["@id"]}>
-                            <a>{user.lab.title}</a>
-                          </Link>
+                          <Link href={user.lab["@id"]}>{user.lab.title}</Link>
                         )}
                       </CollectionItem>
                     ))}

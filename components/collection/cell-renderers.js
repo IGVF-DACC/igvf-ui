@@ -29,8 +29,8 @@ const MAX_CELL_JSON_LENGTH = 100;
  */
 const AtId = ({ source }) => {
   return (
-    <Link href={source["@id"]}>
-      <a data-testid="cell-type-atid">{source["@id"]}</a>
+    <Link href={source["@id"]} data-testid="cell-type-atid">
+      {source["@id"]}
     </Link>
   );
 };
@@ -217,11 +217,9 @@ HealthStatusHistory.propTypes = {
 const PageParent = ({ source }) => {
   if (source.parent) {
     return (
-      <div data-testid="cell-type-page-parent">
-        <Link href={source.parent}>
-          <a>{source.parent}</a>
-        </Link>
-      </div>
+      <Link href={source.parent} data-testid="cell-type-page-parent">
+        {source.parent}
+      </Link>
     );
   }
   return null;
@@ -245,11 +243,9 @@ const Path = ({ id, source }) => {
     // property. So if this path property has an object, get its @id and use that as the link.
     const resolvedPath = typeof path === "object" ? path["@id"] : path;
     return (
-      <div data-testid="cell-type-path">
-        <Link href={resolvedPath}>
-          <a>{resolvedPath}</a>
-        </Link>
-      </div>
+      <Link href={resolvedPath} data-testid="cell-type-path">
+        {resolvedPath}
+      </Link>
     );
   }
   return null;
@@ -269,7 +265,7 @@ const PathArray = ({ id, source }) => {
   const paths = source[id];
   if (paths?.length > 0) {
     return (
-      <div data-testid="path-array">
+      <div data-testid="cell-type-path-array">
         {paths.map((path, index) => {
           // The collection page's `getServerSideProps()` might have embedded the linked object in
           // this property. So if this path property has an object instead of a path string, get
@@ -277,8 +273,12 @@ const PathArray = ({ id, source }) => {
           const isObject = path !== null && typeof path === "object";
           const resolvedPath = isObject ? path["@id"] : path;
           return (
-            <Link key={index} href={path}>
-              <a className="my-2 block first:mt-0 last:mb-0">{resolvedPath}</a>
+            <Link
+              key={index}
+              href={path}
+              className="my-2 block first:mt-0 last:mb-0"
+            >
+              {resolvedPath}
             </Link>
           );
         })}

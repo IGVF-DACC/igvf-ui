@@ -43,8 +43,12 @@ const Lab = ({ lab, awards, pi = null }) => {
                 <DataItemLabel>Awards</DataItemLabel>
                 <SeparatedList>
                   {awards.map((award) => (
-                    <Link href={award["@id"]} key={award.uuid}>
-                      <a aria-label={`Award ${award.name}`}>{award.name}</a>
+                    <Link
+                      href={award["@id"]}
+                      aria-label={`Award ${award.name}`}
+                      key={award.uuid}
+                    >
+                      {award.name}
                     </Link>
                   ))}
                 </SeparatedList>

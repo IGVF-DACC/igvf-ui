@@ -56,14 +56,13 @@ const HelpPageIndividual = ({ page }) => {
 
   return (
     <li className="my-2">
-      <Link href={page["@id"]}>
-        <a
-          className={`block${
-            isCategoryPage ? " mb-2 text-2xl font-medium text-blue-600" : ""
-          }`}
-        >
-          {page.title}
-        </a>
+      <Link
+        href={page["@id"]}
+        className={`block${
+          isCategoryPage ? " mb-2 text-2xl font-medium text-blue-600" : ""
+        }`}
+      >
+        {page.title}
       </Link>
       {page.subpages?.length > 0 && <HelpSubpages subpages={page.subpages} />}
     </li>
@@ -82,9 +81,7 @@ const HelpPageCategory = ({ categoryPage }) => {
   return (
     <div className="mb-8 shrink-0 grow md:basis-1/2 xl:basis-1/3">
       <h2 className="mb-4 text-xl font-medium text-brand">
-        <Link href={categoryPage["@id"]}>
-          <a>{categoryPage.title}</a>
-        </Link>
+        <Link href={categoryPage["@id"]}>{categoryPage.title}</Link>
       </h2>
       {categoryPage.subpages?.length > 0 && (
         <HelpSubpages subpages={categoryPage.subpages} />
