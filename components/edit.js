@@ -32,7 +32,6 @@ export function useEditor(action) {
     // If the URL has us not editing but we just were, set to false, and update props
     if (!isEdit && edit) {
       setEditing(false);
-      router.replace(router.asPath);
     }
   }, [edit, router, action]);
 
