@@ -221,7 +221,7 @@ const PageMetaEditor = memo(function PageMetaEditor({
             label="Name"
             name="name"
             value={livePageMeta.name}
-            isSpellCheckEnabled={false}
+            isSpellCheckDisabled
             placeholder="last-part-of-path"
             message={nameFieldMessage}
             onChange={setNameField}
@@ -231,7 +231,6 @@ const PageMetaEditor = memo(function PageMetaEditor({
             label="Title"
             name="title"
             value={livePageMeta.title}
-            isSpellCheckEnabled={false}
             placeholder="Appears at the top of the page"
             message={titleFieldMessage}
             onChange={setTitleField}

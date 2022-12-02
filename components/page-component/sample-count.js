@@ -10,6 +10,8 @@ import { Select } from "../form";
 import SessionContext from "../session-context";
 // lib
 import FetchRequest from "../../lib/fetch-request";
+/* istanbul ignore file */
+/* This page component just shows how to implement a complex one; no need to test with Jest */
 
 const SampleCount = ({ label = "Sample Count", color = "gray" }) => {
   // Selected sample collection type

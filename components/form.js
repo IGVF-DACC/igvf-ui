@@ -21,6 +21,7 @@ export const FormLabel = ({
 }) => {
   return (
     <label
+      data-testid="form-label"
       htmlFor={htmlFor}
       className={`${className} flex items-center font-semibold text-data-label`}
     >
@@ -54,7 +55,7 @@ export const Select = ({
   children,
 }) => {
   return (
-    <div className={className}>
+    <div data-testid="form-select" className={className}>
       {label && <FormLabel htmlFor={name}>{label}</FormLabel>}
       <div className="relative flex items-center">
         <select
@@ -98,7 +99,7 @@ Select.propTypes = {
  * edited value gets passed in the `value` property.
  */
 export const TextField = ({
-  label,
+  label = "",
   name,
   value,
   message = "",
@@ -108,21 +109,23 @@ export const TextField = ({
   className = null,
   isRequired = false,
   isDisabled = false,
-  isSpellCheckEnabled = true,
+  isSpellCheckDisabled = false,
   placeholder = null,
 }) => {
   return (
-    <div className={className || "my-2"}>
-      <FormLabel htmlFor={name} isRequired={isRequired}>
-        {label}
-      </FormLabel>
+    <div data-testid="form-text-field" className={className || "my-2"}>
+      {label && (
+        <FormLabel htmlFor={name} isRequired={isRequired}>
+          {label}
+        </FormLabel>
+      )}
       <input
         className="block w-full rounded border border-data-border bg-data-background p-2 text-sm"
         name={name}
         id={name}
         value={value}
         placeholder={placeholder}
-        spellCheck={isSpellCheckEnabled ? "true" : "false"}
+        spellCheck={isSpellCheckDisabled ? "false" : "true"}
         disabled={isDisabled}
         onChange={onChange}
         onBlur={onBlur}
@@ -160,8 +163,8 @@ TextField.propTypes = {
   isRequired: PropTypes.bool,
   // True if the text field is disabled
   isDisabled: PropTypes.bool,
-  // True if the text field should have spell checking enabled
-  isSpellCheckEnabled: PropTypes.bool,
+  // True if the text field should have spell checking disabled
+  isSpellCheckDisabled: PropTypes.bool,
   // Placeholder text to display in the text field
   placeholder: PropTypes.string,
 };

@@ -31,11 +31,15 @@ const PageNavigation = (items) => {
             return (
               <li key={index} className="m-0 p-0 pb-2">
                 {isUrl || isAnchor ? (
-                  <a href={href} className={className}>
+                  <a data-testid="external" href={href} className={className}>
                     {itemTitle}
                   </a>
                 ) : (
-                  <Link href={href} className={className}>
+                  <Link
+                    data-testid="internal"
+                    href={href}
+                    className={className}
+                  >
                     {itemTitle}
                   </Link>
                 )}

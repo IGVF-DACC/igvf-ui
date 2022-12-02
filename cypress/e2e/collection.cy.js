@@ -67,8 +67,7 @@ describe("collection-view tests", () => {
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist");
     cy.wait(1000);
 
-    cy.reload();
-    cy.wait(1000);
+    cy.reloadWithDelay();
     cy.get(`[aria-label="Select collection table view"]`).click();
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist");
 
@@ -105,8 +104,7 @@ describe("collection-view tests", () => {
   });
 
   it("responds to the columns URL by showing and hiding the correct columns", () => {
-    cy.reload();
-    cy.wait(500);
+    cy.reloadWithDelay();
     cy.visit("/treatments#hidden=aliases,lot_id");
     cy.get("[data-testid^=collection-list-item-]").should("not.exist");
     cy.get("[role=table]").should("exist");
@@ -134,8 +132,7 @@ describe("collection-view tests", () => {
     cy.wait(1000);
 
     cy.visit("/treatments#hidden=aliases,lot_id");
-    cy.reload();
-    cy.wait(500);
+    cy.reloadWithDelay();
     cy.get("[role=columnheader]").contains("Aliases").should("not.exist");
     cy.get("[role=columnheader]").contains("Lot ID").should("not.exist");
     cy.get("[role=columnheader]").contains("Amount").should("exist");

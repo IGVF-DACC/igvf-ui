@@ -29,7 +29,7 @@
 
 // node_modules
 import PropTypes from "prop-types";
-// compnents/page-components
+// components/page-components
 import ImageAligned from "./image-aligned";
 import PageNavigation from "./page-navigation";
 import SampleCount from "./sample-count";
@@ -55,7 +55,7 @@ const componentMap = {
  */
 const PageComponent = ({ spec }) => {
   // Extract the component label and its properties from the spec.
-  const specParts = spec.split("\n");
+  const specParts = spec.split("\n").filter((specPart) => specPart !== "");
   const componentLabel = specParts.splice(0, 1)[0];
 
   // Map the component label to the matching page plugin component.

@@ -30,7 +30,7 @@ const ImageAligned = ({
   caption = "",
 }) => {
   if (src && alt) {
-    const alignClassName = align ? ` ${alignClassNames[align]}` : "";
+    const alignClassName = ` ${alignClassNames[align]}`;
     const imgMargins = align === "center" ? "my-6" : "my-2";
 
     return (
@@ -40,7 +40,14 @@ const ImageAligned = ({
         data-testid="image-aligned"
       >
         <img alt={alt} src={src} className="my-0 block w-full" />
-        <figcaption className="mt-1 text-center text-sm">{caption}</figcaption>
+        {caption && (
+          <figcaption
+            data-testid="image-aligned-caption"
+            className="mt-1 text-center text-sm"
+          >
+            {caption}
+          </figcaption>
+        )}
       </picture>
     );
   }
