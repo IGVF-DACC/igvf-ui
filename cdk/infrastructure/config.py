@@ -1,6 +1,14 @@
 from copy import deepcopy
 
+from aws_cdk import Environment
+
 from dataclasses import dataclass
+
+from infrastructure.constructs.existing import igvf_dev
+from infrastructure.constructs.existing import igvf_prod
+
+from infrastructure.constructs.existing.types import ExistingResourcesClass
+
 
 from typing import Any
 from typing import Dict
@@ -10,25 +18,92 @@ from typing import Tuple
 
 
 config: Dict[str, Any] = {
-    'environment': {
+    'pipeline': {
         'demo': {
             'pipeline': 'DemoDeploymentPipelineStack',
+            'existing_resources_class': igvf_dev.Resources,
+            'account_and_region': igvf_dev.US_WEST_2,
             'tags': [
                 ('time-to-live-hours', '72'),
                 ('turn-off-on-friday-night', 'yes'),
             ],
         },
         'dev': {
-            'pipeline': 'DemoDeploymentPipelineStack',
+            'pipeline': 'DevDeploymentPipelineStack',
+            'existing_resources_class': igvf_dev.Resources,
+            'account_and_region': igvf_dev.US_WEST_2,
+            'tags': [
+            ],
+        },
+        'production': {
+            'pipeline': 'ProductionDeploymentPipelineStack',
+            'cross_account_keys': True,
+            'existing_resources_class': igvf_prod.Resources,
+            'account_and_region': igvf_prod.US_WEST_2,
+            'tags': [
+            ],
+        },
+    },
+    'environment': {
+        'demo': {
+            'frontend': {
+                'cpu': 1024,
+                'memory_limit_mib': 2048,
+                'desired_count': 1,
+                'max_capacity': 4,
+            },
+            'tags': [
+                ('time-to-live-hours', '72'),
+                ('turn-off-on-friday-night', 'yes'),
+            ],
+        },
+        'dev': {
+            'frontend': {
+                'cpu': 1024,
+                'memory_limit_mib': 2048,
+                'desired_count': 1,
+                'max_capacity': 4,
+            },
             'backend_url': 'https://igvfd-dev.demo.igvf.org',
             'tags': [
             ],
         },
-        'main': {
-            'staging': {},
-            'test': {},
-            'prod': {},
-        }
+        'staging': {
+            'frontend': {
+                'cpu': 1024,
+                'memory_limit_mib': 2048,
+                'desired_count': 1,
+                'max_capacity': 4,
+            },
+            'backend_url': 'https://api.staging.igvf.org',
+            'use_subdomain': False,
+            'tags': [
+            ],
+        },
+        'sandbox': {
+            'frontend': {
+                'cpu': 1024,
+                'memory_limit_mib': 2048,
+                'desired_count': 1,
+                'max_capacity': 4,
+            },
+            'backend_url': 'https://api.sandbox.igvf.org',
+            'use_subdomain': False,
+            'tags': [
+            ],
+        },
+        'production': {
+            'frontend': {
+                'cpu': 1024,
+                'memory_limit_mib': 2048,
+                'desired_count': 1,
+                'max_capacity': 4,
+            },
+            'backend_url': 'https://api.data.igvf.org',
+            'use_subdomain': False,
+            'tags': [
+            ],
+        },
     }
 }
 
@@ -45,9 +120,23 @@ class Common:
 class Config:
     name: str
     branch: str
-    pipeline: str
     backend_url: str
+    frontend: Dict[str, Any]
     tags: List[Tuple[str, str]]
+    url_prefix: Optional[str] = None
+    use_subdomain: bool = True
+    common: Common = Common()
+
+
+@dataclass
+class PipelineConfig:
+    name: str
+    branch: str
+    pipeline: str
+    existing_resources_class: ExistingResourcesClass
+    account_and_region: Environment
+    tags: List[Tuple[str, str]]
+    cross_account_keys: bool = False
     common: Common = Common()
 
 
@@ -84,9 +173,27 @@ def build_config_from_name(name: str, **kwargs: Any) -> Config:
     return config_factory(**calculated_config)
 
 
+def build_pipeline_config_from_name(name: str, **kwargs: Any) -> PipelineConfig:
+    return PipelineConfig(
+        **{
+            **config['pipeline'][name],
+            **kwargs,
+            **{'name': name},
+        }
+    )
+
+
 def get_config_name_from_branch(branch: str) -> str:
     if branch == 'dev':
         return 'dev'
+    return 'demo'
+
+
+def get_pipeline_config_name_from_branch(branch: str) -> str:
+    if branch == 'dev':
+        return 'dev'
+    if branch == 'main':
+        return 'production'
     return 'demo'
 
 

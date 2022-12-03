@@ -4,6 +4,7 @@ import pytest
 def test_config_exists():
     from infrastructure.config import config
     assert 'demo' in config['environment']
+    assert 'demo' in config['pipeline']
 
 
 def test_config_common_dataclass():
@@ -18,7 +19,7 @@ def test_config_config_dataclass():
     config = Config(
         name='demo',
         branch='xyz-branch',
-        pipeline='xyz-pipeline',
+        frontend={},
         backend_url='https://test.backend.org',
         tags=[
             ('test', 'tag'),
@@ -27,9 +28,35 @@ def test_config_config_dataclass():
     assert config.common.organization_name == 'igvf-dacc'
     assert config.common.project_name == 'igvf-ui'
     assert config.branch == 'xyz-branch'
-    assert config.pipeline == 'xyz-pipeline'
+    assert config.frontend == {}
     assert config.backend_url == 'https://test.backend.org'
     assert config.tags == [('test', 'tag')]
+
+
+def test_config_pipeline_config_dataclass():
+    from infrastructure.config import PipelineConfig
+    from infrastructure.constructs.existing import igvf_dev
+    config = PipelineConfig(
+        name='demo',
+        branch='xyz-branch',
+        pipeline='xyz-pipeline',
+        existing_resources_class=igvf_dev.Resources,
+        account_and_region=igvf_dev.US_WEST_2,
+        tags=[
+            ('abc', '123'),
+            ('xyz', '321'),
+        ]
+    )
+    assert config.common.organization_name == 'igvf-dacc'
+    assert config.common.project_name == 'igvf-ui'
+    assert config.existing_resources_class == igvf_dev.Resources
+    assert config.account_and_region == igvf_dev.US_WEST_2
+    assert config.branch == 'xyz-branch'
+    assert config.pipeline == 'xyz-pipeline'
+    assert config.tags == [
+        ('abc', '123'),
+        ('xyz', '321'),
+    ]
 
 
 def test_config_build_config_from_name():
@@ -37,13 +64,13 @@ def test_config_build_config_from_name():
     config = build_config_from_name(
         'demo',
         branch='my-branch',
-        pipeline='my-pipeline',
         backend_url='http://my-specific-endpoint.org',
+        frontend={},
     )
     assert config.common.organization_name == 'igvf-dacc'
     assert config.common.project_name == 'igvf-ui'
     assert config.branch == 'my-branch'
-    assert config.pipeline == 'my-pipeline'
+    assert config.frontend == {}
     assert config.name == 'demo'
     assert config.backend_url == 'http://my-specific-endpoint.org'
     config = build_config_from_name(
@@ -53,7 +80,7 @@ def test_config_build_config_from_name():
     assert config.common.organization_name == 'igvf-dacc'
     assert config.common.project_name == 'igvf-ui'
     assert config.branch == 'my-branch'
-    assert config.pipeline == 'DemoDeploymentPipelineStack'
+    assert config.frontend
     assert config.name == 'dev'
     assert config.backend_url == 'https://igvfd-dev.demo.igvf.org'
 
@@ -63,7 +90,7 @@ def test_config_build_config_from_name_demo(mocker):
     mocker.patch(
         'infrastructure.config.get_raw_config_from_name',
         return_value={
-            'pipeline': 'DemoDeploymentPipelineStack',
+            'frontend': {},
             'branch': 'my-branch',
             'name': 'demo',
             'tags': [('time-to-live-hours', '3')]
@@ -73,9 +100,36 @@ def test_config_build_config_from_name_demo(mocker):
         'demo',
         branch='my-branch',
         # Overrides.
-        pipeline='my-pipeline',
+        frontend={}
     )
     assert config.backend_url == 'https://igvfd-my-branch.demo.igvf.org'
+
+
+def test_config_build_pipeline_config_from_name():
+    from aws_cdk import Environment
+    from infrastructure.constructs.existing import igvf_dev
+    from infrastructure.config import build_pipeline_config_from_name
+    config = build_pipeline_config_from_name(
+        'demo',
+        branch='my-branch',
+        pipeline='my-pipeline',
+    )
+    assert config.common.organization_name == 'igvf-dacc'
+    assert config.common.project_name == 'igvf-ui'
+    assert ('time-to-live-hours', '72') in config.tags
+    assert config.branch == 'my-branch'
+    assert config.pipeline == 'my-pipeline'
+    assert config.name == 'demo'
+    config = build_pipeline_config_from_name(
+        'dev',
+        branch='my-branch',
+    )
+    assert config.common.organization_name == 'igvf-dacc'
+    assert config.common.project_name == 'igvf-ui'
+    assert config.pipeline == 'DevDeploymentPipelineStack'
+    assert config.name == 'dev'
+    assert isinstance(config.account_and_region, Environment)
+    assert config.existing_resources_class == igvf_dev.Resources
 
 
 def test_config_build_config_from_branch():
@@ -86,6 +140,17 @@ def test_config_build_config_from_branch():
     assert config_name == 'dev'
 
 
+def test_config_get_pipeline_config_name_from_branch():
+    from infrastructure.config import get_pipeline_config_name_from_branch
+    config_name = get_pipeline_config_name_from_branch(
+        'IGVF-123-add-new-feature')
+    assert config_name == 'demo'
+    config_name = get_pipeline_config_name_from_branch('dev')
+    assert config_name == 'dev'
+    config_name = get_pipeline_config_name_from_branch('main')
+    assert config_name == 'production'
+
+
 def test_config_get_raw_config_from_name():
     from infrastructure.config import get_raw_config_from_name
     raw_config = get_raw_config_from_name(
@@ -93,7 +158,7 @@ def test_config_get_raw_config_from_name():
         branch='my-branch',
     )
     assert raw_config['branch'] == 'my-branch'
-    assert raw_config['pipeline'] == 'DemoDeploymentPipelineStack'
+    assert raw_config['frontend']
     assert raw_config['name'] == 'dev'
     assert raw_config['backend_url'] == 'https://igvfd-dev.demo.igvf.org'
 
@@ -103,20 +168,20 @@ def test_config_get_raw_config_from_name_demo():
     raw_config = get_raw_config_from_name(
         'demo',
         branch='my-branch',
-        pipeline='my-pipeline',
+        frontend={},
     )
     assert raw_config['branch'] == 'my-branch'
-    assert raw_config['pipeline'] == 'my-pipeline'
+    assert raw_config['frontend'] == {}
     assert raw_config['name'] == 'demo'
     raw_config = get_raw_config_from_name(
         'demo',
         branch='my-branch',
-        pipeline='my-pipeline',
+        frontend={},
         backend_url='http://my-specific-endpoint.org',
         tags=[('abc', '123')]
     )
     assert raw_config['branch'] == 'my-branch'
-    assert raw_config['pipeline'] == 'my-pipeline'
+    assert raw_config['frontend'] == {}
     assert raw_config['name'] == 'demo'
     assert raw_config['backend_url'] == 'http://my-specific-endpoint.org'
     assert raw_config['tags'] == [('abc', '123')]
@@ -143,13 +208,13 @@ def test_config_fill_in_calculated_config():
     raw_config = get_raw_config_from_name(
         'demo',
         branch='my-branch',
-        pipeline='my-pipeline',
+        frontend={},
         tags=[('xyz', '123')],
     )
     raw_config.pop('backend_url', None)
     calculated_config = fill_in_calculated_config(raw_config)
     assert calculated_config == {
-        'pipeline': 'my-pipeline',
+        'frontend': {},
         'branch': 'my-branch',
         'name': 'demo',
         'backend_url': 'https://igvfd-my-branch.demo.igvf.org',
@@ -165,7 +230,7 @@ def test_config_config_factory_init():
     kwargs = {
         'name': 'some-name',
         'branch': 'some-branch',
-        'pipeline': 'some-pipeline',
+        'frontend': {},
         'backend_url': 'some-backend-url',
         'tags': [('abc', '123')]
     }
