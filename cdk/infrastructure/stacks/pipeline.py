@@ -94,7 +94,7 @@ class ProductionDeploymentPipelineStack(Stack):
             self,
             'ProductionDeploymentPipeline',
             props=ProductionDeploymentPipelineProps(
-                github_repo='IGVF-DACC/igvfd',
+                github_repo='IGVF-DACC/igvf-ui',
                 existing_resources=self.existing_resources,
                 config=config,
             )
