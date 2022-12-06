@@ -4,11 +4,11 @@
   },
   "extends": ["next", "prettier", "eslint:recommended"],
   "rules": {
-    "no-useless-constructor": ["error"],
     "comma-dangle": ["error", "always-multiline"],
     "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
-    "object-curly-spacing": ["error", "always"],
     "no-trailing-spaces": ["error"],
+    "no-useless-constructor": ["error"],
+    "object-curly-spacing": ["error", "always"],
     "react/no-unused-prop-types": ["error", { "skipShapeProps": true }],
     "react/prop-types": ["error", { "ignore": ["children"] }],
     "semi": ["error", "always"]

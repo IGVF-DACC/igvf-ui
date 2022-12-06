@@ -15,6 +15,7 @@ const VideoYouTube = ({ id = "", start = "" }) => {
   if (id) {
     return (
       <iframe
+        data-testid="video-youtube"
         className="my-3 aspect-video w-full first:mt-0 last:mb-0"
         src={`https://www.youtube.com/embed/${id}${startQuery}`}
         frameBorder="0"

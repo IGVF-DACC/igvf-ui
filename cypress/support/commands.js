@@ -80,3 +80,22 @@ Cypress.Commands.add("loginAuth0", (username, password) => {
     });
   });
 });
+
+/**
+ * With Amazon OpenSearch, we have a need to insert delays after requests to allow the server to
+ * process the request. This command lets you insert these delays when needed.
+ * @param {string} delay Optional time to delay in ms
+ */
+Cypress.Commands.add("delayForIndexing", (delay = 3000) => {
+  cy.wait(delay);
+});
+
+/**
+ * Cypress can run into issues if we have a test interact with a page too soon after reloading the
+ * page. This command lets you insert a delay after a reload to allow the page to load.
+ * @param {string} delay Optional time to delay in ms
+ */
+Cypress.Commands.add("reloadWithDelay", (delay = 1000) => {
+  cy.reload();
+  cy.wait(delay);
+});
