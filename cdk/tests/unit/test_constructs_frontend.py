@@ -365,3 +365,27 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
             ]
         }
     )
+
+
+def test_constructs_frontend_get_url_prefix():
+    from infrastructure.config import Config
+    from infrastructure.constructs.frontend import get_url_prefix
+    config_without_prefix = Config(
+        name='abc',
+        branch='some-branch',
+        backend_url='abc.123',
+        frontend={},
+        tags=[],
+    )
+    url_prefix = get_url_prefix(config_without_prefix)
+    assert url_prefix == 'igvf-ui-some-branch'
+    config_with_prefix = Config(
+        name='abc',
+        branch='some-branch',
+        backend_url='abc.123',
+        frontend={},
+        tags=[],
+        url_prefix='some-prefix',
+    )
+    url_prefix = get_url_prefix(config_with_prefix)
+    assert url_prefix == 'some-prefix'
