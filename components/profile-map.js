@@ -7,6 +7,14 @@ const ProfileMapContext = createContext({
 });
 
 /**
+ * $id values of schemas we don't need to retrieve the empty collection data from. Each comment
+ * describes the reason why we don't.
+ */
+const EXCLUDED_PROFILES = [
+  "/profiles/access_key.json", // /access_key not public; we don't create these like other objects
+];
+
+/**
  * This component is used in _App to generate the mappings between schemas
  * and their corresponding collection in the backend.
  *
@@ -22,7 +30,7 @@ const ProfileMapContext = createContext({
  * Then the mapping can be accessed with `profileMap[schemaId]` where
  * schemaId is something like "human_donor", like above.
  *
- * This works by going through the nextjs api in the pages/api/mapprofile.js
+ * This works by going through the nextjs api in the pages/api/mapprofile
  * which provides the actual mapping.
  *
  * @returns A ProfileMapContext provided with all the mappings between
@@ -39,18 +47,19 @@ export const ProfileMap = ({ children }) => {
       // For each Profile get the name id
       Object.values(profiles)
         .filter((p) => {
-          return Object.keys(p).includes("$id");
+          return (
+            Object.keys(p).includes("$id") &&
+            !EXCLUDED_PROFILES.includes(p["$id"])
+          );
         })
         .forEach((p) => {
           const profileName = p["$id"].match(/^\/profiles\/(.+).json$/)[1];
           // Get the mapped collection for the profile schema
-          api
-            .getObject(`/api/mapprofile?profile=${profileName}`)
-            .then((collect) => {
-              setMapping((current) => {
-                return { ...current, [profileName]: collect };
-              });
+          api.getObject(`/api/mapprofile/${profileName}`).then((collect) => {
+            setMapping((current) => {
+              return { ...current, [profileName]: collect };
             });
+          });
         });
     });
   }, [session]);
