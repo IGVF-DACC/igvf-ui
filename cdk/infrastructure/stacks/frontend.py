@@ -32,11 +32,8 @@ class FrontendStack(Stack):
             self,
             'Frontend',
             props=FrontendProps(
+                **config.frontend,
                 config=config,
                 existing_resources=self.existing_resources,
-                cpu=1024,
-                memory_limit_mib=2048,
-                desired_count=1,
-                max_capacity=4,
             )
         )

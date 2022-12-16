@@ -365,3 +365,73 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
             ]
         }
     )
+
+
+def test_constructs_frontend_frontend_define_domain_name(stack, instance_type, existing_resources, vpc, config):
+    from dataclasses import asdict
+    from infrastructure.config import Config
+    from infrastructure.constructs.frontend import Frontend
+    from infrastructure.constructs.frontend import FrontendProps
+    frontend = Frontend(
+        stack,
+        'TestFrontend',
+        props=FrontendProps(
+            config=config,
+            existing_resources=existing_resources,
+            cpu=2048,
+            memory_limit_mib=4096,
+            desired_count=4,
+            max_capacity=7,
+        )
+    )
+    assert frontend.domain_name == 'igvf-ui-some-branch.my.test.domain.org'
+    old_config = {
+        k: v
+        for k, v in asdict(config).items()
+        if k != 'common'
+    }
+    config_with_prefix = Config(
+        **{
+            **old_config,
+            **{
+                'url_prefix': 'some-prefix',
+            }
+        }
+    )
+    frontend = Frontend(
+        stack,
+        'TestFrontend2',
+        props=FrontendProps(
+            config=config_with_prefix,
+            existing_resources=existing_resources,
+            cpu=2048,
+            memory_limit_mib=4096,
+            desired_count=4,
+            max_capacity=7,
+        )
+    )
+    assert frontend.domain_name == 'some-prefix.my.test.domain.org'
+
+
+def test_constructs_frontend_get_url_prefix():
+    from infrastructure.config import Config
+    from infrastructure.constructs.frontend import get_url_prefix
+    config_without_prefix = Config(
+        name='abc',
+        branch='some-branch',
+        backend_url='abc.123',
+        frontend={},
+        tags=[],
+    )
+    url_prefix = get_url_prefix(config_without_prefix)
+    assert url_prefix == 'igvf-ui-some-branch'
+    config_with_prefix = Config(
+        name='abc',
+        branch='some-branch',
+        backend_url='abc.123',
+        frontend={},
+        tags=[],
+        url_prefix='some-prefix',
+    )
+    url_prefix = get_url_prefix(config_with_prefix)
+    assert url_prefix == 'some-prefix'

@@ -34,6 +34,12 @@ from typing import cast
 from dataclasses import dataclass
 
 
+def get_url_prefix(config: Config) -> str:
+    if config.url_prefix is not None:
+        return config.url_prefix
+    return f'igvf-ui-{config.branch}'
+
+
 @dataclass
 class FrontendProps:
     config: Config
@@ -48,6 +54,7 @@ class Frontend(Construct):
 
     props: FrontendProps
     application_image: ContainerImage
+    domain_name: str
     fargate_service: ApplicationLoadBalancedFargateService
 
     def __init__(
@@ -61,6 +68,7 @@ class Frontend(Construct):
         super().__init__(scope, construct_id, **kwargs)
         self.props = props
         self._define_docker_assets()
+        self._define_domain_name()
         self._define_fargate_service()
         self._configure_health_check()
         self._add_tags_to_fargate_service()
@@ -73,6 +81,16 @@ class Frontend(Construct):
             '../',
             file='docker/nextjs/Dockerfile',
         )
+
+    def _define_domain_name(self) -> None:
+        if self.props.config.use_subdomain:
+            self.domain_name = (
+                f'{get_url_prefix(self.props.config)}.{self.props.existing_resources.domain.name}'
+            )
+        else:
+            self.domain_name = (
+                f'{self.props.existing_resources.domain.name}'
+            )
 
     def _define_fargate_service(self) -> None:
         self.fargate_service = ApplicationLoadBalancedFargateService(
@@ -102,7 +120,7 @@ class Frontend(Construct):
             assign_public_ip=True,
             certificate=self.props.existing_resources.domain.certificate,
             domain_zone=self.props.existing_resources.domain.zone,
-            domain_name=f'igvf-ui-{self.props.config.branch}.{self.props.existing_resources.domain.name}',
+            domain_name=self.domain_name,
             redirect_http=True,
         )
 

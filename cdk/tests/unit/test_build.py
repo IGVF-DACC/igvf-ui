@@ -63,7 +63,7 @@ def test_synth_get_config():
     args = get_args(app)
     config = get_config(args)
     assert config.branch == 'dev'
-    assert config.pipeline == 'DemoDeploymentPipelineStack'
+    assert config.pipeline == 'DevDeploymentPipelineStack'
     assert config.common.project_name == 'igvf-ui'
 
 
@@ -99,9 +99,9 @@ def test_synth_add_deploy_pipeline_stack_to_app():
         child.node.path
         for child in app.node.children
     ]
-    assert 'igvf-ui-dev-DemoDeploymentPipelineStack' in child_paths
+    assert 'igvf-ui-dev-DevDeploymentPipelineStack' in child_paths
     stack = app.node.find_child(
-        'igvf-ui-dev-DemoDeploymentPipelineStack'
+        'igvf-ui-dev-DevDeploymentPipelineStack'
     )
     template = Template.from_stack(stack)
     template.has_resource_properties(
