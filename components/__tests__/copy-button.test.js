@@ -21,6 +21,7 @@ describe("Test <CopyButton> component", () => {
 
     const copyButton = screen.getByRole("button");
     expect(copyButton).toHaveTextContent("Copy It");
+    expect(copyButton).toHaveAttribute("aria-label", "Copy text");
     fireEvent.click(copyButton);
     await screen.findByText("Copied!");
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
@@ -29,6 +30,18 @@ describe("Test <CopyButton> component", () => {
 
     // Wait for the "Copied!" text to change back to "Copy It" after two seconds.
     await screen.findByText("Copy It", {}, { timeout: 2200 });
+  });
+
+  it("renders a text-based copy button with no label", () => {
+    render(
+      <CopyButton target="the copied text">
+        {(isCopied) => (isCopied ? "Copied" : "Copy It")}
+      </CopyButton>
+    );
+
+    const copyButton = screen.getByRole("button");
+    expect(copyButton).toHaveTextContent("Copy It");
+    expect(copyButton).not.toHaveAttribute("aria-label");
   });
 
   it("Renders an icon-based copy button and reacts to a click", async () => {

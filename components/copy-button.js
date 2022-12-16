@@ -48,7 +48,7 @@ export const useCopyAction = (target) => {
  */
 const CopyButton = ({
   target,
-  label = "",
+  label = null,
   disabled = false,
   className = "",
   children,

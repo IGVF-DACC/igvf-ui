@@ -7,8 +7,9 @@ describe("page-component tests", () => {
     cy.wait(1000);
 
     // Add a new page.
-    cy.get(`[data-testid="pages"]`).click();
-    cy.contains("Add Page").click();
+    cy.visit("/");
+    cy.get("[data-testid=profiles]").click();
+    cy.get(`[label="Add Page"]`).click();
 
     // Add an image aligned component.
     cy.get("#block1-type").select("Component");
@@ -34,8 +35,9 @@ describe("page-component tests", () => {
     cy.wait(1000);
 
     // Add a new page.
-    cy.get(`[data-testid="pages"]`).click();
-    cy.contains("Add Page").click();
+    cy.visit("/");
+    cy.get("[data-testid=profiles]").click();
+    cy.get(`[label="Add Page"]`).click();
 
     // Add an image aligned component.
     cy.get("#block1-type").select("Component");
@@ -70,8 +72,9 @@ describe("page-component tests", () => {
     cy.wait(1000);
 
     // Add a new page.
-    cy.get(`[data-testid="pages"]`).click();
-    cy.contains("Add Page").click();
+    cy.visit("/");
+    cy.get("[data-testid=profiles]").click();
+    cy.get(`[label="Add Page"]`).click();
 
     // Add an image aligned component.
     cy.get("#block1-type").select("Component");

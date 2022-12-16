@@ -313,7 +313,7 @@ const Navigation = ({ navigationClick }) => {
     <NavigationList>
       <NavigationHrefItem
         id="awards"
-        href="/awards"
+        href="/search?type=Award"
         navigationClick={navigationClick}
       >
         <NavigationIcon>
@@ -323,7 +323,7 @@ const Navigation = ({ navigationClick }) => {
       </NavigationHrefItem>
       <NavigationHrefItem
         id="documents"
-        href="/documents"
+        href="/search?type=Document"
         navigationClick={navigationClick}
       >
         <NavigationIcon>
@@ -340,7 +340,7 @@ const Navigation = ({ navigationClick }) => {
       >
         <NavigationHrefItem
           id="human-donors"
-          href="/human-donors"
+          href="/search?type=HumanDonor"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -348,7 +348,7 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
         <NavigationHrefItem
           id="rodent-donors"
-          href="/rodent-donors"
+          href="/search?type=RodentDonor"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -357,7 +357,7 @@ const Navigation = ({ navigationClick }) => {
       </NavigationGroupItem>
       <NavigationHrefItem
         id="genes"
-        href="/genes"
+        href="/search?type=Gene"
         navigationClick={navigationClick}
       >
         <NavigationIcon>
@@ -367,7 +367,7 @@ const Navigation = ({ navigationClick }) => {
       </NavigationHrefItem>
       <NavigationHrefItem
         id="labs"
-        href="/labs"
+        href="/search?type=Lab"
         navigationClick={navigationClick}
       >
         <NavigationIcon>
@@ -377,7 +377,7 @@ const Navigation = ({ navigationClick }) => {
       </NavigationHrefItem>
       <NavigationHrefItem
         id="pages"
-        href="/pages"
+        href="/search?type=Page"
         navigationClick={navigationClick}
       >
         <NavigationIcon>
@@ -394,7 +394,7 @@ const Navigation = ({ navigationClick }) => {
       >
         <NavigationHrefItem
           id="assay-terms"
-          href="/assay-terms"
+          href="/search?type=AssayTerm"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -402,7 +402,7 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
         <NavigationHrefItem
           id="phenotype-terms"
-          href="/phenotype-terms"
+          href="/search?type=PhenotypeTerm"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -410,7 +410,7 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
         <NavigationHrefItem
           id="samples-terms"
-          href="/sample-terms"
+          href="/search?type=SampleTerm"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -426,7 +426,7 @@ const Navigation = ({ navigationClick }) => {
       >
         <NavigationHrefItem
           id="cell-lines"
-          href="/cell-lines"
+          href="/search?type=CellLine"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -434,7 +434,7 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
         <NavigationHrefItem
           id="differentiated-cells"
-          href="/differentiated-cells"
+          href="/search?type=DifferentiatedCell"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -442,7 +442,7 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
         <NavigationHrefItem
           id="differentiated-tissues"
-          href="/differentiated-tissues"
+          href="/search?type=DifferentiatedTissue"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -450,7 +450,7 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
         <NavigationHrefItem
           id="primary-cells"
-          href="/primary-cells"
+          href="/search?type=PrimaryCell"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -458,7 +458,7 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
         <NavigationHrefItem
           id="technical-samples"
-          href="/technical-samples"
+          href="/search?type=TechnicalSample"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -466,7 +466,7 @@ const Navigation = ({ navigationClick }) => {
         </NavigationHrefItem>
         <NavigationHrefItem
           id="tissues"
-          href="/tissues"
+          href="/search?type=Tissue"
           navigationClick={navigationClick}
           isChildItem
         >
@@ -485,7 +485,7 @@ const Navigation = ({ navigationClick }) => {
       </NavigationHrefItem>
       <NavigationHrefItem
         id="treatments"
-        href="/treatments"
+        href="/search?type=Treatment"
         navigationClick={navigationClick}
       >
         <NavigationIcon>
@@ -495,7 +495,7 @@ const Navigation = ({ navigationClick }) => {
       </NavigationHrefItem>
       <NavigationHrefItem
         id="users"
-        href="/users"
+        href="/search?type=User"
         navigationClick={navigationClick}
       >
         <NavigationIcon>

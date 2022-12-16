@@ -33,13 +33,17 @@
 }
 
 :root {
-  --color-page-background: #ebebeb;
+  --color-background: #f8f8f8;
 
   --color-brand: #337788;
   --color-brand-accent: #666666;
   --color-brand-highlight: #2a6270;
 
-  --color-panel-background: #f8f8f8;
+  --color-data-background: #ffffff;
+  --color-data-header-background: #e0e0e0;
+  --color-data-border: #c0c0c0;
+
+  --color-panel-background: #fff;
   --color-panel-border: #d0d0d0;
 
   --color-button-primary-background: #4f66a7;
@@ -112,10 +116,15 @@
  * applied after the body element mounts.
  */
 .dark {
-  --color-page-background: #010b20;
-
+  --color-background: #111827;
   --color-brand-accent: #444444;
   --color-brand-highlight: #860f2d;
+  --color-data-background: #0b0f19;
+  --color-data-header-background: #192339;
+  --color-data-border: #2c3f66;
+  --color-highlight: #2c3f66;
+  --color-highlight-border: #45629f;
+  --color-title-border: #6b7280;
 
   --color-panel-background: #000205;
   --color-panel-border: #4e5b75;

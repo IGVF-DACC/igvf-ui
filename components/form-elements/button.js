@@ -107,7 +107,7 @@ const generateButtonSizeClasses = (size, hasIconOnly, hasIconCircleOnly) => {
  */
 export const Button = ({
   onClick,
-  label = "",
+  label = null,
   id = null,
   type = "primary",
   size = "md",
@@ -170,6 +170,7 @@ Button.displayName = "Button";
  */
 export const ButtonLink = ({
   href,
+  label = null,
   id = null,
   type = "primary",
   size = "md",
@@ -187,6 +188,7 @@ export const ButtonLink = ({
   return (
     <Link
       href={href}
+      label={label}
       id={id}
       className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[type]} ${className}`}
     >
@@ -198,6 +200,8 @@ export const ButtonLink = ({
 ButtonLink.propTypes = {
   // Link that pressing the button will navigate to
   href: PropTypes.string.isRequired,
+  // Accessible label of the button if the button text is not sufficient for screen readers
+  label: PropTypes.string,
   // HTML ID of the button element
   id: PropTypes.string,
   // Button color type
@@ -227,19 +231,32 @@ ButtonLink.propTypes = {
  * See https://github.com/tailwindlabs/tailwindcss-container-queries for a Tailwind CSS plugin that
  * adds container queries to Tailwind CSS.
  */
-export const AttachedButtons = ({ className = "", children }) => {
+export const AttachedButtons = ({
+  testid = null,
+  className = "",
+  children,
+}) => {
   // Modify the borders and corner roundness of the child buttons so they look attached to each
   // other.
   const moddedChildren = React.Children.map(children, (child) => {
-    return React.cloneElement(child, {
-      className: `${child.props.className} border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r`,
-    });
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, {
+        className: `${child.props.className} border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r`,
+      });
+    }
+    return child;
   });
 
-  return <div className={`flex ${className}`}>{moddedChildren}</div>;
+  return (
+    <div data-testid={testid} className={`flex ${className}`}>
+      {moddedChildren}
+    </div>
+  );
 };
 
 AttachedButtons.propTypes = {
+  // data-testid attribute for testing
+  testid: PropTypes.string,
   // Additional Tailwind CSS classes to apply to the wrapper element
   className: PropTypes.string,
 };

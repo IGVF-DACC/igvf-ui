@@ -148,4 +148,24 @@ describe("Test AttachedButtons wrapper component", () => {
       "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r"
     );
   });
+
+  it("can handle an undefined value within it", () => {
+    const onClick = jest.fn();
+    const isSecondRendered = false;
+    render(
+      <AttachedButtons testid="attached-test">
+        <Button onClick={onClick}>Button 1</Button>
+        {isSecondRendered && <Button onClick={onClick}>Button 2</Button>}
+        <Button onClick={onClick}>Button 3</Button>
+      </AttachedButtons>
+    );
+
+    // Test that the attached button wrapper exists, but only two buttons exist within it.
+    const attachedButtons = screen.getByTestId("attached-test");
+    expect(attachedButtons).toBeInTheDocument();
+    const buttons = screen.getAllByRole("button");
+    expect(buttons.length).toBe(2);
+    expect(buttons[0]).toHaveTextContent("Button 1");
+    expect(buttons[1]).toHaveTextContent("Button 3");
+  });
 });

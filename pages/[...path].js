@@ -5,15 +5,8 @@ import buildBreadcrumbs from "../lib/breadcrumbs";
 import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 // components
-import {
-  Collection,
-  CollectionContent,
-  CollectionHeader,
-  CollectionItem,
-  CollectionItemName,
-} from "../components/collection";
+import { AddableItem } from "../components/add";
 import { DataPanel } from "../components/data-area";
-import NoCollectionData from "../components/no-collection-data";
 import Page from "../components/page";
 import PagePreamble from "../components/page-preamble";
 
@@ -24,50 +17,6 @@ import PagePreamble from "../components/page-preamble";
  */
 const extractTitle = (generic) => {
   return generic.accession || generic.title || generic.name || generic["@id"];
-};
-
-const FallbackCollection = ({ collection }) => {
-  return (
-    <>
-      <PagePreamble />
-      <Collection items={collection}>
-        {({ pageItems, pagerStatus, pagerAction }) => {
-          if (collection.length > 0) {
-            return (
-              <>
-                <CollectionHeader
-                  pagerStatus={pagerStatus}
-                  pagerAction={pagerAction}
-                />
-                <CollectionContent
-                  collection={pageItems}
-                  pagerStatus={pagerStatus}
-                >
-                  {collection.map((item) => (
-                    <CollectionItem
-                      key={item.uuid}
-                      testid={item.uuid}
-                      href={item["@id"]}
-                    >
-                      <CollectionItemName>
-                        {extractTitle(item)}
-                      </CollectionItemName>
-                    </CollectionItem>
-                  ))}
-                </CollectionContent>
-              </>
-            );
-          }
-          return <NoCollectionData />;
-        }}
-      </Collection>
-    </>
-  );
-};
-
-FallbackCollection.propTypes = {
-  // @graph of collection object to display
-  collection: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 /**
@@ -81,11 +30,6 @@ const FallbackObject = ({
   pages = null,
 }) => {
   if (generic) {
-    // Collections get displayed as a semi-formatted list linking to their objects.
-    if (generic["@type"].includes("Collection")) {
-      return <FallbackCollection collection={generic["@graph"]} />;
-    }
-
     // Pages get displayed as markdown.
     if (generic["@type"].includes("Page")) {
       return <Page page={generic} awards={awards} labs={labs} pages={pages} />;
@@ -95,11 +39,13 @@ const FallbackObject = ({
     return (
       <>
         <PagePreamble />
-        <DataPanel>
-          <div className="overflow-x-auto border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
-            <pre className="p-1">{JSON.stringify(generic, null, 4)}</pre>
-          </div>
-        </DataPanel>
+        <AddableItem collection={generic}>
+          <DataPanel>
+            <div className="overflow-x-auto border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
+              <pre className="p-1">{JSON.stringify(generic, null, 4)}</pre>
+            </div>
+          </DataPanel>
+        </AddableItem>
       </>
     );
   }

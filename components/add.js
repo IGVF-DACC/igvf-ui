@@ -75,29 +75,34 @@ const convertOptionalIntoRequiredSchema = (schema) => {
  * Generates a button link to the #!add url for the given collection.
  * A custom label can be suplied with the `label` prop.
  */
-export const AddLink = ({ collection }) => {
+export const AddLink = ({ collection, label = null }) => {
   if (collection.status === "error") {
     return;
   }
-  const collectPath = urlWithoutParams(collection["@id"]);
+  const collectPath = collection["@type"].includes("PageCollection")
+    ? "/add-page#!edit"
+    : `${urlWithoutParams(collection["@id"])}#!add`;
 
   if (canEdit(collection, ["add"])) {
     return (
       <ButtonLink
-        label="Add"
-        href={`${collectPath}#!add`}
+        label={label}
+        href={collectPath}
         size="sm"
         type="secondary"
         hasIconOnly
       >
-        <PlusIcon title="Add" />
+        <PlusIcon />
       </ButtonLink>
     );
   }
 };
 
 AddLink.propTypes = {
+  // Collection object with no results in @graph
   collection: PropTypes.object.isRequired,
+  // Label for the Add button
+  label: PropTypes.string,
 };
 
 export const AddInstancePage = ({ collection }) => {
@@ -190,7 +195,7 @@ export const AddInstancePage = ({ collection }) => {
       .then((response) => {
         if (response.status === "success") {
           setSaveErrors([]);
-          router.push(collectPath);
+          router.push(response["@graph"][0]["@id"]);
         } else {
           setEditorStatus({
             canEdit: true,
@@ -229,10 +234,6 @@ export const AddInstancePage = ({ collection }) => {
       });
   };
 
-  const cancel = () => {
-    router.back();
-  };
-
   return (
     <div className="space-y-1">
       <EditJson
@@ -243,7 +244,6 @@ export const AddInstancePage = ({ collection }) => {
       />
       <div className="flex justify-end">
         <SaveCancelControl
-          cancelClick={cancel}
           saveClick={save}
           itemPath={urlWithoutParams(collection["@id"])}
           saveEnabled={editorStatus.canSave}
@@ -293,16 +293,19 @@ AddableItem.propTypes = {
  * URL, allowing the user to Add an object of the schema type to the
  * collection.
  */
-export const AddItemFromSchema = ({ schema }) => {
+export const AddItemFromSchema = ({ schema, label = "" }) => {
   const { profileMap } = useContext(ProfileMapContext);
   const schemaId = schema["$id"].match(/^\/profiles\/(.+).json$/)[1];
   const collection = profileMap[schemaId];
 
   if (collection) {
-    return <AddLink collection={collection} />;
+    return <AddLink collection={collection} label={label} />;
   }
 };
 
 AddItemFromSchema.propTypes = {
+  // Single schema for the object type to add
   schema: PropTypes.object.isRequired,
+  // Label for the Add button to identify what's being added
+  label: PropTypes.string,
 };

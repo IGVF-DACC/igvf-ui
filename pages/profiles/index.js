@@ -24,7 +24,7 @@ const ChildElement = (props) => {
         >
           {props.title}
         </Link>
-        <AddItemFromSchema schema={schema} label="Add" type="primary" />
+        <AddItemFromSchema schema={schema} label={`Add ${schema.title}`} />
       </div>
     );
   } else if (Object.keys(props.child).length > 0) {

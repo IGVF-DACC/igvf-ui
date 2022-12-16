@@ -57,19 +57,10 @@ EditableItem.propTypes = {
   item: PropTypes.object.isRequired,
 };
 
-export const SaveCancelControl = ({
-  cancelClick,
-  saveClick,
-  itemPath,
-  saveEnabled,
-}) => {
+export const SaveCancelControl = ({ saveClick, itemPath, saveEnabled }) => {
   return (
     <div className="flex space-x-1">
-      <ButtonLink
-        href={itemPath}
-        type="secondary"
-        navigationClick={cancelClick}
-      >
+      <ButtonLink href={itemPath} type="secondary">
         Cancel
       </ButtonLink>
       <Button onClick={saveClick} isDisabled={!saveEnabled} type="primary">
@@ -80,7 +71,6 @@ export const SaveCancelControl = ({
 };
 
 SaveCancelControl.propTypes = {
-  cancelClick: PropTypes.func.isRequired,
   saveClick: PropTypes.func.isRequired,
   itemPath: PropTypes.string.isRequired,
   saveEnabled: PropTypes.bool.isRequired,
@@ -150,9 +140,7 @@ const EditPage = ({ item }) => {
   /**
    * The text is the current editor text of the underlying Ace editor component.
    */
-  const [text, setText] = useState(() => {
-    JSON.stringify({}, null, 4);
-  });
+  const [text, setText] = useState(() => JSON.stringify({}, null, 4));
 
   /**
    * When attempting to save the edited text to the backend, if there are any
@@ -258,10 +246,9 @@ const EditPage = ({ item }) => {
       />
       <div className="flex flex-row-reverse">
         <SaveCancelControl
-          cancelClick={() => ({})}
           saveClick={save}
-          itemPath={path}
           saveEnabled={editorStatus.canSave}
+          itemPath={item["@id"]}
         />
       </div>
       {saveErrors.length > 0 &&
