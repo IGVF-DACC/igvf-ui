@@ -10,7 +10,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
-import Button from "../button";
+import { Button } from "../form-elements";
 import ChromosomeLocations from "../chromosome-locations";
 import Modal from "../modal";
 import SeparatedList from "../separated-list";

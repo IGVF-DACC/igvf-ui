@@ -1,21 +1,23 @@
 // node_modules
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
-import Button from "./button";
+// components
+import { Button } from "./form-elements";
 
 /**
  * Displays a standard close icon button in a circle with an X mark.
  */
-const CloseButton = ({ onClick, label, className = "" }) => {
+const CloseButton = ({ onClick, label }) => {
   return (
-    <Button.Icon
-      type="info-outline"
+    <Button
+      type="secondary"
       onClick={onClick}
       label={label}
-      className={`block h-6 w-6 rounded-full ${className}`}
+      size="sm"
+      hasIconCircleOnly
     >
       <XMarkIcon />
-    </Button.Icon>
+    </Button>
   );
 };
 
@@ -24,8 +26,6 @@ CloseButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   // Accessible label for the close button
   label: PropTypes.string.isRequired,
-  // Tailwind CSS classes to apply colors or other changes to the close button
-  className: PropTypes.string,
 };
 
 export default CloseButton;

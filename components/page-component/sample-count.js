@@ -6,7 +6,7 @@
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
 // components
-import { Select } from "../form";
+import { Select } from "../form-elements";
 import SessionContext from "../session-context";
 // lib
 import FetchRequest from "../../lib/fetch-request";

@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import { Select } from "./form";
+import { Select } from "./form-elements";
 
 /**
  * Generates the list of items per page to offer.
@@ -39,7 +39,6 @@ const ItemsPerPageSelector = ({
   return (
     <Select
       name="items-per-page"
-      className="flex grow gap-1 [&>div]:w-full"
       value={itemsPerPage}
       onChange={onItemsPerPageChange}
     >

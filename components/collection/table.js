@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 // components
-import Button from "../button";
+import { Button } from "../form-elements";
 import Checkbox from "../checkbox";
 import CopyButton from "../copy-button";
 import { DataGridContainer } from "../data-grid";
@@ -106,12 +106,12 @@ const ColumnSelector = ({
       </Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Modal.Header onClose={() => setIsOpen(false)}>
-          <div className="flex items-center">
+          <h2 className="flex items-center font-semibold">
             Show / Hide Columns
             <HiddenColumnsIndicator
               isAnyColumnHidden={hiddenColumns.length > 0}
             />
-          </div>
+          </h2>
         </Modal.Header>
 
         <Modal.Body>
@@ -149,7 +149,7 @@ const ColumnSelector = ({
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="primary-outline" onClick={() => setIsOpen(false)}>
+          <Button type="primary" onClick={() => setIsOpen(false)}>
             Close
           </Button>
         </Modal.Footer>
@@ -342,7 +342,7 @@ BrowserColumnControls.propTypes = {
  */
 const ColumnControls = ({ children }) => {
   return (
-    <div className="my-1 flex flex-wrap items-center gap-1">{children}</div>
+    <div className="my-1 flex flex-wrap items-stretch gap-1">{children}</div>
   );
 };
 

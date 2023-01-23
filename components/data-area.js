@@ -18,9 +18,7 @@ import PropTypes from "prop-types";
  */
 export const DataPanel = ({ className = "", children }) => {
   return (
-    <div
-      className={`border border-data-border bg-data-background p-4 ${className}`}
-    >
+    <div className={`border border-panel bg-panel p-4 ${className}`}>
       {children}
     </div>
   );

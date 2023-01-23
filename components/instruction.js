@@ -3,7 +3,7 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
-import Button from "./button";
+import { Button } from "./form-elements";
 import Modal from "./modal";
 
 /**
@@ -15,13 +15,15 @@ const Instruction = ({ title, className = null, children }) => {
 
   return (
     <>
-      <Button.Icon
-        type="info-outline"
+      <Button
+        type="primary"
+        size="md"
         label={title}
         onClick={() => setIsOpen(true)}
+        hasIconOnly
       >
         <QuestionMarkCircleIcon />
-      </Button.Icon>
+      </Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Modal.Header
           closeLabel="Close instructions"

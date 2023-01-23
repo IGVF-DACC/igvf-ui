@@ -26,11 +26,16 @@ import {
 // components
 import { useAuthenticated } from "./authentication";
 import Breadcrumbs from "./breadcrumbs";
-import Button from "./button";
 import { DataPanel } from "./data-area";
 import FlashMessage from "./flash-message";
-import { Select, TextField } from "./form";
-import ListSelect from "./list-select";
+import {
+  AttachedButtons,
+  Button,
+  ButtonLink,
+  ListSelect,
+  Select,
+  TextField,
+} from "./form-elements";
 import Markdown from "./markdown";
 import Modal from "./modal";
 import PageComponent from "./page-component";
@@ -121,9 +126,9 @@ const PageCondition = createContext({
 const EditPageTrigger = ({ href }) => {
   return (
     <div className="mb-1 flex justify-end">
-      <Button.Link href={`${href}#!edit`} type="secondary-outline" size="sm">
+      <ButtonLink href={`${href}#!edit`} type="secondary" size="sm">
         Edit Page
-      </Button.Link>
+      </ButtonLink>
     </div>
   );
 };
@@ -225,6 +230,7 @@ const PageMetaEditor = memo(function PageMetaEditor({
             placeholder="last-part-of-path"
             message={nameFieldMessage}
             onChange={setNameField}
+            className="my-2"
             isRequired
           />
           <TextField
@@ -234,6 +240,7 @@ const PageMetaEditor = memo(function PageMetaEditor({
             placeholder="Appears at the top of the page"
             message={titleFieldMessage}
             onChange={setTitleField}
+            className="my-2"
             isRequired
           />
           <Select
@@ -252,7 +259,7 @@ const PageMetaEditor = memo(function PageMetaEditor({
             label="Parent"
             value={livePageMeta.parent}
             onChange={setPageMetaParent}
-            className="self-stretch [&>div]:h-56 [&>div]:max-h-56"
+            className="my-2 self-stretch [&>div]:h-56 [&>div]:max-h-56"
           >
             {pages.map((page) => {
               return (
@@ -345,7 +352,7 @@ const BlockEditor = ({ block, dispatchLiveBlocks, previewedBlockIds }) => {
 
   if (isBlockInPreviewMode) {
     return (
-      <div className="prose h-96 w-full overflow-y-auto border border-data-border bg-data-background p-2 dark:prose-invert">
+      <div className="prose h-96 w-full overflow-y-auto border border-panel bg-panel p-2 dark:prose-invert">
         <Markdown direction={block.direction} markdown={block.body} />
       </div>
     );
@@ -353,7 +360,7 @@ const BlockEditor = ({ block, dispatchLiveBlocks, previewedBlockIds }) => {
 
   return (
     <textarea
-      className="block h-96 w-full border border-data-border bg-data-background p-2 font-mono text-sm"
+      className="block h-96 w-full border border-form-element bg-form-element p-2 font-mono text-sm"
       id={block["@id"].substring(1)}
       value={block.body}
       dir={block.direction}
@@ -388,7 +395,6 @@ const TextDirectionSwitch = ({
   disabled,
   onBlockDirectionChange,
 }) => {
-  const buttonClassName = "block border border-data-border py-2 px-3";
   const iconClassName = `h-4 w-4${
     disabled
       ? " fill-gray-400 dark:fill-gray-600"
@@ -407,30 +413,26 @@ const TextDirectionSwitch = ({
 
   return (
     <div className="flex">
-      <button
-        onClick={() => onDirectionClick("ltr")}
-        className={`${buttonClassName} ${
-          direction === "ltr"
-            ? "bg-gray-200 dark:bg-gray-800"
-            : "bg-white dark:bg-black"
-        } rounded-l`}
-        disabled={disabled}
-        aria-label="Left-to-right language text direction"
-      >
-        <Bars3BottomLeftIcon className={iconClassName} />
-      </button>
-      <button
-        onClick={() => onDirectionClick("rtl")}
-        className={`${buttonClassName} ${
-          direction === "rtl"
-            ? "bg-gray-200 dark:bg-gray-800"
-            : "bg-white dark:bg-black"
-        } rounded-r border-l-0`}
-        disabled={disabled}
-        aria-label="Right-to-left language text direction"
-      >
-        <Bars3BottomRightIcon className={iconClassName} />
-      </button>
+      <AttachedButtons>
+        <Button
+          onClick={() => onDirectionClick("ltr")}
+          type={direction === "ltr" ? "selected" : "secondary"}
+          isDisabled={disabled}
+          label="Left-to-right language text direction"
+          hasIconOnly
+        >
+          <Bars3BottomLeftIcon className={iconClassName} />
+        </Button>
+        <Button
+          onClick={() => onDirectionClick("rtl")}
+          type={direction === "rtl" ? "selected" : "secondary"}
+          isDisabled={disabled}
+          label="Right-to-left language text direction"
+          hasIconOnly
+        >
+          <Bars3BottomRightIcon className={iconClassName} />
+        </Button>
+      </AttachedButtons>
     </div>
   );
 };
@@ -462,7 +464,7 @@ const DeleteBlockTrigger = ({ onDelete }) => {
   return (
     <>
       <Button
-        type="error"
+        type="warning"
         label="Delete block"
         className="grow"
         onClick={() => setOpen(true)}
@@ -485,7 +487,7 @@ const DeleteBlockTrigger = ({ onDelete }) => {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            type="primary-outline"
+            type="secondary"
             onClick={() => setOpen(false)}
             id="cancel-delete-block"
             autofocus
@@ -493,7 +495,7 @@ const DeleteBlockTrigger = ({ onDelete }) => {
             Cancel
           </Button>
           <Button
-            type="error"
+            type="warning"
             id="confirm-delete-block"
             onClick={handleDeleteClick}
           >
@@ -557,7 +559,7 @@ const BlockControls = ({
 
   return (
     <div className="mt-1 lg:flex lg:items-start lg:justify-between">
-      <div className="flex items-center gap-1">
+      <div className="flex gap-1">
         <Select
           name={`${block["@id"].substring(1)}-type`}
           value={block["@type"]}
@@ -573,13 +575,14 @@ const BlockControls = ({
               disabled={isBlockPreviewed}
               onBlockDirectionChange={onBlockDirectionChange}
             />
-            <Button.Icon
-              type={`secondary${isBlockPreviewed ? "" : "-outline"}`}
+            <Button
+              type={isBlockPreviewed ? "selected" : "secondary"}
               onClick={() => onPreview(block["@id"], !isBlockPreviewed)}
               label="Preview markdown"
+              hasIconOnly
             >
-              <EyeIcon className="h-5 w-5" />
-            </Button.Icon>
+              <EyeIcon />
+            </Button>
           </>
         )}
       </div>
@@ -798,13 +801,13 @@ const PageEditor = ({ blocks, pageMeta, awards, labs, pages, onClose }) => {
       <div className="mb-1 flex justify-end gap-1">
         <Button
           onClick={() => onClose()}
-          type="secondary-outline"
+          type="secondary"
           label="Cancel editing page"
         >
           Cancel
         </Button>
         <Button
-          disabled={isValidationError}
+          isDisabled={isValidationError}
           label="Save edits to page"
           onClick={() =>
             onClose({ blocks: liveBlocks, pageMeta: livePageMeta })
@@ -813,7 +816,7 @@ const PageEditor = ({ blocks, pageMeta, awards, labs, pages, onClose }) => {
           Save
         </Button>
       </div>
-      <div className="mb-4 border-b border-data-border">
+      <div className="mb-4 border-b border-panel">
         {liveBlocks.map((block) => {
           return (
             <div key={block["@id"]} className="my-10 first:mt-0">

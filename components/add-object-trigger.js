@@ -6,7 +6,7 @@
 import PropTypes from "prop-types";
 // components
 import { useAuthenticated } from "./authentication";
-import Button from "./button";
+import { ButtonLink } from "./form-elements";
 
 const AddObjectTrigger = ({ addSpec = null }) => {
   const isAuthenticated = useAuthenticated();
@@ -14,14 +14,15 @@ const AddObjectTrigger = ({ addSpec = null }) => {
     return (
       <>
         {isAuthenticated && (
-          <Button.Link
-            href={`${addSpec.path}#!edit`}
-            type="success-outline"
-            size="md"
-            className="self-stretch"
-          >
-            {`Add ${addSpec.label}`}
-          </Button.Link>
+          <div className="mb-1 flex justify-end">
+            <ButtonLink
+              href={`${addSpec.path}#!edit`}
+              type="primary"
+              className="self-stretch"
+            >
+              {`Add ${addSpec.label}`}
+            </ButtonLink>
+          </div>
         )}
       </>
     );

@@ -9,7 +9,7 @@ import FetchRequest from "../lib/fetch-request";
 
 const HelpBanner = ({ helpPageRoot }) => {
   return (
-    <div className="aspect-ultra w-full border border-data-border bg-help-banner bg-cover dark:bg-help-banner-dark">
+    <div className="aspect-ultra w-full border border-panel bg-help-banner bg-cover dark:bg-help-banner-dark">
       <h1 className="mt-2 ml-4 text-2xl font-light text-black dark:text-white sm:text-3xl md:mt-8 md:text-4xl xl:text-5xl">
         {helpPageRoot?.title || null}
       </h1>

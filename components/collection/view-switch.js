@@ -3,7 +3,7 @@ import { Bars4Icon, TableCellsIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import { useContext } from "react";
 // components
-import Button from "../button";
+import { AttachedButtons, Button } from "../form-elements";
 import GlobalContext from "../global-context";
 // components/collection
 import { COLLECTION_VIEW_LIST, COLLECTION_VIEW_TABLE } from "./constants";
@@ -36,32 +36,31 @@ const CollectionViewSwitch = () => {
   };
 
   return (
-    <div
-      className="mb-4 flex gap-1 sm:mb-0"
-      data-testid="collection-view-switch"
-    >
-      <Button.Icon
-        type={isListSelected ? "primary" : "primary-outline"}
-        label={`Select collection list view${
-          isListSelected ? " (selected)" : ""
-        }`}
-        onClick={onListViewSelect}
-        className="h-8 w-8 sm:h-6 sm:w-6"
-      >
-        <Bars4Icon />
-      </Button.Icon>
-      <Button.Icon
-        type={isTableSelected ? "primary" : "primary-outline"}
-        label={`Select collection table view${
-          isTableSelected ? " (selected)" : ""
-        }`}
-        onClick={() =>
-          collectionView.setCurrentCollectionView(COLLECTION_VIEW_TABLE)
-        }
-        className="h-8 w-8 sm:h-6 sm:w-6"
-      >
-        <TableCellsIcon />
-      </Button.Icon>
+    <div data-testid="collection-view-switch">
+      <AttachedButtons className="mb-4 flex sm:mb-0">
+        <Button
+          type={isListSelected ? "selected" : "secondary"}
+          label={`Select collection list view${
+            isListSelected ? " (selected)" : ""
+          }`}
+          onClick={onListViewSelect}
+          hasIconOnly
+        >
+          <Bars4Icon />
+        </Button>
+        <Button
+          type={isTableSelected ? "selected" : "secondary"}
+          label={`Select collection table view${
+            isTableSelected ? " (selected)" : ""
+          }`}
+          onClick={() =>
+            collectionView.setCurrentCollectionView(COLLECTION_VIEW_TABLE)
+          }
+          hasIconOnly
+        >
+          <TableCellsIcon />
+        </Button>
+      </AttachedButtons>
     </div>
   );
 };

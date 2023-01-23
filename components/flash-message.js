@@ -30,11 +30,7 @@ const FlashMessage = ({ message, type = "error", onClose }) => {
     >
       <div className="grow text-gray-600 dark:text-gray-300">{message}</div>
       <div className="ml-2 shrink basis-5">
-        <CloseButton
-          onClick={onClose}
-          label="Close message"
-          className={`[&>svg]:fill-white ${classes[type].close}`}
-        />
+        <CloseButton onClick={onClose} label="Close message" />
       </div>
     </div>
   );

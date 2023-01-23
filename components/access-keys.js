@@ -8,11 +8,10 @@ import {
 import PropTypes from "prop-types";
 import { Fragment, useContext, useState } from "react";
 // components
-import Button from "./button";
+import { Button } from "./form-elements";
 import CopyButton from "./copy-button";
 import Modal from "./modal";
 import SessionContext from "./session-context";
-import Tooltip from "./tooltip";
 // lib
 import {
   createAccessKey,
@@ -117,7 +116,6 @@ const AccessKeyModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          type="primary-outline"
           onClick={onClose}
           label={accessKeyModalMessages[createOrReset].close}
         >
@@ -197,11 +195,16 @@ CreateAccessKeyTrigger.propTypes = {
 /**
  * Display a single access key control button.
  */
-const AccessKeyControl = ({ label, onClick, type, children }) => {
+const AccessKeyControl = ({ label, onClick, type, hasIconOnly, children }) => {
   return (
-    <Button.Icon label={label} onClick={onClick} type={type}>
-      <Tooltip content={label}>{children}</Tooltip>
-    </Button.Icon>
+    <Button
+      label={label}
+      onClick={onClick}
+      type={type}
+      hasIconOnly={hasIconOnly}
+    >
+      {children}
+    </Button>
   );
 };
 
@@ -210,7 +213,9 @@ AccessKeyControl.propTypes = {
   label: PropTypes.string.isRequired,
   // Function to call when the user clicks the control
   onClick: PropTypes.func.isRequired,
-  // Additional Tailwind CSS class names to apply to the button
+  // True if the control contains only an icon
+  hasIconOnly: PropTypes.bool,
+  // Type of button to display
   type: PropTypes.string,
 };
 
@@ -244,9 +249,10 @@ export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
       <AccessKeyControl
         label={`Reset access key ${accessKeyId}`}
         onClick={resetKey}
-        type="secondary"
+        type="primary"
       >
         <ArrowPathIcon className="fill-white" />
+        Reset
       </AccessKeyControl>
       {isOpen && (
         <AccessKeyModal
@@ -294,8 +300,9 @@ const DeleteAccessKeyTrigger = ({ accessKeyId, onAccessKeyChange }) => {
         label={`Delete access key ${accessKeyId}`}
         onClick={() => setOpen(true)}
         type="warning"
+        hasIconOnly
       >
-        <TrashIcon className="fill-white" />
+        <TrashIcon />
       </AccessKeyControl>
       <Modal isOpen={isOpen} onClose={onCancel}>
         <Modal.Header
@@ -312,14 +319,14 @@ const DeleteAccessKeyTrigger = ({ accessKeyId, onAccessKeyChange }) => {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            type="primary-outline"
+            type="secondary"
             onClick={onCancel}
             label="Cancel deleting access key"
           >
             Cancel
           </Button>
           <Button
-            type="error"
+            type="warning"
             onClick={onDelete}
             label="Confirm deleting access key"
           >
@@ -344,7 +351,7 @@ DeleteAccessKeyTrigger.propTypes = {
 export const AccessKeyItem = ({ accessKey, onAccessKeyChange }) => {
   return (
     <>
-      <div className="flex items-center justify-between border border-data-border px-3 py-2 md:px-2 md:py-1">
+      <div className="flex items-center justify-between border border-panel px-3 py-2 md:px-2 md:py-1">
         <div className="font-mono">{accessKey.access_key_id}</div>
         <div className="flex gap-1">
           <ResetAccessKeyTrigger accessKeyId={accessKey.access_key_id} />
@@ -370,7 +377,7 @@ AccessKeyItem.propTypes = {
  */
 export const AccessKeyList = ({ children }) => {
   return (
-    <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {children}
     </div>
   );
