@@ -10,7 +10,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import { Children, cloneElement, useState } from "react";
-// compoonents
+// components
 import DataGrid from "./data-grid";
 
 // enums for the column-sorting directions.
@@ -245,8 +245,6 @@ HeaderCell.propTypes = {
 const SortableGrid = ({
   data,
   columns,
-  startIndex = 0,
-  endIndex = data.length,
   keyProp = "",
   initialSort = {},
   meta = {},
@@ -305,10 +303,9 @@ const SortableGrid = ({
     return null;
   } else {
     // Convert the data (simple array of objects) into a data grid array and render the table.
-    const sortedData = sortData(data, columns, sortBy, sortDirection).slice(
-      startIndex,
-      endIndex
-    );
+    const sortedData = initialSort.isSortingSuppressed
+      ? data
+      : sortData(data, columns, sortBy, sortDirection);
     const dataRows = convertObjectArrayToDataGrid(sortedData, columns, keyProp);
     return (
       <DataGrid
@@ -331,10 +328,6 @@ SortableGrid.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Column configurations for the grid
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Index of the first row to display
-  startIndex: PropTypes.number,
-  // Index of the last row to display
-  endIndex: PropTypes.number,
   // Which prop of the objects in the data array to use as the React key
   keyProp: PropTypes.string,
   // Optional initial sorting of the grid
@@ -343,6 +336,8 @@ SortableGrid.propTypes = {
     columnId: PropTypes.string,
     // sort direction
     direction: PropTypes.oneOf(Object.values(SORT_DIRECTIONS)),
+    // True to not sort the data
+    isSortingSuppressed: PropTypes.bool,
   }),
   // meta property for the data cells
   meta: PropTypes.object,

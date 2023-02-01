@@ -3,7 +3,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import Error from "next/error";
 import Head from "next/head";
 import PropTypes from "prop-types";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 // lib
 import onRedirectCallback from "../lib/authentication-redirect";
 import {
@@ -15,7 +15,6 @@ import {
 } from "../lib/constants";
 import DarkModeManager from "../lib/dark-mode-manager";
 // components
-import { COLLECTION_VIEW_LIST } from "../components/collection";
 import GlobalContext from "../components/global-context";
 import NavigationSection from "../components/navigation";
 import { Session } from "../components/session-context";
@@ -24,12 +23,6 @@ import "../styles/globals.css";
 import { ProfileMap } from "../components/profile-map";
 
 const App = ({ Component, pageProps }) => {
-  // Server session cookie.
-  const [sessionCookie, setSessionCookie] = useState("");
-  // Selects between "list" and "table" collection views
-  const [currentCollectionView, setCurrentCollectionView] =
-    useState(COLLECTION_VIEW_LIST);
-
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
     const darkModeManager = new DarkModeManager();
@@ -41,13 +34,6 @@ const App = ({ Component, pageProps }) => {
     };
   }, []);
 
-  useEffect(() => {
-    // Set the session cookie if the back end has retrieved one.
-    if (pageProps.sessionCookie) {
-      setSessionCookie(pageProps.sessionCookie);
-    }
-  }, [pageProps.sessionCookie]);
-
   const globalContext = useMemo(() => {
     return {
       site: {
@@ -58,19 +44,11 @@ const App = ({ Component, pageProps }) => {
         type: pageProps.pageContext?.type || "",
       },
       breadcrumbs: pageProps.breadcrumbs || [],
-      sessionCookie,
-      collectionView: {
-        currentCollectionView,
-        setCurrentCollectionView,
-      },
     };
   }, [
-    currentCollectionView,
     pageProps.breadcrumbs,
     pageProps.pageContext?.title,
     pageProps.pageContext?.type,
-    sessionCookie,
-    setCurrentCollectionView,
   ]);
 
   return (

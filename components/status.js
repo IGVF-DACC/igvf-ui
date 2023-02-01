@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 /**
  * Styles for each possible status value. As new status values get added to the schemas, add a
  * corresponding entry with its colors here. bg-[#xxxxxx] define the color of the badge background
- * while shadoow-[#xxxxxx] define the color of the badge outline.
+ * while shadow-[#xxxxxx] define the color of the badge outline.
  */
 const statusStyles = {
   fallback: "bg-[#d0d0d0] text-black shadow-[#a0a0a0]",
@@ -25,7 +25,7 @@ const Status = ({ status }) => {
   const statusClass = statusStyles[status] || statusStyles.fallback;
   return (
     <div
-      className={`my-0.5 mx-px w-fit self-start whitespace-nowrap rounded-full border border-white px-2 py-0 text-xs font-semibold uppercase shadow-status ${statusClass}`}
+      className={`my-0.5 mx-px w-fit whitespace-nowrap rounded-full border border-white px-2 py-0 text-xs font-semibold uppercase shadow-status ${statusClass}`}
     >
       {status}
     </div>

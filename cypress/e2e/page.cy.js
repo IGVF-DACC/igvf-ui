@@ -9,11 +9,7 @@ describe("Content-Change Tests", () => {
 
     // Go to the page titled `Samples`.
     cy.get(`[data-testid="pages"]`).click();
-    cy.get(
-      `[data-testid="collection-list-item-331928f7-d8f7-4ea6-b4e0-8d380fb22974"]`
-    ).within(() => {
-      cy.get("a").click();
-    });
+    cy.get(`[aria-label="View details for /test-section/subpage/"]`).click();
     cy.contains("Edit Page").click();
     cy.get("#block1").type("{enter}{enter}Updated content.");
 
@@ -55,9 +51,9 @@ describe("Content-Change Tests", () => {
     cy.get("#status").select("Released");
     cy.get(`[aria-label="Save edits to page"]`).click();
     cy.delayForIndexing();
-    cy.visit("/pages/");
+    cy.visit("/search?type=Page");
     cy.get(
-      `[data-testid="collection-list-item-83173355-31ff-4ca7-a259-e4af0f3a0169"]`
+      `[data-testid="search-list-item-/test-section/subpage-in-progress/"]`
     ).within(() => {
       cy.contains("Updated Subpage Title");
       cy.contains("released");
@@ -92,8 +88,8 @@ describe("Content-Change Tests", () => {
     cy.wait(1500);
 
     // Make a new top-level help page.
-    cy.visit("/pages");
-    cy.contains("Add Page").click();
+    cy.get("[data-testid=profiles]").click();
+    cy.get(`[label="Add Page"]`).click();
     cy.get("#block1").type("Test Help Category");
     cy.get("#name").type("test-help-category");
     cy.get("#title").type("Test Help Category");
@@ -107,8 +103,8 @@ describe("Content-Change Tests", () => {
     cy.get("h2").should("contain", "Test Help Category");
 
     // Make a new top-level help page.
-    cy.visit("/pages");
-    cy.contains("Add Page").click();
+    cy.get("[data-testid=profiles]").click();
+    cy.get(`[label="Add Page"]`).click();
     cy.get("#block1").type("Help Content Page");
     cy.get("#name").type("help-content");
     cy.get("#title").type("Help Content");

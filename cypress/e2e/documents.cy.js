@@ -14,18 +14,13 @@ describe("Must sign in to see current document objects", () => {
 
       // Go to the documents collection page.
       cy.get("[data-testid=documents]").click();
-      cy.get(`[data-testid^="collection-list-item"]`).should(
+      cy.get(`[data-testid^="search-list-item"]`).should(
         "have.length.at.least",
         1
       );
 
-      // Go to the first document in the list and make sure it has a link to download the attachment.
-      cy.get(`[data-testid^="collection-list-item"]`)
-        .first()
-        .find("[aria-label^=Download]");
-
       // Go to the first document in the list and go to its document object page.
-      cy.get(`[data-testid^="collection-list-item"]`)
+      cy.get(`[data-testid^="search-list-item"]`)
         .first()
         .find("a")
         .first()

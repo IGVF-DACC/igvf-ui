@@ -18,14 +18,14 @@ module.exports = {
         "help-banner-dark": "url('/img/help-banner-dark.jpg')",
       },
       colors: {
-        background: "var(--color-page-background)",
-
+        background: "var(--color-background)",
         brand: "var(--color-brand)",
         "brand-accent": "var(--color-brand-accent)",
-
         "nav-highlight": "var(--color-nav-highlight)",
         "nav-border": "var(--color-nav-border)",
         "title-border": "var(--color-title-border)",
+        "data-background": "var(--color-data-background)",
+        "data-border": "var(--color-data-border)",
         highlight: "var(--color-highlight)",
         "highlight-border": "var(--color-highlight-border)",
         "modal-border": "var(--color-modal-border)",

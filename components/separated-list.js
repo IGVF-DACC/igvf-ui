@@ -48,6 +48,7 @@ const SeparatedList = ({
     return (
       <div className={className || ""} data-testid={testid}>
         {children
+          .filter(Boolean)
           .map((item) => <React.Fragment key={item.key}>{item}</React.Fragment>)
           .reduce((combined, curr, index) => [
             combined,
