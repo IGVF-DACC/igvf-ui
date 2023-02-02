@@ -37,8 +37,10 @@ import RodentDonor from "./rodent-donor";
 import TechnicalSample from "./technical-sample";
 import Treatment from "./treatment";
 import User from "./user";
+import AnalysisSet from "./analysis-set";
 
 const renderers = {
+  AnalysisSet,
   AssayTerm: OntologyTerm,
   Award,
   CellLine: Biosample,
