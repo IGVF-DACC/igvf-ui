@@ -41,9 +41,6 @@ import User from "./user";
 const renderers = {
   AssayTerm: OntologyTerm,
   Award,
-  CellLine: Biosample,
-  DifferentiatedCell: Biosample,
-  DifferentiatedTissue: Biosample,
   Document,
   Gene,
   HumanDonor,

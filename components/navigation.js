@@ -425,28 +425,12 @@ const Navigation = ({ navigationClick }) => {
         handleGroupClick={handleParentClick}
       >
         <NavigationHrefItem
-          id="cell-lines"
-          href="/search?type=CellLine"
+          id="tissues"
+          href="/search?type=Tissue"
           navigationClick={navigationClick}
           isChildItem
         >
-          Cell Lines
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="differentiated-cells"
-          href="/search?type=DifferentiatedCell"
-          navigationClick={navigationClick}
-          isChildItem
-        >
-          Differentiated Cells
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="differentiated-tissues"
-          href="/search?type=DifferentiatedTissue"
-          navigationClick={navigationClick}
-          isChildItem
-        >
-          Differentiated Tissues
+          Tissues
         </NavigationHrefItem>
         <NavigationHrefItem
           id="primary-cells"
@@ -463,14 +447,6 @@ const Navigation = ({ navigationClick }) => {
           isChildItem
         >
           Technical Samples
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="tissues"
-          href="/search?type=Tissue"
-          navigationClick={navigationClick}
-          isChildItem
-        >
-          Tissues
         </NavigationHrefItem>
       </NavigationGroupItem>
       <NavigationHrefItem
