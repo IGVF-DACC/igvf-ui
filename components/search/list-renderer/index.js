@@ -217,8 +217,8 @@ const getRenderableItemTypes = (searchResults) => {
  * the search results as keys. Under each key is an array of search-result items of that type, i.e.:
  * ```
  * {
- *   "CellLine": [cell-line-item-1, cell-line-item-2, cell-line-item-3],
- *   "DifferentiatedTissue": [differentiated-tissue-item-1, differentiated-tissue-item-2],
+ *   "CellLine": [primary-call-item-1, primary-call-item-2, primary-call-item-3],
+ *   "Tissue": [tissue-item-1, tissue-item-2],
  * }
  * ```
  * @param {object} searchResults Search results from igvfd

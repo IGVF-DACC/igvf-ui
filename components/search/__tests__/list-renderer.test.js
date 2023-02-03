@@ -156,23 +156,23 @@ describe("Test Award component", () => {
 describe("Test the Biosample component", () => {
   it("renders a biosample-derived item with accessory data", () => {
     const item = {
-      "@id": "/cell-lines/IGVFSM002AAA/",
-      "@type": ["CellLine", "Biosample", "Sample", "Item"],
-      accession: "IGVFSM002AAA",
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      accession: "IGVFSM0000EEEE",
       biosample_term: "/sample-terms/CL_0011001/",
-      lab: "/labs/ali-mortazavi/",
+      lab: "j-michael-cherry",
       status: "released",
       taxa: "Homo sapiens",
-      uuid: "8e35b598-e688-443b-bf0d-9ea1783d171e",
+      uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
     };
     const accessoryData = {
       "/sample-terms/CL_0011001/": {
         "@id": "/sample-terms/CL_0011001/",
         term_name: "motor neuron",
       },
-      "/labs/ali-mortazavi/": {
-        "@id": "/labs/ali-mortazavi/",
-        title: "Ali Mortazavi, UCI",
+      "/labs/j-michael-cherry/": {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
       },
     };
 
@@ -183,8 +183,8 @@ describe("Test the Biosample component", () => {
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^CellLine/);
-    expect(uniqueId).toHaveTextContent(/IGVFSM002AAA$/);
+    expect(uniqueId).toHaveTextContent(/^IGVFSM0000EEEE/);
+    expect(uniqueId).toHaveTextContent(/IGVFSM0000EEEE$/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent("Homo sapiens motor neuron");
@@ -198,20 +198,20 @@ describe("Test the Biosample component", () => {
     const paths = Biosample.getAccessoryDataPaths([item]);
     expect(paths).toEqual([
       "/sample-terms/CL_0011001/",
-      "/labs/ali-mortazavi/",
+      "/labs/j-michael-cherry/",
     ]);
   });
 
   it("renders a biosample-derived item without accessory data", () => {
     const item = {
-      "@id": "/cell-lines/IGVFSM002AAA/",
-      "@type": ["CellLine", "Biosample", "Sample", "Item"],
-      accession: "IGVFSM002AAA",
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      accession: "IGVFSM0000EEEE",
       biosample_term: "/sample-terms/CL_0011001/",
-      lab: "/labs/ali-mortazavi/",
+      lab: "/labs/j-michael-cherry/",
       status: "released",
       taxa: "Homo sapiens",
-      uuid: "8e35b598-e688-443b-bf0d-9ea1783d171e",
+      uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
     };
 
     render(

@@ -15,7 +15,7 @@ import FetchRequest from "../../lib/fetch-request";
 
 const SampleCount = ({ label = "Sample Count", color = "gray" }) => {
   // Selected sample collection type
-  const [sampleType, setSampleType] = useState("cell-lines");
+  const [sampleType, setSampleType] = useState("tissues");
   // Sample collection @graph for the selected sample type
   const [samples, setSamples] = useState([]);
 

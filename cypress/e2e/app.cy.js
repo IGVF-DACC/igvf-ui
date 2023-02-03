@@ -138,12 +138,9 @@ describe("Navigation", () => {
       .should("be.gte", 2);
 
     cy.get("[data-testid=samples]").click();
-    cy.get("[data-testid=cell-lines]").should("not.exist");
-    cy.get("[data-testid=differentiated-cells]").should("not.exist");
-    cy.get("[data-testid=differentiated-tissues]").should("not.exist");
+    cy.get("[data-testid=tissues]").should("not.exist");
     cy.get("[data-testid=primary-cells]").should("not.exist");
     cy.get("[data-testid=technical-samples]").should("not.exist");
-    cy.get("[data-testid=tissues]").should("not.exist");
 
     cy.get("[data-testid=treatments]").click();
     cy.url().should("include", "/search?type=Treatment");

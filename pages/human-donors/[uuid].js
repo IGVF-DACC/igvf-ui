@@ -97,13 +97,13 @@ const HumanDonor = ({
 };
 
 HumanDonor.propTypes = {
-  // Technical sample to display
+  // Human donor to display
   donor: PropTypes.object.isRequired,
-  // Award applied to this technical sample
+  // Award applied to this human donor
   award: PropTypes.object,
-  // Documents associated with the cell-line
+  // Documents associated with human donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this technical sample
+  // Lab that submitted this human donor
   lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,

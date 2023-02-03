@@ -112,7 +112,7 @@ const Treatment = ({ treatment, documents }) => {
 Treatment.propTypes = {
   // Technical treatment to display
   treatment: PropTypes.object.isRequired,
-  // Documents associated with the cell-line
+  // Documents treatment
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 

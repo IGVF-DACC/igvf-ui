@@ -102,7 +102,7 @@ Tissue.propTypes = {
   tissue: PropTypes.object.isRequired,
   // Award applied to this sample
   award: PropTypes.object,
-  // Documents associated with the cell-line
+  // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
