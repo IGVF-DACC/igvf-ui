@@ -183,7 +183,7 @@ describe("Test the Biosample component", () => {
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^IGVFSM0000EEEE/);
+    expect(uniqueId).toHaveTextContent(/^PrimaryCell/);
     expect(uniqueId).toHaveTextContent(/IGVFSM0000EEEE$/);
 
     const title = screen.getByTestId("search-list-item-title");

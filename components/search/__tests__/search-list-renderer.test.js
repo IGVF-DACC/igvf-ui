@@ -196,13 +196,13 @@ describe("Test item-type utility functions", () => {
       {
         "@id": "/tissues/IGVFSM0000DDDD/",
         "@type": ["Tissue", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM003CCC",
+        accession: "IGVFSM0000DDDD",
         uuid: "f1e4d059-a970-4250-bc2b-ba4572945e22",
       },
       {
         "@id": "/tissues/IGVFSM0001DDDD/",
         "@type": ["Tissue", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM003BBB",
+        accession: "IGVFSM0001DDDD",
         uuid: "984a5f8e-c751-11ec-9d64-0242ac120002",
       },
     ],
