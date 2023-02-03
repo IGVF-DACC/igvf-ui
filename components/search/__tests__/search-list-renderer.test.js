@@ -219,9 +219,9 @@ describe("Test item-type utility functions", () => {
     expect(Object.keys(itemListsByType)).toHaveLength(1);
     expect(itemListsByType).toHaveProperty("PrimaryCell");
     expect(itemListsByType.PrimaryCell).toHaveLength(3);
-    expect(itemListsByType.PrimaryCell[0].accession).toBe("IGVFSM000BBB");
-    expect(itemListsByType.PrimaryCell[1].accession).toBe("IGVFSM002BBB");
-    expect(itemListsByType.PrimaryCell[2].accession).toBe("IGVFSM003BBB");
+    expect(itemListsByType.PrimaryCell[0].accession).toBe("IGVFSM0000EEEE");
+    expect(itemListsByType.PrimaryCell[1].accession).toBe("IGVFSM0001EEEE");
+    expect(itemListsByType.PrimaryCell[2].accession).toBe("IGVFSM0002EEEE");
   });
 
   it("should return an object with multiple keys for heterogenous search results", () => {
@@ -252,7 +252,7 @@ describe("Test Fallback component", () => {
       title: "PrimaryCell title",
     };
     render(<Fallback item={item} />);
-    expect(screen.getByText("IGVFSM000BBB")).toBeInTheDocument();
+    expect(screen.getByText("IGVFSM0000EEEE")).toBeInTheDocument();
   });
 
   it("should render the item's title", () => {
@@ -264,7 +264,7 @@ describe("Test Fallback component", () => {
       title: "PrimaryCell title",
     };
     render(<Fallback item={item} />);
-    expect(screen.getByText("PrimaryCelltitle")).toBeInTheDocument();
+    expect(screen.getByText("PrimaryCell title")).toBeInTheDocument();
   });
 
   it("should render the item's name", () => {

@@ -190,7 +190,7 @@ describe("Test the Biosample component", () => {
     expect(title).toHaveTextContent("Homo sapiens motor neuron");
 
     const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("Ali Mortazavi, UCI");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
