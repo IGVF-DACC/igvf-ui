@@ -160,7 +160,7 @@ describe("Test the Biosample component", () => {
       "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       accession: "IGVFSM0000EEEE",
       biosample_term: "/sample-terms/CL_0011001/",
-      lab: "j-michael-cherry",
+      lab: "/labs/j-michael-cherry/",
       status: "released",
       taxa: "Homo sapiens",
       uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",

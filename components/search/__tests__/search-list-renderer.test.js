@@ -178,7 +178,7 @@ describe("Test item-type utility functions", () => {
       {
         "@id": "/primary-cells/IGVFSM0000EEEE/",
         "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM000CCC",
+        accession: "IGVFSM0000EEEE",
         uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
       },
       {
@@ -285,7 +285,7 @@ describe("Test Fallback component", () => {
       description: "PrimaryCell description",
     };
     render(<Fallback item={item} />);
-    expect(screen.getByText("PrimaryCelldescription")).toBeInTheDocument();
+    expect(screen.getByText("PrimaryCell description")).toBeInTheDocument();
   });
 
   it("should render the item's path", () => {
