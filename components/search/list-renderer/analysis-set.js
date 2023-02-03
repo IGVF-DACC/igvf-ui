@@ -12,11 +12,11 @@ import {
 } from "./search-list-item";
 
 const AnalysisSet = ({ item: analysisSet, accessoryData }) => {
-//   const ethnicities =
-//     analysisSet.ethnicity?.length > 0 ? analysisSet.ethnicity.join(", ") : "";
-//   const sex = analysisSet.sex || "";
-//   const title = [ethnicities, sex].filter(Boolean);
-//   const lab = accessoryData?.[analysisSet.lab];
+  //   const ethnicities =
+  //     analysisSet.ethnicity?.length > 0 ? analysisSet.ethnicity.join(", ") : "";
+  //   const sex = analysisSet.sex || "";
+  //   const title = [ethnicities, sex].filter(Boolean);
+  //   const lab = accessoryData?.[analysisSet.lab];
 
   return (
     <SearchListItemContent>
@@ -26,9 +26,8 @@ const AnalysisSet = ({ item: analysisSet, accessoryData }) => {
           {analysisSet.uuid}
         </SearchListItemUniqueId>
         <SearchListItemTitle>
-        <SearchListItemType item={analysisSet} />
+          <SearchListItemType item={analysisSet} />
         </SearchListItemTitle>
-
       </SearchListItemMain>
       <SearchListItemStatus item={analysisSet} />
     </SearchListItemContent>

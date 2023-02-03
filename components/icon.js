@@ -51,7 +51,7 @@ const Icon = {
 	c-1,0-1.9-0.8-1.9-1.9c0-1,0.8-1.9,1.9-1.9s1.9,0.8,1.9,1.9c0,1-0.8,1.9-1.9,1.9h1.7c0.9,0,1.6,0.7,1.6,1.6V12.1z"
       />
     </svg>
-  ), 
+  ),
   FileSet: ({ className = null, testid = "icon-fileset" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

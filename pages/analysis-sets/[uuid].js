@@ -52,7 +52,6 @@ const AnalysisSet = ({
   donors,
   lab = null,
   samples,
-  
 }) => {
   return (
     <>
@@ -61,10 +60,10 @@ const AnalysisSet = ({
         <PagePreamble />
         <DataPanel>
           <DataArea>
-          <DataItemLabel>Aliases</DataItemLabel>
-          <DataItemValue>
-            <AliasList aliases={analysisSet.aliases} />
-          </DataItemValue>
+            <DataItemLabel>Aliases</DataItemLabel>
+            <DataItemValue>
+              <AliasList aliases={analysisSet.aliases} />
+            </DataItemValue>
             <DataItemLabel>Status</DataItemLabel>
             <DataItemValue>
               <Status status={analysisSet.status} />
@@ -133,7 +132,7 @@ export const getServerSideProps = async ({ params, req }) => {
         documents,
         donors,
         lab,
-        samples,    
+        samples,
         pageContext: { title: analysisSet.accession },
         breadcrumbs,
       },
