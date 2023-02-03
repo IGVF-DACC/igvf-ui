@@ -1,10 +1,10 @@
 // node_modules
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
-import { DonorDataItems } from "../../components/common-data-items";
+// import { DonorDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
@@ -12,38 +12,40 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import { DataGridContainer } from "../../components/data-grid";
+// import { DataGridContainer } from "../../components/data-grid";
 import DocumentTable from "../../components/document-table";
-import ExternalResources from "../../components/external-resources";
+// import ExternalResources from "../../components/external-resources";
 import PagePreamble from "../../components/page-preamble";
-import SortableGrid from "../../components/sortable-grid";
+// import SortableGrid from "../../components/sortable-grid";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { formatDateRange } from "../../lib/dates";
+// import { formatDateRange } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
+import SeparatedList from "../../components/separated-list";
+import Link from "next/link";
 
 /**
  * Defines the columns for the health-status table.
  */
-const healthStatusHistoryColumns = [
-  {
-    id: "dates",
-    title: "Health Change Date",
-    display: ({ source }) =>
-      formatDateRange(source.date_start, source.date_end),
-    sorter: (healthStatus) =>
-      dayjs(healthStatus.date_start || healthStatus.date_end).unix(),
-  },
-  {
-    id: "health_description",
-    title: "Description",
-    isSortable: false,
-  },
-];
+// const healthStatusHistoryColumns = [
+//   {
+//     id: "dates",
+//     title: "Health Change Date",
+//     display: ({ source }) =>
+//       formatDateRange(source.date_start, source.date_end),
+//     sorter: (healthStatus) =>
+//       dayjs(healthStatus.date_start || healthStatus.date_end).unix(),
+//   },
+//   {
+//     id: "health_description",
+//     title: "Description",
+//     isSortable: false,
+//   },
+// ];
 
 const AnalysisSet = ({
   analysisSet,
@@ -64,6 +66,34 @@ const AnalysisSet = ({
             <DataItemValue>
               <AliasList aliases={analysisSet.aliases} />
             </DataItemValue>
+            {donors.length > 0 && (
+                <>
+                <DataItemLabel>Donors</DataItemLabel>
+                <DataItemValue>
+                    <SeparatedList>
+                    {donors.map((donor) => (
+                        <Link href={donor["@id"]} key={donor.uuid}>
+                        {donor.accession}
+                        </Link>
+                    ))}
+                    </SeparatedList>
+                </DataItemValue>
+                </>
+            )}
+            {samples.length > 0 && (
+                <>
+                <DataItemLabel>Samples</DataItemLabel>
+                <DataItemValue>
+                    <SeparatedList>
+                    {samples.map((sample) => (
+                        <Link href={sample["@id"]} key={sample.uuid}>
+                        {sample.accession}
+                        </Link>
+                    ))}
+                    </SeparatedList>
+                </DataItemValue>
+                </>
+            )}
             <DataItemLabel>Status</DataItemLabel>
             <DataItemValue>
               <Status status={analysisSet.status} />
@@ -85,16 +115,17 @@ const AnalysisSet = ({
 };
 
 AnalysisSet.propTypes = {
+  analysisSet: PropTypes.object.isRequired,
   // Technical sample to display
-  donor: PropTypes.object.isRequired,
+  donors: PropTypes.object.isRequired,
+  samples: PropTypes.object.isRequired,
   // Award applied to this technical sample
   award: PropTypes.object,
   // Documents associated with the cell-line
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Lab that submitted this technical sample
   lab: PropTypes.object,
-  // Parents of this donor
-  parents: PropTypes.arrayOf(PropTypes.object).isRequired,
+
 };
 
 export default AnalysisSet;

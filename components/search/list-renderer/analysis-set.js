@@ -16,7 +16,7 @@ const AnalysisSet = ({ item: analysisSet, accessoryData }) => {
   //     analysisSet.ethnicity?.length > 0 ? analysisSet.ethnicity.join(", ") : "";
   //   const sex = analysisSet.sex || "";
   //   const title = [ethnicities, sex].filter(Boolean);
-  //   const lab = accessoryData?.[analysisSet.lab];
+     const lab = accessoryData?.[analysisSet.lab];
 
   return (
     <SearchListItemContent>
@@ -28,6 +28,11 @@ const AnalysisSet = ({ item: analysisSet, accessoryData }) => {
         <SearchListItemTitle>
           <SearchListItemType item={analysisSet} />
         </SearchListItemTitle>
+        {lab && (
+          <SearchListItemMeta>
+            <div key="lab">{lab.title}</div>
+          </SearchListItemMeta>
+        )}
       </SearchListItemMain>
       <SearchListItemStatus item={analysisSet} />
     </SearchListItemContent>
