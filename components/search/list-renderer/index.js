@@ -217,7 +217,7 @@ const getRenderableItemTypes = (searchResults) => {
  * the search results as keys. Under each key is an array of search-result items of that type, i.e.:
  * ```
  * {
- *   "CellLine": [primary-call-item-1, primary-call-item-2, primary-call-item-3],
+ *   "PrimaryCell": [primary-cell-item-1, primary-cell-item-2, primary-cell-item-3],
  *   "Tissue": [tissue-item-1, tissue-item-2],
  * }
  * ```
