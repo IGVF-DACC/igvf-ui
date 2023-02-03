@@ -67,32 +67,32 @@ const AnalysisSet = ({
               <AliasList aliases={analysisSet.aliases} />
             </DataItemValue>
             {donors.length > 0 && (
-                <>
+              <>
                 <DataItemLabel>Donors</DataItemLabel>
                 <DataItemValue>
-                    <SeparatedList>
+                  <SeparatedList>
                     {donors.map((donor) => (
-                        <Link href={donor["@id"]} key={donor.uuid}>
+                      <Link href={donor["@id"]} key={donor.uuid}>
                         {donor.accession}
-                        </Link>
+                      </Link>
                     ))}
-                    </SeparatedList>
+                  </SeparatedList>
                 </DataItemValue>
-                </>
+              </>
             )}
             {samples.length > 0 && (
-                <>
+              <>
                 <DataItemLabel>Samples</DataItemLabel>
                 <DataItemValue>
-                    <SeparatedList>
+                  <SeparatedList>
                     {samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample.uuid}>
+                      <Link href={sample["@id"]} key={sample.uuid}>
                         {sample.accession}
-                        </Link>
+                      </Link>
                     ))}
-                    </SeparatedList>
+                  </SeparatedList>
                 </DataItemValue>
-                </>
+              </>
             )}
             <DataItemLabel>Status</DataItemLabel>
             <DataItemValue>
@@ -125,7 +125,6 @@ AnalysisSet.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Lab that submitted this technical sample
   lab: PropTypes.object,
-
 };
 
 export default AnalysisSet;
