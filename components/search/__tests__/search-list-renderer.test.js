@@ -147,25 +147,25 @@ describe("Test item-type utility functions", () => {
     "@context": "/terms/",
     "@graph": [
       {
-        "@id": "/differentiated-tissues/IGVFSM000BBB/",
-        "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM000BBB",
-        uuid: "a79ffa29-4bdf-4283-9494-1017e5d13f8b",
+        "@id": "/primary-cells/IGVFSM0000EEEE/",
+        "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+        accession: "IGVFSM0000EEEE",
+        uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
       },
       {
-        "@id": "/differentiated-tissues/IGVFSM002BBB/",
-        "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM002BBB",
-        uuid: "7c058e39-e36b-4afa-bb2a-5e6c4ed07197",
+        "@id": "/primary-cells/IGVFSM0001EEEE/",
+        "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+        accession: "IGVFSM0001EEEE",
+        uuid: "5673c93a-c748-11ec-9d64-0242ac120002",
       },
       {
-        "@id": "/differentiated-tissues/IGVFSM003BBB/",
-        "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM003BBB",
-        uuid: "4d93cbfc-0300-11ed-b939-0242ac120002",
+        "@id": "/primary-cells/IGVFSM0002EEEE/",
+        "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+        accession: "IGVFSM0002EEEE",
+        uuid: "62732db8-11c3-4549-824c-6192f8dbce15",
       },
     ],
-    "@id": "/search?type=DifferentiatedTissue",
+    "@id": "/search?type=PrimaryCell",
     "@type": ["Search"],
     notification: "Success",
     title: "Search",
@@ -176,37 +176,37 @@ describe("Test item-type utility functions", () => {
     "@context": "/terms/",
     "@graph": [
       {
-        "@id": "/differentiated-cells/IGVFSM000CCC/",
-        "@type": ["DifferentiatedCell", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM000CCC",
-        uuid: "f1d10666-ebb2-4152-9d49-f98b6de7c9e5",
+        "@id": "/primary-cells/IGVFSM0000EEEE/",
+        "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+        accession: "IGVFSM0000EEEE",
+        uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
       },
       {
-        "@id": "/differentiated-tissues/IGVFSM000BBB/",
-        "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM000BBB",
-        uuid: "a79ffa29-4bdf-4283-9494-1017e5d13f8b",
+        "@id": "/primary-cells/IGVFSM0001EEEE/",
+        "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+        accession: "IGVFSM0001EEEE",
+        uuid: "5673c93a-c748-11ec-9d64-0242ac120002",
       },
       {
-        "@id": "/differentiated-tissues/IGVFSM002BBB/",
-        "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM002BBB",
-        uuid: "7c058e39-e36b-4afa-bb2a-5e6c4ed07197",
+        "@id": "/primary-cells/IGVFSM0002EEEE/",
+        "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+        accession: "IGVFSM0002EEEE",
+        uuid: "62732db8-11c3-4549-824c-6192f8dbce15",
       },
       {
-        "@id": "/differentiated-cells/IGVFSM003CCC/",
-        "@type": ["DifferentiatedCell", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM003CCC",
-        uuid: "d360c844-02ff-11ed-b939-0242ac120002",
+        "@id": "/tissues/IGVFSM0000DDDD/",
+        "@type": ["Tissue", "Biosample", "Sample", "Item"],
+        accession: "IGVFSM0000DDDD",
+        uuid: "f1e4d059-a970-4250-bc2b-ba4572945e22",
       },
       {
-        "@id": "/differentiated-tissues/IGVFSM003BBB/",
-        "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-        accession: "IGVFSM003BBB",
-        uuid: "4d93cbfc-0300-11ed-b939-0242ac120002",
+        "@id": "/tissues/IGVFSM0001DDDD/",
+        "@type": ["Tissue", "Biosample", "Sample", "Item"],
+        accession: "IGVFSM0001DDDD",
+        uuid: "984a5f8e-c751-11ec-9d64-0242ac120002",
       },
     ],
-    "@id": "/search?type=DifferentiatedCell&type=DifferentiatedTissue",
+    "@id": "/search?type=PrimaryCell&type=Tissue",
     "@type": ["Search"],
     notification: "Success",
     title: "Search",
@@ -217,104 +217,86 @@ describe("Test item-type utility functions", () => {
     const itemListsByType = getItemListsByType(homogeneousSearchResults);
 
     expect(Object.keys(itemListsByType)).toHaveLength(1);
-    expect(itemListsByType).toHaveProperty("DifferentiatedTissue");
-    expect(itemListsByType.DifferentiatedTissue).toHaveLength(3);
-    expect(itemListsByType.DifferentiatedTissue[0].accession).toBe(
-      "IGVFSM000BBB"
-    );
-    expect(itemListsByType.DifferentiatedTissue[1].accession).toBe(
-      "IGVFSM002BBB"
-    );
-    expect(itemListsByType.DifferentiatedTissue[2].accession).toBe(
-      "IGVFSM003BBB"
-    );
+    expect(itemListsByType).toHaveProperty("PrimaryCell");
+    expect(itemListsByType.PrimaryCell).toHaveLength(3);
+    expect(itemListsByType.PrimaryCell[0].accession).toBe("IGVFSM0000EEEE");
+    expect(itemListsByType.PrimaryCell[1].accession).toBe("IGVFSM0001EEEE");
+    expect(itemListsByType.PrimaryCell[2].accession).toBe("IGVFSM0002EEEE");
   });
 
   it("should return an object with multiple keys for heterogenous search results", () => {
     const itemListsByType = getItemListsByType(heterogeneousSearchResults);
 
     expect(Object.keys(itemListsByType)).toHaveLength(2);
-    expect(itemListsByType).toHaveProperty("DifferentiatedCell");
-    expect(itemListsByType.DifferentiatedCell).toHaveLength(2);
-    expect(itemListsByType.DifferentiatedCell[0].accession).toBe(
-      "IGVFSM000CCC"
-    );
-    expect(itemListsByType.DifferentiatedCell[1].accession).toBe(
-      "IGVFSM003CCC"
-    );
+    expect(itemListsByType).toHaveProperty("Tissue");
+    expect(itemListsByType.Tissue).toHaveLength(2);
+    expect(itemListsByType.Tissue[0].accession).toBe("IGVFSM0000DDDD");
+    expect(itemListsByType.Tissue[1].accession).toBe("IGVFSM0001DDDD");
 
-    expect(itemListsByType).toHaveProperty("DifferentiatedTissue");
-    expect(itemListsByType.DifferentiatedTissue).toHaveLength(3);
-    expect(itemListsByType.DifferentiatedTissue[0].accession).toBe(
-      "IGVFSM000BBB"
-    );
-    expect(itemListsByType.DifferentiatedTissue[1].accession).toBe(
-      "IGVFSM002BBB"
-    );
-    expect(itemListsByType.DifferentiatedTissue[2].accession).toBe(
-      "IGVFSM003BBB"
-    );
+    expect(itemListsByType).toHaveProperty("PrimaryCell");
+    expect(itemListsByType.PrimaryCell).toHaveLength(3);
+    expect(itemListsByType.PrimaryCell[0].accession).toBe("IGVFSM0000EEEE");
+    expect(itemListsByType.PrimaryCell[1].accession).toBe("IGVFSM0001EEEE");
+    expect(itemListsByType.PrimaryCell[2].accession).toBe("IGVFSM0002EEEE");
   });
 });
 
 describe("Test Fallback component", () => {
   it("should render the item's accession", () => {
     const item = {
-      "@id": "/differentiated-tissues/IGVFSM000BBB/",
-      "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-      accession: "IGVFSM000BBB",
-      description: "Differentiated tissue description",
-      name: "Differentiated tissue name",
-      title: "Differentiated tissue title",
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      accession: "IGVFSM0000EEEE",
+      description: "PrimaryCell description",
+      name: "PrimaryCell name",
+      title: "PrimaryCell title",
     };
     render(<Fallback item={item} />);
-    expect(screen.getByText("IGVFSM000BBB")).toBeInTheDocument();
+    expect(screen.getByText("IGVFSM0000EEEE")).toBeInTheDocument();
   });
 
   it("should render the item's title", () => {
     const item = {
-      "@id": "/differentiated-tissues/IGVFSM000BBB/",
-      "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-      description: "Differentiated tissue description",
-      name: "Differentiated tissue name",
-      title: "Differentiated tissue title",
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      description: "PrimaryCell description",
+      name: "PrimaryCell name",
+      title: "PrimaryCell title",
     };
     render(<Fallback item={item} />);
-    expect(screen.getByText("Differentiated tissue title")).toBeInTheDocument();
+    expect(screen.getByText("PrimaryCell title")).toBeInTheDocument();
   });
 
   it("should render the item's name", () => {
     const item = {
-      "@id": "/differentiated-tissues/IGVFSM000BBB/",
-      "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-      description: "Differentiated tissue description",
-      name: "Differentiated tissue name",
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      description: "PrimaryCell description",
+      name: "PrimaryCell name",
     };
     render(<Fallback item={item} />);
-    expect(screen.getByText("Differentiated tissue name")).toBeInTheDocument();
+    expect(screen.getByText("PrimaryCell name")).toBeInTheDocument();
   });
 
   it("should render the item's description", () => {
     const item = {
-      "@id": "/differentiated-tissues/IGVFSM000BBB/",
-      "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
-      description: "Differentiated tissue description",
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      description: "PrimaryCell description",
     };
     render(<Fallback item={item} />);
-    expect(
-      screen.getByText("Differentiated tissue description")
-    ).toBeInTheDocument();
+    expect(screen.getByText("PrimaryCell description")).toBeInTheDocument();
   });
 
   it("should render the item's path", () => {
     const item = {
-      "@id": "/differentiated-tissues/IGVFSM000BBB/",
-      "@type": ["DifferentiatedTissue", "Biosample", "Sample", "Item"],
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
     };
     render(<Fallback item={item} />);
 
     // Want to check the second one because the first one is the unique identifier.
-    const paths = screen.getAllByText("/differentiated-tissues/IGVFSM000BBB/");
+    const paths = screen.getAllByText("/primary-cells/IGVFSM0000EEEE/");
     expect(paths[1]).toBeInTheDocument();
   });
 });

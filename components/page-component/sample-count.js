@@ -15,7 +15,7 @@ import FetchRequest from "../../lib/fetch-request";
 
 const SampleCount = ({ label = "Sample Count", color = "gray" }) => {
   // Selected sample collection type
-  const [sampleType, setSampleType] = useState("cell-lines");
+  const [sampleType, setSampleType] = useState("tissues");
   // Sample collection @graph for the selected sample type
   const [samples, setSamples] = useState([]);
 
@@ -45,12 +45,9 @@ const SampleCount = ({ label = "Sample Count", color = "gray" }) => {
         value={sampleType}
         onChange={(event) => setSampleType(event.target.value)}
       >
-        <option value="cell-lines">Cell Lines</option>
-        <option value="differentiated-cells">Differentiated Cells</option>
-        <option value="differentiated-tissues">Differentiated Tissues</option>
+        <option value="tissues">Tissues</option>
         <option value="primary-cells">Primary Cells</option>
         <option value="technical-samples">Technical Samples</option>
-        <option value="tissues">Tissues</option>
       </Select>
     </div>
   );

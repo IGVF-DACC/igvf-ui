@@ -56,7 +56,7 @@ This required field specifies the last element of the page’s path (URL). For e
 
 This field only accepts characters that work in a URL, so typing a disallowed character results in a dash instead. Only letters, numbers, dashes, and underscores get accepted without getting converted to dashes. You can’t have more than one dash consecutively. If you try, every dash or other character converted to a dash gets ignored.
 
-You cannot have two pages with the same name throughout the system. This applies even if the two pages have different paths. Even if you delete a page, you cannot use its name for any other page in the system. Also don’t use the name of an existing non-documentation page, `cell-lines` for example. Doing this could make the original page inaccessible. So put some thought into every page’s name to reduce annoying issues going forward.
+You cannot have two pages with the same name throughout the system. This applies even if the two pages have different paths. Even if you delete a page, you cannot use its name for any other page in the system. Also don’t use the name of an existing non-documentation page, `primary-cells` for example. Doing this could make the original page inaccessible. So put some thought into every page’s name to reduce annoying issues going forward.
 
 #### Title
 
@@ -68,7 +68,7 @@ Set the status in this dropdown menu. You can delete pages with this, making the
 
 #### Parent
 
-You can set the last element of a page’s path through its name. You set the rest of the path in this Parent field. The parent pages must exist already to appear in this field. For example, if you want to have a page at the path `/samples/biosamples/cell-lines`, you’d first create a page with the name `samples` and with no parent, then another page with the name `biosamples` and make `/samples/` its parent. Then make a page with the name `cell-lines` and make `/samples/biosamples/` its parent.
+You can set the last element of a page’s path through its name. You set the rest of the path in this Parent field. The parent pages must exist already to appear in this field. For example, if you want to have a page at the path `/samples/biosamples/primary-cells`, you’d first create a page with the name `samples` and with no parent, then another page with the name `biosamples` and make `/samples/` its parent. Then make a page with the name `primary-cells` and make `/samples/biosamples/` its parent.
 
 Pages without parents appear at a top-level path, such as `/samples/` in the above example. If you select a parent and then change your mind and want to have the page at the top level, just click the parent you selected again, leaving no parent selected.
 

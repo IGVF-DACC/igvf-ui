@@ -76,7 +76,7 @@ TechnicalSample.propTypes = {
   sample: PropTypes.object.isRequired,
   // Award applied to this technical sample
   award: PropTypes.object,
-  // Documents associated with the cell-line
+  // Documents associated with this technical sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Lab that submitted this technical sample
   lab: PropTypes.object,

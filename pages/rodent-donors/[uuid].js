@@ -71,13 +71,13 @@ const RodentDonor = ({
 };
 
 RodentDonor.propTypes = {
-  // Technical sample to display
+  // Rodent donor to display
   donor: PropTypes.object.isRequired,
-  // Award applied to this technical sample
+  // Award applied to this rodent donor
   award: PropTypes.object,
-  // Documents associated with the cell-line
+  // Documents associated with the rodent donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this technical sample
+  // Lab that submitted this technical rodent donor
   lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,

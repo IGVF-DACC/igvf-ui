@@ -107,36 +107,6 @@ describe("Navigation", () => {
 
     cy.get("[data-testid=samples]").click();
 
-    cy.get("[data-testid=cell-lines]").click();
-    cy.url().should("include", "/search?type=CellLine");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=differentiated-cells]").click();
-    cy.url().should("include", "/search?type=DifferentiatedCell");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=differentiated-tissues]").click();
-    cy.url().should("include", "/search?type=DifferentiatedTissue");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
     cy.get("[data-testid=primary-cells]").click();
     cy.url().should("include", "/search?type=PrimaryCell");
     cy.get("[data-testid=search-results-view-switch]").should("exist");
@@ -168,12 +138,9 @@ describe("Navigation", () => {
       .should("be.gte", 2);
 
     cy.get("[data-testid=samples]").click();
-    cy.get("[data-testid=cell-lines]").should("not.exist");
-    cy.get("[data-testid=differentiated-cells]").should("not.exist");
-    cy.get("[data-testid=differentiated-tissues]").should("not.exist");
+    cy.get("[data-testid=tissues]").should("not.exist");
     cy.get("[data-testid=primary-cells]").should("not.exist");
     cy.get("[data-testid=technical-samples]").should("not.exist");
-    cy.get("[data-testid=tissues]").should("not.exist");
 
     cy.get("[data-testid=treatments]").click();
     cy.url().should("include", "/search?type=Treatment");
