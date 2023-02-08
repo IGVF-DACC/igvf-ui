@@ -2,6 +2,7 @@
 import { Auth0Provider } from "@auth0/auth0-react";
 import Error from "next/error";
 import Head from "next/head";
+import Script from "next/script";
 import PropTypes from "prop-types";
 import { useEffect, useMemo } from "react";
 // lib
@@ -53,6 +54,19 @@ const App = ({ Component, pageProps }) => {
 
   return (
     <>
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-E2PEXFFGYR"
+      ></Script>
+      <Script id="google-analytics-4-script">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-E2PEXFFGYR');
+        `}
+      </Script>
       <Head>
         <title>{SITE_TITLE}</title>
         <meta
