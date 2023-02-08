@@ -54,19 +54,6 @@ const App = ({ Component, pageProps }) => {
 
   return (
     <>
-      <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-E2PEXFFGYR"
-      ></Script>
-      <Script id="google-analytics-4-script">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-E2PEXFFGYR');
-        `}
-      </Script>
       <Head>
         <title>{SITE_TITLE}</title>
         <meta
@@ -94,6 +81,19 @@ const App = ({ Component, pageProps }) => {
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="msapplication-TileColor" content="#da532c" />
       </Head>
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-E2PEXFFGYR"
+      ></Script>
+      <Script id="google-analytics-4-script">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-E2PEXFFGYR');
+        `}
+      </Script>
       <div className="pt-0 pr-2 pb-8 pl-2 md:container md:flex">
         <Auth0Provider
           domain={AUTH0_ISSUER_BASE_DOMAIN}
