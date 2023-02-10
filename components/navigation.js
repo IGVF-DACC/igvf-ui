@@ -426,6 +426,14 @@ function Navigation({ navigationClick }) {
         handleGroupClick={handleParentClick}
       >
         <NavigationHrefItem
+          id="in-vitro-systems"
+          href="/search?type=InVitroSystem"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          In Vitro Systems
+        </NavigationHrefItem>
+        <NavigationHrefItem
           id="tissues"
           href="/search?type=Tissue"
           navigationClick={navigationClick}
