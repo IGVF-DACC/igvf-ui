@@ -19,5 +19,5 @@ jobs:
           python -m pip install -r requirements.txt -r requirements-dev.txt
         working-directory: ./cdk
       - name: Check demo environment config for changes
-        run: pytest tests/ -k "test_demo_environment_not_changed_when_opening_PR"
+        run: python -m commands.check_config_on_pr
         working-directory: ./cdk
