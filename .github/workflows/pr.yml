@@ -1,4 +1,4 @@
-name: Check config on PR
+name: cdk-check-config-on-pr
 
 on:
   pull_request:
