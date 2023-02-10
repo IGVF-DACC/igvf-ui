@@ -115,4 +115,4 @@ jobs:
           path: ~/igvf-ui
       - run: pyenv global 3.9.7
       - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: pytest tests/
+      - run: pytest tests/ -k "not test_demo_environment_not_changed_when_opening_PR"

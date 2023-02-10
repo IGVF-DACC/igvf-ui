@@ -1,6 +1,15 @@
 import pytest
 
 
+def test_demo_environment_not_changed_when_opening_PR():
+    from infrastructure.config import config
+    assert 'backend_url' not in config['environment']['demo']
+    assert config['environment']['demo']['tags'] == [
+        ('time-to-live-hours', '72'),
+        ('turn-off-on-friday-night', 'yes'),
+    ]
+
+
 def test_config_exists():
     from infrastructure.config import config
     assert 'demo' in config['environment']
