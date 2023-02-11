@@ -6,7 +6,7 @@ import Icon from "../icon";
 /**
  * Display an icon showing whether any columns are hidden or not.
  */
-const HiddenColumnsIndicator = ({ isAnyColumnHidden }) => {
+export default function HiddenColumnsIndicator({ isAnyColumnHidden }) {
   const className = "ml-1.5 h-4 w-4";
   return (
     <>
@@ -17,11 +17,9 @@ const HiddenColumnsIndicator = ({ isAnyColumnHidden }) => {
       )}
     </>
   );
-};
+}
 
 HiddenColumnsIndicator.propTypes = {
   // True if at least one column is hidden
   isAnyColumnHidden: PropTypes.bool.isRequired,
 };
-
-export default HiddenColumnsIndicator;

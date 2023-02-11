@@ -18,7 +18,7 @@ import {
 /**
  * Displays a single item on a search-list view.
  */
-const SearchListItem = ({ href, testid, children }) => {
+function SearchListItem({ href, testid, children }) {
   return (
     <li
       className="my-0.5 flex border border-data-border bg-data-background px-2 first:mt-0 last:mb-0"
@@ -28,7 +28,7 @@ const SearchListItem = ({ href, testid, children }) => {
       <div className="grow py-4 px-2 sm:px-4">{children}</div>
     </li>
   );
-};
+}
 
 SearchListItem.propTypes = {
   // Path to item this item links to

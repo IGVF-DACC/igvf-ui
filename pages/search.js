@@ -29,7 +29,7 @@ import { composeSearchResultsPageTitle } from "../lib/search-results";
  * components this relies on use the term, "search list," to distinguish it from other kinds of
  * search-result display pages, such as /report.
  */
-const Search = ({ searchResults, accessoryData = null }) => {
+export default function Search({ searchResults, accessoryData = null }) {
   const { profiles } = useContext(SessionContext);
   const pageTitle = profiles
     ? composeSearchResultsPageTitle(searchResults, profiles)
@@ -68,7 +68,7 @@ const Search = ({ searchResults, accessoryData = null }) => {
       )}
     </>
   );
-};
+}
 
 Search.propTypes = {
   // /search results from igvfd
@@ -76,8 +76,6 @@ Search.propTypes = {
   // Accessory data for search results, keyed by each object's `@id`
   accessoryData: PropTypes.object,
 };
-
-export default Search;
 
 /**
  * Retrieve all needed accessory data for search results. Each search result item type might have
@@ -87,7 +85,7 @@ export default Search;
  * @param {object} searchResults Search results from igvfd
  * @param {string} cookie Browser cookie for request authentication
  */
-const getAccessoryData = async (searchResults, cookie) => {
+async function getAccessoryData(searchResults, cookie) {
   const itemListsByType = getItemListsByType(searchResults);
   const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
   if (accessoryDataPaths.length > 0) {
@@ -102,9 +100,9 @@ const getAccessoryData = async (searchResults, cookie) => {
     return generateAccessoryDataPropertyMap(accessoryDataList);
   }
   return null;
-};
+}
 
-export const getServerSideProps = async ({ req, query }) => {
+export async function getServerSideProps({ req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const queryParams = getQueryStringFromServerQuery(query);
   const searchResults = await request.getObject(`/search/?${queryParams}`);
@@ -129,4 +127,4 @@ export const getServerSideProps = async ({ req, query }) => {
     };
   }
   return errorObjectToProps(searchResults);
-};
+}

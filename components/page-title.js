@@ -7,7 +7,7 @@ import GlobalContext from "./global-context";
 /**
  * Show a standard page title for the top of any page.
  */
-const PageTitle = ({ pageTitle = "" }) => {
+export default function PageTitle({ pageTitle = "" }) {
   const { page } = useContext(GlobalContext);
 
   return (
@@ -15,11 +15,9 @@ const PageTitle = ({ pageTitle = "" }) => {
       {pageTitle || page.title}
     </h1>
   );
-};
+}
 
 PageTitle.propTypes = {
   // Page title for pages in which the server doesn't supply one
   pageTitle: PropTypes.string,
 };
-
-export default PageTitle;

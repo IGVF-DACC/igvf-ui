@@ -13,7 +13,7 @@ import { useState } from "react";
  * Renders a single left- or right-pointing scroll indicator that fades out after appearing. Don't
  * attempt to compose the left-5 and right-5 Tailwind CSS classes or they'll get tree shaken.
  */
-const ScrollIndicator = ({ direction, children }) => {
+function ScrollIndicator({ direction, children }) {
   return (
     <motion.div
       initial="visible"
@@ -28,7 +28,7 @@ const ScrollIndicator = ({ direction, children }) => {
       {children}
     </motion.div>
   );
-};
+}
 
 ScrollIndicator.propTypes = {
   // Direction of the scroll indicator
@@ -39,7 +39,7 @@ ScrollIndicator.propTypes = {
  * Wrapper around the data grid to show scroll indicators when the table is horizontally scrollable.
  */
 // coverage:ignore-line to ignore one line.
-const ScrollIndicators = ({ gridRef, children }) => {
+export default function ScrollIndicators({ gridRef, children }) {
   // True if the table can be scrolled to the right
   const [isScrollableRight, setIsScrollableRight] = useState(false);
   // True if the table can be scrolled to the left
@@ -49,7 +49,7 @@ const ScrollIndicators = ({ gridRef, children }) => {
    * Called when the mouse enters anywhere in the table. Determines whether the table can be
    * scrolled to the right or left.
    */
-  const onPointerEnter = () => {
+  function onPointerEnter() {
     // Determine if any portion of the table exists to the right of the visible portion.
     const isRightScrollable =
       gridRef.current.scrollWidth - Math.round(gridRef.current.scrollLeft) !==
@@ -59,15 +59,15 @@ const ScrollIndicators = ({ gridRef, children }) => {
     // Determine if any portion of the table exists to the left of the visible portion.
     const isLeftScrollable = gridRef.current.scrollLeft > 0;
     setIsScrollableLeft(isLeftScrollable);
-  };
+  }
 
   /**
    * Called when the mouse exits the table. Remove the scroll indicators from the DOM.
    */
-  const onPointerLeave = () => {
+  function onPointerLeave() {
     setIsScrollableRight(false);
     setIsScrollableLeft(false);
-  };
+  }
 
   return (
     <div
@@ -88,11 +88,9 @@ const ScrollIndicators = ({ gridRef, children }) => {
       {children}
     </div>
   );
-};
+}
 
 ScrollIndicators.propTypes = {
   // Ref to the table DOM element
   gridRef: PropTypes.object.isRequired,
 };
-
-export default ScrollIndicators;

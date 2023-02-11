@@ -123,7 +123,7 @@ const PageCondition = createContext({
 /**
  * Shows the button to trigger editing the page.
  */
-const EditPageTrigger = ({ href }) => {
+function EditPageTrigger({ href }) {
   return (
     <div className="mb-1 flex justify-end">
       <ButtonLink href={`${href}#!edit`} type="secondary" size="sm">
@@ -131,7 +131,7 @@ const EditPageTrigger = ({ href }) => {
       </ButtonLink>
     </div>
   );
-};
+}
 
 EditPageTrigger.propTypes = {
   // URL to the page to edit
@@ -170,18 +170,30 @@ const PageMetaEditor = memo(function PageMetaEditor({
    * @param {string} type Type code for metadata property to update
    * @param {string} value New value the user set for the metadata property
    */
-  const setLivePageMeta = (type, value) => {
+  function setLivePageMeta(type, value) {
     dispatchLivePageMeta({ type, value });
     setDirty(true);
-  };
+  }
 
   // Shortcuts to call the reducers for page metadata.
-  const setPageMetaName = (value) => setLivePageMeta(PAGE_META_NAME, value);
-  const setPageMetaTitle = (value) => setLivePageMeta(PAGE_META_TITLE, value);
-  const setPageMetaStatus = (value) => setLivePageMeta(PAGE_META_STATUS, value);
-  const setPageMetaParent = (value) => setLivePageMeta(PAGE_META_PARENT, value);
-  const setPageMetaAward = (value) => setLivePageMeta(PAGE_META_AWARD, value);
-  const setPageMetaLab = (value) => setLivePageMeta(PAGE_META_LAB, value);
+  function setPageMetaName(value) {
+    setLivePageMeta(PAGE_META_NAME, value);
+  }
+  function setPageMetaTitle(value) {
+    setLivePageMeta(PAGE_META_TITLE, value);
+  }
+  function setPageMetaStatus(value) {
+    setLivePageMeta(PAGE_META_STATUS, value);
+  }
+  function setPageMetaParent(value) {
+    setLivePageMeta(PAGE_META_PARENT, value);
+  }
+  function setPageMetaAward(value) {
+    setLivePageMeta(PAGE_META_AWARD, value);
+  }
+  function setPageMetaLab(value) {
+    setLivePageMeta(PAGE_META_LAB, value);
+  }
 
   useEffect(() => {
     // Let the <PageEditor> component know if we detected conditions that prevent saving the page.
@@ -193,21 +205,21 @@ const PageMetaEditor = memo(function PageMetaEditor({
    * only characters that are valid in a URL path.
    * @param {object} event React synthetic event object for text field changes
    */
-  const setNameField = (event) => {
+  function setNameField(event) {
     const validPath = event.target.value.toLowerCase().replace(/\W+/g, "-");
     setPageMetaName(validPath);
     setNameConflicting(detectConflictingName(validPath, pages));
     setNameEmpty(!event.target.value);
-  };
+  }
 
   /**
    * Updates the `pageMeta` title property to track text field changes for the Title field.
    * @param {object} event React synthetic event object for text field changes
    */
-  const setTitleField = (event) => {
+  function setTitleField(event) {
     setPageMetaTitle(event.target.value);
     setTitleEmpty(!event.target.value);
-  };
+  }
 
   // Determine the messages to display under the name and title fields.
   let nameFieldMessage = "";
@@ -346,7 +358,7 @@ PageMetaEditor.propTypes = {
  * displays the live text content of one editable block, though its contents are held by
  * <PageEditor> state.
  */
-const BlockEditor = ({ block, dispatchLiveBlocks, previewedBlockIds }) => {
+function BlockEditor({ block, dispatchLiveBlocks, previewedBlockIds }) {
   const { setDirty } = useContext(PageCondition);
   const isBlockInPreviewMode = previewedBlockIds.includes(block["@id"]);
 
@@ -376,7 +388,7 @@ const BlockEditor = ({ block, dispatchLiveBlocks, previewedBlockIds }) => {
       }}
     />
   );
-};
+}
 
 BlockEditor.propTypes = {
   // The block of text to edit
@@ -390,11 +402,7 @@ BlockEditor.propTypes = {
 /**
  * Displays the two text direction buttons and handles clicks in them.
  */
-const TextDirectionSwitch = ({
-  direction,
-  disabled,
-  onBlockDirectionChange,
-}) => {
+function TextDirectionSwitch({ direction, disabled, onBlockDirectionChange }) {
   const iconClassName = `h-4 w-4${
     disabled
       ? " fill-gray-400 dark:fill-gray-600"
@@ -405,11 +413,11 @@ const TextDirectionSwitch = ({
    * Called when the user clicks the left-to-right or right-to-left text direction buttons.
    * @param {string} newDirection "ltr" or "rtl"
    */
-  const onDirectionClick = (newDirection) => {
+  function onDirectionClick(newDirection) {
     if (newDirection !== direction) {
       onBlockDirectionChange(newDirection);
     }
-  };
+  }
 
   return (
     <div className="flex">
@@ -435,7 +443,7 @@ const TextDirectionSwitch = ({
       </AttachedButtons>
     </div>
   );
-};
+}
 
 TextDirectionSwitch.propTypes = {
   // The current text direction of the block
@@ -449,17 +457,17 @@ TextDirectionSwitch.propTypes = {
 /**
  * Display the Delete Block button and handle the modal confirmation.
  */
-const DeleteBlockTrigger = ({ onDelete }) => {
+function DeleteBlockTrigger({ onDelete }) {
   // True if the Delete warning modal is open
   const [isOpen, setOpen] = useState(false);
 
   /**
    * Called when the user confirms the deletion of the block.
    */
-  const handleDeleteClick = () => {
+  function handleDeleteClick() {
     setOpen(false);
     onDelete();
-  };
+  }
 
   return (
     <>
@@ -505,7 +513,7 @@ const DeleteBlockTrigger = ({ onDelete }) => {
       </Modal>
     </>
   );
-};
+}
 
 DeleteBlockTrigger.propTypes = {
   // Called if the user confirms the deletion of the block
@@ -515,13 +523,13 @@ DeleteBlockTrigger.propTypes = {
 /**
  * Displays the controls below each block to set the block's type, preview the block, etc.
  */
-const BlockControls = ({
+function BlockControls({
   block,
   dispatchLiveBlocks,
   blocks,
   previewedBlockIds,
   onPreview,
-}) => {
+}) {
   const isBlockPreviewed = previewedBlockIds.includes(block["@id"]);
   const { setDirty } = useContext(PageCondition);
 
@@ -529,7 +537,7 @@ const BlockControls = ({
    * Called when the user changes the type of a block between Markdown and Component.
    * @param {object} event React synthetic event
    */
-  const onBlockTypeChange = (event) => {
+  function onBlockTypeChange(event) {
     dispatchLiveBlocks({
       type: LIVE_BLOCK_UPDATE,
       blockId: block["@id"],
@@ -541,21 +549,21 @@ const BlockControls = ({
     if (event.target.value === BLOCK_TYPE_COMPONENT) {
       onPreview(block["@id"], false);
     }
-  };
+  }
 
   /**
    * Gets called when the user selects a new language text direction (left-to-right or right-to-
    * left) for the block.
    * @param {string} direction Whether to have the "ltr" or "rtl" text direction
    */
-  const onBlockDirectionChange = (direction) => {
+  function onBlockDirectionChange(direction) {
     dispatchLiveBlocks({
       type: LIVE_BLOCK_UPDATE,
       blockId: block["@id"],
       direction,
     });
     setDirty(true);
-  };
+  }
 
   return (
     <div className="mt-1 lg:flex lg:items-start lg:justify-between">
@@ -632,7 +640,7 @@ const BlockControls = ({
       </div>
     </div>
   );
-};
+}
 
 BlockControls.propTypes = {
   // Block being edited
@@ -658,7 +666,7 @@ BlockControls.propTypes = {
  * @param {string} action.content New text content for the block
  * @returns {object} The updated live blocks state
  */
-const reducerLiveBlocks = (state, action) => {
+function reducerLiveBlocks(state, action) {
   let updatedState = [...state];
 
   switch (action.type) {
@@ -712,7 +720,7 @@ const reducerLiveBlocks = (state, action) => {
       break;
   }
   return updatedState;
-};
+}
 
 /**
  * Updates the page metadata when changed by the user in the metadata form.
@@ -722,16 +730,16 @@ const reducerLiveBlocks = (state, action) => {
  * @param {string} action.value New value for the metadata property
  * @returns {object} Copy of the current page metadata states with the new property value
  */
-const reducerLivePageMeta = (state, action) => {
+function reducerLivePageMeta(state, action) {
   const newLivePageMeta = { ...state };
   newLivePageMeta[action.type] = action.value;
   return newLivePageMeta;
-};
+}
 
 /**
  * Displays the page editor with multiple blocks of text and the page metadata.
  */
-const PageEditor = ({ blocks, pageMeta, awards, labs, pages, onClose }) => {
+function PageEditor({ blocks, pageMeta, awards, labs, pages, onClose }) {
   // Copy of blocks but containing the live editable text content of each block.
   const [liveBlocks, dispatchLiveBlocks] = useReducer(
     reducerLiveBlocks,
@@ -761,13 +769,13 @@ const PageEditor = ({ blocks, pageMeta, awards, labs, pages, onClose }) => {
       "You have unsaved changes. Are you sure you wish to leave this page?";
 
     // Use the built-in browser alert to handle warning before reloading the page.
-    const handleWindowClose = (e) => {
+    function handleWindowClose(e) {
       if (isDirty) {
         e.preventDefault();
         e.returnValue = warningText;
         return e.returnValue;
       }
-    };
+    }
 
     window.addEventListener("beforeunload", handleWindowClose);
     return () => {
@@ -780,13 +788,13 @@ const PageEditor = ({ blocks, pageMeta, awards, labs, pages, onClose }) => {
    * @param {string} blockId @id of the block being toggled between preview and edit mode
    * @param {boolean} isPreviewMode True to set the block preview mode, false to set the edit mode
    */
-  const onPreview = (blockId, isPreviewMode) => {
+  function onPreview(blockId, isPreviewMode) {
     if (isPreviewMode) {
       setPreviewedBlockIds([...previewedBlockIds, blockId]);
     } else {
       setPreviewedBlockIds(previewedBlockIds.filter((id) => id !== blockId));
     }
-  };
+  }
 
   useEffect(() => {
     // If the user deletes or adds a block, disable all preview modes because the block @ids
@@ -845,7 +853,7 @@ const PageEditor = ({ blocks, pageMeta, awards, labs, pages, onClose }) => {
       />
     </EditorValidation.Provider>
   );
-};
+}
 
 PageEditor.propTypes = {
   // Editable blocks of markdown text
@@ -882,7 +890,7 @@ PageEditor.propTypes = {
  * @param {object} page Page object to potentially be edited
  * @returns {object} Contains editable copies of the page's metadata
  */
-const copyPageMeta = (page) => {
+function copyPageMeta(page) {
   return {
     award: page?.award || "",
     lab: page?.lab || "",
@@ -891,7 +899,7 @@ const copyPageMeta = (page) => {
     status: page?.status || "",
     title: page?.title || "",
   };
-};
+}
 
 /**
  * Displays the page content, either as the normal read-only page, or as an editable page if the
@@ -900,13 +908,13 @@ const copyPageMeta = (page) => {
  * of the page get displayed from the editable states to prevent the need to reload the page after
  * the user saves their edits.
  */
-const Page = ({
+export default function Page({
   page = initialPage,
   awards,
   labs,
   pages,
   isNewPage = false,
-}) => {
+}) {
   // Blocks of content; gets updated on save
   const [editableBlocks, setEditableBlocks] = useState(() =>
     sliceBlocks(page.layout.blocks)
@@ -961,7 +969,7 @@ const Page = ({
    * @param {object} updates.blocks Updated blocks of text
    * @param {object} updates.pageMeta Updated page metadata
    */
-  const onClose = (updates) => {
+  function onClose(updates) {
     setActiveError("");
     if (updates) {
       // User clicked save, so save the blocks and metadata.
@@ -990,7 +998,7 @@ const Page = ({
         router.push(`${router.asPath.split("#")[0]}`);
       }
     }
-  };
+  }
 
   return (
     <PageCondition.Provider value={{ isDirty, setDirty, isNewPage }}>
@@ -1037,7 +1045,7 @@ const Page = ({
       )}
     </PageCondition.Provider>
   );
-};
+}
 
 Page.propTypes = {
   // Page object to display; null for new pages
@@ -1051,5 +1059,3 @@ Page.propTypes = {
   // True if adding a page instead of updating an existing page
   isNewPage: PropTypes.bool,
 };
-
-export default Page;

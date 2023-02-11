@@ -11,10 +11,10 @@ import ViewSwitch from "./view-switch";
  * Displays controls for the search-result list and report views, including the controls to switch
  * between list and report views.
  */
-const SearchResultsHeader = ({
+export default function SearchResultsHeader({
   searchResults,
   columnSelectorConfig = null,
-}) => {
+}) {
   const { totalPages } = useSearchLimits(searchResults);
 
   return (
@@ -37,7 +37,7 @@ const SearchResultsHeader = ({
       </div>
     </div>
   );
-};
+}
 
 SearchResultsHeader.propTypes = {
   // Search results for list or report
@@ -48,5 +48,3 @@ SearchResultsHeader.propTypes = {
     onAllColumnsVisibilityChange: PropTypes.func.isRequired,
   }),
 };
-
-export default SearchResultsHeader;

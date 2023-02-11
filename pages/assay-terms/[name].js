@@ -17,7 +17,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const AssayOntologyTerm = ({ assayOntologyTerm }) => {
+export default function AssayOntologyTerm({ assayOntologyTerm }) {
   return (
     <>
       <Breadcrumbs />
@@ -44,16 +44,14 @@ const AssayOntologyTerm = ({ assayOntologyTerm }) => {
       </EditableItem>
     </>
   );
-};
+}
 
 AssayOntologyTerm.propTypes = {
   // Assay ontology term object to display
   assayOntologyTerm: PropTypes.object.isRequired,
 };
 
-export default AssayOntologyTerm;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const assayOntologyTerm = await request.getObject(
     `/assay-terms/${params.name}/`
@@ -73,4 +71,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(assayOntologyTerm);
-};
+}

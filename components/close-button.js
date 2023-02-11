@@ -7,7 +7,7 @@ import { Button } from "./form-elements";
 /**
  * Displays a standard close icon button in a circle with an X mark.
  */
-const CloseButton = ({ onClick, label }) => {
+export default function CloseButton({ onClick, label }) {
   return (
     <Button
       type="secondary"
@@ -19,7 +19,7 @@ const CloseButton = ({ onClick, label }) => {
       <XMarkIcon />
     </Button>
   );
-};
+}
 
 CloseButton.propTypes = {
   // Called to close the modal on click
@@ -27,5 +27,3 @@ CloseButton.propTypes = {
   // Accessible label for the close button
   label: PropTypes.string.isRequired,
 };
-
-export default CloseButton;

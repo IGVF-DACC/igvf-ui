@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const HumanDonor = ({ item: humanDonor, accessoryData }) => {
+export default function HumanDonor({ item: humanDonor, accessoryData }) {
   const ethnicities =
     humanDonor.ethnicity?.length > 0 ? humanDonor.ethnicity.join(", ") : "";
   const sex = humanDonor.sex || "";
@@ -37,7 +37,7 @@ const HumanDonor = ({ item: humanDonor, accessoryData }) => {
       <SearchListItemStatus item={humanDonor} />
     </SearchListItemContent>
   );
-};
+}
 
 HumanDonor.propTypes = {
   // Single human-donor search-result object to display on a search-result list page
@@ -49,5 +49,3 @@ HumanDonor.propTypes = {
 HumanDonor.getAccessoryDataPaths = (humanDonors) => {
   return humanDonors.map((humanDonor) => humanDonor.lab).filter(Boolean);
 };
-
-export default HumanDonor;

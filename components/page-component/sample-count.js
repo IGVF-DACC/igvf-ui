@@ -13,7 +13,10 @@ import FetchRequest from "../../lib/fetch-request";
 /* istanbul ignore file */
 /* This page component just shows how to implement a complex one; no need to test with Jest */
 
-const SampleCount = ({ label = "Sample Count", color = "gray" }) => {
+export default function SampleCount({
+  label = "Sample Count",
+  color = "gray",
+}) {
   // Selected sample collection type
   const [sampleType, setSampleType] = useState("tissues");
   // Sample collection @graph for the selected sample type
@@ -51,7 +54,7 @@ const SampleCount = ({ label = "Sample Count", color = "gray" }) => {
       </Select>
     </div>
   );
-};
+}
 
 SampleCount.propTypes = {
   // Label to display before the count
@@ -59,5 +62,3 @@ SampleCount.propTypes = {
   // Color style to use for the border and background
   color: PropTypes.string,
 };
-
-export default SampleCount;

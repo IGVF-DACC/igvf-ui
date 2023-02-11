@@ -18,7 +18,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const Lab = ({ lab, awards, pi = null }) => {
+export default function Lab({ lab, awards, pi = null }) {
   return (
     <>
       <Breadcrumbs />
@@ -65,7 +65,7 @@ const Lab = ({ lab, awards, pi = null }) => {
       </EditableItem>
     </>
   );
-};
+}
 
 Lab.propTypes = {
   // Data for lab displayed on the page
@@ -76,9 +76,7 @@ Lab.propTypes = {
   pi: PropTypes.object,
 };
 
-export default Lab;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const lab = await request.getObject(`/labs/${params.name}/`);
   if (FetchRequest.isResponseSuccess(lab)) {
@@ -104,4 +102,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(lab);
-};
+}

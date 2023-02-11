@@ -465,7 +465,7 @@ const DEFAULT_SIZE = 100;
  * Display an image thumbnail for an attachment that's viewable in the browser. When the user
  * clicks the thumbnail, display the attachment image preview as a modal overlay on the page.
  */
-const ImageThumbnailAndPreview = ({ attachment, ownerPath, alt, size }) => {
+function ImageThumbnailAndPreview({ attachment, ownerPath, alt, size }) {
   // True if the attachment image preview is visible.
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
@@ -515,7 +515,7 @@ const ImageThumbnailAndPreview = ({ attachment, ownerPath, alt, size }) => {
       </Dialog>
     </>
   );
-};
+}
 
 ImageThumbnailAndPreview.propTypes = {
   // The attachment to display
@@ -531,12 +531,12 @@ ImageThumbnailAndPreview.propTypes = {
 /**
  * Display the thumbnail for the given attachment.
  */
-const AttachmentThumbnail = ({
+export default function AttachmentThumbnail({
   attachment,
   ownerPath,
   alt,
   size = DEFAULT_SIZE,
-}) => {
+}) {
   let thumbnailIcon =
     thumbnailIconMap[attachment.type] || thumbnailIcons.default;
   if (thumbnailIcon === "image") {
@@ -564,7 +564,7 @@ const AttachmentThumbnail = ({
       <span className="sr-only">Download {attachment.download}</span>
     </a>
   );
-};
+}
 
 AttachmentThumbnail.propTypes = {
   // Attachment object to display
@@ -579,5 +579,3 @@ AttachmentThumbnail.propTypes = {
   // Size of the thumbnail in pixels
   size: PropTypes.number,
 };
-
-export default AttachmentThumbnail;

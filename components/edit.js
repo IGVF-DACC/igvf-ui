@@ -12,7 +12,7 @@ import FetchRequest from "../lib/fetch-request";
 import FlashMessage from "./flash-message";
 import PagePreamble from "./page-preamble";
 
-export const useEditor = (action) => {
+export function useEditor(action) {
   /**
    * Represents whether the Editor component can be actively typed in or saved.
    * This is determined by the logged in status of the user and if the user has
@@ -37,9 +37,9 @@ export const useEditor = (action) => {
   }, [edit, router, action]);
 
   return edit;
-};
+}
 
-export const EditableItem = ({ item, children }) => {
+export function EditableItem({ item, children }) {
   const editing = useEditor("edit");
   return editing ? (
     <EditPage item={item} />
@@ -51,13 +51,13 @@ export const EditableItem = ({ item, children }) => {
       {children}
     </>
   );
-};
+}
 
 EditableItem.propTypes = {
   item: PropTypes.object.isRequired,
 };
 
-export const SaveCancelControl = ({ saveClick, itemPath, saveEnabled }) => {
+export function SaveCancelControl({ saveClick, itemPath, saveEnabled }) {
   return (
     <div className="flex space-x-1">
       <ButtonLink href={itemPath} type="secondary">
@@ -68,7 +68,7 @@ export const SaveCancelControl = ({ saveClick, itemPath, saveEnabled }) => {
       </Button>
     </div>
   );
-};
+}
 
 SaveCancelControl.propTypes = {
   saveClick: PropTypes.func.isRequired,
@@ -93,7 +93,7 @@ export function sortedJson(obj) {
   return obj;
 }
 
-export const SavedErrors = ({ errors = [] }) => {
+export function SavedErrors({ errors = [] }) {
   return (
     <div>
       <p className="text-lg text-rose-600">Errors from Save:</p>
@@ -106,13 +106,13 @@ export const SavedErrors = ({ errors = [] }) => {
       </ul>
     </div>
   );
-};
+}
 
 SavedErrors.propTypes = {
   errors: PropTypes.array.isRequired,
 };
 
-const EditPage = ({ item }) => {
+export default function EditPage({ item }) {
   const { session } = useContext(SessionContext);
   const request = useRef(new FetchRequest({ session }));
 
@@ -120,13 +120,13 @@ const EditPage = ({ item }) => {
 
   const loggedIn = useAuthenticated();
 
-  const editable = (item) => {
+  function editable(item) {
     // cannot edit if not logged in or object not editable
     const editable = canEdit(item);
     return loggedIn && editable;
-  };
+  }
 
-  const jsonErrors = (json) => {
+  function jsonErrors(json) {
     // cannot save if we cannot edit or if the JSON is wrong
     try {
       JSON.parse(json);
@@ -135,7 +135,7 @@ const EditPage = ({ item }) => {
       // Save the error
       return [err.message];
     }
-  };
+  }
 
   /**
    * The text is the current editor text of the underlying Ace editor component.
@@ -174,7 +174,7 @@ const EditPage = ({ item }) => {
 
   const router = useRouter();
 
-  const onChange = (newValue) => {
+  function onChange(newValue) {
     setText(newValue);
     const errors = jsonErrors(newValue);
     const isEditable = editable(item);
@@ -184,9 +184,9 @@ const EditPage = ({ item }) => {
       errors,
     };
     setEditorStatus(status);
-  };
+  }
 
-  const save = () => {
+  function save() {
     setEditorStatus({
       canEdit: false,
       canSave: false,
@@ -233,7 +233,7 @@ const EditPage = ({ item }) => {
         setSaveErrors([...new Set(errors)]);
       }
     });
-  };
+  }
 
   return (
     <div className="space-y-1">
@@ -270,10 +270,8 @@ const EditPage = ({ item }) => {
         ))}
     </div>
   );
-};
+}
 
 EditPage.propTypes = {
   item: PropTypes.object.isRequired,
 };
-
-export default EditPage;

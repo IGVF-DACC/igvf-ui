@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 /**
  * Displays the number of items in a collection above the list or table views.
  */
-const SearchResultsCount = ({ count }) => {
+export default function SearchResultsCount({ count }) {
   if (count > 0) {
     return (
       <div
@@ -16,11 +16,9 @@ const SearchResultsCount = ({ count }) => {
     );
   }
   return null;
-};
+}
 
 SearchResultsCount.propTypes = {
   // Number of items in the collection
   count: PropTypes.number.isRequired,
 };
-
-export default SearchResultsCount;

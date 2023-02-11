@@ -18,7 +18,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const User = ({ user, lab = null }) => {
+export default function User({ user, lab = null }) {
   return (
     <>
       <Breadcrumbs />
@@ -71,7 +71,7 @@ const User = ({ user, lab = null }) => {
       </EditableItem>
     </>
   );
-};
+}
 
 User.propTypes = {
   // User object from the server
@@ -80,9 +80,7 @@ User.propTypes = {
   lab: PropTypes.object,
 };
 
-export default User;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const user = await request.getObject(`/users/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(user)) {
@@ -102,4 +100,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(user);
-};
+}

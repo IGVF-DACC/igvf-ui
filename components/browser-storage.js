@@ -20,22 +20,22 @@ import { useState } from "react";
  *   1: Function to set new value in localStorage; calling component must be mounted
  * ]
  */
-export const useLocalStorage = (key, initialValue) => {
+export function useLocalStorage(key, initialValue) {
   const [value, setValue] = useState(() => {
     const item =
       typeof window !== "undefined" ? localStorage.getItem(key) : null;
     return item ? JSON.parse(item) : initialValue;
   });
 
-  const setValueMethod = (valueToStore) => {
+  function setValueMethod(valueToStore) {
     if (typeof window !== "undefined") {
       setValue(valueToStore);
       localStorage.setItem(key, JSON.stringify(valueToStore));
     }
-  };
+  }
 
   return [value, setValueMethod];
-};
+}
 
 /**
  * Analogous to useState, but sets new values in the browser's sessionStorage, and recalls them.
@@ -47,19 +47,19 @@ export const useLocalStorage = (key, initialValue) => {
  *   1: Function to set new value in sessionStorage; calling component must be mounted
  * ]
  */
-export const useSessionStorage = (key, initialValue) => {
+export function useSessionStorage(key, initialValue) {
   const [value, setValue] = useState(() => {
     const item =
       typeof window !== "undefined" ? window.sessionStorage.getItem(key) : null;
     return item ? JSON.parse(item) : initialValue;
   });
 
-  const setValueMethod = (valueToStore) => {
+  function setValueMethod(valueToStore) {
     if (typeof window !== "undefined") {
       setValue(valueToStore);
       window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
     }
-  };
+  }
 
   return [value, setValueMethod];
-};
+}

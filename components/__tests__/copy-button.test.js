@@ -71,7 +71,7 @@ describe("Test <CopyButton> component", () => {
 
 describe("Test useCopyAction hook", () => {
   it("sets the isCopied state after calling initiateCopy", async () => {
-    const Component = () => {
+    function Component() {
       const { isCopied, initiateCopy } = useCopyAction("the copied text");
       return (
         <div>
@@ -79,7 +79,7 @@ describe("Test useCopyAction hook", () => {
           <span data-testid="isCopied">{isCopied.toString()}</span>
         </div>
       );
-    };
+    }
 
     render(<Component />);
 

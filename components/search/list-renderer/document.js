@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const Document = ({ item: document, accessoryData }) => {
+export default function Document({ item: document, accessoryData }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -30,7 +30,7 @@ const Document = ({ item: document, accessoryData }) => {
       <SearchListItemStatus item={document} />
     </SearchListItemContent>
   );
-};
+}
 
 Document.propTypes = {
   // Single document search-result object to display on a search-result list page
@@ -42,5 +42,3 @@ Document.propTypes = {
 Document.getAccessoryDataPaths = (documents) => {
   return documents.map((document) => document.lab).filter(Boolean);
 };
-
-export default Document;

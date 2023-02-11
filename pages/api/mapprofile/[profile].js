@@ -5,7 +5,7 @@ import FetchRequest, { HTTP_STATUS_CODE } from "../../../lib/fetch-request";
  * return the collection associated with the <schema_name> with 0
  * items.
  */
-const mapprofile = (req, res) => {
+export default function mapprofile(req, res) {
   if (req.method === "GET") {
     if (req.query.profile) {
       const request = new FetchRequest({ cookie: req.headers.cookie });
@@ -26,6 +26,4 @@ const mapprofile = (req, res) => {
   } else {
     res.status(HTTP_STATUS_CODE.METHOD_NOT_ALLOWED).end();
   }
-};
-
-export default mapprofile;
+}

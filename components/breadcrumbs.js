@@ -13,7 +13,7 @@ import { REPLACE_TYPE } from "../lib/breadcrumbs";
  * Render a single breadcrumb element. If no `href` provided, the element only displays its title
  * with no link.
  */
-const BreadcrumbElement = ({ href = "", className, id, children }) => {
+function BreadcrumbElement({ href = "", className, id, children }) {
   // For all but the last element...
   if (href) {
     return (
@@ -36,7 +36,7 @@ const BreadcrumbElement = ({ href = "", className, id, children }) => {
       {children}
     </div>
   );
-};
+}
 
 BreadcrumbElement.propTypes = {
   // Link to navigate to
@@ -56,7 +56,7 @@ BreadcrumbElement.propTypes = {
  * @param {object} profiles All schema profiles
  * @returns {array} Copy of breadcrumb array altered with any special
  */
-const processBreadcrumbs = (breadcrumbs, profiles) => {
+function processBreadcrumbs(breadcrumbs, profiles) {
   return breadcrumbs.map((breadcrumb) => {
     if (breadcrumb.operation === REPLACE_TYPE) {
       const mappedTitle = profiles ? profiles[breadcrumb.title]?.title : "";
@@ -67,7 +67,7 @@ const processBreadcrumbs = (breadcrumbs, profiles) => {
     }
     return breadcrumb;
   });
-};
+}
 
 /**
  * Static breadcrumb for the home page.
@@ -82,7 +82,7 @@ const homeBreadcrumb = [
 /**
  * Render a breadcrumb trail for the current page.
  */
-const Breadcrumbs = () => {
+export default function Breadcrumbs() {
   const { breadcrumbs } = useContext(GlobalContext);
   const { profiles } = useContext(SessionContext);
 
@@ -115,6 +115,4 @@ const Breadcrumbs = () => {
       </SeparatedList>
     </nav>
   );
-};
-
-export default Breadcrumbs;
+}

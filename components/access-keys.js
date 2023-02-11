@@ -23,7 +23,7 @@ import {
  * Displays the access key ID and secret for the modal used when creating or resetting an access
  * key.
  */
-const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
+function AccessKeyDisplay({ accessKeyId, accessKeySecret }) {
   // The labels and keys appear in a two-row table. The row contents get defined here. On mobile
   // they appear in one column.
   const rows = [
@@ -60,7 +60,7 @@ const AccessKeyDisplay = ({ accessKeyId, accessKeySecret }) => {
       })}
     </div>
   );
-};
+}
 
 AccessKeyDisplay.propTypes = {
   // Access key ID
@@ -88,12 +88,12 @@ const accessKeyModalMessages = {
  * Displays the modal to show the user their new or reset access keys. This component always shows
  * the modal, so its visibility gets controlled from the parent component.
  */
-const AccessKeyModal = ({
+function AccessKeyModal({
   accessKeyId,
   accessKeySecret,
   createOrReset,
   onClose,
-}) => {
+}) {
   return (
     <Modal isOpen={true} onClose={onClose}>
       <Modal.Header
@@ -124,7 +124,7 @@ const AccessKeyModal = ({
       </Modal.Footer>
     </Modal>
   );
-};
+}
 
 AccessKeyModal.propTypes = {
   // New (create) or existing (reset) access key ID
@@ -140,7 +140,7 @@ AccessKeyModal.propTypes = {
 /**
  * Displays a button and modal to create a new access key.
  */
-export const CreateAccessKeyTrigger = ({ onAccessKeyChange }) => {
+export function CreateAccessKeyTrigger({ onAccessKeyChange }) {
   // True if modal displaying newly created access-keys is open
   const [isOpen, setOpen] = useState(false);
   // Access key ID
@@ -154,7 +154,7 @@ export const CreateAccessKeyTrigger = ({ onAccessKeyChange }) => {
    * Called to create a new access key. Once that happens it opens the modal to display the new
    * access key ID and secret.
    */
-  const createKey = () => {
+  function createKey() {
     createAccessKey(session).then((response) => {
       setAccessKeyId(response.access_key_id);
       setAccessKeySecret(response.secret_access_key);
@@ -164,11 +164,11 @@ export const CreateAccessKeyTrigger = ({ onAccessKeyChange }) => {
       onAccessKeyChange();
       setOpen(true);
     });
-  };
+  }
 
-  const closeModal = () => {
+  function closeModal() {
     setOpen(false);
-  };
+  }
 
   return (
     <>
@@ -185,7 +185,7 @@ export const CreateAccessKeyTrigger = ({ onAccessKeyChange }) => {
       )}
     </>
   );
-};
+}
 
 CreateAccessKeyTrigger.propTypes = {
   // Callback to tell the parent about the new access keys
@@ -195,7 +195,7 @@ CreateAccessKeyTrigger.propTypes = {
 /**
  * Display a single access key control button.
  */
-const AccessKeyControl = ({ label, onClick, type, hasIconOnly, children }) => {
+function AccessKeyControl({ label, onClick, type, hasIconOnly, children }) {
   return (
     <Button
       label={label}
@@ -206,7 +206,7 @@ const AccessKeyControl = ({ label, onClick, type, hasIconOnly, children }) => {
       {children}
     </Button>
   );
-};
+}
 
 AccessKeyControl.propTypes = {
   // The label for the control for screen readers and tooltip
@@ -222,7 +222,7 @@ AccessKeyControl.propTypes = {
 /**
  * Displays a button and new-key modal to reset an existing access key.
  */
-export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
+export function ResetAccessKeyTrigger({ accessKeyId }) {
   // True if modal displaying reset access-keys open
   const [isOpen, setOpen] = useState(false);
   // Access key secret
@@ -233,16 +233,16 @@ export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
   /**
    * Creates a new access key and opens the modal to display it.
    */
-  const resetKey = () => {
+  function resetKey() {
     resetAccessKey(accessKeyId, session).then((response) => {
       setAccessKeySecret(response.secret_access_key);
       setOpen(true);
     });
-  };
+  }
 
-  const closeModal = () => {
+  function closeModal() {
     setOpen(false);
-  };
+  }
 
   return (
     <>
@@ -264,7 +264,7 @@ export const ResetAccessKeyTrigger = ({ accessKeyId }) => {
       )}
     </>
   );
-};
+}
 
 ResetAccessKeyTrigger.propTypes = {
   // Access key ID to reset
@@ -274,7 +274,7 @@ ResetAccessKeyTrigger.propTypes = {
 /**
  * Displays a button and warning modal to delete an access key.
  */
-const DeleteAccessKeyTrigger = ({ accessKeyId, onAccessKeyChange }) => {
+function DeleteAccessKeyTrigger({ accessKeyId, onAccessKeyChange }) {
   // True if access key delete warning modal is visible.
   const [isOpen, setOpen] = useState(false);
 
@@ -283,16 +283,16 @@ const DeleteAccessKeyTrigger = ({ accessKeyId, onAccessKeyChange }) => {
   /**
    * Called to perform the deletion of the access key.
    */
-  const onDelete = () => {
+  function onDelete() {
     deleteAccessKey(accessKeyId, session).then(() => {
       // Rerender the page with the deleted access key removed.
       onAccessKeyChange();
     });
-  };
+  }
 
-  const onCancel = () => {
+  function onCancel() {
     setOpen(false);
-  };
+  }
 
   return (
     <>
@@ -336,7 +336,7 @@ const DeleteAccessKeyTrigger = ({ accessKeyId, onAccessKeyChange }) => {
       </Modal>
     </>
   );
-};
+}
 
 DeleteAccessKeyTrigger.propTypes = {
   // ID of access key to delete
@@ -348,7 +348,7 @@ DeleteAccessKeyTrigger.propTypes = {
 /**
  * Displays a single access key and its associated controls.
  */
-export const AccessKeyItem = ({ accessKey, onAccessKeyChange }) => {
+export function AccessKeyItem({ accessKey, onAccessKeyChange }) {
   return (
     <>
       <div className="flex items-center justify-between border border-panel px-3 py-2 md:px-2 md:py-1">
@@ -363,7 +363,7 @@ export const AccessKeyItem = ({ accessKey, onAccessKeyChange }) => {
       </div>
     </>
   );
-};
+}
 
 AccessKeyItem.propTypes = {
   // Array of access keys from the session user object
@@ -375,10 +375,10 @@ AccessKeyItem.propTypes = {
 /**
  * Displays a list of access keys and their associated controls.
  */
-export const AccessKeyList = ({ children }) => {
+export function AccessKeyList({ children }) {
   return (
     <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {children}
     </div>
   );
-};
+}

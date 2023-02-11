@@ -2,17 +2,17 @@ import PropTypes from "prop-types";
 import { render, screen, within } from "@testing-library/react";
 import DataGrid, { DataGridContainer } from "../data-grid";
 
-const SpecialCell = ({ value }) => {
+function SpecialCell({ value }) {
   return <div className="font-semibold">{value}</div>;
-};
+}
 
 SpecialCell.propTypes = {
   value: PropTypes.string,
 };
 
-const HeaderRow = ({ meta, children }) => {
+function HeaderRow({ meta, children }) {
   return <div style={{ backgroundColor: `${meta.color}` }}>{children}</div>;
-};
+}
 
 HeaderRow.propTypes = {
   meta: PropTypes.exact({

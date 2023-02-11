@@ -6,7 +6,7 @@ import { attachmentToServerHref } from "../lib/attachment";
 /**
  * Display a link to the given document's attachment. The link opens in a new tab.
  */
-const DocumentAttachmentLink = ({ document }) => {
+export default function DocumentAttachmentLink({ document }) {
   return (
     <a
       className="break-all"
@@ -19,7 +19,7 @@ const DocumentAttachmentLink = ({ document }) => {
       <span className="sr-only">{`Download ${document.attachment.download}`}</span>
     </a>
   );
-};
+}
 
 DocumentAttachmentLink.propTypes = {
   // Document whose attachment to link to
@@ -30,5 +30,3 @@ DocumentAttachmentLink.propTypes = {
     }).isRequired,
   }).isRequired,
 };
-
-export default DocumentAttachmentLink;

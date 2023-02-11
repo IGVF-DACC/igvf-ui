@@ -24,7 +24,7 @@ const labelSizeClasses = {
  * in all browsers look the same. It displays an absolutely positioned icon in the right side of
  * the <select> element.
  */
-const Select = ({
+export default function Select({
   label = "",
   name,
   value,
@@ -35,7 +35,7 @@ const Select = ({
   onFocus = null,
   className = "",
   children,
-}) => {
+}) {
   return (
     <div data-testid="form-select" className={className}>
       {label && (
@@ -66,7 +66,7 @@ const Select = ({
       </div>
     </div>
   );
-};
+}
 
 Select.propTypes = {
   // Label to display outside the <select> element
@@ -88,5 +88,3 @@ Select.propTypes = {
   // Tailwind CSS classes to apply to the select element
   className: PropTypes.string,
 };
-
-export default Select;

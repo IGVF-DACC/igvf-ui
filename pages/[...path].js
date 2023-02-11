@@ -15,20 +15,20 @@ import PagePreamble from "../components/page-preamble";
  * @param {object} generic - Generic object or collection
  * @returns {string} Reasonable name extracted from generic object
  */
-const extractTitle = (generic) => {
+function extractTitle(generic) {
   return generic.accession || generic.title || generic.name || generic["@id"];
-};
+}
 
 /**
  * Displays the JSON of the specified object or collection for any object or collection that
  * doesn't have a page defined in the NextJS router.
  */
-const FallbackObject = ({
+export default function FallbackObject({
   generic = null,
   awards = null,
   labs = null,
   pages = null,
-}) => {
+}) {
   if (generic) {
     // Pages get displayed as markdown.
     if (generic["@type"].includes("Page")) {
@@ -50,7 +50,7 @@ const FallbackObject = ({
     );
   }
   return null;
-};
+}
 
 FallbackObject.propTypes = {
   // Any object which doesn't have a page defined.
@@ -63,9 +63,7 @@ FallbackObject.propTypes = {
   pages: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default FallbackObject;
-
-export const getServerSideProps = async ({ req, resolvedUrl }) => {
+export async function getServerSideProps({ req, resolvedUrl }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const generic = await request.getObject(resolvedUrl);
   if (FetchRequest.isResponseSuccess(generic)) {
@@ -96,4 +94,4 @@ export const getServerSideProps = async ({ req, resolvedUrl }) => {
     };
   }
   return errorObjectToProps(generic);
-};
+}

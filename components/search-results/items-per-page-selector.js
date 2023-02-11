@@ -31,11 +31,11 @@ const itemsPerPageOptions = [25, 100, 300];
  * the dropdown, their manually set value disappears from the dropdown, leaving only the options in
  * `itemsPerPageOptions`.
  */
-const ItemsPerPageSelector = (searchResults) => {
+export default function ItemsPerPageSelector(searchResults) {
   const router = useRouter();
   const { itemsPerPage } = useSearchLimits(searchResults);
 
-  const onChangeItemsPerPage = (e) => {
+  function onChangeItemsPerPage(e) {
     const newItemsPerPage = Number(e.target.value);
 
     // Update the `limit` query parameter based on the user's selection.
@@ -53,7 +53,7 @@ const ItemsPerPageSelector = (searchResults) => {
     // Navigate to the same search page with the updated limit= parameter.
     const query = getQueryStringFromServerQuery(updatedQueryParams);
     router.push(`${router.pathname}?${query}`);
-  };
+  }
 
   // Add the current limit= to the dropdown options if it's not one of the predefined options.
   const options = itemsPerPageOptions.includes(itemsPerPage)
@@ -74,6 +74,4 @@ const ItemsPerPageSelector = (searchResults) => {
       ))}
     </Select>
   );
-};
-
-export default ItemsPerPageSelector;
+}

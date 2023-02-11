@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
  * authenticated with Auth0 and `isLoading` is false, without having to pay attention to the
  * `isLoading` boolean.
  */
-export const useAuthenticated = () => {
+export function useAuthenticated() {
   const { isLoading, isAuthenticated } = useAuth0();
 
   // Caches the value of `isAuthenticated` the last time `isLoading` was false.
@@ -27,4 +27,4 @@ export const useAuthenticated = () => {
   }, [isLoading, isAuthenticated]);
 
   return stableAuthenticated;
-};
+}

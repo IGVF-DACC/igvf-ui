@@ -31,7 +31,7 @@ const columns = [
 /**
  * Display a table of external resources.
  */
-const ExternalResources = ({ resources = [] }) => {
+export default function ExternalResources({ resources = [] }) {
   if (resources.length > 0) {
     return (
       <>
@@ -43,11 +43,9 @@ const ExternalResources = ({ resources = [] }) => {
     );
   }
   return null;
-};
+}
 
 ExternalResources.propTypes = {
   // List of external resources to display
   resources: PropTypes.arrayOf(PropTypes.object),
 };
-
-export default ExternalResources;

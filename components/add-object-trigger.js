@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import { useAuthenticated } from "./authentication";
 import { ButtonLink } from "./form-elements";
 
-const AddObjectTrigger = ({ addSpec = null }) => {
+export default function AddObjectTrigger({ addSpec = null }) {
   const isAuthenticated = useAuthenticated();
   if (addSpec) {
     return (
@@ -28,7 +28,7 @@ const AddObjectTrigger = ({ addSpec = null }) => {
     );
   }
   return null;
-};
+}
 
 AddObjectTrigger.propTypes = {
   addSpec: PropTypes.exact({
@@ -38,5 +38,3 @@ AddObjectTrigger.propTypes = {
     path: PropTypes.string.isRequired,
   }),
 };
-
-export default AddObjectTrigger;

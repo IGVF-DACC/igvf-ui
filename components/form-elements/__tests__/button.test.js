@@ -100,11 +100,13 @@ describe("ButtonLink component", () => {
 });
 
 describe("Test the Tailwind CSS classes resulting from using the `hasIconOnly` flag", () => {
-  const Circle = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-      <circle cx="10" cy="10" r="10" />
-    </svg>
-  );
+  function Circle() {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <circle cx="10" cy="10" r="10" />
+      </svg>
+    );
+  }
 
   it("renders an icon-only button with the correct classes", () => {
     const { container } = render(

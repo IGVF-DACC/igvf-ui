@@ -38,12 +38,12 @@ import React from "react";
  * </SeparatedList>
  * // Expected output: "First component, Second component LINK Third component, Fourth component"
  */
-const SeparatedList = ({
+export default function SeparatedList({
   separator = ", ",
   className = "",
   testid = null,
   children,
-}) => {
+}) {
   if (children.length > 0) {
     return (
       <div className={className || ""} data-testid={testid}>
@@ -59,7 +59,7 @@ const SeparatedList = ({
     );
   }
   return <div className={className || ""}>{children}</div>;
-};
+}
 
 SeparatedList.propTypes = {
   // The separator between the items; ", " by default
@@ -69,5 +69,3 @@ SeparatedList.propTypes = {
   // Test ID for wrapper element
   testid: PropTypes.string,
 };
-
-export default SeparatedList;

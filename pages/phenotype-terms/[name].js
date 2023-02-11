@@ -17,7 +17,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const PhenotypeOntologyTerm = ({ phenotypeOntologyTerm }) => {
+export default function PhenotypeOntologyTerm({ phenotypeOntologyTerm }) {
   return (
     <>
       <Breadcrumbs />
@@ -35,16 +35,14 @@ const PhenotypeOntologyTerm = ({ phenotypeOntologyTerm }) => {
       </EditableItem>
     </>
   );
-};
+}
 
 PhenotypeOntologyTerm.propTypes = {
   // Phenotype ontology term object to display
   phenotypeOntologyTerm: PropTypes.object.isRequired,
 };
 
-export default PhenotypeOntologyTerm;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const phenotypeOntologyTerm = await request.getObject(
     `/phenotype-terms/${params.name}/`
@@ -64,4 +62,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(phenotypeOntologyTerm);
-};
+}

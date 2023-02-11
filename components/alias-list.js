@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 /**
  * Display the given aliases as a list, suitable for a value in a <DataArea>.
  */
-const AliasList = ({ aliases }) => {
+export default function AliasList({ aliases }) {
   return (
     <>
       {aliases.map((alias) => (
@@ -14,11 +14,9 @@ const AliasList = ({ aliases }) => {
       ))}
     </>
   );
-};
+}
 
 AliasList.propTypes = {
   // Aliases to display
   aliases: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
-
-export default AliasList;

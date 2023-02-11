@@ -36,7 +36,7 @@ const EXCLUDED_PROFILES = [
  * @returns A ProfileMapContext provided with all the mappings between
  * schemas and collections
  */
-export const ProfileMap = ({ children }) => {
+export function ProfileMap({ children }) {
   const [mapping, setMapping] = useState({});
 
   const { session } = useContext(SessionContext);
@@ -69,6 +69,6 @@ export const ProfileMap = ({ children }) => {
       {children}
     </ProfileMapContext.Provider>
   );
-};
+}
 
 export default ProfileMapContext;

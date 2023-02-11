@@ -11,7 +11,7 @@ import { isValidUrl } from "../../lib/general";
  *
  * See ./docs/page-navigation.md for more information.
  */
-const PageNavigation = (items) => {
+export default function PageNavigation(items) {
   // Get the titles of each link the page editor has entered.
   const itemTitles = Object.keys(items);
   if (itemTitles.length > 0) {
@@ -51,6 +51,4 @@ const PageNavigation = (items) => {
     );
   }
   return null;
-};
-
-export default PageNavigation;
+}

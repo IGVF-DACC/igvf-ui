@@ -16,7 +16,7 @@ import Spinner from "../components/spinner";
 // lib
 import FetchRequest from "../lib/fetch-request";
 
-const UserProfile = ({ sessionUser = null }) => {
+export default function UserProfile({ sessionUser = null }) {
   // Keeps a current copy of the access keys for handling adds/deletes w/o relying on indexing.
   const [accessKeys, setAccessKeys] = useState(
     sessionUser ? sessionUser.access_keys : []
@@ -28,7 +28,7 @@ const UserProfile = ({ sessionUser = null }) => {
   /**
    * Called when the user adds a new access key.
    */
-  const onAccessKeyChange = () => {
+  function onAccessKeyChange() {
     if (sessionUser) {
       const request = new FetchRequest({ session });
       request
@@ -39,7 +39,7 @@ const UserProfile = ({ sessionUser = null }) => {
           }
         });
     }
-  };
+  }
 
   return (
     <>
@@ -83,15 +83,13 @@ const UserProfile = ({ sessionUser = null }) => {
       </DataPanel>
     </>
   );
-};
+}
 
 UserProfile.propTypes = {
   sessionUser: PropTypes.object,
 };
 
-export default UserProfile;
-
-export const getServerSideProps = async ({ req }) => {
+export async function getServerSideProps({ req }) {
   // Get the currently logged-in user from the server, then get their user object that includes
   // their access keys. Can't handle errors in the usual way because the returned object has no
   // @type.
@@ -106,4 +104,4 @@ export const getServerSideProps = async ({ req }) => {
       pageContext: { title: "User Profile" },
     },
   };
-};
+}

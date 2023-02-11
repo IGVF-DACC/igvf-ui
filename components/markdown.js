@@ -7,7 +7,11 @@ import PropTypes from "prop-types";
  * This component provides a convenient way to render markdown as HTML while filtering out
  * dangerous content.
  */
-const Markdown = ({ markdown, direction = "ltr", className = "" }) => {
+export default function Markdown({
+  markdown,
+  direction = "ltr",
+  className = "",
+}) {
   const rawConvertedHtml = marked(markdown);
   const sanitizedHtml = DOMPurify.sanitize(rawConvertedHtml);
   return (
@@ -17,7 +21,7 @@ const Markdown = ({ markdown, direction = "ltr", className = "" }) => {
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />
   );
-};
+}
 
 Markdown.propTypes = {
   // The markdown to render
@@ -27,5 +31,3 @@ Markdown.propTypes = {
   // Tailwind CSS classes to add to the wrapper div around the HTML
   className: PropTypes.string,
 };
-
-export default Markdown;

@@ -8,7 +8,7 @@ import GlobalContext from "./global-context";
 /**
  * Display a message on a collection page indicating that no viewable collection data exists.
  */
-const NoCollectionData = ({ pageTitle = "" }) => {
+export default function NoCollectionData({ pageTitle = "" }) {
   const { page } = useContext(GlobalContext);
 
   return (
@@ -18,11 +18,9 @@ const NoCollectionData = ({ pageTitle = "" }) => {
       </div>
     </DataPanel>
   );
-};
+}
 
 NoCollectionData.propTypes = {
   // Page title to display in the message if not using pageTitle props from getServerSideProps()
   pageTitle: PropTypes.string,
 };
-
-export default NoCollectionData;

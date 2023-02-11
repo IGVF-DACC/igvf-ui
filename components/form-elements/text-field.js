@@ -25,7 +25,7 @@ const labelSizeClasses = {
  * Displays an input text field. This uses the React controlled-input method, so the current
  * edited value gets passed in the `value` property.
  */
-const TextField = ({
+export default function TextField({
   label = "",
   name,
   value,
@@ -39,7 +39,7 @@ const TextField = ({
   isDisabled = false,
   isSpellCheckDisabled = false,
   placeholder = null,
-}) => {
+}) {
   return (
     <div data-testid="form-text-field" className={className}>
       {label && (
@@ -68,7 +68,7 @@ const TextField = ({
       </div>
     </div>
   );
-};
+}
 
 TextField.propTypes = {
   // Label to display above the text field
@@ -102,5 +102,3 @@ TextField.propTypes = {
   // Placeholder text to display in the text field
   placeholder: PropTypes.string,
 };
-
-export default TextField;

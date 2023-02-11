@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 /**
  * Display a single gene location and assembly.
  */
-export const ChromosomeLocation = ({ location, className = null }) => {
+export function ChromosomeLocation({ location, className = null }) {
   return (
     <div data-testid="chromosome-location" className={className}>
       <span className="whitespace-nowrap">{`${location.chromosome}:${location.start}-${location.end}`}</span>
@@ -13,7 +13,7 @@ export const ChromosomeLocation = ({ location, className = null }) => {
       </div>
     </div>
   );
-};
+}
 
 ChromosomeLocation.propTypes = {
   // Gene location to display as defined in the schema
@@ -30,11 +30,11 @@ ChromosomeLocation.propTypes = {
 /**
  * Display an array of gene locations and assemblies.
  */
-const ChromosomeLocations = ({
+export default function ChromosomeLocations({
   locations,
   className = null,
   testid = null,
-}) => {
+}) {
   return (
     <ul className={className} data-testid={testid}>
       {locations.map((location, index) => (
@@ -44,7 +44,7 @@ const ChromosomeLocations = ({
       ))}
     </ul>
   );
-};
+}
 
 ChromosomeLocations.propTypes = {
   // Gene locations to display as defined in the schema
@@ -54,5 +54,3 @@ ChromosomeLocations.propTypes = {
   // Test ID for wrapper element
   testid: PropTypes.string,
 };
-
-export default ChromosomeLocations;

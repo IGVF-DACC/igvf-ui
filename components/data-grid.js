@@ -12,13 +12,13 @@ import { forwardRef } from "react";
  * Default data grid cell. Custom data grid cells can use wrap or replace this; whatever they
  * choose.
  */
-export const DefaultCell = ({ children }) => {
+function DefaultCell({ children }) {
   return (
     <div className="flex h-full w-full bg-white p-2 dark:bg-gray-900">
       {children}
     </div>
   );
-};
+}
 
 /**
  * Surround the <DataGrid> component with this wrapper component, or a custom one like it. Note
@@ -51,13 +51,13 @@ DataGridContainer.propTypes = {
 /**
  * Main data-grid interface.
  */
-const DataGrid = ({
+export default function DataGrid({
   data,
   CellComponent = DefaultCell,
   startingRow = 1,
   startingCol = 1,
   meta = {},
-}) => {
+}) {
   let rowLine = startingRow;
   return data.reduce((acc, row) => {
     // Render the cells of a row.
@@ -104,7 +104,7 @@ const DataGrid = ({
     rowLine += childCount;
     return acc.concat(rowRenders).concat(children);
   }, []);
-};
+}
 
 DataGrid.propTypes = {
   // The data to render in the data-grid form
@@ -129,5 +129,3 @@ DataGrid.propTypes = {
   // Extra metadata to pass to custom cell renderers
   meta: PropTypes.object,
 };
-
-export default DataGrid;

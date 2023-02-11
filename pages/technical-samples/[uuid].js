@@ -22,14 +22,14 @@ import { formatDate } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const TechnicalSample = ({
+export default function TechnicalSample({
   sample,
   award = null,
   documents,
   lab = null,
   source = null,
   technicalSampleTerm,
-}) => {
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -69,7 +69,7 @@ const TechnicalSample = ({
       </EditableItem>
     </>
   );
-};
+}
 
 TechnicalSample.propTypes = {
   // Technical sample to display
@@ -86,9 +86,7 @@ TechnicalSample.propTypes = {
   technicalSampleTerm: PropTypes.object.isRequired,
 };
 
-export default TechnicalSample;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sample = await request.getObject(`/technical-samples/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(sample)) {
@@ -127,4 +125,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(sample);
-};
+}

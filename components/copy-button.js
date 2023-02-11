@@ -14,14 +14,14 @@ import { Button } from "./form-elements";
  * @returns {boolean} isCopied True if the user clicked the button within the last two seconds
  * @returns {function} initiateCopy Call when the user clicks the button to initiate the copy action
  */
-export const useCopyAction = (target) => {
+export function useCopyAction(target) {
   // True if the user has clicked the copy button within the last two seconds
   const [isCopied, setCopied] = useState(false);
 
   /**
    * Copies the given text to the clipboard.
    */
-  const initiateCopy = () => {
+  function initiateCopy() {
     navigator.clipboard.writeText(target).then(() => {
       // Temporarily display a checkmark to confirm to the user that the copy was successful. Once
       // tooltips are feature complete, might want to add a "Copied" tooltip along with the check
@@ -31,7 +31,7 @@ export const useCopyAction = (target) => {
         setCopied(false);
       }, 2000);
     });
-  };
+  }
 
   return {
     // States
@@ -39,20 +39,20 @@ export const useCopyAction = (target) => {
     // Actions
     initiateCopy,
   };
-};
+}
 
 /**
  * Displays a button to copy text to the clipboard. Supply a function as the child of this button
  * that takes an argument that gets set to true for two seconds after the user clicks the copy
  * button.
  */
-const CopyButton = ({
+export default function CopyButton({
   target,
   label = null,
   disabled = false,
   className = "",
   children,
-}) => {
+}) {
   const { isCopied, initiateCopy } = useCopyAction(target);
 
   return (
@@ -65,7 +65,7 @@ const CopyButton = ({
       {children(isCopied)}
     </Button>
   );
-};
+}
 
 CopyButton.propTypes = {
   // The text to copy
@@ -83,7 +83,7 @@ CopyButton.propTypes = {
  * Supply a function as the child of this button that takes an argument that gets set to true for
  * two seconds after the user clicks the copy button.
  */
-const Icon = ({ target, label, className = "", children }) => {
+function Icon({ target, label, className = "", children }) {
   const { isCopied, initiateCopy } = useCopyAction(target);
 
   return (
@@ -96,7 +96,7 @@ const Icon = ({ target, label, className = "", children }) => {
       {children(isCopied)}
     </Button>
   );
-};
+}
 
 Icon.propTypes = {
   // The text to copy
@@ -108,4 +108,3 @@ Icon.propTypes = {
 };
 
 CopyButton.Icon = Icon;
-export default CopyButton;

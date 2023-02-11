@@ -53,7 +53,7 @@ const componentMap = {
  * block in the page editor. The first line of `spec` contains the component label, and the rest of
  * the lines contain properties to pass to the actual page component.
  */
-const PageComponent = ({ spec }) => {
+export default function PageComponent({ spec }) {
   // Extract the component label and its properties from the spec.
   const specParts = spec.split("\n").filter((specPart) => specPart !== "");
   const componentLabel = specParts.splice(0, 1)[0];
@@ -75,11 +75,9 @@ const PageComponent = ({ spec }) => {
   }
 
   return null;
-};
+}
 
 PageComponent.propTypes = {
   // React component specification from a "Component" block on a page
   spec: PropTypes.string.isRequired,
 };
-
-export default PageComponent;

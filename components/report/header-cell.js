@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
  * Display the sorting icon in report header cells for the currently sorted column. Render
  * nothing for other columns.
  */
-const HeaderSortIcon = ({ column, sortedColumn }) => {
+function HeaderSortIcon({ column, sortedColumn }) {
   const isDescending = sortedColumn.startsWith("-");
   const sortedColumnId = isDescending ? sortedColumn.slice(1) : sortedColumn;
   const SortIcon = isDescending ? ChevronDownIcon : ChevronUpIcon;
@@ -22,7 +22,7 @@ const HeaderSortIcon = ({ column, sortedColumn }) => {
     );
   }
   return null;
-};
+}
 
 HeaderSortIcon.propTypes = {
   // Column ID for the current cell
@@ -35,12 +35,12 @@ HeaderSortIcon.propTypes = {
  * Renders the header cells for the report table. Click events navigate to the report page with
  * that cell as the sorting key.
  */
-const ReportHeaderCell = ({ cells, cellIndex, meta, children }) => {
+export default function ReportHeaderCell({ cells, cellIndex, meta, children }) {
   const columnId = cells[cellIndex].id;
 
-  const onClick = () => {
+  function onClick() {
     meta.onHeaderCellClick(columnId);
-  };
+  }
 
   return (
     <button
@@ -54,7 +54,7 @@ const ReportHeaderCell = ({ cells, cellIndex, meta, children }) => {
       </div>
     </button>
   );
-};
+}
 
 ReportHeaderCell.propTypes = {
   // Cell data for the grid header row
@@ -76,5 +76,3 @@ ReportHeaderCell.propTypes = {
     nonSortableColumnIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   }),
 };
-
-export default ReportHeaderCell;

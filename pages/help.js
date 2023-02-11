@@ -7,7 +7,7 @@ import NoContent from "../components/no-content";
 import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 
-const HelpBanner = ({ helpPageRoot }) => {
+function HelpBanner({ helpPageRoot }) {
   return (
     <div className="aspect-ultra w-full border border-panel bg-help-banner bg-cover dark:bg-help-banner-dark">
       <h1 className="mt-2 ml-4 text-2xl font-light text-black dark:text-white sm:text-3xl md:mt-8 md:text-4xl xl:text-5xl">
@@ -15,7 +15,7 @@ const HelpBanner = ({ helpPageRoot }) => {
       </h1>
     </div>
   );
-};
+}
 
 HelpBanner.propTypes = {
   // The help page root page
@@ -26,7 +26,7 @@ HelpBanner.propTypes = {
  * Displays links to the given help subpages. This is mutually recursive with the
  * <HelpPageIndividual> component.
  */
-const HelpSubpages = ({ subpages }) => {
+function HelpSubpages({ subpages }) {
   return (
     <ul className="pl-4">
       {subpages.map((subpage) => (
@@ -34,7 +34,7 @@ const HelpSubpages = ({ subpages }) => {
       ))}
     </ul>
   );
-};
+}
 
 HelpSubpages.propTypes = {
   // Subpages to display in the list
@@ -45,7 +45,7 @@ HelpSubpages.propTypes = {
  * Displays one link to a help page, as well as all of its sub-pages. This is mutually recursive
  * with the <HelpSubpages> component to allow multiple levels of nesting.
  */
-const HelpPageIndividual = ({ page }) => {
+function HelpPageIndividual({ page }) {
   // Determine the level of the help subpage by trimming the leading and trailing slashes
   // from the subpage's path and gettings the individual path elements.
   const trimmedPath = page["@id"].replace(/^\//, "").replace(/\/$/, "");
@@ -67,7 +67,7 @@ const HelpPageIndividual = ({ page }) => {
       {page.subpages?.length > 0 && <HelpSubpages subpages={page.subpages} />}
     </li>
   );
-};
+}
 
 HelpPageIndividual.propTypes = {
   // Help page to display as a link
@@ -77,7 +77,7 @@ HelpPageIndividual.propTypes = {
 /**
  * Displays the help category link and all of the category's sub-pages.
  */
-const HelpPageCategory = ({ categoryPage }) => {
+function HelpPageCategory({ categoryPage }) {
   return (
     <div className="mb-8 shrink-0 grow md:basis-1/2 xl:basis-1/3">
       <h2 className="mb-4 text-xl font-medium text-brand">
@@ -88,7 +88,7 @@ const HelpPageCategory = ({ categoryPage }) => {
       )}
     </div>
   );
-};
+}
 
 HelpPageCategory.propTypes = {
   // Help page category to display
@@ -98,7 +98,7 @@ HelpPageCategory.propTypes = {
 /**
  * Displays the entire help page, including links to all of the help content pages.
  */
-const HelpPage = ({ helpPageRoot }) => {
+export default function HelpPage({ helpPageRoot }) {
   if (helpPageRoot?.subpages?.length > 0) {
     return (
       <>
@@ -115,16 +115,14 @@ const HelpPage = ({ helpPageRoot }) => {
     );
   }
   return <NoContent message="No help pages" />;
-};
+}
 
 HelpPage.propTypes = {
   // Root-level help page
   helpPageRoot: PropTypes.object.isRequired,
 };
 
-export default HelpPage;
-
-export const getServerSideProps = async ({ req }) => {
+export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const pages = await request.getCollection("pages");
   if (FetchRequest.isResponseSuccess(pages)) {
@@ -159,4 +157,4 @@ export const getServerSideProps = async ({ req }) => {
     };
   }
   return errorObjectToProps(pages);
-};
+}

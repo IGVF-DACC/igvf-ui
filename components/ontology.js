@@ -37,7 +37,7 @@ export class OntologyTerm extends Curie {
  * of the term ID has one. Any term IDs with prefixes not matching any in the `urlMap` global
  * variable simply display without a link. All term IDs are of the form XXX:nnnnnnn...
  */
-export const OntologyTermId = ({ termId }) => {
+export function OntologyTermId({ termId }) {
   const ontologyTerm = new OntologyTerm(termId);
   if (ontologyTerm.isValid) {
     return (
@@ -50,7 +50,7 @@ export const OntologyTermId = ({ termId }) => {
   // Either term ID not in specified form (schema should disallow) or we don't handle the prefix,
   // displaying the term ID without linking anywhere.
   return <>{ontologyTerm.curie}</>;
-};
+}
 
 OntologyTermId.propTypes = {
   // Term ID to map to a link
