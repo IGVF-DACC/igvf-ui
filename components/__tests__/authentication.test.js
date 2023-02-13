@@ -11,7 +11,7 @@ jest.mock("@auth0/auth0-react", () => ({
   useAuth0: jest.fn(),
 }));
 
-const Component = () => {
+function Component() {
   const isAuthenticated = useAuthenticated();
   return (
     <div>
@@ -22,7 +22,7 @@ const Component = () => {
       )}
     </div>
   );
-};
+}
 
 describe("Test authentication custom react hook", () => {
   it("should show 'Authenticated' text when authenticated", () => {

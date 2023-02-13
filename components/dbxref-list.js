@@ -175,7 +175,7 @@ class DbxrefProcessor extends Curie {
  * Display a single linked dbxref. If no URL is available for the dbxref, just display the dbxref
  * string.
  */
-const DbxrefItem = ({ dbxref, meta }) => {
+function DbxrefItem({ dbxref, meta }) {
   const dbxrefProcessor = new DbxrefProcessor(dbxref, meta);
   if (dbxrefProcessor.url) {
     return (
@@ -185,7 +185,7 @@ const DbxrefItem = ({ dbxref, meta }) => {
     );
   }
   return <>{dbxref}</>;
-};
+}
 
 DbxrefItem.propTypes = {
   // Dbxref to display as a link
@@ -197,7 +197,7 @@ DbxrefItem.propTypes = {
 /**
  * Display a comma-separated list of linked dbxrefs.
  */
-const DbxrefList = ({ dbxrefs, meta = {} }) => {
+export default function DbxrefList({ dbxrefs, meta = {} }) {
   return (
     <SeparatedList>
       {_.uniq(dbxrefs).map((dbxref) => {
@@ -205,7 +205,7 @@ const DbxrefList = ({ dbxrefs, meta = {} }) => {
       })}
     </SeparatedList>
   );
-};
+}
 
 DbxrefList.propTypes = {
   // Dbxrefs to display
@@ -213,5 +213,3 @@ DbxrefList.propTypes = {
   // Metadata that affects certain dbxrefs
   meta: PropTypes.object,
 };
-
-export default DbxrefList;

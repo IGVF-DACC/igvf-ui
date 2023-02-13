@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 /**
  * Displays the link to an object page, with a double-right chevron icon.
  */
-const ItemLink = ({ href, label = "" }) => {
+export default function ItemLink({ href, label = "" }) {
   return (
     <div className="mx-auto flex items-center justify-center">
       <Link
@@ -18,7 +18,7 @@ const ItemLink = ({ href, label = "" }) => {
       </Link>
     </div>
   );
-};
+}
 
 ItemLink.propTypes = {
   // Path to item this links to
@@ -26,5 +26,3 @@ ItemLink.propTypes = {
   // Voice label for item; treat as required unless you have absolutely nothing
   label: PropTypes.string,
 };
-
-export default ItemLink;

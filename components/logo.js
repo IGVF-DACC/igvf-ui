@@ -1,7 +1,7 @@
 // node_modules
 import Link from "next/link";
 
-export const Logo = () => {
+export function Logo() {
   return (
     <svg
       version="1.1"
@@ -51,15 +51,13 @@ export const Logo = () => {
       />
     </svg>
   );
-};
+}
 
-const SiteLogo = () => {
+export default function SiteLogo() {
   return (
     <Link href="/" className="block w-32 py-2 md:h-24 md:w-auto md:px-8">
       <Logo />
       <span className="sr-only">Home</span>
     </Link>
   );
-};
-
-export default SiteLogo;
+}

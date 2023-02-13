@@ -21,13 +21,13 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const RodentDonor = ({
+export default function RodentDonor({
   donor,
   award = null,
   documents,
   lab = null,
   parents,
-}) => {
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -68,7 +68,7 @@ const RodentDonor = ({
       </EditableItem>
     </>
   );
-};
+}
 
 RodentDonor.propTypes = {
   // Rodent donor to display
@@ -83,9 +83,7 @@ RodentDonor.propTypes = {
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default RodentDonor;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/rodent-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
@@ -119,4 +117,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(donor);
-};
+}

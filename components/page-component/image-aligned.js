@@ -22,13 +22,13 @@ const alignClassNames = {
  *
  * See ./docs/image-aligned.md for more information.
  */
-const ImageAligned = ({
+export default function ImageAligned({
   src = "",
   alt = "",
   align = "center",
   width = "100%",
   caption = "",
-}) => {
+}) {
   if (src && alt) {
     const alignClassName = ` ${alignClassNames[align]}`;
     const imgMargins = align === "center" ? "my-6" : "my-2";
@@ -52,7 +52,7 @@ const ImageAligned = ({
     );
   }
   return null;
-};
+}
 
 ImageAligned.propTypes = {
   // Path or URL to the image; required
@@ -66,5 +66,3 @@ ImageAligned.propTypes = {
   // Caption that appears below the image
   caption: PropTypes.string,
 };
-
-export default ImageAligned;

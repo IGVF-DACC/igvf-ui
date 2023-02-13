@@ -37,7 +37,7 @@ const navigationVariants = {
  * Renders collapsable navigation items, both for the mobile menu and for collapsable children of
  * grouped navigation items.
  */
-const NavigationCollapsableArea = ({ isOpen, testid = "", children }) => {
+function NavigationCollapsableArea({ isOpen, testid = "", children }) {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -55,7 +55,7 @@ const NavigationCollapsableArea = ({ isOpen, testid = "", children }) => {
       )}
     </AnimatePresence>
   );
-};
+}
 
 NavigationCollapsableArea.propTypes = {
   // True if the collapsable navigation area is visible.
@@ -67,13 +67,13 @@ NavigationCollapsableArea.propTypes = {
 /**
  * Wrapper for the navigation icons to add Tailwind CSS classes to the icon svg.
  */
-const NavigationIcon = ({ children }) => {
+function NavigationIcon({ children }) {
   const iconElement = Children.only(children);
   if (isValidElement(iconElement)) {
     return React.cloneElement(iconElement, { className: "mr-1 h-4 w-4" });
   }
   return children;
-};
+}
 
 /**
  * Render the button for a navigation item, whether it actually navigates or just opens the child
@@ -114,7 +114,7 @@ NavigationButton.displayName = "NavigationButton";
 /**
  * Navigation item to handle the Sign In button.
  */
-const NavigationSignInItem = ({ id, children }) => {
+function NavigationSignInItem({ id, children }) {
   const { isLoading, loginWithRedirect } = useAuth0();
   const { setRedirectTo } = useContext(SessionContext);
 
@@ -124,7 +124,7 @@ const NavigationSignInItem = ({ id, children }) => {
    * authentication error one. We leave the rest of the provider authentication process to Auth0.
    * We only know it was successful once `useAuth0` returns true in `isAuthenticated`.
    */
-  const handleAuthClick = () => {
+  function handleAuthClick() {
     // Save the current path in auth0-react appState so we can redirect to it after signin, unless
     // the user is on the authentication-error page, in which case we redirect to the home page
     // after sign-in so the user doesn't see an authentication error after a good sign-in.
@@ -134,7 +134,7 @@ const NavigationSignInItem = ({ id, children }) => {
         : window.location.pathname
     );
     loginWithRedirect();
-  };
+  }
 
   return (
     <li>
@@ -147,7 +147,7 @@ const NavigationSignInItem = ({ id, children }) => {
       </NavigationButton>
     </li>
   );
-};
+}
 
 NavigationSignInItem.propTypes = {
   // ID of the authentication navigation item
@@ -157,15 +157,15 @@ NavigationSignInItem.propTypes = {
 /**
  * Navigation item to handle the Sign Out button.
  */
-const NavigationSignOutItem = ({ id, children }) => {
+function NavigationSignOutItem({ id, children }) {
   const { logout } = useAuth0();
 
   /**
    * Called when the user clicks the Sign Out button.
    */
-  const handleAuthClick = () => {
+  function handleAuthClick() {
     logout({ returnTo: window.location.origin });
-  };
+  }
 
   return (
     <li>
@@ -174,7 +174,7 @@ const NavigationSignOutItem = ({ id, children }) => {
       </NavigationButton>
     </li>
   );
-};
+}
 
 NavigationSignOutItem.propTypes = {
   // ID of the authentication navigation item
@@ -184,21 +184,21 @@ NavigationSignOutItem.propTypes = {
 /**
  * Renders a single navigation item.
  */
-const NavigationHrefItem = ({
+function NavigationHrefItem({
   id,
   href,
   navigationClick,
   isChildItem = false,
   children,
-}) => {
+}) {
   const router = useRouter();
 
-  const onClick = () => {
+  function onClick() {
     // Notify the main navigation component that the user has clicked a navigation item, then
     // navigate to the href for the navigation item.
     navigationClick();
     router.push(href);
-  };
+  }
 
   return (
     <li>
@@ -207,7 +207,7 @@ const NavigationHrefItem = ({
       </NavigationButton>
     </li>
   );
-};
+}
 
 NavigationHrefItem.propTypes = {
   // ID of the navigation item
@@ -223,13 +223,13 @@ NavigationHrefItem.propTypes = {
 /**
  * Icon for expanding or collapsing a navigation group item.
  */
-const NavigationGroupExpandIcon = ({ isGroupOpened }) => {
+function NavigationGroupExpandIcon({ isGroupOpened }) {
   return (
     <div className="ml-auto h-4 w-4">
       {isGroupOpened ? <MinusIcon /> : <PlusIcon />}
     </div>
   );
-};
+}
 
 NavigationGroupExpandIcon.propTypes = {
   // True if the navigation group is open
@@ -240,14 +240,14 @@ NavigationGroupExpandIcon.propTypes = {
  * Handles a navigation group item, reacting to clicks to expand or collapse the group, and
  * rendering the child items.
  */
-const NavigationGroupItem = ({
+function NavigationGroupItem({
   id,
   title,
   icon,
   isGroupOpened,
   handleGroupClick,
   children,
-}) => {
+}) {
   return (
     <li>
       <NavigationButton id={id} onClick={() => handleGroupClick(id)}>
@@ -260,7 +260,7 @@ const NavigationGroupItem = ({
       </NavigationCollapsableArea>
     </li>
   );
-};
+}
 
 NavigationGroupItem.propTypes = {
   // ID of the navigation group item
@@ -278,18 +278,18 @@ NavigationGroupItem.propTypes = {
 /**
  * Wraps the navigation items in <nav> and <ul> tags.
  */
-const NavigationList = ({ children }) => {
+function NavigationList({ children }) {
   return (
     <nav className="p-4">
       <ul>{children}</ul>
     </nav>
   );
-};
+}
 
 /**
  * Renders the navigation area for mobile and desktop.
  */
-const Navigation = ({ navigationClick }) => {
+function Navigation({ navigationClick }) {
   // Holds the ids of the currently open parent navigation items
   const [openedParents, setOpenedParents] = React.useState([]);
   // Current Auth0 information
@@ -299,7 +299,7 @@ const Navigation = ({ navigationClick }) => {
    * Called when the user clicks a group navigation item to open or close it.
    * @param {string} parentId ID of the clicked parent navigation item
    */
-  const handleParentClick = (parentId) => {
+  function handleParentClick(parentId) {
     if (openedParents.includes(parentId)) {
       // Close the parent navigation item.
       setOpenedParents(openedParents.filter((id) => id !== parentId));
@@ -307,7 +307,7 @@ const Navigation = ({ navigationClick }) => {
       // Open the parent navigation item.
       setOpenedParents([...openedParents, parentId]);
     }
-  };
+  }
 
   return (
     <NavigationList>
@@ -517,7 +517,7 @@ const Navigation = ({ navigationClick }) => {
       </NavigationHrefItem>
     </NavigationList>
   );
-};
+}
 
 Navigation.propTypes = {
   // Function to call when user clicks a navigation item
@@ -527,16 +527,16 @@ Navigation.propTypes = {
 /**
  * Displays the navigation bar (for mobile) or the sidebar navigation (for desktop).
  */
-const NavigationSection = () => {
+export default function NavigationSection() {
   // True if user has opened the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   /**
    * Called when the user clicks a navigation menu item.
    */
-  const navigationClick = () => {
+  function navigationClick() {
     setIsMobileMenuOpen(false);
-  };
+  }
 
   return (
     <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">
@@ -562,6 +562,4 @@ const NavigationSection = () => {
       </NavigationCollapsableArea>
     </section>
   );
-};
-
-export default NavigationSection;
+}

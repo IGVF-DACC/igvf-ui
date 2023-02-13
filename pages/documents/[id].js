@@ -20,7 +20,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const Document = ({ document, award = null, lab = null }) => {
+export default function Document({ document, award = null, lab = null }) {
   return (
     <>
       <Breadcrumbs />
@@ -97,7 +97,7 @@ const Document = ({ document, award = null, lab = null }) => {
       </EditableItem>
     </>
   );
-};
+}
 
 Document.propTypes = {
   // Document object to display
@@ -108,9 +108,7 @@ Document.propTypes = {
   lab: PropTypes.object,
 };
 
-export default Document;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const document = await request.getObject(`/documents/${params.id}/`);
   if (FetchRequest.isResponseSuccess(document)) {
@@ -132,4 +130,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(document);
-};
+}

@@ -18,7 +18,7 @@ import {
 /**
  * Displays the buttons to hide or show all columns at once.
  */
-const ChangeAllControls = ({ onChangeAll }) => {
+function ChangeAllControls({ onChangeAll }) {
   const className = "flex-grow md:flex-grow-0";
   return (
     <div className="flex gap-1">
@@ -30,7 +30,7 @@ const ChangeAllControls = ({ onChangeAll }) => {
       </Button>
     </div>
   );
-};
+}
 
 ChangeAllControls.propTypes = {
   // Called when the user wants to hide or show all columns at once
@@ -41,7 +41,11 @@ ChangeAllControls.propTypes = {
  * Display the actuator button to display the modal for the user to select which columns to
  * display and which to hide. This also displays that modal.
  */
-const ColumnSelector = ({ searchResults, onChange, onChangeAll }) => {
+export default function ColumnSelector({
+  searchResults,
+  onChange,
+  onChangeAll,
+}) {
   // True if the column-selection modal is open.
   const [isOpen, setIsOpen] = useState(false);
   const { profiles } = useContext(SessionContext);
@@ -118,7 +122,7 @@ const ColumnSelector = ({ searchResults, onChange, onChangeAll }) => {
 
   // profiles hasn't yet loaded or (extremely unlikely) the report doesn't have a type= filter.
   return null;
-};
+}
 
 ColumnSelector.propTypes = {
   // Search results for the current report page. Includes a single "type=" guaranteed
@@ -128,5 +132,3 @@ ColumnSelector.propTypes = {
   // Called when the user wants to show or hide all columns at once
   onChangeAll: PropTypes.func.isRequired,
 };
-
-export default ColumnSelector;

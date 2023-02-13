@@ -25,7 +25,7 @@ import { urlWithoutParams } from "../lib/general";
  * @returns the profile path corresponding to an action or null if there
  * are no available actions or if the none of the specified actions are present.
  */
-const actionProfile = (item, actions) => {
+function actionProfile(item, actions) {
   if ("actions" in item) {
     const act = item.actions.find((act) => actions.includes(act.name));
     if (act != null) {
@@ -33,7 +33,7 @@ const actionProfile = (item, actions) => {
     }
   }
   return null;
-};
+}
 
 /**
  * This takes a schema object and adds to the required properties
@@ -49,7 +49,7 @@ const actionProfile = (item, actions) => {
  * @returns The modified schema with appropriate fields added as
  * required
  */
-const convertOptionalIntoRequiredSchema = (schema) => {
+function convertOptionalIntoRequiredSchema(schema) {
   const topProperties = Object.entries(schema.properties)
     .filter(([, p]) => {
       return p.comment ? !p.comment.includes("Do not submit") : true;
@@ -69,13 +69,13 @@ const convertOptionalIntoRequiredSchema = (schema) => {
   const newschema = schema;
   newschema.required = [...topProperties, ...schema.required];
   return newschema;
-};
+}
 
 /**
  * Generates a button link to the #!add url for the given collection.
  * A custom label can be suplied with the `label` prop.
  */
-export const AddLink = ({ collection, label = null }) => {
+export function AddLink({ collection, label = null }) {
   if (collection.status === "error") {
     return;
   }
@@ -96,7 +96,7 @@ export const AddLink = ({ collection, label = null }) => {
       </ButtonLink>
     );
   }
-};
+}
 
 AddLink.propTypes = {
   // Collection object with no results in @graph
@@ -105,7 +105,7 @@ AddLink.propTypes = {
   label: PropTypes.string,
 };
 
-export const AddInstancePage = ({ collection }) => {
+export function AddInstancePage({ collection }) {
   const { session } = useContext(SessionContext);
   const loggedIn = useAuthenticated();
 
@@ -117,12 +117,12 @@ export const AddInstancePage = ({ collection }) => {
   const router = useRouter();
 
   // Cannot add if not logged in or "add" not an action
-  const addable = (collection) => {
+  function addable(collection) {
     const canAdd = canEdit(collection, "add");
     return loggedIn && canAdd;
-  };
+  }
 
-  const jsonErrors = (json) => {
+  function jsonErrors(json) {
     // cannot save if we cannot edit or if the JSON is wrong
     try {
       JSON.parse(json);
@@ -131,7 +131,7 @@ export const AddInstancePage = ({ collection }) => {
       // Save the error
       return [err.message];
     }
-  };
+  }
 
   /**
    * When attempting to save the edited text to the backend, if there are any
@@ -169,7 +169,7 @@ export const AddInstancePage = ({ collection }) => {
     });
   }, [profilePath, session]);
 
-  const onChange = (newValue) => {
+  function onChange(newValue) {
     setText(newValue);
     const errors = jsonErrors(newValue);
     const isAddable = addable(collection);
@@ -179,9 +179,9 @@ export const AddInstancePage = ({ collection }) => {
       errors,
     };
     setEditorStatus(status);
-  };
+  }
 
-  const save = () => {
+  function save() {
     setEditorStatus({
       canEdit: false,
       canSave: false,
@@ -232,7 +232,7 @@ export const AddInstancePage = ({ collection }) => {
           setSaveErrors([...new Set(errors)]);
         }
       });
-  };
+  }
 
   return (
     <div className="space-y-1">
@@ -268,20 +268,20 @@ export const AddInstancePage = ({ collection }) => {
         ))}
     </div>
   );
-};
+}
 
 AddInstancePage.propTypes = {
   collection: PropTypes.object.isRequired,
 };
 
-export const AddableItem = ({ collection, children }) => {
+export function AddableItem({ collection, children }) {
   const editing = useEditor("add");
   return editing ? (
     <AddInstancePage collection={collection} />
   ) : (
     <>{children}</>
   );
-};
+}
 
 AddableItem.propTypes = {
   collection: PropTypes.object.isRequired,
@@ -293,7 +293,7 @@ AddableItem.propTypes = {
  * URL, allowing the user to Add an object of the schema type to the
  * collection.
  */
-export const AddItemFromSchema = ({ schema, label = "" }) => {
+export function AddItemFromSchema({ schema, label = "" }) {
   const { profileMap } = useContext(ProfileMapContext);
   const schemaId = schema["$id"].match(/^\/profiles\/(.+).json$/)[1];
   const collection = profileMap[schemaId];
@@ -301,7 +301,7 @@ export const AddItemFromSchema = ({ schema, label = "" }) => {
   if (collection) {
     return <AddLink collection={collection} label={label} />;
   }
-};
+}
 
 AddItemFromSchema.propTypes = {
   // Single schema for the object type to add

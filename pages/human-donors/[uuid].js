@@ -44,13 +44,13 @@ const healthStatusHistoryColumns = [
   },
 ];
 
-const HumanDonor = ({
+export default function HumanDonor({
   donor,
   award = null,
   documents,
   lab = null,
   parents,
-}) => {
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -94,7 +94,7 @@ const HumanDonor = ({
       </EditableItem>
     </>
   );
-};
+}
 
 HumanDonor.propTypes = {
   // Human donor to display
@@ -109,9 +109,7 @@ HumanDonor.propTypes = {
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default HumanDonor;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/human-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
@@ -145,4 +143,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(donor);
-};
+}

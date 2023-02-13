@@ -8,7 +8,7 @@ import { pathToType } from "../lib/general";
  * The `source` property of sample objects can refer to either a `source` or `lab` object. Display
  * the source or lab name with a link either to the source URL or the lab page.
  */
-const SourceProp = ({ source }) => {
+export default function SourceProp({ source }) {
   const sourceType = pathToType(source["@id"]);
   if (sourceType === "sources") {
     return (
@@ -21,7 +21,7 @@ const SourceProp = ({ source }) => {
     return <Link href={source["@id"]}>{source.title}</Link>;
   }
   return null;
-};
+}
 
 SourceProp.propTypes = {
   // `source` or `lab` object to display a relevant link for
@@ -31,5 +31,3 @@ SourceProp.propTypes = {
     url: PropTypes.string,
   }),
 };
-
-export default SourceProp;

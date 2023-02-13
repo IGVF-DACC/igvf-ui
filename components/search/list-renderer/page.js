@@ -10,7 +10,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const Page = ({ item: page }) => {
+export default function Page({ item: page }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -23,11 +23,9 @@ const Page = ({ item: page }) => {
       <SearchListItemStatus item={page} />
     </SearchListItemContent>
   );
-};
+}
 
 Page.propTypes = {
   // Single page search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
 };
-
-export default Page;

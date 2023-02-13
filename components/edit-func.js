@@ -6,12 +6,12 @@ import React from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
 
-export const canEdit = (item, actions = ["edit", "edit-json"]) => {
+export function canEdit(item, actions = ["edit", "edit-json"]) {
   if ("actions" in item) {
     return item.actions.find((act) => actions.includes(act.name)) != undefined;
   }
   return false;
-};
+}
 
 const Editor = dynamic(
   async () => {
@@ -28,7 +28,7 @@ const Editor = dynamic(
   }
 );
 
-const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
+function JsonEditor({ text, onChange, enabled, errors = [] }) {
   const annotations = errors.map((msg) => ({
     row: 0,
     column: 0,
@@ -63,7 +63,7 @@ const JsonEditor = ({ text, onChange, enabled, errors = [] }) => {
       }}
     />
   );
-};
+}
 
 JsonEditor.propTypes = {
   // The text that will be shown in the editor
@@ -79,20 +79,25 @@ JsonEditor.propTypes = {
   errors: PropTypes.array,
 };
 
-const ControlButton = ({ onClick, isDisabled = false, children }) => {
+function ControlButton({ onClick, isDisabled = false, children }) {
   return (
     <Button onClick={onClick} isDisabled={isDisabled}>
       {children}
     </Button>
   );
-};
+}
 
 ControlButton.propTypes = {
   onClick: PropTypes.func,
   isDisabled: PropTypes.bool,
 };
 
-const EditJson = ({ text, onChange, enabled = true, errors = [] }) => {
+export default function EditJson({
+  text,
+  onChange,
+  enabled = true,
+  errors = [],
+}) {
   return (
     <div className="relative m-px w-full border-2 border-solid border-slate-300">
       <JsonEditor
@@ -103,7 +108,7 @@ const EditJson = ({ text, onChange, enabled = true, errors = [] }) => {
       />
     </div>
   );
-};
+}
 
 EditJson.propTypes = {
   text: PropTypes.string.isRequired,
@@ -112,10 +117,10 @@ EditJson.propTypes = {
   errors: PropTypes.array,
 };
 
-export const EditLink = ({ item }) => {
-  const removeTrailingSlash = (url) => {
+export function EditLink({ item }) {
+  function removeTrailingSlash(url) {
     return url.endsWith("/") ? url.slice(0, url.length - 1) : url;
-  };
+  }
 
   const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
   if (canEdit(item)) {
@@ -132,10 +137,8 @@ export const EditLink = ({ item }) => {
     );
   }
   return null;
-};
+}
 
 EditLink.propTypes = {
   item: PropTypes.object.isRequired,
 };
-
-export default EditJson;

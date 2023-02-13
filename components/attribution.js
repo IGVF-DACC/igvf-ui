@@ -14,7 +14,7 @@ import {
  * Displays the attribution properties of an item in its own data panel, typically from a data
  * object with a defined schema.
  */
-const Attribution = ({ award = null, lab = null }) => {
+export default function Attribution({ award = null, lab = null }) {
   if (award || lab) {
     return (
       <>
@@ -43,7 +43,7 @@ const Attribution = ({ award = null, lab = null }) => {
     );
   }
   return null;
-};
+}
 
 Attribution.propTypes = {
   // Award applied to the displayed object
@@ -51,5 +51,3 @@ Attribution.propTypes = {
   // Lab that submitted the displayed object
   lab: PropTypes.object,
 };
-
-export default Attribution;

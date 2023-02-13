@@ -9,7 +9,7 @@ import Page from "../components/page";
 // lib
 import FetchRequest from "../lib/fetch-request";
 
-const AddPage = ({ awards = null, labs = null, pages = null }) => {
+export default function AddPage({ awards = null, labs = null, pages = null }) {
   // True if the user is editing a new page to add
   const [isNewPage, setAddingPage] = useState(false);
 
@@ -28,7 +28,7 @@ const AddPage = ({ awards = null, labs = null, pages = null }) => {
   }
 
   return <NoContent message="No page added." />;
-};
+}
 
 AddPage.propTypes = {
   // Awards to offer as options for the new page
@@ -39,9 +39,7 @@ AddPage.propTypes = {
   pages: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default AddPage;
-
-export const getServerSideProps = async ({ req }) => {
+export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const awards = await request.getCollection("awards");
   const labs = await request.getCollection("labs");
@@ -54,4 +52,4 @@ export const getServerSideProps = async ({ req }) => {
       pageContext: { title: "Add a New Page" },
     },
   };
-};
+}

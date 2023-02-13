@@ -23,7 +23,7 @@ import { Session } from "../components/session-context";
 import "../styles/globals.css";
 import { ProfileMap } from "../components/profile-map";
 
-const App = ({ Component, pageProps }) => {
+export default function App({ Component, pageProps }) {
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
     const darkModeManager = new DarkModeManager();
@@ -125,7 +125,7 @@ const App = ({ Component, pageProps }) => {
       </div>
     </>
   );
-};
+}
 
 App.propTypes = {
   // Component to render for the page, as determined by nextjs router
@@ -133,5 +133,3 @@ App.propTypes = {
   // Properties associated with the page to pass to `Component`
   pageProps: PropTypes.object.isRequired,
 };
-
-export default App;

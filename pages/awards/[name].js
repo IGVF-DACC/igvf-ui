@@ -17,7 +17,7 @@ import { formatDateRange } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const Award = ({ award, pis }) => {
+export default function Award({ award, pis }) {
   return (
     <>
       <Breadcrumbs />
@@ -82,7 +82,7 @@ const Award = ({ award, pis }) => {
       </EditableItem>
     </>
   );
-};
+}
 
 Award.propTypes = {
   // Award data to display on the page
@@ -91,9 +91,7 @@ Award.propTypes = {
   pis: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default Award;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const award = await request.getObject(`/awards/${params.name}/`);
   if (FetchRequest.isResponseSuccess(award)) {
@@ -115,4 +113,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(award);
-};
+}

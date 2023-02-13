@@ -59,7 +59,7 @@ const renderers = {
 /**
  * Search-list renderer for search-result items that don't have a specific renderer.
  */
-export const Fallback = ({ item }) => {
+export function Fallback({ item }) {
   const title =
     item.accession ||
     item.title ||
@@ -77,7 +77,7 @@ export const Fallback = ({ item }) => {
       </SearchListItemMain>
     </>
   );
-};
+}
 
 Fallback.propTypes = {
   // Single search-result object to display on a search-result list page
@@ -91,10 +91,10 @@ Fallback.propTypes = {
  * @param {object} item Object with `@type` property to look up in registry
  * @returns {string} `@type` from `item` that a search-list renderer handles
  */
-const getItemRendererType = (item) => {
+function getItemRendererType(item) {
   const matchingType = item["@type"].find((itemType) => renderers[itemType]);
   return matchingType || null;
-};
+}
 
 /**
  * Look up the React component to render the given `item` based on the `@type` of the object. The
@@ -104,10 +104,10 @@ const getItemRendererType = (item) => {
  * @param {object} item Object with `@type` property to look up in registry
  * @returns {React.Component} React component to render the given item
  */
-export const getSearchListItemRenderer = (item) => {
+export function getSearchListItemRenderer(item) {
   const itemType = getItemRendererType(item);
   return itemType ? renderers[itemType] : Fallback;
-};
+}
 
 /**
  * Get the accessory data-paths generator function for the given item type. If no paths generator
@@ -116,10 +116,10 @@ export const getSearchListItemRenderer = (item) => {
  * @param {string} itemType Item @type to look up in registry
  * @returns {function} Function to retrieve accessory data paths for the given item type
  */
-const getAccessoryDataPathsGenerator = (itemType) => {
+function getAccessoryDataPathsGenerator(itemType) {
   const renderer = renderers[itemType];
   return renderer.getAccessoryDataPaths || null;
-};
+}
 
 /**
  * For all item types that have an accessory data-paths generator function, call that function
@@ -129,7 +129,7 @@ const getAccessoryDataPathsGenerator = (itemType) => {
  * @param {object} itemListsByType Search-result items keyed by item type
  * @returns {array} Array of unique accessory data paths
  */
-export const getAccessoryDataPaths = (itemListsByType) => {
+export function getAccessoryDataPaths(itemListsByType) {
   // For each item type, get its accessory data paths generator function, if any. Pass that
   // function the list of items of that type, and concatenate all the paths from all the item
   // types into one array.
@@ -155,7 +155,7 @@ export const getAccessoryDataPaths = (itemListsByType) => {
 
   // Deduplicate the paths to all the accessory data objects we need to retrieve from igvfd.
   return [...new Set(accessoryDataPaths)];
-};
+}
 
 /**
  * Once you have all the requested objects for a property within each search-result item, generate a
@@ -188,12 +188,12 @@ export const getAccessoryDataPaths = (itemListsByType) => {
  * @param {array.objects} propertyObjects Objects for a single property of search result items
  * @returns {object} Map of property objects keyed by `@id`
  */
-export const generateAccessoryDataPropertyMap = (propertyObjects) => {
+export function generateAccessoryDataPropertyMap(propertyObjects) {
   return propertyObjects.reduce(
     (map, term) => ({ ...map, [term["@id"]]: term }),
     {}
   );
-};
+}
 
 /**
  * Get an array of unique item @types from the search-result items. Only the types that have a
@@ -201,7 +201,7 @@ export const generateAccessoryDataPropertyMap = (propertyObjects) => {
  * @param {object} searchResults Search results from igvfd
  * @returns {array} Array of unique item types in the search-result items
  */
-const getRenderableItemTypes = (searchResults) => {
+function getRenderableItemTypes(searchResults) {
   return searchResults["@graph"].reduce((itemTypesAcc, item) => {
     const itemType = getItemRendererType(item);
 
@@ -210,7 +210,7 @@ const getRenderableItemTypes = (searchResults) => {
       ? itemTypesAcc.concat(itemType)
       : itemTypesAcc;
   }, []);
-};
+}
 
 /**
  * Generate lists of search-result items by item type, generating an object with each item type in
@@ -225,7 +225,7 @@ const getRenderableItemTypes = (searchResults) => {
  * @param {array.string} itemTypes @types found in search results
  * @returns {object} Object with item types as keys and arrays of search-result items as values
  */
-export const getItemListsByType = (searchResults) => {
+export function getItemListsByType(searchResults) {
   const itemTypes = getRenderableItemTypes(searchResults);
   return itemTypes.reduce((itemListsByTypeAcc, itemType) => {
     itemListsByTypeAcc[itemType] = searchResults["@graph"].filter(
@@ -233,4 +233,4 @@ export const getItemListsByType = (searchResults) => {
     );
     return itemListsByTypeAcc;
   }, {});
-};
+}

@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const User = ({ item: user, accessoryData }) => {
+export default function User({ item: user, accessoryData }) {
   const lab = accessoryData?.[user.lab];
 
   return (
@@ -31,7 +31,7 @@ const User = ({ item: user, accessoryData }) => {
       <SearchListItemStatus item={user} />
     </SearchListItemContent>
   );
-};
+}
 
 User.propTypes = {
   // Single search-result object to display on a search-result list page
@@ -43,5 +43,3 @@ User.propTypes = {
 User.getAccessoryDataPaths = (items) => {
   return items.map((item) => item.lab).filter(Boolean);
 };
-
-export default User;

@@ -9,7 +9,7 @@ import Modal from "./modal";
 /**
  * Display pop-up instructions triggered by a help button.
  */
-const Instruction = ({ title, className = null, children }) => {
+export default function Instruction({ title, className = null, children }) {
   // True if the instruction modal is open
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,7 +37,7 @@ const Instruction = ({ title, className = null, children }) => {
       </Modal>
     </>
   );
-};
+}
 
 Instruction.propTypes = {
   // Title for the instruction modal
@@ -45,5 +45,3 @@ Instruction.propTypes = {
   // Tailwind CSS classes to style the instructions
   className: PropTypes.string,
 };
-
-export default Instruction;

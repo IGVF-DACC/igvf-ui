@@ -11,7 +11,10 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const TechnicalSample = ({ item: technicalSample, accessoryData }) => {
+export default function TechnicalSample({
+  item: technicalSample,
+  accessoryData,
+}) {
   const technicalSampleTerm =
     accessoryData?.[technicalSample.technical_sample_term];
   const lab = accessoryData?.[technicalSample.lab];
@@ -35,7 +38,7 @@ const TechnicalSample = ({ item: technicalSample, accessoryData }) => {
       <SearchListItemStatus item={technicalSample} />
     </SearchListItemContent>
   );
-};
+}
 
 TechnicalSample.propTypes = {
   // Single search-result object to display on a search-result list page
@@ -51,5 +54,3 @@ TechnicalSample.getAccessoryDataPaths = (technicalSamples) => {
   const labs = technicalSamples.map((technicalSample) => technicalSample.lab);
   return terms.concat(labs);
 };
-
-export default TechnicalSample;

@@ -18,14 +18,14 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const EnsemblLink = ({ geneid, taxa }) => {
+function EnsemblLink({ geneid, taxa }) {
   const organism = taxa.replace(/ /g, "_");
   return (
     <a href={`http://www.ensembl.org/${organism}/Gene/Summary?g=${geneid}`}>
       {geneid}
     </a>
   );
-};
+}
 
 EnsemblLink.propTypes = {
   // GeneID to display as a link
@@ -34,7 +34,7 @@ EnsemblLink.propTypes = {
   taxa: PropTypes.string.isRequired,
 };
 
-const Gene = ({ gene }) => {
+export default function Gene({ gene }) {
   return (
     <>
       <Breadcrumbs />
@@ -96,16 +96,14 @@ const Gene = ({ gene }) => {
       </EditableItem>
     </>
   );
-};
+}
 
 Gene.propTypes = {
   // Data for gene displayed on the page
   gene: PropTypes.object.isRequired,
 };
 
-export default Gene;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const gene = await request.getObject(`/genes/${params.id}/`);
   if (FetchRequest.isResponseSuccess(gene)) {
@@ -123,4 +121,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(gene);
-};
+}

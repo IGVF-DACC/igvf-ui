@@ -11,11 +11,11 @@ import useSearchLimits from "./search-limits";
  * user selects a page, the from= parameter in the URL query string gets updated to reflect the
  * new page.
  */
-const SearchPager = ({ searchResults }) => {
+export default function SearchPager({ searchResults }) {
   const router = useRouter();
   const { itemsPerPage, totalPages } = useSearchLimits(searchResults);
 
-  const onPagerClick = (pageIndex) => {
+  function onPagerClick(pageIndex) {
     // Calculate the new from= parameter based on the page index.
     const from = (pageIndex - 1) * itemsPerPage;
     let updatedQuery = {};
@@ -28,7 +28,7 @@ const SearchPager = ({ searchResults }) => {
       updatedQuery = { ...router.query, from };
     }
     router.push({ query: updatedQuery });
-  };
+  }
 
   // Calculate the currently viewed page index based on the from= parameters in the URL
   // query string.
@@ -50,11 +50,9 @@ const SearchPager = ({ searchResults }) => {
       )}
     </>
   );
-};
+}
 
 SearchPager.propTypes = {
   // Search results
   searchResults: PropTypes.object.isRequired,
 };
-
-export default SearchPager;

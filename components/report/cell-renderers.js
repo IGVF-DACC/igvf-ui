@@ -27,13 +27,13 @@ const MAX_CELL_JSON_LENGTH = 100;
  * Display the @id of an object as a link to the object's page. This works much like the `Path`
  * renderer, but `@id` has a slightly odd schema definition, so it needs its own custom renderer.
  */
-const AtId = ({ source }) => {
+function AtId({ source }) {
   return (
     <Link href={source["@id"]} data-testid="cell-type-atid">
       {source["@id"]}
     </Link>
   );
-};
+}
 
 AtId.propTypes = {
   // Object displayed in a row
@@ -46,7 +46,7 @@ AtId.propTypes = {
 /**
  * Displays the embedded `attachment` object as a link to the attachment file.
  */
-const Attachment = ({ source }) => {
+function Attachment({ source }) {
   if (source.attachment) {
     return (
       <a
@@ -62,7 +62,7 @@ const Attachment = ({ source }) => {
     );
   }
   return null;
-};
+}
 
 Attachment.propTypes = {
   // Object displayed in a row
@@ -79,14 +79,14 @@ Attachment.propTypes = {
 /**
  * Display a generic boolean as a "yes" or "no" string.
  */
-const Boolean = ({ id, source }) => {
+function Boolean({ id, source }) {
   if (source[id] !== undefined) {
     return (
       <div data-testid="cell-type-boolean">{source[id] ? "Yes" : "No"}</div>
     );
   }
   return null;
-};
+}
 
 Boolean.propTypes = {
   // Name of the property displayed in a cell
@@ -100,7 +100,7 @@ Boolean.propTypes = {
  * and without a `resource_url` property, displaying a link to an external site if the external
  * resource includes `resource_url`.
  */
-const ExternalResources = ({ source }) => {
+function ExternalResources({ source }) {
   if (source.external_resources?.length > 0) {
     return (
       <SeparatedList testid="cell-type-external-resources">
@@ -130,7 +130,7 @@ const ExternalResources = ({ source }) => {
     );
   }
   return null;
-};
+}
 
 ExternalResources.propTypes = {
   // Object displayed in a row
@@ -148,7 +148,7 @@ ExternalResources.propTypes = {
 /**
  * Display the gene locations of a gene object.
  */
-const GeneLocations = ({ source }) => {
+function GeneLocations({ source }) {
   if (source.locations?.length > 0) {
     return (
       <ChromosomeLocations
@@ -158,7 +158,7 @@ const GeneLocations = ({ source }) => {
     );
   }
   return null;
-};
+}
 
 GeneLocations.propTypes = {
   // Object displayed in a row
@@ -174,7 +174,7 @@ GeneLocations.propTypes = {
  * the type detection function below for this weird case, just treat this as a special renderer for
  * this report/property type.
  */
-const PageParent = ({ source }) => {
+function PageParent({ source }) {
   if (source.parent) {
     return (
       <Link href={source.parent} data-testid="cell-type-page-parent">
@@ -183,7 +183,7 @@ const PageParent = ({ source }) => {
     );
   }
   return null;
-};
+}
 
 PageParent.propTypes = {
   // Object displayed in a row
@@ -196,7 +196,7 @@ PageParent.propTypes = {
 /**
  * Report cell renderer for a single path/@id linking to another page on the site.
  */
-const Path = ({ id, source }) => {
+function Path({ id, source }) {
   const path = source[id];
   if (path) {
     // The report search results might have embedded the linked object in this property. So if this
@@ -209,7 +209,7 @@ const Path = ({ id, source }) => {
     );
   }
   return null;
-};
+}
 
 Path.propTypes = {
   // Property name of column being rendered
@@ -221,7 +221,7 @@ Path.propTypes = {
 /**
  * Report cell renderer for an array of paths/@ids linking to other pages on the site.
  */
-const PathArray = ({ id, source }) => {
+function PathArray({ id, source }) {
   const paths = source[id];
   if (paths?.length > 0) {
     return (
@@ -246,7 +246,7 @@ const PathArray = ({ id, source }) => {
     );
   }
   return null;
-};
+}
 
 PathArray.propTypes = {
   // Property name of column being rendered
@@ -258,7 +258,7 @@ PathArray.propTypes = {
 /**
  * Displays an array of a primitive type as a comma-separated list.
  */
-const SimpleArray = ({ id, source }) => {
+function SimpleArray({ id, source }) {
   const arrayProperty = source[id];
   if (arrayProperty?.length > 0) {
     return (
@@ -268,7 +268,7 @@ const SimpleArray = ({ id, source }) => {
     );
   }
   return null;
-};
+}
 
 SimpleArray.propTypes = {
   // Property name of column being rendered
@@ -282,7 +282,7 @@ SimpleArray.propTypes = {
  * stringified JSON in the cell if it's longer than 100 characters. Display a button to open a
  * modal with the whole object's formatted JSON.
  */
-const UnknownObject = ({ id, source }) => {
+function UnknownObject({ id, source }) {
   // True if the modal showing formatted JSON is open
   const [isJsonModalOpen, setJsonModalOpen] = useState(false);
 
@@ -317,7 +317,7 @@ const UnknownObject = ({ id, source }) => {
     );
   }
   return null;
-};
+}
 
 UnknownObject.propTypes = {
   // Property name for column
@@ -329,7 +329,7 @@ UnknownObject.propTypes = {
 /**
  * Renders an external URL string as a link.
  */
-const Url = ({ id, source }) => {
+function Url({ id, source }) {
   const urlProperty = source[id];
   if (urlProperty) {
     return (
@@ -343,7 +343,7 @@ const Url = ({ id, source }) => {
       </a>
     );
   }
-};
+}
 
 Url.propTypes = {
   // Property name of column
@@ -411,7 +411,7 @@ export const typeRenderers = {
  * @param {object} profile Schema profile to check the property against
  * @returns {string} The type of the property; see `typeRenderers`
  */
-export const detectPropertyTypes = (property, profile) => {
+export function detectPropertyTypes(property, profile) {
   const propertyDefinition = profile.properties[property];
   let propertyType = "";
   if (propertyDefinition) {
@@ -465,4 +465,4 @@ export const detectPropertyTypes = (property, profile) => {
 
   // Property type unrecognized.
   return propertyType;
-};
+}

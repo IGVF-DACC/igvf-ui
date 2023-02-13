@@ -43,12 +43,12 @@ import { composeSearchResultsPageTitle } from "../lib/search-results";
  * @param {array} defaultColumnSpecs Column specs for the default columns of the report's schema
  * @returns {string} `queryString` with the `columnId` column added or removed
  */
-const updateColumnVisibilityQuery = (
+function updateColumnVisibilityQuery(
   queryString,
   columnId,
   isVisible,
   defaultColumnSpecs
-) => {
+) {
   const query = new QueryString(queryString);
   const hasSpecificFields = query.getKeyValues("field").length > 0;
   const defaultColumnIds = defaultColumnSpecs.map(
@@ -88,7 +88,7 @@ const updateColumnVisibilityQuery = (
   }
 
   return query.format();
-};
+}
 
 /**
  * Update the given query string to show or hide all columns. When hiding all columns, the `@id`
@@ -98,11 +98,11 @@ const updateColumnVisibilityQuery = (
  * @param {array} allColumnSpecs All possible columns for the current report type
  * @returns
  */
-const updateAllColumnsVisibilityQuery = (
+function updateAllColumnsVisibilityQuery(
   queryString,
   isAllVisible,
   allColumnSpecs
-) => {
+) {
   const query = new QueryString(queryString);
   if (isAllVisible) {
     // Set fields for all possible report columns for the current type
@@ -117,9 +117,9 @@ const updateAllColumnsVisibilityQuery = (
     query.addKeyValue("field", "@id");
   }
   return query.format();
-};
+}
 
-const Report = ({ searchResults }) => {
+export default function Report({ searchResults }) {
   const router = useRouter();
   const { profiles } = useContext(SessionContext);
 
@@ -141,13 +141,13 @@ const Report = ({ searchResults }) => {
    * column.
    * @param {string} columnId Property name of the column that was clicked
    */
-  const onHeaderCellClick = (columnId) => {
+  function onHeaderCellClick(columnId) {
     const query = new QueryString(queryString);
     const newSortColumn =
       columnId === sortedColumnId ? `-${columnId}` : columnId;
     query.replaceKeyValue("sort", newSortColumn);
     router.push(`${path}?${query.format()}`);
-  };
+  }
 
   /**
    * Called when the user clicks an individual column's visibility toggle in the modal. Depending
@@ -156,7 +156,7 @@ const Report = ({ searchResults }) => {
    * @param {string} columnId ID of the column the user made visible or invisible in the modal
    * @param {boolean} isVisible True if the column is now visible, false if it is now invisible
    */
-  const onColumnVisibilityChange = (columnId, isVisible) => {
+  function onColumnVisibilityChange(columnId, isVisible) {
     const updatedQueryString = updateColumnVisibilityQuery(
       queryString,
       columnId,
@@ -164,21 +164,21 @@ const Report = ({ searchResults }) => {
       defaultColumnSpecs
     );
     router.push(`${path}?${updatedQueryString}`);
-  };
+  }
 
   /**
    * Called when the user chooses to hide or show all columns in the modal at once. When hiding all
    * columns, the `@id` column remains visible.
    * @param {boolean} isAllVisible True to make all possible columns visible, false to hide all
    */
-  const onAllColumnsVisibilityChange = (isAllVisible) => {
+  function onAllColumnsVisibilityChange(isAllVisible) {
     const updatedQueryString = updateAllColumnsVisibilityQuery(
       queryString,
       isAllVisible,
       allColumnSpecs
     );
     router.push(`${path}?${updatedQueryString}`);
-  };
+  }
 
   if (profiles) {
     const pageTitle = composeSearchResultsPageTitle(searchResults, profiles);
@@ -221,16 +221,14 @@ const Report = ({ searchResults }) => {
     );
   }
   return null;
-};
+}
 
 Report.propTypes = {
   // @graph from search results from igvfd
   searchResults: PropTypes.object.isRequired,
 };
 
-export default Report;
-
-export const getServerSideProps = async ({ req, query }) => {
+export async function getServerSideProps({ req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const queryParams = getQueryStringFromServerQuery(query);
   const searchResults = await request.getObject(`/report/?${queryParams}`);
@@ -250,4 +248,4 @@ export const getServerSideProps = async ({ req, query }) => {
     };
   }
   return errorObjectToProps(searchResults);
-};
+}

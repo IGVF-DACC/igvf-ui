@@ -18,7 +18,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
+export default function SampleOntologyTerm({ sampleOntologyTerm }) {
   return (
     <>
       <Breadcrumbs />
@@ -77,16 +77,14 @@ const SampleOntologyTerm = ({ sampleOntologyTerm }) => {
       </EditableItem>
     </>
   );
-};
+}
 
 SampleOntologyTerm.propTypes = {
   // Sample ontology term object to display
   sampleOntologyTerm: PropTypes.object.isRequired,
 };
 
-export default SampleOntologyTerm;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sampleOntologyTerm = await request.getObject(
     `/sample-terms//${params.name}/`
@@ -106,4 +104,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(sampleOntologyTerm);
-};
+}

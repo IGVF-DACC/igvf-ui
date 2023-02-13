@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const Gene = ({ item: gene }) => {
+export default function Gene({ item: gene }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -30,11 +30,9 @@ const Gene = ({ item: gene }) => {
       <SearchListItemStatus item={gene} />
     </SearchListItemContent>
   );
-};
+}
 
 Gene.propTypes = {
   // Single gene search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
 };
-
-export default Gene;

@@ -36,7 +36,7 @@ import { Button } from "./form-elements";
  * component consistent regardless of the current page number, so that the previous/next buttons
  * don't shift around horizontally.
  */
-const Pager = ({ currentPage, totalPages, onClick, className }) => {
+export default function Pager({ currentPage, totalPages, onClick, className }) {
   // Create the array of 1-based page numbers, with page 0 to represent an ellipsis before the
   // current page and page -1 to represent an ellipsis after the current page. No real difference
   // between these two ellipsis values, but Pager uses distinct values so we don't have duplicate
@@ -79,25 +79,25 @@ const Pager = ({ currentPage, totalPages, onClick, className }) => {
   const pageNumberWidth = 10 + totalPages.toString().length * 10;
 
   // Called when the user clicks on a page number.
-  const pageNumberClick = (pageNumber) => {
+  function pageNumberClick(pageNumber) {
     if (pageNumber !== currentPage) {
       onClick(pageNumber);
     }
-  };
+  }
 
   // Called when the user clicks the previous-page-number arrow.
-  const prevClick = () => {
+  function prevClick() {
     if (currentPage !== 1) {
       onClick(currentPage - 1);
     }
-  };
+  }
 
   // Called when the user clicks the next-page-number arrow.
-  const nextClick = () => {
+  function nextClick() {
     if (currentPage !== totalPages) {
       onClick(currentPage + 1);
     }
-  };
+  }
 
   return (
     <nav aria-label="Pagination" className={className}>
@@ -167,7 +167,7 @@ const Pager = ({ currentPage, totalPages, onClick, className }) => {
       </ul>
     </nav>
   );
-};
+}
 
 Pager.propTypes = {
   // Currently selected page
@@ -179,5 +179,3 @@ Pager.propTypes = {
   // Tailwind CSS classes to add to the pager
   className: PropTypes.string,
 };
-
-export default Pager;

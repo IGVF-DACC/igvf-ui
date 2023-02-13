@@ -20,7 +20,7 @@ import { UC } from "../../lib/constants";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const Treatment = ({ treatment, documents }) => {
+export default function Treatment({ treatment, documents }) {
   return (
     <>
       <Breadcrumbs />
@@ -107,7 +107,7 @@ const Treatment = ({ treatment, documents }) => {
       </EditableItem>
     </>
   );
-};
+}
 
 Treatment.propTypes = {
   // Technical treatment to display
@@ -116,9 +116,7 @@ Treatment.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default Treatment;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const treatment = await request.getObject(`/treatments/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(treatment)) {
@@ -142,4 +140,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(treatment);
-};
+}

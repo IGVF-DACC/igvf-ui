@@ -38,9 +38,9 @@ const data = [
   },
 ];
 
-const CustomDescriptionHeader = () => {
+function CustomDescriptionHeader() {
   return <div className="bg-slate-100">Description</div>;
-};
+}
 
 describe("SortableGrid", () => {
   it("renders a two-column sortable table", () => {

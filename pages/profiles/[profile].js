@@ -11,7 +11,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { AddItemFromSchema } from "../../components/add";
 
-const Schema = ({ schema, changelog }) => {
+export default function Schema({ schema, changelog }) {
   const html = marked(changelog);
   return (
     <>
@@ -36,16 +36,14 @@ const Schema = ({ schema, changelog }) => {
       </DataPanel>
     </>
   );
-};
+}
 
 Schema.propTypes = {
   schema: PropTypes.object.isRequired,
   changelog: PropTypes.string.isRequired,
 };
 
-export default Schema;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const schema = await request.getObject(`/profiles/${params.profile}`);
   if (FetchRequest.isResponseSuccess(schema)) {
@@ -65,4 +63,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(schema);
-};
+}

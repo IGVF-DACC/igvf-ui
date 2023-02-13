@@ -21,7 +21,7 @@ import { formatDate } from "../lib/dates";
 /**
  * Display the data items common to all donor-derived objects.
  */
-export const DonorDataItems = ({ donor, parents, children }) => {
+export function DonorDataItems({ donor, parents, children }) {
   return (
     <>
       {donor.sex && (
@@ -77,7 +77,7 @@ export const DonorDataItems = ({ donor, parents, children }) => {
       )}
     </>
   );
-};
+}
 
 DonorDataItems.propTypes = {
   // Object derived from donor.json schema
@@ -89,7 +89,7 @@ DonorDataItems.propTypes = {
 /**
  * Display data items common to all sample-derived objects.
  */
-export const SampleDataItems = ({ sample, source = null, children }) => {
+export function SampleDataItems({ sample, source = null, children }) {
   return (
     <>
       {sample.product_id && (
@@ -171,7 +171,7 @@ export const SampleDataItems = ({ sample, source = null, children }) => {
       )}
     </>
   );
-};
+}
 
 SampleDataItems.propTypes = {
   // Object derived from the sample.json schema
@@ -183,7 +183,7 @@ SampleDataItems.propTypes = {
 /**
  * Display data items common to all biosample-derived objects.
  */
-export const BiosampleDataItems = ({
+export function BiosampleDataItems({
   biosample,
   source = null,
   donors = [],
@@ -193,7 +193,7 @@ export const BiosampleDataItems = ({
     dateObtainedTitle: "Date Obtained",
   },
   children,
-}) => {
+}) {
   return (
     <SampleDataItems sample={biosample} source={source}>
       {biosample.organism && (
@@ -286,7 +286,7 @@ export const BiosampleDataItems = ({
       {children}
     </SampleDataItems>
   );
-};
+}
 
 BiosampleDataItems.propTypes = {
   // Object derived from the biosample.json schema
@@ -309,7 +309,7 @@ BiosampleDataItems.propTypes = {
 /**
  * Display data items common to all ontology-term-derived objects.
  */
-export const OntologyTermDataItems = ({ ontologyTerm, children }) => {
+export function OntologyTermDataItems({ ontologyTerm, children }) {
   return (
     <>
       <DataItemLabel>Term Name</DataItemLabel>
@@ -333,7 +333,7 @@ export const OntologyTermDataItems = ({ ontologyTerm, children }) => {
       )}
     </>
   );
-};
+}
 
 OntologyTermDataItems.propTypes = {
   // Ontology term object

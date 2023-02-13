@@ -16,7 +16,7 @@ const SEARCH_TYPE_REPORT = "Report";
 /**
  * Display the buttons to view the collection as a table or list.
  */
-const ViewSwitch = ({ searchResults }) => {
+export default function ViewSwitch({ searchResults }) {
   // Determine whether the list or report view is selected
   const isListSelected = searchResults["@type"][0] === SEARCH_TYPE_LIST;
   const isReportSelected = searchResults["@type"][0] === SEARCH_TYPE_REPORT;
@@ -69,11 +69,9 @@ const ViewSwitch = ({ searchResults }) => {
       )}
     </AttachedButtons>
   );
-};
+}
 
 ViewSwitch.propTypes = {
   // The current list or report search results from igvfd
   searchResults: PropTypes.object.isRequired,
 };
-
-export default ViewSwitch;

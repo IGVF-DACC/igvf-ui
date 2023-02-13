@@ -21,7 +21,7 @@ const statusStyles = {
  * Displays the status of any object. If new statuses get added, define their colors in the
  * `statusStyles` object above.
  */
-const Status = ({ status }) => {
+export default function Status({ status }) {
   const statusClass = statusStyles[status] || statusStyles.fallback;
   return (
     <div
@@ -30,11 +30,9 @@ const Status = ({ status }) => {
       {status}
     </div>
   );
-};
+}
 
 Status.propTypes = {
   // Status of item
   status: PropTypes.string.isRequired,
 };
-
-export default Status;

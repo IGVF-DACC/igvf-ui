@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
  * Loading spinnner by Sam Herbert (@sherb)
  * http://samherbert.net/svg-loaders/
  */
-const Spinner = ({ className = "" }) => {
+export default function Spinner({ className = "" }) {
   return (
     <div
       className={`flex items-center justify-center stroke-gray-600 dark:stroke-gray-400 ${className}`}
@@ -66,11 +66,9 @@ const Spinner = ({ className = "" }) => {
       </svg>
     </div>
   );
-};
+}
 
 Spinner.propTypes = {
   // Extra Tailwind CSS classes
   className: PropTypes.string,
 };
-
-export default Spinner;

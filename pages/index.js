@@ -1,7 +1,7 @@
 // components
 import { useEffect } from "react";
 
-const Home = () => {
+export default function Home() {
   useEffect(() => {
     // For the home page, add a full-page background image. You cannot do this in _document.js
     // because there the body tag only gets rendered on the server and therefore can't be
@@ -16,12 +16,10 @@ const Home = () => {
   });
 
   return null;
-};
+}
 
-export default Home;
-
-export const getServerSideProps = async () => {
+export async function getServerSideProps() {
   return {
     props: {},
   };
-};
+}

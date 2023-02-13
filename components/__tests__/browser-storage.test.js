@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useLocalStorage, useSessionStorage } from "../browser-storage";
 
-const LocalComponent = () => {
+function LocalComponent() {
   const [value, setValue] = useLocalStorage("test-key", "test-value");
 
   return (
@@ -10,9 +10,9 @@ const LocalComponent = () => {
       <button onClick={() => setValue("test-value2")}>Set value</button>
     </div>
   );
-};
+}
 
-const SessionComponent = () => {
+function SessionComponent() {
   const [value, setValue] = useSessionStorage("test-key", "test-value");
 
   return (
@@ -21,7 +21,7 @@ const SessionComponent = () => {
       <button onClick={() => setValue("test-value2")}>Set value</button>
     </div>
   );
-};
+}
 
 describe("Test the localStorage and sessionStorage custom hook", () => {
   test("the localStorage custom hook", () => {
@@ -56,7 +56,7 @@ describe("Test the localStorage and sessionStorage custom hook", () => {
  * figured out how to run both jsdom and node environments in the same test, so this works around
  * that by deleting and then restoring the `window` object.
  */
-const LocalNodeComponent = () => {
+function LocalNodeComponent() {
   const { window } = global;
   delete global.window;
   const [value, setValue] = useLocalStorage("test-key", "test-value");
@@ -68,9 +68,9 @@ const LocalNodeComponent = () => {
       <button onClick={() => setValue("test-value2")}>Set value</button>
     </div>
   );
-};
+}
 
-const SessionNodeComponent = () => {
+function SessionNodeComponent() {
   const { window } = global;
   delete global.window;
   const [value, setValue] = useSessionStorage("test-key", "test-value");
@@ -82,7 +82,7 @@ const SessionNodeComponent = () => {
       <button onClick={() => setValue("test-value2")}>Set value</button>
     </div>
   );
-};
+}
 
 describe("Test the localStorage and sessionStorage custom hooks with no DOM", () => {
   test("the localStorage custom hook", () => {

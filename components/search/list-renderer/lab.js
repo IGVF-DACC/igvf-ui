@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const Lab = ({ item: lab, accessoryData }) => {
+export default function Lab({ item: lab, accessoryData }) {
   const awards = (
     accessoryData && lab.awards?.length > 0
       ? lab.awards.map((award) => accessoryData[award])
@@ -36,7 +36,7 @@ const Lab = ({ item: lab, accessoryData }) => {
       <SearchListItemStatus item={lab} />
     </SearchListItemContent>
   );
-};
+}
 
 Lab.propTypes = {
   // Single lab search-result object to display on a search-result list page
@@ -48,5 +48,3 @@ Lab.propTypes = {
 Lab.getAccessoryDataPaths = (labs) => {
   return labs.reduce((awardAcc, lab) => awardAcc.concat(lab.awards), []);
 };
-
-export default Lab;

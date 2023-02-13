@@ -21,7 +21,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const PrimaryCell = ({
+export default function PrimaryCell({
   primaryCell,
   award = null,
   biosampleTerm = null,
@@ -31,7 +31,7 @@ const PrimaryCell = ({
   lab = null,
   source = null,
   treatments,
-}) => {
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -78,7 +78,7 @@ const PrimaryCell = ({
       </EditableItem>
     </>
   );
-};
+}
 
 PrimaryCell.propTypes = {
   // Primary-cell sample to display
@@ -101,9 +101,7 @@ PrimaryCell.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default PrimaryCell;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(primaryCell)) {
@@ -159,4 +157,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(primaryCell);
-};
+}

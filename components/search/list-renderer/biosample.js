@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const Biosample = ({ item: biosample, accessoryData }) => {
+export default function Biosample({ item: biosample, accessoryData }) {
   const biosampleTerm = accessoryData?.[biosample.biosample_term];
   const titleElements = [biosample.taxa, biosampleTerm?.term_name].filter(
     Boolean
@@ -35,7 +35,7 @@ const Biosample = ({ item: biosample, accessoryData }) => {
       <SearchListItemStatus item={biosample} />
     </SearchListItemContent>
   );
-};
+}
 
 Biosample.propTypes = {
   // Single biosample-derived search-result object to display on a search-result list page
@@ -53,5 +53,3 @@ Biosample.getAccessoryDataPaths = (biosample) => {
     .filter(Boolean);
   return terms.concat(labs);
 };
-
-export default Biosample;

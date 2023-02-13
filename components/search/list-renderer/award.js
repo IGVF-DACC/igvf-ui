@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const Award = ({ item: award }) => {
+export default function Award({ item: award }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -29,11 +29,9 @@ const Award = ({ item: award }) => {
       <SearchListItemStatus item={award} />
     </SearchListItemContent>
   );
-};
+}
 
 Award.propTypes = {
   // Single award search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
 };
-
-export default Award;

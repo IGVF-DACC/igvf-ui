@@ -28,7 +28,12 @@ import CloseButton from "./close-button";
 /**
  * Main component for modal dialogs.
  */
-const Modal = ({ isOpen, onClose, defaultElementId = null, children }) => {
+export default function Modal({
+  isOpen,
+  onClose,
+  defaultElementId = null,
+  children,
+}) {
   useEffect(() => {
     // Focus the default element if it exists.
     if (isOpen && defaultElementId) {
@@ -56,7 +61,7 @@ const Modal = ({ isOpen, onClose, defaultElementId = null, children }) => {
       </div>
     </Dialog>
   );
-};
+}
 
 Modal.propTypes = {
   // True if the modal is open
@@ -74,12 +79,12 @@ Modal.propTypes = {
  * rendered as is, though within a flex container so that the optional close box still gets
  * rendered.
  */
-const Header = ({
+function Header({
   onClose = null,
   closeLabel = "Close dialog",
   className = "",
   children,
-}) => {
+}) {
   // If the children is a single string or number, wrap it in an <h2>. Otherwise the children
   // comprise one or more JSX elements, in which case we just render them within the header <div>
   // as is.
@@ -101,7 +106,7 @@ const Header = ({
       {onClose ? <CloseButton label={closeLabel} onClick={onClose} /> : null}
     </div>
   );
-};
+}
 
 Header.propTypes = {
   // Called to close the modal when clicking the close button
@@ -116,22 +121,21 @@ Header.propTypes = {
  * Wraps the contents of a modal to provide a standard padding. You can skip using this if you
  * don't want padding, or non-standard padding.
  */
-const Body = ({ children }) => {
+function Body({ children }) {
   return <div className="p-2">{children}</div>;
-};
+}
 
 /**
  * Footer for the modal. This is typically used to provide an action button, or a close button.
  */
-const Footer = ({ children }) => {
+function Footer({ children }) {
   return (
     <div className="flex justify-end gap-1 border-t border-modal-border bg-gray-50 p-1.5 dark:bg-gray-800">
       {children}
     </div>
   );
-};
+}
 
 Modal.Header = Header;
 Modal.Body = Body;
 Modal.Footer = Footer;
-export default Modal;

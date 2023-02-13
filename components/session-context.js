@@ -39,7 +39,7 @@ export default SessionContext;
  * This only gets used in the <App> component to encapsulate the session context. Place this within
  * the <Auth0Provider> context so that <Session> can access the current authentication state.
  */
-export const Session = ({ children }) => {
+export function Session({ children }) {
   // Tracks the back-end session object
   const [session, setSession] = useState(null);
   // Holds the /profiles schemas
@@ -159,4 +159,4 @@ export const Session = ({ children }) => {
       {children}
     </SessionContext.Provider>
   );
-};
+}

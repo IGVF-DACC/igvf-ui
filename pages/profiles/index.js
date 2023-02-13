@@ -10,7 +10,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const ChildElement = (props) => {
+function ChildElement(props) {
   const schema = props.schemas[props.schemaKey];
   if (schema && schema.title) {
     return (
@@ -51,7 +51,7 @@ const ChildElement = (props) => {
     );
   }
   return null;
-};
+}
 
 ChildElement.propTypes = {
   title: PropTypes.string.isRequired,
@@ -61,7 +61,7 @@ ChildElement.propTypes = {
   indentation: PropTypes.number.isRequired,
 };
 
-const SchemaList = ({ schemas }) => {
+export default function SchemaList({ schemas }) {
   const schemaHierarchy = schemas["_hierarchy"];
 
   return (
@@ -88,16 +88,14 @@ const SchemaList = ({ schemas }) => {
       </>
     </>
   );
-};
+}
 
 SchemaList.propTypes = {
   // schemas to display in the list
   schemas: PropTypes.object.isRequired,
 };
 
-export default SchemaList;
-
-export const getServerSideProps = async ({ req }) => {
+export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const schemas = await request.getCollection("profiles");
   if (FetchRequest.isResponseSuccess(schemas)) {
@@ -111,4 +109,4 @@ export const getServerSideProps = async ({ req }) => {
     };
   }
   return errorObjectToProps(schemas);
-};
+}

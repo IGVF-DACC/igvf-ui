@@ -62,17 +62,15 @@ const columns = [
  * Display the given documents in a table, useful for pages displaying objects containing document
  * arrays.
  */
-const DocumentTable = ({ documents }) => {
+export default function DocumentTable({ documents }) {
   return (
     <DataGridContainer>
       <SortableGrid data={documents} columns={columns} />
     </DataGridContainer>
   );
-};
+}
 
 DocumentTable.propTypes = {
   // Documents to display in the table
   documents: PropTypes.array.isRequired,
 };
-
-export default DocumentTable;

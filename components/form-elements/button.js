@@ -86,7 +86,7 @@ const iconCircleButtonSizeClasses = {
  * @param {boolean} hasIconCircleOnly True for circular buttons containing only an icon
  * @returns {string} Tailwind CSS classes for the button size
  */
-const generateButtonSizeClasses = (size, hasIconOnly, hasIconCircleOnly) => {
+function generateButtonSizeClasses(size, hasIconOnly, hasIconCircleOnly) {
   if (hasIconOnly) {
     return iconButtonSizeClasses[size];
   } else if (hasIconCircleOnly) {
@@ -94,7 +94,7 @@ const generateButtonSizeClasses = (size, hasIconOnly, hasIconCircleOnly) => {
   } else {
     return buttonSizeClasses[size];
   }
-};
+}
 
 /*
  * Displays a button with a site-standard style. Use this for buttons that perform an action; not
@@ -105,7 +105,7 @@ const generateButtonSizeClasses = (size, hasIconOnly, hasIconCircleOnly) => {
  *   Click me! <DecorativeIcon />
  * </Button>
  */
-export const Button = ({
+export function Button({
   onClick,
   label = null,
   id = null,
@@ -116,7 +116,7 @@ export const Button = ({
   isDisabled = false,
   className = "",
   children,
-}) => {
+}) {
   const sizeClasses = generateButtonSizeClasses(
     size,
     hasIconOnly,
@@ -135,7 +135,7 @@ export const Button = ({
       {children}
     </button>
   );
-};
+}
 
 Button.propTypes = {
   // Called when the button is clicked
@@ -168,7 +168,7 @@ Button.displayName = "Button";
  *   Go Here!
  * </ButtonLink>
  */
-export const ButtonLink = ({
+export function ButtonLink({
   href,
   label = null,
   id = null,
@@ -178,7 +178,7 @@ export const ButtonLink = ({
   hasIconCircleOnly = false,
   className = "",
   children,
-}) => {
+}) {
   const sizeClasses = generateButtonSizeClasses(
     size,
     hasIconOnly,
@@ -195,7 +195,7 @@ export const ButtonLink = ({
       {children}
     </Link>
   );
-};
+}
 
 ButtonLink.propTypes = {
   // Link that pressing the button will navigate to
@@ -231,11 +231,7 @@ ButtonLink.propTypes = {
  * See https://github.com/tailwindlabs/tailwindcss-container-queries for a Tailwind CSS plugin that
  * adds container queries to Tailwind CSS.
  */
-export const AttachedButtons = ({
-  testid = null,
-  className = "",
-  children,
-}) => {
+export function AttachedButtons({ testid = null, className = "", children }) {
   // Modify the borders and corner roundness of the child buttons so they look attached to each
   // other.
   const moddedChildren = React.Children.map(children, (child) => {
@@ -252,7 +248,7 @@ export const AttachedButtons = ({
       {moddedChildren}
     </div>
   );
-};
+}
 
 AttachedButtons.propTypes = {
   // data-testid attribute for testing

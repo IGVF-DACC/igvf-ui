@@ -21,7 +21,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-const Tissue = ({
+export default function Tissue({
   tissue,
   donors,
   award = null,
@@ -31,7 +31,7 @@ const Tissue = ({
   treatments,
   biosampleTerm = null,
   diseaseTerms,
-}) => {
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -95,7 +95,7 @@ const Tissue = ({
       </EditableItem>
     </>
   );
-};
+}
 
 Tissue.propTypes = {
   // Tissue sample to display
@@ -118,9 +118,7 @@ Tissue.propTypes = {
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default Tissue;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(tissue)) {
@@ -176,4 +174,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(tissue);
-};
+}

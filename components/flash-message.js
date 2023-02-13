@@ -23,7 +23,7 @@ const classes = {
   },
 };
 
-const FlashMessage = ({ message, type = "error", onClose }) => {
+export default function FlashMessage({ message, type = "error", onClose }) {
   return (
     <div
       className={`my-2 flex items-center rounded-md border p-2 ${classes[type].frame}`}
@@ -34,7 +34,7 @@ const FlashMessage = ({ message, type = "error", onClose }) => {
       </div>
     </div>
   );
-};
+}
 
 FlashMessage.propTypes = {
   // Error message to display
@@ -44,5 +44,3 @@ FlashMessage.propTypes = {
   // Called when the user closes the modal
   onClose: PropTypes.func.isRequired,
 };
-
-export default FlashMessage;

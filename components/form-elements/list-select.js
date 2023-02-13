@@ -63,20 +63,20 @@ import { FormLabel } from ".";
 /**
  * This is the parent component that wraps the list of options.
  */
-const ListSelect = ({
+export default function ListSelect({
   label = "",
   value,
   onChange,
   isMultiple = false,
   className = "",
   children,
-}) => {
+}) {
   /**
    * Called when the user clicks a list item to select or deselect it. This handles both single and
    * multiple selections.
    * @param {string,number} itemId Client's id for the clicked item
    */
-  const onClickItem = (itemId) => {
+  function onClickItem(itemId) {
     if (isMultiple) {
       // Add or remove the item from the list of selected items.
       const newValue = [...value];
@@ -91,7 +91,7 @@ const ListSelect = ({
       // currently selected item, leave no item selected.
       onChange(itemId === value ? "" : itemId);
     }
-  };
+  }
 
   // Add the click handler and other list-select options to each of the ListSelect.Option children.
   const clonedChildren = Children.map(children, (child) => {
@@ -118,7 +118,7 @@ const ListSelect = ({
       </div>
     </div>
   );
-};
+}
 
 ListSelect.propTypes = {
   // Label to display above the list
@@ -143,7 +143,7 @@ ListSelect.propTypes = {
  * Wraps a single item within a <ListSelect>. This reacts to item clicks by calling the client's
  * `onClick` function.
  */
-export const Option = ({
+function Option({
   id,
   label,
   selected,
@@ -151,7 +151,7 @@ export const Option = ({
   onClick,
   parentLabel,
   children,
-}) => {
+}) {
   const selectedButtonStyle = selected ? "bg-slate-200 dark:bg-slate-800" : "";
   const roundedCheckStyle = isMultiple ? "rounded-sm" : "rounded-full";
   const selectedCheckStyle = selected
@@ -174,7 +174,7 @@ export const Option = ({
       {children}
     </button>
   );
-};
+}
 
 Option.propTypes = {
   // ID of this option; this is the only property the client passes; others passed by <ListSelect>
@@ -192,5 +192,3 @@ Option.propTypes = {
 };
 
 ListSelect.Option = Option;
-
-export default ListSelect;

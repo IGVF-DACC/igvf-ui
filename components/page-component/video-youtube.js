@@ -9,7 +9,8 @@ import PropTypes from "prop-types";
  *
  * See ./docs/video-youtube.md for more information.
  */
-const VideoYouTube = ({ id = "", start = "" }) => {
+
+export default function VideoYouTube({ id = "", start = "" }) {
   const startQuery = start ? `?start=${start}` : "";
 
   if (id) {
@@ -26,7 +27,7 @@ const VideoYouTube = ({ id = "", start = "" }) => {
   }
 
   return null;
-};
+}
 
 VideoYouTube.propTypes = {
   // YouTube video ID after the "v=" in its URL; required.
@@ -34,5 +35,3 @@ VideoYouTube.propTypes = {
   // Start time in seconds.
   start: PropTypes.string,
 };
-
-export default VideoYouTube;

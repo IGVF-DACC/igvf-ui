@@ -12,7 +12,7 @@ import {
 // lib
 import { UC } from "../../../lib/constants";
 
-const Treatment = ({ item: treatment }) => {
+export default function Treatment({ item: treatment }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -27,11 +27,9 @@ const Treatment = ({ item: treatment }) => {
       <SearchListItemStatus item={treatment} />
     </SearchListItemContent>
   );
-};
+}
 
 Treatment.propTypes = {
   // Single search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
 };
-
-export default Treatment;

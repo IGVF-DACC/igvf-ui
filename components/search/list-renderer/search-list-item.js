@@ -11,19 +11,19 @@ import Status from "../../status";
  * Display the main contents of a search-list item including the unique identifier, title, and
  * status, and not including the data portion.
  */
-export const SearchListItemMain = ({ children }) => {
+export function SearchListItemMain({ children }) {
   return (
     <div className="grow" data-testid="search-list-item-main">
       {children}
     </div>
   );
-};
+}
 
 /**
  * Displays the type of the search-list item. This just displays the item's `@type` property if we
  * can't determine the human-readable type from the schema.
  */
-export const SearchListItemType = ({ item }) => {
+export function SearchListItemType({ item }) {
   const { profiles } = useContext(SessionContext);
 
   const type = item["@type"][0];
@@ -33,7 +33,7 @@ export const SearchListItemType = ({ item }) => {
       {typeName}
     </div>
   );
-};
+}
 
 SearchListItemType.propTypes = {
   // Search-result item to display on a search-result list page
@@ -43,7 +43,7 @@ SearchListItemType.propTypes = {
 /**
  * Display a search-list item's type and unique ID, often an accession.
  */
-export const SearchListItemUniqueId = ({ children }) => {
+export function SearchListItemUniqueId({ children }) {
   return (
     <div
       className="text-xs leading-tight text-gray-500 dark:text-gray-400"
@@ -52,12 +52,12 @@ export const SearchListItemUniqueId = ({ children }) => {
       {children}
     </div>
   );
-};
+}
 
 /**
  * Display a search-list item's title. This appears in large, bold text.
  */
-export const SearchListItemTitle = ({ children }) => {
+export function SearchListItemTitle({ children }) {
   return (
     <div
       className="text-lg font-semibold capitalize leading-tight text-gray-600 dark:text-gray-300"
@@ -66,13 +66,13 @@ export const SearchListItemTitle = ({ children }) => {
       {children}
     </div>
   );
-};
+}
 
 /**
  * Displays the data line below the title in a search-list item. It separates each item with a
  * circle bullet. Each child component should include a React key.
  */
-export const SearchListItemMeta = ({ children }) => {
+export function SearchListItemMeta({ children }) {
   return (
     <div className="mt-2" data-testid="search-list-item-meta">
       <SeparatedList
@@ -87,13 +87,13 @@ export const SearchListItemMeta = ({ children }) => {
       </SeparatedList>
     </div>
   );
-};
+}
 
 /**
  * Wraps the whole supplement section of a search-list item. It contains one or more
  * `<SearchListItemSupplementSection />'s.
  */
-export const SearchListItemSupplement = ({ children }) => {
+export function SearchListItemSupplement({ children }) {
   return (
     <div
       className="mt-2 border-t border-gray-200 dark:border-gray-800"
@@ -102,24 +102,24 @@ export const SearchListItemSupplement = ({ children }) => {
       {children}
     </div>
   );
-};
+}
 
 /**
  * Wraps a single section of a search-list item's supplement area. It contains a single property
  * of a search-list item including a label and the data for that property.
  */
-export const SearchListItemSupplementSection = ({ children }) => {
+export function SearchListItemSupplementSection({ children }) {
   return (
     <div className="my-1.5" data-testid="search-list-item-supplement-section">
       {children}
     </div>
   );
-};
+}
 
 /**
  * Displays the label of a search-list item's supplement section.
  */
-export const SearchListItemSupplementLabel = ({ children }) => {
+export function SearchListItemSupplementLabel({ children }) {
   return (
     <div
       className="mr-1 text-xs font-semibold uppercase text-gray-800 dark:text-gray-200"
@@ -128,12 +128,12 @@ export const SearchListItemSupplementLabel = ({ children }) => {
       {children}
     </div>
   );
-};
+}
 
 /**
  * Displays the data of a search-list item's supplement section, under the label.
  */
-export const SearchListItemSupplementContent = ({ children }) => {
+export function SearchListItemSupplementContent({ children }) {
   return (
     <div
       className="text-xs text-gray-600 dark:text-gray-400"
@@ -142,24 +142,24 @@ export const SearchListItemSupplementContent = ({ children }) => {
       {children}
     </div>
   );
-};
+}
 
 /**
  * Wraps the content area of a search-list item. That includes everything except the link to the
  * object page.
  */
-export const SearchListItemContent = ({ children }) => {
+export function SearchListItemContent({ children }) {
   return (
     <div className="sm:flex sm:gap-2" data-testid="search-list-item-content">
       {children}
     </div>
   );
-};
+}
 
 /**
  * Display the status of a search-list item.
  */
-export const SearchListItemStatus = ({ item }) => {
+export function SearchListItemStatus({ item }) {
   return (
     <>
       {item.status && (
@@ -172,7 +172,7 @@ export const SearchListItemStatus = ({ item }) => {
       )}
     </>
   );
-};
+}
 
 SearchListItemStatus.propTypes = {
   // Item to display status for

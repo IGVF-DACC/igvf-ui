@@ -16,7 +16,7 @@ import { getReportType, getVisibleReportColumnSpecs } from "../../lib/report";
  * @param {object} profile Schema profile for the report's type
  * @returns {function} React component to render the column; null if no custom renderer
  */
-const getColumnRenderer = (type, property, profile) => {
+function getColumnRenderer(type, property, profile) {
   // For columns with a renderer matching both the column's property and a specific report type.
   if (
     reportPropertyRenderers[type] &&
@@ -35,7 +35,7 @@ const getColumnRenderer = (type, property, profile) => {
   // renderer appropriate for that type.
   const detectedType = detectPropertyTypes(property, profile);
   return typeRenderers[detectedType] || null;
-};
+}
 
 /**
  * Generate a list of report columnSpecs in a format suitable for `<SortableGrid>`. The columns to
@@ -47,7 +47,7 @@ const getColumnRenderer = (type, property, profile) => {
  * @param {object} profiles Schemas for all types; don't pass null
  * @returns {object} Sortable grid columns
  */
-const generateColumns = (searchResults, profiles) => {
+export default function generateColumns(searchResults, profiles) {
   const reportType = getReportType(searchResults);
   const columns = getVisibleReportColumnSpecs(searchResults, profiles);
 
@@ -64,6 +64,4 @@ const generateColumns = (searchResults, profiles) => {
   });
 
   return columns;
-};
-
-export default generateColumns;
+}

@@ -45,7 +45,7 @@ const treatmentColumns = [
 /**
  * Display a sortable table of the given treatments.
  */
-const TreatmentTable = ({ treatments }) => {
+export default function TreatmentTable({ treatments }) {
   return (
     <DataGridContainer>
       <SortableGrid
@@ -55,11 +55,9 @@ const TreatmentTable = ({ treatments }) => {
       />
     </DataGridContainer>
   );
-};
+}
 
 TreatmentTable.propTypes = {
   // Treatments to display
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
-
-export default TreatmentTable;

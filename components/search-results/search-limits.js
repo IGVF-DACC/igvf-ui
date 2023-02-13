@@ -11,7 +11,7 @@ import { DEFAULT_ITEMS_PER_PAGE } from "../search/constants";
  * @returns {number} returns.itemsPerPage - Number of items to display per page
  * @returns {number} returns.totalPages - Total number of pages of results
  */
-const useSearchLimits = (searchResults) => {
+export default function useSearchLimits(searchResults) {
   const router = useRouter();
 
   // Get the number of items to display per page from the query string. If the limit= parameter
@@ -23,6 +23,4 @@ const useSearchLimits = (searchResults) => {
   const totalPages = Math.ceil(searchResults.total / itemsPerPage);
 
   return { itemsPerPage, totalPages };
-};
-
-export default useSearchLimits;
+}

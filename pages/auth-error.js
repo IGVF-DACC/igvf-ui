@@ -2,7 +2,7 @@
 import { DataPanel } from "../components/data-area";
 import PagePreamble from "../components/page-preamble";
 
-const AuthError = () => {
+export default function AuthError() {
   return (
     <>
       <PagePreamble pageTitle="Error" />
@@ -14,6 +14,4 @@ const AuthError = () => {
       </DataPanel>
     </>
   );
-};
-
-export default AuthError;
+}
