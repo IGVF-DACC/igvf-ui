@@ -28,33 +28,14 @@ import AliasList from "../../components/alias-list";
 import SeparatedList from "../../components/separated-list";
 import Link from "next/link";
 
-/**
- * Defines the columns for the health-status table.
- */
-// const healthStatusHistoryColumns = [
-//   {
-//     id: "dates",
-//     title: "Health Change Date",
-//     display: ({ source }) =>
-//       formatDateRange(source.date_start, source.date_end),
-//     sorter: (healthStatus) =>
-//       dayjs(healthStatus.date_start || healthStatus.date_end).unix(),
-//   },
-//   {
-//     id: "health_description",
-//     title: "Description",
-//     isSortable: false,
-//   },
-// ];
-
-const AnalysisSet = ({
+export default function AnalysisSet({
   analysisSet,
   award = null,
   documents,
   donors,
   lab = null,
   samples,
-}) => {
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -112,7 +93,7 @@ const AnalysisSet = ({
       </EditableItem>
     </>
   );
-};
+}
 
 AnalysisSet.propTypes = {
   analysisSet: PropTypes.object.isRequired,
@@ -127,9 +108,7 @@ AnalysisSet.propTypes = {
   lab: PropTypes.object,
 };
 
-export default AnalysisSet;
-
-export const getServerSideProps = async ({ params, req }) => {
+export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const analysisSet = await request.getObject(`/analysis-sets/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(analysisSet)) {
@@ -169,4 +148,4 @@ export const getServerSideProps = async ({ params, req }) => {
     };
   }
   return errorObjectToProps(analysisSet);
-};
+}

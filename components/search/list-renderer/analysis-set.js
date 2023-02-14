@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-const AnalysisSet = ({ item: analysisSet, accessoryData }) => {
+export default function AnalysisSet({ item: analysisSet, accessoryData }) {
   //   const ethnicities =
   //     analysisSet.ethnicity?.length > 0 ? analysisSet.ethnicity.join(", ") : "";
   //   const sex = analysisSet.sex || "";
@@ -37,7 +37,7 @@ const AnalysisSet = ({ item: analysisSet, accessoryData }) => {
       <SearchListItemStatus item={analysisSet} />
     </SearchListItemContent>
   );
-};
+}
 
 AnalysisSet.propTypes = {
   // Single human-donor search-result object to display on a search-result list page
@@ -49,5 +49,3 @@ AnalysisSet.propTypes = {
 // AnalysisSet.getAccessoryDataPaths = (humanDonors) => {
 //   return humanDonors.map((humanDonor) => humanDonor.lab).filter(Boolean);
 // };
-
-export default AnalysisSet;
