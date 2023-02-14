@@ -15,19 +15,18 @@ import {
   SearchListItemSupplementContent,
 } from "./search-list-item";
 
-export default function AnalysisSet({ item: analysisSet, accessoryData }) {
-  const lab = accessoryData?.[analysisSet.lab];
-  const summary = analysisSet.summary;
-  const inputFileSets = analysisSet.input_file_sets;
+export default function CuratedSet({ item: curatedSet, accessoryData }) {
+  const lab = accessoryData?.[curatedSet.lab];
+  const summary = curatedSet.summary;
 
   return (
     <SearchListItemContent>
       <SearchListItemMain>
         <SearchListItemUniqueId>
-          <SearchListItemType item={analysisSet} />
-          {analysisSet.accession}
+          <SearchListItemType item={curatedSet} />
+          {curatedSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>Analysis</SearchListItemTitle>
+        <SearchListItemTitle>Curated set</SearchListItemTitle>
         {summary && (
           <SearchListItemMeta>
             <div key="summary">{summary}</div>
@@ -45,31 +44,21 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
                 </SearchListItemSupplementContent>
               </>
             )}
-            {inputFileSets && (
-              <>
-                <SearchListItemSupplementLabel>
-                  Input file sets
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {inputFileSets}
-                </SearchListItemSupplementContent>
-              </>
-            )}
           </SearchListItemSupplementSection>
         </SearchListItemSupplement>
       </SearchListItemMain>
-      <SearchListItemStatus item={analysisSet} />
+      <SearchListItemStatus item={curatedSet} />
     </SearchListItemContent>
   );
 }
 
-AnalysisSet.propTypes = {
-  // Single analysis set search-result object to display on a search-result list page
+CuratedSet.propTypes = {
+  // Single curated set search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
   // Accessory data to display for all search-result objects
   accessoryData: PropTypes.object,
 };
 
-AnalysisSet.getAccessoryDataPaths = (analysisSets) => {
-  return analysisSets.map((analysisSet) => analysisSet.lab).filter(Boolean);
+CuratedSet.getAccessoryDataPaths = (curatedSets) => {
+  return curatedSets.map((curatedSet) => curatedSet.lab).filter(Boolean);
 };

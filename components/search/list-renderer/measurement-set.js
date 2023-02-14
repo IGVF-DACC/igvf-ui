@@ -15,19 +15,22 @@ import {
   SearchListItemSupplementContent,
 } from "./search-list-item";
 
-export default function AnalysisSet({ item: analysisSet, accessoryData }) {
-  const lab = accessoryData?.[analysisSet.lab];
-  const summary = analysisSet.summary;
-  const inputFileSets = analysisSet.input_file_sets;
+export default function MeasurementSet({
+  item: measurementSet,
+  accessoryData,
+}) {
+  const assayTerm = accessoryData?.[measurementSet.assay_term];
+  const lab = accessoryData?.[measurementSet.lab];
+  const summary = measurementSet.summary;
 
   return (
     <SearchListItemContent>
       <SearchListItemMain>
         <SearchListItemUniqueId>
-          <SearchListItemType item={analysisSet} />
-          {analysisSet.accession}
+          <SearchListItemType item={measurementSet} />
+          {measurementSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>Analysis</SearchListItemTitle>
+        <SearchListItemTitle>{assayTerm.term_name}</SearchListItemTitle>
         {summary && (
           <SearchListItemMeta>
             <div key="summary">{summary}</div>
@@ -45,31 +48,27 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
                 </SearchListItemSupplementContent>
               </>
             )}
-            {inputFileSets && (
-              <>
-                <SearchListItemSupplementLabel>
-                  Input file sets
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {inputFileSets}
-                </SearchListItemSupplementContent>
-              </>
-            )}
           </SearchListItemSupplementSection>
         </SearchListItemSupplement>
       </SearchListItemMain>
-      <SearchListItemStatus item={analysisSet} />
+      <SearchListItemStatus item={measurementSet} />
     </SearchListItemContent>
   );
 }
 
-AnalysisSet.propTypes = {
-  // Single analysis set search-result object to display on a search-result list page
+MeasurementSet.propTypes = {
+  // Single measurement set search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
   // Accessory data to display for all search-result objects
   accessoryData: PropTypes.object,
 };
 
-AnalysisSet.getAccessoryDataPaths = (analysisSets) => {
-  return analysisSets.map((analysisSet) => analysisSet.lab).filter(Boolean);
+MeasurementSet.getAccessoryDataPaths = (measurementSets) => {
+  const assay_terms = measurementSets
+    .map((measurementSet) => measurementSet.assay_term)
+    .filter(Boolean);
+  const labs = measurementSets
+    .map((measurementSet) => measurementSet.lab)
+    .filter(Boolean);
+  return assay_terms.concat(labs);
 };

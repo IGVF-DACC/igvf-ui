@@ -25,28 +25,32 @@ import {
  * This is the root file with utility functions to handle both search-list renderers and accessory
  * data-path generators, as the latter relies on the former.
  */
+import AnalysisSet from "./analysis-set";
 import Award from "./award";
 import Biosample from "./biosample";
+import CuratedSet from "./curated-set";
 import Document from "./document";
 import Gene from "./gene";
 import HumanDonor from "./human-donor";
 import Lab from "./lab";
+import MeasurementSet from "./measurement-set";
 import OntologyTerm from "./ontology-term";
 import Page from "./page";
 import RodentDonor from "./rodent-donor";
 import TechnicalSample from "./technical-sample";
 import Treatment from "./treatment";
 import User from "./user";
-import AnalysisSet from "./analysis-set";
 
 const renderers = {
   AnalysisSet,
   AssayTerm: OntologyTerm,
   Award,
+  CuratedSet,
   Document,
   Gene,
   HumanDonor,
   Lab,
+  MeasurementSet,
   Page,
   PhenotypeTerm: OntologyTerm,
   PrimaryCell: Biosample,
