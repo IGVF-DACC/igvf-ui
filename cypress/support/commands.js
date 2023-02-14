@@ -32,10 +32,13 @@
  * https://github.com/charklewis/auth0-cypress
  * @param {string} username - The username to use for the login.
  * @param {string} password - The password to use for the login.
+ * @param {boolean} isPrepSkipped - Whether or not to skip login prep.
  */
-Cypress.Commands.add("loginAuth0", (username, password) => {
-  cy.visit("http://localhost:3000/");
-  cy.clearLocalStorage();
+Cypress.Commands.add("loginAuth0", (username, password, isPrepSkipped) => {
+  if (!isPrepSkipped) {
+    cy.visit("http://localhost:3000/");
+    cy.clearLocalStorage();
+  }
 
   const client_id = Cypress.env("AUTH_CLIENT_ID");
   const client_secret = Cypress.env("AUTH_CLIENT_SECRET");
