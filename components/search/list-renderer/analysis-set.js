@@ -9,6 +9,10 @@ import {
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
+  SearchListItemSupplement,
+  SearchListItemSupplementSection,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementContent,
 } from "./search-list-item";
 
 export default function AnalysisSet({ item: analysisSet, accessoryData }) {
@@ -17,22 +21,46 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
   //   const sex = analysisSet.sex || "";
   //   const title = [ethnicities, sex].filter(Boolean);
   const lab = accessoryData?.[analysisSet.lab];
+  const summary = analysisSet.summary;
+  const inputFileSets = analysisSet.input_file_sets;
 
   return (
     <SearchListItemContent>
       <SearchListItemMain>
         <SearchListItemUniqueId>
           <SearchListItemType item={analysisSet} />
-          {analysisSet.uuid}
+          {analysisSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>
-          <SearchListItemType item={analysisSet} />
-        </SearchListItemTitle>
-        {lab && (
+        <SearchListItemTitle>Analysis</SearchListItemTitle>
+        {summary && (
           <SearchListItemMeta>
-            <div key="lab">{lab.title}</div>
+            <div key="summary">{summary}</div>
           </SearchListItemMeta>
         )}
+        <SearchListItemSupplement>
+          <SearchListItemSupplementSection>
+            {lab && (
+              <>
+                <SearchListItemSupplementLabel>
+                  Lab
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {lab}
+                </SearchListItemSupplementContent>
+              </>
+            )}
+            {inputFileSets && (
+              <>
+                <SearchListItemSupplementLabel>
+                  Input file sets
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {inputFileSets}
+                </SearchListItemSupplementContent>
+              </>
+            )}
+          </SearchListItemSupplementSection>
+        </SearchListItemSupplement>
       </SearchListItemMain>
       <SearchListItemStatus item={analysisSet} />
     </SearchListItemContent>
@@ -40,12 +68,12 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
 }
 
 AnalysisSet.propTypes = {
-  // Single human-donor search-result object to display on a search-result list page
+  // Single analysis set search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
   // Accessory data to display for all search-result objects
   accessoryData: PropTypes.object,
 };
 
-// AnalysisSet.getAccessoryDataPaths = (humanDonors) => {
-//   return humanDonors.map((humanDonor) => humanDonor.lab).filter(Boolean);
-// };
+AnalysisSet.getAccessoryDataPaths = (analysisSets) => {
+  return analysisSets.map((analysisSet) => analysisSet.lab).filter(Boolean);
+};

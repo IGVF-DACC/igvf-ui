@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
-// import { DonorDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
@@ -12,16 +11,12 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-// import { DataGridContainer } from "../../components/data-grid";
 import DocumentTable from "../../components/document-table";
-// import ExternalResources from "../../components/external-resources";
 import PagePreamble from "../../components/page-preamble";
-// import SortableGrid from "../../components/sortable-grid";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-// import { formatDateRange } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
@@ -32,6 +27,7 @@ export default function AnalysisSet({
   analysisSet,
   award = null,
   documents,
+  input_file_sets,
   donors,
   lab = null,
   samples,
@@ -47,6 +43,20 @@ export default function AnalysisSet({
             <DataItemValue>
               <AliasList aliases={analysisSet.aliases} />
             </DataItemValue>
+            {input_file_sets.length > 0 && (
+              <>
+                <DataItemLabel>Input file sets</DataItemLabel>
+                <DataItemValue>
+                  <SeparatedList>
+                    {input_file_sets.map((file) => (
+                      <Link href={file["@id"]} key={file.uuid}>
+                        {file.accession}
+                      </Link>
+                    ))}
+                  </SeparatedList>
+                </DataItemValue>
+              </>
+            )}
             {donors.length > 0 && (
               <>
                 <DataItemLabel>Donors</DataItemLabel>
@@ -81,7 +91,6 @@ export default function AnalysisSet({
             </DataItemValue>
           </DataArea>
         </DataPanel>
-
         {documents.length > 0 && (
           <>
             <DataAreaTitle>Documents</DataAreaTitle>
@@ -97,14 +106,17 @@ export default function AnalysisSet({
 
 AnalysisSet.propTypes = {
   analysisSet: PropTypes.object.isRequired,
-  // Technical sample to display
+  // Donors to display
   donors: PropTypes.object.isRequired,
+  // Samples to display
   samples: PropTypes.object.isRequired,
-  // Award applied to this technical sample
+  // Award applied to this analysis set
   award: PropTypes.object,
-  // Documents associated with the cell-line
+  // input_file_sets to this analysis set
+  input_file_sets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Documents associated with this analysis set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this technical sample
+  // Lab that submitted this analysis set
   lab: PropTypes.object,
 };
 
@@ -113,6 +125,11 @@ export async function getServerSideProps({ params, req }) {
   const analysisSet = await request.getObject(`/analysis-sets/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(analysisSet)) {
     const award = await request.getObject(analysisSet.award, null);
+    const input_file_sets = analysisSet.input_file_sets
+      ? await request.getMultipleObjects(analysisSet.input_file_sets, null, {
+          filterErrors: true,
+        })
+      : [];
     const documents = analysisSet.documents
       ? await request.getMultipleObjects(analysisSet.documents, null, {
           filterErrors: true,
@@ -138,6 +155,7 @@ export async function getServerSideProps({ params, req }) {
       props: {
         analysisSet,
         award,
+        input_file_sets,
         documents,
         donors,
         lab,
