@@ -48,6 +48,43 @@ describe("Navigation", () => {
     cy.get("[data-testid=human-donors]").should("not.exist");
     cy.get("[data-testid=rodent-donors]").should("not.exist");
 
+    cy.get("[data-testid=file-sets]").click();
+
+    cy.get("[data-testid=analysis-sets]").click();
+    cy.url().should("include", "/search?type=AnalysisSet");
+    cy.get("[data-testid=search-results-view-switch]").should("exist");
+    cy.get("[data-testid=form-select]").should("exist");
+    cy.get("[data-testid=search-results-count]").should("exist");
+    cy.get("[data-testid=search-list]")
+      .find("li")
+      .its("length")
+      .should("be.gte", 2);
+
+    cy.get("[data-testid=curated-sets]").click();
+    cy.url().should("include", "/search?type=CuratedSet");
+    cy.get("[data-testid=search-results-view-switch]").should("exist");
+    cy.get("[data-testid=form-select]").should("exist");
+    cy.get("[data-testid=search-results-count]").should("exist");
+    cy.get("[data-testid=search-list]")
+      .find("li")
+      .its("length")
+      .should("be.gte", 2);
+
+    cy.get("[data-testid=measurement-sets]").click();
+    cy.url().should("include", "/search?type=MeasurementSet");
+    cy.get("[data-testid=search-results-view-switch]").should("exist");
+    cy.get("[data-testid=form-select]").should("exist");
+    cy.get("[data-testid=search-results-count]").should("exist");
+    cy.get("[data-testid=search-list]")
+      .find("li")
+      .its("length")
+      .should("be.gte", 1);
+
+    cy.get("[data-testid=file-sets]").click();
+    cy.get("[data-testid=analysis-sets]").should("not.exist");
+    cy.get("[data-testid=curated-sets]").should("not.exist");
+    cy.get("[data-testid=measurement-sets]").should("not.exist");
+
     cy.get("[data-testid=genes]").click();
     cy.url().should("include", "/search?type=Gene");
     cy.get("[data-testid=search-results-view-switch]").should("exist");
