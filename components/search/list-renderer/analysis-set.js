@@ -18,8 +18,14 @@ import {
 export default function AnalysisSet({ item: analysisSet, accessoryData }) {
   const lab = accessoryData?.[analysisSet.lab];
   const summary = analysisSet.summary;
-  const inputFileSets = analysisSet.input_file_sets;
-
+  const inputFileSetsKey = analysisSet.input_file_sets;
+  let inputFileSetsAccessions = null;
+  if (inputFileSetsKey) {
+    inputFileSetsAccessions = [];
+    inputFileSetsKey.forEach((key) => {
+      inputFileSetsAccessions.push(accessoryData[key]["accession"]);
+    });
+  }
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -33,7 +39,7 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
             <div key="summary">{summary}</div>
           </SearchListItemMeta>
         )}
-        {(lab || inputFileSets) && (
+        {(lab || inputFileSetsAccessions) && (
           <SearchListItemSupplement>
             <SearchListItemSupplementSection>
               {lab && (
@@ -46,13 +52,13 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
                   </SearchListItemSupplementContent>
                 </>
               )}
-              {inputFileSets && (
+              {inputFileSetsAccessions && (
                 <>
                   <SearchListItemSupplementLabel>
                     Input file sets
                   </SearchListItemSupplementLabel>
                   <SearchListItemSupplementContent>
-                    {inputFileSets}
+                    {inputFileSetsAccessions}
                   </SearchListItemSupplementContent>
                 </>
               )}
@@ -73,5 +79,11 @@ AnalysisSet.propTypes = {
 };
 
 AnalysisSet.getAccessoryDataPaths = (analysisSets) => {
-  return analysisSets.map((analysisSet) => analysisSet.lab).filter(Boolean);
+  const file_sets = analysisSets
+    .map((analysisSet) => analysisSet.input_file_sets)
+    .filter(Boolean);
+  const labs = analysisSets
+    .map((analysisSet) => analysisSet.lab)
+    .filter(Boolean);
+  return file_sets.concat(labs);
 };
