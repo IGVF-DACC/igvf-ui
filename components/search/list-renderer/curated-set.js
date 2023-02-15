@@ -32,20 +32,16 @@ export default function CuratedSet({ item: curatedSet, accessoryData }) {
             <div key="summary">{summary}</div>
           </SearchListItemMeta>
         )}
-        <SearchListItemSupplement>
-          <SearchListItemSupplementSection>
-            {lab && (
-              <>
-                <SearchListItemSupplementLabel>
-                  Lab
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {lab}
-                </SearchListItemSupplementContent>
-              </>
-            )}
-          </SearchListItemSupplementSection>
-        </SearchListItemSupplement>
+        {lab && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>Lab</SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                {lab}
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemStatus item={curatedSet} />
     </SearchListItemContent>

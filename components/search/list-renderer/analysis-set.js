@@ -33,30 +33,32 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
             <div key="summary">{summary}</div>
           </SearchListItemMeta>
         )}
-        <SearchListItemSupplement>
-          <SearchListItemSupplementSection>
-            {lab && (
-              <>
-                <SearchListItemSupplementLabel>
-                  Lab
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {lab}
-                </SearchListItemSupplementContent>
-              </>
-            )}
-            {inputFileSets && (
-              <>
-                <SearchListItemSupplementLabel>
-                  Input file sets
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {inputFileSets}
-                </SearchListItemSupplementContent>
-              </>
-            )}
-          </SearchListItemSupplementSection>
-        </SearchListItemSupplement>
+        {(lab || inputFileSets) && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementSection>
+              {lab && (
+                <>
+                  <SearchListItemSupplementLabel>
+                    Lab
+                  </SearchListItemSupplementLabel>
+                  <SearchListItemSupplementContent>
+                    {lab}
+                  </SearchListItemSupplementContent>
+                </>
+              )}
+              {inputFileSets && (
+                <>
+                  <SearchListItemSupplementLabel>
+                    Input file sets
+                  </SearchListItemSupplementLabel>
+                  <SearchListItemSupplementContent>
+                    {inputFileSets}
+                  </SearchListItemSupplementContent>
+                </>
+              )}
+            </SearchListItemSupplementSection>
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemStatus item={analysisSet} />
     </SearchListItemContent>
