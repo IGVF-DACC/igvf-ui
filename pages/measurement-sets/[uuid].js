@@ -22,11 +22,11 @@ import AliasList from "../../components/alias-list";
 import SeparatedList from "../../components/separated-list";
 import Link from "next/link";
 
-export default function AnalysisSet({
-  analysisSet,
+export default function MeasurementSet({
+  measurementSet,
   award = null,
+  assayTerm,
   documents,
-  input_file_sets,
   donors,
   lab = null,
   samples,
@@ -34,28 +34,33 @@ export default function AnalysisSet({
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={analysisSet}>
+      <EditableItem item={measurementSet}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Aliases</DataItemLabel>
+            <DataItemLabel>Assay Term</DataItemLabel>
             <DataItemValue>
-              <AliasList aliases={analysisSet.aliases} />
+              <Link href={assayTerm["@id"]} key={assayTerm.uuid}>
+                {assayTerm.term_name}
+              </Link>
             </DataItemValue>
-            {input_file_sets.length > 0 && (
+            {measurementSet.protocol && (
               <>
-                <DataItemLabel>Input File Sets</DataItemLabel>
+                <DataItemLabel>Protocol</DataItemLabel>
                 <DataItemValue>
-                  <SeparatedList>
-                    {input_file_sets.map((file) => (
-                      <Link href={file["@id"]} key={file.uuid}>
-                        {file.accession}
-                      </Link>
-                    ))}
-                  </SeparatedList>
+                  <Link
+                    href={measurementSet["protocol"]}
+                    key={measurementSet.protocol}
+                  >
+                    {measurementSet.protocol}
+                  </Link>
                 </DataItemValue>
               </>
             )}
+            <DataItemLabel>Aliases</DataItemLabel>
+            <DataItemValue>
+              <AliasList aliases={measurementSet.aliases} />
+            </DataItemValue>
             {donors.length > 0 && (
               <>
                 <DataItemLabel>Donors</DataItemLabel>
@@ -86,7 +91,7 @@ export default function AnalysisSet({
             )}
             <DataItemLabel>Status</DataItemLabel>
             <DataItemValue>
-              <Status status={analysisSet.status} />
+              <Status status={measurementSet.status} />
             </DataItemValue>
           </DataArea>
         </DataPanel>
@@ -103,66 +108,63 @@ export default function AnalysisSet({
   );
 }
 
-AnalysisSet.propTypes = {
-  analysisSet: PropTypes.object.isRequired,
+MeasurementSet.propTypes = {
+  measurementSet: PropTypes.object.isRequired,
+  assayTerm: PropTypes.object.isRequired,
   // Donors to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Award applied to this analysis set
+  // Award applied to this measurement set
   award: PropTypes.object,
-  // input_file_sets to this analysis set
-  input_file_sets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Documents associated with this analysis set
+  // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this analysis set
+  // Lab that submitted this measurement set
   lab: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const analysisSet = await request.getObject(`/analysis-sets/${params.uuid}/`);
-  if (FetchRequest.isResponseSuccess(analysisSet)) {
-    const award = await request.getObject(analysisSet.award, null);
-    const input_file_sets = analysisSet.input_file_sets
-      ? await request.getMultipleObjects(analysisSet.input_file_sets, null, {
+  const measurementSet = await request.getObject(
+    `/measurement-sets/${params.uuid}/`
+  );
+  if (FetchRequest.isResponseSuccess(measurementSet)) {
+    const award = await request.getObject(measurementSet.award, null);
+    const assayTerm = await request.getObject(measurementSet.assay_term, null);
+    const documents = measurementSet.documents
+      ? await request.getMultipleObjects(measurementSet.documents, null, {
           filterErrors: true,
         })
       : [];
-    const documents = analysisSet.documents
-      ? await request.getMultipleObjects(analysisSet.documents, null, {
+    const lab = await request.getObject(measurementSet.lab, null);
+    const samples = measurementSet.samples
+      ? await request.getMultipleObjects(measurementSet.samples, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(analysisSet.lab, null);
-    const samples = analysisSet.samples
-      ? await request.getMultipleObjects(analysisSet.samples, null, {
-          filterErrors: true,
-        })
-      : [];
-    const donors = analysisSet.donors
-      ? await request.getMultipleObjects(analysisSet.donors, null, {
+    const donors = measurementSet.donors
+      ? await request.getMultipleObjects(measurementSet.donors, null, {
           filterErrors: true,
         })
       : [];
     const breadcrumbs = await buildBreadcrumbs(
-      analysisSet,
+      measurementSet,
       "accession",
       req.headers.cookie
     );
     return {
       props: {
-        analysisSet,
+        measurementSet,
         award,
-        input_file_sets,
+        assayTerm,
         documents,
         donors,
         lab,
         samples,
-        pageContext: { title: analysisSet.accession },
+        pageContext: { title: measurementSet.accession },
         breadcrumbs,
       },
     };
   }
-  return errorObjectToProps(analysisSet);
+  return errorObjectToProps(measurementSet);
 }

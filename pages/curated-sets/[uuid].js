@@ -22,11 +22,10 @@ import AliasList from "../../components/alias-list";
 import SeparatedList from "../../components/separated-list";
 import Link from "next/link";
 
-export default function AnalysisSet({
-  analysisSet,
+export default function CuratedSet({
+  curatedSet,
   award = null,
   documents,
-  input_file_sets,
   donors,
   lab = null,
   samples,
@@ -34,28 +33,22 @@ export default function AnalysisSet({
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={analysisSet}>
+      <EditableItem item={curatedSet}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Aliases</DataItemLabel>
-            <DataItemValue>
-              <AliasList aliases={analysisSet.aliases} />
-            </DataItemValue>
-            {input_file_sets.length > 0 && (
+            <DataItemLabel>Curated Set Type</DataItemLabel>
+            <DataItemValue>{curatedSet.curated_set_type}</DataItemValue>
+            {curatedSet.taxa && (
               <>
-                <DataItemLabel>Input File Sets</DataItemLabel>
-                <DataItemValue>
-                  <SeparatedList>
-                    {input_file_sets.map((file) => (
-                      <Link href={file["@id"]} key={file.uuid}>
-                        {file.accession}
-                      </Link>
-                    ))}
-                  </SeparatedList>
-                </DataItemValue>
+                <DataItemLabel>Taxa</DataItemLabel>
+                <DataItemValue>{curatedSet.taxa}</DataItemValue>
               </>
             )}
+            <DataItemLabel>Aliases</DataItemLabel>
+            <DataItemValue>
+              <AliasList aliases={curatedSet.aliases} />
+            </DataItemValue>
             {donors.length > 0 && (
               <>
                 <DataItemLabel>Donors</DataItemLabel>
@@ -86,7 +79,7 @@ export default function AnalysisSet({
             )}
             <DataItemLabel>Status</DataItemLabel>
             <DataItemValue>
-              <Status status={analysisSet.status} />
+              <Status status={curatedSet.status} />
             </DataItemValue>
           </DataArea>
         </DataPanel>
@@ -103,66 +96,64 @@ export default function AnalysisSet({
   );
 }
 
-AnalysisSet.propTypes = {
-  analysisSet: PropTypes.object.isRequired,
+CuratedSet.propTypes = {
+  curatedSet: PropTypes.object.isRequired,
   // Donors to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Award applied to this analysis set
+  // Award applied to this curated set
   award: PropTypes.object,
-  // input_file_sets to this analysis set
-  input_file_sets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Documents associated with this analysis set
+  // Documents associated with this curated set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this analysis set
+  // Lab that submitted this curated set
   lab: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const analysisSet = await request.getObject(`/analysis-sets/${params.uuid}/`);
-  if (FetchRequest.isResponseSuccess(analysisSet)) {
-    const award = await request.getObject(analysisSet.award, null);
-    const input_file_sets = analysisSet.input_file_sets
-      ? await request.getMultipleObjects(analysisSet.input_file_sets, null, {
+  const curatedSet = await request.getObject(`/curated-sets/${params.uuid}/`);
+  if (FetchRequest.isResponseSuccess(curatedSet)) {
+    const award = await request.getObject(curatedSet.award, null);
+    const input_file_sets = curatedSet.input_file_sets
+      ? await request.getMultipleObjects(curatedSet.input_file_sets, null, {
           filterErrors: true,
         })
       : [];
-    const documents = analysisSet.documents
-      ? await request.getMultipleObjects(analysisSet.documents, null, {
+    const documents = curatedSet.documents
+      ? await request.getMultipleObjects(curatedSet.documents, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(analysisSet.lab, null);
-    const samples = analysisSet.samples
-      ? await request.getMultipleObjects(analysisSet.samples, null, {
+    const lab = await request.getObject(curatedSet.lab, null);
+    const samples = curatedSet.samples
+      ? await request.getMultipleObjects(curatedSet.samples, null, {
           filterErrors: true,
         })
       : [];
-    const donors = analysisSet.donors
-      ? await request.getMultipleObjects(analysisSet.donors, null, {
+    const donors = curatedSet.donors
+      ? await request.getMultipleObjects(curatedSet.donors, null, {
           filterErrors: true,
         })
       : [];
     const breadcrumbs = await buildBreadcrumbs(
-      analysisSet,
+      curatedSet,
       "accession",
       req.headers.cookie
     );
     return {
       props: {
-        analysisSet,
+        curatedSet,
         award,
         input_file_sets,
         documents,
         donors,
         lab,
         samples,
-        pageContext: { title: analysisSet.accession },
+        pageContext: { title: curatedSet.accession },
         breadcrumbs,
       },
     };
   }
-  return errorObjectToProps(analysisSet);
+  return errorObjectToProps(curatedSet);
 }
