@@ -37,6 +37,10 @@ export default function CuratedSet({
         <PagePreamble />
         <DataPanel>
           <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={curatedSet.status} />
+            </DataItemValue>
             <DataItemLabel>Curated Set Type</DataItemLabel>
             <DataItemValue>{curatedSet.curated_set_type}</DataItemValue>
             {curatedSet.taxa && (
@@ -77,10 +81,6 @@ export default function CuratedSet({
                 </DataItemValue>
               </>
             )}
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={curatedSet.status} />
-            </DataItemValue>
           </DataArea>
         </DataPanel>
         {documents.length > 0 && (

@@ -38,6 +38,10 @@ export default function MeasurementSet({
         <PagePreamble />
         <DataPanel>
           <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={measurementSet.status} />
+            </DataItemValue>
             <DataItemLabel>Assay Term</DataItemLabel>
             <DataItemValue>
               <Link href={assayTerm["@id"]} key={assayTerm.uuid}>
@@ -89,10 +93,6 @@ export default function MeasurementSet({
                 </DataItemValue>
               </>
             )}
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={measurementSet.status} />
-            </DataItemValue>
           </DataArea>
         </DataPanel>
         {documents.length > 0 && (

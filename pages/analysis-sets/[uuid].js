@@ -38,6 +38,10 @@ export default function AnalysisSet({
         <PagePreamble />
         <DataPanel>
           <DataArea>
+            <DataItemLabel>Status</DataItemLabel>
+            <DataItemValue>
+              <Status status={analysisSet.status} />
+            </DataItemValue>
             <DataItemLabel>Aliases</DataItemLabel>
             <DataItemValue>
               <AliasList aliases={analysisSet.aliases} />
@@ -84,10 +88,6 @@ export default function AnalysisSet({
                 </DataItemValue>
               </>
             )}
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={analysisSet.status} />
-            </DataItemValue>
           </DataArea>
         </DataPanel>
         {documents.length > 0 && (
