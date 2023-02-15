@@ -355,6 +355,30 @@ function Navigation({ navigationClick }) {
           Rodent Donors
         </NavigationHrefItem>
       </NavigationGroupItem>
+      <NavigationGroupItem
+        id="files"
+        title="Files"
+        icon={<Icon.Donor />}
+        isGroupOpened={openedParents.includes("files")}
+        handleGroupClick={handleParentClick}
+      >
+        <NavigationHrefItem
+          id="reference-data"
+          href="/search?type=ReferenceData"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Reference Data
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="sequence-data"
+          href="/search?type=SequenceData"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Sequence Data
+        </NavigationHrefItem>
+      </NavigationGroupItem>
       <NavigationHrefItem
         id="genes"
         href="/search?type=Gene"
