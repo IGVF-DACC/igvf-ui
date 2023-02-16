@@ -917,6 +917,8 @@ describe("Test the AnalysisSet component", () => {
       award: "/awards/HG012012/",
       lab: "/labs/j-michael-cherry/",
       status: "released",
+      summary: "IGVFDS3099XPLN",
+      input_file_sets: ["/analysis-sets/IGVFDS3099XPLN/"],
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
     };
 
@@ -948,12 +950,24 @@ describe("Test the AnalysisSet component", () => {
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("IGVFDS3099XPLN");
 
-    const supplement = screen.queryByTestId("search-list-item-supplement");
-    expect(supplement).toBeNull();
+    const supplement = screen.queryByTestId(
+      "search-list-item-supplement-content"
+    );
+    console.log(supplement.textContent);
+
+    expect(supplement).toHaveTextContent("IGVFDS3099XPLN");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
+
+    const paths = AnalysisSet.getAccessoryDataPaths([item]);
+    console.log(paths);
+    expect(paths).toEqual([
+      ["/analysis-sets/IGVFDS3099XPLN/"],
+      "/labs/j-michael-cherry/",
+    ]);
   });
 });
 
@@ -990,7 +1004,7 @@ describe("Test the CuratedSet component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDS0000AAAA$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^Curated Set$/);
+    expect(title).toHaveTextContent(/^Curated set$/);
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
@@ -1041,7 +1055,7 @@ describe("Test the MeasurementSet component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDS6408BFHD$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^STARR-Seq$/);
+    expect(title).toHaveTextContent(/^STARR-seq$/);
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
@@ -1050,6 +1064,9 @@ describe("Test the MeasurementSet component", () => {
     expect(status).toHaveTextContent("released");
 
     const paths = MeasurementSet.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
+    expect(paths).toEqual([
+      "/assay-terms/OBI_0002041/",
+      "/labs/j-michael-cherry/",
+    ]);
   });
 });
