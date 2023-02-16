@@ -873,41 +873,6 @@ describe("Test User component", () => {
 });
 
 describe("Test the AnalysisSet component", () => {
-  it("renders an AnalysisSet item without accessory data", () => {
-    const item = {
-      "@id": "/analysis-sets/IGVFDS0390NOLS/",
-      "@type": ["AnalysisSet", "FileSet", "Item"],
-      accession: "IGVFDS3099XPLN",
-      aliases: ["igvf:basic_analysis_set"],
-      award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
-      status: "released",
-      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <AnalysisSet item={item} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Analysis Set/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS3099XPLN$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^Analysis$/);
-
-    const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
-
-    const supplement = screen.queryByTestId("search-list-item-supplement");
-    expect(supplement).toBeNull();
-
-    const status = screen.getByTestId("search-list-item-status");
-    expect(status).toHaveTextContent("released");
-  });
-
   it("renders an AnalysisSet item with accessory data", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
@@ -966,6 +931,41 @@ describe("Test the AnalysisSet component", () => {
       "/labs/j-michael-cherry/",
     ]);
   });
+
+  it("renders an AnalysisSet item without accessory data and summary", () => {
+    const item = {
+      "@id": "/analysis-sets/IGVFDS0390NOLS/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS3099XPLN",
+      aliases: ["igvf:basic_analysis_set"],
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Analysis Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS3099XPLN$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Analysis$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
+    const supplement = screen.queryByTestId("search-list-item-supplement");
+    expect(supplement).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
 });
 
 describe("Test the CuratedSet component", () => {
@@ -1011,6 +1011,36 @@ describe("Test the CuratedSet component", () => {
 
     const paths = CuratedSet.getAccessoryDataPaths([item]);
     expect(paths).toEqual(["/labs/j-michael-cherry/"]);
+  });
+
+  it("renders a CuratedSet item without accessory data and summary", () => {
+    const item = {
+      "@id": "/curated-sets/IGVFDS0000AAAA/",
+      "@type": ["CuratedSet", "FileSet", "Item"],
+      accession: "IGVFDS0000AAAA",
+      aliases: ["igvf-dacc:GRCh38.p14_assembly"],
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      taxa: "Homo sapiens",
+      uuid: "40f1e08c-5d6d-4d19-8f69-3fd91420c09f",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <CuratedSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^CuratedSet/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS0000AAAA$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Curated set$/);
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
   });
 });
 
@@ -1065,5 +1095,43 @@ describe("Test the MeasurementSet component", () => {
       "/assay-terms/OBI_0002041/",
       "/labs/j-michael-cherry/",
     ]);
+  });
+
+  it("renders a MeasurementSet item without accessory data and summary", () => {
+    const item = {
+      "@id": "/measurement-sets/IGVFDS6408BFHD/",
+      "@type": ["MeasurementSet", "FileSet", "Item"],
+      accession: "IGVFDS6408BFHD",
+      aliases: ["igvf:basic_measurement_set"],
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
+      assay_term: "/assay-terms/OBI_0002041/",
+    };
+
+    const accessoryData = {
+      "/assay-terms/OBI_0002041/": {
+        "@id": "/assay-terms/OBI_0002041/",
+        "@type": ["AssayTerm", "OntologyTerm", "Item"],
+        term_name: "STARR-seq",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <MeasurementSet item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Measurement Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS6408BFHD$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^STARR-seq$/);
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
   });
 });
