@@ -9,10 +9,6 @@ import {
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
-  SearchListItemSupplement,
-  SearchListItemSupplementSection,
-  SearchListItemSupplementLabel,
-  SearchListItemSupplementContent,
 } from "./search-list-item";
 
 export default function CuratedSet({ item: curatedSet, accessoryData }) {
