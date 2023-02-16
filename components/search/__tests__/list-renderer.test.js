@@ -908,9 +908,6 @@ describe("Test the AnalysisSet component", () => {
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("IGVFDS3099XPLN");
 
-    const supplement = screen.queryByTestId("search-list-item-meta");
-    expect(supplement).toBeNull();
-
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
 
@@ -945,9 +942,6 @@ describe("Test the AnalysisSet component", () => {
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
-
-    const supplement = screen.queryByTestId("search-list-item-meta");
-    expect(supplement).toBeNull();
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
