@@ -29,7 +29,7 @@ export default function MeasurementSet({
         <SearchListItemTitle>{assayTerm.term_name}</SearchListItemTitle>
         {(summary || lab) && (
           <SearchListItemMeta>
-            {lab && <div key="lab}">{lab.title}</div>}
+            {lab && <div key="lab">{lab.title}</div>}
             {summary && <div key="summary">{summary}</div>}
           </SearchListItemMeta>
         )}
@@ -50,8 +50,6 @@ MeasurementSet.getAccessoryDataPaths = (measurementSets) => {
   const assay_terms = measurementSets
     .map((measurementSet) => measurementSet.assay_term)
     .filter(Boolean);
-  const labs = measurementSets
-    .map((measurementSet) => measurementSet.lab)
-    .filter(Boolean);
+  const labs = measurementSets.map((measurementSet) => measurementSet.lab);
   return assay_terms.concat(labs);
 };

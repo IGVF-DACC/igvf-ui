@@ -25,7 +25,7 @@ export default function CuratedSet({ item: curatedSet, accessoryData }) {
         <SearchListItemTitle>Curated set</SearchListItemTitle>
         {(summary || lab) && (
           <SearchListItemMeta>
-            {lab && <div key="lab}">{lab.title}</div>}
+            {lab && <div key="lab">{lab.title}</div>}
             {summary && <div key="summary">{summary}</div>}
           </SearchListItemMeta>
         )}
@@ -43,5 +43,5 @@ CuratedSet.propTypes = {
 };
 
 CuratedSet.getAccessoryDataPaths = (curatedSets) => {
-  return curatedSets.map((curatedSet) => curatedSet.lab).filter(Boolean);
+  return curatedSets.map((curatedSet) => curatedSet.lab);
 };

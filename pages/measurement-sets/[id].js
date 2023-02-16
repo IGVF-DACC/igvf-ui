@@ -126,7 +126,7 @@ MeasurementSet.propTypes = {
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const measurementSet = await request.getObject(
-    `/measurement-sets/${params.uuid}/`
+    `/measurement-sets/${params.id}/`
   );
   if (FetchRequest.isResponseSuccess(measurementSet)) {
     const award = await request.getObject(measurementSet.award, null);

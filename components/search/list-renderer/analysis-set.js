@@ -18,14 +18,12 @@ import {
 export default function AnalysisSet({ item: analysisSet, accessoryData }) {
   const lab = accessoryData?.[analysisSet.lab];
   const summary = analysisSet.summary;
-  const inputFileSetsKey = analysisSet.input_file_sets;
-  let inputFileSetsAccessions = null;
-  if (inputFileSetsKey) {
-    inputFileSetsAccessions = [];
-    inputFileSetsKey.forEach((key) => {
-      inputFileSetsAccessions.push(accessoryData[key]["accession"]);
-    });
-  }
+  const inputFileSetsKeys = analysisSet.input_file_sets;
+  const inputFileSetsAccessions =
+    inputFileSetsKeys && accessoryData
+      ? inputFileSetsKeys.map((key) => accessoryData[key]["accession"])
+      : null;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -36,23 +34,19 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
         <SearchListItemTitle>Analysis</SearchListItemTitle>
         {(summary || lab) && (
           <SearchListItemMeta>
-            {lab && <div key="lab}">{lab.title}</div>}
+            {lab && <div key="lab">{lab.title}</div>}
             {summary && <div key="summary">{summary}</div>}
           </SearchListItemMeta>
         )}
         {inputFileSetsAccessions && (
           <SearchListItemSupplement>
             <SearchListItemSupplementSection>
-              {inputFileSetsAccessions && (
-                <>
-                  <SearchListItemSupplementLabel>
-                    Input file sets
-                  </SearchListItemSupplementLabel>
-                  <SearchListItemSupplementContent>
-                    {inputFileSetsAccessions}
-                  </SearchListItemSupplementContent>
-                </>
-              )}
+              <SearchListItemSupplementLabel>
+                Input file sets
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                {inputFileSetsAccessions.join(", ")}
+              </SearchListItemSupplementContent>
             </SearchListItemSupplementSection>
           </SearchListItemSupplement>
         )}
@@ -70,11 +64,9 @@ AnalysisSet.propTypes = {
 };
 
 AnalysisSet.getAccessoryDataPaths = (analysisSets) => {
-  const file_sets = analysisSets
+  const fileSets = analysisSets
     .map((analysisSet) => analysisSet.input_file_sets)
     .filter(Boolean);
-  const labs = analysisSets
-    .map((analysisSet) => analysisSet.lab)
-    .filter(Boolean);
-  return file_sets.concat(labs);
+  const labs = analysisSets.map((analysisSet) => analysisSet.lab);
+  return fileSets.concat(labs);
 };
