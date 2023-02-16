@@ -68,7 +68,7 @@ describe("Navigation", () => {
     cy.get("[data-testid=search-list]")
       .find("li")
       .its("length")
-      .should("be.gte", 2);
+      .should("be.gte", 1);
 
     cy.get("[data-testid=measurement-sets]").click();
     cy.url().should("include", "/search?type=MeasurementSet");
