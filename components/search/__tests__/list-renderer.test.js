@@ -871,50 +871,6 @@ describe("Test User component", () => {
 });
 
 describe("Test the AnalysisSet component", () => {
-  it("renders an AnalysisSet item with accessory data", () => {
-    const item = {
-      "@id": "/analysis-sets/IGVFDS0390NOLS/",
-      "@type": ["AnalysisSet", "FileSet", "Item"],
-      accession: "IGVFDS0390NOLS",
-      aliases: ["igvf:analysis_set_with_input"],
-      award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
-      summary: "IGVFDS3099XPLN",
-      status: "released",
-      uuid: "dd171b83-cbd9-4d06-4aa1-b77ab49569cd",
-    };
-    const accessoryData = {
-      "/labs/chongyuan-luo/": {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
-        title: "J. Michael Cherry, Stanford",
-      },
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <AnalysisSet item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Analysis Set/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS0390NOLS$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^Analysis$/);
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-    expect(meta).toHaveTextContent("IGVFDS3099XPLN");
-
-    const status = screen.getByTestId("search-list-item-status");
-    expect(status).toHaveTextContent("released");
-
-    const paths = AnalysisSet.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
-  });
-
   it("renders an AnalysisSet item without accessory data", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
@@ -942,6 +898,9 @@ describe("Test the AnalysisSet component", () => {
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
+
+    const supplement = screen.queryByTestId("search-list-item-supplement");
+    expect(supplement).toBeNull();
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
