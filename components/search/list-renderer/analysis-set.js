@@ -34,24 +34,15 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
           {analysisSet.accession}
         </SearchListItemUniqueId>
         <SearchListItemTitle>Analysis</SearchListItemTitle>
-        {summary && (
+        {(summary || lab) && (
           <SearchListItemMeta>
-            <div key="summary">{summary}</div>
+            {lab && <div key="lab}">{lab.title}</div>}
+            {summary && <div key="summary">{summary}</div>}
           </SearchListItemMeta>
         )}
-        {(lab || inputFileSetsAccessions) && (
+        {inputFileSetsAccessions && (
           <SearchListItemSupplement>
             <SearchListItemSupplementSection>
-              {lab && (
-                <>
-                  <SearchListItemSupplementLabel>
-                    Lab
-                  </SearchListItemSupplementLabel>
-                  <SearchListItemSupplementContent>
-                    {lab}
-                  </SearchListItemSupplementContent>
-                </>
-              )}
               {inputFileSetsAccessions && (
                 <>
                   <SearchListItemSupplementLabel>
