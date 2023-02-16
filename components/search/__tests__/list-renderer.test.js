@@ -1039,6 +1039,9 @@ describe("Test the CuratedSet component", () => {
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^Curated set$/);
 
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
   });
@@ -1130,6 +1133,9 @@ describe("Test the MeasurementSet component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^STARR-seq$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
