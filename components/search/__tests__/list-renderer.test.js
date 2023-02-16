@@ -873,7 +873,7 @@ describe("Test User component", () => {
 describe("Test the AnalysisSet component", () => {
   it("renders an AnalysisSet item with accessory data", () => {
     const item = {
-      "@id": "analysis-sets/IGVFDS0390NOLS/",
+      "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
       accession: "IGVFDS0390NOLS",
       aliases: ["igvf:analysis_set_with_input"],
@@ -917,7 +917,7 @@ describe("Test the AnalysisSet component", () => {
 
   it("renders an AnalysisSet item without accessory data", () => {
     const item = {
-      "@id": "analysis-sets/IGVFDS0390NOLS/",
+      "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
       accession: "IGVFDS3099XPLN",
       aliases: ["igvf:basic_analysis_set"],
