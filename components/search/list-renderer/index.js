@@ -37,6 +37,7 @@ import RodentDonor from "./rodent-donor";
 import TechnicalSample from "./technical-sample";
 import Treatment from "./treatment";
 import User from "./user";
+import File from "./file";
 
 const renderers = {
   AssayTerm: OntologyTerm,
@@ -48,8 +49,10 @@ const renderers = {
   Page,
   PhenotypeTerm: OntologyTerm,
   PrimaryCell: Biosample,
+  ReferenceData: File,
   RodentDonor,
   SampleTerm: OntologyTerm,
+  SequenceData: File,
   TechnicalSample,
   Tissue: Biosample,
   Treatment,
