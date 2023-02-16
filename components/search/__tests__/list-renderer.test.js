@@ -955,15 +955,12 @@ describe("Test the AnalysisSet component", () => {
     const supplement = screen.queryByTestId(
       "search-list-item-supplement-content"
     );
-    console.log(supplement.textContent);
-
     expect(supplement).toHaveTextContent("IGVFDS3099XPLN");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
 
     const paths = AnalysisSet.getAccessoryDataPaths([item]);
-    console.log(paths);
     expect(paths).toEqual([
       ["/analysis-sets/IGVFDS3099XPLN/"],
       "/labs/j-michael-cherry/",
