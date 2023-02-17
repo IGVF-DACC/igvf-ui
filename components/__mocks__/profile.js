@@ -606,6 +606,819 @@ const profiles = {
       },
     },
   },
+
+  ReferenceData: {
+    title: "Reference data",
+    $id: "/profiles/reference_data.json",
+    required: [
+      "award",
+      "lab",
+      "md5sum",
+      "file_format",
+      "file_set",
+      "content_type",
+    ],
+    identifyingProperties: [
+      "uuid",
+      "accession",
+      "alternate_accessions",
+      "aliases",
+      "md5sum",
+    ],
+    properties: {
+      documents: {
+        title: "Documents",
+        description:
+          "Documents that provide additional information (not data file).",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Document",
+          description:
+            "A document that provides additional information (not data file).",
+          type: "string",
+          comment: "See document.json for available identifiers.",
+          linkTo: "Document",
+        },
+      },
+      lab: {
+        title: "Lab",
+        description: "Lab associated with the submission.",
+        comment: "Required. See lab.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Lab",
+        linkSubmitsFor: true,
+      },
+      award: {
+        title: "Award",
+        description: "Grant associated with the submission.",
+        comment: "Required. See award.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Award",
+      },
+      accession: {
+        title: "Accession",
+        description:
+          "A unique identifier to be used to reference the object prefixed with IGVF.",
+        comment: "Do not submit. The accession is assigned by the server.",
+        type: "string",
+        format: "accession",
+        serverDefault: "accession",
+        permission: "import_items",
+        accessionType: "FI",
+        readonly: true,
+      },
+      alternate_accessions: {
+        title: "Alternate Accessions",
+        description:
+          "Accessions previously assigned to objects that have been merged with this object.",
+        comment:
+          "Do not submit. Only admins are allowed to set or update this value.",
+        type: "array",
+        minItems: 1,
+        permission: "import_items",
+        items: {
+          title: "Alternate Accession",
+          description:
+            "An accession previously assigned to an object that has been merged with this object.",
+          comment:
+            "Only accessions of objects that have status equal replaced will work here.",
+          type: "string",
+          format: "accession",
+        },
+        readonly: true,
+      },
+      collections: {
+        title: "Collections",
+        description: "Some samples are part of particular data collections.",
+        comment: "Do not submit. Collections are for DACC use only.",
+        type: "array",
+        minItems: 1,
+        permission: "import_items",
+        uniqueItems: true,
+        items: {
+          type: "string",
+          enum: ["ENCODE"],
+        },
+        readonly: true,
+      },
+      status: {
+        title: "Status",
+        type: "string",
+        permission: "import_items",
+        default: "in progress",
+        description: "The status of the metadata object.",
+        comment:
+          "Do not submit.  This is set by admins along the process of metadata submission.",
+        enum: [
+          "in progress",
+          "released",
+          "deleted",
+          "replaced",
+          "revoked",
+          "archived",
+        ],
+        readonly: true,
+      },
+      revoke_detail: {
+        title: "Revoke Detail",
+        type: "string",
+        permission: "import_items",
+        description:
+          "Explanation of why an object was transitioned to the revoked status.",
+        comment:
+          "Do not submit. This is set by admins when an object is revoked.",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+        readonly: true,
+      },
+      schema_version: {
+        title: "Schema Version",
+        description:
+          "The version of the JSON schema that the server uses to validate the object.",
+        comment:
+          "Do not submit. The version used to validate the object is set by the server. The default should be set to the current version.",
+        type: "string",
+        pattern: "^\\d+(\\.\\d+)*$",
+        requestMethod: [],
+        "hidden comment": "Bump the default in the subclasses.",
+        default: "2",
+      },
+      uuid: {
+        title: "UUID",
+        description: "The unique identifier associated with every object.",
+        comment: "Do not submit. The uuid is set by the server.",
+        type: "string",
+        format: "uuid",
+        serverDefault: "uuid4",
+        permission: "import_items",
+        requestMethod: "POST",
+        readonly: true,
+      },
+      notes: {
+        title: "Notes",
+        description: "DACC internal notes.",
+        comment:
+          "Do not submit. A place for the DACC to keep information that does not have a place in the schema.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        permission: "import_items",
+        formInput: "textarea",
+        readonly: true,
+      },
+      aliases: {
+        title: "Aliases",
+        description: "Lab specific identifiers to reference an object.",
+        comment:
+          "The purpose of this field is to provide a link into the lab LIMS and to facilitate shared objects.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          uniqueKey: "alias",
+          title: "Lab Alias",
+          description: "A lab specific identifier to reference an object.",
+          comment:
+            "Current convention is colon separated lab name and lab identifier. (e.g. john-doe:42).",
+          type: "string",
+          pattern:
+            "^(?:j-michael-cherry|ali-mortazavi|barbara-wold|lior-pachter|grant-macgregor|kim-green|mark-craven|qiongshi-lu|audrey-gasch|robert-steiner|jesse-engreitz|thomas-quertermous|anshul-kundaje|michael-bassik|will-greenleaf|marlene-rabinovitch|lars-steinmetz|jay-shendure|nadav-ahituv|martin-kircher|danwei-huangfu|michael-beer|anna-katerina-hadjantonakis|christina-leslie|alexander-rudensky|laura-donlin|hannah-carter|bing-ren|kyle-gaulton|maike-sander|charles-gersbach|gregory-crawford|tim-reddy|ansuman-satpathy|andrew-allen|gary-hon|nikhil-munshi|w-lee-kraus|lea-starita|doug-fowler|luca-pinello|guillaume-lettre|benhur-lee|daniel-bauer|richard-sherwood|benjamin-kleinstiver|marc-vidal|david-hill|frederick-roth|mikko-taipale|anne-carpenter|hyejung-won|karen-mohlke|michael-love|jason-buenrostro|bradley-bernstein|hilary-finucane|chongyuan-luo|noah-zaitlen|kathrin-plath|roy-wollman|jason-ernst|zhiping-weng|manuel-garber|xihong-lin|alan-boyle|ryan-mills|jie-liu|maureen-sartor|joshua-welch|stephen-montgomery|alexis-battle|livnat-jerby|jonathan-pritchard|predrag-radivojac|sean-mooney|harinder-singh|nidhi-sahni|jishnu-das|hao-wu|sreeram-kannan|hongjun-song|alkes-price|soumya-raychaudhuri|shamil-sunyaev|len-pennacchio|axel-visel|jill-moore|ting-wang|feng-yue|igvf|igvf-dacc):[a-zA-Z\\d_$.+!*,()'-]+(?:\\s[a-zA-Z\\d_$.+!*,()'-]+)*$",
+        },
+      },
+      creation_timestamp: {
+        "rdfs:subPropertyOf": "dc:created",
+        title: "Creation Timestamp",
+        description: "The date the object was created.",
+        comment:
+          "Do not submit. The date the object is created is assigned by the server.",
+        type: "string",
+        format: "date-time",
+        serverDefault: "now",
+        permission: "import_items",
+        readonly: true,
+      },
+      submitted_by: {
+        "rdfs:subPropertyOf": "dc:creator",
+        title: "Submitted By",
+        comment:
+          "Do not submit. The user that created the object is assigned by the server.",
+        type: "string",
+        linkTo: "User",
+        serverDefault: "userid",
+        permission: "import_items",
+        readonly: true,
+      },
+      submitter_comment: {
+        title: "Submitter Comment",
+        description:
+          "Additional information specified by the submitter to be displayed as a comment on the portal.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+      },
+      description: {
+        title: "Description",
+        description: "A plain text description of the object.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$|^$",
+        formInput: "textarea",
+      },
+      content_md5sum: {
+        title: "Content MD5sum",
+        description: "The MD5sum of the uncompressed file.",
+        type: "string",
+        permission: "import_items",
+        format: "hex",
+        maxLength: 32,
+        pattern: "[a-f\\d]{32}|[A-F\\d]{32}",
+        readonly: true,
+      },
+      content_type: {
+        title: "Content Type",
+        description: "The type of content in the file.",
+        comment:
+          "Content Type describes the content of the file. Genome reference are composite nucleic acid sequences assembled from the sequence of several different individual organisms representing the species. Guide RNA sequences are sequences of RNA molecules used in assays involving CRISPR editing. Sequence barcodes are lists of barcodes found in the sequencing library. Spike-ins are nucleic acid fragments of known sequence and quantity used for calibration in high-throughput sequencing. Transcriptome references are transcriptomic sequences of an idealized representative individual in a species. Vector sequences are sequences tested in MPRAs.",
+        type: "string",
+        enum: [
+          "exclusion list",
+          "genome reference",
+          "guide RNA sequences",
+          "inclusion list",
+          "sequence barcodes",
+          "spike-ins",
+          "transcriptome reference",
+          "vector sequences",
+        ],
+      },
+      dbxrefs: {
+        "@type": "@id",
+        "rdfs:subPropertyOf": "rdfs:seeAlso",
+        title: "External Resources",
+        description:
+          "Identifiers from external resources that may have 1-to-1 or 1-to-many relationships with IGVF file objects.",
+        comment:
+          "This property is overwritten by the subclasses to define specific enum values.",
+        type: "array",
+        uniqueItems: true,
+        items: {
+          title: "External identifier",
+          description:
+            "Identifier from an external resource that may have 1-to-1 or 1-to-many relationships with IGVF file objects.",
+          type: "string",
+          pattern: "^$",
+        },
+      },
+      derived_from: {
+        title: "Derived From",
+        description:
+          "The files participating as inputs into software to produce this output file.",
+        type: "array",
+        uniqueItems: true,
+        items: {
+          comment: "See file.json for a list of available identifiers.",
+          type: "string",
+          linkTo: "File",
+        },
+      },
+      file_format: {
+        title: "File Format",
+        description: "The file format or extension of the file.",
+        comment:
+          "This property is overwritten by the subclasses to define specific enum values.",
+        type: "string",
+        enum: ["fasta", "gtf", "tar", "txt"],
+      },
+      file_format_specifications: {
+        title: "File Format Specifications Documents",
+        description: "Document that further explains the file format.",
+        type: "array",
+        uniqueItems: true,
+        items: {
+          comment: "See document.json for a list of available identifiers.",
+          type: "string",
+          linkTo: "Document",
+        },
+      },
+      file_set: {
+        title: "File Set",
+        description: "The file set that this file belongs to.",
+        comment: "See file_set.json for a list of available identifiers.",
+        type: "string",
+        linkTo: "FileSet",
+      },
+      file_size: {
+        title: "File Size",
+        description: "File size specified in bytes.",
+        comment:
+          "Do not submit. This value is calculated by the checkfiles script upon submission.",
+        permission: "import_items",
+        type: "integer",
+        minimum: 0,
+        readonly: true,
+      },
+      md5sum: {
+        title: "MD5sum",
+        description: "The md5sum of the file being transferred.",
+        type: "string",
+        format: "hex",
+        maxLength: 32,
+        pattern: "[a-f\\d]{32}|[A-F\\d]{32}",
+      },
+      submitted_file_name: {
+        title: "Submitted File Name",
+        description: "Original name of the file.",
+        type: "string",
+      },
+      upload_status: {
+        title: "Upload Status",
+        description: "The upload/validation status of the file.",
+        type: "string",
+        default: "pending",
+        permission: "import_items",
+        enum: ["pending", "file not found", "invalidated", "validated"],
+        readonly: true,
+      },
+      validation_error_detail: {
+        title: "Validation Error Detail",
+        description:
+          "Explanation of why the file failed the automated content checks.",
+        type: "string",
+        permission: "import_items",
+        readonly: true,
+      },
+      assembly: {
+        title: "Genome Assembly",
+        description: "Genome assembly applicable for the reference data.",
+        type: "string",
+        enum: ["GRCh38", "hg19", "GRCm39", "mm10"],
+      },
+      source: {
+        title: "Source",
+        description:
+          "Link to external resource, such as NCBI or GENCODE, where the reference data was obtained.",
+        type: "string",
+      },
+      "@id": {
+        title: "ID",
+        type: "string",
+        notSubmittable: true,
+      },
+      "@type": {
+        title: "Type",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        notSubmittable: true,
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
+        notSubmittable: true,
+      },
+      href: {
+        title: "Download URL",
+        description: "The download path to obtain file.",
+        comment: "Do not submit. This is issued by the server.",
+        type: "string",
+        notSubmittable: true,
+      },
+      upload_credentials: {
+        title: "Upload Credentials",
+        description:
+          "The upload credentials for S3 to submit the file content.",
+        comment: "Do not submit. This is issued by the server.",
+        type: "object",
+        notSubmittable: true,
+      },
+    },
+  },
+
+  SequenceData: {
+    title: "Sequence data",
+    $id: "/profiles/sequence_data.json",
+    required: [
+      "award",
+      "lab",
+      "md5sum",
+      "file_format",
+      "file_set",
+      "content_type",
+      "sequencing_run",
+    ],
+    identifyingProperties: [
+      "uuid",
+      "accession",
+      "alternate_accessions",
+      "aliases",
+      "md5sum",
+    ],
+    properties: {
+      documents: {
+        title: "Documents",
+        description:
+          "Documents that provide additional information (not data file).",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Document",
+          description:
+            "A document that provides additional information (not data file).",
+          type: "string",
+          comment: "See document.json for available identifiers.",
+          linkTo: "Document",
+        },
+      },
+      lab: {
+        title: "Lab",
+        description: "Lab associated with the submission.",
+        comment: "Required. See lab.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Lab",
+        linkSubmitsFor: true,
+      },
+      award: {
+        title: "Award",
+        description: "Grant associated with the submission.",
+        comment: "Required. See award.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Award",
+      },
+      accession: {
+        title: "Accession",
+        description:
+          "A unique identifier to be used to reference the object prefixed with IGVF.",
+        comment: "Do not submit. The accession is assigned by the server.",
+        type: "string",
+        format: "accession",
+        serverDefault: "accession",
+        permission: "import_items",
+        accessionType: "FI",
+        readonly: true,
+      },
+      alternate_accessions: {
+        title: "Alternate Accessions",
+        description:
+          "Accessions previously assigned to objects that have been merged with this object.",
+        comment:
+          "Do not submit. Only admins are allowed to set or update this value.",
+        type: "array",
+        minItems: 1,
+        permission: "import_items",
+        items: {
+          title: "Alternate Accession",
+          description:
+            "An accession previously assigned to an object that has been merged with this object.",
+          comment:
+            "Only accessions of objects that have status equal replaced will work here.",
+          type: "string",
+          format: "accession",
+        },
+        readonly: true,
+      },
+      collections: {
+        title: "Collections",
+        description: "Some samples are part of particular data collections.",
+        comment: "Do not submit. Collections are for DACC use only.",
+        type: "array",
+        minItems: 1,
+        permission: "import_items",
+        uniqueItems: true,
+        items: {
+          type: "string",
+          enum: ["ENCODE"],
+        },
+        readonly: true,
+      },
+      status: {
+        title: "Status",
+        type: "string",
+        permission: "import_items",
+        default: "in progress",
+        description: "The status of the metadata object.",
+        comment:
+          "Do not submit.  This is set by admins along the process of metadata submission.",
+        enum: [
+          "in progress",
+          "released",
+          "deleted",
+          "replaced",
+          "revoked",
+          "archived",
+        ],
+        readonly: true,
+      },
+      revoke_detail: {
+        title: "Revoke Detail",
+        type: "string",
+        permission: "import_items",
+        description:
+          "Explanation of why an object was transitioned to the revoked status.",
+        comment:
+          "Do not submit. This is set by admins when an object is revoked.",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+        readonly: true,
+      },
+      schema_version: {
+        title: "Schema Version",
+        description:
+          "The version of the JSON schema that the server uses to validate the object.",
+        comment:
+          "Do not submit. The version used to validate the object is set by the server. The default should be set to the current version.",
+        type: "string",
+        pattern: "^\\d+(\\.\\d+)*$",
+        requestMethod: [],
+        "hidden comment": "Bump the default in the subclasses.",
+        default: "2",
+      },
+      uuid: {
+        title: "UUID",
+        description: "The unique identifier associated with every object.",
+        comment: "Do not submit. The uuid is set by the server.",
+        type: "string",
+        format: "uuid",
+        serverDefault: "uuid4",
+        permission: "import_items",
+        requestMethod: "POST",
+        readonly: true,
+      },
+      notes: {
+        title: "Notes",
+        description: "DACC internal notes.",
+        comment:
+          "Do not submit. A place for the DACC to keep information that does not have a place in the schema.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        permission: "import_items",
+        formInput: "textarea",
+        readonly: true,
+      },
+      aliases: {
+        title: "Aliases",
+        description: "Lab specific identifiers to reference an object.",
+        comment:
+          "The purpose of this field is to provide a link into the lab LIMS and to facilitate shared objects.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          uniqueKey: "alias",
+          title: "Lab Alias",
+          description: "A lab specific identifier to reference an object.",
+          comment:
+            "Current convention is colon separated lab name and lab identifier. (e.g. john-doe:42).",
+          type: "string",
+          pattern:
+            "^(?:j-michael-cherry|ali-mortazavi|barbara-wold|lior-pachter|grant-macgregor|kim-green|mark-craven|qiongshi-lu|audrey-gasch|robert-steiner|jesse-engreitz|thomas-quertermous|anshul-kundaje|michael-bassik|will-greenleaf|marlene-rabinovitch|lars-steinmetz|jay-shendure|nadav-ahituv|martin-kircher|danwei-huangfu|michael-beer|anna-katerina-hadjantonakis|christina-leslie|alexander-rudensky|laura-donlin|hannah-carter|bing-ren|kyle-gaulton|maike-sander|charles-gersbach|gregory-crawford|tim-reddy|ansuman-satpathy|andrew-allen|gary-hon|nikhil-munshi|w-lee-kraus|lea-starita|doug-fowler|luca-pinello|guillaume-lettre|benhur-lee|daniel-bauer|richard-sherwood|benjamin-kleinstiver|marc-vidal|david-hill|frederick-roth|mikko-taipale|anne-carpenter|hyejung-won|karen-mohlke|michael-love|jason-buenrostro|bradley-bernstein|hilary-finucane|chongyuan-luo|noah-zaitlen|kathrin-plath|roy-wollman|jason-ernst|zhiping-weng|manuel-garber|xihong-lin|alan-boyle|ryan-mills|jie-liu|maureen-sartor|joshua-welch|stephen-montgomery|alexis-battle|livnat-jerby|jonathan-pritchard|predrag-radivojac|sean-mooney|harinder-singh|nidhi-sahni|jishnu-das|hao-wu|sreeram-kannan|hongjun-song|alkes-price|soumya-raychaudhuri|shamil-sunyaev|len-pennacchio|axel-visel|jill-moore|ting-wang|feng-yue|igvf|igvf-dacc):[a-zA-Z\\d_$.+!*,()'-]+(?:\\s[a-zA-Z\\d_$.+!*,()'-]+)*$",
+        },
+      },
+      creation_timestamp: {
+        "rdfs:subPropertyOf": "dc:created",
+        title: "Creation Timestamp",
+        description: "The date the object was created.",
+        comment:
+          "Do not submit. The date the object is created is assigned by the server.",
+        type: "string",
+        format: "date-time",
+        serverDefault: "now",
+        permission: "import_items",
+        readonly: true,
+      },
+      submitted_by: {
+        "rdfs:subPropertyOf": "dc:creator",
+        title: "Submitted By",
+        comment:
+          "Do not submit. The user that created the object is assigned by the server.",
+        type: "string",
+        linkTo: "User",
+        serverDefault: "userid",
+        permission: "import_items",
+        readonly: true,
+      },
+      submitter_comment: {
+        title: "Submitter Comment",
+        description:
+          "Additional information specified by the submitter to be displayed as a comment on the portal.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+      },
+      description: {
+        title: "Description",
+        description: "A plain text description of the object.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$|^$",
+        formInput: "textarea",
+      },
+      content_md5sum: {
+        title: "Content MD5sum",
+        description: "The MD5sum of the uncompressed file.",
+        type: "string",
+        permission: "import_items",
+        format: "hex",
+        maxLength: 32,
+        pattern: "[a-f\\d]{32}|[A-F\\d]{32}",
+        readonly: true,
+      },
+      content_type: {
+        title: "Content Type",
+        description: "The type of content in the file.",
+        comment:
+          "Content Type describes the content of the file. Reads are individual sequences of bases corresponding to DNA or RNA fragments in a FASTQ text file format. Subreads are sequences of bases produced using PacBio platforms.",
+        type: "string",
+        enum: ["reads", "subreads"],
+      },
+      dbxrefs: {
+        "@type": "@id",
+        "rdfs:subPropertyOf": "rdfs:seeAlso",
+        title: "External Resources",
+        description:
+          "Identifiers from external resources that may have 1-to-1 or 1-to-many relationships with IGVF file objects.",
+        comment:
+          "This property is overwritten by the subclasses to define specific enum values.",
+        type: "array",
+        uniqueItems: true,
+        items: {
+          title: "External identifier",
+          description:
+            "Identifier from an external resource that may have 1-to-1 or 1-to-many relationships with IGVF file objects.",
+          type: "string",
+          pattern: "^(SRA:(SRR|SRX)\\d+)$",
+        },
+      },
+      derived_from: {
+        title: "Derived From",
+        description:
+          "The files participating as inputs into software to produce this output file.",
+        type: "array",
+        uniqueItems: true,
+        items: {
+          comment: "See file.json for a list of available identifiers.",
+          type: "string",
+          linkTo: "File",
+        },
+      },
+      file_format: {
+        title: "File Format",
+        description: "The file format or extension of the file.",
+        comment:
+          "This property is overwritten by the subclasses to define specific enum values.",
+        type: "string",
+        enum: ["bam", "fastq"],
+      },
+      file_format_specifications: {
+        title: "File Format Specifications Documents",
+        description: "Document that further explains the file format.",
+        type: "array",
+        uniqueItems: true,
+        items: {
+          comment: "See document.json for a list of available identifiers.",
+          type: "string",
+          linkTo: "Document",
+        },
+      },
+      file_set: {
+        title: "File Set",
+        description: "The file set that this file belongs to.",
+        comment: "See file_set.json for a list of available identifiers.",
+        type: "string",
+        linkTo: "FileSet",
+      },
+      file_size: {
+        title: "File Size",
+        description: "File size specified in bytes.",
+        comment:
+          "Do not submit. This value is calculated by the checkfiles script upon submission.",
+        permission: "import_items",
+        type: "integer",
+        minimum: 0,
+        readonly: true,
+      },
+      md5sum: {
+        title: "MD5sum",
+        description: "The md5sum of the file being transferred.",
+        type: "string",
+        format: "hex",
+        maxLength: 32,
+        pattern: "[a-f\\d]{32}|[A-F\\d]{32}",
+      },
+      submitted_file_name: {
+        title: "Submitted File Name",
+        description: "Original name of the file.",
+        type: "string",
+      },
+      upload_status: {
+        title: "Upload Status",
+        description: "The upload/validation status of the file.",
+        type: "string",
+        default: "pending",
+        permission: "import_items",
+        enum: ["pending", "file not found", "invalidated", "validated"],
+        readonly: true,
+      },
+      validation_error_detail: {
+        title: "Validation Error Detail",
+        description:
+          "Explanation of why the file failed the automated content checks.",
+        type: "string",
+        permission: "import_items",
+        readonly: true,
+      },
+      read_count: {
+        title: "Read Count",
+        description: "Number of reads in a fastq file.",
+        comment:
+          "Do not submit. This value is calculated by the checkfiles script upon submission.",
+        permission: "import_items",
+        type: "integer",
+        minimum: 0,
+        readonly: true,
+      },
+      minimum_read_length: {
+        title: "Minimum Read Length",
+        description:
+          "For high-throughput sequencing, the minimum number of contiguous nucleotides determined by sequencing.",
+        comment:
+          "Do not submit. This value is calculated by the checkfiles script upon submission.",
+        permission: "import_items",
+        type: "integer",
+        minimum: 0,
+        readonly: true,
+      },
+      maximum_read_length: {
+        title: "Read Length",
+        description:
+          "For high-throughput sequencing, the maximum number of contiguous nucleotides determined by sequencing.",
+        comment:
+          "Do not submit. This value is calculated by the checkfiles script upon submission.",
+        permission: "import_items",
+        type: "integer",
+        minimum: 0,
+        readonly: true,
+      },
+      mean_read_length: {
+        title: "Read Length",
+        description:
+          "For high-throughput sequencing, the mean number of contiguous nucleotides determined by sequencing.",
+        comment:
+          "Do not submit. This value is calculated by the checkfiles script upon submission.",
+        permission: "import_items",
+        type: "integer",
+        minimum: 0,
+        readonly: true,
+      },
+      sequencing_run: {
+        title: "Sequencing Run",
+        description:
+          "An ordinal number indicating which sequencing run of the associated library that the file belongs to.",
+        type: "integer",
+        minimum: 1,
+      },
+      illumina_read_type: {
+        title: "Illumina Read Type",
+        description:
+          "The read type of the file. Relevant only for files produced using an Illumina sequencing platform.",
+        type: "string",
+        enum: ["R1", "R2", "R3", "I1", "I2"],
+      },
+      "@id": {
+        title: "ID",
+        type: "string",
+        notSubmittable: true,
+      },
+      "@type": {
+        title: "Type",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        notSubmittable: true,
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
+        notSubmittable: true,
+      },
+      href: {
+        title: "Download URL",
+        description: "The download path to obtain file.",
+        comment: "Do not submit. This is issued by the server.",
+        type: "string",
+        notSubmittable: true,
+      },
+      upload_credentials: {
+        title: "Upload Credentials",
+        description:
+          "The upload credentials for S3 to submit the file content.",
+        comment: "Do not submit. This is issued by the server.",
+        type: "object",
+        notSubmittable: true,
+      },
+    },
+  },
 };
 
 export default profiles;
