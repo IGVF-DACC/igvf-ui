@@ -341,7 +341,7 @@ OntologyTermDataItems.propTypes = {
 };
 
 /**
- * Display data items common to all sample-derived objects.
+ * Display data items common to all file-derived objects.
  */
 export function FileDataItems({ file, fileSet, derivedFrom, children }) {
   return (
@@ -418,6 +418,6 @@ FileDataItems.propTypes = {
   file: PropTypes.object.isRequired,
   // file set for this file
   fileSet: PropTypes.object.isRequired,
-  // file this file is derived from
+  // files this file is derived from
   derivedFrom: PropTypes.array.isRequired,
 };

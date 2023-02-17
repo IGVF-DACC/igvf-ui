@@ -37,7 +37,7 @@ export default function File({ item: file, accessoryData }) {
 }
 
 File.propTypes = {
-  // Single biosample-derived search-result object to display on a search-result list page
+  // Single file search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
   // Accessory data to display for all search-result objects
   accessoryData: PropTypes.object,

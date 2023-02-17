@@ -80,17 +80,17 @@ export default function ReferenceData({
 }
 
 ReferenceData.propTypes = {
-  // File object to display
+  // ReferenceData object to display
   referenceData: PropTypes.object.isRequired,
   // Award applied to this file
   award: PropTypes.object,
-  // Lab that submitted this sile
+  // Lab that submitted this file
   lab: PropTypes.object,
   // File set that contains this file
   fileSet: PropTypes.object,
-  // Documents set that contains this file
+  // Documents set associate with this file
   documents: PropTypes.array,
-  // The files participating as inputs into software to produce this output file
+  // The file is derived from
   derivedFrom: PropTypes.array,
 };
 
