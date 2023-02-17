@@ -14,6 +14,7 @@ import {
 export default function File({ item: file, accessoryData }) {
   const titleElements = [file.file_format, file.content_type];
   const lab = accessoryData?.[file.lab];
+  const summary = file.summary;
 
   return (
     <SearchListItemContent>
@@ -23,9 +24,10 @@ export default function File({ item: file, accessoryData }) {
           {file.accession}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{titleElements.join(" - ")}</SearchListItemTitle>
-        {lab && (
+        {(summary || lab) && (
           <SearchListItemMeta>
-            <div key="lab">{lab.title}</div>
+            {lab && <div key="lab">{lab.title}</div>}
+            {summary && <div key="summary">{summary}</div>}
           </SearchListItemMeta>
         )}
       </SearchListItemMain>
