@@ -927,7 +927,7 @@ describe("Test the AnalysisSet component", () => {
 
     const paths = AnalysisSet.getAccessoryDataPaths([item]);
     expect(paths).toEqual([
-      ["/analysis-sets/IGVFDS3099XPLN/"],
+      "/analysis-sets/IGVFDS3099XPLN/",
       "/labs/j-michael-cherry/",
     ]);
   });
