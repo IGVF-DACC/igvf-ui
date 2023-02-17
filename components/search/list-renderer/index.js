@@ -44,6 +44,7 @@ const renderers = {
   Document,
   Gene,
   HumanDonor,
+  InVitroSystem: Biosample,
   Lab,
   Page,
   PhenotypeTerm: OntologyTerm,
