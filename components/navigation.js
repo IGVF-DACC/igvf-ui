@@ -381,6 +381,38 @@ function Navigation({ navigationClick }) {
           Sequence Data
         </NavigationHrefItem>
       </NavigationGroupItem>
+      <NavigationGroupItem
+        id="file-sets"
+        title="File sets"
+        icon={<Icon.FileSet />}
+        isGroupOpened={openedParents.includes("file-sets")}
+        handleGroupClick={handleParentClick}
+      >
+        <NavigationHrefItem
+          id="analysis-sets"
+          href="/search?type=AnalysisSet"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Analysis Sets
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="curated-sets"
+          href="/search?type=CuratedSet"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Curated Sets
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="measurement-sets"
+          href="/search?type=MeasurementSet"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Measurement Sets
+        </NavigationHrefItem>
+      </NavigationGroupItem>
       <NavigationHrefItem
         id="genes"
         href="/search?type=Gene"

@@ -2,7 +2,10 @@ import { render, screen } from "@testing-library/react";
 import profiles from "../../__mocks__/profile";
 import SessionContext from "../../session-context";
 import Award from "../list-renderer/award";
+import AnalysisSet from "../list-renderer/analysis-set";
 import Biosample from "../list-renderer/biosample";
+import CuratedSet from "../list-renderer/curated-set";
+import MeasurementSet from "../list-renderer/measurement-set";
 import Document from "../list-renderer/document";
 import Gene from "../list-renderer/gene";
 import HumanDonor from "../list-renderer/human-donor";
@@ -939,6 +942,276 @@ describe("Test File component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^txt - sequence barcodes$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the AnalysisSet component", () => {
+  it("renders an AnalysisSet item with accessory data", () => {
+    const item = {
+      "@id": "/analysis-sets/IGVFDS0390NOLS/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS3099XPLN",
+      aliases: ["igvf:basic_analysis_set"],
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      summary: "IGVFDS3099XPLN",
+      input_file_sets: ["/analysis-sets/IGVFDS3099XPLN/"],
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    const accessoryData = {
+      "/labs/j-michael-cherry/": {
+        "@id": "/labs/j-michael-cherry/",
+        "@type": ["Lab", "Item"],
+        title: "J. Michael Cherry, Stanford",
+      },
+      "/analysis-sets/IGVFDS3099XPLN/": {
+        "@id": "/analysis-sets/IGVFDS3099XPLN/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+        accession: "IGVFDS3099XPLN",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisSet item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Analysis Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS3099XPLN$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Analysis$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("IGVFDS3099XPLN");
+
+    const supplement = screen.queryByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplement).toHaveTextContent("IGVFDS3099XPLN");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+
+    const paths = AnalysisSet.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      "/analysis-sets/IGVFDS3099XPLN/",
+      "/labs/j-michael-cherry/",
+    ]);
+  });
+
+  it("renders an AnalysisSet item without accessory data and summary", () => {
+    const item = {
+      "@id": "/analysis-sets/IGVFDS0390NOLS/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS3099XPLN",
+      aliases: ["igvf:basic_analysis_set"],
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Analysis Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS3099XPLN$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Analysis$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
+    const supplement = screen.queryByTestId("search-list-item-supplement");
+    expect(supplement).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the CuratedSet component", () => {
+  it("renders a CuratedSet item with accessory data", () => {
+    const item = {
+      "@id": "/curated-sets/IGVFDS0000AAAA/",
+      "@type": ["CuratedSet", "FileSet", "Item"],
+      accession: "IGVFDS0000AAAA",
+      aliases: ["igvf-dacc:GRCh38.p14_assembly"],
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      taxa: "Homo sapiens",
+      summary: "IGVFDS0000AAAA",
+      uuid: "40f1e08c-5d6d-4d19-8f69-3fd91420c09f",
+    };
+    const accessoryData = {
+      "/labs/j-michael-cherry/": {
+        "@id": "/labs/j-michael-cherry/",
+        "@type": ["Lab", "Item"],
+        title: "J. Michael Cherry, Stanford",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <CuratedSet item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^CuratedSet/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS0000AAAA$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Curated set$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+
+    const paths = CuratedSet.getAccessoryDataPaths([item]);
+    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
+  });
+
+  it("renders a CuratedSet item without accessory data and summary", () => {
+    const item = {
+      "@id": "/curated-sets/IGVFDS0000AAAA/",
+      "@type": ["CuratedSet", "FileSet", "Item"],
+      accession: "IGVFDS0000AAAA",
+      aliases: ["igvf-dacc:GRCh38.p14_assembly"],
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      taxa: "Homo sapiens",
+      uuid: "40f1e08c-5d6d-4d19-8f69-3fd91420c09f",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <CuratedSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^CuratedSet/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS0000AAAA$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Curated set$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the MeasurementSet component", () => {
+  it("renders a MeasurementSet item with accessory data", () => {
+    const item = {
+      "@id": "/measurement-sets/IGVFDS6408BFHD/",
+      "@type": ["MeasurementSet", "FileSet", "Item"],
+      accession: "IGVFDS6408BFHD",
+      aliases: ["igvf:basic_measurement_set"],
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      summary: "IGVFDS6408BFHD",
+      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
+      assay_term: "/assay-terms/OBI_0002041/",
+    };
+    const accessoryData = {
+      "/labs/j-michael-cherry/": {
+        "@id": "/labs/j-michael-cherry/",
+        "@type": ["Lab", "Item"],
+        title: "J. Michael Cherry, Stanford",
+      },
+      "/assay-terms/OBI_0002041/": {
+        "@id": "/assay-terms/OBI_0002041/",
+        "@type": ["AssayTerm", "OntologyTerm", "Item"],
+        term_name: "STARR-seq",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <MeasurementSet item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Measurement Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS6408BFHD$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^STARR-seq$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+
+    const paths = MeasurementSet.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      "/assay-terms/OBI_0002041/",
+      "/labs/j-michael-cherry/",
+    ]);
+  });
+
+  it("renders a MeasurementSet item without accessory data and summary", () => {
+    const item = {
+      "@id": "/measurement-sets/IGVFDS6408BFHD/",
+      "@type": ["MeasurementSet", "FileSet", "Item"],
+      accession: "IGVFDS6408BFHD",
+      aliases: ["igvf:basic_measurement_set"],
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
+      assay_term: "/assay-terms/OBI_0002041/",
+    };
+
+    const accessoryData = {
+      "/assay-terms/OBI_0002041/": {
+        "@id": "/assay-terms/OBI_0002041/",
+        "@type": ["AssayTerm", "OntologyTerm", "Item"],
+        term_name: "STARR-seq",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <MeasurementSet item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Measurement Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS6408BFHD$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^STARR-seq$/);
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();

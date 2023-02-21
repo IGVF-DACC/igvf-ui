@@ -52,6 +52,22 @@ const Icon = {
       />
     </svg>
   ),
+  FileSet: ({ className = null, testid = "icon-fileset" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path
+        d="M17.5,4.7h-6.2V4.4c0-1.4-1.1-2.5-2.5-2.5H2.5C1.1,1.9,0,3,0,4.4v2.7c0,0,0,0,0,0.1c0,0,0,0,0,0.1v8.1
+	c0,1.4,1.1,2.5,2.5,2.5h15.1c1.4,0,2.5-1.1,2.5-2.5V7.2C20,5.8,18.9,4.7,17.5,4.7z M8.6,13.2c0,0.7-0.5,1.2-1.2,1.2H4.7
+	c-0.7,0-1.2-0.5-1.2-1.2V9.3c0-0.7,0.5-1.2,1.2-1.2h2.7c0.7,0,1.2,0.5,1.2,1.2V13.2z M16.5,13.2c0,0.7-0.5,1.2-1.2,1.2h-2.7
+	c-0.7,0-1.2-0.5-1.2-1.2V9.3c0-0.7,0.5-1.2,1.2-1.2h2.7c0.7,0,1.2,0.5,1.2,1.2V13.2z"
+      />
+    </svg>
+  ),
   Gene: ({ className = null, testid = "icon-gene" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -171,6 +187,10 @@ Icon.Circle.propTypes = {
   testid: PropTypes.string,
 };
 Icon.Donor.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.FileSet.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
