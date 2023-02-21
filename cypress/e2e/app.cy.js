@@ -73,7 +73,6 @@ describe("Navigation", () => {
     cy.get("[data-testid=files]").click();
     cy.get("[data-testid=reference-data]").should("not.exist");
     cy.get("[data-testid=sequence-data]").should("not.exist");
-    
     cy.get("[data-testid=file-sets]").click();
 
     cy.get("[data-testid=analysis-sets]").click();

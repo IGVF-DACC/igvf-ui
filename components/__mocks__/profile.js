@@ -1419,8 +1419,8 @@ const profiles = {
       },
     },
   },
-  
-    AnalysisSet: {
+
+  AnalysisSet: {
     title: "Analysis Set",
     $id: "/profiles/analysis_set.json",
     required: ["award", "lab"],
