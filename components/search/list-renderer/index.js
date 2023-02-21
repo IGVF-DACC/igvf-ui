@@ -49,6 +49,7 @@ const renderers = {
   Document,
   Gene,
   HumanDonor,
+  InVitroSystem: Biosample,
   Lab,
   MeasurementSet,
   Page,

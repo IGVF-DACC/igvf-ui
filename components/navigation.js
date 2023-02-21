@@ -125,13 +125,14 @@ function NavigationSignInItem({ id, children }) {
    * We only know it was successful once `useAuth0` returns true in `isAuthenticated`.
    */
   function handleAuthClick() {
-    // Save the current path in auth0-react appState so we can redirect to it after signin, unless
-    // the user is on the authentication-error page, in which case we redirect to the home page
-    // after sign-in so the user doesn't see an authentication error after a good sign-in.
+    // Save the current path and query string in session storage so we can redirect to it after
+    // signin, unless the user is on the authentication-error page, in which case we redirect to
+    // the home page after sign-in so the user doesn't see an authentication error after a good
+    // sign-in.
     setRedirectTo(
       window.location.pathname === AUTH_ERROR_URI
         ? "/"
-        : window.location.pathname
+        : `${window.location.pathname}${window.location.search}`
     );
     loginWithRedirect();
   }
@@ -456,6 +457,14 @@ function Navigation({ navigationClick }) {
         isGroupOpened={openedParents.includes("samples")}
         handleGroupClick={handleParentClick}
       >
+        <NavigationHrefItem
+          id="in-vitro-systems"
+          href="/search?type=InVitroSystem"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          In Vitro Systems
+        </NavigationHrefItem>
         <NavigationHrefItem
           id="tissues"
           href="/search?type=Tissue"
