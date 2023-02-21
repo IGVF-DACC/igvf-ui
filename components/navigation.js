@@ -13,6 +13,7 @@ import {
   TagIcon,
   UserGroupIcon,
   UserIcon,
+  PaperClipIcon,
 } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
@@ -328,7 +329,7 @@ function Navigation({ navigationClick }) {
         navigationClick={navigationClick}
       >
         <NavigationIcon>
-          <DocumentTextIcon />
+          <PaperClipIcon />
         </NavigationIcon>
         Documents
       </NavigationHrefItem>
@@ -354,6 +355,30 @@ function Navigation({ navigationClick }) {
           isChildItem
         >
           Rodent Donors
+        </NavigationHrefItem>
+      </NavigationGroupItem>
+      <NavigationGroupItem
+        id="files"
+        title="Files"
+        icon={<DocumentTextIcon />}
+        isGroupOpened={openedParents.includes("files")}
+        handleGroupClick={handleParentClick}
+      >
+        <NavigationHrefItem
+          id="reference-data"
+          href="/search?type=ReferenceData"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Reference Data
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="sequence-data"
+          href="/search?type=SequenceData"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Sequence Data
         </NavigationHrefItem>
       </NavigationGroupItem>
       <NavigationHrefItem

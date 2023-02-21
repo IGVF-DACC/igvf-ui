@@ -339,3 +339,85 @@ OntologyTermDataItems.propTypes = {
   // Ontology term object
   ontologyTerm: PropTypes.object.isRequired,
 };
+
+/**
+ * Display data items common to all file-derived objects.
+ */
+export function FileDataItems({ file, fileSet, derivedFrom, children }) {
+  return (
+    <>
+      <DataItemLabel>File Set</DataItemLabel>
+      <DataItemValue>
+        <Link
+          href={fileSet["@id"]}
+          aria-label={`FileSet ${fileSet.accession}`}
+          key={fileSet.uuid}
+        >
+          {fileSet.accession}
+        </Link>
+      </DataItemValue>
+      <DataItemLabel>File Format</DataItemLabel>
+      <DataItemValue>{file.file_format}</DataItemValue>
+      <DataItemLabel>Content Type</DataItemLabel>
+      <DataItemValue>{file.content_type}</DataItemValue>
+      <DataItemLabel>md5sum</DataItemLabel>
+      <DataItemValue>{file.md5sum}</DataItemValue>
+      {file.content_md5sum && (
+        <>
+          <DataItemLabel>Content MD5sum</DataItemLabel>
+          <DataItemValue>{file.content_md5sum}</DataItemValue>
+        </>
+      )}
+      {file.file_size && (
+        <>
+          <DataItemLabel>File Size</DataItemLabel>
+          <DataItemValue>{file.file_size}</DataItemValue>
+        </>
+      )}
+      {derivedFrom.length > 0 && (
+        <>
+          <DataItemLabel>Derived From</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {derivedFrom.map((file) => (
+                <Link
+                  href={file["@id"]}
+                  aria-label={`file ${file.accession}`}
+                  key={file.accession}
+                >
+                  {file.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
+      {children}
+      {file.aliases?.length > 0 && (
+        <>
+          <DataItemLabel>Aliases</DataItemLabel>
+          <DataItemValue>
+            <AliasList aliases={file.aliases} />
+          </DataItemValue>
+        </>
+      )}
+      {file.dbxrefs?.length > 0 && (
+        <>
+          <DataItemLabel>External Resources</DataItemLabel>
+          <DataItemValue>
+            <DbxrefList dbxrefs={file.dbxrefs} />
+          </DataItemValue>
+        </>
+      )}
+    </>
+  );
+}
+
+FileDataItems.propTypes = {
+  // file object common for all file types
+  file: PropTypes.object.isRequired,
+  // file set for this file
+  fileSet: PropTypes.object.isRequired,
+  // files this file is derived from
+  derivedFrom: PropTypes.array.isRequired,
+};

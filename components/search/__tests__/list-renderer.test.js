@@ -12,6 +12,7 @@ import Page from "../list-renderer/page";
 import RodentDonor from "../list-renderer/rodent-donor";
 import TechnicalSample from "../list-renderer/technical-sample";
 import User from "../list-renderer/user";
+import File from "../list-renderer/file";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -866,5 +867,83 @@ describe("Test User component", () => {
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
+  });
+});
+
+describe("Test File component", () => {
+  it("renders a File item with accessory data", () => {
+    const item = {
+      "@id": "/reference-data/IGVFFI0000SQBR/",
+      "@type": ["ReferenceData", "File", "Item"],
+      accession: "IGVFFI0000SQBR",
+      file_format: "txt",
+      content_type: "sequence barcodes",
+      lab: "/labs/christina-leslie/",
+      summary: "IGVFFI0000SQBR",
+      uuid: "fa9feeb4-28ba-4356-8c24-50f4e6562029",
+      status: "released",
+    };
+    const accessoryData = {
+      "/labs/christina-leslie/": {
+        "@id": "/labs/christina-leslie/",
+        "@type": ["Lab", "Item"],
+        title: "Christina Leslie, MSKCC",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <File item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Reference data/);
+    expect(uniqueId).toHaveTextContent(/IGVFFI0000SQBR$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^txt - sequence barcodes$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("Christina Leslie, MSKCC");
+    expect(meta).toHaveTextContent("IGVFFI0000SQBR");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+
+    const paths = File.getAccessoryDataPaths([item]);
+    expect(paths).toEqual(["/labs/christina-leslie/"]);
+  });
+
+  it("renders a File item without accessory data and summary", () => {
+    const item = {
+      "@id": "/reference-data/IGVFFI0000SQBR/",
+      "@type": ["ReferenceData", "File", "Item"],
+      accession: "IGVFFI0000SQBR",
+      file_format: "txt",
+      content_type: "sequence barcodes",
+      lab: "/labs/christina-leslie/",
+      uuid: "fa9feeb4-28ba-4356-8c24-50f4e6562029",
+      status: "released",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <File item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Reference data/);
+    expect(uniqueId).toHaveTextContent(/IGVFFI0000SQBR$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^txt - sequence barcodes$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
   });
 });

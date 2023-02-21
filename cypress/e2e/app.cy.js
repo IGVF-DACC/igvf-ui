@@ -48,6 +48,32 @@ describe("Navigation", () => {
     cy.get("[data-testid=human-donors]").should("not.exist");
     cy.get("[data-testid=rodent-donors]").should("not.exist");
 
+    cy.get("[data-testid=files]").click();
+
+    cy.get("[data-testid=reference-data]").click();
+    cy.url().should("include", "/search?type=ReferenceData");
+    cy.get("[data-testid=search-results-view-switch]").should("exist");
+    cy.get("[data-testid=form-select]").should("exist");
+    cy.get("[data-testid=search-results-count]").should("exist");
+    cy.get("[data-testid=search-list]")
+      .find("li")
+      .its("length")
+      .should("be.gte", 2);
+
+    cy.get("[data-testid=sequence-data]").click();
+    cy.url().should("include", "/search?type=SequenceData");
+    cy.get("[data-testid=search-results-view-switch]").should("exist");
+    cy.get("[data-testid=form-select]").should("exist");
+    cy.get("[data-testid=search-results-count]").should("exist");
+    cy.get("[data-testid=search-list]")
+      .find("li")
+      .its("length")
+      .should("be.gte", 3);
+
+    cy.get("[data-testid=files]").click();
+    cy.get("[data-testid=reference-data]").should("not.exist");
+    cy.get("[data-testid=sequence-data]").should("not.exist");
+
     cy.get("[data-testid=genes]").click();
     cy.url().should("include", "/search?type=Gene");
     cy.get("[data-testid=search-results-view-switch]").should("exist");
