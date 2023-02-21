@@ -37,6 +37,7 @@ import MeasurementSet from "./measurement-set";
 import OntologyTerm from "./ontology-term";
 import Page from "./page";
 import RodentDonor from "./rodent-donor";
+import Software from "./software";
 import TechnicalSample from "./technical-sample";
 import Treatment from "./treatment";
 import User from "./user";
@@ -60,6 +61,7 @@ const renderers = {
   RodentDonor,
   SampleTerm: OntologyTerm,
   SequenceData: File,
+  Software,
   TechnicalSample,
   Tissue: Biosample,
   Treatment,
