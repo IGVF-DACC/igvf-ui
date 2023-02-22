@@ -21,7 +21,7 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
   const inputFileSetsKeys = analysisSet.input_file_sets;
   const inputFileSetsAccessions =
     inputFileSetsKeys && accessoryData
-      ? inputFileSetsKeys.map((key) => accessoryData[key]["accession"])
+      ? inputFileSetsKeys.map((key) => accessoryData[key].accession)
       : null;
 
   return (

@@ -48,12 +48,11 @@ export function ProfileMap({ children }) {
       Object.values(profiles)
         .filter((p) => {
           return (
-            Object.keys(p).includes("$id") &&
-            !EXCLUDED_PROFILES.includes(p["$id"])
+            Object.keys(p).includes("$id") && !EXCLUDED_PROFILES.includes(p.$id)
           );
         })
         .forEach((p) => {
-          const profileName = p["$id"].match(/^\/profiles\/(.+).json$/)[1];
+          const profileName = p.$id.match(/^\/profiles\/(.+).json$/)[1];
           // Get the mapped collection for the profile schema
           api.getObject(`/api/mapprofile/${profileName}`).then((collect) => {
             setMapping((current) => {

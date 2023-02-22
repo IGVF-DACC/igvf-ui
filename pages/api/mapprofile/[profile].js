@@ -14,15 +14,13 @@ export default function mapprofile(req, res) {
         .then((response) => {
           if (FetchRequest.isResponseSuccess(response)) {
             return res.status(HTTP_STATUS_CODE.OK).json(response);
-          } else {
-            res
-              .status(HTTP_STATUS_CODE.BAD_REQUEST)
-              .json({ error: "Bad Request" });
           }
+          res
+            .status(HTTP_STATUS_CODE.BAD_REQUEST)
+            .json({ error: "Bad Request" });
         });
-    } else {
-      res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({ error: "Bad Request" });
     }
+    res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({ error: "Bad Request" });
   } else {
     res.status(HTTP_STATUS_CODE.METHOD_NOT_ALLOWED).end();
   }

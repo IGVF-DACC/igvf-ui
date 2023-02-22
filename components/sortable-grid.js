@@ -301,26 +301,26 @@ export default function SortableGrid({
   if (!sortByColumn) {
     setSortBy(columns[0].id);
     return null;
-  } else {
-    // Convert the data (simple array of objects) into a data grid array and render the table.
-    const sortedData = initialSort.isSortingSuppressed
-      ? data
-      : sortData(data, columns, sortBy, sortDirection);
-    const dataRows = convertObjectArrayToDataGrid(sortedData, columns, keyProp);
-    return (
-      <DataGrid
-        data={headerRow.concat(dataRows)}
-        meta={{
-          ...meta,
-          sortBy,
-          columns,
-          sortDirection,
-          handleSortClick,
-          dataLength: dataRows.length,
-        }}
-      />
-    );
   }
+
+  // Convert the data (simple array of objects) into a data grid array and render the table.
+  const sortedData = initialSort.isSortingSuppressed
+    ? data
+    : sortData(data, columns, sortBy, sortDirection);
+  const dataRows = convertObjectArrayToDataGrid(sortedData, columns, keyProp);
+  return (
+    <DataGrid
+      data={headerRow.concat(dataRows)}
+      meta={{
+        ...meta,
+        sortBy,
+        columns,
+        sortDirection,
+        handleSortClick,
+        dataLength: dataRows.length,
+      }}
+    />
+  );
 }
 
 SortableGrid.propTypes = {

@@ -89,11 +89,11 @@ const iconCircleButtonSizeClasses = {
 function generateButtonSizeClasses(size, hasIconOnly, hasIconCircleOnly) {
   if (hasIconOnly) {
     return iconButtonSizeClasses[size];
-  } else if (hasIconCircleOnly) {
-    return iconCircleButtonSizeClasses[size];
-  } else {
-    return buttonSizeClasses[size];
   }
+  if (hasIconCircleOnly) {
+    return iconCircleButtonSizeClasses[size];
+  }
+  return buttonSizeClasses[size];
 }
 
 /*

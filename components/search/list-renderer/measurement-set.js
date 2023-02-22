@@ -47,9 +47,9 @@ MeasurementSet.propTypes = {
 };
 
 MeasurementSet.getAccessoryDataPaths = (measurementSets) => {
-  const assay_terms = measurementSets
+  const assayTerms = measurementSets
     .map((measurementSet) => measurementSet.assay_term)
     .filter(Boolean);
   const labs = measurementSets.map((measurementSet) => measurementSet.lab);
-  return assay_terms.concat(labs);
+  return assayTerms.concat(labs);
 };
