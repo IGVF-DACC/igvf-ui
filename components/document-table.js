@@ -19,7 +19,7 @@ const columns = [
       return (
         <ItemLink
           href={source["@id"]}
-          label={`View page for document ${source.description}`}
+          label={`View page for software version ${source.name}`}
         />
       );
     },

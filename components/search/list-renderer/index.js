@@ -38,6 +38,7 @@ import OntologyTerm from "./ontology-term";
 import Page from "./page";
 import RodentDonor from "./rodent-donor";
 import Software from "./software";
+import SoftwareVersion from "./software-version";
 import TechnicalSample from "./technical-sample";
 import Treatment from "./treatment";
 import User from "./user";
@@ -62,6 +63,7 @@ const renderers = {
   SampleTerm: OntologyTerm,
   SequenceData: File,
   Software,
+  SoftwareVersion,
   TechnicalSample,
   Tissue: Biosample,
   Treatment,

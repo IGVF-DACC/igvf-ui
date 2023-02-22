@@ -11,35 +11,42 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function Software({ item: software, accessoryData }) {
-  const lab = accessoryData?.[software.lab];
+export default function SoftwareVersion({
+  item: softwareVersion,
+  accessoryData,
+}) {
+  const lab = accessoryData?.[softwareVersion.lab];
+  const titleElements = [
+    softwareVersion.software?.title,
+    softwareVersion.version,
+  ].filter(Boolean);
 
   return (
     <SearchListItemContent>
       <SearchListItemMain>
         <SearchListItemUniqueId>
-          <SearchListItemType item={software} />
-          {software.name}
+          <SearchListItemType item={softwareVersion} />
+          {softwareVersion.name}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{software.title}</SearchListItemTitle>
+        <SearchListItemTitle>{titleElements.join(" ")}</SearchListItemTitle>
         {lab && (
           <SearchListItemMeta>
             <div key="lab">{lab.title}</div>
           </SearchListItemMeta>
         )}
       </SearchListItemMain>
-      <SearchListItemStatus item={software} />
+      <SearchListItemStatus item={softwareVersion} />
     </SearchListItemContent>
   );
 }
 
-Software.propTypes = {
-  // Single software object to display on a search-result list page
+SoftwareVersion.propTypes = {
+  // Single SoftwareVersion search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
   // Accessory data to display for all search-result objects
   accessoryData: PropTypes.object,
 };
 
-Software.getAccessoryDataPaths = (softwares) => {
-  return softwares.map((software) => software.lab);
+SoftwareVersion.getAccessoryDataPaths = (softwareVersions) => {
+  return softwareVersions.map((softwareVersion) => softwareVersion.lab);
 };
