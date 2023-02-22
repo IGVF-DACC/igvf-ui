@@ -49,10 +49,14 @@ export default function CuratedSet({
                 <DataItemValue>{curatedSet.taxa}</DataItemValue>
               </>
             )}
-            <DataItemLabel>Aliases</DataItemLabel>
-            <DataItemValue>
-              <AliasList aliases={curatedSet.aliases} />
-            </DataItemValue>
+            {curatedSet.aliases?.length > 0 && (
+              <>
+                <DataItemLabel>Aliases</DataItemLabel>
+                <DataItemValue>
+                  <AliasList aliases={curatedSet.aliases} />
+                </DataItemValue>
+              </>
+            )}
             {donors.length > 0 && (
               <>
                 <DataItemLabel>Donors</DataItemLabel>
