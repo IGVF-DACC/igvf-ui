@@ -542,7 +542,7 @@ function Navigation({ navigationClick }) {
           Software
         </NavigationHrefItem>
         <NavigationHrefItem
-          id="software-versoins"
+          id="software-versions"
           href="/search?type=SoftwareVersion"
           navigationClick={navigationClick}
           isChildItem

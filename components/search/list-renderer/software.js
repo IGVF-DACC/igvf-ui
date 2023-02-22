@@ -11,9 +11,8 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function Software({ item: software, accessoryData }) {
-  const lab = accessoryData?.[software.lab];
-
+export default function Software({ item: software }) {
+  const lab = software.lab;
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -36,10 +35,4 @@ export default function Software({ item: software, accessoryData }) {
 Software.propTypes = {
   // Single software object to display on a search-result list page
   item: PropTypes.object.isRequired,
-  // Accessory data to display for all search-result objects
-  accessoryData: PropTypes.object,
-};
-
-Software.getAccessoryDataPaths = (softwares) => {
-  return softwares.map((software) => software.lab);
 };

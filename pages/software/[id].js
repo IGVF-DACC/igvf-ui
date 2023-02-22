@@ -43,14 +43,18 @@ export default function Software({ software }) {
                 {software.source_url}
               </Link>
             </DataItemValue>
-            <DataItemLabel>Aliases</DataItemLabel>
-            <DataItemValue>
-              <AliasList aliases={software.aliases} />
-            </DataItemValue>
+            {software.aliases && software.aliases.length > 0 && (
+              <>
+                <DataItemLabel>Aliases</DataItemLabel>
+                <DataItemValue>
+                  <AliasList aliases={software.aliases} />
+                </DataItemValue>
+              </>
+            )}
           </DataArea>
         </DataPanel>
 
-        {software.versions.length > 0 && (
+        {software.versions && software.versions.length > 0 && (
           <>
             <DataAreaTitle>Software Versions</DataAreaTitle>
             <SoftwareVersionTable versions={software.versions} />

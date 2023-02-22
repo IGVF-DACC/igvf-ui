@@ -2463,6 +2463,194 @@ const profiles = {
       },
     },
   },
+
+  SoftwareVersion: {
+    title: "Software version",
+    description: "Schema for submitting a tagged version of a software object.",
+    $id: "/profiles/software_version.json",
+
+    identifyingProperties: ["uuid", "aliases", "software.name-version"],
+
+    properties: {
+      references: {
+        title: "References",
+        description:
+          "The references that provide more information about the object.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Reference",
+          description:
+            "A reference that provide smore information about the object.",
+          type: "string",
+          pattern:
+            "^(PMID:[0-9]+|doi:10\\.[0-9]{4}[\\d\\s\\S\\:\\.\\/]+|PMCID:PMC[0-9]+|[0-9]{4}\\.[0-9]{4})$",
+        },
+      },
+      lab: {
+        title: "Lab",
+        description: "Lab associated with the submission.",
+        comment: "Required. See lab.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Lab",
+        linkSubmitsFor: true,
+      },
+      award: {
+        title: "Award",
+        description: "Grant associated with the submission.",
+        comment: "Required. See award.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Award",
+      },
+      status: {
+        title: "Status",
+        type: "string",
+        default: "in progress",
+        permission: "import_items",
+        enum: ["deleted", "in progress", "released"],
+      },
+      schema_version: {
+        title: "Schema Version",
+        description:
+          "The version of the JSON schema that the server uses to validate the object.",
+        comment:
+          "Do not submit. The version used to validate the object is set by the server. The default should be set to the current version.",
+        type: "string",
+        pattern: "^\\d+(\\.\\d+)*$",
+        requestMethod: [],
+        default: "1",
+      },
+      uuid: {
+        title: "UUID",
+        description: "The unique identifier associated with every object.",
+        comment: "Do not submit. The uuid is set by the server.",
+        type: "string",
+        format: "uuid",
+        serverDefault: "uuid4",
+        permission: "import_items",
+        requestMethod: "POST",
+      },
+      notes: {
+        title: "Notes",
+        description: "DACC internal notes.",
+        comment:
+          "Do not submit. A place for the DACC to keep information that does not have a place in the schema.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        permission: "import_items",
+        formInput: "textarea",
+      },
+      aliases: {
+        title: "Aliases",
+        description: "Lab specific identifiers to reference an object.",
+        comment:
+          "The purpose of this field is to provide a link into the lab LIMS and to facilitate shared objects.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          uniqueKey: "alias",
+          title: "Lab Alias",
+          description: "A lab specific identifier to reference an object.",
+          comment:
+            "Current convention is colon separated lab name and lab identifier. (e.g. john-doe:42).",
+          type: "string",
+          pattern:
+            "^(?:j-michael-cherry|ali-mortazavi|barbara-wold|lior-pachter|grant-macgregor|kim-green|mark-craven|qiongshi-lu|audrey-gasch|robert-steiner|jesse-engreitz|thomas-quertermous|anshul-kundaje|michael-bassik|will-greenleaf|marlene-rabinovitch|lars-steinmetz|jay-shendure|nadav-ahituv|martin-kircher|danwei-huangfu|michael-beer|anna-katerina-hadjantonakis|christina-leslie|alexander-rudensky|laura-donlin|hannah-carter|bing-ren|kyle-gaulton|maike-sander|charles-gersbach|gregory-crawford|tim-reddy|ansuman-satpathy|andrew-allen|gary-hon|nikhil-munshi|w-lee-kraus|lea-starita|doug-fowler|luca-pinello|guillaume-lettre|benhur-lee|daniel-bauer|richard-sherwood|benjamin-kleinstiver|marc-vidal|david-hill|frederick-roth|mikko-taipale|anne-carpenter|hyejung-won|karen-mohlke|michael-love|jason-buenrostro|bradley-bernstein|hilary-finucane|chongyuan-luo|noah-zaitlen|kathrin-plath|roy-wollman|jason-ernst|zhiping-weng|manuel-garber|xihong-lin|alan-boyle|ryan-mills|jie-liu|maureen-sartor|joshua-welch|stephen-montgomery|alexis-battle|livnat-jerby|jonathan-pritchard|predrag-radivojac|sean-mooney|harinder-singh|nidhi-sahni|jishnu-das|hao-wu|sreeram-kannan|hongjun-song|alkes-price|soumya-raychaudhuri|shamil-sunyaev|len-pennacchio|axel-visel|jill-moore|ting-wang|feng-yue|igvf|igvf-dacc):[a-zA-Z\\d_$.+!*,()'-]+(?:\\s[a-zA-Z\\d_$.+!*,()'-]+)*$",
+        },
+      },
+      creation_timestamp: {
+        "rdfs:subPropertyOf": "dc:created",
+        title: "Creation Timestamp",
+        description: "The date the object was created.",
+        comment:
+          "Do not submit. The date the object is created is assigned by the server.",
+        type: "string",
+        format: "date-time",
+        serverDefault: "now",
+        permission: "import_items",
+      },
+      submitted_by: {
+        "rdfs:subPropertyOf": "dc:creator",
+        title: "Submitted By",
+        comment:
+          "Do not submit. The user that created the object is assigned by the server.",
+        type: "string",
+        linkTo: "User",
+        serverDefault: "userid",
+        permission: "import_items",
+      },
+      submitter_comment: {
+        title: "Submitter Comment",
+        description:
+          "Additional information specified by the submitter to be displayed as a comment on the portal.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+      },
+      description: {
+        title: "Description",
+        description: "A plain text description of the object.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$|^$",
+        formInput: "textarea",
+      },
+      software: {
+        title: "Software",
+        description: "Unique name of the software package.",
+        comment: "See software.json for available identifiers.",
+        type: "string",
+        linkTo: "Software",
+      },
+      version: {
+        title: "Version",
+        description: "The version of a particular software.",
+        comment: "A string to identify a specific version of the software.",
+        type: "string",
+        pattern: "^[0-9].*",
+      },
+      download_id: {
+        title: "Download ID",
+        description:
+          "The MD5 checksum, SHA-1 commit ID, image hash, or similar permanent identifier of the particular version of software used.",
+        comment:
+          "Prefer SHA-1 of commit ID if available, otherwise use md5sum of downloaded software.",
+        type: "string",
+        format: "hex",
+      },
+      downloaded_url: {
+        title: "Download URL",
+        description:
+          "An external resource to track the version of the software downloaded.",
+        type: "string",
+        format: "uri",
+      },
+      "@id": {
+        title: "ID",
+        type: "string",
+        notSubmittable: true,
+      },
+      "@type": {
+        title: "Type",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        notSubmittable: true,
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
+        notSubmittable: true,
+      },
+      name: {
+        title: "Name",
+        type: "string",
+        notSubmittable: true,
+      },
+    },
+  },
 };
 
 export default profiles;

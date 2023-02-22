@@ -20,15 +20,15 @@ export default function SoftwareVersion({
     softwareVersion.software?.title,
     softwareVersion.version,
   ].filter(Boolean);
-
+  const title = titleElements.join(" ");
   return (
     <SearchListItemContent>
       <SearchListItemMain>
         <SearchListItemUniqueId>
           <SearchListItemType item={softwareVersion} />
-          {softwareVersion.name}
+          {title}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{titleElements.join(" ")}</SearchListItemTitle>
+        <SearchListItemTitle>{title}</SearchListItemTitle>
         {lab && (
           <SearchListItemMeta>
             <div key="lab">{lab.title}</div>

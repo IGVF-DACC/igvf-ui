@@ -15,6 +15,7 @@ import OntologyTerm from "../list-renderer/ontology-term";
 import Page from "../list-renderer/page";
 import RodentDonor from "../list-renderer/rodent-donor";
 import Software from "../list-renderer/software";
+import SoftwareVersion from "../list-renderer/software-version";
 import TechnicalSample from "../list-renderer/technical-sample";
 import User from "../list-renderer/user";
 
@@ -1223,27 +1224,21 @@ describe("Test the MeasurementSet component", () => {
 });
 
 describe("Test the Software component", () => {
-  it("renders a Software item with accessory data", () => {
+  it("renders a Software item", () => {
     const item = {
       "@id": "/software/bowtie2/",
       "@type": ["Software", "Item"],
       name: "bowtie2",
       title: "Bowtie2",
-      lab: "/labs/j-michael-cherry/",
-      status: "released",
-      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
-    };
-    const accessoryData = {
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
+      lab: {
         title: "J. Michael Cherry, Stanford",
       },
+      status: "released",
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <Software item={item} accessoryData={accessoryData} />
+        <Software item={item} />
       </SessionContext.Provider>
     );
 
@@ -1259,17 +1254,61 @@ describe("Test the Software component", () => {
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the SoftwareVersion component", () => {
+  it("renders a SoftwareVersion item with accessory data", () => {
+    const item = {
+      "@id": "/software-versions/bowtie2-v2.4.4/",
+      "@type": ["SoftwareVersion", "Item"],
+      software: {
+        title: "Bowtie2",
+      },
+      version: "2.4.4",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
+    };
+    const accessoryData = {
+      "/labs/j-michael-cherry/": {
+        "@id": "/labs/j-michael-cherry/",
+        "@type": ["Lab", "Item"],
+        title: "J. Michael Cherry, Stanford",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <SoftwareVersion item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Software/);
+    expect(uniqueId).toHaveTextContent(/Bowtie2 2.4.4$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Bowtie2 2.4.4$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
 
     const paths = MeasurementSet.getAccessoryDataPaths([item]);
     expect(paths).toEqual(["/labs/j-michael-cherry/"]);
   });
 
-  it("renders a software item without accessory data", () => {
+  it("renders a SoftwareVersion item without accessory data", () => {
     const item = {
-      "@id": "/software/bowtie2/",
-      "@type": ["Software", "Item"],
-      name: "bowtie2",
-      title: "Bowtie2",
+      "@id": "/software-versions/bowtie2-v2.4.4/",
+      "@type": ["SoftwareVersion", "Item"],
+      software: {
+        title: "Bowtie2",
+      },
+      version: "2.4.4",
       lab: "/labs/j-michael-cherry/",
       status: "released",
       uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
@@ -1277,16 +1316,16 @@ describe("Test the Software component", () => {
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <Software item={item} />
+        <SoftwareVersion item={item} />
       </SessionContext.Provider>
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/^Software/);
-    expect(uniqueId).toHaveTextContent(/bowtie2$/);
+    expect(uniqueId).toHaveTextContent(/Bowtie2 2.4.4$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^Bowtie2$/);
+    expect(title).toHaveTextContent(/^Bowtie2 2.4.4$/);
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
