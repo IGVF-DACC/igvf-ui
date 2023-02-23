@@ -19,7 +19,6 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
-import Link from "next/link";
 
 export default function Software({ software }) {
   return (
@@ -39,9 +38,9 @@ export default function Software({ software }) {
             <DataItemValue>{software.description}</DataItemValue>
             <DataItemLabel>Source URL</DataItemLabel>
             <DataItemValue>
-              <Link href={software.source_url} key={software.source_url}>
+              <a href={software.source_url} target="_blank" rel="noreferrer">
                 {software.source_url}
-              </Link>
+              </a>
             </DataItemValue>
             {software.aliases?.length > 0 && (
               <>

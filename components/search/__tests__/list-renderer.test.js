@@ -1297,7 +1297,7 @@ describe("Test the SoftwareVersion component", () => {
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
 
-    const paths = MeasurementSet.getAccessoryDataPaths([item]);
+    const paths = SoftwareVersion.getAccessoryDataPaths([item]);
     expect(paths).toEqual(["/labs/j-michael-cherry/"]);
   });
 

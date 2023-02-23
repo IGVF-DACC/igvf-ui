@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import { DataGridContainer } from "./data-grid";
 import ItemLink from "./item-link";
 import SortableGrid from "./sortable-grid";
-import Link from "next/link";
 
 /**
  * Columns displayed in the software version table.
@@ -32,13 +31,9 @@ const columns = [
     title: "Download",
     display: ({ source }) => {
       return (
-        <Link
-          href={source.downloaded_url}
-          key={source.downloaded_url}
-          target="_blank"
-        >
+        <a href={source.downloaded_url} target="_blank" rel="noreferrer">
           {source.downloaded_url}
-        </Link>
+        </a>
       );
     },
   },
