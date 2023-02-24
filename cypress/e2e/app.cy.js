@@ -214,6 +214,25 @@ describe("Navigation", () => {
     cy.get("[data-testid=primary-cells]").should("not.exist");
     cy.get("[data-testid=technical-samples]").should("not.exist");
 
+    cy.get("[data-testid=software-parent]").click();
+
+    cy.get("[data-testid=software]").click();
+    cy.url().should("include", "/search?type=Software");
+    cy.get("[data-testid=search-results-view-switch]").should("exist");
+    cy.get("[data-testid=form-select]").should("exist");
+    cy.get("[data-testid=search-results-count]").should("exist");
+    cy.get("[data-testid=search-list]")
+      .find("li")
+      .its("length")
+      .should("be.gte", 1);
+
+    cy.get("[data-testid=software-versions]").click();
+    cy.url().should("include", "/search?type=SoftwareVersion");
+
+    cy.get("[data-testid=software-parent]").click();
+    cy.get("[data-testid=software]").should("not.exist");
+    cy.get("[data-testid=software-versions]").should("not.exist");
+
     cy.get("[data-testid=treatments]").click();
     cy.url().should("include", "/search?type=Treatment");
     cy.get("[data-testid=search-results-view-switch]").should("exist");

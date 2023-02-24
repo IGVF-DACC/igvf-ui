@@ -5,6 +5,7 @@ import {
   CodeBracketIcon,
   Bars2Icon,
   BeakerIcon,
+  CircleStackIcon,
   DocumentIcon,
   DocumentTextIcon,
   MinusIcon,
@@ -525,6 +526,30 @@ function Navigation({ navigationClick }) {
         </NavigationIcon>
         Schemas
       </NavigationHrefItem>
+      <NavigationGroupItem
+        id="software-parent"
+        title="Software"
+        icon={<CircleStackIcon />}
+        isGroupOpened={openedParents.includes("software-parent")}
+        handleGroupClick={handleParentClick}
+      >
+        <NavigationHrefItem
+          id="software"
+          href="/search?type=Software"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Software
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="software-versions"
+          href="/search?type=SoftwareVersion"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Software Versions
+        </NavigationHrefItem>
+      </NavigationGroupItem>
       <NavigationHrefItem
         id="treatments"
         href="/search?type=Treatment"

@@ -5,17 +5,19 @@ import Award from "../list-renderer/award";
 import AnalysisSet from "../list-renderer/analysis-set";
 import Biosample from "../list-renderer/biosample";
 import CuratedSet from "../list-renderer/curated-set";
-import MeasurementSet from "../list-renderer/measurement-set";
 import Document from "../list-renderer/document";
+import File from "../list-renderer/file";
+import MeasurementSet from "../list-renderer/measurement-set";
 import Gene from "../list-renderer/gene";
 import HumanDonor from "../list-renderer/human-donor";
 import Lab from "../list-renderer/lab";
 import OntologyTerm from "../list-renderer/ontology-term";
 import Page from "../list-renderer/page";
 import RodentDonor from "../list-renderer/rodent-donor";
+import Software from "../list-renderer/software";
+import SoftwareVersion from "../list-renderer/software-version";
 import TechnicalSample from "../list-renderer/technical-sample";
 import User from "../list-renderer/user";
-import File from "../list-renderer/file";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -1212,6 +1214,118 @@ describe("Test the MeasurementSet component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^STARR-seq$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the Software component", () => {
+  it("renders a Software item", () => {
+    const item = {
+      "@id": "/software/bowtie2/",
+      "@type": ["Software", "Item"],
+      name: "bowtie2",
+      title: "Bowtie2",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Software item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Software/);
+    expect(uniqueId).toHaveTextContent(/bowtie2$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Bowtie2$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the SoftwareVersion component", () => {
+  it("renders a SoftwareVersion item with accessory data", () => {
+    const item = {
+      "@id": "/software-versions/bowtie2-v2.4.4/",
+      "@type": ["SoftwareVersion", "Item"],
+      software: {
+        title: "Bowtie2",
+      },
+      version: "2.4.4",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
+    };
+    const accessoryData = {
+      "/labs/j-michael-cherry/": {
+        "@id": "/labs/j-michael-cherry/",
+        "@type": ["Lab", "Item"],
+        title: "J. Michael Cherry, Stanford",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <SoftwareVersion item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Software/);
+    expect(uniqueId).toHaveTextContent(/Bowtie2 2.4.4$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Bowtie2 2.4.4$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+
+    const paths = SoftwareVersion.getAccessoryDataPaths([item]);
+    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
+  });
+
+  it("renders a SoftwareVersion item without accessory data", () => {
+    const item = {
+      "@id": "/software-versions/bowtie2-v2.4.4/",
+      "@type": ["SoftwareVersion", "Item"],
+      software: {
+        title: "Bowtie2",
+      },
+      version: "2.4.4",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <SoftwareVersion item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Software/);
+    expect(uniqueId).toHaveTextContent(/Bowtie2 2.4.4$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Bowtie2 2.4.4$/);
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
