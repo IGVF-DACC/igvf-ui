@@ -2,6 +2,7 @@
   "env": {
     "es6": true
   },
+  "plugins": ["testing-library"],
   "extends": ["next", "prettier", "eslint:recommended"],
   "rules": {
     "camelcase": ["error", { "properties": "never" }],
@@ -24,6 +25,10 @@
         "named": "never",
         "asyncArrow": "always"
       }
-    ]
+    ],
+    "testing-library/await-async-query": "error",
+		"testing-library/no-await-sync-query": "error",
+		"testing-library/no-debugging-utils": "warn",
+		"testing-library/no-dom-import": "off"
   }
 }

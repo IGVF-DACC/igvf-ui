@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import React from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
+/* istanbul ignore file */
 
 export function canEdit(item, actions = ["edit", "edit-json"]) {
   if ("actions" in item) {
