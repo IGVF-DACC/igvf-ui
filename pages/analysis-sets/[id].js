@@ -42,10 +42,14 @@ export default function AnalysisSet({
             <DataItemValue>
               <Status status={analysisSet.status} />
             </DataItemValue>
-            <DataItemLabel>Aliases</DataItemLabel>
-            <DataItemValue>
-              <AliasList aliases={analysisSet.aliases} />
-            </DataItemValue>
+            {analysisSet.aliases?.length > 0 && (
+              <>
+                <DataItemLabel>Aliases</DataItemLabel>
+                <DataItemValue>
+                  <AliasList aliases={analysisSet.aliases} />
+                </DataItemValue>
+              </>
+            )}
             {input_file_sets.length > 0 && (
               <>
                 <DataItemLabel>Input File Sets</DataItemLabel>

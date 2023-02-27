@@ -61,10 +61,14 @@ export default function MeasurementSet({
                 </DataItemValue>
               </>
             )}
-            <DataItemLabel>Aliases</DataItemLabel>
-            <DataItemValue>
-              <AliasList aliases={measurementSet.aliases} />
-            </DataItemValue>
+            {measurementSet.aliases?.length > 0 && (
+              <>
+                <DataItemLabel>Aliases</DataItemLabel>
+                <DataItemValue>
+                  <AliasList aliases={measurementSet.aliases} />
+                </DataItemValue>
+              </>
+            )}
             {donors.length > 0 && (
               <>
                 <DataItemLabel>Donors</DataItemLabel>
