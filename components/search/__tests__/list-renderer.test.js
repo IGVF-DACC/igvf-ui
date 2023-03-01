@@ -18,7 +18,7 @@ import Software from "../list-renderer/software";
 import SoftwareVersion from "../list-renderer/software-version";
 import TechnicalSample from "../list-renderer/technical-sample";
 import User from "../list-renderer/user";
-import Source from "../../../pages/sources/[id]";
+import Source from "../list-renderer/source";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
