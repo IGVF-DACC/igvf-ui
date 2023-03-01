@@ -1355,7 +1355,7 @@ describe("Test the SoftwareVersion component", () => {
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/^Source/);
-    expect(uniqueId).toHaveTextContent(/aviva$/);
+    expect(uniqueId).toHaveTextContent(/Aviva$/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^Aviva$/);

@@ -18,7 +18,7 @@ export default function Source({ item: source }) {
       <SearchListItemMain>
         <SearchListItemUniqueId>
           <SearchListItemType item={source} />
-          {source.name}
+          {source.title}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{source.title}</SearchListItemTitle>
         {description && (
