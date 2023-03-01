@@ -18,6 +18,7 @@ import Software from "../list-renderer/software";
 import SoftwareVersion from "../list-renderer/software-version";
 import TechnicalSample from "../list-renderer/technical-sample";
 import User from "../list-renderer/user";
+import Source from "../../../pages/sources/[id]";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -1329,6 +1330,38 @@ describe("Test the SoftwareVersion component", () => {
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a Source item without accessory data", () => {
+    const item = {
+      name: "aviva",
+      title: "Aviva",
+      status: "released",
+      description: "Aviva Systems Biology",
+      "@id": "/sources/aviva/",
+      "@type": ["Source", "Item"],
+      uuid: "fa701215-07e6-4ffe-a8f4-20356d66f3e0",
+      summary: "aviva",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Source item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Source/);
+    expect(uniqueId).toHaveTextContent(/aviva$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Aviva$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("Aviva Systems Biology");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
