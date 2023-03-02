@@ -1,18 +1,18 @@
 // node_modules
 import PropTypes from "prop-types";
-// components
+// components/search/list-renderer
 import {
   SearchListItemContent,
-  SearchListItemMeta,
   SearchListItemMain,
-  SearchListItemStatus,
-  SearchListItemTitle,
-  SearchListItemType,
-  SearchListItemUniqueId,
+  SearchListItemMeta,
+  SearchListItemQuality,
   SearchListItemSupplement,
   SearchListItemSupplementSection,
   SearchListItemSupplementLabel,
   SearchListItemSupplementContent,
+  SearchListItemTitle,
+  SearchListItemType,
+  SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function AnalysisSet({ item: analysisSet, accessoryData }) {
@@ -48,7 +48,7 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>
-      <SearchListItemStatus item={analysisSet} />
+      <SearchListItemQuality item={analysisSet} />
     </SearchListItemContent>
   );
 }

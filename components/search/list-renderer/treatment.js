@@ -1,10 +1,10 @@
 // node_modules
 import PropTypes from "prop-types";
-// components
+// components/search/list-renderer
 import {
   SearchListItemContent,
   SearchListItemMain,
-  SearchListItemStatus,
+  SearchListItemQuality,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -35,7 +35,7 @@ export default function Treatment({ item: treatment }) {
           </SearchListItemTitle>
         )}
       </SearchListItemMain>
-      <SearchListItemStatus item={treatment} />
+      <SearchListItemQuality item={treatment} />
     </SearchListItemContent>
   );
 }

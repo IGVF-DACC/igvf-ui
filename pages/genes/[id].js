@@ -10,9 +10,10 @@ import {
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import ChromosomeLocations from "../../components/chromosome-locations";
+import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
-import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -40,6 +41,7 @@ export default function Gene({ gene }) {
       <Breadcrumbs />
       <EditableItem item={gene}>
         <PagePreamble />
+        <ObjectPageHeader item={gene} />
         <DataPanel>
           <DataArea>
             <DataItemLabel>Status</DataItemLabel>

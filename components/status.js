@@ -25,7 +25,8 @@ export default function Status({ status }) {
   const statusClass = statusStyles[status] || statusStyles.fallback;
   return (
     <div
-      className={`my-0.5 mx-px w-fit whitespace-nowrap rounded-full border border-white px-2 py-0 text-xs font-semibold uppercase shadow-status ${statusClass}`}
+      className={`h-5 w-fit whitespace-nowrap rounded-full border border-white px-2 pt-px text-xs font-semibold uppercase shadow-status ${statusClass}`}
+      data-testid={`status-pill-${status.replace(/\s/g, "-")}`}
     >
       {status}
     </div>

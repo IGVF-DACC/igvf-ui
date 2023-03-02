@@ -11,8 +11,8 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import NoContent from "../../components/no-content";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -24,17 +24,10 @@ export default function User({ user, lab = null }) {
       <Breadcrumbs />
       <EditableItem item={user}>
         <PagePreamble />
+        <ObjectPageHeader item={user} />
         {user.status || user.job_title || lab || user.email ? (
           <DataPanel>
             <DataArea>
-              {user.status && (
-                <>
-                  <DataItemLabel>Status</DataItemLabel>
-                  <DataItemValue>
-                    <Status status={user.status} />
-                  </DataItemValue>
-                </>
-              )}
               {user.job_title && (
                 <>
                   <DataItemLabel>Job Title</DataItemLabel>

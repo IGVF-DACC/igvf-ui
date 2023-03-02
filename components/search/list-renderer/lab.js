@@ -1,11 +1,11 @@
 // node_modules
 import PropTypes from "prop-types";
-// components
+// components/search/list-renderer
 import {
   SearchListItemContent,
-  SearchListItemMeta,
   SearchListItemMain,
-  SearchListItemStatus,
+  SearchListItemMeta,
+  SearchListItemQuality,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -28,7 +28,7 @@ export default function Lab({ item: lab }) {
           </SearchListItemMeta>
         )}
       </SearchListItemMain>
-      <SearchListItemStatus item={lab} />
+      <SearchListItemQuality item={lab} />
     </SearchListItemContent>
   );
 }

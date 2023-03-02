@@ -10,9 +10,9 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
+import PagePreamble from "../../components/page-preamble";
 import SoftwareVersionTable from "../../components/software-version-table";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -27,12 +27,9 @@ export default function Software({ software, versions, attribution = null }) {
       <Breadcrumbs />
       <EditableItem item={software}>
         <PagePreamble />
+        <ObjectPageHeader item={software} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={software.status} />
-            </DataItemValue>
             <DataItemLabel>Title</DataItemLabel>
             <DataItemValue>{software.title}</DataItemValue>
             <DataItemLabel>Description</DataItemLabel>

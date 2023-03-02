@@ -1,20 +1,17 @@
+// node_modules
+import { PropTypes } from "prop-types";
+// components/search/list-renderer
 import {
   SearchListItemContent,
   SearchListItemMain,
   SearchListItemMeta,
-  SearchListItemStatus,
+  SearchListItemQuality,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
-import { PropTypes } from "prop-types";
-
-export function humanGenomicVariantTitle(variant) {
-  const first =
-    variant.chromosome || variant.refseq_id || variant.reference_sequence;
-  const titleSeq = [first, variant.position, variant.ref, variant.alt];
-  return titleSeq.join(":");
-}
+// lib
+import humanGenomicVariantTitle from "../../../lib/human-genomic-variant-title";
 
 export default function HumanGenomicVariant({ item: variant }) {
   return (
@@ -33,7 +30,7 @@ export default function HumanGenomicVariant({ item: variant }) {
           </SearchListItemMeta>
         )}
       </SearchListItemMain>
-      <SearchListItemStatus item={variant} />
+      <SearchListItemQuality item={variant} />
     </SearchListItemContent>
   );
 }

@@ -5,7 +5,7 @@ import React, { useContext, useRef, useState, useEffect } from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
 import FlashMessage from "./flash-message";
-import EditJson, { EditLink, canEdit } from "./edit-func";
+import EditJson, { canEdit } from "./edit-func";
 import SessionContext from "./session-context";
 import { useAuthenticated } from "./authentication";
 import PagePreamble from "./page-preamble";
@@ -42,16 +42,7 @@ export function useEditor(action) {
 
 export function EditableItem({ item, children }) {
   const editing = useEditor("edit");
-  return editing ? (
-    <EditPage item={item} />
-  ) : (
-    <>
-      <div className="mb-1 flex justify-end">
-        <EditLink item={item} />
-      </div>
-      {children}
-    </>
-  );
+  return editing ? <EditPage item={item} /> : <>{children}</>;
 }
 
 EditableItem.propTypes = {

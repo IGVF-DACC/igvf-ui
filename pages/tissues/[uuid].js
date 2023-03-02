@@ -12,15 +12,15 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
 // lib
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import buildAttribution from "../../lib/attribution";
 
 export default function Tissue({
   tissue,
@@ -39,12 +39,9 @@ export default function Tissue({
       <Breadcrumbs />
       <EditableItem item={tissue}>
         <PagePreamble />
+        <ObjectPageHeader item={tissue} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={tissue.status} />
-            </DataItemValue>
             <BiosampleDataItems
               biosample={tissue}
               source={source}

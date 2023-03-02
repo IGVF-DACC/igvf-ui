@@ -23,20 +23,15 @@ import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import React, { Children, isValidElement, useContext, useState } from "react";
 // components
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "./animation";
 import Icon from "./icon";
 import SiteLogo from "./logo";
 import SessionContext from "./session-context";
 // lib
 import { AUTH_ERROR_URI } from "../lib/constants";
-
-/**
- * Animation configurations for mobile and hierarchical navigation.
- */
-const navigationTransition = { duration: 0.2, ease: "easeInOut" };
-const navigationVariants = {
-  open: { height: "auto" },
-  collapsed: { height: 0 },
-};
 
 /**
  * Renders collapsable navigation items, both for the mobile menu and for collapsable children of
@@ -52,8 +47,8 @@ function NavigationCollapsableArea({ isOpen, testid = "", children }) {
           initial="collapsed"
           animate="open"
           exit="collapsed"
-          transition={navigationTransition}
-          variants={navigationVariants}
+          transition={standardAnimationTransition}
+          variants={standardAnimationVariants}
         >
           {children}
         </motion.div>

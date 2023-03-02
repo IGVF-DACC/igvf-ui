@@ -52,6 +52,11 @@ module.exports = {
         "button-selected-disabled":
           "var(--color-button-selected-background-disabled)",
 
+        "button-audit-open": "var(--color-button-audit-open-background)",
+        "button-audit-closed": "var(--color-button-audit-closed-background)",
+        "button-audit-level-detail": "var(--color-button-audit-level-detail)",
+        "audit-level-detail": "var(--color-audit-level-detail-background)",
+
         "facet-group-button": "var(--color-facet-group-button-background)",
         "facet-group-button-selected":
           "var(--color-facet-group-button-selected-background)",
@@ -74,6 +79,8 @@ module.exports = {
           "var(--color-button-warning-border-disabled)",
         "button-selected-disabled":
           "var(--color-button-selected-border-disabled)",
+
+        "button-audit": "var(--color-button-audit-border)",
 
         "facet-group-button": "var(--color-facet-group-button-border)",
         "facet-group-button-selected":

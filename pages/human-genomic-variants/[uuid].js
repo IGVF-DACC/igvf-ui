@@ -1,3 +1,6 @@
+// node_modules
+import { PropTypes } from "prop-types";
+// components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
@@ -6,13 +9,13 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
-import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { PropTypes } from "prop-types";
-import { humanGenomicVariantTitle } from "../../components/search/list-renderer/human-genomic-variant";
+import ObjectPageHeader from "../../components/object-page-header";
+import PagePreamble from "../../components/page-preamble";
+// lib
+import buildBreadcrumbs from "../../lib/breadcrumbs";
+import humanGenomicVariantTitle from "../../lib/human-genomic-variant-title";
 
 export default function HumanGenomicVariant({ variant }) {
   // reference_sequence/refseq_id
@@ -24,12 +27,9 @@ export default function HumanGenomicVariant({ variant }) {
       <Breadcrumbs />
       <EditableItem item={variant}>
         <PagePreamble pageTitle={humanGenomicVariantTitle(variant)} />
+        <ObjectPageHeader item={variant} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={variant.status} />
-            </DataItemValue>
             <DataItemLabel>Assembly</DataItemLabel>
             <DataItemValue>{variant.assembly}</DataItemValue>
             <DataItemLabel>{label}</DataItemLabel>

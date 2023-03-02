@@ -11,9 +11,9 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
-import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
+import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { UC } from "../../lib/constants";
@@ -26,12 +26,9 @@ export default function Treatment({ treatment, documents }) {
       <Breadcrumbs />
       <EditableItem item={treatment}>
         <PagePreamble />
+        <ObjectPageHeader item={treatment} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={treatment.status} />
-            </DataItemValue>
             <DataItemLabel>Treatment Term Name</DataItemLabel>
             <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
             <DataItemLabel>Treatment Type</DataItemLabel>

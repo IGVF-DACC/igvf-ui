@@ -13,8 +13,8 @@ import {
 } from "../../components/data-area";
 import DocumentAttachmentLink from "../../components/document-link";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -27,12 +27,9 @@ export default function Document({ document, attribution = null }) {
       <Breadcrumbs />
       <EditableItem item={document}>
         <PagePreamble />
+        <ObjectPageHeader item={document} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={document.status} />
-            </DataItemValue>
             <DataItemLabel>Type</DataItemLabel>
             <DataItemValue>{document.document_type}</DataItemValue>
             <DataItemLabel>Description</DataItemLabel>

@@ -1,11 +1,11 @@
 // node_modules
 import PropTypes from "prop-types";
-// components
+// components/search/list-renderer
 import {
   SearchListItemContent,
-  SearchListItemMeta,
   SearchListItemMain,
-  SearchListItemStatus,
+  SearchListItemMeta,
+  SearchListItemQuality,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -27,7 +27,7 @@ export default function Gene({ item: gene }) {
           )}
         </SearchListItemMeta>
       </SearchListItemMain>
-      <SearchListItemStatus item={gene} />
+      <SearchListItemQuality item={gene} />
     </SearchListItemContent>
   );
 }

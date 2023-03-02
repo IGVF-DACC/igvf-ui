@@ -130,15 +130,17 @@ export function EditLink({ item }) {
   const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
   if (canEdit(item)) {
     return (
-      <ButtonLink
-        label="Edit"
-        href={editPath}
-        type="secondary"
-        size="sm"
-        hasIconOnly
-      >
-        <PencilSquareIcon title="Edit" />
-      </ButtonLink>
+      <div className="mb-1 flex justify-end">
+        <ButtonLink
+          label="Edit"
+          href={editPath}
+          type="secondary"
+          size="sm"
+          hasIconOnly
+        >
+          <PencilSquareIcon title="Edit" />
+        </ButtonLink>
+      </div>
     );
   }
   return null;

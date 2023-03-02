@@ -11,8 +11,8 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -36,12 +36,9 @@ export default function AnalysisSet({
       <Breadcrumbs />
       <EditableItem item={analysisSet}>
         <PagePreamble />
+        <ObjectPageHeader item={analysisSet} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={analysisSet.status} />
-            </DataItemValue>
             {analysisSet.aliases?.length > 0 && (
               <>
                 <DataItemLabel>Aliases</DataItemLabel>
@@ -100,7 +97,6 @@ export default function AnalysisSet({
             <DocumentTable documents={documents} />
           </>
         )}
-
         <Attribution attribution={attribution} />
       </EditableItem>
     </>

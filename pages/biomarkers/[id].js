@@ -12,6 +12,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -26,6 +27,7 @@ export default function Biomarker({ biomarker, gene, attribution = null }) {
       <Breadcrumbs />
       <EditableItem item={biomarker}>
         <PagePreamble />
+        <ObjectPageHeader item={biomarker} />
         <DataPanel>
           <DataArea>
             <DataItemLabel>Name</DataItemLabel>

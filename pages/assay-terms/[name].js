@@ -10,8 +10,8 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -23,12 +23,9 @@ export default function AssayOntologyTerm({ assayOntologyTerm, isA }) {
       <Breadcrumbs />
       <EditableItem item={assayOntologyTerm}>
         <PagePreamble />
+        <ObjectPageHeader item={assayOntologyTerm} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={assayOntologyTerm.status} />
-            </DataItemValue>
             <OntologyTermDataItems ontologyTerm={assayOntologyTerm} isA={isA}>
               {assayOntologyTerm.category_slims.length > 0 && (
                 <>

@@ -11,8 +11,8 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -35,12 +35,9 @@ export default function CuratedSet({
       <Breadcrumbs />
       <EditableItem item={curatedSet}>
         <PagePreamble />
+        <ObjectPageHeader item={curatedSet} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={curatedSet.status} />
-            </DataItemValue>
             <DataItemLabel>Curated Set Type</DataItemLabel>
             <DataItemValue>{curatedSet.curated_set_type}</DataItemValue>
             {curatedSet.taxa && (

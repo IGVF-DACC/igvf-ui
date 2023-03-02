@@ -4,22 +4,22 @@ import PropTypes from "prop-types";
 import AttachmentThumbnail from "../../components/attachment-thumbnail";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
-import DbxrefList from "../../components/dbxref-list";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
 import DocumentAttachmentLink from "../../components/document-link";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 // lib
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import buildAttribution from "../../lib/attribution";
 
 export default function Publication({ publication, attribution = null }) {
   return (
@@ -27,12 +27,9 @@ export default function Publication({ publication, attribution = null }) {
       <Breadcrumbs />
       <EditableItem item={publication}>
         <PagePreamble />
+        <ObjectPageHeader item={publication} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={publication.status} />
-            </DataItemValue>
             <DataItemLabel>Title</DataItemLabel>
             <DataItemValue>{publication.title}</DataItemValue>
             {publication.authors && (

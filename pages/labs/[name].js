@@ -9,10 +9,10 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
-import Status from "../../components/status";
-import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -24,12 +24,9 @@ export default function Lab({ lab, awards = null, pi = null }) {
       <Breadcrumbs />
       <EditableItem item={lab}>
         <PagePreamble />
+        <ObjectPageHeader item={lab} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={lab.status} />
-            </DataItemValue>
             <DataItemLabel>Institute</DataItemLabel>
             <DataItemValue>{lab.institute_label}</DataItemValue>
             {pi && (

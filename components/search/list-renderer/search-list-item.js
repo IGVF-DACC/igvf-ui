@@ -2,10 +2,11 @@
 import PropTypes from "prop-types";
 import { useContext } from "react";
 // components
+import { AuditDetail, useAudit } from "../../audit";
 import Icon from "../../icon";
+import QualitySection from "../../quality-section";
 import SeparatedList from "../../separated-list";
 import SessionContext from "../../session-context";
-import Status from "../../status";
 
 /**
  * Display the main contents of a search-list item including the unique identifier, title, and
@@ -110,7 +111,7 @@ export function SearchListItemSupplement({ children }) {
  */
 export function SearchListItemSupplementSection({ children }) {
   return (
-    <div className="my-1.5" data-testid="search-list-item-supplement-section">
+    <div className="mt-1.5" data-testid="search-list-item-supplement-section">
       {children}
     </div>
   );
@@ -149,32 +150,24 @@ export function SearchListItemSupplementContent({ children }) {
  * object page.
  */
 export function SearchListItemContent({ children }) {
+  return <div data-testid="search-list-item-content">{children}</div>;
+}
+
+/**
+ * Wrapper for the status and audit information of a search-list item.
+ */
+export function SearchListItemQuality({ item }) {
+  const auditState = useAudit();
+
   return (
-    <div className="sm:flex sm:gap-2" data-testid="search-list-item-content">
-      {children}
+    <div className="mt-2" data-testid="search-list-item-quality">
+      <QualitySection item={item} auditState={auditState} />
+      <AuditDetail item={item} auditState={auditState} />
     </div>
   );
 }
 
-/**
- * Display the status of a search-list item.
- */
-export function SearchListItemStatus({ item }) {
-  return (
-    <>
-      {item.status && (
-        <div
-          className="mt-2 self-center sm:mt-0"
-          data-testid="search-list-item-status"
-        >
-          <Status status={item.status} />
-        </div>
-      )}
-    </>
-  );
-}
-
-SearchListItemStatus.propTypes = {
-  // Item to display status for
+SearchListItemQuality.propTypes = {
+  // Search-result item to to display the status and audits for
   item: PropTypes.object.isRequired,
 };
