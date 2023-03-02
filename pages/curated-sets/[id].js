@@ -119,11 +119,6 @@ export async function getServerSideProps({ params, req }) {
   const curatedSet = await request.getObject(`/curated-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(curatedSet)) {
     const award = await request.getObject(curatedSet.award, null);
-    const input_file_sets = curatedSet.input_file_sets
-      ? await request.getMultipleObjects(curatedSet.input_file_sets, null, {
-          filterErrors: true,
-        })
-      : [];
     const documents = curatedSet.documents
       ? await request.getMultipleObjects(curatedSet.documents, null, {
           filterErrors: true,
@@ -149,7 +144,6 @@ export async function getServerSideProps({ params, req }) {
       props: {
         curatedSet,
         award,
-        input_file_sets,
         documents,
         donors,
         lab,

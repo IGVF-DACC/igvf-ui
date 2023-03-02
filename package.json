@@ -17,7 +17,7 @@
     "dayjs": "^1.11.3",
     "empty-schema": "^0.1.5",
     "framer-motion": "^9.0.2",
-    "isomorphic-dompurify": "^0.27.0",
+    "isomorphic-dompurify": "^1.0.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "marked": "^4.0.17",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.4",
     "@testing-library/jest-dom": "^5.16.3",
-    "@testing-library/react": "^13.3.0",
+    "@testing-library/react": "^14.0.0",
     "auth0-js": "^9.19.0",
     "autoprefixer": "^10.4.7",
     "coveralls": "^3.1.1",

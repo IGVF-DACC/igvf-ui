@@ -53,7 +53,7 @@ export default function MeasurementSet({
                 <DataItemLabel>Protocol</DataItemLabel>
                 <DataItemValue>
                   <Link
-                    href={measurementSet["protocol"]}
+                    href={measurementSet.protocol}
                     key={measurementSet.protocol}
                   >
                     {measurementSet.protocol}

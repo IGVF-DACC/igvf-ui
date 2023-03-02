@@ -26,7 +26,7 @@ export default function AnalysisSet({
   analysisSet,
   award = null,
   documents,
-  input_file_sets,
+  inputFileSets,
   donors,
   lab = null,
   samples,
@@ -50,12 +50,12 @@ export default function AnalysisSet({
                 </DataItemValue>
               </>
             )}
-            {input_file_sets.length > 0 && (
+            {inputFileSets.length > 0 && (
               <>
                 <DataItemLabel>Input File Sets</DataItemLabel>
                 <DataItemValue>
                   <SeparatedList>
-                    {input_file_sets.map((file) => (
+                    {inputFileSets.map((file) => (
                       <Link href={file["@id"]} key={file.uuid}>
                         {file.accession}
                       </Link>
@@ -116,7 +116,7 @@ AnalysisSet.propTypes = {
   // Award applied to this analysis set
   award: PropTypes.object,
   // input_file_sets to this analysis set
-  input_file_sets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Lab that submitted this analysis set
@@ -128,7 +128,7 @@ export async function getServerSideProps({ params, req }) {
   const analysisSet = await request.getObject(`/analysis-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(analysisSet)) {
     const award = await request.getObject(analysisSet.award, null);
-    const input_file_sets = analysisSet.input_file_sets
+    const inputFileSets = analysisSet.input_file_sets
       ? await request.getMultipleObjects(analysisSet.input_file_sets, null, {
           filterErrors: true,
         })
@@ -158,7 +158,7 @@ export async function getServerSideProps({ params, req }) {
       props: {
         analysisSet,
         award,
-        input_file_sets,
+        inputFileSets,
         documents,
         donors,
         lab,

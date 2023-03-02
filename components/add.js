@@ -295,7 +295,7 @@ AddableItem.propTypes = {
  */
 export function AddItemFromSchema({ schema, label = "" }) {
   const { profileMap } = useContext(ProfileMapContext);
-  const schemaId = schema["$id"].match(/^\/profiles\/(.+).json$/)[1];
+  const schemaId = schema.$id.match(/^\/profiles\/(.+).json$/)[1];
   const collection = profileMap[schemaId];
 
   if (collection) {
