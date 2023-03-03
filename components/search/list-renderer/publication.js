@@ -12,6 +12,7 @@ import {
 } from "./search-list-item";
 
 export default function Publication({ item: publication, accessoryData }) {
+  const lab = accessoryData?.[publication.lab];
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -20,14 +21,12 @@ export default function Publication({ item: publication, accessoryData }) {
           {publication.identifiers[0]}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{publication.title}</SearchListItemTitle>
-        {((accessoryData && accessoryData[publication.lab]) ||
+        {(lab ||
           publication.authors ||
           publication.journal ||
           publication.date_published) && (
           <SearchListItemMeta>
-            {accessoryData && accessoryData[publication.lab] && (
-              <div key="lab">{accessoryData[publication.lab].title}</div>
-            )}
+            {lab && <div key="lab">{lab.title}</div>}
             {publication.authors && (
               <div key="authors">{publication.authors}</div>
             )}
