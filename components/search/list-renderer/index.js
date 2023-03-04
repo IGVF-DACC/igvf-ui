@@ -43,6 +43,7 @@ import TechnicalSample from "./technical-sample";
 import Treatment from "./treatment";
 import User from "./user";
 import File from "./file";
+import Source from "./source";
 
 const renderers = {
   AnalysisSet,
@@ -64,6 +65,7 @@ const renderers = {
   SequenceData: File,
   Software,
   SoftwareVersion,
+  Source,
   TechnicalSample,
   Tissue: Biosample,
   Treatment,
