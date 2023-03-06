@@ -27,6 +27,7 @@ import {
  */
 import AnalysisSet from "./analysis-set";
 import Award from "./award";
+import Biomarker from "./biomarker";
 import Biosample from "./biosample";
 import CuratedSet from "./curated-set";
 import Document from "./document";
@@ -48,6 +49,7 @@ const renderers = {
   AnalysisSet,
   AssayTerm: OntologyTerm,
   Award,
+  Biomarker,
   CuratedSet,
   Document,
   Gene,

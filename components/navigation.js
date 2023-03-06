@@ -5,6 +5,7 @@ import {
   CodeBracketIcon,
   Bars2Icon,
   BeakerIcon,
+  BookmarkIcon,
   CircleStackIcon,
   DocumentIcon,
   DocumentTextIcon,
@@ -323,6 +324,16 @@ function Navigation({ navigationClick }) {
           <Icon.Award />
         </NavigationIcon>
         Awards
+      </NavigationHrefItem>
+      <NavigationHrefItem
+        id="biomarkers"
+        href="/search?type=Biomarker"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <BookmarkIcon />
+        </NavigationIcon>
+        Biomarkers
       </NavigationHrefItem>
       <NavigationHrefItem
         id="documents"
