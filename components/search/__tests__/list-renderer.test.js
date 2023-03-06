@@ -18,6 +18,7 @@ import Software from "../list-renderer/software";
 import SoftwareVersion from "../list-renderer/software-version";
 import TechnicalSample from "../list-renderer/technical-sample";
 import User from "../list-renderer/user";
+import Biomarker from "../list-renderer/biomarker";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -1332,5 +1333,80 @@ describe("Test the SoftwareVersion component", () => {
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the Biomarker component", () => {
+  it("renders a Biomarker item with accessory data", () => {
+    const item = {
+      lab: "/labs/j-michael-cherry/",
+      gene: "/genes/ENSG00000163930/",
+      name: "BAP1",
+      award: "/awards/HG012012/",
+      classification: "marker gene",
+      quantification: "positive",
+      "@id": "/biomarkers/bdfaa822-cdbe-405c-920c-67da068c43b6/",
+      "@type": ["Biomarker", "Item"],
+      uuid: "bdfaa822-cdbe-405c-920c-67da068c43b6",
+      summary: "bdfaa822-cdbe-405c-920c-67da068c43b6",
+      name_quantification: "BAP1-positive",
+    };
+    const accessoryData = {
+      "/labs/j-michael-cherry/": {
+        "@id": "/labs/j-michael-cherry/",
+        "@type": ["Lab", "Item"],
+        title: "J. Michael Cherry, Stanford",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Biomarker item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Biomarker/);
+    expect(uniqueId).toHaveTextContent(/BAP1 positive$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^BAP1 positive$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const paths = Biomarker.getAccessoryDataPaths([item]);
+    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
+  });
+
+  it("renders a Biomarker item without accessory data", () => {
+    const item = {
+      gene: "/genes/ENSG00000163930/",
+      name: "BAP1",
+      award: "/awards/HG012012/",
+      classification: "marker gene",
+      quantification: "positive",
+      "@id": "/biomarkers/bdfaa822-cdbe-405c-920c-67da068c43b6/",
+      "@type": ["Biomarker", "Item"],
+      uuid: "bdfaa822-cdbe-405c-920c-67da068c43b6",
+      summary: "bdfaa822-cdbe-405c-920c-67da068c43b6",
+      name_quantification: "BAP1-positive",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Biomarker item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Biomarker/);
+    expect(uniqueId).toHaveTextContent(/BAP1 positive$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^BAP1 positive$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
   });
 });
