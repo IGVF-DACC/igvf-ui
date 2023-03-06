@@ -13,6 +13,7 @@ import HumanDonor from "../list-renderer/human-donor";
 import Lab from "../list-renderer/lab";
 import OntologyTerm from "../list-renderer/ontology-term";
 import Page from "../list-renderer/page";
+import Publication from "../list-renderer/publication";
 import RodentDonor from "../list-renderer/rodent-donor";
 import Software from "../list-renderer/software";
 import SoftwareVersion from "../list-renderer/software-version";
@@ -1365,6 +1366,172 @@ describe("Test the Source component", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Aviva Systems Biology");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the Publication component", () => {
+  it("renders a Publication item with accessory data", () => {
+    const item = {
+      lab: "/labs/j-michael-cherry/",
+      page: "57-74",
+      award: "/awards/HG012012/",
+      issue: "7414",
+      title: "An integrated encyclopedia of DNA elements in the human genome",
+      status: "released",
+      volume: "489",
+      authors:
+        "ENCODE Project Consortium, Bernstein BE, Birney E, Dunham I, Green ED, Gunter C, Snyder M.",
+      journal: "Nature",
+      identifiers: ["PMID:22955616", "PMCID:PMC3439153"],
+      date_published: "2012-09-06",
+      "@id": "/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/",
+      "@type": ["Publication", "Item"],
+      uuid: "936b0798-3d6b-4b2f-a357-2bd59faae506",
+    };
+    const accessoryData = {
+      "/labs/j-michael-cherry/": {
+        "@id": "/labs/j-michael-cherry/",
+        "@type": ["Lab", "Item"],
+        title: "J. Michael Cherry, Stanford",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Publication item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Publication/);
+    expect(uniqueId).toHaveTextContent(/PMID:22955616$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^An integrated encyclopedia of DNA elements in the human genome$/
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+
+    const paths = Publication.getAccessoryDataPaths([item]);
+    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
+  });
+
+  it("renders a Publication item without accessory data and data for meta area", () => {
+    const item = {
+      lab: "/labs/j-michael-cherry/",
+      page: "57-74",
+      award: "/awards/HG012012/",
+      issue: "7414",
+      title: "An integrated encyclopedia of DNA elements in the human genome",
+      status: "released",
+      volume: "489",
+      identifiers: ["PMID:22955616", "PMCID:PMC3439153"],
+      "@id": "/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/",
+      "@type": ["Publication", "Item"],
+      uuid: "936b0798-3d6b-4b2f-a357-2bd59faae506",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Publication item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Publication/);
+    expect(uniqueId).toHaveTextContent(/PMID:22955616$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^An integrated encyclopedia of DNA elements in the human genome$/
+    );
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a Publication item with publication date and without accessory data", () => {
+    const item = {
+      lab: "/labs/j-michael-cherry/",
+
+      award: "/awards/HG012012/",
+
+      title: "An integrated encyclopedia of DNA elements in the human genome",
+      status: "released",
+
+      identifiers: ["PMID:22955616", "PMCID:PMC3439153"],
+      "@id": "/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/",
+      "@type": ["Publication", "Item"],
+      uuid: "936b0798-3d6b-4b2f-a357-2bd59faae506",
+      date_published: "2012-09-06",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Publication item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Publication/);
+    expect(uniqueId).toHaveTextContent(/PMID:22955616$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^An integrated encyclopedia of DNA elements in the human genome$/
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("2012-09-06;");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a Publication item with journal and without accessory data", () => {
+    const item = {
+      lab: "/labs/j-michael-cherry/",
+
+      award: "/awards/HG012012/",
+
+      title: "An integrated encyclopedia of DNA elements in the human genome",
+      status: "released",
+
+      identifiers: ["PMID:22955616", "PMCID:PMC3439153"],
+      "@id": "/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/",
+      "@type": ["Publication", "Item"],
+      uuid: "936b0798-3d6b-4b2f-a357-2bd59faae506",
+      journal: "Nature",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Publication item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Publication/);
+    expect(uniqueId).toHaveTextContent(/PMID:22955616$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^An integrated encyclopedia of DNA elements in the human genome$/
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("Nature.");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");

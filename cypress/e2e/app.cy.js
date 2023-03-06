@@ -133,6 +133,16 @@ describe("Navigation", () => {
       .its("length")
       .should("be.gte", 2);
 
+    cy.get("[data-testid=publications]").click();
+    cy.url().should("include", "/search?type=Publication");
+    cy.get("[data-testid=search-results-view-switch]").should("exist");
+    cy.get("[data-testid=form-select]").should("exist");
+    cy.get("[data-testid=search-results-count]").should("exist");
+    cy.get("[data-testid=search-list]")
+      .find("li")
+      .its("length")
+      .should("be.gte", 2);
+
     cy.get("[data-testid=ontologies]").click();
 
     cy.get("[data-testid=assay-terms]").click();

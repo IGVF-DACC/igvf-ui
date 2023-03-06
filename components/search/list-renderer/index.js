@@ -37,6 +37,7 @@ import Lab from "./lab";
 import MeasurementSet from "./measurement-set";
 import OntologyTerm from "./ontology-term";
 import Page from "./page";
+import Publication from "./publication";
 import RodentDonor from "./rodent-donor";
 import Software from "./software";
 import SoftwareVersion from "./software-version";
@@ -61,6 +62,7 @@ const renderers = {
   Page,
   PhenotypeTerm: OntologyTerm,
   PrimaryCell: Biosample,
+  Publication,
   ReferenceData: File,
   RodentDonor,
   SampleTerm: OntologyTerm,
