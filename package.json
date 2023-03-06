@@ -7,7 +7,8 @@
     "lint": "next lint",
     "test": "jest --coverage",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run --record --key 083e76f3-5f44-43f0-b248-ace10abf0877"
+    "cypress:run": "cypress run --record --key 083e76f3-5f44-43f0-b248-ace10abf0877",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@auth0/auth0-react": "^1.10.1",

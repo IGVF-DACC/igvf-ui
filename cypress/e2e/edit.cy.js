@@ -23,10 +23,10 @@ describe("Test Edit button", () => {
     // cy.get("[id=JSON Editor]").should("exist");
     // cy.contains("first_name").should("exist");
     // cy.get("textarea").focus();
-    cy.get("nav div:last").then($el => {
+    cy.get("nav div:last").then(($el) => {
       const t = $el.text();
       cy.log(t);
-      cy.get("h1").then($h => {
+      cy.get("h1").then(($h) => {
         $h.text();
         expect($h.text()).to.equal(`Editing ${t}`);
       });
@@ -81,14 +81,16 @@ describe("Test Edit button", () => {
     cy.get('[id="JSON Editor"]').should("exist");
 
     const now = new Date().getTime();
-    cy.get("textarea").focus().clear()
+    cy.get("textarea")
+      .focus()
+      .clear()
       .type("{\n")
       .type('"creation_timestamp": "2023-03-01T00:31:51.129742+00:00",\n')
       .type('"email": "christina@email_domain.com",\n')
       .type(`"first_name": "${now}",\n`)
       .type('"groups": [\n')
       .type('"verified"\n')
-      .type('{backspace}{rightArrow},\n')
+      .type("{backspace}{rightArrow},\n")
       .type('"job_title": "Principal Investigator",\n')
       .type('"lab": "/labs/christina-leslie/",\n')
       .type('"last_name": "Leslie",\n')
@@ -96,11 +98,11 @@ describe("Test Edit button", () => {
       .type('"status": "current",\n')
       .type('"submits_for": [\n')
       .type('"/labs/christina-leslie/"\n')
-      .type('{backspace}{rightArrow},\n')
+      .type("{backspace}{rightArrow},\n")
       .type('"viewing_groups": [\n')
       .type('"IGVF"\n')
-      .type('{backspace}{rightArrow}\n')
-      .type('{backspace}{backspace}');
+      .type("{backspace}{rightArrow}\n")
+      .type("{backspace}{backspace}");
     cy.contains(`${now}`).should("exist");
 
     cy.get("button").contains("Save").click();
@@ -128,14 +130,16 @@ describe("Test Edit button", () => {
     cy.get('[id="JSON Editor"]').should("exist");
 
     const badEmail = "NotAnEmail";
-    cy.get("textarea").focus().clear()
+    cy.get("textarea")
+      .focus()
+      .clear()
       .type("{\n")
       .type('"creation_timestamp": "2023-03-01T00:31:51.129742+00:00",\n')
       .type(`"email": "${badEmail}",\n`)
       .type('"first_name": "Christina",\n')
       .type('"groups": [\n')
       .type('"verified"\n')
-      .type('{backspace}{rightArrow},\n')
+      .type("{backspace}{rightArrow},\n")
       .type('"job_title": "Principal Investigator",\n')
       .type('"lab": "/labs/christina-leslie/",\n')
       .type('"last_name": "Leslie",\n')
@@ -143,11 +147,11 @@ describe("Test Edit button", () => {
       .type('"status": "current",\n')
       .type('"submits_for": [\n')
       .type('"/labs/christina-leslie/"\n')
-      .type('{backspace}{rightArrow},\n')
+      .type("{backspace}{rightArrow},\n")
       .type('"viewing_groups": [\n')
       .type('"IGVF"\n')
-      .type('{backspace}{rightArrow}\n')
-      .type('{backspace}{backspace}');
+      .type("{backspace}{rightArrow}\n")
+      .type("{backspace}{backspace}");
     cy.get("button").contains("Save").click();
     cy.contains(`'${badEmail}' is not a 'email'`);
     // Test Cancel Button
