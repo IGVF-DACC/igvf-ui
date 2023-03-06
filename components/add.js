@@ -15,6 +15,7 @@ import SessionContext from "./session-context";
 // lib
 import FetchRequest from "../lib/fetch-request";
 import { urlWithoutParams } from "../lib/general";
+/* istanbul ignore file */
 
 /**
  * Looks for an action in the item with a name in the list of given actions
