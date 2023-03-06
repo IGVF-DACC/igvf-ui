@@ -103,9 +103,9 @@ export default function Publication({ publication, award = null, lab = null }) {
 Publication.propTypes = {
   // Publication object to display
   publication: PropTypes.object.isRequired,
-  // Award applied to this technical sample
+  // Award applied to this publication
   award: PropTypes.object,
-  // Lab that submitted this technical sample
+  // Lab that submitted this publication
   lab: PropTypes.object,
 };
 
