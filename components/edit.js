@@ -221,7 +221,7 @@ export default function EditPage({ item }) {
 
   return (
     <div className="space-y-1">
-      <PagePreamble pageTitle={`Editing ${item.name}`} />
+      <PagePreamble />
       <EditJson
         text={text}
         onChange={onChange}

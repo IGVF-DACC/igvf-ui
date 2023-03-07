@@ -20,15 +20,11 @@ describe("Test Edit button", () => {
 
     cy.wait(1000);
 
-    // cy.get("[id=JSON Editor]").should("exist");
-    // cy.contains("first_name").should("exist");
-    // cy.get("textarea").focus();
     cy.get("nav div:last").then(($el) => {
-      const t = $el.text();
-      cy.log(t);
+      const name = $el.text();
+      cy.log(name);
       cy.get("h1").then(($h) => {
-        $h.text();
-        expect($h.text()).to.equal(`Editing ${t}`);
+        expect($h.text()).to.equal(`${name}`);
       });
     });
   });
@@ -72,6 +68,7 @@ describe("Test Edit button", () => {
     // <ul> element with data-testid == "search-list", get the first <li>
     // and a contained <a>, and click it
     cy.get("ul[data-testid=search-list] li:first a").click();
+    cy.wait(2000);
     cy.get("a[label=Edit]").click();
 
     cy.url().should("include", "#!edit");
@@ -106,7 +103,11 @@ describe("Test Edit button", () => {
     cy.contains(`${now}`).should("exist");
 
     cy.get("button").contains("Save").click();
-    cy.get("h1").contains(`${now}`).should("exist");
+    cy.reload();
+    cy.get("h1").then(($el) => {
+      cy.log(`<h1> Title Content is: ${$el.text}`);
+      expect($el.text()).to.contain(`${now}`);
+    });
   });
   // 4. Type garbage and save should show an error
   it("Saving a bad form should show an error", () => {
@@ -155,7 +156,7 @@ describe("Test Edit button", () => {
     cy.get("button").contains("Save").click();
     cy.contains(`'${badEmail}' is not a 'email'`);
     // Test Cancel Button
-    cy.get("button").contains("Cancel").click();
+    cy.get("a").contains("Cancel").click();
     cy.url().should("not.include", "#!edit");
   });
 });
