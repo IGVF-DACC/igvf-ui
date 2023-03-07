@@ -3,7 +3,6 @@
 describe("Test Edit button", () => {
   // 1. Editing an object shows the correct Title
   it("Edit Page shows correct title for object", () => {
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
     cy.contains("Cypress Testing");
     cy.wait(1000);
@@ -103,9 +102,9 @@ describe("Test Edit button", () => {
     cy.contains(`${now}`).should("exist");
 
     cy.get("button").contains("Save").click();
+    cy.wait(1000);
     cy.reload();
     cy.get("h1").then(($el) => {
-      cy.log(`<h1> Title Content is: ${$el.text}`);
       expect($el.text()).to.contain(`${now}`);
     });
   });

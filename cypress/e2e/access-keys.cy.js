@@ -7,9 +7,6 @@ describe("Exercise access keys", () => {
       defaultCommandTimeout: 30000,
     },
     () => {
-      cy.log("***************");
-      cy.log(`HELLLOOO auth url ${Cypress.env("CYPRESS_AUTH_URL")}`);
-      cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
       cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
       cy.contains("Cypress Testing");
       cy.wait(1000);

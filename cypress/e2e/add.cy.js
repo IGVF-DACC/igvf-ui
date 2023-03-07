@@ -2,7 +2,6 @@
 
 describe("Test Add button", () => {
   it("Profiles Page has buttons, can create object", () => {
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
     cy.contains("Cypress Testing");
     cy.wait(1000);
@@ -28,8 +27,6 @@ describe("Test Add button", () => {
       .type('"institute_label": "Very Good University"');
     cy.contains("http://verygood.university.edu").should("exist");
     cy.get("button").contains("Save").click();
-    cy.get("h1")
-      .contains("Cypress Testing, Very Good University")
-      .should("exist");
+    cy.get("h1").contains("Cypress Testing, Very Good University");
   });
 });

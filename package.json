@@ -15,7 +15,6 @@
     "@headlessui/react": "^1.6.4",
     "@heroicons/react": "^2.0.10",
     "ace-builds": "^1.5.0",
-    "babel-plugin-transform-dynamic-import": "^2.1.0",
     "dayjs": "^1.11.3",
     "empty-schema": "^0.1.5",
     "framer-motion": "^9.0.2",
