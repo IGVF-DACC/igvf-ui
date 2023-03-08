@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^1.10.1",
-    "@headlessui/react": "^1.7.11",
+    "@headlessui/react": "1.7.11",
     "@heroicons/react": "^2.0.10",
     "ace-builds": "^1.5.0",
     "dayjs": "^1.11.3",
