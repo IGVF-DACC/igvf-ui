@@ -77,7 +77,7 @@ JsonEditor.propTypes = {
   onChange: PropTypes.func.isRequired,
   // When false, the text field on the editor cannot be changed, and when true
   // editing is allowed
-  enabled: PropTypes.bool,
+  enabled: PropTypes.bool.isRequired,
   // If there are any errors in the text, these are passed on to the react-ace `annotations`
   // prop and are rendered in the editor component. Array elements are the error
   // messages as strings.
