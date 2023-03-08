@@ -222,6 +222,16 @@ describe("Navigation", () => {
       .its("length")
       .should("be.gte", 2);
 
+    cy.get("[data-testid=whole-organisms]").click();
+    cy.url().should("include", "/search?type=WholeOrganism");
+    cy.get("[data-testid=search-results-view-switch]").should("exist");
+    cy.get("[data-testid=form-select]").should("exist");
+    cy.get("[data-testid=search-results-count]").should("exist");
+    cy.get("[data-testid=search-list]")
+      .find("li")
+      .its("length")
+      .should("be.gte", 2);
+
     cy.get("[data-testid=samples]").click();
     cy.get("[data-testid=tissues]").should("not.exist");
     cy.get("[data-testid=primary-cells]").should("not.exist");

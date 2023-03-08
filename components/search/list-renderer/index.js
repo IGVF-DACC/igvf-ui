@@ -74,6 +74,7 @@ const renderers = {
   Tissue: Biosample,
   Treatment,
   User,
+  WholeOrganism: Biosample,
 };
 
 /**

@@ -577,36 +577,6 @@ const profiles = {
     },
   },
 
-  WholeOrganism: {
-    title: "Whole Organism",
-    $id: "/profiles/whole_organism.json",
-    required: ["award", "lab", "source", "donors", "taxa", "biosample_term"],
-    properties: {
-      "@id": {
-        title: "ID",
-        type: "string",
-        notSubmittable: true,
-      },
-      "@type": {
-        title: "Type",
-        type: "array",
-        items: {
-          type: "string",
-        },
-        notSubmittable: true,
-      },
-      accession: {
-        title: "Accession",
-        type: "string",
-        format: "accession",
-      },
-      embryonic: {
-        title: "Embryonic",
-        type: "boolean",
-      },
-    },
-  },
-
   ReferenceData: {
     title: "Reference data",
     $id: "/profiles/reference_data.json",
@@ -2973,7 +2943,7 @@ const profiles = {
       },
     },
   },
-
+  
   Publication: {
     title: "Publication",
     description: "Schema for a publication object.",
@@ -3243,6 +3213,480 @@ const profiles = {
         notSubmittable: true,
       },
     },
+  },
+
+  WholeOrganism: {
+    title: "Whole Organism",
+    $id: "/profiles/whole_organism.json",
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    description: "Schema for submiting a whole organism sample.",
+    type: "object",
+    required: ["award", "lab", "source", "donors", "taxa", "biosample_term"],
+    identifyingProperties: [
+      "uuid",
+      "accession",
+      "alternate_accessions",
+      "aliases",
+    ],
+    properties: {
+      taxa: {
+        title: "Taxa",
+        type: "string",
+        enum: ["Homo sapiens", "Mus musculus", "Saccharomyces"],
+      },
+      references: {
+        title: "References",
+        description:
+          "The references that provide more information about the object.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Reference",
+          description:
+            "A reference that provide smore information about the object.",
+          type: "string",
+          pattern:
+            "^(PMID:[0-9]+|doi:10\\.[0-9]{4}[\\d\\s\\S\\:\\.\\/]+|PMCID:PMC[0-9]+|[0-9]{4}\\.[0-9]{4})$",
+        },
+      },
+      url: {
+        "@type": "@id",
+        "rdfs:subPropertyOf": "rdfs:seeAlso",
+        title: "URL",
+        description: "An external resource with additional information.",
+        type: "string",
+        format: "uri",
+      },
+      source: {
+        title: "Source",
+        description: "The originating lab or vendor.",
+        comment: "See source.json for available identifiers.",
+        type: "string",
+        linkTo: ["Source", "Lab"],
+      },
+      lot_id: {
+        title: "Lot ID",
+        description:
+          "The lot identifier provided by the originating lab or vendor.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+      },
+      product_id: {
+        title: "Product ID",
+        description:
+          "The product identifier provided by the originating lab or vendor.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+      },
+      documents: {
+        title: "Documents",
+        description:
+          "Documents that provide additional information (not data file).",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Document",
+          description:
+            "A document that provides additional information (not data file).",
+          type: "string",
+          comment: "See document.json for available identifiers.",
+          linkTo: "Document",
+        },
+      },
+      lab: {
+        title: "Lab",
+        description: "Lab associated with the submission.",
+        comment: "Required. See lab.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Lab",
+        linkSubmitsFor: true,
+      },
+      award: {
+        title: "Award",
+        description: "Grant associated with the submission.",
+        comment: "Required. See award.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Award",
+      },
+      accession: {
+        title: "Accession",
+        description:
+          "A unique identifier to be used to reference the object prefixed with IGVF.",
+        comment: "Do not submit. The accession is assigned by the server.",
+        type: "string",
+        format: "accession",
+        serverDefault: "accession",
+        permission: "import_items",
+        accessionType: "SM",
+      },
+      alternate_accessions: {
+        title: "Alternate Accessions",
+        description:
+          "Accessions previously assigned to objects that have been merged with this object.",
+        comment:
+          "Do not submit. Only admins are allowed to set or update this value.",
+        type: "array",
+        minItems: 1,
+        permission: "import_items",
+        items: {
+          title: "Alternate Accession",
+          description:
+            "An accession previously assigned to an object that has been merged with this object.",
+          comment:
+            "Only accessions of objects that have status equal replaced will work here.",
+          type: "string",
+          format: "accession",
+        },
+      },
+      collections: {
+        title: "Collections",
+        description: "Some samples are part of particular data collections.",
+        comment: "Do not submit. Collections are for DACC use only.",
+        type: "array",
+        minItems: 1,
+        permission: "import_items",
+        uniqueItems: true,
+        items: {
+          type: "string",
+          enum: ["ENCODE"],
+        },
+      },
+      status: {
+        title: "Status",
+        type: "string",
+        permission: "import_items",
+        default: "in progress",
+        description: "The status of the metadata object.",
+        comment:
+          "Do not submit.  This is set by admins along the process of metadata submission.",
+        enum: [
+          "in progress",
+          "released",
+          "deleted",
+          "replaced",
+          "revoked",
+          "archived",
+        ],
+      },
+      revoke_detail: {
+        title: "Revoke Detail",
+        type: "string",
+        permission: "import_items",
+        description:
+          "Explanation of why an object was transitioned to the revoked status.",
+        comment:
+          "Do not submit. This is set by admins when an object is revoked.",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+      },
+      schema_version: {
+        title: "Schema Version",
+        description:
+          "The version of the JSON schema that the server uses to validate the object.",
+        comment:
+          "Do not submit. The version used to validate the object is set by the server. The default should be set to the current version.",
+        type: "string",
+        pattern: "^\\d+(\\.\\d+)*$",
+        requestMethod: [],
+        "hidden comment": "Bump the default in the subclasses.",
+        default: "8",
+      },
+      uuid: {
+        title: "UUID",
+        description: "The unique identifier associated with every object.",
+        comment: "Do not submit. The uuid is set by the server.",
+        type: "string",
+        format: "uuid",
+        serverDefault: "uuid4",
+        permission: "import_items",
+        requestMethod: "POST",
+      },
+      notes: {
+        title: "Notes",
+        description: "DACC internal notes.",
+        comment:
+          "Do not submit. A place for the DACC to keep information that does not have a place in the schema.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        permission: "import_items",
+        formInput: "textarea",
+      },
+      aliases: {
+        title: "Aliases",
+        description: "Lab specific identifiers to reference an object.",
+        comment:
+          "The purpose of this field is to provide a link into the lab LIMS and to facilitate shared objects.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          uniqueKey: "alias",
+          title: "Lab Alias",
+          description: "A lab specific identifier to reference an object.",
+          comment:
+            "Current convention is colon separated lab name and lab identifier. (e.g. john-doe:42).",
+          type: "string",
+          pattern:
+            "^(?:j-michael-cherry|ali-mortazavi|barbara-wold|lior-pachter|grant-macgregor|kim-green|mark-craven|qiongshi-lu|audrey-gasch|robert-steiner|jesse-engreitz|thomas-quertermous|anshul-kundaje|michael-bassik|will-greenleaf|marlene-rabinovitch|lars-steinmetz|jay-shendure|nadav-ahituv|martin-kircher|danwei-huangfu|michael-beer|anna-katerina-hadjantonakis|christina-leslie|alexander-rudensky|laura-donlin|hannah-carter|bing-ren|kyle-gaulton|maike-sander|charles-gersbach|gregory-crawford|tim-reddy|ansuman-satpathy|andrew-allen|gary-hon|nikhil-munshi|w-lee-kraus|lea-starita|doug-fowler|luca-pinello|guillaume-lettre|benhur-lee|daniel-bauer|richard-sherwood|benjamin-kleinstiver|marc-vidal|david-hill|frederick-roth|mikko-taipale|anne-carpenter|hyejung-won|karen-mohlke|michael-love|jason-buenrostro|bradley-bernstein|hilary-finucane|chongyuan-luo|noah-zaitlen|kathrin-plath|roy-wollman|jason-ernst|zhiping-weng|manuel-garber|xihong-lin|alan-boyle|ryan-mills|jie-liu|maureen-sartor|joshua-welch|stephen-montgomery|alexis-battle|livnat-jerby|jonathan-pritchard|predrag-radivojac|sean-mooney|harinder-singh|nidhi-sahni|jishnu-das|hao-wu|sreeram-kannan|hongjun-song|alkes-price|soumya-raychaudhuri|shamil-sunyaev|len-pennacchio|axel-visel|jill-moore|ting-wang|feng-yue|igvf|igvf-dacc):[a-zA-Z\\d_$.+!*,()'-]+(?:\\s[a-zA-Z\\d_$.+!*,()'-]+)*$",
+        },
+      },
+      creation_timestamp: {
+        "rdfs:subPropertyOf": "dc:created",
+        title: "Creation Timestamp",
+        description: "The date the object was created.",
+        comment:
+          "Do not submit. The date the object is created is assigned by the server.",
+        type: "string",
+        format: "date-time",
+        serverDefault: "now",
+        permission: "import_items",
+      },
+      submitted_by: {
+        "rdfs:subPropertyOf": "dc:creator",
+        title: "Submitted By",
+        comment:
+          "Do not submit. The user that created the object is assigned by the server.",
+        type: "string",
+        linkTo: "User",
+        serverDefault: "userid",
+        permission: "import_items",
+      },
+      submitter_comment: {
+        title: "Submitter Comment",
+        description:
+          "Additional information specified by the submitter to be displayed as a comment on the portal.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+      },
+      description: {
+        title: "Description",
+        description: "A plain text description of the object.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$|^$",
+        formInput: "textarea",
+      },
+      lower_bound_age: {
+        title: "Lower Bound Age",
+        description:
+          "Lower bound of age of the organism at the time of collection of the sample.",
+        comment:
+          "For samples from human donors older than 89 years, the lower bound of age has to be 90 and upper bound has to be 90, for de-identification purposes.",
+        type: "number",
+      },
+      upper_bound_age: {
+        title: "Upper Bound Age",
+        description:
+          "Upper bound of age of the organism at the time of collection of the sample.",
+        comment:
+          "For samples from human donors older than 89 years, the lower bound of age has to be 90 and upper bound has to be 90, for de-identification purposes.",
+        type: "number",
+      },
+      age_units: {
+        title: "Age Units",
+        description: "The units of time associated with age of the biosample.",
+        type: "string",
+        enum: ["minute", "hour", "day", "week", "month", "year"],
+      },
+      biosample_term: {
+        title: "Biosample Term",
+        description: "Ontology term identifying a biosample.",
+        type: "string",
+        linkTo: "SampleTerm",
+      },
+      disease_terms: {
+        title: "Disease Terms",
+        description:
+          "Ontology term of the disease associated with the biosample.",
+        comment:
+          "This property should only be used to submit existing known diseases, and not any phenotypic trait.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Disease Term",
+          comment: "See phenotype_term.json for available identifiers.",
+          type: "string",
+          linkTo: "PhenotypeTerm",
+        },
+      },
+      nih_institutional_certification: {
+        type: "string",
+        title: "NIH Institutional Certification",
+        description:
+          "Institutional certification given by the NIH for human biosamples.",
+        comment: "Required for IGVF human biosamples.",
+        pattern: "^NIC[A-Z0-9]+$",
+      },
+      pooled_from: {
+        title: "Biosample(s) Pooled From",
+        description: "The biosample(s) this biosample is pooled from.",
+        type: "array",
+        uniqueItems: true,
+        minItems: 2,
+        items: {
+          title: "Biosample",
+          description: "Biosample(s).",
+          comment: "See biosample.json for available identifiers.",
+          type: "string",
+          linkTo: "Biosample",
+        },
+      },
+      part_of: {
+        title: "Part of Biosample",
+        description:
+          "Links to a biosample which represents a larger sample from which this sample was taken regardless of whether it is a tissue taken from an organism or smaller slices of a piece of tissue or aliquots of a cell growth.",
+        comment:
+          "For other specific relationships such as differentiation or hosting there are separate properties.",
+        type: "string",
+        linkTo: "Biosample",
+      },
+      treatments: {
+        title: "Treatments",
+        description: "A list of treatments applied to the biosample.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Treatment",
+          comment: "See treatment.json for available identifiers.",
+          type: "string",
+          linkTo: "Treatment",
+        },
+      },
+      donors: {
+        title: "Donors",
+        description: "Donor(s) the sample was derived from.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Donor",
+          description: "Donor.",
+          comment:
+            "See concrete class human_donor.json or rodent_donor.json for available identifiers.",
+          type: "string",
+          linkTo: "Donor",
+        },
+      },
+      biomarkers: {
+        title: "Biomarkers",
+        description: "Biological markers that are associated with this sample.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Biomarker",
+          description: "Associated biomarker.",
+          type: "string",
+          linkTo: "Biomarker",
+        },
+      },
+      embryonic: {
+        title: "Embryonic",
+        description: "Biosample is embryonic.",
+        type: "boolean",
+      },
+      starting_amount: {
+        title: "Starting Amount",
+        description: "The initial quantity of samples obtained.",
+        type: "number",
+        minimum: 0,
+      },
+      starting_amount_units: {
+        title: "Starting Amount Units",
+        description:
+          "The units used to quantify the amount of samples obtained.",
+        type: "string",
+        enum: [
+          "cells",
+          "cells/ml",
+          "g",
+          "items",
+          "mg",
+          "whole animals",
+          "whole embryos",
+          "μg",
+          "ng",
+        ],
+      },
+      dbxrefs: {
+        "@type": "@id",
+        "rdfs:subPropertyOf": "rdfs:seeAlso",
+        title: "External Resources",
+        description:
+          "Biosample identifiers from external resources, such as Biosample database or Cellosaurus.",
+        comment:
+          "Do not submit. DCC personnel is responsible for submission of biosample external resource identifiers.",
+        permission: "import_items",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "External Identifier",
+          description: "An identifier from external resource.",
+          type: "string",
+          pattern: "^((GEO:SAMN\\d+)|(Cellosaurus:CVCL_\\w{4}))$",
+        },
+      },
+      date_obtained: {
+        title: "Date Obtained",
+        description:
+          "The date the sample was harvested, dissected or created, depending on the type of the sample.",
+        comment: "Date should be submitted in as YYYY-MM-DD.",
+        type: "string",
+        format: "date",
+      },
+      "@id": {
+        title: "ID",
+        type: "string",
+        notSubmittable: true,
+      },
+      "@type": {
+        title: "Type",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        notSubmittable: true,
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
+        notSubmittable: true,
+      },
+      file_sets: {
+        title: "File Sets",
+        type: "array",
+        items: {
+          type: ["string", "object"],
+          linkFrom: "FileSet.samples",
+        },
+      },
+      sex: {
+        title: "Sex",
+        type: "string",
+        enum: ["female", "male", "mixed", "unspecified"],
+        notSubmittable: true,
+      },
+      age: {
+        title: "Age",
+        description: "Age of organism at the time of collection of the sample.",
+        type: "string",
+        pattern:
+          "^((\\d+(\\.[1-9])?(\\-\\d+(\\.[1-9])?)?)|(unknown)|([1-8]?\\d)|(90 or above))$",
+        notSubmittable: true,
+      },
+    },
+    boost_values: {
+      accession: 1,
+      "@type": 1,
+      taxa: 1,
+    },
+    changelog: "/profiles/changelogs/whole_organism.md",
+    "@type": ["JSONSchema"],
   },
 };
 
