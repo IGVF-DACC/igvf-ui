@@ -17,7 +17,7 @@ import PagePreamble from "../../components/page-preamble";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { getTitle } from "../../lib/biomarker";
+import { getBiomarkerTitle } from "../../lib/biomarker";
 
 export default function Biomarker({
   biomarker,
@@ -101,14 +101,14 @@ export async function getServerSideProps({ params, req }) {
       "name",
       req.headers.cookie
     );
-    const title = getTitle(biomarker);
+    const title = getBiomarkerTitle(biomarker);
     return {
       props: {
         biomarker,
         award,
         lab,
         gene,
-        pageContext: { title: title },
+        pageContext: { title },
         breadcrumbs,
       },
     };
