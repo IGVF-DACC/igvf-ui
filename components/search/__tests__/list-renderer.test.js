@@ -21,7 +21,6 @@ import User from "../list-renderer/user";
 import Biomarker from "../list-renderer/biomarker";
 import Source from "../list-renderer/source";
 
-
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
  * object's `@type` property. For other objects, the `@type` property itself appears.
@@ -1336,7 +1335,9 @@ describe("Test the SoftwareVersion component", () => {
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
   });
+});
 
+describe("Test the Source component", () => {
   it("renders a Source item without accessory data", () => {
     const item = {
       name: "aviva",
