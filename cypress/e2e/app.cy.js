@@ -235,6 +235,7 @@ describe("Navigation", () => {
     cy.get("[data-testid=samples]").click();
     cy.get("[data-testid=tissues]").should("not.exist");
     cy.get("[data-testid=primary-cells]").should("not.exist");
+    cy.get("[data-testid=whole-organisms]").should("not.exist");
     cy.get("[data-testid=technical-samples]").should("not.exist");
 
     cy.get("[data-testid=software-parent]").click();
