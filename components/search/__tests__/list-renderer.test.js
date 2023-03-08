@@ -1367,7 +1367,7 @@ describe("Test the Biomarker component", () => {
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/^Biomarker/);
-    expect(uniqueId).toHaveTextContent(/BAP1 positive$/);
+    expect(uniqueId).toHaveTextContent(/bdfaa822-cdbe-405c-920c-67da068c43b6$/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^BAP1 positive$/);
@@ -1401,7 +1401,7 @@ describe("Test the Biomarker component", () => {
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/^Biomarker/);
-    expect(uniqueId).toHaveTextContent(/BAP1 positive$/);
+    expect(uniqueId).toHaveTextContent(/bdfaa822-cdbe-405c-920c-67da068c43b6$/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^BAP1 positive$/);
