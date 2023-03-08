@@ -9,6 +9,7 @@ import {
   CircleStackIcon,
   DocumentIcon,
   DocumentTextIcon,
+  InformationCircleIcon,
   MinusIcon,
   PlusIcon,
   QuestionMarkCircleIcon,
@@ -561,6 +562,16 @@ function Navigation({ navigationClick }) {
           Software Versions
         </NavigationHrefItem>
       </NavigationGroupItem>
+      <NavigationHrefItem
+        id="sources"
+        href="/search?type=Source"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <InformationCircleIcon />
+        </NavigationIcon>
+        Sources
+      </NavigationHrefItem>
       <NavigationHrefItem
         id="treatments"
         href="/search?type=Treatment"
