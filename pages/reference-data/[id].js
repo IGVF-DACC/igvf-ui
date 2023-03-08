@@ -100,8 +100,8 @@ export async function getServerSideProps({ params, req }) {
     `/reference-data/${params.id}/`
   );
   if (FetchRequest.isResponseSuccess(referenceData)) {
-    const award = await request.getObject(referenceData.award, null);
-    const lab = await request.getObject(referenceData.lab, null);
+    const award = await request.getObject(referenceData.award["@id"], null);
+    const lab = await request.getObject(referenceData.lab["@id"], null);
     const fileSet = await request.getObject(referenceData.file_set, null);
     const documents = referenceData.documents
       ? await request.getMultipleObjects(referenceData.documents, null, {

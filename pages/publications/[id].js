@@ -113,8 +113,8 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const publication = await request.getObject(`/publications/${params.id}/`);
   if (FetchRequest.isResponseSuccess(publication)) {
-    const award = await request.getObject(publication.award, null);
-    const lab = await request.getObject(publication.lab, null);
+    const award = await request.getObject(publication.award["@id"], null);
+    const lab = await request.getObject(publication.lab["@id"], null);
     const breadcrumbs = await buildBreadcrumbs(
       publication,
       "title",

@@ -18,7 +18,10 @@ import PropTypes from "prop-types";
  */
 export function DataPanel({ className = "", children }) {
   return (
-    <div className={`border border-panel bg-panel p-4 ${className}`}>
+    <div
+      className={`border border-panel bg-panel p-4 ${className}`}
+      data-testid="datapanel"
+    >
       {children}
     </div>
   );
@@ -36,7 +39,12 @@ DataPanel.propTypes = {
  */
 export function DataArea({ children }) {
   return (
-    <div className="md:grid md:grid-cols-data-item md:gap-4">{children}</div>
+    <div
+      className="md:grid md:grid-cols-data-item md:gap-4"
+      data-testid="dataarea"
+    >
+      {children}
+    </div>
   );
 }
 
@@ -44,7 +52,11 @@ export function DataArea({ children }) {
  * Displays the title above a data panel or table.
  */
 export function DataAreaTitle({ children }) {
-  return <h2 className="mt-4 mb-1 text-2xl font-light">{children}</h2>;
+  return (
+    <h2 className="mt-4 mb-1 text-2xl font-light" data-testid="dataareatitle">
+      {children}
+    </h2>
+  );
 }
 
 /**
@@ -54,6 +66,7 @@ export function DataItemLabel({ className = "", children }) {
   return (
     <div
       className={`mt-4 break-words font-semibold text-data-label first:mt-0 dark:text-gray-400 md:mt-0 ${className}`}
+      data-testid="dataitemlabel"
     >
       {children}
     </div>
@@ -70,7 +83,10 @@ DataItemLabel.propTypes = {
  */
 export function DataItemValue({ children }) {
   return (
-    <div className="mb-4 font-medium text-data-value last:mb-0 md:mb-0">
+    <div
+      className="mb-4 font-medium text-data-value last:mb-0 md:mb-0"
+      data-testid="dataitemvalue"
+    >
       {children}
     </div>
   );

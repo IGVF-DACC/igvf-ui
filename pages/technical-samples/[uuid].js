@@ -22,14 +22,7 @@ import { formatDate } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-export default function TechnicalSample({
-  sample,
-  award = null,
-  documents,
-  lab = null,
-  source = null,
-  technicalSampleTerm,
-}) {
+export default function TechnicalSample({ sample, documents }) {
   return (
     <>
       <Breadcrumbs />
@@ -41,7 +34,7 @@ export default function TechnicalSample({
             <DataItemValue>
               <Status status={sample.status} />
             </DataItemValue>
-            <SampleDataItems sample={sample} source={source}>
+            <SampleDataItems sample={sample} source={sample.source}>
               {sample.date && (
                 <>
                   <DataItemLabel>Technical Sample Date</DataItemLabel>
@@ -52,8 +45,8 @@ export default function TechnicalSample({
               <DataItemValue>{sample.sample_material}</DataItemValue>
               <DataItemLabel>Technical Sample Term</DataItemLabel>
               <DataItemValue>
-                <Link href={technicalSampleTerm["@id"]}>
-                  {technicalSampleTerm.term_name}
+                <Link href={sample.technical_sample_term["@id"]}>
+                  {sample.technical_sample_term.term_name}
                 </Link>
               </DataItemValue>
             </SampleDataItems>
@@ -65,7 +58,7 @@ export default function TechnicalSample({
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} />
+        <Attribution award={sample.award} lab={sample.lab} />
       </EditableItem>
     </>
   );
@@ -74,34 +67,19 @@ export default function TechnicalSample({
 TechnicalSample.propTypes = {
   // Technical sample to display
   sample: PropTypes.object.isRequired,
-  // Award applied to this technical sample
-  award: PropTypes.object,
   // Documents associated with this technical sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this technical sample
-  lab: PropTypes.object,
-  // Source lab or source for this technical sample
-  source: PropTypes.object,
-  // Tehnical sample ontology for the technical sample
-  technicalSampleTerm: PropTypes.object.isRequired,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sample = await request.getObject(`/technical-samples/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(sample)) {
-    const award = await request.getObject(sample.award, null);
     const documents = sample.documents
       ? await request.getMultipleObjects(sample.documents, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(sample.lab, null);
-    const source = await request.getObject(sample.source, null);
-    const technicalSampleTerm = await request.getObject(
-      sample.technical_sample_term,
-      null
-    );
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       "accession",
@@ -110,15 +88,9 @@ export async function getServerSideProps({ params, req }) {
     return {
       props: {
         sample,
-        award,
         documents,
-        lab,
-        source,
-        technicalSampleTerm,
         pageContext: {
-          title: `${
-            technicalSampleTerm ? `${technicalSampleTerm.term_name} — ` : ""
-          }${sample.accession}`,
+          title: sample.accession,
         },
         breadcrumbs,
       },

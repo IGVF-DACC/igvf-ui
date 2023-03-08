@@ -83,7 +83,7 @@ export default function Tissue({
             </BiosampleDataItems>
           </DataArea>
         </DataPanel>
-        {treatments.length > 0 && (
+        {treatments?.length > 0 && (
           <>
             <DataAreaTitle>Treatments</DataAreaTitle>
             <TreatmentTable treatments={treatments} />
@@ -130,15 +130,19 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(tissue)) {
-    const award = await request.getObject(tissue.award, null);
+    const award = await request.getObject(tissue.award["@id"], null);
     const biosampleTerm = tissue.biosample_term
-      ? await request.getObject(tissue.biosample_term, null)
+      ? await request.getObject(tissue.biosample_term["@id"], null)
       : null;
-    const diseaseTerms = tissue.disease_terms
-      ? await request.getMultipleObjects(tissue.disease_terms, null, {
-          filterErrors: true,
-        })
-      : [];
+    let diseaseTerms = [];
+    if (tissue.disease_terms?.length > 0) {
+      const diseaseTermPaths = tissue.disease_terms.map((term) => term["@id"]);
+      diseaseTerms = tissue.disease_terms
+        ? await request.getMultipleObjects(diseaseTermPaths, null, {
+            filterErrors: true,
+          })
+        : [];
+    }
     const documents = tissue.documents
       ? await request.getMultipleObjects(tissue.documents, null, {
           filterErrors: true,
@@ -149,8 +153,8 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(tissue.lab, null);
-    const source = await request.getObject(tissue.source, null);
+    const lab = await request.getObject(tissue.lab["@id"], null);
+    const source = await request.getObject(tissue.source["@id"], null);
     const treatments = tissue.treatments
       ? await request.getMultipleObjects(tissue.treatments, null, {
           filterErrors: true,
@@ -184,9 +188,7 @@ export async function getServerSideProps({ params, req }) {
         pooledFrom,
         partOf,
         pageContext: {
-          title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
-            tissue.accession
-          }`,
+          title: `${tissue.biosample_term.term_name} — ${tissue.accession}`,
         },
         breadcrumbs,
       },

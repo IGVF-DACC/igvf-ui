@@ -34,13 +34,12 @@ describe("search view tests", () => {
     cy.contains("Columns").click();
     cy.get("[id^=headlessui-dialog-panel-]").should("exist");
 
-    cy.get("[role=columnheader]").contains("Award").should("exist");
-    cy.get("input[name=awards]").uncheck();
-    cy.get("[role=columnheader]").contains("Award").should("not.exist");
-    cy.get("input[name=awards]").check();
-    cy.get("[role=columnheader]").contains("Award").should("exist");
-    cy.get("input[name=aliases]").uncheck();
-    cy.get("[role=columnheader]").contains("Aliases").should("not.exist");
+    cy.get("[role=columnheader]").contains("Name").should("exist");
+    cy.get("input[aria-label=name]").uncheck();
+    cy.get("[role=columnheader]").contains("Name").should("not.exist");
+    cy.get("input[aria-label=name]").check();
+    cy.get("[role=columnheader]").contains("Name").should("exist");
+    cy.get("input[aria-label=aliases]").uncheck();
 
     cy.contains("Close").click();
     cy.get("[id^=headlessui-dialog-panel-]").should("not.exist");

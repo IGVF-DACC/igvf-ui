@@ -16,7 +16,6 @@ import {
 } from "./search-list-item";
 
 export default function AnalysisSet({ item: analysisSet, accessoryData }) {
-  const lab = accessoryData?.[analysisSet.lab];
   const summary = analysisSet.summary;
   const inputFileSetsKeys = analysisSet.input_file_sets;
   const inputFileSetsAccessions =
@@ -32,12 +31,10 @@ export default function AnalysisSet({ item: analysisSet, accessoryData }) {
           {analysisSet.accession}
         </SearchListItemUniqueId>
         <SearchListItemTitle>Analysis</SearchListItemTitle>
-        {(summary || lab) && (
-          <SearchListItemMeta>
-            {lab && <div key="lab">{lab.title}</div>}
-            {summary && <div key="summary">{summary}</div>}
-          </SearchListItemMeta>
-        )}
+        <SearchListItemMeta>
+          <div key="lab">{analysisSet.lab.title}</div>
+          {summary && <div key="summary">{summary}</div>}
+        </SearchListItemMeta>
         {inputFileSetsAccessions && (
           <SearchListItemSupplement>
             <SearchListItemSupplementSection>
@@ -67,7 +64,5 @@ AnalysisSet.getAccessoryDataPaths = (analysisSets) => {
   let fileSets = analysisSets
     .map((analysisSet) => analysisSet.input_file_sets)
     .filter(Boolean);
-  fileSets = fileSets.flat();
-  const labs = analysisSets.map((analysisSet) => analysisSet.lab);
-  return fileSets.concat(labs);
+  return fileSets.flat();
 };

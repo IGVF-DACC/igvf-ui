@@ -18,7 +18,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-export default function Lab({ lab, awards, pi = null }) {
+export default function Lab({ lab, awards = null, pi = null }) {
   return (
     <>
       <Breadcrumbs />
@@ -48,7 +48,7 @@ export default function Lab({ lab, awards, pi = null }) {
                 </DataItemValue>
               </>
             )}
-            {awards.length > 0 && (
+            {awards?.length > 0 && (
               <>
                 <DataItemLabel>Awards</DataItemLabel>
                 <SeparatedList>
@@ -56,7 +56,7 @@ export default function Lab({ lab, awards, pi = null }) {
                     <Link
                       href={award["@id"]}
                       aria-label={`Award ${award.name}`}
-                      key={award.uuid}
+                      key={award["@id"]}
                     >
                       {award.name}
                     </Link>
@@ -90,11 +90,13 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const lab = await request.getObject(`/labs/${params.name}/`);
   if (FetchRequest.isResponseSuccess(lab)) {
-    const awards = lab.awards
-      ? await request.getMultipleObjects(lab.awards, null, {
-          filterErrors: true,
-        })
-      : [];
+    let awards = [];
+    if (lab.awards?.length > 0) {
+      const awardPaths = lab.awards.map((award) => award["@id"]);
+      awards = await request.getMultipleObjects(awardPaths, null, {
+        filterErrors: true,
+      });
+    }
     const pi = await request.getObject(lab.pi, null);
     const breadcrumbs = await buildBreadcrumbs(
       lab,

@@ -671,8 +671,8 @@ export default function NavigationSection() {
   }
 
   return (
-    <section className="bg-brand md:block md:h-auto md:shrink-0 md:grow-0 md:basis-1/4 md:bg-transparent">
-      <div className="flex h-14 justify-between px-4 md:block">
+    <section className="bg-brand md:sticky md:top-0 md:h-screen md:w-72 md:shrink-0 md:grow-0 md:overflow-y-auto md:border-r-2 md:border-r-gray-300 md:bg-transparent">
+      <div className="flex h-14 justify-between px-2 md:block md:px-4">
         <SiteLogo />
         <button
           data-testid="mobile-navigation-trigger"

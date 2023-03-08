@@ -11,9 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function RodentDonor({ item: rodentDonor, accessoryData }) {
-  const lab = accessoryData?.[rodentDonor.lab];
-
+export default function RodentDonor({ item: rodentDonor }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -24,11 +22,9 @@ export default function RodentDonor({ item: rodentDonor, accessoryData }) {
         <SearchListItemTitle>
           {rodentDonor.strain} {rodentDonor.sex}
         </SearchListItemTitle>
-        {lab && (
-          <SearchListItemMeta>
-            <div key="lab">{lab.title}</div>
-          </SearchListItemMeta>
-        )}
+        <SearchListItemMeta>
+          <div key="lab">{rodentDonor.lab.title}</div>
+        </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemStatus item={rodentDonor} />
     </SearchListItemContent>
@@ -38,10 +34,4 @@ export default function RodentDonor({ item: rodentDonor, accessoryData }) {
 RodentDonor.propTypes = {
   // Single rodent-donor search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
-  // Accessory data to display for all search-result objects
-  accessoryData: PropTypes.object,
-};
-
-RodentDonor.getAccessoryDataPaths = (rodentDonors) => {
-  return rodentDonors.map((rodentDonor) => rodentDonor.lab).filter(Boolean);
 };

@@ -16,7 +16,6 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
     humanDonor.ethnicities?.length > 0 ? humanDonor.ethnicities.join(", ") : "";
   const sex = humanDonor.sex || "";
   const title = [ethnicities, sex].filter(Boolean);
-  const lab = accessoryData?.[humanDonor.lab];
   const collections =
     humanDonor.collections?.length > 0 ? humanDonor.collections.join(", ") : "";
   const phenotypicFeatures = humanDonor.phenotypic_features
@@ -40,13 +39,13 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
         <SearchListItemTitle>
           {title.length > 0 ? title.join(" ") : humanDonor["@id"]}
         </SearchListItemTitle>
-        {(lab || collections || phenotypicFeatures) && (
-          <SearchListItemMeta>
-            {lab && <div key="lab">{lab.title}</div>}
-            {collections && <div>{collections}</div>}
-            {phenotypicFeatures && <div>{phenotypicFeatures}</div>}
-          </SearchListItemMeta>
-        )}
+        <SearchListItemMeta>
+          <div key="lab">{humanDonor.lab.title}</div>
+          {collections && <div key="collections">{collections}</div>}
+          {phenotypicFeatures && (
+            <div key="phenotypic-features">{phenotypicFeatures}</div>
+          )}
+        </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemStatus item={humanDonor} />
     </SearchListItemContent>
@@ -61,11 +60,9 @@ HumanDonor.propTypes = {
 };
 
 HumanDonor.getAccessoryDataPaths = (humanDonors) => {
-  // A list lab path
-  const labs = humanDonors.map((humanDonor) => humanDonor.lab).filter(Boolean);
   // A list of list of phenotypic features paths
   const phenotypicFeatures = humanDonors
-    .map((humanDoner) => humanDoner.phenotypic_features)
+    .map((humanDonor) => humanDonor.phenotypic_features)
     .filter(Boolean);
-  return phenotypicFeatures.flat().concat(labs);
+  return phenotypicFeatures.flat();
 };

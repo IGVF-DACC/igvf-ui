@@ -167,61 +167,22 @@ describe("Test Award component", () => {
 });
 
 describe("Test the Biosample component", () => {
-  it("renders a biosample-derived item with accessory data", () => {
+  it("renders a biosample-derived item", () => {
     const item = {
       "@id": "/primary-cells/IGVFSM0000EEEE/",
       "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       accession: "IGVFSM0000EEEE",
-      biosample_term: "/sample-terms/CL_0011001/",
-      lab: "/labs/j-michael-cherry/",
-      status: "released",
-      taxa: "Homo sapiens",
-      uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
-    };
-    const accessoryData = {
-      "/sample-terms/CL_0011001/": {
-        "@id": "/sample-terms/CL_0011001/",
+      award: {
+        component: "data coordination",
+        name: "HG012012",
+        "@id": "/awards/HG012012/",
+      },
+      biosample_term: {
         term_name: "motor neuron",
       },
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
+      lab: {
         title: "J. Michael Cherry, Stanford",
       },
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <Biosample item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^PrimaryCell/);
-    expect(uniqueId).toHaveTextContent(/IGVFSM0000EEEE$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent("Homo sapiens motor neuron");
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-    const status = screen.getByTestId("search-list-item-status");
-    expect(status).toHaveTextContent("released");
-
-    const paths = Biosample.getAccessoryDataPaths([item]);
-    expect(paths).toEqual([
-      "/sample-terms/CL_0011001/",
-      "/labs/j-michael-cherry/",
-    ]);
-  });
-
-  it("renders a biosample-derived item without accessory data", () => {
-    const item = {
-      "@id": "/primary-cells/IGVFSM0000EEEE/",
-      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
-      accession: "IGVFSM0000EEEE",
-      biosample_term: "/sample-terms/CL_0011001/",
-      lab: "/labs/j-michael-cherry/",
       status: "released",
       taxa: "Homo sapiens",
       uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
@@ -238,10 +199,10 @@ describe("Test the Biosample component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFSM0000EEEE$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^Homo sapiens$/);
+    expect(title).toHaveTextContent("Homo sapiens motor neuron");
 
-    const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
@@ -249,7 +210,7 @@ describe("Test the Biosample component", () => {
 });
 
 describe("Test Document component", () => {
-  it("renders a document item with accessory data", () => {
+  it("renders a document item", () => {
     const item = {
       "@id": "/documents/c7870a38-4286-42fc-9551-22436306e22a/",
       "@type": ["Document", "Item"],
@@ -263,61 +224,9 @@ describe("Test Document component", () => {
       award: "/awards/1UM1HG011996-01/",
       description: "Characterization of a sample using immunofluorescence.",
       document_type: "characterization",
-      lab: "/labs/j-michael-cherry/",
-      status: "in progress",
-      submitted_by: "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/",
-      uuid: "c7870a38-4286-42fc-9551-22436306e22a",
-    };
-    const accessoryData = {
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
+      lab: {
         title: "J. Michael Cherry, Stanford",
       },
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <Document item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Document/);
-    expect(uniqueId).toHaveTextContent(
-      /mouse_H3K4me3_07-473_validation_Hardison.pdf$/
-    );
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(
-      /^Characterization of a sample using immunofluorescence.$/
-    );
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-    expect(meta).toHaveTextContent("characterization");
-
-    const status = screen.getByTestId("search-list-item-status");
-    expect(status).toHaveTextContent("in progress");
-
-    const paths = Document.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
-  });
-
-  it("renders a document item without accessory data", () => {
-    const item = {
-      "@id": "/documents/c7870a38-4286-42fc-9551-22436306e22a/",
-      "@type": ["Document", "Item"],
-      aliases: ["j-michael-cherry:characterization_immunofluorescence_insert"],
-      attachment: {
-        download: "mouse_H3K4me3_07-473_validation_Hardison.pdf",
-        md5sum: "a7c2c98ff7d0f198fdbc6f0ccbfcb411",
-        href: "@@download/attachment/mouse_H3K4me3_07-473_validation_Hardison.pdf",
-        type: "application/pdf",
-      },
-      award: "/awards/1UM1HG011996-01/",
-      description: "Characterization of a sample using immunofluorescence.",
-      document_type: "characterization",
-      lab: "/labs/j-michael-cherry/",
       status: "in progress",
       submitted_by: "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/",
       uuid: "c7870a38-4286-42fc-9551-22436306e22a",
@@ -341,7 +250,7 @@ describe("Test Document component", () => {
     );
 
     const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).not.toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("characterization");
 
     const status = screen.getByTestId("search-list-item-status");
@@ -419,7 +328,7 @@ describe("Test Gene component", () => {
 });
 
 describe("Test the HumanDonor component", () => {
-  it("renders a human donor item with accessory data", () => {
+  it("renders a human donor item", () => {
     const item = {
       "@id": "/human-donors/IGVFDO856PXB/",
       "@type": ["HumanDonor", "Donor", "Item"],
@@ -427,7 +336,7 @@ describe("Test the HumanDonor component", () => {
       aliases: ["chongyuan-luo:AA F donor of fibroblasts"],
       award: "/awards/1U01HG012079-01/",
       ethnicities: ["African American"],
-      lab: "/labs/chongyuan-luo/",
+      lab: { "@id": "/labs/chongyuan-luo/", title: "Chongyuan Luo" },
       sex: "female",
       status: "released",
       taxa: "Homo sapiens",
@@ -439,11 +348,6 @@ describe("Test the HumanDonor component", () => {
       ],
     };
     const accessoryData = {
-      "/labs/chongyuan-luo/": {
-        "@id": "/labs/chongyuan-luo/",
-        "@type": ["Lab", "Item"],
-        title: "Chongyuan Luo",
-      },
       "/phenotypic-features/123/": {
         lab: "/labs/j-michael-cherry/",
         award: "/awards/HG012012/",
@@ -505,11 +409,7 @@ describe("Test the HumanDonor component", () => {
 
     const paths = HumanDonor.getAccessoryDataPaths([item]);
     expect(paths.sort()).toEqual(
-      [
-        "/labs/chongyuan-luo/",
-        "/phenotypic-features/123/",
-        "/phenotypic-features/456/",
-      ].sort()
+      ["/phenotypic-features/123/", "/phenotypic-features/456/"].sort()
     );
   });
 
@@ -521,7 +421,7 @@ describe("Test the HumanDonor component", () => {
       aliases: ["chongyuan-luo:AA F donor of fibroblasts"],
       award: "/awards/1U01HG012079-01/",
       ethnicities: ["African American"],
-      lab: "/labs/chongyuan-luo/",
+      lab: { "@id": "/labs/chongyuan-luo/", title: "Chongyuan Luo" },
       sex: "female",
       status: "released",
       taxa: "Homo sapiens",
@@ -541,14 +441,14 @@ describe("Test the HumanDonor component", () => {
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^African American female$/);
 
-    const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("Chongyuan Luo");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders a human donor item without accessory data nor ethnicities nor sex", () => {
+  it("renders a human donor item without ethnicities nor sex", () => {
     const item = {
       "@id": "/human-donors/IGVFDO856PXB/",
       "@type": ["HumanDonor", "Donor", "Item"],
@@ -574,20 +474,21 @@ describe("Test the HumanDonor component", () => {
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^\/human-donors\/IGVFDO856PXB\/$/);
 
-    const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
-
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
   });
 });
 
 describe("Test the Lab component", () => {
-  it("renders a lab item with accessory data", () => {
+  it("renders a lab item", () => {
     const item = {
       "@id": "/labs/hyejung-won/",
       "@type": ["Lab", "Item"],
-      awards: ["/awards/1UM1HG012003-01/"],
+      awards: [
+        {
+          name: "1UM1HG012003-01",
+        },
+      ],
       institute_label: "UNC",
       name: "hyejung-won",
       pi: "/users/7e51864b-2e2b-40cf-9abc-5cc2dc98f35d/",
@@ -595,17 +496,10 @@ describe("Test the Lab component", () => {
       title: "Hyejung Won, UNC",
       uuid: "fe27c988-4664-4245-a1ca-bab9e1c62a00",
     };
-    const accessoryData = {
-      "/awards/1UM1HG012003-01/": {
-        "@id": "/awards/1UM1HG012003-01/",
-        "@type": ["Award", "Item"],
-        name: "1UM1HG012003-01",
-      },
-    };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <Lab item={item} accessoryData={accessoryData} />
+        <Lab item={item} />
       </SessionContext.Provider>
     );
 
@@ -621,16 +515,12 @@ describe("Test the Lab component", () => {
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("current");
-
-    const paths = Lab.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/awards/1UM1HG012003-01/"]);
   });
 
-  it("renders a lab item without accessory data", () => {
+  it("renders a lab item without the optional award", () => {
     const item = {
       "@id": "/labs/hyejung-won/",
       "@type": ["Lab", "Item"],
-      awards: ["/awards/1UM1HG012003-01/"],
       institute_label: "UNC",
       name: "hyejung-won",
       pi: "/users/7e51864b-2e2b-40cf-9abc-5cc2dc98f35d/",
@@ -692,7 +582,7 @@ describe("Test the Page component", () => {
 });
 
 describe("Test the RodentDonor component", () => {
-  it("renders a RodentDonor item with accessory data", () => {
+  it("renders a RodentDonor item", () => {
     const item = {
       "@id": "/rodent-donors/IGVFDO524ORO/",
       "@type": ["RodentDonor", "Donor", "Item"],
@@ -701,56 +591,14 @@ describe("Test the RodentDonor component", () => {
         "j-michael-cherry:alias_rodent_donor_1",
         "j-michael-cherry:rodent_donor_with_arterial_blood_pressure_trait",
       ],
-      award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
-      sex: "male",
-      status: "released",
-      strain: "some name",
-      taxa: "Mus musculus",
-      uuid: "c37934b0-4269-4470-be53-9eac7b196447",
-    };
-    const accessoryData = {
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
+      award: {
+        component: "data coordination",
+        name: "HG012012",
+        "@id": "/awards/HG012012/",
+      },
+      lab: {
         title: "J. Michael Cherry, Stanford",
       },
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <RodentDonor item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^RodentDonor/);
-    expect(uniqueId).toHaveTextContent(/IGVFDO524ORO$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^some name male$/);
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-    const status = screen.getByTestId("search-list-item-status");
-    expect(status).toHaveTextContent("released");
-
-    const paths = RodentDonor.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
-  });
-
-  it("renders a Rodent Donor item without accessory data", () => {
-    const item = {
-      "@id": "/rodent-donors/IGVFDO524ORO/",
-      "@type": ["RodentDonor", "Donor", "Item"],
-      accession: "IGVFDO524ORO",
-      aliases: [
-        "j-michael-cherry:alias_rodent_donor_1",
-        "j-michael-cherry:rodent_donor_with_arterial_blood_pressure_trait",
-      ],
-      award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
       sex: "male",
       status: "released",
       strain: "some name",
@@ -771,8 +619,8 @@ describe("Test the RodentDonor component", () => {
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^some name male$/);
 
-    const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
@@ -788,61 +636,13 @@ describe("Test the TechnicalSample component", () => {
       award: "/awards/HG012012/",
       date_obtained: "2022-04-09",
       description: "The technical sample was archived due to poor quality.",
-      lab: "/labs/j-michael-cherry/",
-      status: "archived",
-      technical_sample_term: "/sample-terms/NTR_0000637/",
-      uuid: "f12ab44c-bba8-46cc-9f3d-6a192eb09e7e",
-    };
-    const accessoryData = {
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
+      lab: {
         title: "J. Michael Cherry, Stanford",
       },
-      "/sample-terms/NTR_0000637/": {
-        "@id": "/sample-terms/NTR_0000637/",
-        "@type": ["SampleTerm", "Item"],
-        term_id: "NTR:0000637",
-      },
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <TechnicalSample item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^TechnicalSample/);
-    expect(uniqueId).toHaveTextContent(/IGVFSM515BSZ$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^NTR:0000637$/);
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-    const status = screen.getByTestId("search-list-item-status");
-    expect(status).toHaveTextContent("archived");
-
-    const paths = TechnicalSample.getAccessoryDataPaths([item]);
-    expect(paths).toEqual([
-      "/sample-terms/NTR_0000637/",
-      "/labs/j-michael-cherry/",
-    ]);
-  });
-
-  it("renders a TechnicalSample item without accessory data", () => {
-    const item = {
-      "@id": "/technical-samples/IGVFSM515BSZ/",
-      "@type": ["TechnicalSample", "Sample", "Item"],
-      accession: "IGVFSM515BSZ",
-      award: "/awards/HG012012/",
-      date_obtained: "2022-04-09",
-      description: "The technical sample was archived due to poor quality.",
-      lab: "/labs/j-michael-cherry/",
       status: "archived",
-      technical_sample_term: "/sample-terms/NTR_0000637/",
+      technical_sample_term: {
+        term_name: "technical sample",
+      },
       uuid: "f12ab44c-bba8-46cc-9f3d-6a192eb09e7e",
     };
 
@@ -857,10 +657,10 @@ describe("Test the TechnicalSample component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFSM515BSZ$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^\/technical-samples\/IGVFSM515BSZ\/$/);
+    expect(title).toHaveTextContent(/^technical sample$/);
 
-    const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("archived");
@@ -939,22 +739,17 @@ describe("Test File component", () => {
       accession: "IGVFFI0000SQBR",
       file_format: "txt",
       content_type: "sequence barcodes",
-      lab: "/labs/christina-leslie/",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
       summary: "IGVFFI0000SQBR",
       uuid: "fa9feeb4-28ba-4356-8c24-50f4e6562029",
       status: "released",
     };
-    const accessoryData = {
-      "/labs/christina-leslie/": {
-        "@id": "/labs/christina-leslie/",
-        "@type": ["Lab", "Item"],
-        title: "Christina Leslie, MSKCC",
-      },
-    };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <File item={item} accessoryData={accessoryData} />
+        <File item={item} />
       </SessionContext.Provider>
     );
 
@@ -966,24 +761,23 @@ describe("Test File component", () => {
     expect(title).toHaveTextContent(/^txt - sequence barcodes$/);
 
     const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("Christina Leslie, MSKCC");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("IGVFFI0000SQBR");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
-
-    const paths = File.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/christina-leslie/"]);
   });
 
-  it("renders a File item without accessory data and summary", () => {
+  it("renders a File item without summary", () => {
     const item = {
       "@id": "/reference-data/IGVFFI0000SQBR/",
       "@type": ["ReferenceData", "File", "Item"],
       accession: "IGVFFI0000SQBR",
       file_format: "txt",
       content_type: "sequence barcodes",
-      lab: "/labs/christina-leslie/",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
       uuid: "fa9feeb4-28ba-4356-8c24-50f4e6562029",
       status: "released",
     };
@@ -1002,7 +796,8 @@ describe("Test File component", () => {
     expect(title).toHaveTextContent(/^txt - sequence barcodes$/);
 
     const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).not.toHaveTextContent("IGVFFI0000SQBR");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
@@ -1017,7 +812,9 @@ describe("Test the AnalysisSet component", () => {
       accession: "IGVFDS3099XPLN",
       aliases: ["igvf:basic_analysis_set"],
       award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
       status: "released",
       summary: "IGVFDS3099XPLN",
       input_file_sets: ["/analysis-sets/IGVFDS3099XPLN/"],
@@ -1025,11 +822,6 @@ describe("Test the AnalysisSet component", () => {
     };
 
     const accessoryData = {
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
-        title: "J. Michael Cherry, Stanford",
-      },
       "/analysis-sets/IGVFDS3099XPLN/": {
         "@id": "/analysis-sets/IGVFDS3099XPLN/",
         "@type": ["AnalysisSet", "FileSet", "Item"],
@@ -1063,10 +855,7 @@ describe("Test the AnalysisSet component", () => {
     expect(status).toHaveTextContent("released");
 
     const paths = AnalysisSet.getAccessoryDataPaths([item]);
-    expect(paths).toEqual([
-      "/analysis-sets/IGVFDS3099XPLN/",
-      "/labs/j-michael-cherry/",
-    ]);
+    expect(paths).toEqual(["/analysis-sets/IGVFDS3099XPLN/"]);
   });
 
   it("renders an AnalysisSet item without accessory data and summary", () => {
@@ -1076,7 +865,10 @@ describe("Test the AnalysisSet component", () => {
       accession: "IGVFDS3099XPLN",
       aliases: ["igvf:basic_analysis_set"],
       award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
       status: "released",
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
     };
@@ -1095,7 +887,7 @@ describe("Test the AnalysisSet component", () => {
     expect(title).toHaveTextContent(/^Analysis$/);
 
     const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    expect(meta).toHaveTextContent(/^J. Michael Cherry, Stanford$/);
 
     const supplement = screen.queryByTestId("search-list-item-supplement");
     expect(supplement).toBeNull();
@@ -1106,30 +898,26 @@ describe("Test the AnalysisSet component", () => {
 });
 
 describe("Test the CuratedSet component", () => {
-  it("renders a CuratedSet item with accessory data", () => {
+  it("renders a CuratedSet item", () => {
     const item = {
       "@id": "/curated-sets/IGVFDS0000AAAA/",
       "@type": ["CuratedSet", "FileSet", "Item"],
       accession: "IGVFDS0000AAAA",
       aliases: ["igvf-dacc:GRCh38.p14_assembly"],
       award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        "@id": "/labs/tim-reddy/",
+        title: "Tim Reddy, Duke",
+      },
       status: "released",
       taxa: "Homo sapiens",
       summary: "IGVFDS0000AAAA",
       uuid: "40f1e08c-5d6d-4d19-8f69-3fd91420c09f",
     };
-    const accessoryData = {
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
-        title: "J. Michael Cherry, Stanford",
-      },
-    };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <CuratedSet item={item} accessoryData={accessoryData} />
+        <CuratedSet item={item} />
       </SessionContext.Provider>
     );
 
@@ -1141,23 +929,23 @@ describe("Test the CuratedSet component", () => {
     expect(title).toHaveTextContent(/^Curated set$/);
 
     const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("Tim Reddy, Duke");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
-
-    const paths = CuratedSet.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
   });
 
-  it("renders a CuratedSet item without accessory data and summary", () => {
+  it("renders a CuratedSet item without summary", () => {
     const item = {
       "@id": "/curated-sets/IGVFDS0000AAAA/",
       "@type": ["CuratedSet", "FileSet", "Item"],
       accession: "IGVFDS0000AAAA",
       aliases: ["igvf-dacc:GRCh38.p14_assembly"],
       award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        "@id": "/labs/tim-reddy/",
+        title: "Tim Reddy, Duke",
+      },
       status: "released",
       taxa: "Homo sapiens",
       uuid: "40f1e08c-5d6d-4d19-8f69-3fd91420c09f",
@@ -1177,7 +965,7 @@ describe("Test the CuratedSet component", () => {
     expect(title).toHaveTextContent(/^Curated set$/);
 
     const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    expect(meta).toHaveTextContent("Tim Reddy, Duke");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
@@ -1185,35 +973,27 @@ describe("Test the CuratedSet component", () => {
 });
 
 describe("Test the MeasurementSet component", () => {
-  it("renders a MeasurementSet item with accessory data", () => {
+  it("renders a MeasurementSet item", () => {
     const item = {
       "@id": "/measurement-sets/IGVFDS6408BFHD/",
       "@type": ["MeasurementSet", "FileSet", "Item"],
       accession: "IGVFDS6408BFHD",
       aliases: ["igvf:basic_measurement_set"],
       award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
       status: "released",
       summary: "IGVFDS6408BFHD",
       uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
-      assay_term: "/assay-terms/OBI_0002041/",
-    };
-    const accessoryData = {
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
-        title: "J. Michael Cherry, Stanford",
-      },
-      "/assay-terms/OBI_0002041/": {
-        "@id": "/assay-terms/OBI_0002041/",
-        "@type": ["AssayTerm", "OntologyTerm", "Item"],
+      assay_term: {
         term_name: "STARR-seq",
       },
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <MeasurementSet item={item} accessoryData={accessoryData} />
+        <MeasurementSet item={item} />
       </SessionContext.Provider>
     );
 
@@ -1229,38 +1009,28 @@ describe("Test the MeasurementSet component", () => {
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
-
-    const paths = MeasurementSet.getAccessoryDataPaths([item]);
-    expect(paths).toEqual([
-      "/assay-terms/OBI_0002041/",
-      "/labs/j-michael-cherry/",
-    ]);
   });
 
-  it("renders a MeasurementSet item without accessory data and summary", () => {
+  it("renders a MeasurementSet item without summary", () => {
     const item = {
       "@id": "/measurement-sets/IGVFDS6408BFHD/",
       "@type": ["MeasurementSet", "FileSet", "Item"],
       accession: "IGVFDS6408BFHD",
       aliases: ["igvf:basic_measurement_set"],
       award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
       status: "released",
       uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
-      assay_term: "/assay-terms/OBI_0002041/",
-    };
-
-    const accessoryData = {
-      "/assay-terms/OBI_0002041/": {
-        "@id": "/assay-terms/OBI_0002041/",
-        "@type": ["AssayTerm", "OntologyTerm", "Item"],
+      assay_term: {
         term_name: "STARR-seq",
       },
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <MeasurementSet item={item} accessoryData={accessoryData} />
+        <MeasurementSet item={item} />
       </SessionContext.Provider>
     );
 
@@ -1272,7 +1042,7 @@ describe("Test the MeasurementSet component", () => {
     expect(title).toHaveTextContent(/^STARR-seq$/);
 
     const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
@@ -1314,7 +1084,7 @@ describe("Test the Software component", () => {
 });
 
 describe("Test the SoftwareVersion component", () => {
-  it("renders a SoftwareVersion item with accessory data", () => {
+  it("renders a SoftwareVersion item", () => {
     const item = {
       "@id": "/software-versions/bowtie2-v2.4.4/",
       "@type": ["SoftwareVersion", "Item"],
@@ -1322,50 +1092,9 @@ describe("Test the SoftwareVersion component", () => {
         title: "Bowtie2",
       },
       version: "2.4.4",
-      lab: "/labs/j-michael-cherry/",
-      status: "released",
-      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
-    };
-    const accessoryData = {
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
+      lab: {
         title: "J. Michael Cherry, Stanford",
       },
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <SoftwareVersion item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Software/);
-    expect(uniqueId).toHaveTextContent(/Bowtie2 2.4.4$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^Bowtie2 2.4.4$/);
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-    const status = screen.getByTestId("search-list-item-status");
-    expect(status).toHaveTextContent("released");
-
-    const paths = SoftwareVersion.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
-  });
-
-  it("renders a SoftwareVersion item without accessory data", () => {
-    const item = {
-      "@id": "/software-versions/bowtie2-v2.4.4/",
-      "@type": ["SoftwareVersion", "Item"],
-      software: {
-        title: "Bowtie2",
-      },
-      version: "2.4.4",
-      lab: "/labs/j-michael-cherry/",
       status: "released",
       uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
     };
@@ -1383,8 +1112,8 @@ describe("Test the SoftwareVersion component", () => {
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^Bowtie2 2.4.4$/);
 
-    const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
@@ -1392,7 +1121,7 @@ describe("Test the SoftwareVersion component", () => {
 });
 
 describe("Test the Source component", () => {
-  it("renders a Source item without accessory data", () => {
+  it("renders a Source item", () => {
     const item = {
       name: "aviva",
       title: "Aviva",
@@ -1426,9 +1155,11 @@ describe("Test the Source component", () => {
 });
 
 describe("Test the Publication component", () => {
-  it("renders a Publication item with accessory data", () => {
+  it("renders a Publication item", () => {
     const item = {
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
       page: "57-74",
       award: "/awards/HG012012/",
       issue: "7414",
@@ -1444,17 +1175,10 @@ describe("Test the Publication component", () => {
       "@type": ["Publication", "Item"],
       uuid: "936b0798-3d6b-4b2f-a357-2bd59faae506",
     };
-    const accessoryData = {
-      "/labs/j-michael-cherry/": {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
-        title: "J. Michael Cherry, Stanford",
-      },
-    };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <Publication item={item} accessoryData={accessoryData} />
+        <Publication item={item} />
       </SessionContext.Provider>
     );
 
@@ -1469,17 +1193,20 @@ describe("Test the Publication component", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent(
+      "ENCODE Project Consortium, Bernstein BE, Birney E, Dunham I, Green ED, Gunter C, Snyder M."
+    );
+    expect(meta).toHaveTextContent("Nature. 2012-09-06;489(7414):57-74.");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
-
-    const paths = Publication.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
   });
 
-  it("renders a Publication item without accessory data and data for meta area", () => {
+  it("renders a Publication item without data for meta area", () => {
     const item = {
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
       page: "57-74",
       award: "/awards/HG012012/",
       issue: "7414",
@@ -1508,21 +1235,22 @@ describe("Test the Publication component", () => {
     );
 
     const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).not.toHaveTextContent("ENCODE Project Consortium");
+    expect(meta).not.toHaveTextContent("Nature.");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders a Publication item with publication date and without accessory data", () => {
+  it("renders a Publication item with publication date", () => {
     const item = {
-      lab: "/labs/j-michael-cherry/",
-
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
       award: "/awards/HG012012/",
-
       title: "An integrated encyclopedia of DNA elements in the human genome",
       status: "released",
-
       identifiers: ["PMID:22955616", "PMCID:PMC3439153"],
       "@id": "/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/",
       "@type": ["Publication", "Item"],
@@ -1552,15 +1280,14 @@ describe("Test the Publication component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders a Publication item with journal and without accessory data", () => {
+  it("renders a Publication item with journal", () => {
     const item = {
-      lab: "/labs/j-michael-cherry/",
-
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
       award: "/awards/HG012012/",
-
       title: "An integrated encyclopedia of DNA elements in the human genome",
       status: "released",
-
       identifiers: ["PMID:22955616", "PMCID:PMC3439153"],
       "@id": "/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/",
       "@type": ["Publication", "Item"],
@@ -1592,50 +1319,12 @@ describe("Test the Publication component", () => {
 });
 
 describe("Test the Biomarker component", () => {
-  it("renders a Biomarker item with accessory data", () => {
+  it("renders a Biomarker item", () => {
     const item = {
-      lab: "/labs/j-michael-cherry/",
-      gene: "/genes/ENSG00000163930/",
-      name: "BAP1",
-      award: "/awards/HG012012/",
-      classification: "marker gene",
-      quantification: "positive",
-      "@id": "/biomarkers/bdfaa822-cdbe-405c-920c-67da068c43b6/",
-      "@type": ["Biomarker", "Item"],
-      uuid: "bdfaa822-cdbe-405c-920c-67da068c43b6",
-      summary: "bdfaa822-cdbe-405c-920c-67da068c43b6",
-      name_quantification: "BAP1-positive",
-    };
-    const accessoryData = {
-      "/labs/j-michael-cherry/": {
+      lab: {
         "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
         title: "J. Michael Cherry, Stanford",
       },
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <Biomarker item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Biomarker/);
-    expect(uniqueId).toHaveTextContent(/bdfaa822-cdbe-405c-920c-67da068c43b6$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^BAP1 positive$/);
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-    const paths = Biomarker.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/j-michael-cherry/"]);
-  });
-
-  it("renders a Biomarker item without accessory data", () => {
-    const item = {
       gene: "/genes/ENSG00000163930/",
       name: "BAP1",
       award: "/awards/HG012012/",
@@ -1661,8 +1350,8 @@ describe("Test the Biomarker component", () => {
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^BAP1 positive$/);
 
-    const meta = screen.queryByTestId("search-list-item-meta");
-    expect(meta).toBeNull();
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
   });
 });
 

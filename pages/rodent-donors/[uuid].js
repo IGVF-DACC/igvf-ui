@@ -87,13 +87,13 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/rodent-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
-    const award = await request.getObject(donor.award, null);
+    const award = await request.getObject(donor.award["@id"], null);
     const documents = donor.documents
       ? await request.getMultipleObjects(donor.documents, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(donor.lab, null);
+    const lab = await request.getObject(donor.lab["@id"], null);
     const parents = donor.parents
       ? await request.getMultipleObjects(donor.parents, null, {
           filterErrors: true,

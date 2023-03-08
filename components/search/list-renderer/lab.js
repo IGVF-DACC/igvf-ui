@@ -11,13 +11,8 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function Lab({ item: lab, accessoryData }) {
-  const awards = (
-    accessoryData && lab.awards?.length > 0
-      ? lab.awards.map((award) => accessoryData[award])
-      : []
-  ).filter(Boolean);
-  const awardNames = awards.map((award) => award.name);
+export default function Lab({ item: lab }) {
+  const awardNames = lab.awards ? lab.awards.map((award) => award.name) : [];
 
   return (
     <SearchListItemContent>
@@ -41,10 +36,4 @@ export default function Lab({ item: lab, accessoryData }) {
 Lab.propTypes = {
   // Single lab search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
-  // Accessory data to display for all search-result objects
-  accessoryData: PropTypes.object,
-};
-
-Lab.getAccessoryDataPaths = (labs) => {
-  return labs.reduce((awardAcc, lab) => awardAcc.concat(lab.awards), []);
 };

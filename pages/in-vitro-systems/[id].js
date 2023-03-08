@@ -117,15 +117,19 @@ export async function getServerSideProps({ params, req }) {
     `/in-vitro-systems/${params.id}/`
   );
   if (FetchRequest.isResponseSuccess(inVitroSystem)) {
-    const award = await request.getObject(inVitroSystem.award, null);
+    const award = await request.getObject(inVitroSystem.award["@id"], null);
     const biosampleTerm = inVitroSystem.biosample_term
-      ? await request.getObject(inVitroSystem.biosample_term, null)
+      ? await request.getObject(inVitroSystem.biosample_term["@id"], null)
       : null;
-    const diseaseTerms = inVitroSystem.disease_terms
-      ? await request.getMultipleObjects(inVitroSystem.disease_terms, null, {
-          filterErrors: true,
-        })
-      : [];
+    let diseaseTerms = [];
+    if (inVitroSystem.disease_terms) {
+      const diseaseTermPaths = inVitroSystem.disease_terms.map(
+        (diseaseTerm) => diseaseTerm["@id"]
+      );
+      diseaseTerms = await request.getMultipleObjects(diseaseTermPaths, null, {
+        filterErrors: true,
+      });
+    }
     const documents = inVitroSystem.documents
       ? await request.getMultipleObjects(inVitroSystem.documents, null, {
           filterErrors: true,
@@ -136,13 +140,17 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(inVitroSystem.lab, null);
-    const source = await request.getObject(inVitroSystem.source, null);
-    const treatments = inVitroSystem.treatments
-      ? await request.getMultipleObjects(inVitroSystem.treatments, null, {
-          filterErrors: true,
-        })
-      : [];
+    const lab = await request.getObject(inVitroSystem.lab["@id"], null);
+    const source = await request.getObject(inVitroSystem.source["@id"], null);
+    let treatments = [];
+    if (inVitroSystem.treatments) {
+      const treatmentPaths = inVitroSystem.treatments.map(
+        (treatment) => treatment["@id"]
+      );
+      treatments = await request.getMultipleObjects(treatmentPaths, null, {
+        filterErrors: true,
+      });
+    }
     const pooledFrom =
       inVitroSystem.pooled_from?.length > 0
         ? await request.getMultipleObjects(inVitroSystem.pooled_from, null, {

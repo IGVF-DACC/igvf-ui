@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import "../../__mocks__/intersectionObserverMock";
 import profiles from "../../__mocks__/profile";
 import { DataGridContainer } from "../../data-grid";
@@ -170,11 +170,9 @@ describe("Test cell renderers in search results", () => {
       const numberArrayList = cells[COLUMN_NUMBER_ARRAY];
       expect(numberArrayList).toHaveTextContent("1, 2, 3");
 
-      // Check unknown object array has JSON string and View JSON button.
+      // Check unknown object array has JSON string.
       const objectArrayList = cells[COLUMN_OBJECT_ARRAY];
       expect(objectArrayList).toHaveTextContent('[{"object":"object1"}]');
-      const viewJsonButton = objectArrayList.querySelector("button");
-      expect(viewJsonButton).toHaveTextContent("View JSON");
 
       // Check PI column has two linked paths with the correct text.
       const piLinks = within(cells[COLUMN_PI]).getAllByRole("link");
@@ -916,35 +914,6 @@ describe("Page cell-rendering tests", () => {
     expect(unknown).toHaveTextContent(
       '{"blocks":[{"@id":"#block1","body":"# Donor Help This is some help text about donors.","@type":"mark...'
     );
-
-    // Layout should have a View JSON button.
-    const viewJsonButton = within(cells[COLUMN_LAYOUT]).getByRole("button");
-    expect(viewJsonButton).toHaveTextContent("View JSON");
-
-    // Click the View JSON button to open the modal with the complete JSON.
-    fireEvent.click(viewJsonButton);
-    let previewDialog = screen.getByRole("dialog");
-    expect(previewDialog).toHaveTextContent(
-      '{ "blocks": [ { "@id": "#block1", "body": "# Donor Help This is some help text about donors.", "@type": "markdown", "direction": "ltr" } ] }'
-    );
-
-    // Close the modal.
-    const previewDialogCloseButton = within(previewDialog).getByRole("button");
-    fireEvent.click(previewDialogCloseButton);
-    previewDialog = screen.queryByRole("dialog");
-    expect(previewDialog).not.toBeInTheDocument();
-
-    // Open the modal again and close it with the ESC key.
-    fireEvent.click(viewJsonButton);
-    previewDialog = screen.getByRole("dialog");
-    fireEvent.keyDown(previewDialog, {
-      key: "Escape",
-      code: "Escape",
-      keyCode: 27,
-      charCode: 27,
-    });
-    previewDialog = screen.queryByRole("dialog");
-    expect(previewDialog).not.toBeInTheDocument();
   });
 
   it("renders nothing for `parent` when page's parent doesn't exist", () => {

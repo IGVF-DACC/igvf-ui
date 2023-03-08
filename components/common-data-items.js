@@ -209,7 +209,7 @@ export function BiosampleDataItems({
   source = null,
   donors = [],
   biosampleTerm = null,
-  diseaseTerms,
+  diseaseTerms = null,
   pooledFrom,
   partOf,
   options = {
@@ -288,13 +288,13 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
-      {diseaseTerms.length > 0 && (
+      {diseaseTerms?.length > 0 && (
         <>
           <DataItemLabel>Disease Terms</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {diseaseTerms.map((diseaseTerm) => (
-                <Link href={diseaseTerm["@id"]} key={diseaseTerm.uuid}>
+                <Link href={diseaseTerm["@id"]} key={diseaseTerm["@id"]}>
                   {diseaseTerm.term_name}
                 </Link>
               ))}
@@ -339,7 +339,7 @@ BiosampleDataItems.propTypes = {
   // Sample ontology for the biosample
   biosampleTerm: PropTypes.object,
   // Disease ontology for the biosample
-  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  diseaseTerms: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample

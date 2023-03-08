@@ -25,7 +25,7 @@ import Link from "next/link";
 export default function MeasurementSet({
   measurementSet,
   award = null,
-  assayTerm,
+  assayTerm = null,
   documents,
   donors,
   lab = null,
@@ -43,11 +43,11 @@ export default function MeasurementSet({
               <Status status={measurementSet.status} />
             </DataItemValue>
             <DataItemLabel>Assay Term</DataItemLabel>
-            <DataItemValue>
-              <Link href={assayTerm["@id"]} key={assayTerm.uuid}>
-                {assayTerm.term_name}
-              </Link>
-            </DataItemValue>
+            {assayTerm && (
+              <DataItemValue>
+                <Link href={assayTerm["@id"]}>{assayTerm.term_name}</Link>
+              </DataItemValue>
+            )}
             {measurementSet.protocol && (
               <>
                 <DataItemLabel>Protocol</DataItemLabel>
@@ -113,8 +113,10 @@ export default function MeasurementSet({
 }
 
 MeasurementSet.propTypes = {
+  // Measurement set to display
   measurementSet: PropTypes.object.isRequired,
-  assayTerm: PropTypes.object.isRequired,
+  // Assay term of the measurement set
+  assayTerm: PropTypes.object,
   // Donors to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
@@ -133,8 +135,11 @@ export async function getServerSideProps({ params, req }) {
     `/measurement-sets/${params.id}/`
   );
   if (FetchRequest.isResponseSuccess(measurementSet)) {
-    const award = await request.getObject(measurementSet.award, null);
-    const assayTerm = await request.getObject(measurementSet.assay_term, null);
+    const award = await request.getObject(measurementSet.award["@id"], null);
+    const assayTerm = await request.getObject(
+      measurementSet.assay_term["@id"],
+      null
+    );
     const documents = measurementSet.documents
       ? await request.getMultipleObjects(measurementSet.documents, null, {
           filterErrors: true,
@@ -146,11 +151,13 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const donors = measurementSet.donors
-      ? await request.getMultipleObjects(measurementSet.donors, null, {
-          filterErrors: true,
-        })
-      : [];
+    let donors = [];
+    if (measurementSet.donors) {
+      const donorPaths = measurementSet.donors.map((donor) => donor["@id"]);
+      donors = await request.getMultipleObjects(donorPaths, null, {
+        filterErrors: true,
+      });
+    }
     const breadcrumbs = await buildBreadcrumbs(
       measurementSet,
       "accession",

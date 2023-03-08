@@ -12,11 +12,11 @@ export default function Checkbox({
   children,
 }) {
   return (
-    <label data-testid="checkbox-label" className={className}>
+    <label data-testid="checkbox-label" className={`flex ${className}`}>
       <input
         className="mr-1"
         type="checkbox"
-        name={name}
+        aria-label={name}
         checked={checked}
         onChange={onChange}
       />

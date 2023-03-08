@@ -92,8 +92,8 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sequenceData = await request.getObject(`/sequence-data/${params.id}/`);
   if (FetchRequest.isResponseSuccess(sequenceData)) {
-    const award = await request.getObject(sequenceData.award, null);
-    const lab = await request.getObject(sequenceData.lab, null);
+    const award = await request.getObject(sequenceData.award["@id"], null);
+    const lab = await request.getObject(sequenceData.lab["@id"], null);
     const fileSet = await request.getObject(sequenceData.file_set, null);
     const documents = sequenceData.documents
       ? await request.getMultipleObjects(sequenceData.documents, null, {

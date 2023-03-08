@@ -127,7 +127,7 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const analysisSet = await request.getObject(`/analysis-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(analysisSet)) {
-    const award = await request.getObject(analysisSet.award, null);
+    const award = await request.getObject(analysisSet.award["@id"], null);
     const inputFileSets = analysisSet.input_file_sets
       ? await request.getMultipleObjects(analysisSet.input_file_sets, null, {
           filterErrors: true,
@@ -138,17 +138,19 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(analysisSet.lab, null);
+    const lab = await request.getObject(analysisSet.lab["@id"], null);
     const samples = analysisSet.samples
       ? await request.getMultipleObjects(analysisSet.samples, null, {
           filterErrors: true,
         })
       : [];
-    const donors = analysisSet.donors
-      ? await request.getMultipleObjects(analysisSet.donors, null, {
-          filterErrors: true,
-        })
-      : [];
+    let donors = [];
+    if (analysisSet.donors) {
+      const donorPaths = analysisSet.donors.map((donor) => donor["@id"]);
+      donors = await request.getMultipleObjects(donorPaths, null, {
+        filterErrors: true,
+      });
+    }
     const breadcrumbs = await buildBreadcrumbs(
       analysisSet,
       "accession",

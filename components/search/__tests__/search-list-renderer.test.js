@@ -38,12 +38,12 @@ describe("Test accessory data-path functions", () => {
           uuid: "860c4750-8d3c-40f5-8f2c-90c5e5d19e88",
         },
         {
-          "@id": "/technical-samples/IGVFSM632ETH/",
-          "@type": ["TechnicalSample", "Sample", "Item"],
-          accession: "IGVFSM632ETH",
-          status: "archived",
-          technical_sample_term: "/sample-terms/NTR_0000637/",
-          uuid: "f12ab44c-bba8-46cc-9f3d-6a192eb09e7e",
+          "@id": "/analysis-sets/IGVFDS9588HSLV/",
+          "@type": ["AnalysisSet", "FileSet", "Item"],
+          accession: "IGVFDS9588HSLV",
+          input_file_sets: ["/analysis-sets/IGVFDS4723JTXI/"],
+          status: "released",
+          uuid: "dd171b83-cbd9-4d06-4aa1-b77ab49569cd",
         },
         {
           "@id": "/genes/ENSG00000163930/",
@@ -94,14 +94,14 @@ describe("Test accessory data-path functions", () => {
           uuid: "3787a0ac-f13a-40fc-a524-69628b04cd59",
         },
       ],
-      TechnicalSample: [
+      AnalysisSet: [
         {
-          "@id": "/technical-samples/IGVFSM632ETH/",
-          "@type": ["TechnicalSample", "Sample", "Item"],
-          accession: "IGVFSM632ETH",
-          status: "archived",
-          technical_sample_term: "/sample-terms/NTR_0000637/",
-          uuid: "f12ab44c-bba8-46cc-9f3d-6a192eb09e7e",
+          "@id": "/analysis-sets/IGVFDS9588HSLV/",
+          "@type": ["AnalysisSet", "FileSet", "Item"],
+          accession: "IGVFDS9588HSLV",
+          input_file_sets: ["/analysis-sets/IGVFDS4723JTXI/"],
+          status: "released",
+          uuid: "dd171b83-cbd9-4d06-4aa1-b77ab49569cd",
         },
       ],
       Gene: [
@@ -135,7 +135,7 @@ describe("Test accessory data-path functions", () => {
     // results, and deduplicates them.
     const expectedAccessoryDataPaths = [
       "/labs/j-michael-cherry/",
-      "/sample-terms/NTR_0000637/",
+      "/analysis-sets/IGVFDS4723JTXI/",
     ];
     const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
     expect(accessoryDataPaths).toEqual(expectedAccessoryDataPaths);

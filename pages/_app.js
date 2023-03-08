@@ -18,6 +18,7 @@ import DarkModeManager from "../lib/dark-mode-manager";
 // components
 import GlobalContext from "../components/global-context";
 import NavigationSection from "../components/navigation";
+import ScrollToTop from "../components/scroll-to-top";
 import { Session } from "../components/session-context";
 // CSS
 import "../styles/globals.css";
@@ -94,7 +95,8 @@ export default function App({ Component, pageProps }) {
           gtag('config', 'G-E2PEXFFGYR');
         `}
       </Script>
-      <div className="pt-0 pr-2 pb-8 pl-2 md:container md:flex">
+      <div className="md:container">
+        <ScrollToTop />
         <Auth0Provider
           domain={AUTH0_ISSUER_BASE_DOMAIN}
           clientId={AUTH0_CLIENT_ID}
@@ -107,16 +109,18 @@ export default function App({ Component, pageProps }) {
           <GlobalContext.Provider value={globalContext}>
             <Session>
               <ProfileMap>
-                <NavigationSection />
-                <div className="min-w-0 shrink grow px-8 py-2 text-black dark:text-white">
-                  {pageProps.serverSideError ? (
-                    <Error
-                      statusCode={pageProps.serverSideError.code}
-                      title={pageProps.serverSideError.description}
-                    />
-                  ) : (
-                    <Component {...pageProps} />
-                  )}
+                <div className="md:flex">
+                  <NavigationSection />
+                  <div className="min-w-0 shrink grow px-3 py-2 text-black dark:text-white md:px-8">
+                    {pageProps.serverSideError ? (
+                      <Error
+                        statusCode={pageProps.serverSideError.code}
+                        title={pageProps.serverSideError.description}
+                      />
+                    ) : (
+                      <Component {...pageProps} />
+                    )}
+                  </div>
                 </div>
               </ProfileMap>
             </Session>

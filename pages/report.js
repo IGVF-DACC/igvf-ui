@@ -4,7 +4,9 @@ import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import React, { useContext, useRef } from "react";
 // components
+import Breadcrumbs from "../components/breadcrumbs";
 import { DataGridContainer } from "../components/data-grid";
+import { FacetSection, FacetTags } from "../components/facets";
 import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 import {
@@ -21,6 +23,7 @@ import SortableGrid from "../components/sortable-grid";
 // lib
 import buildBreadcrumbs from "../lib/breadcrumbs";
 import errorObjectToProps from "../lib/errors";
+import { generateFacetKey } from "../lib/facets";
 import FetchRequest from "../lib/fetch-request";
 import QueryString from "../lib/query-string";
 import {
@@ -187,33 +190,41 @@ export default function Report({ searchResults }) {
 
     return (
       <>
+        <Breadcrumbs />
         {pageTitle && <PagePreamble pageTitle={pageTitle} />}
         {items.length > 0 ? (
-          <>
-            <SearchResultsHeader
+          <div className="lg:flex lg:items-start lg:gap-1">
+            <FacetSection
+              key={generateFacetKey(searchResults)}
               searchResults={searchResults}
-              columnSelectorConfig={{
-                onColumnVisibilityChange,
-                onAllColumnsVisibilityChange,
-              }}
             />
-            <SearchResultsCount count={searchResults.total} />
-            <ScrollIndicators gridRef={gridRef}>
-              <DataGridContainer ref={gridRef}>
-                <SortableGrid
-                  data={items}
-                  columns={columns}
-                  initialSort={{ isSortingSuppressed: true }}
-                  meta={{
-                    onHeaderCellClick,
-                    sortedColumnId,
-                    nonSortableColumnIds,
-                  }}
-                  CustomHeaderCell={ReportHeaderCell}
-                />
-              </DataGridContainer>
-            </ScrollIndicators>
-          </>
+            <div className="min-w-0 grow">
+              <FacetTags searchResults={searchResults} />
+              <SearchResultsHeader
+                searchResults={searchResults}
+                columnSelectorConfig={{
+                  onColumnVisibilityChange,
+                  onAllColumnsVisibilityChange,
+                }}
+              />
+              <SearchResultsCount count={searchResults.total} />
+              <ScrollIndicators gridRef={gridRef}>
+                <DataGridContainer ref={gridRef}>
+                  <SortableGrid
+                    data={items}
+                    columns={columns}
+                    initialSort={{ isSortingSuppressed: true }}
+                    meta={{
+                      onHeaderCellClick,
+                      sortedColumnId,
+                      nonSortableColumnIds,
+                    }}
+                    CustomHeaderCell={ReportHeaderCell}
+                  />
+                </DataGridContainer>
+              </ScrollIndicators>
+            </div>
+          </div>
         ) : (
           <NoCollectionData pageTitle="report items" />
         )}
