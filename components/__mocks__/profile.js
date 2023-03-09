@@ -2973,6 +2973,277 @@ const profiles = {
       },
     },
   },
+
+  Publication: {
+    title: "Publication",
+    description: "Schema for a publication object.",
+    $id: "/profiles/publication.json",
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    type: "object",
+    required: ["title", "award", "lab", "identifiers"],
+    identifyingProperties: ["uuid", "title", "aliases"],
+    properties: {
+      status: {
+        title: "Status",
+        type: "string",
+        default: "in progress",
+        permission: "import_items",
+        enum: ["deleted", "in progress", "released"],
+      },
+      lab: {
+        title: "Lab",
+        description: "Lab associated with the submission.",
+        comment: "Required. See lab.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Lab",
+        linkSubmitsFor: true,
+      },
+      award: {
+        title: "Award",
+        description: "Grant associated with the submission.",
+        comment: "Required. See award.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Award",
+      },
+      attachment: {
+        title: "Attachment",
+        type: "object",
+        additionalProperties: false,
+        formInput: "file",
+        attachment: true,
+        properties: {
+          download: {
+            title: "File Name",
+            type: "string",
+          },
+          href: {
+            comment: "Internal webapp URL for document file",
+            type: "string",
+          },
+          type: {
+            title: "MIME type",
+            type: "string",
+            enum: [
+              "application/json",
+              "application/pdf",
+              "image/gif",
+              "image/jpeg",
+              "image/png",
+              "image/svs",
+              "image/tiff",
+              "text/autosql",
+              "text/html",
+              "text/plain",
+              "text/tab-separated-values",
+            ],
+          },
+          md5sum: {
+            title: "MD5sum",
+            type: "string",
+            format: "md5sum",
+          },
+          size: {
+            title: "File Size",
+            type: "integer",
+            minimum: 0,
+          },
+          width: {
+            title: "Image Width",
+            type: "integer",
+            minimum: 0,
+          },
+          height: {
+            title: "Image Height",
+            type: "integer",
+            minimum: 0,
+          },
+        },
+      },
+      schema_version: {
+        title: "Schema Version",
+        description:
+          "The version of the JSON schema that the server uses to validate the object.",
+        comment:
+          "Do not submit. The version used to validate the object is set by the server. The default should be set to the current version.",
+        type: "string",
+        pattern: "^\\d+(\\.\\d+)*$",
+        requestMethod: [],
+        default: "2",
+      },
+      uuid: {
+        title: "UUID",
+        description: "The unique identifier associated with every object.",
+        comment: "Do not submit. The uuid is set by the server.",
+        type: "string",
+        format: "uuid",
+        serverDefault: "uuid4",
+        permission: "import_items",
+        requestMethod: "POST",
+      },
+      notes: {
+        title: "Notes",
+        description: "DACC internal notes.",
+        comment:
+          "Do not submit. A place for the DACC to keep information that does not have a place in the schema.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        permission: "import_items",
+        formInput: "textarea",
+      },
+      aliases: {
+        title: "Aliases",
+        description: "Lab specific identifiers to reference an object.",
+        comment:
+          "The purpose of this field is to provide a link into the lab LIMS and to facilitate shared objects.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          uniqueKey: "alias",
+          title: "Lab Alias",
+          description: "A lab specific identifier to reference an object.",
+          comment:
+            "Current convention is colon separated lab name and lab identifier. (e.g. john-doe:42).",
+          type: "string",
+          pattern:
+            "^(?:j-michael-cherry|ali-mortazavi|barbara-wold|lior-pachter|grant-macgregor|kim-green|mark-craven|qiongshi-lu|audrey-gasch|robert-steiner|jesse-engreitz|thomas-quertermous|anshul-kundaje|michael-bassik|will-greenleaf|marlene-rabinovitch|lars-steinmetz|jay-shendure|nadav-ahituv|martin-kircher|danwei-huangfu|michael-beer|anna-katerina-hadjantonakis|christina-leslie|alexander-rudensky|laura-donlin|hannah-carter|bing-ren|kyle-gaulton|maike-sander|charles-gersbach|gregory-crawford|tim-reddy|ansuman-satpathy|andrew-allen|gary-hon|nikhil-munshi|w-lee-kraus|lea-starita|doug-fowler|luca-pinello|guillaume-lettre|benhur-lee|daniel-bauer|richard-sherwood|benjamin-kleinstiver|marc-vidal|david-hill|frederick-roth|mikko-taipale|anne-carpenter|hyejung-won|karen-mohlke|michael-love|jason-buenrostro|bradley-bernstein|hilary-finucane|chongyuan-luo|noah-zaitlen|kathrin-plath|roy-wollman|jason-ernst|zhiping-weng|manuel-garber|xihong-lin|alan-boyle|ryan-mills|jie-liu|maureen-sartor|joshua-welch|stephen-montgomery|alexis-battle|livnat-jerby|jonathan-pritchard|predrag-radivojac|sean-mooney|harinder-singh|nidhi-sahni|jishnu-das|hao-wu|sreeram-kannan|hongjun-song|alkes-price|soumya-raychaudhuri|shamil-sunyaev|len-pennacchio|axel-visel|jill-moore|ting-wang|feng-yue|igvf|igvf-dacc):[a-zA-Z\\d_$.+!*,()'-]+(?:\\s[a-zA-Z\\d_$.+!*,()'-]+)*$",
+        },
+      },
+      creation_timestamp: {
+        "rdfs:subPropertyOf": "dc:created",
+        title: "Creation Timestamp",
+        description: "The date the object was created.",
+        comment:
+          "Do not submit. The date the object is created is assigned by the server.",
+        type: "string",
+        format: "date-time",
+        serverDefault: "now",
+        permission: "import_items",
+      },
+      submitted_by: {
+        "rdfs:subPropertyOf": "dc:creator",
+        title: "Submitted By",
+        comment:
+          "Do not submit. The user that created the object is assigned by the server.",
+        type: "string",
+        linkTo: "User",
+        serverDefault: "userid",
+        permission: "import_items",
+      },
+      submitter_comment: {
+        title: "Submitter Comment",
+        description:
+          "Additional information specified by the submitter to be displayed as a comment on the portal.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+      },
+      description: {
+        title: "Description",
+        description: "A plain text description of the object.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$|^$",
+        formInput: "textarea",
+      },
+      title: {
+        title: "Title",
+        description: "Title of the publication or communication.",
+        uniqueKey: true,
+        type: "string",
+      },
+      abstract: {
+        title: "Abstract",
+        description: "Abstract of the publication or communication.",
+        type: "string",
+      },
+      authors: {
+        title: "Authors",
+        type: "string",
+      },
+      date_published: {
+        title: "Publication Date",
+        description:
+          "The date the publication or communication was published; must be in YYYY-MM-DD format.",
+        type: "string",
+        format: "date",
+      },
+      date_revised: {
+        title: "Date Revised",
+        type: "string",
+        format: "date",
+      },
+      issue: {
+        title: "Issue",
+        description: "The issue of the publication.",
+        type: "string",
+      },
+      page: {
+        title: "Page",
+        description: "Pagination of the reference",
+        type: "string",
+      },
+      volume: {
+        title: "Volume",
+        description: "The volume of the publication.",
+        type: "string",
+      },
+      journal: {
+        title: "Journal",
+        description: "The journal of the publication.",
+        type: "string",
+      },
+      identifiers: {
+        title: "Identifiers",
+        description: "The identifiers that reference data found in the object.",
+        type: "array",
+        uniqueItems: true,
+        minItems: 1,
+        items: {
+          title: "Identifier",
+          description:
+            "An identifier that references data found in the object.",
+          type: "string",
+          uniqueKey: "publication:identifier",
+          pattern:
+            "^(PMID:[0-9]+|doi:10\\.[0-9]{4}[\\d\\s\\S\\:\\.\\/]+|PMCID:PMC[0-9]+|[0-9]{4}\\.[0-9]{4})$",
+        },
+      },
+      published_by: {
+        title: "Published By",
+        type: "array",
+        uniqueItems: true,
+        default: ["IGVF"],
+        items: {
+          title: "Published By",
+          type: "string",
+          enum: ["community", "IGVF", "ENCODE"],
+        },
+      },
+      "@id": {
+        title: "ID",
+        type: "string",
+        notSubmittable: true,
+      },
+      "@type": {
+        title: "Type",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        notSubmittable: true,
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
+        notSubmittable: true,
+      },
+      publication_year: {
+        title: "Publication Year",
+        type: "integer",
+        notSubmittable: true,
+      },
+    },
+  },
 };
 
 export default profiles;

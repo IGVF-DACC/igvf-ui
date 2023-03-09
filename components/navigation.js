@@ -17,6 +17,7 @@ import {
   UserGroupIcon,
   UserIcon,
   PaperClipIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
@@ -455,6 +456,16 @@ function Navigation({ navigationClick }) {
           <DocumentIcon />
         </NavigationIcon>
         Pages
+      </NavigationHrefItem>
+      <NavigationHrefItem
+        id="publications"
+        href="/search?type=Publication"
+        navigationClick={navigationClick}
+      >
+        <NavigationIcon>
+          <PencilSquareIcon />
+        </NavigationIcon>
+        Publications
       </NavigationHrefItem>
       <NavigationGroupItem
         id="ontologies"

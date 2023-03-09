@@ -83,6 +83,9 @@ export const dbxrefPrefixMap = {
       return {};
     },
   },
+  doi: {
+    pattern: "https://doi.org/doi:{0}",
+  },
   ENTREZ: {
     pattern: "https://www.ncbi.nlm.nih.gov/gene/{0}",
   },
@@ -113,6 +116,12 @@ export const dbxrefPrefixMap = {
   },
   miRBase: {
     pattern: "http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={0}",
+  },
+  PMCID: {
+    pattern: "https://www.ncbi.nlm.nih.gov/pmc/articles/{0}",
+  },
+  PMID: {
+    pattern: "https://www.ncbi.nlm.nih.gov/pubmed/?term={0}",
   },
   RefSeq: {
     pattern: "https://www.ncbi.nlm.nih.gov/nuccore/{0}",
