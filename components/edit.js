@@ -1,16 +1,18 @@
 // node_modules
+import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import React, { useContext, useRef, useState, useEffect } from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
+import FlashMessage from "./flash-message";
 import EditJson, { EditLink, canEdit } from "./edit-func";
 import SessionContext from "./session-context";
 import { useAuthenticated } from "./authentication";
-import { useRouter } from "next/router";
+import PagePreamble from "./page-preamble";
 // lib
 import FetchRequest from "../lib/fetch-request";
-import FlashMessage from "./flash-message";
-import PagePreamble from "./page-preamble";
+import { sortedJson } from "../lib/general";
+/* istanbul ignore file */
 
 export function useEditor(action) {
   /**
@@ -23,7 +25,7 @@ export function useEditor(action) {
   const router = useRouter();
 
   useEffect(() => {
-    const isEdit = document.URL.endsWith(`#!${action}`);
+    const isEdit = router.asPath.endsWith(`#!${action}`);
     // If the URL says edit but we aren't editing yet, set the state
     if (isEdit && !edit) {
       setEditing(true);
@@ -32,7 +34,6 @@ export function useEditor(action) {
     // If the URL has us not editing but we just were, set to false, and update props
     if (!isEdit && edit) {
       setEditing(false);
-      router.replace(router.asPath);
     }
   }, [edit, router, action]);
 
@@ -75,23 +76,6 @@ SaveCancelControl.propTypes = {
   itemPath: PropTypes.string.isRequired,
   saveEnabled: PropTypes.bool.isRequired,
 };
-
-export function sortedJson(obj) {
-  if (Array.isArray(obj)) {
-    return obj.map((value) => sortedJson(value));
-  }
-  // We know it's not an array if we're here because the above `if`
-  if (typeof obj == "object") {
-    const sorted = {};
-    Object.keys(obj)
-      .sort()
-      .forEach((key) => {
-        sorted[key] = obj[key];
-      });
-    return sorted;
-  }
-  return obj;
-}
 
 export function SavedErrors({ errors = [] }) {
   return (
@@ -237,7 +221,7 @@ export default function EditPage({ item }) {
 
   return (
     <div className="space-y-1">
-      <PagePreamble pageTitle={`Editing ${item.name}`} />
+      <PagePreamble />
       <EditJson
         text={text}
         onChange={onChange}

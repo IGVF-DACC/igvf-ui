@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import React from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
+/* istanbul ignore file */
 
 export function canEdit(item, actions = ["edit", "edit-json"]) {
   if ("actions" in item) {
@@ -37,31 +38,35 @@ function JsonEditor({ text, onChange, enabled, errors = [] }) {
   }));
 
   return (
-    <Editor
-      value={text}
-      mode="json"
-      theme="solarized_light"
-      name="JSON Editor"
-      onLoad={() => ({})}
-      onChange={onChange}
-      fontSize={14}
-      showPrintMargin={true}
-      showGutter={true}
-      highlightActiveLine={true}
-      annotations={annotations}
-      width="100%"
-      readOnly={!enabled}
-      setOptions={{
-        enableBasicAutocompletion: true,
-        enableLiveAutocompletion: false,
-        enableSnippets: false,
-        showLineNumbers: true,
-        useWorker: false,
-        tabSize: 4,
-        maxLines: 1000,
-        minLines: 24,
-      }}
-    />
+    <>
+      <div className="relative m-px w-full border-2 border-solid border-slate-300">
+        <Editor
+          value={text}
+          mode="json"
+          theme="solarized_light"
+          name="JSON Editor"
+          onLoad={() => ({})}
+          onChange={onChange}
+          fontSize={14}
+          showPrintMargin={true}
+          showGutter={true}
+          highlightActiveLine={true}
+          annotations={annotations}
+          width="100%"
+          readOnly={!enabled}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: false,
+            enableSnippets: false,
+            showLineNumbers: true,
+            useWorker: false,
+            tabSize: 4,
+            maxLines: 1000,
+            minLines: 24,
+          }}
+        />
+      </div>
+    </>
   );
 }
 

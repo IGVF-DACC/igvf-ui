@@ -1,0 +1,9 @@
+cdk/*
+.next/*
+.github/*
+.swc/*
+.coverage/*
+env/*
+docker/*
+docs/*
+coverage/*

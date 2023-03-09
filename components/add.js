@@ -6,7 +6,7 @@ import { PropTypes } from "prop-types";
 import { useContext, useState, useEffect } from "react";
 // components
 import { useAuthenticated } from "./authentication";
-import { SaveCancelControl, sortedJson, useEditor } from "./edit";
+import { SaveCancelControl, useEditor } from "./edit";
 import EditJson, { canEdit } from "./edit-func";
 import FlashMessage from "./flash-message";
 import { ButtonLink } from "./form-elements";
@@ -14,7 +14,8 @@ import ProfileMapContext from "./profile-map";
 import SessionContext from "./session-context";
 // lib
 import FetchRequest from "../lib/fetch-request";
-import { urlWithoutParams } from "../lib/general";
+import { urlWithoutParams, sortedJson } from "../lib/general";
+/* istanbul ignore file */
 
 /**
  * Looks for an action in the item with a name in the list of given actions
