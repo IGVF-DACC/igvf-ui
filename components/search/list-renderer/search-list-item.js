@@ -60,7 +60,7 @@ export function SearchListItemUniqueId({ children }) {
 export function SearchListItemTitle({ children }) {
   return (
     <div
-      className="text-lg font-semibold capitalize leading-tight text-gray-600 dark:text-gray-300"
+      className="text-lg font-semibold leading-tight text-gray-600 dark:text-gray-300"
       data-testid="search-list-item-title"
     >
       {children}
