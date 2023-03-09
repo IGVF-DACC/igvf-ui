@@ -2943,7 +2943,7 @@ const profiles = {
       },
     },
   },
-  
+
   Publication: {
     title: "Publication",
     description: "Schema for a publication object.",
