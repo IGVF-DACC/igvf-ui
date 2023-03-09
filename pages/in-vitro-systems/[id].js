@@ -53,8 +53,6 @@ export default function InVitroSystem({
                 dateObtainedTitle: "Date Collected",
               }}
             >
-              <DataItemLabel>Taxa</DataItemLabel>
-              <DataItemValue>{inVitroSystem.taxa}</DataItemValue>
               <DataItemLabel>Classification</DataItemLabel>
               <DataItemValue>{inVitroSystem.classification}</DataItemValue>
               {inVitroSystem.passage_number && (
