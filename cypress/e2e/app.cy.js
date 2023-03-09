@@ -15,6 +15,9 @@ describe("Navigation", () => {
       .its("length")
       .should("be.gte", 2);
 
+    cy.get("[data-testid=biomarkers]").click();
+    cy.url().should("include", "/search?type=Biomarker");
+
     cy.get("[data-testid=documents]").click();
     cy.url().should("include", "/search?type=Document");
     cy.get("[data-testid=search-results-view-switch]").should("not.exist");

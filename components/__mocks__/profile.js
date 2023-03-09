@@ -2652,6 +2652,186 @@ const profiles = {
     },
   },
 
+  Biomarker: {
+    title: "Biomarker",
+    description: "Schema for submitting a biomarker.",
+    $id: "/profiles/biomarker.json",
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    type: "object",
+    required: ["name", "quantification", "award", "lab"],
+    identifyingProperties: ["uuid", "name_quantification", "aliases"],
+    properties: {
+      lab: {
+        title: "Lab",
+        description: "Lab associated with the submission.",
+        comment: "Required. See lab.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Lab",
+        linkSubmitsFor: true,
+      },
+      award: {
+        title: "Award",
+        description: "Grant associated with the submission.",
+        comment: "Required. See award.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Award",
+      },
+      schema_version: {
+        title: "Schema Version",
+        description:
+          "The version of the JSON schema that the server uses to validate the object.",
+        comment:
+          "Do not submit. The version used to validate the object is set by the server. The default should be set to the current version.",
+        type: "string",
+        pattern: "^\\d+(\\.\\d+)*$",
+        requestMethod: [],
+        default: "1",
+      },
+      uuid: {
+        title: "UUID",
+        description: "The unique identifier associated with every object.",
+        comment: "Do not submit. The uuid is set by the server.",
+        type: "string",
+        format: "uuid",
+        serverDefault: "uuid4",
+        permission: "import_items",
+        requestMethod: "POST",
+        readonly: true,
+      },
+      notes: {
+        title: "Notes",
+        description: "DACC internal notes.",
+        comment:
+          "Do not submit. A place for the DACC to keep information that does not have a place in the schema.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        permission: "import_items",
+        formInput: "textarea",
+        readonly: true,
+      },
+      aliases: {
+        title: "Aliases",
+        description: "Lab specific identifiers to reference an object.",
+        comment:
+          "The purpose of this field is to provide a link into the lab LIMS and to facilitate shared objects.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          uniqueKey: "alias",
+          title: "Lab Alias",
+          description: "A lab specific identifier to reference an object.",
+          comment:
+            "Current convention is colon separated lab name and lab identifier. (e.g. john-doe:42).",
+          type: "string",
+          pattern:
+            "^(?:j-michael-cherry|ali-mortazavi|barbara-wold|lior-pachter|grant-macgregor|kim-green|mark-craven|qiongshi-lu|audrey-gasch|robert-steiner|jesse-engreitz|thomas-quertermous|anshul-kundaje|michael-bassik|will-greenleaf|marlene-rabinovitch|lars-steinmetz|jay-shendure|nadav-ahituv|martin-kircher|danwei-huangfu|michael-beer|anna-katerina-hadjantonakis|christina-leslie|alexander-rudensky|laura-donlin|hannah-carter|bing-ren|kyle-gaulton|maike-sander|charles-gersbach|gregory-crawford|tim-reddy|ansuman-satpathy|andrew-allen|gary-hon|nikhil-munshi|w-lee-kraus|lea-starita|doug-fowler|luca-pinello|guillaume-lettre|benhur-lee|daniel-bauer|richard-sherwood|benjamin-kleinstiver|marc-vidal|david-hill|frederick-roth|mikko-taipale|anne-carpenter|hyejung-won|karen-mohlke|michael-love|jason-buenrostro|bradley-bernstein|hilary-finucane|chongyuan-luo|noah-zaitlen|kathrin-plath|roy-wollman|jason-ernst|zhiping-weng|manuel-garber|xihong-lin|alan-boyle|ryan-mills|jie-liu|maureen-sartor|joshua-welch|stephen-montgomery|alexis-battle|livnat-jerby|jonathan-pritchard|predrag-radivojac|sean-mooney|harinder-singh|nidhi-sahni|jishnu-das|hao-wu|sreeram-kannan|hongjun-song|alkes-price|soumya-raychaudhuri|shamil-sunyaev|len-pennacchio|axel-visel|jill-moore|ting-wang|feng-yue|igvf|igvf-dacc):[a-zA-Z\\d_$.+!*,()'-]+(?:\\s[a-zA-Z\\d_$.+!*,()'-]+)*$",
+        },
+      },
+      creation_timestamp: {
+        "rdfs:subPropertyOf": "dc:created",
+        title: "Creation Timestamp",
+        description: "The date the object was created.",
+        comment:
+          "Do not submit. The date the object is created is assigned by the server.",
+        type: "string",
+        format: "date-time",
+        serverDefault: "now",
+        permission: "import_items",
+        readonly: true,
+      },
+      submitted_by: {
+        "rdfs:subPropertyOf": "dc:creator",
+        title: "Submitted By",
+        comment:
+          "Do not submit. The user that created the object is assigned by the server.",
+        type: "string",
+        linkTo: "User",
+        serverDefault: "userid",
+        permission: "import_items",
+        readonly: true,
+      },
+      submitter_comment: {
+        title: "Submitter Comment",
+        description:
+          "Additional information specified by the submitter to be displayed as a comment on the portal.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+      },
+      description: {
+        title: "Description",
+        description: "A plain text description of the object.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$|^$",
+        formInput: "textarea",
+      },
+      name: {
+        title: "Name",
+        description: "The biomarker name.",
+        comment: "Only admins are allowed to set this value.",
+        type: "string",
+        permission: "import_items",
+        readonly: true,
+      },
+      classification: {
+        title: "Classification",
+        description: "Sample specific biomarker.",
+        type: "string",
+        enum: ["cell surface protein", "marker gene"],
+      },
+      quantification: {
+        title: "Quantification",
+        description:
+          "The biomarker association to the biosample, disease or other condition.  This can be the absence of the biomarker or the presence of the biomarker in some low, intermediate or high quantity.",
+        comment: "Only admins are allowed to set this value.",
+        type: "string",
+        enum: ["negative", "positive", "low", "intermediate", "high"],
+        permission: "import_items",
+        readonly: true,
+      },
+      synonyms: {
+        title: "Synonyms",
+        description: "Alternate names for this biomarker.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          type: "string",
+        },
+      },
+      gene: {
+        title: "Gene",
+        description: "Biomarker gene.",
+        type: "string",
+        linkTo: "Gene",
+      },
+      "@id": {
+        title: "ID",
+        type: "string",
+        notSubmittable: true,
+      },
+      "@type": {
+        title: "Type",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        notSubmittable: true,
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
+        notSubmittable: true,
+      },
+      name_quantification: {
+        title: "Name and Quantification",
+        type: "string",
+        notSubmittable: true,
+      },
+    },
+  },
+
   Source: {
     title: "Source",
     description: "Schema for submitting an originating lab or vendor.",
