@@ -24,16 +24,24 @@ import { formatDate } from "../lib/dates";
 export function DonorDataItems({ donor, parents, children }) {
   return (
     <>
+      {donor.taxa && (
+        <>
+          <DataItemLabel>Taxa</DataItemLabel>
+          <DataItemValue>{donor.taxa}</DataItemValue>
+        </>
+      )}
+      {donor.ethnicities?.length > 0 && (
+        <>
+          <DataItemLabel>Ethnicities</DataItemLabel>
+          <DataItemValue>
+            {donor.ethnicities.join(", ")}
+          </DataItemValue>
+        </>
+      )}
       {donor.sex && (
         <>
           <DataItemLabel>Sex</DataItemLabel>
           <DataItemValue>{donor.sex}</DataItemValue>
-        </>
-      )}
-      {donor.taxon_id && (
-        <>
-          <DataItemLabel>Taxa Identifier</DataItemLabel>
-          <DataItemValue>{donor.taxon_id}</DataItemValue>
         </>
       )}
       {parents.length > 0 && (
@@ -73,6 +81,20 @@ export function DonorDataItems({ donor, parents, children }) {
           <DataItemValue>
             <AliasList aliases={donor.aliases} />
           </DataItemValue>
+        </>
+      )}
+      {donor.references?.length > 0 && (
+        <>
+          <DataItemLabel>References</DataItemLabel>
+          <DataItemValue>
+            <DbxrefList dbxrefs={donor.references} />
+          </DataItemValue>
+        </>
+      )}
+      {donor.url && (
+        <>
+          <DataItemLabel>URL</DataItemLabel>
+          <DataItemValue><Link href={donor.url}>{donor.url}</Link></DataItemValue>
         </>
       )}
     </>

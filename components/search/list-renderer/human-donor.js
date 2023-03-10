@@ -13,10 +13,12 @@ import {
 
 export default function HumanDonor({ item: humanDonor, accessoryData }) {
   const ethnicities =
-    humanDonor.ethnicity?.length > 0 ? humanDonor.ethnicity.join(", ") : "";
+    humanDonor.ethnicities?.length > 0 ? humanDonor.ethnicities.join(", ") : "";
   const sex = humanDonor.sex || "";
   const title = [ethnicities, sex].filter(Boolean);
   const lab = accessoryData?.[humanDonor.lab];
+  const collections = humanDonor.collections?.length > 0 ? `, ${humanDonor.collections.join(", ")}` : "";
+  const phenotypicFeatures = "";
 
   return (
     <SearchListItemContent>
@@ -31,6 +33,8 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
         {lab && (
           <SearchListItemMeta>
             <div key="lab">{lab.title}</div>
+            <div key="collections">{collections}</div>
+            <div key="phynotypic-features">{phenotypicFeatures}</div>
           </SearchListItemMeta>
         )}
       </SearchListItemMain>

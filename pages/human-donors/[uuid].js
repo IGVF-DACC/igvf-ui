@@ -24,6 +24,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { formatDateRange } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 
 /**
  * Defines the columns for the health-status table.
@@ -50,6 +51,7 @@ export default function HumanDonor({
   documents,
   lab = null,
   parents,
+  phenotypicFeatures,
 }) {
   return (
     <>
@@ -62,16 +64,15 @@ export default function HumanDonor({
             <DataItemValue>
               <Status status={donor.status} />
             </DataItemValue>
-            <DonorDataItems donor={donor} parents={parents}>
-              {donor.ethnicity && (
-                <>
-                  <DataItemLabel>Ethnicity</DataItemLabel>
-                  <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
-                </>
-              )}
-            </DonorDataItems>
+            <DonorDataItems donor={donor} parents={parents}/>
           </DataArea>
         </DataPanel>
+        {phenotypicFeatures.length > 0 && (
+          <>
+            <DataAreaTitle>Phenotypic Features</DataAreaTitle>
+            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
+          </>
+        )}
         <ExternalResources resources={donor.external_resources} />
         {donor.health_status_history?.length > 0 && (
           <>
@@ -91,6 +92,14 @@ export default function HumanDonor({
           </>
         )}
         <Attribution award={award} lab={lab} />
+        {donor.collections?.length > 0 && (
+          <DataPanel>
+            <DataArea>
+              <DataItemLabel>Collections</DataItemLabel>
+              <DataItemValue>{donor.collections.join(", ")}</DataItemValue>
+            </DataArea>
+          </DataPanel>
+        )}
       </EditableItem>
     </>
   );
@@ -107,6 +116,8 @@ HumanDonor.propTypes = {
   lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Phenotypic Features of this donor
+  phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -125,6 +136,9 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
+    const phenotypicFeatures = donor.phenotypic_features ? await request.getMultipleObjects(donor.phenotypic_features, null, {
+      filterErrors: true,
+    }) : [];
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
@@ -138,6 +152,7 @@ export async function getServerSideProps({ params, req }) {
         lab,
         parents,
         pageContext: { title: donor.accession },
+        phenotypicFeatures,
         breadcrumbs,
       },
     };
