@@ -21,47 +21,38 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-export default function InVitroSystem({
-  inVitroSystem,
-  award = null,
-  biosampleTerm = null,
-  diseaseTerms,
-  documents,
+export default function WholeOrganism({
+  sample,
   donors,
+  award = null,
+  documents,
   lab = null,
   source = null,
   treatments,
+  biosampleTerm = null,
+  diseaseTerms,
 }) {
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={inVitroSystem}>
+      <EditableItem item={sample}>
         <PagePreamble />
         <DataPanel>
           <DataArea>
             <DataItemLabel>Status</DataItemLabel>
             <DataItemValue>
-              <Status status={inVitroSystem.status} />
+              <Status status={sample.status} />
             </DataItemValue>
             <BiosampleDataItems
-              biosample={inVitroSystem}
+              biosample={sample}
               source={source}
               donors={donors}
               biosampleTerm={biosampleTerm}
               diseaseTerms={diseaseTerms}
               options={{
-                dateObtainedTitle: "Date Collected",
+                dateObtainedTitle: "Date Obtained",
               }}
-            >
-              <DataItemLabel>Classification</DataItemLabel>
-              <DataItemValue>{inVitroSystem.classification}</DataItemValue>
-              {inVitroSystem.passage_number && (
-                <>
-                  <DataItemLabel>Passage Number</DataItemLabel>
-                  <DataItemValue>{inVitroSystem.passage_number}</DataItemValue>
-                </>
-              )}
-            </BiosampleDataItems>
+            ></BiosampleDataItems>
           </DataArea>
         </DataPanel>
         {treatments.length > 0 && (
@@ -82,15 +73,11 @@ export default function InVitroSystem({
   );
 }
 
-InVitroSystem.propTypes = {
-  // In Vitro System sample to display
-  inVitroSystem: PropTypes.object.isRequired,
+WholeOrganism.propTypes = {
+  // WholeOrganism sample to display
+  sample: PropTypes.object.isRequired,
   // Award applied to this sample
   award: PropTypes.object,
-  // Biosample ontology for this sample
-  biosampleTerm: PropTypes.object,
-  // Disease ontology for this sample
-  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
@@ -101,64 +88,66 @@ InVitroSystem.propTypes = {
   source: PropTypes.object,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample ontology for this sample
+  biosampleTerm: PropTypes.object,
+  // Disease ontology for this sample
+  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const inVitroSystem = await request.getObject(
-    `/in-vitro-systems/${params.id}/`
-  );
-  if (FetchRequest.isResponseSuccess(inVitroSystem)) {
-    const award = await request.getObject(inVitroSystem.award, null);
-    const biosampleTerm = inVitroSystem.biosample_term
-      ? await request.getObject(inVitroSystem.biosample_term, null)
+  const sample = await request.getObject(`/whole-organisms/${params.id}/`);
+  if (FetchRequest.isResponseSuccess(sample)) {
+    const award = await request.getObject(sample.award, null);
+    const biosampleTerm = sample.biosample_term
+      ? await request.getObject(sample.biosample_term, null)
       : null;
-    const diseaseTerms = inVitroSystem.disease_terms
-      ? await request.getMultipleObjects(inVitroSystem.disease_terms, null, {
+    const diseaseTerms = sample.disease_terms
+      ? await request.getMultipleObjects(sample.disease_terms, null, {
           filterErrors: true,
         })
       : [];
-    const documents = inVitroSystem.documents
-      ? await request.getMultipleObjects(inVitroSystem.documents, null, {
+    const documents = sample.documents
+      ? await request.getMultipleObjects(sample.documents, null, {
           filterErrors: true,
         })
       : [];
-    const donors = inVitroSystem.donors
-      ? await request.getMultipleObjects(inVitroSystem.donors, null, {
+    const donors = sample.donors
+      ? await request.getMultipleObjects(sample.donors, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(inVitroSystem.lab, null);
-    const source = await request.getObject(inVitroSystem.source, null);
-    const treatments = inVitroSystem.treatments
-      ? await request.getMultipleObjects(inVitroSystem.treatments, null, {
+    const lab = await request.getObject(sample.lab, null);
+    const source = await request.getObject(sample.source, null);
+    const treatments = sample.treatments
+      ? await request.getMultipleObjects(sample.treatments, null, {
           filterErrors: true,
         })
       : [];
     const breadcrumbs = await buildBreadcrumbs(
-      inVitroSystem,
+      sample,
       "accession",
       req.headers.cookie
     );
     return {
       props: {
-        inVitroSystem,
+        sample,
         award,
-        biosampleTerm,
-        diseaseTerms,
         documents,
         donors,
         lab,
         source,
         treatments,
+        biosampleTerm,
+        diseaseTerms,
         pageContext: {
           title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
-            inVitroSystem.accession
+            sample.accession
           }`,
         },
         breadcrumbs,
       },
     };
   }
-  return errorObjectToProps(inVitroSystem);
+  return errorObjectToProps(sample);
 }

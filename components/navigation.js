@@ -531,6 +531,14 @@ function Navigation({ navigationClick }) {
           Primary Cells
         </NavigationHrefItem>
         <NavigationHrefItem
+          id="whole-organisms"
+          href="/search?type=WholeOrganism"
+          navigationClick={navigationClick}
+          isChildItem
+        >
+          Whole Organisms
+        </NavigationHrefItem>
+        <NavigationHrefItem
           id="technical-samples"
           href="/search?type=TechnicalSample"
           navigationClick={navigationClick}
