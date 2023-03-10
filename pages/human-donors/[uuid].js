@@ -64,7 +64,7 @@ export default function HumanDonor({
             <DataItemValue>
               <Status status={donor.status} />
             </DataItemValue>
-            <DonorDataItems donor={donor} parents={parents}/>
+            <DonorDataItems donor={donor} parents={parents} />
           </DataArea>
         </DataPanel>
         {phenotypicFeatures.length > 0 && (
@@ -136,9 +136,11 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const phenotypicFeatures = donor.phenotypic_features ? await request.getMultipleObjects(donor.phenotypic_features, null, {
-      filterErrors: true,
-    }) : [];
+    const phenotypicFeatures = donor.phenotypic_features
+      ? await request.getMultipleObjects(donor.phenotypic_features, null, {
+          filterErrors: true,
+        })
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",

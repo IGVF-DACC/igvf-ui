@@ -32,7 +32,11 @@ const phenotypicFeaturesColumns = [
     id: "feature",
     title: "Feature",
     display: ({ source }) => {
-      return <Link href={source.feature}>{source.feature.split("/").slice("-2")}</Link>;
+      return (
+        <Link href={source.feature}>
+          {source.feature.split("/").slice("-2")}
+        </Link>
+      );
     },
   },
   {

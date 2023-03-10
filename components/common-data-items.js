@@ -33,9 +33,7 @@ export function DonorDataItems({ donor, parents, children }) {
       {donor.ethnicities?.length > 0 && (
         <>
           <DataItemLabel>Ethnicities</DataItemLabel>
-          <DataItemValue>
-            {donor.ethnicities.join(", ")}
-          </DataItemValue>
+          <DataItemValue>{donor.ethnicities.join(", ")}</DataItemValue>
         </>
       )}
       {donor.sex && (
@@ -94,7 +92,9 @@ export function DonorDataItems({ donor, parents, children }) {
       {donor.url && (
         <>
           <DataItemLabel>URL</DataItemLabel>
-          <DataItemValue><Link href={donor.url}>{donor.url}</Link></DataItemValue>
+          <DataItemValue>
+            <Link href={donor.url}>{donor.url}</Link>
+          </DataItemValue>
         </>
       )}
     </>

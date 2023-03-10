@@ -17,7 +17,10 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
   const sex = humanDonor.sex || "";
   const title = [ethnicities, sex].filter(Boolean);
   const lab = accessoryData?.[humanDonor.lab];
-  const collections = humanDonor.collections?.length > 0 ? `, ${humanDonor.collections.join(", ")}` : "";
+  const collections =
+    humanDonor.collections?.length > 0
+      ? `, ${humanDonor.collections.join(", ")}`
+      : "";
   const phenotypicFeatures = "";
 
   return (
