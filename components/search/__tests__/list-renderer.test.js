@@ -21,6 +21,7 @@ import TechnicalSample from "../list-renderer/technical-sample";
 import User from "../list-renderer/user";
 import Biomarker from "../list-renderer/biomarker";
 import Source from "../list-renderer/source";
+import Treatment from "../list-renderer/treatment";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -1610,5 +1611,67 @@ describe("Test the Biomarker component", () => {
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
+  });
+});
+
+describe("Test the Treatment component", () => {
+  it("renders a Treatment item with duration data", () => {
+    const item = {
+      "@id": "/treatments/4fbb0dc2-c72e-11ec-9d64-0242ac120002/",
+      "@type": ["Treatment", "Item"],
+      amount: 10,
+      amount_units: "μg/mL",
+      duration: 30,
+      duration_units: "minute",
+      purpose: "antagonist",
+      status: "released",
+      treatment_term_id: "CHEBI:27810",
+      treatment_term_name: "resorcinol",
+      treatment_type: "chemical",
+      uuid: "4fbb0dc2-c72e-11ec-9d64-0242ac120002",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Treatment item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Treatment/);
+    expect(uniqueId).toHaveTextContent(/CHEBI:27810$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title.textContent).toBe(
+      "resorcinol — chemical — 10 μg/mL — 30 minute"
+    );
+  });
+
+  it("renders a Treatment item without duration data", () => {
+    const item = {
+      "@id": "/treatments/4fbb0dc2-c72e-11ec-9d64-0242ac120002/",
+      "@type": ["Treatment", "Item"],
+      amount: 10,
+      amount_units: "μg/mL",
+      purpose: "antagonist",
+      status: "released",
+      treatment_term_id: "CHEBI:27810",
+      treatment_term_name: "resorcinol",
+      treatment_type: "chemical",
+      uuid: "4fbb0dc2-c72e-11ec-9d64-0242ac120002",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Treatment item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Treatment/);
+    expect(uniqueId).toHaveTextContent(/CHEBI:27810$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title.textContent).toBe("resorcinol — chemical — 10 μg/mL");
   });
 });
