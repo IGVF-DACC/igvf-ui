@@ -51,7 +51,7 @@ export default function HumanDonor({
   documents,
   lab = null,
   parents,
-  phenotypicFeatures,
+  materializedPhenotypicFeatures,
 }) {
   return (
     <>
@@ -67,10 +67,12 @@ export default function HumanDonor({
             <DonorDataItems donor={donor} parents={parents} />
           </DataArea>
         </DataPanel>
-        {phenotypicFeatures.length > 0 && (
+        {materializedPhenotypicFeatures.length > 0 && (
           <>
             <DataAreaTitle>Phenotypic Features</DataAreaTitle>
-            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
+            <PhenotypicFeatureTable
+              phenotypicFeatures={materializedPhenotypicFeatures}
+            />
           </>
         )}
         <ExternalResources resources={donor.external_resources} />
@@ -116,8 +118,8 @@ HumanDonor.propTypes = {
   lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Phenotypic Features of this donor
-  phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
+  // Phenotypic Features of this donor with the feature turm embedded
+  materializedPhenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -141,6 +143,22 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
+    const phenotypeTermsList = phenotypicFeatures
+      ? await request.getMultipleObjects(
+          phenotypicFeatures.map((phenotype) => phenotype.feature)
+        )
+      : [];
+    const phenotypeTerms = phenotypeTermsList.reduce((obj, el) => {
+      obj[el["@id"]] = el;
+      return obj;
+    }, {});
+
+    const materializedPhenotypicFeatures = phenotypicFeatures.map((feature) => {
+      const term = phenotypeTerms[feature.feature];
+      feature.feature = term;
+      return feature;
+    });
+
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
@@ -154,7 +172,7 @@ export async function getServerSideProps({ params, req }) {
         lab,
         parents,
         pageContext: { title: donor.accession },
-        phenotypicFeatures,
+        materializedPhenotypicFeatures,
         breadcrumbs,
       },
     };

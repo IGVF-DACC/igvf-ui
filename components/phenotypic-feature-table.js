@@ -25,18 +25,18 @@ const phenotypicFeaturesColumns = [
     id: "phenotypic_feature_id",
     title: "Phenotypic Feature",
     display: ({ source }) => {
-      return <Link href={source["@id"]}>{source.notes}</Link>;
+      return (
+        <Link href={source["@id"]}>
+          {source.notes ? source.notes : source["@id"]}
+        </Link>
+      );
     },
   },
   {
     id: "feature",
     title: "Feature",
     display: ({ source }) => {
-      return (
-        <Link href={source.feature}>
-          {source.feature.split("/").slice("-2")}
-        </Link>
-      );
+      return <Link href={source.feature["@id"]}>{source.feature.term_id}</Link>;
     },
   },
   {
