@@ -14,7 +14,11 @@ import {
  * Displays the attribution properties of an item in its own data panel, typically from a data
  * object with a defined schema.
  */
-export default function Attribution({ award = null, lab = null, collections = null }) {
+export default function Attribution({
+  award = null,
+  lab = null,
+  collections = null,
+}) {
   if (award || lab || collections) {
     return (
       <>

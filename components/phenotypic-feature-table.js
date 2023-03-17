@@ -38,9 +38,12 @@ const phenotypicFeaturesColumns = [
     display: (source, meta) => {
       const terms = meta.phenotypeTermsList;
       // Filter the list to contain only the term that matches the one in the source feature
-      const featureTerm = terms.filter((term) => term["@id"] == source.source.feature);
+      const featureTerm = terms.filter(
+        (term) => term["@id"] == source.source.feature
+      );
       // If we found it, then use it, otherwise use the full path
-      const termId = featureTerm.length > 0 ? featureTerm[0].term_id : source.source.feature;
+      const termId =
+        featureTerm.length > 0 ? featureTerm[0].term_id : source.source.feature;
       return <Link href={source.source.feature}>{termId}</Link>;
     },
   },
@@ -58,7 +61,10 @@ const phenotypicFeaturesColumns = [
 /**
  * Display a sortable table of the given treatments.
  */
-export default function PhenotypicFeatureTable({ phenotypicFeatures, phenotypeTermsList }) {
+export default function PhenotypicFeatureTable({
+  phenotypicFeatures,
+  phenotypeTermsList,
+}) {
   return (
     <DataGridContainer>
       <SortableGrid

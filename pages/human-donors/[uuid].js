@@ -30,7 +30,6 @@ export default function HumanDonor({
   parents,
   phenotypicFeatures,
   phenotypeTermsList,
-
 }) {
   return (
     <>
