@@ -35,8 +35,13 @@ const phenotypicFeaturesColumns = [
   {
     id: "feature",
     title: "Feature",
-    display: ({ source }) => {
-      return <Link href={source.feature["@id"]}>{source.feature.term_id}</Link>;
+    display: (source, meta) => {
+      const terms = meta.phenotypeTermsList;
+      // Filter the list to contain only the term that matches the one in the source feature
+      const featureTerm = terms.filter((term) => term["@id"] == source.source.feature);
+      // If we found it, then use it, otherwise use the full path
+      const termId = featureTerm.length > 0 ? featureTerm[0].term_id : source.source.feature;
+      return <Link href={source.source.feature}>{termId}</Link>;
     },
   },
   {
@@ -53,13 +58,14 @@ const phenotypicFeaturesColumns = [
 /**
  * Display a sortable table of the given treatments.
  */
-export default function PhenotypicFeatureTable({ phenotypicFeatures }) {
+export default function PhenotypicFeatureTable({ phenotypicFeatures, phenotypeTermsList }) {
   return (
     <DataGridContainer>
       <SortableGrid
         data={phenotypicFeatures}
         columns={phenotypicFeaturesColumns}
         keyProp="phenotypic_feature_id"
+        meta={{ phenotypeTermsList }}
       />
     </DataGridContainer>
   );
@@ -68,4 +74,6 @@ export default function PhenotypicFeatureTable({ phenotypicFeatures }) {
 PhenotypicFeatureTable.propTypes = {
   // Phenotypic Features to display
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Phenotype Terms associated with the features
+  phenotypeTermsList: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
