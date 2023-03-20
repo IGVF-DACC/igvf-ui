@@ -23,8 +23,9 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
       : "";
   const phenotypicFeatures = humanDonor.phenotypic_features
     ?.map((path) => {
-      const feature = accessoryData[path];
-      return `${feature.notes} ${feature.quantity} ${feature.quantity_units}`;
+      const feature = accessoryData?.[path];
+      const notes = feature?.notes ? feature?.notes : "Amount";
+      return `${notes} ${feature?.quantity} ${feature?.quantity_units}`;
     })
     ?.join(", ");
 
