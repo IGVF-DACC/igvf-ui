@@ -105,11 +105,14 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const phenotypeTermsList = phenotypicFeatures
-      ? await request.getMultipleObjects([
-          ...new Set(phenotypicFeatures.map((phenotype) => phenotype.feature)),
-        ])
-      : [];
+    const phenotypeTermsList =
+      phenotypicFeatures.length > 0
+        ? await request.getMultipleObjects([
+            ...new Set(
+              phenotypicFeatures.map((phenotype) => phenotype.feature)
+            ),
+          ])
+        : [];
 
     const breadcrumbs = await buildBreadcrumbs(
       donor,
