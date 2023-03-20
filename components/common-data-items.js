@@ -198,12 +198,6 @@ export function BiosampleDataItems({
     <SampleDataItems sample={biosample} source={source}>
       <DataItemLabel>Taxa</DataItemLabel>
       <DataItemValue>{biosample.taxa}</DataItemValue>
-      {biosample.organism && (
-        <>
-          <DataItemLabel>Organism</DataItemLabel>
-          <DataItemValue>{biosample.organism}</DataItemValue>
-        </>
-      )}
       {biosample.sex && (
         <>
           <DataItemLabel>Sex</DataItemLabel>
