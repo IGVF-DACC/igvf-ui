@@ -38,6 +38,16 @@ export default function Lab({ lab, awards, pi = null }) {
                 <DataItemValue>{pi.title}</DataItemValue>
               </>
             )}
+            {lab.url && (
+              <>
+                <DataItemLabel>URL</DataItemLabel>
+                <DataItemValue>
+                  <a href={lab.url} target="_blank" rel="noreferrer">
+                    {lab.url}
+                  </a>
+                </DataItemValue>
+              </>
+            )}
             {awards.length > 0 && (
               <>
                 <DataItemLabel>Awards</DataItemLabel>
