@@ -20,9 +20,20 @@ export default function Treatment({ item: treatment }) {
           <SearchListItemType item={treatment} />
           {treatment.treatment_term_id}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>
-          {treatment.treatment_term_name} {UC.mdash} {treatment.treatment_type}
-        </SearchListItemTitle>
+        {treatment.duration ? (
+          <SearchListItemTitle>
+            {treatment.treatment_term_name} {UC.mdash}{" "}
+            {treatment.treatment_type} {UC.mdash} {treatment.amount}{" "}
+            {treatment.amount_units} {UC.mdash} {treatment.duration}{" "}
+            {treatment.duration_units}
+          </SearchListItemTitle>
+        ) : (
+          <SearchListItemTitle>
+            {treatment.treatment_term_name} {UC.mdash}{" "}
+            {treatment.treatment_type} {UC.mdash} {treatment.amount}{" "}
+            {treatment.amount_units}
+          </SearchListItemTitle>
+        )}
       </SearchListItemMain>
       <SearchListItemStatus item={treatment} />
     </SearchListItemContent>
