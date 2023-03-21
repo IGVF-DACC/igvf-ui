@@ -18,9 +18,7 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
   const title = [ethnicities, sex].filter(Boolean);
   const lab = accessoryData?.[humanDonor.lab];
   const collections =
-    humanDonor.collections?.length > 0
-      ? humanDonor.collections.join(", ")
-      : "";
+    humanDonor.collections?.length > 0 ? humanDonor.collections.join(", ") : "";
   const phenotypicFeatures = humanDonor.phenotypic_features
     ?.filter((path) => {
       return Boolean(accessoryData?.[path]);
