@@ -5,21 +5,6 @@ import PropTypes from "prop-types";
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
 
-/*
-phenotypic feature
-lab	"/labs/j-michael-cherry/"
-award	"/awards/HG012012/"
-notes	"Phenotypic feature of body weight"
-status	"released"
-feature	"/phenotype-terms/NCIT_C92648/"
-quantity	58
-quantity_units	"kilogram"
-schema_version	"1"
-observation_date	"2022-11-15"
-creation_timestamp	"2023-03-06T23:31:20.467925+00:00"
-@id: /phenotypic-features/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa/
-*/
-
 const phenotypicFeaturesColumns = [
   {
     id: "phenotypic_feature_id",

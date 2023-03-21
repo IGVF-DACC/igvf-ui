@@ -19,15 +19,18 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
   const lab = accessoryData?.[humanDonor.lab];
   const collections =
     humanDonor.collections?.length > 0
-      ? `${humanDonor.collections.join(", ")}`
+      ? humanDonor.collections.join(", ")
       : "";
   const phenotypicFeatures = humanDonor.phenotypic_features
-    ?.map((path) => {
-      const feature = accessoryData?.[path];
-      const notes = feature?.notes ? feature?.notes : "Amount";
-      return `${notes} ${feature?.quantity} ${feature?.quantity_units}`;
+    ?.filter((path) => {
+      return Boolean(accessoryData?.[path]);
     })
-    ?.join(", ");
+    .map((path) => {
+      const feature = accessoryData[path];
+      const notes = feature.notes ? feature.notes : "Amount";
+      return `${notes} ${feature.quantity} ${feature.quantity_units}`;
+    })
+    .join(", ");
 
   return (
     <SearchListItemContent>

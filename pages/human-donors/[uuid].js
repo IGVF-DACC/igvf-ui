@@ -80,7 +80,7 @@ HumanDonor.propTypes = {
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Phenotypic Features of this donor with the feature turm embedded
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
-  // Phenotype terms associted with the above features
+  // Phenotype terms associated with the above features
   phenotypeTermsList: PropTypes.arrayOf(PropTypes.object),
 };
 
