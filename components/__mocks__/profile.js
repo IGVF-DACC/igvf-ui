@@ -3688,6 +3688,373 @@ const profiles = {
     changelog: "/profiles/changelogs/whole_organism.md",
     "@type": ["JSONSchema"],
   },
+
+  Treatment: {
+    title: "Treatment",
+    $id: "/profiles/treatment.json",
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    type: "object",
+    required: [
+      "amount",
+      "amount_units",
+      "treatment_term_id",
+      "treatment_term_name",
+      "treatment_type",
+      "purpose",
+    ],
+    identifyingProperties: ["uuid", "aliases"],
+    additionalProperties: false,
+    mixinProperties: [
+      {
+        $ref: "mixins.json#/basic_item",
+      },
+      {
+        $ref: "mixins.json#/standard_status",
+      },
+      {
+        $ref: "mixins.json#/documents",
+      },
+      {
+        $ref: "mixins.json#/product_info",
+      },
+    ],
+    dependentSchemas: {
+      duration: {
+        required: ["duration_units"],
+        comment: "duration_units must be specified if duration is specified",
+      },
+      duration_units: {
+        required: ["duration"],
+        comment: "duration must be specified if duration_units is specified",
+      },
+      post_treatment_time: {
+        required: ["post_treatment_time_units"],
+        comment:
+          "post_treatment_time_units must be specified if post_treatment_time is specified",
+      },
+      post_treatment_time_units: {
+        required: ["post_treatment_time"],
+        comment:
+          "post_treatment_time must be specified if post_treatment_time_units is specified",
+      },
+      temperature: {
+        required: ["temperature_units"],
+        comment:
+          "temperature_units must be specified if temperature is specified",
+      },
+      temperature_units: {
+        required: ["temperature"],
+        comment:
+          "temperature must be specified if temperature_units is specified",
+      },
+      treatment_term_id: {
+        oneOf: [
+          {
+            properties: {
+              treatment_type: {
+                enum: ["protein"],
+              },
+              treatment_term_id: {
+                pattern: "^((UniProtKB:[A-Z0-9]{6})|(NTR:[0-9]{2,8}))$",
+              },
+            },
+          },
+          {
+            properties: {
+              treatment_type: {
+                enum: ["chemical"],
+              },
+              treatment_term_id: {
+                pattern: "^((CHEBI:[0-9]{1,7})|(NTR:[0-9]{2,8}))$",
+              },
+            },
+          },
+        ],
+        comment:
+          "If treatment_type is protein, only Uniprot ids are allowed while if treatment_type is chemical, only CHEBI ids are allowed. NTRs are allowed in special cases for both",
+      },
+    },
+    properties: {
+      source: {
+        title: "Source",
+        description: "The originating lab or vendor.",
+        comment: "See source.json for available identifiers.",
+        type: "string",
+        linkTo: ["Source", "Lab"],
+      },
+      lot_id: {
+        title: "Lot ID",
+        description:
+          "The lot identifier provided by the originating lab or vendor.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+      },
+      product_id: {
+        title: "Product ID",
+        description:
+          "The product identifier provided by the originating lab or vendor.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+      },
+      documents: {
+        title: "Documents",
+        description: "Documents that describe the treatment protocol details.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Document",
+          description:
+            "A document that provides additional information (not data file).",
+          type: "string",
+          comment: "See document.json for available identifiers.",
+          linkTo: "Document",
+        },
+      },
+      status: {
+        title: "Status",
+        type: "string",
+        default: "in progress",
+        permission: "import_items",
+        enum: ["deleted", "in progress", "released"],
+        readonly: true,
+      },
+      schema_version: {
+        title: "Schema Version",
+        description:
+          "The version of the JSON schema that the server uses to validate the object.",
+        comment:
+          "Do not submit. The version used to validate the object is set by the server. The default should be set to the current version.",
+        type: "string",
+        pattern: "^\\d+(\\.\\d+)*$",
+        requestMethod: [],
+        default: "3",
+      },
+      uuid: {
+        title: "UUID",
+        description: "The unique identifier associated with every object.",
+        comment: "Do not submit. The uuid is set by the server.",
+        type: "string",
+        format: "uuid",
+        serverDefault: "uuid4",
+        permission: "import_items",
+        requestMethod: "POST",
+        readonly: true,
+      },
+      notes: {
+        title: "Notes",
+        description: "DACC internal notes.",
+        comment:
+          "Do not submit. A place for the DACC to keep information that does not have a place in the schema.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        permission: "import_items",
+        formInput: "textarea",
+        readonly: true,
+      },
+      aliases: {
+        title: "Aliases",
+        description: "Lab specific identifiers to reference an object.",
+        comment:
+          "The purpose of this field is to provide a link into the lab LIMS and to facilitate shared objects.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          uniqueKey: "alias",
+          title: "Lab Alias",
+          description: "A lab specific identifier to reference an object.",
+          comment:
+            "Current convention is colon separated lab name and lab identifier. (e.g. john-doe:42).",
+          type: "string",
+          pattern:
+            "^(?:j-michael-cherry|ali-mortazavi|barbara-wold|lior-pachter|grant-macgregor|kim-green|mark-craven|qiongshi-lu|audrey-gasch|robert-steiner|jesse-engreitz|thomas-quertermous|anshul-kundaje|michael-bassik|will-greenleaf|marlene-rabinovitch|lars-steinmetz|jay-shendure|nadav-ahituv|martin-kircher|danwei-huangfu|michael-beer|anna-katerina-hadjantonakis|christina-leslie|alexander-rudensky|laura-donlin|hannah-carter|bing-ren|kyle-gaulton|maike-sander|charles-gersbach|gregory-crawford|tim-reddy|ansuman-satpathy|andrew-allen|gary-hon|nikhil-munshi|w-lee-kraus|lea-starita|doug-fowler|luca-pinello|guillaume-lettre|benhur-lee|daniel-bauer|richard-sherwood|benjamin-kleinstiver|marc-vidal|david-hill|frederick-roth|mikko-taipale|anne-carpenter|hyejung-won|karen-mohlke|michael-love|jason-buenrostro|bradley-bernstein|hilary-finucane|chongyuan-luo|noah-zaitlen|kathrin-plath|roy-wollman|jason-ernst|zhiping-weng|manuel-garber|xihong-lin|alan-boyle|ryan-mills|jie-liu|maureen-sartor|joshua-welch|stephen-montgomery|alexis-battle|livnat-jerby|jonathan-pritchard|predrag-radivojac|sean-mooney|harinder-singh|nidhi-sahni|jishnu-das|hao-wu|sreeram-kannan|hongjun-song|alkes-price|soumya-raychaudhuri|shamil-sunyaev|len-pennacchio|axel-visel|jill-moore|ting-wang|feng-yue|igvf|igvf-dacc):[a-zA-Z\\d_$.+!*,()'-]+(?:\\s[a-zA-Z\\d_$.+!*,()'-]+)*$",
+        },
+      },
+      creation_timestamp: {
+        "rdfs:subPropertyOf": "dc:created",
+        title: "Creation Timestamp",
+        description: "The date the object was created.",
+        comment:
+          "Do not submit. The date the object is created is assigned by the server.",
+        type: "string",
+        format: "date-time",
+        serverDefault: "now",
+        permission: "import_items",
+        readonly: true,
+      },
+      submitted_by: {
+        "rdfs:subPropertyOf": "dc:creator",
+        title: "Submitted By",
+        comment:
+          "Do not submit. The user that created the object is assigned by the server.",
+        type: "string",
+        linkTo: "User",
+        serverDefault: "userid",
+        permission: "import_items",
+        readonly: true,
+      },
+      submitter_comment: {
+        title: "Submitter Comment",
+        description:
+          "Additional information specified by the submitter to be displayed as a comment on the portal.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+      },
+      description: {
+        title: "Description",
+        description: "A plain text description of the object.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$|^$",
+        formInput: "textarea",
+      },
+      amount: {
+        title: "Amount",
+        type: "number",
+        description:
+          "Specific quantity of the applied treatment (used in conjunction with amount_units).",
+        comment: "amount must be specified if amount_units is specified",
+      },
+      amount_units: {
+        title: "Amount Units",
+        type: "string",
+        enum: [
+          "mg/kg",
+          "mg/mL",
+          "mM",
+          "ng/mL",
+          "nM",
+          "percent",
+          "μg/kg",
+          "μg/kg",
+          "μg/mL",
+          "μM",
+        ],
+        comment: "amount_units must be specified if amount is specified",
+      },
+      duration: {
+        title: "Duration",
+        type: "number",
+        description:
+          "Duration indicates the time elapsed between the start and end of the treatment.",
+        comment: "duration must be specified if duration_units is specified",
+      },
+      duration_units: {
+        title: "Duration Units",
+        type: "string",
+        enum: ["second", "minute", "hour", "day"],
+        comment: "duration_units must be specified if duration is specified",
+      },
+      pH: {
+        title: "pH",
+        type: "number",
+        description:
+          "Final pH of the solution containing a chemical compound (if applicable)",
+      },
+      purpose: {
+        title: "Purpose",
+        type: "string",
+        enum: [
+          "activation",
+          "agonist",
+          "antagonist",
+          "control",
+          "differentiation",
+          "de-differentiation",
+          "perturbation",
+          "selection",
+          "stimulation",
+        ],
+        description:
+          "The intended purpose for treating the samples; Activation: treatment is known to activate a pathway in the biosample; Agonist: a substance which is known to initiate a physiological response when combined with a receptor; Antagonist: a substance that is known to interfere with or inhibits the physiological action of another; Control: treatment applied to a sample for control purposes; Differentiation: treatment that is applied to convert a less specialized cell to a more specialized cell; De-differentiation: treatment used to reprogram differentiated cells back to less determined cell states; Perturbation: treatment applied to the sample in order to study the effect of its application; Selection: treatment used to affect biosample in a way that can be used to distinguish cells and select for in the downstream steps; Stimulation: treatment applied to stimulate a cellular pathway.",
+      },
+      post_treatment_time: {
+        title: "Post-treatment Time",
+        description:
+          "Post treatment time in conjunction with post treatment time units is used to specify the time that has passed between the point when biosamples were removed from the treatment solution before being sampled or treated with the next treatment.",
+        type: "number",
+        comment:
+          "post_treatment_time should be used in conjunction with post_treatment_time_units.",
+      },
+      post_treatment_time_units: {
+        title: "Post-treatment Time Units",
+        type: "string",
+        enum: ["minute", "hour", "day", "week", "month"],
+        comment:
+          "post_treatment_time_units should be used in conjunction with post_treatment_time.",
+      },
+      temperature: {
+        title: "Temperature",
+        type: "number",
+        description:
+          "The temperature in Celsius to which the sample was exposed",
+        comment:
+          "Temperature should be used in conjunction with temperature_units.",
+      },
+      temperature_units: {
+        title: "Temperature Units",
+        type: "string",
+        enum: ["Celsius"],
+        comment:
+          "Temperature units should be used in conjunction with temperature.",
+      },
+      treatment_type: {
+        title: "Treatment Type",
+        type: "string",
+        enum: ["chemical", "protein"],
+        description:
+          "The classification of treatment agent that specifies its exact molecular nature. Chemical type refers to (natural or synthetic) organic/inorganic compounds and also includes drugs, while protein type is restricted to active protein biomolecules that are naturally or artifically synthesized via cellular translation mechanism of converting DNA into a protein. Example of chemical type: lactate, ethanol,hydrocortisone, LPS etc. Example of protein type: Interferons, interlukin, antibodies, etc.",
+        comment:
+          "treatment_term_id must be provided for both types. For chemical types, CHEBI ids are required while Uniprot ids are used for protein type.",
+      },
+      treatment_term_id: {
+        "@type": "@id",
+        title: "Treatment Term ID",
+        description:
+          "Ontology identifier describing a component in the treatment.",
+        type: "string",
+        pattern:
+          "^((CHEBI:[0-9]{1,7})|(UniProtKB:[A-Z0-9]{6})|(NTR:[0-9]{2,8}))$",
+      },
+      treatment_term_name: {
+        title: "Treatment Term Name",
+        description:
+          "Ontology term describing a component in the treatment that is the principal component affecting the biosample being treated. Examples: interferon gamma, interleukin-4, Fibroblast growth factor 2, 20-hydroxyecdysone, 5-bromouridine etc.",
+        type: "string",
+      },
+      "@id": {
+        title: "ID",
+        type: "string",
+        notSubmittable: true,
+      },
+      "@type": {
+        title: "Type",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        notSubmittable: true,
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
+        notSubmittable: true,
+      },
+      title: {
+        title: "Title",
+        type: "string",
+        notSubmittable: true,
+      },
+    },
+    boost_values: {
+      "@type": 1,
+      treatment_term_name: 1,
+      treatment_type: 1,
+    },
+    changelog: "/profiles/changelogs/treatment.md",
+    "@type": ["JSONSchema"],
+  },
 };
 
 export default profiles;
