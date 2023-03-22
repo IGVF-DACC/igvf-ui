@@ -54,7 +54,7 @@ export default function PhenotypicFeatureTable({
       <SortableGrid
         data={phenotypicFeatures}
         columns={phenotypicFeaturesColumns}
-        keyProp="phenotypic_feature_id"
+        keyProp="@id"
         meta={{ phenotypeTermsList }}
       />
     </DataGridContainer>
