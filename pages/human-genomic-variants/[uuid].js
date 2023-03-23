@@ -1,28 +1,33 @@
 import Breadcrumbs from "../../components/breadcrumbs";
-import { DataArea, DataItemLabel, DataItemValue, DataPanel } from "../../components/data-area";
+import {
+  DataArea,
+  DataItemLabel,
+  DataItemValue,
+  DataPanel,
+} from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { PropTypes } from 'prop-types';
+import { PropTypes } from "prop-types";
 
-export default function HumanGenomicVariant({
-  variant,
-}) {
+export default function HumanGenomicVariant({ variant }) {
   // reference_sequence/refseq_id
-  const [label, seqRef] = variant.refseq_id ? ["RefSeq Sequence Identifier", variant.refseq_id] : ["Reference Sequence", variant.reference_sequence];
+  const [label, seqRef] = variant.refseq_id
+    ? ["RefSeq Sequence Identifier", variant.refseq_id]
+    : ["Reference Sequence", variant.reference_sequence];
   return (
     <>
-      <Breadcrumbs/>
+      <Breadcrumbs />
       <EditableItem item={variant}>
-        <PagePreamble/>
+        <PagePreamble />
         <DataPanel>
           <DataArea>
             <DataItemLabel>Status</DataItemLabel>
             <DataItemValue>
-              <Status status={variant.status}/>
+              <Status status={variant.status} />
             </DataItemValue>
             <DataItemLabel>Assembly</DataItemLabel>
             <DataItemValue>{variant.assembly}</DataItemValue>
@@ -66,8 +71,14 @@ HumanGenomicVariant.propTypes = {
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const variant = await request.getObject(`/human-genomic-variants/${params.uuid}`);
-  const breadcrumbs = await buildBreadcrumbs(variant, "assembly", req.headers.cookie);
+  const variant = await request.getObject(
+    `/human-genomic-variants/${params.uuid}`
+  );
+  const breadcrumbs = await buildBreadcrumbs(
+    variant,
+    "assembly",
+    req.headers.cookie
+  );
   if (FetchRequest.isResponseSuccess(variant)) {
     return {
       props: {

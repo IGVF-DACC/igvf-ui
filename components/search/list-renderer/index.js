@@ -46,7 +46,7 @@ import Treatment from "./treatment";
 import User from "./user";
 import File from "./file";
 import Source from "./source";
-import HumanGenomicVariant from './human-genomic-variant';
+import HumanGenomicVariant from "./human-genomic-variant";
 
 const renderers = {
   AnalysisSet,
