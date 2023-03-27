@@ -341,10 +341,10 @@ export function OntologyTermDataItems({ ontologyTerm, isA, children }) {
           </DataItemValue>
         </>
       )}
-      {ontologyTerm.Summary && (
+      {ontologyTerm.summary && (
         <>
           <DataItemLabel>Summary</DataItemLabel>
-          <DataItemValue>{ontologyTerm.Summary}</DataItemValue>
+          <DataItemValue>{ontologyTerm.summary}</DataItemValue>
         </>
       )}
       {children}
