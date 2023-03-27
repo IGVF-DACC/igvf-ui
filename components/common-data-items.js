@@ -305,19 +305,47 @@ BiosampleDataItems.propTypes = {
 /**
  * Display data items common to all ontology-term-derived objects.
  */
-export function OntologyTermDataItems({ ontologyTerm, children }) {
+export function OntologyTermDataItems({ ontologyTerm, is_a, children }) {
   return (
     <>
       <DataItemLabel>Term Name</DataItemLabel>
       <DataItemValue>{ontologyTerm.term_name}</DataItemValue>
       <DataItemLabel>External Reference</DataItemLabel>
       <DataItemValue>
-        <OntologyTermId termId={ontologyTerm.term_id} />
+        <DbxrefList dbxrefs={[ontologyTerm.term_id]} />
       </DataItemValue>
+      {is_a?.length > 0 && (
+        <>
+          <DataItemLabel>List of Term Names</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {is_a.map((term) => (
+                <Link href={term["@id"]} key={term.term_id}>
+                  {term.term_name}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
       {ontologyTerm.synonyms.length > 0 && (
         <>
           <DataItemLabel>Synonyms</DataItemLabel>
           <DataItemValue>{ontologyTerm.synonyms.join(", ")}</DataItemValue>
+        </>
+      )}
+      {ontologyTerm.aliases?.length > 0 && (
+        <>
+          <DataItemLabel>Aliases</DataItemLabel>
+          <DataItemValue>
+            <AliasList aliases={ontologyTerm.aliases} />
+          </DataItemValue>
+        </>
+      )}
+      {ontologyTerm.Summary && (
+        <>
+          <DataItemLabel>Summary</DataItemLabel>
+          <DataItemValue>{ontologyTerm.Summary}</DataItemValue>
         </>
       )}
       {children}

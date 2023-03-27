@@ -17,7 +17,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-export default function AssayOntologyTerm({ assayOntologyTerm }) {
+export default function AssayOntologyTerm({ assayOntologyTerm, is_a }) {
   return (
     <>
       <Breadcrumbs />
@@ -29,7 +29,7 @@ export default function AssayOntologyTerm({ assayOntologyTerm }) {
             <DataItemValue>
               <Status status={assayOntologyTerm.status} />
             </DataItemValue>
-            <OntologyTermDataItems ontologyTerm={assayOntologyTerm}>
+            <OntologyTermDataItems ontologyTerm={assayOntologyTerm} is_a={is_a}>
               {assayOntologyTerm.category_slims.length > 0 && (
                 <>
                   <DataItemLabel>Assay Category</DataItemLabel>
@@ -49,6 +49,8 @@ export default function AssayOntologyTerm({ assayOntologyTerm }) {
 AssayOntologyTerm.propTypes = {
   // Assay ontology term object to display
   assayOntologyTerm: PropTypes.object.isRequired,
+  // List of term names
+  is_a: PropTypes.arrayOf(PropTypes.object),
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -57,6 +59,11 @@ export async function getServerSideProps({ params, req }) {
     `/assay-terms/${params.name}/`
   );
   if (FetchRequest.isResponseSuccess(assayOntologyTerm)) {
+    const is_a = assayOntologyTerm.is_a
+      ? await request.getMultipleObjects(assayOntologyTerm.is_a, null, {
+          filterErrors: true,
+        })
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       assayOntologyTerm,
       "term_id",
@@ -65,6 +72,7 @@ export async function getServerSideProps({ params, req }) {
     return {
       props: {
         assayOntologyTerm,
+        is_a,
         pageContext: { title: assayOntologyTerm.term_id },
         breadcrumbs,
       },
