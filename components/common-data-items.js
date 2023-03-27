@@ -304,7 +304,7 @@ BiosampleDataItems.propTypes = {
 /**
  * Display data items common to all ontology-term-derived objects.
  */
-export function OntologyTermDataItems({ ontologyTerm, is_a, children }) {
+export function OntologyTermDataItems({ ontologyTerm, isA, children }) {
   return (
     <>
       <DataItemLabel>Term Name</DataItemLabel>
@@ -313,12 +313,12 @@ export function OntologyTermDataItems({ ontologyTerm, is_a, children }) {
       <DataItemValue>
         <DbxrefList dbxrefs={[ontologyTerm.term_id]} />
       </DataItemValue>
-      {is_a?.length > 0 && (
+      {isA?.length > 0 && (
         <>
           <DataItemLabel>List of Term Names</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
-              {is_a.map((term) => (
+              {isA.map((term) => (
                 <Link href={term["@id"]} key={term.term_id}>
                   {term.term_name}
                 </Link>

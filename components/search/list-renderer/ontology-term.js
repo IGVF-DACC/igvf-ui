@@ -34,4 +34,6 @@ export default function OntologyTerm({ item: ontologyTerm }) {
 OntologyTerm.propTypes = {
   // Single assay term search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
+  // List of term names
+  isA: PropTypes.arrayOf(PropTypes.object),
 };
