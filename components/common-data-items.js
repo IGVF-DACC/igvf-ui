@@ -12,7 +12,6 @@ import PropTypes from "prop-types";
 import AliasList from "./alias-list";
 import { DataItemLabel, DataItemValue } from "./data-area";
 import DbxrefList from "./dbxref-list";
-import { OntologyTermId } from "./ontology";
 import SeparatedList from "./separated-list";
 import SourceProp from "./source-prop";
 // lib
