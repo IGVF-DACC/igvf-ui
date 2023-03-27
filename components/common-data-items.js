@@ -361,6 +361,8 @@ export function OntologyTermDataItems({ ontologyTerm, isA, children }) {
 OntologyTermDataItems.propTypes = {
   // Ontology term object
   ontologyTerm: PropTypes.object.isRequired,
+  // List of term names
+  isA: PropTypes.arrayOf(PropTypes.object),
 };
 
 /**
