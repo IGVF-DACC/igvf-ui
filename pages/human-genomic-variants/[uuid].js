@@ -74,12 +74,12 @@ export async function getServerSideProps({ params, req }) {
   const variant = await request.getObject(
     `/human-genomic-variants/${params.uuid}`
   );
-  const breadcrumbs = await buildBreadcrumbs(
-    variant,
-    "assembly",
-    req.headers.cookie
-  );
   if (FetchRequest.isResponseSuccess(variant)) {
+    const breadcrumbs = await buildBreadcrumbs(
+      variant,
+      "assembly",
+      req.headers.cookie
+    );
     return {
       props: {
         variant,
