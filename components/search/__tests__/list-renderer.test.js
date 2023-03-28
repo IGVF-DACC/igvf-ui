@@ -423,18 +423,56 @@ describe("Test the HumanDonor component", () => {
       accession: "IGVFDO856PXB",
       aliases: ["chongyuan-luo:AA F donor of fibroblasts"],
       award: "/awards/1U01HG012079-01/",
-      ethnicity: ["African American"],
+      ethnicities: ["African American"],
       lab: "/labs/chongyuan-luo/",
       sex: "female",
       status: "released",
       taxa: "Homo sapiens",
       uuid: "ee99221f-a11a-4f8b-baf3-9919db92f2f9",
+      collections: ["ENCODE"],
+      phenotypic_features: [
+        "/phenotypic-features/123/",
+        "/phenotypic-features/456/",
+      ],
     };
     const accessoryData = {
       "/labs/chongyuan-luo/": {
         "@id": "/labs/chongyuan-luo/",
         "@type": ["Lab", "Item"],
         title: "Chongyuan Luo",
+      },
+      "/phenotypic-features/123/": {
+        lab: "/labs/j-michael-cherry/",
+        award: "/awards/HG012012/",
+        notes: "Phenotypic feature of body weight",
+        status: "released",
+        feature: "/phenotype-terms/NCIT_C92648/",
+        quantity: 58,
+        quantity_units: "kilogram",
+        schema_version: "1",
+        observation_date: "2022-11-15",
+        creation_timestamp: "2023-03-13T23:26:17.586384+00:00",
+        "@id": "/phenotypic-features/123/",
+        "@type": ["PhenotypicFeature", "Item"],
+        uuid: "123",
+        summary: "123",
+        "@context": "/terms/",
+      },
+      "/phenotypic-features/456/": {
+        lab: "/labs/j-michael-cherry/",
+        award: "/awards/HG012012/",
+        status: "released",
+        feature: "/phenotype-terms/NCIT_C92648/",
+        quantity: 58,
+        quantity_units: "kilogram",
+        schema_version: "1",
+        observation_date: "2022-11-15",
+        creation_timestamp: "2023-03-13T23:26:17.586384+00:00",
+        "@id": "/phenotypic-features/123/",
+        "@type": ["PhenotypicFeature", "Item"],
+        uuid: "123",
+        summary: "123",
+        "@context": "/terms/",
       },
     };
 
@@ -453,12 +491,23 @@ describe("Test the HumanDonor component", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Chongyuan Luo");
+    expect(meta).toHaveTextContent("Phenotypic feature of body weight");
+    // The text "amount" should appear instead of whatever is in
+    // The "notes" field if notes is not there, since it's not required
+    expect(meta).toHaveTextContent("Amount");
+    expect(meta).toHaveTextContent("ENCODE");
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("released");
 
     const paths = HumanDonor.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/chongyuan-luo/"]);
+    expect(paths.sort()).toEqual(
+      [
+        "/labs/chongyuan-luo/",
+        "/phenotypic-features/123/",
+        "/phenotypic-features/456/",
+      ].sort()
+    );
   });
 
   it("renders a human donor item without accessory data", () => {
@@ -468,7 +517,7 @@ describe("Test the HumanDonor component", () => {
       accession: "IGVFDO856PXB",
       aliases: ["chongyuan-luo:AA F donor of fibroblasts"],
       award: "/awards/1U01HG012079-01/",
-      ethnicity: ["African American"],
+      ethnicities: ["African American"],
       lab: "/labs/chongyuan-luo/",
       sex: "female",
       status: "released",

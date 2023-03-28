@@ -1,5 +1,4 @@
 // node_modules
-import dayjs from "dayjs";
 import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
@@ -12,37 +11,16 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import { DataGridContainer } from "../../components/data-grid";
 import DocumentTable from "../../components/document-table";
 import ExternalResources from "../../components/external-resources";
 import PagePreamble from "../../components/page-preamble";
-import SortableGrid from "../../components/sortable-grid";
 import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { formatDateRange } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-
-/**
- * Defines the columns for the health-status table.
- */
-const healthStatusHistoryColumns = [
-  {
-    id: "dates",
-    title: "Health Change Date",
-    display: ({ source }) =>
-      formatDateRange(source.date_start, source.date_end),
-    sorter: (healthStatus) =>
-      dayjs(healthStatus.date_start || healthStatus.date_end).unix(),
-  },
-  {
-    id: "health_description",
-    title: "Description",
-    isSortable: false,
-  },
-];
+import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 
 export default function HumanDonor({
   donor,
@@ -50,6 +28,8 @@ export default function HumanDonor({
   documents,
   lab = null,
   parents,
+  phenotypicFeatures,
+  phenotypeTermsList,
 }) {
   return (
     <>
@@ -62,35 +42,26 @@ export default function HumanDonor({
             <DataItemValue>
               <Status status={donor.status} />
             </DataItemValue>
-            <DonorDataItems donor={donor} parents={parents}>
-              {donor.ethnicity && (
-                <>
-                  <DataItemLabel>Ethnicity</DataItemLabel>
-                  <DataItemValue>{donor.ethnicity.join(", ")}</DataItemValue>
-                </>
-              )}
-            </DonorDataItems>
+            <DonorDataItems donor={donor} parents={parents} />
           </DataArea>
         </DataPanel>
-        <ExternalResources resources={donor.external_resources} />
-        {donor.health_status_history?.length > 0 && (
+        {phenotypicFeatures.length > 0 && (
           <>
-            <DataAreaTitle>Health Status History</DataAreaTitle>
-            <DataGridContainer>
-              <SortableGrid
-                data={donor.health_status_history}
-                columns={healthStatusHistoryColumns}
-              />
-            </DataGridContainer>
+            <DataAreaTitle>Phenotypic Features</DataAreaTitle>
+            <PhenotypicFeatureTable
+              phenotypicFeatures={phenotypicFeatures}
+              phenotypeTermsList={phenotypeTermsList}
+            />
           </>
         )}
+        <ExternalResources resources={donor.external_resources} />
         {documents.length > 0 && (
           <>
             <DataAreaTitle>Documents</DataAreaTitle>
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} />
+        <Attribution award={award} lab={lab} collections={donor.collections} />
       </EditableItem>
     </>
   );
@@ -107,6 +78,10 @@ HumanDonor.propTypes = {
   lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Phenotypic Features of this donor with the feature turm embedded
+  phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
+  // Phenotype terms associated with the above features
+  phenotypeTermsList: PropTypes.arrayOf(PropTypes.object),
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -125,6 +100,20 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
+    const phenotypicFeatures = donor.phenotypic_features
+      ? await request.getMultipleObjects(donor.phenotypic_features, null, {
+          filterErrors: true,
+        })
+      : [];
+    const phenotypeTermsList =
+      phenotypicFeatures.length > 0
+        ? await request.getMultipleObjects([
+            ...new Set(
+              phenotypicFeatures.map((phenotype) => phenotype.feature)
+            ),
+          ])
+        : [];
+
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
@@ -138,6 +127,8 @@ export async function getServerSideProps({ params, req }) {
         lab,
         parents,
         pageContext: { title: donor.accession },
+        phenotypicFeatures,
+        phenotypeTermsList,
         breadcrumbs,
       },
     };

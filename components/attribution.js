@@ -14,8 +14,12 @@ import {
  * Displays the attribution properties of an item in its own data panel, typically from a data
  * object with a defined schema.
  */
-export default function Attribution({ award = null, lab = null }) {
-  if (award || lab) {
+export default function Attribution({
+  award = null,
+  lab = null,
+  collections = null,
+}) {
+  if (award || lab || collections) {
     return (
       <>
         <DataAreaTitle>Attribution</DataAreaTitle>
@@ -37,6 +41,12 @@ export default function Attribution({ award = null, lab = null }) {
                 </DataItemValue>
               </>
             )}
+            {collections?.length > 0 && (
+              <>
+                <DataItemLabel>Collections</DataItemLabel>
+                <DataItemValue>{collections.join(", ")}</DataItemValue>
+              </>
+            )}
           </DataArea>
         </DataPanel>
       </>
@@ -50,4 +60,6 @@ Attribution.propTypes = {
   award: PropTypes.object,
   // Lab that submitted the displayed object
   lab: PropTypes.object,
+  // Collections associated with the displayed object
+  collections: PropTypes.arrayOf(PropTypes.string),
 };
