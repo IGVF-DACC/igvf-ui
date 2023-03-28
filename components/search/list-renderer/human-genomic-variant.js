@@ -29,7 +29,7 @@ export default function HumanGenomicVariant({ item: variant }) {
         </SearchListItemTitle>
         {variant.rsid && (
           <SearchListItemMeta>
-            <div key={variant.rsid}>{variant.rsid}</div>
+            <div>{variant.rsid}</div>
           </SearchListItemMeta>
         )}
       </SearchListItemMain>
