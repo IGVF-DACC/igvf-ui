@@ -12,7 +12,6 @@ import PropTypes from "prop-types";
 import AliasList from "./alias-list";
 import { DataItemLabel, DataItemValue } from "./data-area";
 import DbxrefList from "./dbxref-list";
-import { OntologyTermId } from "./ontology";
 import SeparatedList from "./separated-list";
 import SourceProp from "./source-prop";
 // lib
@@ -327,19 +326,47 @@ BiosampleDataItems.propTypes = {
 /**
  * Display data items common to all ontology-term-derived objects.
  */
-export function OntologyTermDataItems({ ontologyTerm, children }) {
+export function OntologyTermDataItems({ ontologyTerm, isA, children }) {
   return (
     <>
       <DataItemLabel>Term Name</DataItemLabel>
       <DataItemValue>{ontologyTerm.term_name}</DataItemValue>
       <DataItemLabel>External Reference</DataItemLabel>
       <DataItemValue>
-        <OntologyTermId termId={ontologyTerm.term_id} />
+        <DbxrefList dbxrefs={[ontologyTerm.term_id]} />
       </DataItemValue>
+      {isA?.length > 0 && (
+        <>
+          <DataItemLabel>List of Term Names</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {isA.map((term) => (
+                <Link href={term["@id"]} key={term.term_id}>
+                  {term.term_name}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
       {ontologyTerm.synonyms.length > 0 && (
         <>
           <DataItemLabel>Synonyms</DataItemLabel>
           <DataItemValue>{ontologyTerm.synonyms.join(", ")}</DataItemValue>
+        </>
+      )}
+      {ontologyTerm.aliases?.length > 0 && (
+        <>
+          <DataItemLabel>Aliases</DataItemLabel>
+          <DataItemValue>
+            <AliasList aliases={ontologyTerm.aliases} />
+          </DataItemValue>
+        </>
+      )}
+      {ontologyTerm.summary && (
+        <>
+          <DataItemLabel>Summary</DataItemLabel>
+          <DataItemValue>{ontologyTerm.summary}</DataItemValue>
         </>
       )}
       {children}
@@ -356,6 +383,8 @@ export function OntologyTermDataItems({ ontologyTerm, children }) {
 OntologyTermDataItems.propTypes = {
   // Ontology term object
   ontologyTerm: PropTypes.object.isRequired,
+  // List of term names
+  isA: PropTypes.arrayOf(PropTypes.object),
 };
 
 /**
