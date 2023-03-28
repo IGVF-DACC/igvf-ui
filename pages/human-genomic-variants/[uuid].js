@@ -12,6 +12,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { PropTypes } from "prop-types";
+import { humanGenomicVariantTitle } from "../../components/search/list-renderer/human-genomic-variant";
 
 export default function HumanGenomicVariant({ variant }) {
   // reference_sequence/refseq_id
@@ -22,7 +23,7 @@ export default function HumanGenomicVariant({ variant }) {
     <>
       <Breadcrumbs />
       <EditableItem item={variant}>
-        <PagePreamble />
+        <PagePreamble pageTitle={humanGenomicVariantTitle(variant)} />
         <DataPanel>
           <DataArea>
             <DataItemLabel>Status</DataItemLabel>
@@ -77,7 +78,7 @@ export async function getServerSideProps({ params, req }) {
   if (FetchRequest.isResponseSuccess(variant)) {
     const breadcrumbs = await buildBreadcrumbs(
       variant,
-      "assembly",
+      "position",
       req.headers.cookie
     );
     return {

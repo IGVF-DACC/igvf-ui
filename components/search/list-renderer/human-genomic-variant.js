@@ -9,6 +9,14 @@ import {
 } from "./search-list-item";
 import { PropTypes } from "prop-types";
 
+export function humanGenomicVariantTitle(variant) {
+  const first = variant.chromosome
+    ? variant.chromosome
+    : variant.refseq_id || variant.reference_sequence;
+  const titleSeq = [first, variant.position, variant.ref, variant.alt];
+  return titleSeq.join(":");
+}
+
 export default function HumanGenomicVariant({ item: variant }) {
   return (
     <SearchListItemContent>
@@ -18,7 +26,7 @@ export default function HumanGenomicVariant({ item: variant }) {
           {variant.uuid}
         </SearchListItemUniqueId>
         <SearchListItemTitle>
-          {variant.refseq_id ? variant.refseq_id : variant.reference_sequence}
+          {humanGenomicVariantTitle(variant)}
         </SearchListItemTitle>
         {variant.rsid && (
           <SearchListItemMeta>

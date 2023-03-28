@@ -22,6 +22,9 @@ import User from "../list-renderer/user";
 import Biomarker from "../list-renderer/biomarker";
 import Source from "../list-renderer/source";
 import Treatment from "../list-renderer/treatment";
+import HumanGenomicVariant, {
+  humanGenomicVariantTitle,
+} from "../list-renderer/human-genomic-variant";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -1722,5 +1725,83 @@ describe("Test the Treatment component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title.textContent).toBe("resorcinol — chemical — 10 μg/mL");
+  });
+});
+
+describe("Test the Human Genomic Variant component", () => {
+  it("renders a Human Genomic Variant", () => {
+    const item = {
+      "@id": "/human-genomic-variants/8138364d-f96b-42b9-a719-42199818c6fc/",
+      "@type": ["HumanGenomicVariant", "Variant", "Item"],
+      alt: "GC",
+      ref: "TG",
+      status: "in progress",
+      assembly: "GRCh38",
+      position: 100000000,
+      refseq_id: "NC_000001.1",
+      chromosome: "chr1",
+      schema_version: "1",
+      creation_timestamp: "2023-03-28T05:59:17.412294+00:00",
+      selection_criteria:
+        "The variant was selected by another lab due to its frequency in an understudied population",
+      uuid: "8138364d-f96b-42b9-a719-42199818c6fc",
+      summary: "8138364d-f96b-42b9-a719-42199818c6fc",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <HumanGenomicVariant item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^HumanGenomicVariant/);
+    expect(uniqueId).toHaveTextContent(/8138364d-f96b-42b9-a719-42199818c6fc$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title.textContent).toBe("chr1:100000000:TG:GC");
+  });
+  it("Human Genomic Variant title is correct", () => {
+    const itemWithRefSeqId = {
+      "@id": "/human-genomic-variants/8138364d-f96b-42b9-a719-42199818c6fc/",
+      "@type": ["HumanGenomicVariant", "Variant", "Item"],
+      alt: "GC",
+      ref: "TG",
+      status: "in progress",
+      assembly: "GRCh38",
+      position: 100000000,
+      refseq_id: "NC_000001.1",
+      schema_version: "1",
+      creation_timestamp: "2023-03-28T05:59:17.412294+00:00",
+      selection_criteria:
+        "The variant was selected by another lab due to its frequency in an understudied population",
+      uuid: "8138364d-f96b-42b9-a719-42199818c6fc",
+      summary: "8138364d-f96b-42b9-a719-42199818c6fc",
+    };
+
+    expect(humanGenomicVariantTitle(itemWithRefSeqId)).toBe(
+      "NC_000001.1:100000000:TG:GC"
+    );
+
+    const itemWithReferenceSeq = {
+      "@id": "/human-genomic-variants/8138364d-f96b-42b9-a719-42199818c6fc/",
+      "@type": ["HumanGenomicVariant", "Variant", "Item"],
+      alt: "GC",
+      ref: "TG",
+      status: "in progress",
+      assembly: "GRCh38",
+      position: 100000000,
+      reference_sequence: "AAATCGGG",
+      schema_version: "1",
+      creation_timestamp: "2023-03-28T05:59:17.412294+00:00",
+      selection_criteria:
+        "The variant was selected by another lab due to its frequency in an understudied population",
+      uuid: "8138364d-f96b-42b9-a719-42199818c6fc",
+      summary: "8138364d-f96b-42b9-a719-42199818c6fc",
+    };
+
+    expect(humanGenomicVariantTitle(itemWithReferenceSeq)).toBe(
+      "AAATCGGG:100000000:TG:GC"
+    );
   });
 });
