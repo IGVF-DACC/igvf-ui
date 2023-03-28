@@ -31,6 +31,8 @@ export default function InVitroSystem({
   lab = null,
   source = null,
   treatments,
+  pooledFrom,
+  partOf,
 }) {
   return (
     <>
@@ -49,6 +51,8 @@ export default function InVitroSystem({
               donors={donors}
               biosampleTerm={biosampleTerm}
               diseaseTerms={diseaseTerms}
+              pooledFrom={pooledFrom}
+              partOf={partOf}
               options={{
                 dateObtainedTitle: "Date Collected",
               }}
@@ -101,6 +105,10 @@ InVitroSystem.propTypes = {
   source: PropTypes.object,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample(s) Pooled From
+  pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Part of Biosample
+  partOf: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -135,6 +143,12 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
+    const pooledFrom = inVitroSystem.pooled_from
+      ? await request.getMultipleObjects(inVitroSystem.pooled_from, null, {
+          filterErrors: true,
+        })
+      : [];
+    const partOf = await request.getObject(inVitroSystem.part_of, null);
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,
       "accession",
@@ -151,6 +165,8 @@ export async function getServerSideProps({ params, req }) {
         lab,
         source,
         treatments,
+        pooledFrom,
+        partOf,
         pageContext: {
           title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
             inVitroSystem.accession
