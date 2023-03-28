@@ -10,9 +10,8 @@ import {
 import { PropTypes } from "prop-types";
 
 export function humanGenomicVariantTitle(variant) {
-  const first = variant.chromosome
-    ? variant.chromosome
-    : variant.refseq_id || variant.reference_sequence;
+  const first =
+    variant.chromosome || variant.refseq_id || variant.reference_sequence;
   const titleSeq = [first, variant.position, variant.ref, variant.alt];
   return titleSeq.join(":");
 }
