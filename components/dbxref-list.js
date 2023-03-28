@@ -132,6 +132,10 @@ export const dbxrefPrefixMap = {
   Vega: {
     pattern: "http://vega.sanger.ac.uk/id/{0}",
   },
+  OBI: {
+    pattern:
+      "https://ontobee.org/ontology/OBI?iri=http://purl.obolibrary.org/obo/OBI_{0}",
+  },
 };
 
 /**
