@@ -133,7 +133,7 @@ export async function getServerSideProps({ params, req }) {
         })
       : [];
     const pooledFrom =
-      sample.pooled_from?.length > 1
+      sample.pooled_from?.length > 0
         ? await request.getMultipleObjects(sample.pooled_from, null, {
             filterErrors: true,
           })

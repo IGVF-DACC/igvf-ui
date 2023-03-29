@@ -144,7 +144,7 @@ export async function getServerSideProps({ params, req }) {
         })
       : [];
     const pooledFrom =
-      inVitroSystem.pooled_from?.length > 1
+      inVitroSystem.pooled_from?.length > 0
         ? await request.getMultipleObjects(inVitroSystem.pooled_from, null, {
             filterErrors: true,
           })

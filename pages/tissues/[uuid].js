@@ -157,7 +157,7 @@ export async function getServerSideProps({ params, req }) {
         })
       : [];
     const pooledFrom =
-      tissue.pooled_from?.length > 1
+      tissue.pooled_from?.length > 0
         ? await request.getMultipleObjects(tissue.pooled_from, null, {
             filterErrors: true,
           })
