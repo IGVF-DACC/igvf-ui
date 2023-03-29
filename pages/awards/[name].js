@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import Link from "next/link";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -16,8 +17,9 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { formatDateRange } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import SeparatedList from "../../components/separated-list";
 
-export default function Award({ award, pis }) {
+export default function Award({ award, pis, contactPi }) {
   return (
     <>
       <Breadcrumbs />
@@ -41,7 +43,23 @@ export default function Award({ award, pis }) {
               <>
                 <DataItemLabel>Principal Investigator</DataItemLabel>
                 <DataItemValue>
-                  {pis.map((pi) => pi.title).join(", ")}
+                  <SeparatedList>
+                    {pis.map((pi) => (
+                      <Link href={pi["@id"]} key={pi.uuid}>
+                        {pi.last_name}
+                      </Link>
+                    ))}
+                  </SeparatedList>
+                </DataItemValue>
+              </>
+            )}
+            {contactPi && (
+              <>
+                <DataItemLabel>Contact P.I.</DataItemLabel>
+                <DataItemValue>
+                  <Link href={contactPi["@id"]} key={contactPi.uuid}>
+                    {contactPi.first_name} {contactPi.last_name}
+                  </Link>
                 </DataItemValue>
               </>
             )}
@@ -89,15 +107,20 @@ Award.propTypes = {
   award: PropTypes.object.isRequired,
   // Principal investigator data associated with `award`
   pis: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // The contact Principal Investigator of the grant.
+  contactPi: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const award = await request.getObject(`/awards/${params.name}/`);
   if (FetchRequest.isResponseSuccess(award)) {
-    const pis = award.pi
-      ? await request.getMultipleObjects(award.pi, null, { filterErrors: true })
+    const pis = award.pis
+      ? await request.getMultipleObjects(award.pis, null, {
+          filterErrors: true,
+        })
       : [];
+    const contactPi = await request.getObject(award.contact_pi, null);
     const breadcrumbs = await buildBreadcrumbs(
       award,
       "name",
@@ -107,6 +130,7 @@ export async function getServerSideProps({ params, req }) {
       props: {
         award,
         pis,
+        contactPi,
         pageContext: { title: award.name },
         breadcrumbs,
       },

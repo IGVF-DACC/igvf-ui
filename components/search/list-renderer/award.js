@@ -11,7 +11,8 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function Award({ item: award }) {
+export default function Award({ item: award, accessoryData }) {
+  const contactPi = accessoryData?.[award.contact_pi];
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -20,9 +21,14 @@ export default function Award({ item: award }) {
           {award.name}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{award.title}</SearchListItemTitle>
-        {award.component && (
+        {(award.component || contactPi) && (
           <SearchListItemMeta>
-            <div key="component">{award.component}</div>
+            {contactPi && (
+              <div key="contactPi">
+                {contactPi.first_name} {contactPi.last_name}
+              </div>
+            )}
+            {award.component && <div key="component">{award.component}</div>}
           </SearchListItemMeta>
         )}
       </SearchListItemMain>
@@ -34,4 +40,8 @@ export default function Award({ item: award }) {
 Award.propTypes = {
   // Single award search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
+};
+
+Award.getAccessoryDataPaths = (items) => {
+  return items.map((item) => item.contact_pi).filter(Boolean);
 };
