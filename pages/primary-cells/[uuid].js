@@ -139,12 +139,15 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const pooledFrom = primaryCell.pooled_from
-      ? await request.getMultipleObjects(primaryCell.pooled_from, null, {
-          filterErrors: true,
-        })
-      : [];
-    const partOf = await request.getObject(primaryCell.part_of, null);
+    const pooledFrom =
+      primaryCell.pooled_from?.length > 1
+        ? await request.getMultipleObjects(primaryCell.pooled_from, null, {
+            filterErrors: true,
+          })
+        : [];
+    const partOf = primaryCell.part_of
+      ? await request.getObject(primaryCell.part_of, null)
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       primaryCell,
       "accession",

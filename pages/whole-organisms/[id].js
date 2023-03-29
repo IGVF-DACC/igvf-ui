@@ -132,12 +132,15 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const pooledFrom = sample.pooled_from
-      ? await request.getMultipleObjects(sample.pooled_from, null, {
-          filterErrors: true,
-        })
-      : [];
-    const partOf = await request.getObject(sample.part_of, null);
+    const pooledFrom =
+      sample.pooled_from?.length > 1
+        ? await request.getMultipleObjects(sample.pooled_from, null, {
+            filterErrors: true,
+          })
+        : [];
+    const partOf = sample.part_of
+      ? await request.getObject(sample.part_of, null)
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       "accession",

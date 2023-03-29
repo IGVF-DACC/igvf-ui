@@ -143,12 +143,15 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const pooledFrom = inVitroSystem.pooled_from
-      ? await request.getMultipleObjects(inVitroSystem.pooled_from, null, {
-          filterErrors: true,
-        })
-      : [];
-    const partOf = await request.getObject(inVitroSystem.part_of, null);
+    const pooledFrom =
+      inVitroSystem.pooled_from?.length > 1
+        ? await request.getMultipleObjects(inVitroSystem.pooled_from, null, {
+            filterErrors: true,
+          })
+        : [];
+    const partOf = inVitroSystem.part_of
+      ? await request.getObject(inVitroSystem.part_of, null)
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,
       "accession",

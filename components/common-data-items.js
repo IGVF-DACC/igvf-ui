@@ -284,9 +284,7 @@ export function BiosampleDataItems({
         <>
           <DataItemLabel>Part of Biosample</DataItemLabel>
           <DataItemValue>
-            <Link href={partOf["@id"]} key={partOf.uuid}>
-              {partOf.accession}
-            </Link>
+            <Link href={partOf["@id"]}>{partOf.accession}</Link>
           </DataItemValue>
         </>
       )}
@@ -345,7 +343,7 @@ BiosampleDataItems.propTypes = {
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
-  partOf: PropTypes.arrayOf(PropTypes.object),
+  partOf: PropTypes.object,
   // General options to alter the display of the data items
   options: PropTypes.shape({
     // Title of date_obtained property
