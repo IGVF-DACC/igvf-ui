@@ -46,6 +46,7 @@ import Treatment from "./treatment";
 import User from "./user";
 import File from "./file";
 import Source from "./source";
+import HumanGenomicVariant from "./human-genomic-variant";
 
 const renderers = {
   AnalysisSet,
@@ -56,6 +57,7 @@ const renderers = {
   Document,
   Gene,
   HumanDonor,
+  HumanGenomicVariant,
   InVitroSystem: Biosample,
   Lab,
   MeasurementSet,
