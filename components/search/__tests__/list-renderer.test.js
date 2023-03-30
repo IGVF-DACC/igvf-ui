@@ -164,6 +164,56 @@ describe("Test Award component", () => {
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("current");
   });
+
+  it("renders an award with accessory data", () => {
+    const item = {
+      "@id": "/awards/1U01HG012039-01/",
+      "@type": ["Award", "Item"],
+      component: "predictive modeling",
+      name: "1U01HG012039-01",
+      project: "IGVF",
+      status: "current",
+      title:
+        "Linking Variants to Multi-scale Phenotypes via a Synthesis of Subnetwork Inference and Deep Learning",
+      uuid: "fc8d4357-0c1d-4a67-923b-003879da0fda",
+      contact_pi: "/users/04e6e85d-3737-454e-8a3b-6f8cb2317f00/",
+    };
+
+    const accessoryData = {
+      "/users/04e6e85d-3737-454e-8a3b-6f8cb2317f00/": {
+        email: "lea@email_domain.com",
+        first_name: "Lea",
+        groups: ["verified"],
+        title: "Lea Starita",
+        lab: "/labs/lea-starita/",
+        last_name: "Starita",
+        status: "current",
+        viewing_groups: ["IGVF"],
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Award item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Grant/);
+    expect(uniqueId).toHaveTextContent(/1U01HG012039-01$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      "Linking Variants to Multi-scale Phenotypes via a Synthesis of Subnetwork Inference and Deep Learning"
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("Lea Starit");
+    expect(meta).toHaveTextContent("predictive modeling");
+
+    const status = screen.getByTestId("search-list-item-status");
+    expect(status).toHaveTextContent("current");
+  });
 });
 
 describe("Test the Biosample component", () => {
