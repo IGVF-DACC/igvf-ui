@@ -46,7 +46,7 @@ export default function Award({ award, pis, contactPi }) {
                   <SeparatedList>
                     {pis.map((pi) => (
                       <Link href={pi["@id"]} key={pi.uuid}>
-                        {pi.last_name}
+                        {pi.title}
                       </Link>
                     ))}
                   </SeparatedList>
@@ -58,7 +58,7 @@ export default function Award({ award, pis, contactPi }) {
                 <DataItemLabel>Contact P.I.</DataItemLabel>
                 <DataItemValue>
                   <Link href={contactPi["@id"]} key={contactPi.uuid}>
-                    {contactPi.first_name} {contactPi.last_name}
+                    {contactPi.title}
                   </Link>
                 </DataItemValue>
               </>
