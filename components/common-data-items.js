@@ -210,6 +210,8 @@ export function BiosampleDataItems({
   donors = [],
   biosampleTerm = null,
   diseaseTerms,
+  pooledFrom,
+  partOf,
   options = {
     dateObtainedTitle: "Date Obtained",
   },
@@ -261,6 +263,28 @@ export function BiosampleDataItems({
           <DataItemLabel>Biosample Term</DataItemLabel>
           <DataItemValue>
             <Link href={biosampleTerm["@id"]}>{biosampleTerm.term_name}</Link>
+          </DataItemValue>
+        </>
+      )}
+      {pooledFrom.length > 0 && (
+        <>
+          <DataItemLabel>Biosample(s) Pooled From</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {pooledFrom.map((biosample) => (
+                <Link href={biosample["@id"]} key={biosample.uuid}>
+                  {biosample.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
+      {partOf && (
+        <>
+          <DataItemLabel>Part of Biosample</DataItemLabel>
+          <DataItemValue>
+            <Link href={partOf["@id"]}>{partOf.accession}</Link>
           </DataItemValue>
         </>
       )}
@@ -316,6 +340,10 @@ BiosampleDataItems.propTypes = {
   biosampleTerm: PropTypes.object,
   // Disease ontology for the biosample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample(s) Pooled From
+  pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Part of Biosample
+  partOf: PropTypes.object,
   // General options to alter the display of the data items
   options: PropTypes.shape({
     // Title of date_obtained property

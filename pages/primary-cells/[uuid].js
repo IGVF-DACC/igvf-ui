@@ -31,6 +31,8 @@ export default function PrimaryCell({
   lab = null,
   source = null,
   treatments,
+  pooledFrom,
+  partOf,
 }) {
   return (
     <>
@@ -49,6 +51,8 @@ export default function PrimaryCell({
               donors={donors}
               biosampleTerm={biosampleTerm}
               diseaseTerms={diseaseTerms}
+              pooledFrom={pooledFrom}
+              partOf={partOf}
               options={{
                 dateObtainedTitle: "Date Harvested",
               }}
@@ -99,6 +103,10 @@ PrimaryCell.propTypes = {
   source: PropTypes.object,
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample(s) Pooled From
+  pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Part of Biosample
+  partOf: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -131,6 +139,15 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
+    const pooledFrom =
+      primaryCell.pooled_from?.length > 0
+        ? await request.getMultipleObjects(primaryCell.pooled_from, null, {
+            filterErrors: true,
+          })
+        : [];
+    const partOf = primaryCell.part_of
+      ? await request.getObject(primaryCell.part_of, null)
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       primaryCell,
       "accession",
@@ -147,6 +164,8 @@ export async function getServerSideProps({ params, req }) {
         lab,
         source,
         treatments,
+        pooledFrom,
+        partOf,
         pageContext: {
           title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
             primaryCell.accession

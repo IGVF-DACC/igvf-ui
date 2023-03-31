@@ -31,6 +31,8 @@ export default function WholeOrganism({
   treatments,
   biosampleTerm = null,
   diseaseTerms,
+  pooledFrom,
+  partOf,
 }) {
   return (
     <>
@@ -49,6 +51,8 @@ export default function WholeOrganism({
               donors={donors}
               biosampleTerm={biosampleTerm}
               diseaseTerms={diseaseTerms}
+              pooledFrom={pooledFrom}
+              partOf={partOf}
               options={{
                 dateObtainedTitle: "Date Obtained",
               }}
@@ -92,6 +96,10 @@ WholeOrganism.propTypes = {
   biosampleTerm: PropTypes.object,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample(s) Pooled From
+  pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Part of Biosample
+  partOf: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -124,6 +132,15 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
+    const pooledFrom =
+      sample.pooled_from?.length > 0
+        ? await request.getMultipleObjects(sample.pooled_from, null, {
+            filterErrors: true,
+          })
+        : [];
+    const partOf = sample.part_of
+      ? await request.getObject(sample.part_of, null)
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       "accession",
@@ -140,6 +157,8 @@ export async function getServerSideProps({ params, req }) {
         treatments,
         biosampleTerm,
         diseaseTerms,
+        pooledFrom,
+        partOf,
         pageContext: {
           title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
             sample.accession
