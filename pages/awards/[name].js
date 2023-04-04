@@ -115,12 +115,15 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const award = await request.getObject(`/awards/${params.name}/`);
   if (FetchRequest.isResponseSuccess(award)) {
-    const pis = award.pis
-      ? await request.getMultipleObjects(award.pis, null, {
-          filterErrors: true,
-        })
-      : [];
-    const contactPi = await request.getObject(award.contact_pi, null);
+    const pis =
+      award.pis?.length > 0
+        ? await request.getMultipleObjects(award.pis, null, {
+            filterErrors: true,
+          })
+        : [];
+    const contactPi = award.contact_pi
+      ? await request.getObject(award.contact_pi, null)
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       award,
       "name",
