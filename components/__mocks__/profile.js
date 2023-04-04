@@ -216,6 +216,81 @@ const profiles = {
         type: "string",
         notSubmittable: true,
       },
+      number_array: {
+        title: "Number Array",
+        description: "An array of numbers only for Jest testing.",
+        type: "array",
+        items: {
+          type: "number",
+        },
+      },
+      object_array: {
+        title: "Object Array",
+        description: "An array of unknown objects for Jest testing",
+        type: "array",
+        items: {
+          title: "Object Array Items",
+          type: "object",
+          properties: {
+            object: {
+              title: "Object Array Item",
+              type: "string",
+            },
+          },
+        },
+      },
+      simple_array: {
+        title: "Simple array",
+        description: "A simple array used for empty-array Jest testing",
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
+      om: {
+        title: "Office Managers",
+        description: "Non-real office manager property for Jest testing.",
+        comment: "See user.json for available identifiers.",
+        type: "array",
+        uniqueItems: true,
+        items: {
+          title: "Manager",
+          description: "User object of the office manager.",
+          type: "string",
+          linkTo: "User",
+        },
+      },
+      studied_by: {
+        title: "Studied By",
+        description: "Non-real studied-by property for Jest testing.",
+        comment: "See user.json for available identifiers.",
+        type: "array",
+        uniqueItems: true,
+        items: {
+          title: "Student",
+          description: "User object of the student.",
+          type: "string",
+          linkTo: "User",
+        },
+      },
+      proposed_by: {
+        "rdfs:subPropertyOf": "dc:creator",
+        title: "Proposed By",
+        comment: "Non-existing property just used for Jest testing",
+        type: "string",
+        linkTo: "User",
+        serverDefault: "userid",
+        permission: "import_items",
+      },
+      verified_by: {
+        "rdfs:subPropertyOf": "dc:creator",
+        title: "Verified By",
+        comment: "Non-existing property just used for Jest testing",
+        type: "string",
+        linkTo: "User",
+        serverDefault: "userid",
+        permission: "import_items",
+      },
     },
     boost_values: {
       name: 1,
