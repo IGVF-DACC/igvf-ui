@@ -112,8 +112,8 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const document = await request.getObject(`/documents/${params.id}/`);
   if (FetchRequest.isResponseSuccess(document)) {
-    const award = await request.getObject(document.award, null);
-    const lab = await request.getObject(document.lab, null);
+    const award = await request.getObject(document.award["@id"], null);
+    const lab = await request.getObject(document.lab["@id"], null);
     const breadcrumbs = await buildBreadcrumbs(
       document,
       "description",

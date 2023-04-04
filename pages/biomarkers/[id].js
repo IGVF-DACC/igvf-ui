@@ -93,8 +93,8 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const biomarker = await request.getObject(`/biomarkers/${params.id}/`);
   if (FetchRequest.isResponseSuccess(biomarker)) {
-    const award = await request.getObject(biomarker.award, null);
-    const lab = await request.getObject(biomarker.lab, null);
+    const award = await request.getObject(biomarker.award["@id"], null);
+    const lab = await request.getObject(biomarker.lab["@id"], null);
     const gene = await request.getObject(biomarker.gene, null);
     const breadcrumbs = await buildBreadcrumbs(
       biomarker,

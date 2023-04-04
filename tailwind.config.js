@@ -51,6 +51,11 @@ module.exports = {
           "var(--color-button-warning-background-disabled)",
         "button-selected-disabled":
           "var(--color-button-selected-background-disabled)",
+
+        "facet-group-button": "var(--color-facet-group-button-background)",
+        "facet-group-button-selected":
+          "var(--color-facet-group-button-selected-background)",
+        "facet-title": "var(--color-facet-title-background)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
@@ -69,6 +74,10 @@ module.exports = {
           "var(--color-button-warning-border-disabled)",
         "button-selected-disabled":
           "var(--color-button-selected-border-disabled)",
+
+        "facet-group-button": "var(--color-facet-group-button-border)",
+        "facet-group-button-selected":
+          "var(--color-facet-group-button-selected-border)",
       },
       fontSize: {
         xxs: "0.7rem",
@@ -85,6 +94,11 @@ module.exports = {
           "var(--color-button-selected-label-disabled)",
         "form-element": "var(--color-form-element-label)",
         "form-element-disabled": "var(--color-form-element-label-disabled)",
+
+        "button-facet-group": "var(--color-button-facet-group-text)",
+        "button-facet-group-selected":
+          "var(--color-button-facet-group-selected-text)",
+        "facet-title": "var(--color-facet-title-text)",
       },
       boxShadow: {
         // Status badges

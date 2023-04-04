@@ -78,7 +78,7 @@ HumanDonor.propTypes = {
   lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Phenotypic Features of this donor with the feature turm embedded
+  // Phenotypic Features of this donor with the feature term embedded
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
   // Phenotype terms associated with the above features
   phenotypeTermsList: PropTypes.arrayOf(PropTypes.object),
@@ -88,13 +88,13 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/human-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
-    const award = await request.getObject(donor.award, null);
+    const award = await request.getObject(donor.award["@id"], null);
     const documents = donor.documents
       ? await request.getMultipleObjects(donor.documents, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(donor.lab, null);
+    const lab = await request.getObject(donor.lab["@id"], null);
     const parents = donor.parents
       ? await request.getMultipleObjects(donor.parents, null, {
           filterErrors: true,

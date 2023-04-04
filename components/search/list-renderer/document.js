@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function Document({ item: document, accessoryData }) {
+export default function Document({ item: document }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -21,9 +21,7 @@ export default function Document({ item: document, accessoryData }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{document.description}</SearchListItemTitle>
         <SearchListItemMeta>
-          {accessoryData && accessoryData[document.lab] && (
-            <div key="lab">{accessoryData[document.lab].title}</div>
-          )}
+          <div key="lab">{document.lab.title}</div>
           <div key="document_type">{document.document_type}</div>
         </SearchListItemMeta>
       </SearchListItemMain>
@@ -35,10 +33,4 @@ export default function Document({ item: document, accessoryData }) {
 Document.propTypes = {
   // Single document search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
-  // Accessory data to display for all search-result objects
-  accessoryData: PropTypes.object,
-};
-
-Document.getAccessoryDataPaths = (documents) => {
-  return documents.map((document) => document.lab).filter(Boolean);
 };

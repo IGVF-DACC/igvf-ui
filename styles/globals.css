@@ -72,6 +72,19 @@
   --color-button-warning-label-disabled: #d8d8d8;
   --color-button-selected-label-disabled: #b1bad3;
 
+  --color-facet-group-button-background: #f0e7ca;
+  --color-facet-group-button-selected-background: #bfa678;
+  --color-facet-group-button-border: #998868;
+  --color-facet-group-button-selected-border: #998868;
+  --color-facet-group-icon-background: #000000;
+  --color-facet-group-icon-stroke: #000000;
+  --color-facet-group-button-selected-text: #000000;
+  --color-facet-group-button-border: #d1d5db;
+  --color-facet-group-button-text: #000000;
+
+  --color-facet-title-background: #b2d0de;
+  --color-facet-title-text: #000000;
+
   --color-form-element-background: #ffffff;
   --color-form-element-border: #384977;
   --color-form-element-label: #000000;
@@ -102,7 +115,7 @@
   --color-document-tsv: #a50104;
 
   /** Modal borders */
-  --color-modal-border: #e5e7eb;
+  --color-modal-border: #cecfd3;
 
   /** Typography */
   --color-code-background: #e0e0e0;
@@ -145,6 +158,14 @@
   --color-button-secondary-label-disabled: #606060;
   --color-button-warning-label-disabled: #808080;
   --color-button-selected-label-disabled: #606060;
+
+  --color-facet-group-button-background: #524f45;
+  --color-facet-group-button-border: #998868;
+  --color-facet-group-button-text: #ffffff;
+  --color-facet-group-button-selected-text: #ffffff;
+
+  --color-facet-title-background: #536167;
+  --color-facet-title-text: #ffffff;
 
   --color-data-header-background: #192339;
 

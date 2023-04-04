@@ -92,7 +92,7 @@ function Header({
   if (Children.count(children) === 1) {
     const childrenArray = Children.toArray(children);
     const firstChildType = typeof childrenArray[0];
-    if (firstChildType === "string" || firstChildType === "number") {
+    if (firstChildType === "string") {
       // `children` comprises a single string or number, so wrap it in an <h2>.
       headerChildren = <h2 className="text-lg font-semibold">{children}</h2>;
     }

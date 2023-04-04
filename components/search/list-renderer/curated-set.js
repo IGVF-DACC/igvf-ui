@@ -11,8 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function CuratedSet({ item: curatedSet, accessoryData }) {
-  const lab = accessoryData?.[curatedSet.lab];
+export default function CuratedSet({ item: curatedSet }) {
   const summary = curatedSet.summary;
 
   return (
@@ -23,12 +22,10 @@ export default function CuratedSet({ item: curatedSet, accessoryData }) {
           {curatedSet.accession}
         </SearchListItemUniqueId>
         <SearchListItemTitle>Curated set</SearchListItemTitle>
-        {(summary || lab) && (
-          <SearchListItemMeta>
-            {lab && <div key="lab">{lab.title}</div>}
-            {summary && <div key="summary">{summary}</div>}
-          </SearchListItemMeta>
-        )}
+        <SearchListItemMeta>
+          <div key="lab">{curatedSet.lab.title}</div>
+          {summary && <div key="summary">{summary}</div>}
+        </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemStatus item={curatedSet} />
     </SearchListItemContent>
@@ -38,10 +35,4 @@ export default function CuratedSet({ item: curatedSet, accessoryData }) {
 CuratedSet.propTypes = {
   // Single curated set search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
-  // Accessory data to display for all search-result objects
-  accessoryData: PropTypes.object,
-};
-
-CuratedSet.getAccessoryDataPaths = (curatedSets) => {
-  return curatedSets.map((curatedSet) => curatedSet.lab);
 };

@@ -68,6 +68,24 @@ const Icon = {
       />
     </svg>
   ),
+  Filter: ({ className = null, testid = "icon-filter" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <g className="stroke-[1.5]">
+        <circle cx="10" cy="10" r="9.2" />
+        <g style={{ strokeLinecap: "round" }}>
+          <line x1="5.4" y1="8.1" x2="14.6" y2="8.1" />
+          <line x1="7" y1="10.6" x2="13" y2="10.6" />
+          <line x1="8.1" y1="13.2" x2="11.9" y2="13.2" />
+        </g>
+      </g>
+    </svg>
+  ),
   Gene: ({ className = null, testid = "icon-gene" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -191,6 +209,10 @@ Icon.Donor.propTypes = {
   testid: PropTypes.string,
 };
 Icon.FileSet.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Filter.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };

@@ -12,7 +12,6 @@ import {
 } from "./search-list-item";
 
 export default function Software({ item: software }) {
-  const lab = software.lab;
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -21,11 +20,9 @@ export default function Software({ item: software }) {
           {software.name}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{software.title}</SearchListItemTitle>
-        {lab && (
-          <SearchListItemMeta>
-            <div key="lab">{lab.title}</div>
-          </SearchListItemMeta>
-        )}
+        <SearchListItemMeta>
+          <div key="lab">{software.lab.title}</div>
+        </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemStatus item={software} />
     </SearchListItemContent>

@@ -9,11 +9,8 @@
 import _ from "lodash";
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useState } from "react";
 // components
-import { Button } from "../form-elements";
 import ChromosomeLocations from "../chromosome-locations";
-import Modal from "../modal";
 import SeparatedList from "../separated-list";
 // lib
 import { attachmentToServerHref } from "../../lib/attachment";
@@ -235,7 +232,7 @@ function PathArray({ id, source }) {
           return (
             <Link
               key={index}
-              href={path}
+              href={resolvedPath}
               className="my-2 block first:mt-0 last:mb-0"
             >
               {resolvedPath}
@@ -283,9 +280,6 @@ SimpleArray.propTypes = {
  * modal with the whole object's formatted JSON.
  */
 function UnknownObject({ id, source }) {
-  // True if the modal showing formatted JSON is open
-  const [isJsonModalOpen, setJsonModalOpen] = useState(false);
-
   const unknownObject = source[id];
   if (unknownObject) {
     const json = JSON.stringify(unknownObject);
@@ -294,27 +288,7 @@ function UnknownObject({ id, source }) {
         ? `${json.substring(0, MAX_CELL_JSON_LENGTH)}...`
         : json;
 
-    return (
-      <div data-testid="cell-type-unknown-object">
-        {displayJson}
-        <Button size="sm" onClick={() => setJsonModalOpen(true)}>
-          View JSON
-        </Button>
-        <Modal isOpen={isJsonModalOpen} onClose={() => setJsonModalOpen(false)}>
-          <Modal.Header onClose={() => setJsonModalOpen(false)}>
-            <div>
-              Formatted JSON for <pre className="inline font-bold">{id}</pre>{" "}
-              Property
-            </div>
-          </Modal.Header>
-          <Modal.Body>
-            <pre className="overflow-x-auto text-sm">
-              {JSON.stringify(unknownObject, null, 2)}
-            </pre>
-          </Modal.Body>
-        </Modal>
-      </div>
-    );
+    return <div data-testid="cell-type-unknown-object">{displayJson}</div>;
   }
   return null;
 }

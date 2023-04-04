@@ -118,13 +118,13 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const curatedSet = await request.getObject(`/curated-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(curatedSet)) {
-    const award = await request.getObject(curatedSet.award, null);
+    const award = await request.getObject(curatedSet.award["@id"], null);
     const documents = curatedSet.documents
       ? await request.getMultipleObjects(curatedSet.documents, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(curatedSet.lab, null);
+    const lab = await request.getObject(curatedSet.lab["@id"], null);
     const samples = curatedSet.samples
       ? await request.getMultipleObjects(curatedSet.samples, null, {
           filterErrors: true,

@@ -14,7 +14,7 @@ describe("Test the <Checkbox> component", () => {
     expect(label).toBeInTheDocument();
 
     const checkbox = screen.getByRole("checkbox");
-    expect(checkbox).toHaveAttribute("name", "checkbox-test");
+    expect(checkbox).toHaveAttribute("aria-label", "checkbox-test");
     expect(checkbox).not.toBeChecked();
 
     fireEvent.click(checkbox);

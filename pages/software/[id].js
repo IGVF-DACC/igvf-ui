@@ -20,7 +20,12 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 
-export default function Software({ software }) {
+export default function Software({
+  software,
+  versions,
+  award = null,
+  lab = null,
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -56,24 +61,39 @@ export default function Software({ software }) {
         {software.versions?.length > 0 && (
           <>
             <DataAreaTitle>Software Versions</DataAreaTitle>
-            <SoftwareVersionTable versions={software.versions} />
+            <SoftwareVersionTable versions={versions} />
           </>
         )}
 
-        <Attribution award={software.award} lab={software.lab} />
+        <Attribution award={award} lab={lab} />
       </EditableItem>
     </>
   );
 }
 
 Software.propTypes = {
+  // Software object to display
   software: PropTypes.object.isRequired,
+  // Software versions associated with this software
+  versions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Award object for this software
+  award: PropTypes.object,
+  // Lab that submitted this software
+  lab: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const software = await request.getObject(`/software/${params.id}/`);
   if (FetchRequest.isResponseSuccess(software)) {
+    const award = await request.getObject(software.award["@id"], null);
+    const lab = await request.getObject(software.lab["@id"], null);
+    const versions =
+      software.versions.length > 0
+        ? await request.getMultipleObjects(software.versions, null, {
+            filterErrors: true,
+          })
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       software,
       "name",
@@ -82,6 +102,9 @@ export async function getServerSideProps({ params, req }) {
     return {
       props: {
         software,
+        award,
+        lab,
+        versions,
         pageContext: { title: software.name },
         breadcrumbs,
       },

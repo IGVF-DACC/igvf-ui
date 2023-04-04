@@ -3,6 +3,8 @@ const { defineConfig } = require("cypress");
 module.exports = defineConfig({
   projectId: "3vpsct",
   defaultCommandTimeout: 30000,
+  viewportWidth: 1282,
+  viewportHeight: 800,
   watchForFileChanges: true,
   e2e: {
     // We've imported your old cypress plugins here.

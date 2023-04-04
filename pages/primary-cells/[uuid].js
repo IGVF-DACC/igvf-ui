@@ -113,15 +113,19 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(primaryCell)) {
-    const award = await request.getObject(primaryCell.award, null);
+    const award = await request.getObject(primaryCell.award["@id"], null);
     const biosampleTerm = primaryCell.biosample_term
-      ? await request.getObject(primaryCell.biosample_term, null)
+      ? await request.getObject(primaryCell.biosample_term["@id"], null)
       : null;
-    const diseaseTerms = primaryCell.disease_terms
-      ? await request.getMultipleObjects(primaryCell.disease_terms, null, {
-          filterErrors: true,
-        })
-      : [];
+    let diseaseTerms = [];
+    if (primaryCell.disease_terms?.length > 0) {
+      const diseaseTermPaths = primaryCell.disease_terms.map(
+        (diseaseTerm) => diseaseTerm["@id"]
+      );
+      diseaseTerms = await request.getMultipleObjects(diseaseTermPaths, null, {
+        filterErrors: true,
+      });
+    }
     const documents = primaryCell.documents
       ? await request.getMultipleObjects(primaryCell.documents, null, {
           filterErrors: true,
@@ -132,8 +136,8 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(primaryCell.lab, null);
-    const source = await request.getObject(primaryCell.source, null);
+    const lab = await request.getObject(primaryCell.lab["@id"], null);
+    const source = await request.getObject(primaryCell.source["@id"], null);
     const treatments = primaryCell.treatments
       ? await request.getMultipleObjects(primaryCell.treatments, null, {
           filterErrors: true,

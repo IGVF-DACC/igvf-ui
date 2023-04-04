@@ -106,15 +106,19 @@ export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sample = await request.getObject(`/whole-organisms/${params.id}/`);
   if (FetchRequest.isResponseSuccess(sample)) {
-    const award = await request.getObject(sample.award, null);
+    const award = await request.getObject(sample.award["@id"], null);
     const biosampleTerm = sample.biosample_term
-      ? await request.getObject(sample.biosample_term, null)
+      ? await request.getObject(sample.biosample_term["@id"], null)
       : null;
-    const diseaseTerms = sample.disease_terms
-      ? await request.getMultipleObjects(sample.disease_terms, null, {
-          filterErrors: true,
-        })
-      : [];
+    let diseaseTerms = [];
+    if (sample.disease_terms?.length > 0) {
+      const diseaseTermPaths = sample.disease_terms.map(
+        (diseaseTerm) => diseaseTerm["@id"]
+      );
+      diseaseTerms = await request.getMultipleObjects(diseaseTermPaths, null, {
+        filterErrors: true,
+      });
+    }
     const documents = sample.documents
       ? await request.getMultipleObjects(sample.documents, null, {
           filterErrors: true,
@@ -125,13 +129,17 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(sample.lab, null);
-    const source = await request.getObject(sample.source, null);
-    const treatments = sample.treatments
-      ? await request.getMultipleObjects(sample.treatments, null, {
-          filterErrors: true,
-        })
-      : [];
+    const lab = await request.getObject(sample.lab["@id"], null);
+    const source = await request.getObject(sample.source["@id"], null);
+    let treatments = [];
+    if (sample.treatments?.length > 0) {
+      const treatmentPaths = sample.treatments.map(
+        (treatment) => treatment["@id"]
+      );
+      treatments = await request.getMultipleObjects(treatmentPaths, null, {
+        filterErrors: true,
+      });
+    }
     const pooledFrom =
       sample.pooled_from?.length > 0
         ? await request.getMultipleObjects(sample.pooled_from, null, {
