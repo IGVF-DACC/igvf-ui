@@ -20,19 +20,19 @@ import { EditableItem } from "../../components/edit";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import buildAttribution from "../../lib/attribution";
 
 export default function Tissue({
   tissue,
   donors,
-  award = null,
   documents,
-  lab = null,
   source = null,
   treatments,
   biosampleTerm = null,
   diseaseTerms,
   pooledFrom,
   partOf,
+  attribution,
 }) {
   return (
     <>
@@ -95,7 +95,7 @@ export default function Tissue({
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -104,14 +104,10 @@ export default function Tissue({
 Tissue.propTypes = {
   // Tissue sample to display
   tissue: PropTypes.object.isRequired,
-  // Award applied to this sample
-  award: PropTypes.object,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this sample
-  lab: PropTypes.object,
   // Source lab or source for this sample
   source: PropTypes.object,
   // Treatments associated with the sample
@@ -124,13 +120,14 @@ Tissue.propTypes = {
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
+  // Attribution for this sample
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(tissue)) {
-    const award = await request.getObject(tissue.award["@id"], null);
     const biosampleTerm = tissue.biosample_term
       ? await request.getObject(tissue.biosample_term["@id"], null)
       : null;
@@ -153,8 +150,7 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(tissue.lab["@id"], null);
-    const source = await request.getObject(tissue.source["@id"], null);
+    const source = await request.getObject(tissue.source, null);
     const treatments = tissue.treatments
       ? await request.getMultipleObjects(tissue.treatments, null, {
           filterErrors: true,
@@ -174,13 +170,12 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(tissue, req.headers.cookie);
     return {
       props: {
         tissue,
-        award,
         documents,
         donors,
-        lab,
         source,
         treatments,
         biosampleTerm,
@@ -191,6 +186,7 @@ export async function getServerSideProps({ params, req }) {
           title: `${tissue.biosample_term.term_name} — ${tissue.accession}`,
         },
         breadcrumbs,
+        attribution,
       },
     };
   }

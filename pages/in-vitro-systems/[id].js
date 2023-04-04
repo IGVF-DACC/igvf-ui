@@ -20,19 +20,19 @@ import { EditableItem } from "../../components/edit";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import buildAttribution from "../../lib/attribution";
 
 export default function InVitroSystem({
   inVitroSystem,
-  award = null,
   biosampleTerm = null,
   diseaseTerms,
   documents,
   donors,
-  lab = null,
   source = null,
   treatments,
   pooledFrom,
   partOf,
+  attribution,
 }) {
   return (
     <>
@@ -80,7 +80,7 @@ export default function InVitroSystem({
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -89,8 +89,6 @@ export default function InVitroSystem({
 InVitroSystem.propTypes = {
   // In Vitro System sample to display
   inVitroSystem: PropTypes.object.isRequired,
-  // Award applied to this sample
-  award: PropTypes.object,
   // Biosample ontology for this sample
   biosampleTerm: PropTypes.object,
   // Disease ontology for this sample
@@ -99,8 +97,6 @@ InVitroSystem.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this sample
-  lab: PropTypes.object,
   // Source lab or source for this sample
   source: PropTypes.object,
   // Treatments associated with the sample
@@ -109,6 +105,8 @@ InVitroSystem.propTypes = {
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
+  // Attribution for this sample
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -117,7 +115,6 @@ export async function getServerSideProps({ params, req }) {
     `/in-vitro-systems/${params.id}/`
   );
   if (FetchRequest.isResponseSuccess(inVitroSystem)) {
-    const award = await request.getObject(inVitroSystem.award["@id"], null);
     const biosampleTerm = inVitroSystem.biosample_term
       ? await request.getObject(inVitroSystem.biosample_term["@id"], null)
       : null;
@@ -140,7 +137,6 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(inVitroSystem.lab["@id"], null);
     const source = await request.getObject(inVitroSystem.source["@id"], null);
     let treatments = [];
     if (inVitroSystem.treatments) {
@@ -165,15 +161,17 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(
+      inVitroSystem,
+      req.headers.cookie
+    );
     return {
       props: {
         inVitroSystem,
-        award,
         biosampleTerm,
         diseaseTerms,
         documents,
         donors,
-        lab,
         source,
         treatments,
         pooledFrom,
@@ -184,6 +182,7 @@ export async function getServerSideProps({ params, req }) {
           }`,
         },
         breadcrumbs,
+        attribution,
       },
     };
   }

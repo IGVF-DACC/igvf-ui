@@ -20,19 +20,19 @@ import { EditableItem } from "../../components/edit";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import buildAttribution from "../../lib/attribution";
 
 export default function PrimaryCell({
   primaryCell,
-  award = null,
   biosampleTerm = null,
   diseaseTerms,
   documents,
   donors,
-  lab = null,
   source = null,
   treatments,
   pooledFrom,
   partOf,
+  attribution,
 }) {
   return (
     <>
@@ -78,7 +78,7 @@ export default function PrimaryCell({
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -87,8 +87,6 @@ export default function PrimaryCell({
 PrimaryCell.propTypes = {
   // Primary-cell sample to display
   primaryCell: PropTypes.object.isRequired,
-  // Award applied to this sample
-  award: PropTypes.object,
   // Biosample ontology for this sample
   biosampleTerm: PropTypes.object,
   // Disease ontology for this sample
@@ -97,8 +95,6 @@ PrimaryCell.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this sample
-  lab: PropTypes.object,
   // Source lab or source for this sample
   source: PropTypes.object,
   // Treatments associated with the sample
@@ -107,13 +103,14 @@ PrimaryCell.propTypes = {
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
+  // Attribution for this sample
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(primaryCell)) {
-    const award = await request.getObject(primaryCell.award["@id"], null);
     const biosampleTerm = primaryCell.biosample_term
       ? await request.getObject(primaryCell.biosample_term["@id"], null)
       : null;
@@ -136,7 +133,6 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(primaryCell.lab["@id"], null);
     const source = await request.getObject(primaryCell.source["@id"], null);
     const treatments = primaryCell.treatments
       ? await request.getMultipleObjects(primaryCell.treatments, null, {
@@ -157,15 +153,14 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(primaryCell, req.headers.cookie);
     return {
       props: {
         primaryCell,
-        award,
         biosampleTerm,
         diseaseTerms,
         documents,
         donors,
-        lab,
         source,
         treatments,
         pooledFrom,
@@ -176,6 +171,7 @@ export async function getServerSideProps({ params, req }) {
           }`,
         },
         breadcrumbs,
+        attribution,
       },
     };
   }

@@ -19,8 +19,9 @@ import Status from "../../components/status";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import buildAttribution from "../../lib/attribution";
 
-export default function Publication({ publication, award = null, lab = null }) {
+export default function Publication({ publication, attribution }) {
   return (
     <>
       <Breadcrumbs />
@@ -94,7 +95,7 @@ export default function Publication({ publication, award = null, lab = null }) {
             )}
           </DataArea>
         </DataPanel>
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -103,30 +104,26 @@ export default function Publication({ publication, award = null, lab = null }) {
 Publication.propTypes = {
   // Publication object to display
   publication: PropTypes.object.isRequired,
-  // Award applied to this publication
-  award: PropTypes.object,
-  // Lab that submitted this publication
-  lab: PropTypes.object,
+  // Attribution for this publication
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const publication = await request.getObject(`/publications/${params.id}/`);
   if (FetchRequest.isResponseSuccess(publication)) {
-    const award = await request.getObject(publication.award["@id"], null);
-    const lab = await request.getObject(publication.lab["@id"], null);
     const breadcrumbs = await buildBreadcrumbs(
       publication,
       "title",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(publication, req.headers.cookie);
     return {
       props: {
         publication,
-        award,
-        lab,
         pageContext: { title: publication.title },
         breadcrumbs,
+        attribution,
       },
     };
   }

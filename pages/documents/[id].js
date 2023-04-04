@@ -19,8 +19,9 @@ import Status from "../../components/status";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import buildAttribution from "../../lib/attribution";
 
-export default function Document({ document, award = null, lab = null }) {
+export default function Document({ document, attribution }) {
   return (
     <>
       <Breadcrumbs />
@@ -93,7 +94,7 @@ export default function Document({ document, award = null, lab = null }) {
             </DataItemValue>
           </DataArea>
         </DataPanel>
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -102,30 +103,26 @@ export default function Document({ document, award = null, lab = null }) {
 Document.propTypes = {
   // Document object to display
   document: PropTypes.object.isRequired,
-  // Award applied to this technical sample
-  award: PropTypes.object,
-  // Lab that submitted this technical sample
-  lab: PropTypes.object,
+  // Attribution for this document
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const document = await request.getObject(`/documents/${params.id}/`);
   if (FetchRequest.isResponseSuccess(document)) {
-    const award = await request.getObject(document.award["@id"], null);
-    const lab = await request.getObject(document.lab["@id"], null);
     const breadcrumbs = await buildBreadcrumbs(
       document,
       "description",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(document, req.headers.cookie);
     return {
       props: {
         document,
-        award,
-        lab,
         pageContext: { title: document.description },
         breadcrumbs,
+        attribution,
       },
     };
   }

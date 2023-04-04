@@ -19,14 +19,14 @@ import FetchRequest from "../../lib/fetch-request";
 import { DataAreaTitle } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { FileDataItems } from "../../components/common-data-items";
+import buildAttribution from "../../lib/attribution";
 
 export default function SequenceData({
   sequenceData,
-  award = null,
-  lab = null,
   fileSet,
   documents,
   derivedFrom,
+  attribution,
 }) {
   return (
     <>
@@ -67,7 +67,7 @@ export default function SequenceData({
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -76,24 +76,20 @@ export default function SequenceData({
 SequenceData.propTypes = {
   // SequenceData object to display
   sequenceData: PropTypes.object.isRequired,
-  // Award applied to this file
-  award: PropTypes.object,
-  // Lab that submitted this file
-  lab: PropTypes.object,
   // File set that contains this file
   fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
+  // Attribution for this file
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sequenceData = await request.getObject(`/sequence-data/${params.id}/`);
   if (FetchRequest.isResponseSuccess(sequenceData)) {
-    const award = await request.getObject(sequenceData.award["@id"], null);
-    const lab = await request.getObject(sequenceData.lab["@id"], null);
     const fileSet = await request.getObject(sequenceData.file_set, null);
     const documents = sequenceData.documents
       ? await request.getMultipleObjects(sequenceData.documents, null, {
@@ -110,16 +106,19 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(
+      sequenceData,
+      req.headers.cookie
+    );
     return {
       props: {
         sequenceData,
-        award,
-        lab,
         fileSet,
         documents,
         derivedFrom,
         pageContext: { title: sequenceData.accession },
         breadcrumbs,
+        attribution,
       },
     };
   }

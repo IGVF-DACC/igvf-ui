@@ -19,13 +19,9 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
+import buildAttribution from "../../lib/attribution";
 
-export default function Software({
-  software,
-  versions,
-  award = null,
-  lab = null,
-}) {
+export default function Software({ software, versions, attribution }) {
   return (
     <>
       <Breadcrumbs />
@@ -64,8 +60,7 @@ export default function Software({
             <SoftwareVersionTable versions={versions} />
           </>
         )}
-
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -76,10 +71,8 @@ Software.propTypes = {
   software: PropTypes.object.isRequired,
   // Software versions associated with this software
   versions: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Award object for this software
-  award: PropTypes.object,
-  // Lab that submitted this software
-  lab: PropTypes.object,
+  // Attribution for this software
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -99,6 +92,7 @@ export async function getServerSideProps({ params, req }) {
       "name",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(software, req.headers.cookie);
     return {
       props: {
         software,
@@ -107,6 +101,7 @@ export async function getServerSideProps({ params, req }) {
         versions,
         pageContext: { title: software.name },
         breadcrumbs,
+        attribution,
       },
     };
   }

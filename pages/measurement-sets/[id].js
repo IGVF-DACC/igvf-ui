@@ -21,15 +21,15 @@ import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import SeparatedList from "../../components/separated-list";
 import Link from "next/link";
+import buildAttribution from "../../lib/attribution";
 
 export default function MeasurementSet({
   measurementSet,
-  award = null,
   assayTerm = null,
   documents,
   donors,
-  lab = null,
   samples,
+  attribution,
 }) {
   return (
     <>
@@ -106,7 +106,7 @@ export default function MeasurementSet({
           </>
         )}
 
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -121,12 +121,10 @@ MeasurementSet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Award applied to this measurement set
-  award: PropTypes.object,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this measurement set
-  lab: PropTypes.object,
+  // Attribution for this measurement set
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -135,7 +133,6 @@ export async function getServerSideProps({ params, req }) {
     `/measurement-sets/${params.id}/`
   );
   if (FetchRequest.isResponseSuccess(measurementSet)) {
-    const award = await request.getObject(measurementSet.award["@id"], null);
     const assayTerm = await request.getObject(
       measurementSet.assay_term["@id"],
       null
@@ -145,7 +142,6 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(measurementSet.lab, null);
     const samples = measurementSet.samples
       ? await request.getMultipleObjects(measurementSet.samples, null, {
           filterErrors: true,
@@ -163,17 +159,20 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(
+      measurementSet,
+      req.headers.cookie
+    );
     return {
       props: {
         measurementSet,
-        award,
         assayTerm,
         documents,
         donors,
-        lab,
         samples,
         pageContext: { title: measurementSet.accession },
         breadcrumbs,
+        attribution,
       },
     };
   }

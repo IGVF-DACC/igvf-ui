@@ -21,15 +21,15 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
+import buildAttribution from "../../lib/attribution";
 
 export default function HumanDonor({
   donor,
-  award = null,
   documents,
-  lab = null,
   parents,
   phenotypicFeatures,
   phenotypeTermsList,
+  attribution,
 }) {
   return (
     <>
@@ -61,7 +61,7 @@ export default function HumanDonor({
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} collections={donor.collections} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -70,31 +70,27 @@ export default function HumanDonor({
 HumanDonor.propTypes = {
   // Human donor to display
   donor: PropTypes.object.isRequired,
-  // Award applied to this human donor
-  award: PropTypes.object,
   // Documents associated with human donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this human donor
-  lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Phenotypic Features of this donor with the feature term embedded
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
   // Phenotype terms associated with the above features
   phenotypeTermsList: PropTypes.arrayOf(PropTypes.object),
+  // HumanDonor attribution
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/human-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
-    const award = await request.getObject(donor.award["@id"], null);
     const documents = donor.documents
       ? await request.getMultipleObjects(donor.documents, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(donor.lab["@id"], null);
     const parents = donor.parents
       ? await request.getMultipleObjects(donor.parents, null, {
           filterErrors: true,
@@ -113,23 +109,22 @@ export async function getServerSideProps({ params, req }) {
             ),
           ])
         : [];
-
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(donor, req.headers.cookie);
     return {
       props: {
         donor,
-        award,
         documents,
-        lab,
         parents,
         pageContext: { title: donor.accession },
         phenotypicFeatures,
         phenotypeTermsList,
         breadcrumbs,
+        attribution,
       },
     };
   }
