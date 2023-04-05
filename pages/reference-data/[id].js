@@ -27,7 +27,7 @@ export default function ReferenceData({
   fileSet,
   documents,
   derivedFrom,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

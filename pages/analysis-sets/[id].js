@@ -29,7 +29,7 @@ export default function AnalysisSet({
   inputFileSets,
   donors,
   samples,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

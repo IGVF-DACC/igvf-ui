@@ -32,7 +32,7 @@ export default function InVitroSystem({
   treatments,
   pooledFrom,
   partOf,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

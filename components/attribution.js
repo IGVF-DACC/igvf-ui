@@ -15,7 +15,7 @@ import SeparatedList from "./separated-list";
  * Displays the attribution properties of an item in its own data panel, typically from a data
  * object with a defined schema.
  */
-export default function Attribution({ attribution }) {
+export default function Attribution({ attribution = null }) {
   if (attribution && Object.keys(attribution).length > 0) {
     return (
       <>

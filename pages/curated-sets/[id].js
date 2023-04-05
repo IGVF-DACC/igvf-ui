@@ -28,7 +28,7 @@ export default function CuratedSet({
   documents,
   donors,
   samples,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

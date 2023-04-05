@@ -26,7 +26,7 @@ export default function SequenceData({
   fileSet,
   documents,
   derivedFrom,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

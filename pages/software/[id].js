@@ -21,7 +21,7 @@ import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 
-export default function Software({ software, versions, attribution }) {
+export default function Software({ software, versions, attribution = null }) {
   return (
     <>
       <Breadcrumbs />

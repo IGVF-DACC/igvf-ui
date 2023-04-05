@@ -32,7 +32,7 @@ export default function Tissue({
   diseaseTerms,
   pooledFrom,
   partOf,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

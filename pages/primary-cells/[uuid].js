@@ -32,7 +32,7 @@ export default function PrimaryCell({
   treatments,
   pooledFrom,
   partOf,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

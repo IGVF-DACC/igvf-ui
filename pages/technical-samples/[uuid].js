@@ -23,7 +23,11 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
 
-export default function TechnicalSample({ sample, documents, attribution }) {
+export default function TechnicalSample({
+  sample,
+  documents,
+  attribution = null,
+}) {
   return (
     <>
       <Breadcrumbs />

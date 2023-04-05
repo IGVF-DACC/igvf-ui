@@ -32,7 +32,7 @@ export default function WholeOrganism({
   diseaseTerms,
   pooledFrom,
   partOf,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

@@ -21,7 +21,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
 
-export default function Document({ document, attribution }) {
+export default function Document({ document, attribution = null }) {
   return (
     <>
       <Breadcrumbs />

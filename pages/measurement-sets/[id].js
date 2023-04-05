@@ -29,7 +29,7 @@ export default function MeasurementSet({
   documents,
   donors,
   samples,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

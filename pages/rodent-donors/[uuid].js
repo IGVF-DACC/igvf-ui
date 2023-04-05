@@ -26,7 +26,7 @@ export default function RodentDonor({
   donor,
   documents,
   parents,
-  attribution,
+  attribution = null,
 }) {
   return (
     <>

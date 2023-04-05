@@ -20,7 +20,7 @@ import FetchRequest from "../../lib/fetch-request";
 import { getBiomarkerTitle } from "../../lib/biomarker";
 import buildAttribution from "../../lib/attribution";
 
-export default function Biomarker({ biomarker, gene, attribution }) {
+export default function Biomarker({ biomarker, gene, attribution = null }) {
   return (
     <>
       <Breadcrumbs />
