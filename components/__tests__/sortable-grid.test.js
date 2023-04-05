@@ -72,7 +72,7 @@ describe("SortableGrid", () => {
       </DataGridContainer>
     );
 
-    let table = screen.getByRole("table");
+    const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
 
     const headers = within(table).getAllByRole("columnheader");

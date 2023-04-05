@@ -61,7 +61,7 @@ AnalysisSet.propTypes = {
 };
 
 AnalysisSet.getAccessoryDataPaths = (analysisSets) => {
-  let fileSets = analysisSets
+  const fileSets = analysisSets
     .map((analysisSet) => analysisSet.input_file_sets)
     .filter(Boolean);
   return fileSets.flat();
