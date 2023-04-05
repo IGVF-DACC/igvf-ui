@@ -656,6 +656,7 @@ describe("Test the RodentDonor component", () => {
       strain: "some name",
       taxa: "Mus musculus",
       uuid: "c37934b0-4269-4470-be53-9eac7b196447",
+      collections: ["ENCODE"],
     };
 
     render(
@@ -673,6 +674,7 @@ describe("Test the RodentDonor component", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("ENCODE");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");

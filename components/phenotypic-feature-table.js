@@ -9,10 +9,14 @@ const phenotypicFeaturesColumns = [
   {
     id: "phenotypic_feature_id",
     title: "Phenotypic Feature",
-    display: ({ source }) => {
+    display: (source, meta) => {
+      const terms = meta.phenotypeTermsList;
+      const featureTerm = terms.find(
+        (term) => term["@id"] == source.source.feature
+      );
       return (
-        <Link href={source["@id"]}>
-          {source.notes ? source.notes : source["@id"]}
+        <Link href={source.source["@id"]}>
+          {featureTerm ? featureTerm.term_name : source.source["@id"]}
         </Link>
       );
     },
