@@ -41,7 +41,7 @@ export default function Award({ award, pis, contactPi }) {
             )}
             {pis.length > 0 && (
               <>
-                <DataItemLabel>Principal Investigator</DataItemLabel>
+                <DataItemLabel>Principal Investigator(s)</DataItemLabel>
                 <DataItemValue>
                   <SeparatedList>
                     {pis.map((pi) => (
