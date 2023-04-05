@@ -213,6 +213,9 @@ describe("Test Award component", () => {
 
     const status = screen.getByTestId("search-list-item-status");
     expect(status).toHaveTextContent("current");
+
+    const paths = Award.getAccessoryDataPaths([item]);
+    expect(paths).toEqual(["/users/04e6e85d-3737-454e-8a3b-6f8cb2317f00/"]);
   });
 });
 

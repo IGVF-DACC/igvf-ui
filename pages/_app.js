@@ -1,6 +1,6 @@
 // node_modules
 import { Auth0Provider } from "@auth0/auth0-react";
-import Error from "next/error";
+import Error from "../components/error";
 import Head from "next/head";
 import Script from "next/script";
 import PropTypes from "prop-types";

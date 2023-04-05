@@ -1,17 +1,14 @@
 // components
-import { DataPanel } from "../components/data-area";
-import PagePreamble from "../components/page-preamble";
+import Error from "../components/error";
 
+/**
+ * Display an authentication error page.
+ */
 export default function AuthError() {
   return (
-    <>
-      <PagePreamble pageTitle="Error" />
-      <DataPanel>
-        <div className="text-center text-xl italic">
-          Unable to sign in. You can still explore the site without viewing
-          unreleased data.
-        </div>
-      </DataPanel>
-    </>
+    <Error
+      statusCode="AUTHENTICATION"
+      title="Unable to sign in. You can still explore the site without viewing unreleased data."
+    />
   );
 }
