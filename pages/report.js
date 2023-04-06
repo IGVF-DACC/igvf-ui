@@ -207,7 +207,6 @@ export default function Report({ searchResults }) {
                   onAllColumnsVisibilityChange,
                 }}
               />
-              <div>after search results header</div>
               <SearchResultsCount count={searchResults.total} />
               <ScrollIndicators gridRef={gridRef}>
                 <DataGridContainer ref={gridRef}>

@@ -39,7 +39,7 @@ export default function SearchResultsHeader({
           <ItemsPerPageSelector />
         </div>
       </div>
-      <div>
+      <div className="mb-1">
         {totalPages > 1 && <SearchPager searchResults={searchResults} />}
       </div>
     </>
