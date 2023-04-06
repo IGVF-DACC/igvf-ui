@@ -43,7 +43,7 @@ describe("Test cell renderers in search results", () => {
               "@id": "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/",
               "@type": ["User", "Item"],
             },
-            pi: [
+            pis: [
               "/users/bb7f009f-8541-4066-ab7e-acbcf587e9f5/",
               "/users/84b1815e-2d39-4396-91ff-2ae3043d06db/",
             ],
@@ -103,7 +103,7 @@ describe("Test cell renderers in search results", () => {
           studied_by: {
             title: "Studied By",
           },
-          pi: {
+          pis: {
             title: "P.I.",
           },
           om: {
