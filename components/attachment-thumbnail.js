@@ -537,7 +537,7 @@ export default function AttachmentThumbnail({
   alt,
   size = DEFAULT_SIZE,
 }) {
-  let thumbnailIcon =
+  const thumbnailIcon =
     thumbnailIconMap[attachment.type] || thumbnailIcons.default;
   if (thumbnailIcon === "image") {
     return (

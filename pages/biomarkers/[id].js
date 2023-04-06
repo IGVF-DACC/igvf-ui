@@ -18,13 +18,9 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { getBiomarkerTitle } from "../../lib/biomarker";
+import buildAttribution from "../../lib/attribution";
 
-export default function Biomarker({
-  biomarker,
-  award = null,
-  lab = null,
-  gene,
-}) {
+export default function Biomarker({ biomarker, gene, attribution = null }) {
   return (
     <>
       <Breadcrumbs />
@@ -72,7 +68,7 @@ export default function Biomarker({
             )}
           </DataArea>
         </DataPanel>
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -81,35 +77,31 @@ export default function Biomarker({
 Biomarker.propTypes = {
   // Biomarker object to display
   biomarker: PropTypes.object.isRequired,
-  // Award applied to this biomarker
-  award: PropTypes.object,
-  // Lab that submitted this biomarker
-  lab: PropTypes.object,
   // Gene that submitted this biomarker
   gene: PropTypes.object,
+  // Attribution for this biomarker
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const biomarker = await request.getObject(`/biomarkers/${params.id}/`);
   if (FetchRequest.isResponseSuccess(biomarker)) {
-    const award = await request.getObject(biomarker.award["@id"], null);
-    const lab = await request.getObject(biomarker.lab["@id"], null);
     const gene = await request.getObject(biomarker.gene, null);
     const breadcrumbs = await buildBreadcrumbs(
       biomarker,
       "name",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(biomarker, req.headers.cookie);
     const title = getBiomarkerTitle(biomarker);
     return {
       props: {
         biomarker,
-        award,
-        lab,
         gene,
         pageContext: { title },
         breadcrumbs,
+        attribution,
       },
     };
   }

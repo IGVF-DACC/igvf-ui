@@ -216,7 +216,7 @@ describe("Test <FacetSection> component", () => {
     expect(facetTitle).toBeInTheDocument();
 
     // Make sure the first facet has the correct terms.
-    let terms = within(facetSections[0]).getAllByTestId(/^facetterm-/);
+    const terms = within(facetSections[0]).getAllByTestId(/^facetterm-/);
     expect(terms).toHaveLength(2);
     expect(terms[0]).toHaveTextContent(/^Massively parallel reporter assay/);
     expect(terms[0]).toHaveTextContent(/2$/);

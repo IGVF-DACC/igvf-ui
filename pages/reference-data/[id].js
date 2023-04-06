@@ -20,14 +20,14 @@ import FetchRequest from "../../lib/fetch-request";
 import { DataAreaTitle } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { FileDataItems } from "../../components/common-data-items";
+import buildAttribution from "../../lib/attribution";
 
 export default function ReferenceData({
   referenceData,
-  award = null,
-  lab = null,
   fileSet,
   documents,
   derivedFrom,
+  attribution = null,
 }) {
   return (
     <>
@@ -73,7 +73,7 @@ export default function ReferenceData({
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -82,16 +82,14 @@ export default function ReferenceData({
 ReferenceData.propTypes = {
   // ReferenceData object to display
   referenceData: PropTypes.object.isRequired,
-  // Award applied to this file
-  award: PropTypes.object,
-  // Lab that submitted this file
-  lab: PropTypes.object,
   // File set that contains this file
   fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
+  // Attribution for this ReferenceData
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -100,8 +98,6 @@ export async function getServerSideProps({ params, req }) {
     `/reference-data/${params.id}/`
   );
   if (FetchRequest.isResponseSuccess(referenceData)) {
-    const award = await request.getObject(referenceData.award["@id"], null);
-    const lab = await request.getObject(referenceData.lab["@id"], null);
     const fileSet = await request.getObject(referenceData.file_set, null);
     const documents = referenceData.documents
       ? await request.getMultipleObjects(referenceData.documents, null, {
@@ -118,16 +114,19 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(
+      referenceData,
+      req.headers.cookie
+    );
     return {
       props: {
         referenceData,
-        award,
-        lab,
         fileSet,
         documents,
         derivedFrom,
         pageContext: { title: referenceData.accession },
         breadcrumbs,
+        attribution,
       },
     };
   }

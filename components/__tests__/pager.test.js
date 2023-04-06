@@ -7,7 +7,7 @@ describe("Test the pager component in different conditions", () => {
     render(<Pager currentPage={1} totalPages={9} onClick={onClick} />);
 
     // Test conditions for current page 1
-    let pagerElements = screen.getAllByRole("button");
+    const pagerElements = screen.getAllByRole("button");
     expect(pagerElements).toHaveLength(11);
     expect(pagerElements[0]).toHaveAttribute("disabled");
     expect(pagerElements[1].textContent).toBe("1");

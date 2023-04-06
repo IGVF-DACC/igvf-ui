@@ -20,13 +20,13 @@ import { EditableItem } from "../../components/edit";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import buildAttribution from "../../lib/attribution";
 
 export default function RodentDonor({
   donor,
-  award = null,
   documents,
-  lab = null,
   parents,
+  attribution = null,
 }) {
   return (
     <>
@@ -64,7 +64,7 @@ export default function RodentDonor({
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -73,27 +73,23 @@ export default function RodentDonor({
 RodentDonor.propTypes = {
   // Rodent donor to display
   donor: PropTypes.object.isRequired,
-  // Award applied to this rodent donor
-  award: PropTypes.object,
   // Documents associated with the rodent donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this technical rodent donor
-  lab: PropTypes.object,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Attribution for this donor
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/rodent-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
-    const award = await request.getObject(donor.award["@id"], null);
     const documents = donor.documents
       ? await request.getMultipleObjects(donor.documents, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(donor.lab["@id"], null);
     const parents = donor.parents
       ? await request.getMultipleObjects(donor.parents, null, {
           filterErrors: true,
@@ -104,15 +100,15 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(donor, req.headers.cookie);
     return {
       props: {
         donor,
-        award,
         documents,
-        lab,
         parents,
         pageContext: { title: donor.accession },
         breadcrumbs,
+        attribution,
       },
     };
   }

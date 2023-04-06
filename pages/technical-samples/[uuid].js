@@ -21,8 +21,13 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { formatDate } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import buildAttribution from "../../lib/attribution";
 
-export default function TechnicalSample({ sample, documents }) {
+export default function TechnicalSample({
+  sample,
+  documents,
+  attribution = null,
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -58,7 +63,7 @@ export default function TechnicalSample({ sample, documents }) {
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={sample.award} lab={sample.lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -69,6 +74,10 @@ TechnicalSample.propTypes = {
   sample: PropTypes.object.isRequired,
   // Documents associated with this technical sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Source lab or source for this technical sample
+  source: PropTypes.object,
+  // Attribution for this technical sample
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -85,6 +94,7 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(sample, req.headers.cookie);
     return {
       props: {
         sample,
@@ -93,6 +103,7 @@ export async function getServerSideProps({ params, req }) {
           title: sample.accession,
         },
         breadcrumbs,
+        attribution,
       },
     };
   }

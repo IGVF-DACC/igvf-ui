@@ -21,14 +21,14 @@ import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import SeparatedList from "../../components/separated-list";
 import Link from "next/link";
+import buildAttribution from "../../lib/attribution";
 
 export default function CuratedSet({
   curatedSet,
-  award = null,
   documents,
   donors,
-  lab = null,
   samples,
+  attribution = null,
 }) {
   return (
     <>
@@ -94,7 +94,7 @@ export default function CuratedSet({
           </>
         )}
 
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -106,25 +106,21 @@ CuratedSet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Award applied to this curated set
-  award: PropTypes.object,
   // Documents associated with this curated set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this curated set
-  lab: PropTypes.object,
+  // Attribution for this curated set
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const curatedSet = await request.getObject(`/curated-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(curatedSet)) {
-    const award = await request.getObject(curatedSet.award["@id"], null);
     const documents = curatedSet.documents
       ? await request.getMultipleObjects(curatedSet.documents, null, {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(curatedSet.lab["@id"], null);
     const samples = curatedSet.samples
       ? await request.getMultipleObjects(curatedSet.samples, null, {
           filterErrors: true,
@@ -140,16 +136,16 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(curatedSet, req.headers.cookie);
     return {
       props: {
         curatedSet,
-        award,
         documents,
         donors,
-        lab,
         samples,
         pageContext: { title: curatedSet.accession },
         breadcrumbs,
+        attribution,
       },
     };
   }

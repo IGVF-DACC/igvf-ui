@@ -667,7 +667,7 @@ BlockControls.propTypes = {
  * @returns {object} The updated live blocks state
  */
 function reducerLiveBlocks(state, action) {
-  let updatedState = [...state];
+  const updatedState = [...state];
 
   switch (action.type) {
     case LIVE_BLOCK_UPDATE:

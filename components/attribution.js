@@ -9,42 +9,69 @@ import {
   DataItemValue,
   DataPanel,
 } from "./data-area";
+import SeparatedList from "./separated-list";
 
 /**
  * Displays the attribution properties of an item in its own data panel, typically from a data
  * object with a defined schema.
  */
-export default function Attribution({
-  award = null,
-  lab = null,
-  collections = null,
-}) {
-  if (award || lab || collections) {
+export default function Attribution({ attribution = null }) {
+  if (attribution && Object.keys(attribution).length > 0) {
     return (
       <>
         <DataAreaTitle>Attribution</DataAreaTitle>
         <DataPanel>
           <DataArea>
-            {award && (
+            {attribution.award && (
               <>
                 <DataItemLabel>Award</DataItemLabel>
                 <DataItemValue>
-                  <Link href={award["@id"]}>{award.name}</Link>
+                  <Link href={attribution.award["@id"]}>
+                    {attribution.award.name}
+                  </Link>
                 </DataItemValue>
               </>
             )}
-            {lab && (
+            {attribution.pis && (
+              <>
+                <DataItemLabel>Principal Investigator(s)</DataItemLabel>
+                <DataItemValue>
+                  <SeparatedList>
+                    {attribution.pis.map((pi) => (
+                      <Link href={pi["@id"]} key={pi.uuid}>
+                        {pi.title}
+                      </Link>
+                    ))}
+                  </SeparatedList>
+                </DataItemValue>
+              </>
+            )}
+            {attribution.contactPi && (
+              <>
+                <DataItemLabel>Contact P.I.</DataItemLabel>
+                <DataItemValue>
+                  <Link href={attribution.contactPi["@id"]}>
+                    {attribution.contactPi.title}
+                  </Link>
+                </DataItemValue>
+              </>
+            )}
+            {attribution.lab && (
               <>
                 <DataItemLabel>Lab</DataItemLabel>
                 <DataItemValue>
-                  <Link href={lab["@id"]}>{lab.title}</Link>
+                  <Link href={attribution.lab["@id"]}>
+                    {attribution.lab.title}
+                  </Link>
                 </DataItemValue>
               </>
             )}
-            {collections?.length > 0 && (
+            {attribution.collections?.length > 0 && (
               <>
                 <DataItemLabel>Collections</DataItemLabel>
-                <DataItemValue>{collections.join(", ")}</DataItemValue>
+                <DataItemValue>
+                  {attribution.collections.join(", ")}
+                </DataItemValue>
               </>
             )}
           </DataArea>
@@ -56,10 +83,6 @@ export default function Attribution({
 }
 
 Attribution.propTypes = {
-  // Award applied to the displayed object
-  award: PropTypes.object,
-  // Lab that submitted the displayed object
-  lab: PropTypes.object,
-  // Collections associated with the displayed object
-  collections: PropTypes.arrayOf(PropTypes.string),
+  // attribution object needed for attribution panel
+  attribution: PropTypes.object,
 };

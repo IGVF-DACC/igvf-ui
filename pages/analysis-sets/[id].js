@@ -21,15 +21,15 @@ import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import SeparatedList from "../../components/separated-list";
 import Link from "next/link";
+import buildAttribution from "../../lib/attribution";
 
 export default function AnalysisSet({
   analysisSet,
-  award = null,
   documents,
   inputFileSets,
   donors,
-  lab = null,
   samples,
+  attribution = null,
 }) {
   return (
     <>
@@ -101,7 +101,7 @@ export default function AnalysisSet({
           </>
         )}
 
-        <Attribution award={award} lab={lab} />
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -113,21 +113,18 @@ AnalysisSet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Award applied to this analysis set
-  award: PropTypes.object,
   // input_file_sets to this analysis set
   inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Lab that submitted this analysis set
-  lab: PropTypes.object,
+  // Attribution for this analysis set
+  attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const analysisSet = await request.getObject(`/analysis-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(analysisSet)) {
-    const award = await request.getObject(analysisSet.award["@id"], null);
     const inputFileSets = analysisSet.input_file_sets
       ? await request.getMultipleObjects(analysisSet.input_file_sets, null, {
           filterErrors: true,
@@ -138,7 +135,6 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const lab = await request.getObject(analysisSet.lab["@id"], null);
     const samples = analysisSet.samples
       ? await request.getMultipleObjects(analysisSet.samples, null, {
           filterErrors: true,
@@ -156,17 +152,17 @@ export async function getServerSideProps({ params, req }) {
       "accession",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(analysisSet, req.headers.cookie);
     return {
       props: {
         analysisSet,
-        award,
         inputFileSets,
         documents,
         donors,
-        lab,
         samples,
         pageContext: { title: analysisSet.accession },
         breadcrumbs,
+        attribution,
       },
     };
   }
