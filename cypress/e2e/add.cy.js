@@ -10,7 +10,10 @@ describe("Test Add button", () => {
     cy.wait(500);
 
     cy.get("a[href='/labs#!add']").should("exist").click();
-    cy.wait(500);
+
+    cy.get('[id="JSON Editor"]').should("exist");
+
+    cy.wait(2000);
 
     const t = new Date().getTime();
     cy.get("textarea")
