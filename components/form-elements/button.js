@@ -189,6 +189,7 @@ export function ButtonLink({
     <Link
       href={href}
       label={label}
+      aria-label={label}
       id={id}
       className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[type]} ${className}`}
     >
