@@ -40,7 +40,7 @@ export default function SearchResultsHeader({
         </div>
       </div>
       <div>
-      {totalPages > 1 && <SearchPager searchResults={searchResults} />}
+        {totalPages > 1 && <SearchPager searchResults={searchResults} />}
       </div>
     </>
   );

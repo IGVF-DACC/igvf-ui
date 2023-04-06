@@ -6,8 +6,8 @@ export default function DownloadTSV() {
   const current = new URL(window.location.href);
   const link = new URL(`${API_URL}/report.tsv${current.search}`).toString();
   return (
-    <ButtonLink href={link} hasIconOnly={true} label="Download report as TSV" >
-      <DocumentArrowDownIcon strokeWidth={2}/>
+    <ButtonLink href={link} hasIconOnly={true} label="Download report as TSV">
+      <DocumentArrowDownIcon strokeWidth={2} />
     </ButtonLink>
   );
 }
