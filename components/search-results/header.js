@@ -6,6 +6,7 @@ import { ColumnSelector } from "../report";
 import useSearchLimits from "./search-limits";
 import SearchPager from "./search-pager";
 import ViewSwitch from "./view-switch";
+import DownloadTSV from "./download-tsv";
 
 /**
  * Displays controls for the search-result list and report views, including the controls to switch
@@ -18,24 +19,30 @@ export default function SearchResultsHeader({
   const { totalPages } = useSearchLimits(searchResults);
 
   return (
-    <div className="sm:mb-1 sm:flex sm:items-center sm:justify-between">
-      <div className="mb-1 flex gap-1 sm:mb-0">
-        <ViewSwitch searchResults={searchResults} />
-        {columnSelectorConfig && (
-          <ColumnSelector
-            searchResults={searchResults}
-            onChange={columnSelectorConfig.onColumnVisibilityChange}
-            onChangeAll={columnSelectorConfig.onAllColumnsVisibilityChange}
-          />
-        )}
-      </div>
-      <div className="sm:flex sm:items-center sm:gap-1">
-        {totalPages > 1 && <SearchPager searchResults={searchResults} />}
+    <>
+      <div className="sm:mb-1 sm:flex sm:items-center sm:justify-between">
+        <div className="mb-1 flex gap-1 sm:mb-0">
+          <ViewSwitch searchResults={searchResults} />
+          {columnSelectorConfig && (
+            <>
+              <ColumnSelector
+                searchResults={searchResults}
+                onChange={columnSelectorConfig.onColumnVisibilityChange}
+                onChangeAll={columnSelectorConfig.onAllColumnsVisibilityChange}
+              />
+              <DownloadTSV />
+            </>
+          )}
+        </div>
+
         <div className="mb-1 flex items-center gap-1 sm:mb-0">
           <ItemsPerPageSelector />
         </div>
       </div>
-    </div>
+      <div className="mb-1">
+        {totalPages > 1 && <SearchPager searchResults={searchResults} />}
+      </div>
+    </>
   );
 }
 

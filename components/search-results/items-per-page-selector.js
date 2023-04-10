@@ -69,7 +69,7 @@ export default function ItemsPerPageSelector(searchResults) {
     >
       {options.map((option) => (
         <option key={option} value={option}>
-          {`View ${option} Items`}
+          {`${option} Items`}
         </option>
       ))}
     </Select>

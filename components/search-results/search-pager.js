@@ -44,7 +44,7 @@ export default function SearchPager({ searchResults }) {
             currentPage={pageIndex}
             totalPages={totalPages}
             onClick={onPagerClick}
-            className="mb-2 flex justify-center sm:mb-0 sm:block sm:justify-start"
+            className="mb-2 flex justify-center sm:mb-0 sm:justify-end"
           />
         </div>
       )}
