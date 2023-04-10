@@ -1,6 +1,5 @@
 // node_modules
 import { Auth0Provider } from "@auth0/auth0-react";
-import Error from "../components/error";
 import Head from "next/head";
 import Script from "next/script";
 import PropTypes from "prop-types";
@@ -16,6 +15,7 @@ import {
 } from "../lib/constants";
 import DarkModeManager from "../lib/dark-mode-manager";
 // components
+import Error from "../components/error";
 import GlobalContext from "../components/global-context";
 import NavigationSection from "../components/navigation";
 import ScrollToTop from "../components/scroll-to-top";
