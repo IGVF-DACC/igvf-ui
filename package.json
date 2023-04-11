@@ -17,7 +17,7 @@
     "ace-builds": "^1.5.0",
     "dayjs": "^1.11.3",
     "empty-schema": "^0.1.5",
-    "framer-motion": "^9.0.2",
+    "framer-motion": "^10.10.0",
     "isomorphic-dompurify": "^1.0.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",

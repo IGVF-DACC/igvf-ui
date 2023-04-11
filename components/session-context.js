@@ -21,7 +21,6 @@ import {
   loginToServer,
   logoutFromServer,
 } from "../lib/authentication";
-import { BACKEND_URL } from "../lib/constants";
 import getProfiles from "../lib/profiles";
 /* istanbul ignore file */
 
@@ -87,14 +86,15 @@ export function Session({ children }) {
       serverSessionPromise
         .then((signedOutSession) => {
           setSession(signedOutSession);
+
           // Initiate the request to sign the user into the server.
           return loginToServer(signedOutSession, getAccessTokenSilently);
         })
         .then((sessionProperties) => {
-          if (!sessionProperties) {
+          if (!sessionProperties || sessionProperties.status === "error") {
             // Auth0 authenticated successfully, but we couldn't authenticate with the server.
             // Log back out of Auth0 and go to an error page.
-            logout({ returnTo: `${BACKEND_URL}/auth-error` });
+            logout({ returnTo: `${window.location.origin}/auth-error` });
             isServerAuthPending.current = false;
           } else {
             // Auth0 and the server authenticated successfully. Set the signed-in session object in
@@ -133,7 +133,7 @@ export function Session({ children }) {
       serverSessionPromise.then((serverSession) => {
         setSession(serverSession);
         if (
-          serverSession["auth.userid"] &&
+          serverSession?.["auth.userid"] &&
           !isAuthenticated &&
           !isServerAuthPending.current
         ) {
