@@ -1,6 +1,6 @@
 // node_modules
-import PropTypes from "prop-types";
 import Link from "next/link";
+import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -32,8 +32,8 @@ export default function InVitroSystem({
   source = null,
   treatments,
   pooledFrom,
-  targetedSampleTerm,
   partOf,
+  targetedSampleTerm = null,
   attribution = null,
 }) {
   return (
