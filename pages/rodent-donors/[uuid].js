@@ -33,6 +33,9 @@ export default function RodentDonor({
   phenotypeTermsList,
   source,
 }) {
+  console.log(donor);
+  console.log(donor.source);
+  console.log(source);
   return (
     <>
       <Breadcrumbs />
@@ -131,7 +134,7 @@ export async function getServerSideProps({ params, req }) {
             ),
           ])
         : [];
-    const source = donor.source ? await request.getObject(donor.source) : {};
+    const source = donor.source ? await request.getObject(donor.source["@id"]) : {};
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",

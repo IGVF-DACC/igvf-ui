@@ -12,7 +12,7 @@ const phenotypicFeaturesColumns = [
     display: (source, meta) => {
       const terms = meta.phenotypeTermsList;
       const featureTerm = terms.find(
-        (term) => term["@id"] == source.source.feature
+        (term) => term["@id"] === source.source.feature
       );
       return (
         <Link href={source.source["@id"]}>
