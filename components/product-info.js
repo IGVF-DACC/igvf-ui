@@ -19,7 +19,6 @@ export default function ProductInfo({ source, productId, lotId }) {
       content.unshift(source.name);
       return (
         <>
-
           {source.url ? (
             <Link href={source.url}>{content.join(" - ")}</Link>
           ) : (

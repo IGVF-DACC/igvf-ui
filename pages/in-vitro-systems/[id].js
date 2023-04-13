@@ -16,12 +16,12 @@ import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
+import BiomarkerTable from "../../components/biomarker-table";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
-import BiomarkerTable from "../../components/biomarker-table";
 
 export default function InVitroSystem({
   inVitroSystem,
@@ -73,7 +73,7 @@ export default function InVitroSystem({
         {biomarkers.length > 0 && (
           <>
             <DataAreaTitle>Biomarkers</DataAreaTitle>
-            <BiomarkerTable biomarkers={biomarkers}/>
+            <BiomarkerTable biomarkers={biomarkers} />
           </>
         )}
         {treatments.length > 0 && (

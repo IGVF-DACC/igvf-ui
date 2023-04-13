@@ -24,7 +24,8 @@ const biomarkersColumns = [
   {
     id: "synonyms",
     title: "Synonyms",
-    display: ({ source }) => source.synonyms ? `${source.synonyms.join(", ")}` : "",
+    display: ({ source }) =>
+      source.synonyms ? `${source.synonyms.join(", ")}` : "",
   },
   {
     id: "aliases",
@@ -36,9 +37,7 @@ const biomarkersColumns = [
 /**
  * Display a sortable table of the given treatments.
  */
-export default function BiomarkerTable({
-  biomarkers,
-}) {
+export default function BiomarkerTable({ biomarkers }) {
   return (
     <DataGridContainer>
       <SortableGrid
