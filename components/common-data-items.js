@@ -13,9 +13,9 @@ import AliasList from "./alias-list";
 import { DataItemLabel, DataItemValue } from "./data-area";
 import DbxrefList from "./dbxref-list";
 import SeparatedList from "./separated-list";
+import ProductInfo from "./product-info";
 // lib
 import { formatDate } from "../lib/dates";
-import ProductInfo from "./product-info";
 
 /**
  * Display the data items common to all donor-derived objects.
