@@ -19,9 +19,7 @@ export default function TechnicalSample({ item: technicalSample }) {
           <SearchListItemType item={technicalSample} />
           {technicalSample.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>
-          {technicalSample.technical_sample_term.term_name}
-        </SearchListItemTitle>
+        <SearchListItemTitle>{technicalSample.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{technicalSample.lab.title}</div>
         </SearchListItemMeta>
