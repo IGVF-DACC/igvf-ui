@@ -236,6 +236,7 @@ describe("Test the Biosample component", () => {
       status: "released",
       taxa: "Homo sapiens",
       uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
+      summary: "biosample summary",
     };
 
     render(
@@ -249,7 +250,7 @@ describe("Test the Biosample component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFSM0000EEEE$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent("Homo sapiens motor neuron");
+    expect(title).toHaveTextContent("biosample summary");
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
@@ -694,6 +695,7 @@ describe("Test the TechnicalSample component", () => {
         term_name: "technical sample",
       },
       uuid: "f12ab44c-bba8-46cc-9f3d-6a192eb09e7e",
+      summary: "Technical Sample Summary",
     };
 
     render(
@@ -707,7 +709,7 @@ describe("Test the TechnicalSample component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFSM515BSZ$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^technical sample$/);
+    expect(title).toHaveTextContent("Technical Sample Summary");
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
