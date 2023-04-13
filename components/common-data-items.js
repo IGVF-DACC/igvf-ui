@@ -13,9 +13,9 @@ import AliasList from "./alias-list";
 import { DataItemLabel, DataItemValue } from "./data-area";
 import DbxrefList from "./dbxref-list";
 import SeparatedList from "./separated-list";
-import SourceProp from "./source-prop";
 // lib
 import { formatDate } from "../lib/dates";
+import ProductInfo from "./product-info";
 
 /**
  * Display the data items common to all donor-derived objects.
@@ -110,26 +110,28 @@ DonorDataItems.propTypes = {
 /**
  * Display data items common to all sample-derived objects.
  */
-export function SampleDataItems({ sample, source = null, children }) {
+export function SampleDataItems({
+  sample,
+  source = null,
+  options = {
+    dateObtainedTitle: "Date Obtained",
+  },
+  children,
+}) {
   return (
     <>
-      {sample.product_id && (
-        <>
-          <DataItemLabel>Product ID</DataItemLabel>
-          <DataItemValue>{sample.product_id}</DataItemValue>
-        </>
-      )}
-      {sample.lot_id && (
-        <>
-          <DataItemLabel>Lot ID</DataItemLabel>
-          <DataItemValue>{sample.lot_id}</DataItemValue>
-        </>
-      )}
-      {source && (
+      <DataItemLabel>Summary</DataItemLabel>
+      <DataItemValue>{sample.summary}</DataItemValue>
+      {children}
+      {(sample.lot_id || source) && (
         <>
           <DataItemLabel>Source</DataItemLabel>
           <DataItemValue>
-            <SourceProp source={source} />
+            <ProductInfo
+              lotId={sample.lot_id}
+              productId={sample.product_id}
+              source={source}
+            />
           </DataItemValue>
         </>
       )}
@@ -144,6 +146,12 @@ export function SampleDataItems({ sample, source = null, children }) {
               ""
             )}
           </DataItemValue>
+        </>
+      )}
+      {sample.date_obtained && (
+        <>
+          <DataItemLabel>{options.dateObtainedTitle}</DataItemLabel>
+          <DataItemValue>{formatDate(sample.date_obtained)}</DataItemValue>
         </>
       )}
       {sample.url && (
@@ -169,7 +177,6 @@ export function SampleDataItems({ sample, source = null, children }) {
           </DataItemValue>
         </>
       )}
-      {children}
       {sample.submitter_comment && (
         <>
           <DataItemLabel>Submitter Comment</DataItemLabel>
@@ -199,6 +206,11 @@ SampleDataItems.propTypes = {
   sample: PropTypes.object.isRequired,
   // Source lab or source for this sample
   source: PropTypes.object,
+  // General options to alter the display of the data items
+  options: PropTypes.shape({
+    // Title of date_obtained property
+    dateObtainedTitle: PropTypes.string,
+  }),
 };
 
 /**
@@ -212,15 +224,20 @@ export function BiosampleDataItems({
   diseaseTerms = null,
   pooledFrom,
   partOf,
-  options = {
-    dateObtainedTitle: "Date Obtained",
-  },
   children,
 }) {
   return (
     <SampleDataItems sample={biosample} source={source}>
       <DataItemLabel>Taxa</DataItemLabel>
       <DataItemValue>{biosample.taxa}</DataItemValue>
+      {biosampleTerm && (
+        <>
+          <DataItemLabel>Biosample Term</DataItemLabel>
+          <DataItemValue>
+            <Link href={biosampleTerm["@id"]}>{biosampleTerm.term_name}</Link>
+          </DataItemValue>
+        </>
+      )}
       {biosample.sex && (
         <>
           <DataItemLabel>Sex</DataItemLabel>
@@ -231,7 +248,7 @@ export function BiosampleDataItems({
         <>
           <DataItemLabel>Age</DataItemLabel>
           <DataItemValue>
-            {biosample.age}
+            {biosample.embryonic ? "Embryonic" : ""} {biosample.age}
             {biosample.age_units ? (
               <>
                 {" "}
@@ -241,28 +258,6 @@ export function BiosampleDataItems({
             ) : (
               ""
             )}
-          </DataItemValue>
-        </>
-      )}
-      {"embryonic" in biosample && (
-        <>
-          <DataItemLabel>Embryonic</DataItemLabel>
-          <DataItemValue>
-            <div className="h-5 w-5">{biosample.embryonic ? "yes" : "no"}</div>
-          </DataItemValue>
-        </>
-      )}
-      {biosample.date_obtained && (
-        <>
-          <DataItemLabel>{options.dateObtainedTitle}</DataItemLabel>
-          <DataItemValue>{formatDate(biosample.date_obtained)}</DataItemValue>
-        </>
-      )}
-      {biosampleTerm && (
-        <>
-          <DataItemLabel>Biosample Term</DataItemLabel>
-          <DataItemValue>
-            <Link href={biosampleTerm["@id"]}>{biosampleTerm.term_name}</Link>
           </DataItemValue>
         </>
       )}
@@ -344,11 +339,6 @@ BiosampleDataItems.propTypes = {
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
-  // General options to alter the display of the data items
-  options: PropTypes.shape({
-    // Title of date_obtained property
-    dateObtainedTitle: PropTypes.string,
-  }),
 };
 
 /**

@@ -22,6 +22,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import BiomarkerTable from "../../components/biomarker-table";
 
 export default function InVitroSystem({
   inVitroSystem,
@@ -32,6 +33,7 @@ export default function InVitroSystem({
   source = null,
   treatments,
   pooledFrom,
+  biomarkers,
   partOf,
   targetedSampleTerm = null,
   attribution = null,
@@ -77,6 +79,12 @@ export default function InVitroSystem({
             </BiosampleDataItems>
           </DataArea>
         </DataPanel>
+        {biomarkers.length > 0 && (
+          <>
+            <DataAreaTitle>Biomarkers</DataAreaTitle>
+            <BiomarkerTable biomarkers={biomarkers}/>
+          </>
+        )}
         {treatments.length > 0 && (
           <>
             <DataAreaTitle>Treatments</DataAreaTitle>
@@ -112,6 +120,8 @@ InVitroSystem.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biomarkers of the sample
+  biomarkers: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
   // The targeted endpoint biosample resulting from differentation or reprogramming
@@ -170,6 +180,12 @@ export async function getServerSideProps({ params, req }) {
     const targetedSampleTerm = inVitroSystem.targeted_sample_term
       ? await request.getObject(inVitroSystem.targeted_sample_term, null)
       : null;
+    const biomarkers =
+      inVitroSystem.biomarkers?.length > 0
+        ? await request.getMultipleObjects(inVitroSystem.biomarkers, null, {
+            filterErrors: true,
+          })
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,
       "accession",
@@ -191,6 +207,7 @@ export async function getServerSideProps({ params, req }) {
         pooledFrom,
         partOf,
         targetedSampleTerm,
+        biomarkers,
         pageContext: {
           title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
             inVitroSystem.accession
