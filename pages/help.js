@@ -4,23 +4,61 @@ import PropTypes from "prop-types";
 // components
 import NoContent from "../components/no-content";
 // lib
+import { UI_VERSION } from "../lib/constants";
 import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 
-function HelpBanner({ helpPageRoot }) {
-  return (
-    <div className="aspect-ultra w-full border border-panel bg-help-banner bg-cover dark:bg-help-banner-dark">
-      <h1 className="mt-2 ml-4 text-2xl font-light text-black dark:text-white sm:text-3xl md:mt-8 md:text-4xl xl:text-5xl">
-        {helpPageRoot?.title || null}
+/**
+ * Display the help-page title within the help banner.
+ */
+function HelpBannerTitle({ title = "" }) {
+  if (title) {
+    return (
+      <h1 className="text-xl font-light text-black dark:text-white sm:text-3xl md:text-4xl xl:text-5xl">
+        {title}
       </h1>
+    );
+  }
+  return null;
+}
+
+HelpBannerTitle.propTypes = {
+  // Title of the help page
+  title: PropTypes.string,
+};
+
+/**
+ * Display the igvf-ui and igvfd version numbers.
+ */
+function Versions({ serverVersion = "" }) {
+  if (UI_VERSION || serverVersion) {
+    return (
+      <div className="text-xs leading-tight text-gray-600 dark:text-gray-400">
+        {UI_VERSION && <div data-testid="version-ui">UI: {UI_VERSION}</div>}
+        {serverVersion && (
+          <div data-testid="version-server">Server: {serverVersion}</div>
+        )}
+      </div>
+    );
+  }
+  return null;
+}
+
+Versions.propTypes = {
+  // Server version number
+  serverVersion: PropTypes.string,
+};
+
+/**
+ * Display the help-page banner and its contents.
+ */
+function HelpBanner({ children }) {
+  return (
+    <div className="flex aspect-ultra w-full flex-col justify-between border border-panel bg-help-banner bg-cover pb-1 pl-2 pt-2 dark:bg-help-banner-dark">
+      {children}
     </div>
   );
 }
-
-HelpBanner.propTypes = {
-  // The help page root page
-  helpPageRoot: PropTypes.object.isRequired,
-};
 
 /**
  * Displays links to the given help subpages. This is mutually recursive with the
@@ -98,11 +136,14 @@ HelpPageCategory.propTypes = {
 /**
  * Displays the entire help page, including links to all of the help content pages.
  */
-export default function HelpPage({ helpPageRoot }) {
+export default function HelpPage({ helpPageRoot, serverVersion = "" }) {
   if (helpPageRoot?.subpages?.length > 0) {
     return (
       <>
-        <HelpBanner helpPageRoot={helpPageRoot} />
+        <HelpBanner>
+          <HelpBannerTitle title={helpPageRoot.title} />
+          <Versions serverVersion={serverVersion} />
+        </HelpBanner>
         <div className="mt-8 md:flex md:flex-wrap">
           {helpPageRoot.subpages.map((categoryPage) => (
             <HelpPageCategory
@@ -120,16 +161,25 @@ export default function HelpPage({ helpPageRoot }) {
 HelpPage.propTypes = {
   // Root-level help page
   helpPageRoot: PropTypes.object.isRequired,
+  // Server version number
+  serverVersion: PropTypes.string,
 };
 
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const pages = await request.getCollection("pages");
   if (FetchRequest.isResponseSuccess(pages)) {
+    // Get the server version number.
+    const root = await request.getObject("/", null);
+    const serverVersion = root?.app_version || "";
+
+    // Get all help pages and their subpages.
     let helpPageRoot = null;
     const allHelpPages = pages["@graph"].filter((page) =>
       page["@id"].startsWith("/help/")
     );
+
+    // Build the help-page hierarchy.
     allHelpPages.forEach((helpPage) => {
       // Look for all help pages that are subpages of the current page.
       const subpages = allHelpPages.filter((maybeChildPage) => {
@@ -152,6 +202,7 @@ export async function getServerSideProps({ req }) {
     return {
       props: {
         helpPageRoot,
+        serverVersion,
         pageContext: { title: helpPageRoot?.title },
       },
     };

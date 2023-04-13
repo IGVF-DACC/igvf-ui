@@ -1,3 +1,8 @@
+/**
+ * Change the UI version number for each igvf-ui release.
+ */
+const UI_VERSION = "3.5.0";
+
 module.exports = {
   reactStrictMode: false,
   images: {
@@ -15,5 +20,6 @@ module.exports = {
     SERVER_URL: process.env.SERVER_URL || "",
     PUBLIC_BACKEND_URL:
       process.env.PUBLIC_BACKEND_URL || process.env.BACKEND_URL || "",
+    UI_VERSION,
   },
 };
