@@ -21,6 +21,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
+import BiomarkerTable from "../../components/biomarker-table";
 
 export default function InVitroSystem({
   inVitroSystem,
@@ -31,6 +32,7 @@ export default function InVitroSystem({
   source = null,
   treatments,
   pooledFrom,
+  biomarkers,
   partOf,
   attribution = null,
 }) {
@@ -68,6 +70,12 @@ export default function InVitroSystem({
             </BiosampleDataItems>
           </DataArea>
         </DataPanel>
+        {biomarkers.length > 0 && (
+          <>
+            <DataAreaTitle>Biomarkers</DataAreaTitle>
+            <BiomarkerTable biomarkers={biomarkers}/>
+          </>
+        )}
         {treatments.length > 0 && (
           <>
             <DataAreaTitle>Treatments</DataAreaTitle>
@@ -103,6 +111,8 @@ InVitroSystem.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biomarkers of the sample
+  biomarkers: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
   // Attribution for this sample
@@ -156,6 +166,12 @@ export async function getServerSideProps({ params, req }) {
     const partOf = inVitroSystem.part_of
       ? await request.getObject(inVitroSystem.part_of, null)
       : null;
+    const biomarkers =
+      inVitroSystem.biomarkers?.length > 0
+        ? await request.getMultipleObjects(inVitroSystem.biomarkers, null, {
+            filterErrors: true,
+          })
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,
       "accession",
@@ -176,6 +192,7 @@ export async function getServerSideProps({ params, req }) {
         treatments,
         pooledFrom,
         partOf,
+        biomarkers,
         pageContext: {
           title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
             inVitroSystem.accession

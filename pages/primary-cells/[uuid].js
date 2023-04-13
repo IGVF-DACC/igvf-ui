@@ -21,6 +21,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
+import BiomarkerTable from "../../components/biomarker-table";
 
 export default function PrimaryCell({
   primaryCell,
@@ -31,6 +32,7 @@ export default function PrimaryCell({
   source = null,
   treatments,
   pooledFrom,
+  biomarkers,
   partOf,
   attribution = null,
 }) {
@@ -66,6 +68,12 @@ export default function PrimaryCell({
             </BiosampleDataItems>
           </DataArea>
         </DataPanel>
+        {biomarkers.length > 0 && (
+          <>
+            <DataAreaTitle>Biomarkers</DataAreaTitle>
+            <BiomarkerTable biomarkers={biomarkers} />
+          </>
+        )}
         {treatments.length > 0 && (
           <>
             <DataAreaTitle>Treatments</DataAreaTitle>
@@ -101,6 +109,8 @@ PrimaryCell.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biomarkers of the sample
+  biomarkers: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
   // Attribution for this sample
@@ -148,6 +158,12 @@ export async function getServerSideProps({ params, req }) {
     const partOf = primaryCell.part_of
       ? await request.getObject(primaryCell.part_of, null)
       : null;
+    const biomarkers =
+      primaryCell.biomarkers?.length > 0
+        ? await request.getMultipleObjects(primaryCell.biomarkers, null, {
+            filterErrors: true,
+          })
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       primaryCell,
       "accession",
@@ -165,6 +181,7 @@ export async function getServerSideProps({ params, req }) {
         treatments,
         pooledFrom,
         partOf,
+        biomarkers,
         pageContext: {
           title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
             primaryCell.accession
