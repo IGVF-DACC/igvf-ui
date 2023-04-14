@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
@@ -32,6 +33,7 @@ export default function InVitroSystem({
   treatments,
   pooledFrom,
   partOf,
+  targetedSampleTerm = null,
   attribution = null,
 }) {
   return (
@@ -59,6 +61,16 @@ export default function InVitroSystem({
             >
               <DataItemLabel>Classification</DataItemLabel>
               <DataItemValue>{inVitroSystem.classification}</DataItemValue>
+              {targetedSampleTerm && (
+                <>
+                  <DataItemLabel>Targeted Sample Term</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={targetedSampleTerm["@id"]}>
+                      {targetedSampleTerm.term_name}
+                    </Link>
+                  </DataItemValue>
+                </>
+              )}
               {inVitroSystem.passage_number && (
                 <>
                   <DataItemLabel>Passage Number</DataItemLabel>
@@ -105,6 +117,8 @@ InVitroSystem.propTypes = {
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
+  // The targeted endpoint biosample resulting from differentation or reprogramming
+  targetedSampleTerm: PropTypes.object,
   // Attribution for this sample
   attribution: PropTypes.object,
 };
@@ -156,6 +170,9 @@ export async function getServerSideProps({ params, req }) {
     const partOf = inVitroSystem.part_of
       ? await request.getObject(inVitroSystem.part_of, null)
       : null;
+    const targetedSampleTerm = inVitroSystem.targeted_sample_term
+      ? await request.getObject(inVitroSystem.targeted_sample_term, null)
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,
       "accession",
@@ -176,6 +193,7 @@ export async function getServerSideProps({ params, req }) {
         treatments,
         pooledFrom,
         partOf,
+        targetedSampleTerm,
         pageContext: {
           title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
             inVitroSystem.accession
