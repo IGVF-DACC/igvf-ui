@@ -115,6 +115,36 @@ $ git checkout -b dev-keenan
 
 Then use this new branch to deploy your pipeline.
 
+## Using a specific igvfd demo for your igvf-ui demo
+
+In most cases when deploying an igvf-ui demo, you create an igvfd branch with the same name as your igvf-ui branch, push that to the igvfd repo, then deploy that branch as an igvfd demo. Because your igvf-ui and igvfd demo have the same branch name, they automatically connect with each other so that your igvf-ui demo uses the data from your igvfd demo.
+
+But in some cases, you might want your igvf-ui demo to use another specific igvfd demo instead, for example:
+
+* Your igvf-ui branch relies on changes in a specific igvfd branch, so their demos have to work together.
+* Your igvf-ui demo relies on the data in a specific igvfd demo.
+* You simply don’t want to start an igvfd demo, as the data in an existing igvfd demo works well enough for your igvf-ui demo, and you have no need to change that data.
+
+To point your igvf-ui demo at a specific igvfd demo, open the file at `cdk/infrastructure/config.py` and go to the `config` Dict. Within there, look for the `environment` property, and within that, look for the `demo` property. It should already have `frontend` and `tags` properties. Add a third property: `backend_url`. For its value, enter the complete URL for the igvfd demo you want your igvf-ui demo to use. Make sure not to include the trailing slash after the domain name. If you want your igvf-ui demo to connect with the igvfd “dev” demo for example, your `demo` object would look like:
+```python
+'demo': {
+    'frontend': {
+        'cpu': 1024,
+        'memory_limit_mib': 2048,
+        'desired_count': 1,
+        'max_capacity': 4,
+    },
+    'backend_url': 'https://igvfd-dev.demo.igvf.org',
+    'tags': [
+        ('time-to-live-hours', '72'),
+        ('turn-off-on-friday-night', 'yes'),
+    ],
+},
+```
+Leave this modified config.py file in your branch as it goes through code review and QA. That `backend_url` property gets removed before merging your branch into the dev branch of the igvf-ui repo. If you try to remove this line before QA finishes, it could cause your igvf-ui demo to get rebuilt and lose the connection with the igvfd demo.
+
+This change to your branch’s config.py file causes a CircleCI failure in the “check-demo-config” test. That test makes sure your config file has the correct default values, so ignore that failure.
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
