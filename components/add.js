@@ -219,8 +219,8 @@ export function AddInstancePage({ collection }) {
                 const key = `${keys}${err.description}`;
                 return {
                   description: err.description,
-                  keys: keys,
-                  key: key,
+                  keys,
+                  key,
                 };
               })
             : [

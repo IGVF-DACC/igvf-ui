@@ -14,6 +14,8 @@
     "no-trailing-spaces": ["error"],
     "no-useless-constructor": ["error"],
     "object-curly-spacing": ["error", "always"],
+    "object-shorthand": ["error"],
+    "prefer-const": ["error"],
     "react/no-unused-prop-types": ["error", { "skipShapeProps": true }],
     "react/prop-types": ["error", { "ignore": ["children"] }],
     "semi": ["error", "always"],
@@ -29,7 +31,6 @@
     "testing-library/await-async-query": "error",
     "testing-library/no-await-sync-query": "error",
     "testing-library/no-debugging-utils": "warn",
-    "testing-library/no-dom-import": "off",
-    "prefer-const": ["error"]
+    "testing-library/no-dom-import": "off"
   }
 }
