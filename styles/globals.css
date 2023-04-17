@@ -72,6 +72,12 @@
   --color-button-warning-label-disabled: #d8d8d8;
   --color-button-selected-label-disabled: #b1bad3;
 
+  --color-button-audit-open-background: #d3dfff;
+  --color-button-audit-closed-background: transparet;
+  --color-button-audit-border: #384977;
+  --color-button-audit-level-detail: #f0f0f0;
+  --color-audit-level-detail-background: #d0d0d0;
+
   --color-facet-group-button-background: #f0e7ca;
   --color-facet-group-button-selected-background: #bfa678;
   --color-facet-group-button-border: #998868;
@@ -163,6 +169,12 @@
   --color-facet-group-button-border: #998868;
   --color-facet-group-button-text: #ffffff;
   --color-facet-group-button-selected-text: #ffffff;
+
+  --color-button-audit-open-background: #384977;
+  --color-button-audit-border: #8facff;
+  --color-button-audit-level: #4e5b75;
+  --color-audit-level-detail-background: #4e5b75;
+  --color-button-audit-level-detail: #111827;
 
   --color-facet-title-background: #536167;
   --color-facet-title-text: #ffffff;

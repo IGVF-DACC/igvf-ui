@@ -1,11 +1,11 @@
 // node_modules
 import PropTypes from "prop-types";
-// components
+// components/search/list-renderer
 import {
   SearchListItemContent,
-  SearchListItemMeta,
   SearchListItemMain,
-  SearchListItemStatus,
+  SearchListItemMeta,
+  SearchListItemQuality,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -27,7 +27,7 @@ export default function CuratedSet({ item: curatedSet }) {
           {summary && <div key="summary">{summary}</div>}
         </SearchListItemMeta>
       </SearchListItemMain>
-      <SearchListItemStatus item={curatedSet} />
+      <SearchListItemQuality item={curatedSet} />
     </SearchListItemContent>
   );
 }

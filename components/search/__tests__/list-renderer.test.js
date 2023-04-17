@@ -22,9 +22,7 @@ import User from "../list-renderer/user";
 import Biomarker from "../list-renderer/biomarker";
 import Source from "../list-renderer/source";
 import Treatment from "../list-renderer/treatment";
-import HumanGenomicVariant, {
-  humanGenomicVariantTitle,
-} from "../list-renderer/human-genomic-variant";
+import HumanGenomicVariant from "../list-renderer/human-genomic-variant";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -59,7 +57,7 @@ describe("Test OntologyTerm component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("MPRA");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
@@ -90,7 +88,7 @@ describe("Test OntologyTerm component", () => {
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -127,7 +125,7 @@ describe("Test Award component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("predictive modeling");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("current");
   });
 
@@ -161,7 +159,7 @@ describe("Test Award component", () => {
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("current");
   });
 
@@ -211,7 +209,7 @@ describe("Test Award component", () => {
     expect(meta).toHaveTextContent("Lea Starit");
     expect(meta).toHaveTextContent("predictive modeling");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("current");
 
     const paths = Award.getAccessoryDataPaths([item]);
@@ -257,7 +255,7 @@ describe("Test the Biosample component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -306,7 +304,7 @@ describe("Test Document component", () => {
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("characterization");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("in progress");
   });
 });
@@ -342,7 +340,7 @@ describe("Test Gene component", () => {
     expect(meta).toHaveTextContent("BAP1");
     expect(meta).toHaveTextContent("UCHL2, HUCEP-13, KIAA0272, hucep-6");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
@@ -375,7 +373,7 @@ describe("Test Gene component", () => {
     expect(meta).toHaveTextContent("BAP1");
     expect(meta).not.toHaveTextContent("UCHL2");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -457,7 +455,7 @@ describe("Test the HumanDonor component", () => {
     expect(meta).toHaveTextContent("Amount");
     expect(meta).toHaveTextContent("ENCODE");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
 
     const paths = HumanDonor.getAccessoryDataPaths([item]);
@@ -497,7 +495,7 @@ describe("Test the HumanDonor component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Chongyuan Luo");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
@@ -527,7 +525,7 @@ describe("Test the HumanDonor component", () => {
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^\/human-donors\/IGVFDO856PXB\/$/);
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -566,7 +564,7 @@ describe("Test the Lab component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("1UM1HG012003-01");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("current");
   });
 
@@ -598,7 +596,7 @@ describe("Test the Lab component", () => {
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("current");
   });
 });
@@ -629,7 +627,7 @@ describe("Test the Page component", () => {
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^Human Donors$/);
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -675,7 +673,7 @@ describe("Test the RodentDonor component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -715,7 +713,7 @@ describe("Test the TechnicalSample component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("archived");
   });
 });
@@ -817,7 +815,7 @@ describe("Test File component", () => {
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("IGVFFI0000SQBR");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
@@ -852,7 +850,7 @@ describe("Test File component", () => {
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).not.toHaveTextContent("IGVFFI0000SQBR");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -904,7 +902,7 @@ describe("Test the AnalysisSet component", () => {
     );
     expect(supplement).toHaveTextContent("IGVFDS3099XPLN");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
 
     const paths = AnalysisSet.getAccessoryDataPaths([item]);
@@ -945,7 +943,7 @@ describe("Test the AnalysisSet component", () => {
     const supplement = screen.queryByTestId("search-list-item-supplement");
     expect(supplement).toBeNull();
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -984,7 +982,7 @@ describe("Test the CuratedSet component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Tim Reddy, Duke");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
@@ -1020,7 +1018,7 @@ describe("Test the CuratedSet component", () => {
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Tim Reddy, Duke");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -1060,7 +1058,7 @@ describe("Test the MeasurementSet component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
@@ -1097,7 +1095,7 @@ describe("Test the MeasurementSet component", () => {
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -1131,7 +1129,7 @@ describe("Test the Software component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -1168,7 +1166,7 @@ describe("Test the SoftwareVersion component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -1202,7 +1200,7 @@ describe("Test the Source component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Aviva Systems Biology");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -1251,7 +1249,7 @@ describe("Test the Publication component", () => {
     );
     expect(meta).toHaveTextContent("Nature. 2012-09-06;489(7414):57-74.");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
@@ -1292,7 +1290,7 @@ describe("Test the Publication component", () => {
     expect(meta).not.toHaveTextContent("ENCODE Project Consortium");
     expect(meta).not.toHaveTextContent("Nature.");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
@@ -1329,7 +1327,7 @@ describe("Test the Publication component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("2012-09-06;");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
@@ -1366,7 +1364,7 @@ describe("Test the Publication component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Nature.");
 
-    const status = screen.getByTestId("search-list-item-status");
+    const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
@@ -1502,48 +1500,5 @@ describe("Test the Human Genomic Variant component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title.textContent).toBe("chr1:100000000:TG:GC");
-  });
-  it("Human Genomic Variant title is correct", () => {
-    const itemWithRefSeqId = {
-      "@id": "/human-genomic-variants/8138364d-f96b-42b9-a719-42199818c6fc/",
-      "@type": ["HumanGenomicVariant", "Variant", "Item"],
-      alt: "GC",
-      ref: "TG",
-      status: "in progress",
-      assembly: "GRCh38",
-      position: 100000000,
-      refseq_id: "NC_000001.1",
-      schema_version: "1",
-      creation_timestamp: "2023-03-28T05:59:17.412294+00:00",
-      selection_criteria:
-        "The variant was selected by another lab due to its frequency in an understudied population",
-      uuid: "8138364d-f96b-42b9-a719-42199818c6fc",
-      summary: "8138364d-f96b-42b9-a719-42199818c6fc",
-    };
-
-    expect(humanGenomicVariantTitle(itemWithRefSeqId)).toBe(
-      "NC_000001.1:100000000:TG:GC"
-    );
-
-    const itemWithReferenceSeq = {
-      "@id": "/human-genomic-variants/8138364d-f96b-42b9-a719-42199818c6fc/",
-      "@type": ["HumanGenomicVariant", "Variant", "Item"],
-      alt: "GC",
-      ref: "TG",
-      status: "in progress",
-      assembly: "GRCh38",
-      position: 100000000,
-      reference_sequence: "AAATCGGG",
-      schema_version: "1",
-      creation_timestamp: "2023-03-28T05:59:17.412294+00:00",
-      selection_criteria:
-        "The variant was selected by another lab due to its frequency in an understudied population",
-      uuid: "8138364d-f96b-42b9-a719-42199818c6fc",
-      summary: "8138364d-f96b-42b9-a719-42199818c6fc",
-    };
-
-    expect(humanGenomicVariantTitle(itemWithReferenceSeq)).toBe(
-      "AAATCGGG:100000000:TG:GC"
-    );
   });
 });

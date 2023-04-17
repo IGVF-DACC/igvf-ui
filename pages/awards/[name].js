@@ -9,8 +9,8 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -23,14 +23,11 @@ export default function Award({ award, pis, contactPi }) {
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
       <EditableItem item={award}>
+        <PagePreamble />
+        <ObjectPageHeader item={award} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={award.status} />
-            </DataItemValue>
             <DataItemLabel>Title</DataItemLabel>
             <DataItemValue>{award.title}</DataItemValue>
             {award.description && (

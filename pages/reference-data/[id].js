@@ -4,23 +4,23 @@ import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileDataItems } from "../../components/common-data-items";
 import {
   DataArea,
+  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 // lib
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { DataAreaTitle } from "../../components/data-area";
-import DocumentTable from "../../components/document-table";
-import { FileDataItems } from "../../components/common-data-items";
-import buildAttribution from "../../lib/attribution";
 
 export default function ReferenceData({
   referenceData,
@@ -34,12 +34,9 @@ export default function ReferenceData({
       <Breadcrumbs />
       <EditableItem item={referenceData}>
         <PagePreamble />
+        <ObjectPageHeader item={referenceData} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={referenceData.status} />
-            </DataItemValue>
             <FileDataItems
               file={referenceData}
               fileSet={fileSet}

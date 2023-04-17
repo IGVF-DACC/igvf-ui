@@ -8,8 +8,8 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -23,12 +23,9 @@ export default function Source({ source }) {
       <Breadcrumbs />
       <EditableItem item={source}>
         <PagePreamble />
+        <ObjectPageHeader item={source} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={source.status} />
-            </DataItemValue>
             <DataItemLabel>Title</DataItemLabel>
             <DataItemValue>{source.title}</DataItemValue>
             {source.description && (

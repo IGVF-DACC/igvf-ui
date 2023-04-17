@@ -1,11 +1,11 @@
 // node_modules
 import PropTypes from "prop-types";
-// components
+// components/search/list-renderer
 import {
   SearchListItemContent,
-  SearchListItemMeta,
   SearchListItemMain,
-  SearchListItemStatus,
+  SearchListItemMeta,
+  SearchListItemQuality,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -26,7 +26,7 @@ export default function OntologyTerm({ item: ontologyTerm }) {
           </SearchListItemMeta>
         )}
       </SearchListItemMain>
-      <SearchListItemStatus item={ontologyTerm} />
+      <SearchListItemQuality item={ontologyTerm} />
     </SearchListItemContent>
   );
 }

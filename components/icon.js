@@ -95,16 +95,30 @@ const Icon = {
       fill="none"
       data-testid={testid}
     >
-      <g className="stroke-2">
-        <path
-          d="M14.2,1
+      <path
+        d="M14.2,1
 	c-2.2,2.2,2.6,7,0.4,9.2c-2.2,2.2-7-2.6-9.2-0.4s2.6,7,0.4,9.2"
-        />
-        <path
-          d="M1,14.2
+      />
+      <path
+        d="M1,14.2
 	c2.2-2.2,7,2.6,9.2,0.4c2.2-2.2-2.6-7-0.4-9.2s7,2.6,9.2,0.4"
-        />
-      </g>
+      />
+    </svg>
+  ),
+  EllipsisHorizontal: ({
+    className = null,
+    testid = "icon-ellipsis-horizontal",
+  }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 36 8"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <circle cx="18" cy="4" r="3.4" />
+      <circle cx="31.6" cy="4" r="3.4" />
+      <circle cx="4.4" cy="4" r="3.4" />
     </svg>
   ),
   Sample: ({ className = null, testid = "icon-sample" }) => (
@@ -205,6 +219,10 @@ Icon.Circle.propTypes = {
   testid: PropTypes.string,
 };
 Icon.Donor.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.EllipsisHorizontal.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };

@@ -12,15 +12,15 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
-import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
-import TreatmentTable from "../../components/treatment-table";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
+import PagePreamble from "../../components/page-preamble";
+import TreatmentTable from "../../components/treatment-table";
 // lib
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import buildAttribution from "../../lib/attribution";
 
 export default function PrimaryCell({
   primaryCell,
@@ -39,12 +39,9 @@ export default function PrimaryCell({
       <Breadcrumbs />
       <EditableItem item={primaryCell}>
         <PagePreamble />
+        <ObjectPageHeader item={primaryCell} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={primaryCell.status} />
-            </DataItemValue>
             <BiosampleDataItems
               biosample={primaryCell}
               source={source}

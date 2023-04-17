@@ -3,7 +3,7 @@ import {
   SearchListItemContent,
   SearchListItemMain,
   SearchListItemMeta,
-  SearchListItemStatus,
+  SearchListItemQuality,
   SearchListItemSupplement,
   SearchListItemSupplementContent,
   SearchListItemSupplementLabel,
@@ -38,7 +38,6 @@ describe("Test a search-list item", () => {
               <div>{term.synonyms.join(", ")}</div>
             </SearchListItemMeta>
           </SearchListItemMain>
-          <SearchListItemStatus item={term} />
           <SearchListItemSupplement>
             <SearchListItemSupplementSection>
               <SearchListItemSupplementLabel>
@@ -49,6 +48,7 @@ describe("Test a search-list item", () => {
               </SearchListItemSupplementContent>
             </SearchListItemSupplementSection>
           </SearchListItemSupplement>
+          <SearchListItemQuality item={term} />
         </SearchListItemContent>
       </SearchListItem>
     );
@@ -62,9 +62,6 @@ describe("Test a search-list item", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Metadata");
-
-    const status = screen.getByTestId("search-list-item-status");
-    expect(status).toHaveTextContent("current");
 
     const supplement = screen.getByTestId("search-list-item-supplement");
     expect(supplement).toHaveTextContent("Term Supplement");

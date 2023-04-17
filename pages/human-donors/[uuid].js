@@ -4,18 +4,12 @@ import PropTypes from "prop-types";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { DonorDataItems } from "../../components/common-data-items";
-import {
-  DataArea,
-  DataAreaTitle,
-  DataItemLabel,
-  DataItemValue,
-  DataPanel,
-} from "../../components/data-area";
+import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
-import ExternalResources from "../../components/external-resources";
-import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 import { EditableItem } from "../../components/edit";
+import ExternalResources from "../../components/external-resources";
+import ObjectPageHeader from "../../components/object-page-header";
+import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -36,12 +30,9 @@ export default function HumanDonor({
       <Breadcrumbs />
       <EditableItem item={donor}>
         <PagePreamble />
+        <ObjectPageHeader item={donor} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={donor.status} />
-            </DataItemValue>
             <DonorDataItems donor={donor} parents={parents} />
           </DataArea>
         </DataPanel>

@@ -10,8 +10,8 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -33,12 +33,9 @@ export default function SequenceData({
       <Breadcrumbs />
       <EditableItem item={sequenceData}>
         <PagePreamble />
+        <ObjectPageHeader item={sequenceData} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={sequenceData.status} />
-            </DataItemValue>
             <FileDataItems
               file={sequenceData}
               fileSet={fileSet}

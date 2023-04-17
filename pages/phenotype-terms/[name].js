@@ -2,16 +2,11 @@
 import PropTypes from "prop-types";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
-import {
-  DataArea,
-  DataItemLabel,
-  DataItemValue,
-  DataPanel,
-} from "../../components/data-area";
+import { DataArea, DataPanel } from "../../components/data-area";
 import { OntologyTermDataItems } from "../../components/common-data-items";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -23,12 +18,9 @@ export default function PhenotypeOntologyTerm({ phenotypeOntologyTerm }) {
       <Breadcrumbs />
       <EditableItem item={phenotypeOntologyTerm}>
         <PagePreamble />
+        <ObjectPageHeader item={phenotypeOntologyTerm} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={phenotypeOntologyTerm.status} />
-            </DataItemValue>
             <OntologyTermDataItems ontologyTerm={phenotypeOntologyTerm} />
           </DataArea>
         </DataPanel>

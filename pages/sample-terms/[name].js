@@ -11,8 +11,8 @@ import {
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import { EditableItem } from "../../components/edit";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -24,12 +24,9 @@ export default function SampleOntologyTerm({ sampleOntologyTerm }) {
       <Breadcrumbs />
       <EditableItem item={sampleOntologyTerm}>
         <PagePreamble />
+        <ObjectPageHeader item={sampleOntologyTerm} />
         <DataPanel>
           <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={sampleOntologyTerm.status} />
-            </DataItemValue>
             {sampleOntologyTerm.dbxrefs?.length > 0 && (
               <>
                 <DataItemLabel>External Resources</DataItemLabel>
