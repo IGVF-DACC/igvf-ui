@@ -4,13 +4,17 @@ import PropTypes from "prop-types";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
-import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
+import {
+  DataArea,
+  DataAreaTitle,
+  DataPanel,
+} from "../../components/data-area";
+import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
-import BiomarkerTable from "../../components/biomarker-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -30,7 +34,6 @@ export default function WholeOrganism({
   partOf,
   attribution = null,
 }) {
-  console.log(sample);
   return (
     <>
       <Breadcrumbs />
@@ -95,7 +98,7 @@ WholeOrganism.propTypes = {
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
-  biomarkers: PropTypes.arrayOf(PropTypes.object),
+  biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Part of Biosample
   partOf: PropTypes.object,
   // Attribution for this sample

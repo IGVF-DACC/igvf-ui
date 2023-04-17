@@ -12,12 +12,12 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
-import BiomarkerTable from "../../components/biomarker-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -121,7 +121,7 @@ InVitroSystem.propTypes = {
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
-  biomarkers: PropTypes.arrayOf(PropTypes.object),
+  biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Part of Biosample
   partOf: PropTypes.object,
   // The targeted endpoint biosample resulting from differentation or reprogramming

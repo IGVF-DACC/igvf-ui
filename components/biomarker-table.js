@@ -25,12 +25,12 @@ const biomarkersColumns = [
     id: "synonyms",
     title: "Synonyms",
     display: ({ source }) =>
-      source.synonyms ? `${source.synonyms.join(", ")}` : "",
+      source.synonyms ? source.synonyms.join(", ") : "",
   },
   {
     id: "aliases",
     title: "Aliases",
-    display: ({ source }) => `${source.aliases?.join(", ")}`,
+    display: ({ source }) => source.aliases?.join(", "),
   },
 ];
 
