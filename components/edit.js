@@ -1,7 +1,7 @@
 // node_modules
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
-import React, { useContext, useRef, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
 import FlashMessage from "./flash-message";
@@ -89,7 +89,6 @@ SavedErrors.propTypes = {
 
 export default function EditPage({ item }) {
   const { session } = useContext(SessionContext);
-  const request = useRef(new FetchRequest({ session }));
 
   const path = item["@id"];
 
@@ -142,10 +141,11 @@ export default function EditPage({ item }) {
   });
 
   useEffect(() => {
-    request.current.getObject(`${path}?frame=edit`).then((value) => {
+    const getRequest = new FetchRequest({ session });
+    getRequest.getObject(`${path}?frame=edit`).then((value) => {
       setText(JSON.stringify(sortedJson(value), null, 4));
     });
-  }, [path]);
+  }, [path, session]);
 
   const router = useRouter();
 
@@ -168,7 +168,8 @@ export default function EditPage({ item }) {
       errors: [],
     });
     const value = sortedJson(JSON.parse(text));
-    request.current.putObject(path, value).then((response) => {
+    const putRequest = new FetchRequest({ session });
+    putRequest.putObject(path, value).then((response) => {
       if (response.status === "success") {
         setSaveErrors([]);
         router.push(path);
