@@ -27,6 +27,29 @@ const Icon = {
       <polygon points="10,3.6 11.4,6.5 14.4,6.9 12.2,9 12.7,12.1 10,10.6 7.3,12.1 7.8,9 5.6,6.9 8.6,6.5 " />
     </svg>
   ),
+  Brand: ({ className = null, testid = "icon-brand" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <g className="fill-brand">
+        <path
+          d="M10,20C4.5,20,0,15.5,0,10C0,4.5,4.5,0,10,0c5.5,0,10,4.5,10,10C20,15.5,15.5,20,10,20z M10,2.8
+		C6,2.8,2.8,6,2.8,10c0,4,3.2,7.2,7.2,7.2c4,0,7.2-3.2,7.2-7.2C17.2,6,14,2.8,10,2.8z"
+        />
+        <path d="M12.7,10.2l1.4,1.4V5.3c-0.8-0.7-1.8-1.2-2.8-1.4v7.7L12.7,10.2z" />
+        <path d="M7.3,8.7l1.4-1.4V3.9c-1.1,0.2-2,0.7-2.8,1.4v2.1L7.3,8.7z" />
+        <path d="M7.3,9.8L5.9,8.4v6.3c0.8,0.7,1.8,1.2,2.8,1.4V8.4L7.3,9.8z" />
+      </g>
+      <path
+        className="fill-brand-accent"
+        d="M12.7,11.3l-1.4,1.4v3.5c1.1-0.2,2-0.7,2.8-1.4v-2.1L12.7,11.3z"
+      />
+    </svg>
+  ),
   Circle: ({ className = null, testid = "icon-circle" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -205,12 +228,47 @@ const Icon = {
       />
     </svg>
   ),
+  UserSignedIn: ({ className = null, testid = "icon-user-signed-out" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path
+        d="M10,1.8c-4.5,0-8.2,3.7-8.2,8.2c0,4.5,3.7,8.2,8.2,8.2c4.5,0,8.2-3.7,8.2-8.2C18.2,5.5,14.5,1.8,10,1.8z M15.2,14.2
+	c-0.9-2.1-2.9-3.5-5.2-3.5c-2.3,0-4.4,1.4-5.2,3.5C3.9,13,3.3,11.6,3.3,10c0-3.7,3-6.7,6.7-6.7c3.7,0,6.7,3,6.7,6.7
+	C16.7,11.6,16.1,13,15.2,14.2z"
+      />
+      <circle cx="10" cy="7.3" r="2.4" />
+    </svg>
+  ),
+  UserSignedOut: ({ className = null, testid = "icon-user-signed-out" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path
+        d="M4.7,14.3c-0.2,0.4,0,0.9,0.3,1.1c1.4,1.1,3.2,1.7,5,1.7c1.9,0,3.6-0.6,5-1.7c0.3-0.3,0.5-0.7,0.3-1.1
+	c-0.8-2.2-3-3.6-5.3-3.6S5.5,12.1,4.7,14.3L4.7,14.3z"
+      />
+      <circle cx="10" cy="7.3" r="2.4" />
+    </svg>
+  ),
 };
 
 /**
  * List all icon PropTypes here.
  */
 Icon.Award.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Brand.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
@@ -255,6 +313,14 @@ Icon.TableColumnsVisible.propTypes = {
   testid: PropTypes.string,
 };
 Icon.Treatment.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.UserSignedIn.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.UserSignedOut.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
