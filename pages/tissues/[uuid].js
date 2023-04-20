@@ -11,11 +11,12 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { EditableItem } from "../../components/edit";
+import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
-import { EditableItem } from "../../components/edit";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -31,6 +32,7 @@ export default function Tissue({
   biosampleTerm = null,
   diseaseTerms,
   pooledFrom,
+  biomarkers,
   partOf,
   attribution = null,
 }) {
@@ -80,6 +82,12 @@ export default function Tissue({
             </BiosampleDataItems>
           </DataArea>
         </DataPanel>
+        {biomarkers.length > 0 && (
+          <>
+            <DataAreaTitle>Biomarkers</DataAreaTitle>
+            <BiomarkerTable biomarkers={biomarkers} />
+          </>
+        )}
         {treatments?.length > 0 && (
           <>
             <DataAreaTitle>Treatments</DataAreaTitle>
@@ -115,6 +123,8 @@ Tissue.propTypes = {
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biomarkers of the sample
+  biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Part of Biosample
   partOf: PropTypes.object,
   // Attribution for this sample
@@ -147,7 +157,7 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const source = await request.getObject(tissue.source, null);
+    const source = await request.getObject(tissue.source["@id"], null);
     const treatments = tissue.treatments
       ? await request.getMultipleObjects(tissue.treatments, null, {
           filterErrors: true,
@@ -162,6 +172,12 @@ export async function getServerSideProps({ params, req }) {
     const partOf = tissue.part_of
       ? await request.getObject(tissue.part_of, null)
       : null;
+    const biomarkers =
+      tissue.biomarkers?.length > 0
+        ? await request.getMultipleObjects(tissue.biomarkers, null, {
+            filterErrors: true,
+          })
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       tissue,
       "accession",
@@ -179,6 +195,7 @@ export async function getServerSideProps({ params, req }) {
         diseaseTerms,
         pooledFrom,
         partOf,
+        biomarkers,
         pageContext: {
           title: `${tissue.biosample_term.term_name} — ${tissue.accession}`,
         },

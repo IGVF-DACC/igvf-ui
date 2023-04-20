@@ -155,7 +155,7 @@ export default function EditPage({ item }) {
     const isEditable = editable(item);
     const status = {
       canEdit: isEditable,
-      canSave: errors.length == 0 && isEditable,
+      canSave: errors.length === 0 && isEditable,
       errors,
     };
     setEditorStatus(status);
@@ -237,7 +237,7 @@ export default function EditPage({ item }) {
             }
             onClose={() => {
               const filteredErrors = saveErrors.filter(
-                (e) => e.description != error.description
+                (e) => e.description !== error.description
               );
               setSaveErrors(filteredErrors);
             }}

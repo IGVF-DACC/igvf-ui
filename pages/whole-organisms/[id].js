@@ -5,6 +5,7 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
 import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
+import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -25,6 +26,7 @@ export default function WholeOrganism({
   biosampleTerm = null,
   diseaseTerms,
   pooledFrom,
+  biomarkers,
   partOf,
   attribution = null,
 }) {
@@ -50,6 +52,12 @@ export default function WholeOrganism({
             ></BiosampleDataItems>
           </DataArea>
         </DataPanel>
+        {biomarkers.length > 0 && (
+          <>
+            <DataAreaTitle>Biomarkers</DataAreaTitle>
+            <BiomarkerTable biomarkers={biomarkers} />
+          </>
+        )}
         {treatments.length > 0 && (
           <>
             <DataAreaTitle>Treatments</DataAreaTitle>
@@ -85,6 +93,8 @@ WholeOrganism.propTypes = {
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biomarkers of the sample
+  biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Part of Biosample
   partOf: PropTypes.object,
   // Attribution for this sample
@@ -133,6 +143,18 @@ export async function getServerSideProps({ params, req }) {
             filterErrors: true,
           })
         : [];
+    const biomarkers =
+      sample.biomarkers?.length > 0
+        ? await request.getMultipleObjects(
+            // Biomarkers are embedded in whole organism, so we map
+            // to get as a list of IDs for the request
+            sample.biomarkers.map((m) => m["@id"]),
+            null,
+            {
+              filterErrors: true,
+            }
+          )
+        : [];
     const partOf = sample.part_of
       ? await request.getObject(sample.part_of, null)
       : null;
@@ -153,6 +175,7 @@ export async function getServerSideProps({ params, req }) {
         diseaseTerms,
         pooledFrom,
         partOf,
+        biomarkers,
         pageContext: {
           title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
             sample.accession

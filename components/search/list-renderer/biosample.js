@@ -19,9 +19,7 @@ export default function Biosample({ item: biosample }) {
           <SearchListItemType item={biosample} />
           {biosample.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>
-          {biosample.taxa} {biosample.biosample_term.term_name}
-        </SearchListItemTitle>
+        <SearchListItemTitle>{biosample.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{biosample.lab.title}</div>
         </SearchListItemMeta>

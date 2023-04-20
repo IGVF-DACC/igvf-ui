@@ -9,7 +9,7 @@ import { Button, ButtonLink } from "./form-elements";
 
 export function canEdit(item, actions = ["edit", "edit-json"]) {
   if ("actions" in item) {
-    return item.actions.find((act) => actions.includes(act.name)) != undefined;
+    return item.actions.find((act) => actions.includes(act.name)) !== undefined;
   }
   return false;
 }
