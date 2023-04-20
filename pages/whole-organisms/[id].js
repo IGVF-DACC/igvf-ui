@@ -4,11 +4,7 @@ import PropTypes from "prop-types";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
-import {
-  DataArea,
-  DataAreaTitle,
-  DataPanel,
-} from "../../components/data-area";
+import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
 import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
