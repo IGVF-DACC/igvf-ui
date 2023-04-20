@@ -8,6 +8,7 @@ import { pathToType } from "../lib/general";
 // We know if we have a lotId, then we have a productId
 export default function ProductInfo({ source, productId, lotId }) {
   const content = [];
+  const prodLot = lotId ? `${productId} (${lotId})` : "";
   if (lotId) {
     // If we have a lotId, then we will also have a productId
     content.push(productId);
@@ -20,19 +21,26 @@ export default function ProductInfo({ source, productId, lotId }) {
       return (
         <>
           {source.url ? (
-            <Link href={source.url}>{content.join(" - ")}</Link>
+            <>
+              <Link href={source.url}>{source.name}</Link> {prodLot}
+            </>
           ) : (
-            <>{content.join(" - ")}</>
+            <>
+              {source.name} {prodLot}
+            </>
           )}
         </>
       );
     }
     if (sourceType == "labs") {
-      content.unshift(source.title);
-      return <Link href={source["@id"]}>{content.join(" - ")}</Link>;
+      return (
+        <>
+          <Link href={source["@id"]}>{source.title}</Link> {prodLot}
+        </>
+      );
     }
   }
-  return <>{content.join(" - ")}</>;
+  return <>{prodLot}</>;
 }
 
 ProductInfo.propTypes = {

@@ -224,6 +224,7 @@ export function BiosampleDataItems({
   diseaseTerms = null,
   pooledFrom,
   partOf,
+  classification = null,
   children,
 }) {
   return (
@@ -238,29 +239,39 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
+      {classification && (
+        <>
+          <DataItemLabel>Classification</DataItemLabel>
+          <DataItemValue>{classification}</DataItemValue>
+        </>
+      )}
       {biosample.sex && (
         <>
           <DataItemLabel>Sex</DataItemLabel>
           <DataItemValue>{biosample.sex}</DataItemValue>
         </>
       )}
-      {biosample.age && (
-        <>
-          <DataItemLabel>Age</DataItemLabel>
-          <DataItemValue>
-            {biosample.embryonic ? "Embryonic" : ""} {biosample.age}
-            {biosample.age_units ? (
-              <>
-                {" "}
-                {biosample.age_units}
-                {biosample.age !== "1" ? "s" : ""}
-              </>
-            ) : (
-              ""
-            )}
-          </DataItemValue>
-        </>
-      )}
+      <>
+        <DataItemLabel>Age</DataItemLabel>
+        <DataItemValue>
+          {biosample.age == "unknown"
+            ? biosample.embryonic
+              ? "Embryonic"
+              : "unknown"
+            : biosample.embryonic
+            ? `Emryonic ${biosample.age}`
+            : biosample.age}
+          {biosample.age_units ? (
+            <>
+              {" "}
+              {biosample.age_units}
+              {biosample.age !== "1" ? "s" : ""}
+            </>
+          ) : (
+            ""
+          )}
+        </DataItemValue>
+      </>
       {pooledFrom.length > 0 && (
         <>
           <DataItemLabel>Biosample(s) Pooled From</DataItemLabel>
@@ -339,6 +350,8 @@ BiosampleDataItems.propTypes = {
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
+  // Classification if this biosample has one
+  classification: PropTypes.string,
 };
 
 /**

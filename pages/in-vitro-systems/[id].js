@@ -54,12 +54,11 @@ export default function InVitroSystem({
               diseaseTerms={diseaseTerms}
               pooledFrom={pooledFrom}
               partOf={partOf}
+              classification={inVitroSystem.classification}
               options={{
                 dateObtainedTitle: "Date Collected",
               }}
             >
-              <DataItemLabel>Classification</DataItemLabel>
-              <DataItemValue>{inVitroSystem.classification}</DataItemValue>
               {targetedSampleTerm && (
                 <>
                   <DataItemLabel>Targeted Sample Term</DataItemLabel>
