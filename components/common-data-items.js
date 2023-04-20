@@ -12,8 +12,8 @@ import PropTypes from "prop-types";
 import AliasList from "./alias-list";
 import { DataItemLabel, DataItemValue } from "./data-area";
 import DbxrefList from "./dbxref-list";
-import SeparatedList from "./separated-list";
 import ProductInfo from "./product-info";
+import SeparatedList from "./separated-list";
 // lib
 import { formatDate } from "../lib/dates";
 
@@ -254,7 +254,7 @@ export function BiosampleDataItems({
       <>
         <DataItemLabel>Age</DataItemLabel>
         <DataItemValue>
-          {biosample.age == "unknown"
+          {biosample.age === "unknown"
             ? biosample.embryonic
               ? "Embryonic"
               : "unknown"

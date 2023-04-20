@@ -24,7 +24,7 @@ const phenotypicFeaturesColumns = [
       const terms = meta.phenotypeTermsList;
       // Filter the list to contain only the term that matches the one in the source feature
       const featureTerm = terms.find(
-        (term) => term["@id"] == source.source.feature
+        (term) => term["@id"] === source.source.feature
       );
       // If we found it, then use it, otherwise use the full path
       const termId = featureTerm ? featureTerm.term_id : source.source.feature;

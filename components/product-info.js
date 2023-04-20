@@ -1,5 +1,7 @@
-import PropTypes from "prop-types";
+// node_modules
 import Link from "next/link";
+import PropTypes from "prop-types";
+// lib
 import { pathToType } from "../lib/general";
 
 // We want ideally: ABCAM - CD7348 - 11100020
@@ -16,7 +18,7 @@ export default function ProductInfo({ source, productId, lotId }) {
   }
   if (source) {
     const sourceType = pathToType(source["@id"]);
-    if (sourceType == "sources") {
+    if (sourceType === "sources") {
       content.unshift(source.name);
       return (
         <>
@@ -32,7 +34,7 @@ export default function ProductInfo({ source, productId, lotId }) {
         </>
       );
     }
-    if (sourceType == "labs") {
+    if (sourceType === "labs") {
       return (
         <>
           <Link href={source["@id"]}>{source.title}</Link> {prodLot}

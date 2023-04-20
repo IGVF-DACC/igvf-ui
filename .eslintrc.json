@@ -8,6 +8,7 @@
     "camelcase": ["error", { "properties": "never" }],
     "comma-dangle": ["error", "always-multiline"],
     "dot-notation": ["error"],
+    "eqeqeq": ["error"],
     "func-style": ["error", "declaration"],
     "no-else-return": ["error", { "allowElseIf": false }],
     "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
