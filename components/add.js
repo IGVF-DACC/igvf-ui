@@ -29,7 +29,7 @@ import { urlWithoutParams, sortedJson } from "../lib/general";
 function actionProfile(item, actions) {
   if ("actions" in item) {
     const act = item.actions.find((act) => actions.includes(act.name));
-    if (act != null) {
+    if (act !== null) {
       return act.profile;
     }
   }
@@ -176,7 +176,7 @@ export function AddInstancePage({ collection }) {
     const isAddable = addable(collection);
     const status = {
       canEdit: isAddable,
-      canSave: errors.length == 0 && isAddable,
+      canSave: errors.length === 0 && isAddable,
       errors,
     };
     setEditorStatus(status);
@@ -261,7 +261,7 @@ export function AddInstancePage({ collection }) {
             }
             onClose={() => {
               const filteredErrors = saveErrors.filter(
-                (e) => e.key != error.key
+                (e) => e.key !== error.key
               );
               setSaveErrors(filteredErrors);
             }}
