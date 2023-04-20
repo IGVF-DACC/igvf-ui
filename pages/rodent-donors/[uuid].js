@@ -22,7 +22,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
-import ProductInfo from '../../components/product-info';
+import ProductInfo from "../../components/product-info";
 
 export default function RodentDonor({
   donor,
@@ -30,12 +30,8 @@ export default function RodentDonor({
   parents,
   attribution = null,
   phenotypicFeatures,
-  phenotypeTermsList,
   source,
 }) {
-  console.log(donor);
-  console.log(donor.source);
-  console.log(source);
   return (
     <>
       <Breadcrumbs />
@@ -62,7 +58,13 @@ export default function RodentDonor({
               {(donor.source || donor.lot_id) && (
                 <>
                   <DataItemLabel>Source</DataItemLabel>
-                  <DataItemValue><ProductInfo source={source} lotId={donor.lot_id} productId={donor.product_id}/></DataItemValue>
+                  <DataItemValue>
+                    <ProductInfo
+                      source={source}
+                      lotId={donor.lot_id}
+                      productId={donor.product_id}
+                    />
+                  </DataItemValue>
                 </>
               )}
             </DonorDataItems>
@@ -71,10 +73,7 @@ export default function RodentDonor({
         {phenotypicFeatures.length > 0 && (
           <>
             <DataAreaTitle>Phenotypic Features</DataAreaTitle>
-            <PhenotypicFeatureTable
-              phenotypicFeatures={phenotypicFeatures}
-              phenotypeTermsList={phenotypeTermsList}
-            />
+            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
           </>
         )}
         <ExternalResources resources={donor.external_resources} />
@@ -84,7 +83,7 @@ export default function RodentDonor({
             <DocumentTable documents={documents} />
           </>
         )}
-        <Attribution award={award} lab={lab} collections={donor.collections}/>
+        <Attribution attribution={attribution} />
       </EditableItem>
     </>
   );
@@ -101,8 +100,6 @@ RodentDonor.propTypes = {
   attribution: PropTypes.object,
   // Phenotypic Features of this donor
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
-  // Phenotype terms associated with the above features
-  phenotypeTermsList: PropTypes.arrayOf(PropTypes.object),
   // Source of donor
   source: PropTypes.object,
 };
@@ -126,15 +123,9 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const phenotypeTermsList =
-      phenotypicFeatures.length > 0
-        ? await request.getMultipleObjects([
-            ...new Set(
-              phenotypicFeatures.map((phenotype) => phenotype.feature)
-            ),
-          ])
-        : [];
-    const source = donor.source ? await request.getObject(donor.source["@id"]) : {};
+    const source = donor.source
+      ? await request.getObject(donor.source["@id"])
+      : {};
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
@@ -147,7 +138,6 @@ export async function getServerSideProps({ params, req }) {
         documents,
         parents,
         phenotypicFeatures,
-        phenotypeTermsList,
         source,
         pageContext: { title: donor.accession },
         breadcrumbs,

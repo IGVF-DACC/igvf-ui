@@ -12,21 +12,26 @@ import {
 } from "./search-list-item";
 
 export default function RodentDonor({ item: rodentDonor, accessoryData }) {
-  const lab = accessoryData?.[rodentDonor.lab];
+  const lab = rodentDonor.lab;
   const collections =
     rodentDonor.collections?.length > 0
       ? rodentDonor.collections.join(", ")
       : "";
-  // const phenotypicFeatures = rodentDonor.phenotypic_features
-  //   ?.filter((path) => {
-  //     return Boolean(accessoryData?.[path]);
-  //   })
-  //   .map((path) => {
-  //     const feature = accessoryData[path];
-  //     const notes = feature.notes ? feature.notes : "Amount";
-  //     return `${notes} ${feature.quantity} ${feature.quantity_units}`;
-  //   })
-    // .join(", ");
+  const phenotypicFeatures = rodentDonor.phenotypic_features
+    ?.filter((path) => {
+      const keys = Object.keys(accessoryData);
+      return keys.includes(path);
+    })
+    .map((path) => {
+      const feature = accessoryData[path];
+      if (feature.quantity) {
+        return `${feature.feature.term_name} ${feature.quantity} ${
+          feature.quantity_units
+        }${feature.quantity === 1 ? "" : "s"}`;
+      }
+      return feature.feature.term_name;
+    })
+    .join(", ");
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -41,9 +46,9 @@ export default function RodentDonor({ item: rodentDonor, accessoryData }) {
           <SearchListItemMeta>
             {lab && <div key="lab">{lab.title}</div>}
             {collections && <div key="collections">{collections}</div>}
-            {/* {phenotypicFeatures && (
+            {phenotypicFeatures && (
               <div key="phenotypes">{phenotypicFeatures}</div>
-            )} */}
+            )}
           </SearchListItemMeta>
         )}
       </SearchListItemMain>
@@ -60,12 +65,9 @@ RodentDonor.propTypes = {
 };
 
 RodentDonor.getAccessoryDataPaths = (rodentDonors) => {
-  const labs = rodentDonors
-    .map((rodentDonor) => rodentDonor.lab)
-    .filter(Boolean);
-  // A list of list of phenotypic features paths
-  // const phenotypicFeatures = rodentDonors
-  //   .map((rodentDonor) => rodentDonor.phenotypic_features)
-  //   .filter(Boolean);
-  return labs;
+  const phenotypicFeatures = rodentDonors
+    .map((rodentDonor) => rodentDonor.phenotypic_features)
+    .filter(Boolean)
+    .flat(1);
+  return phenotypicFeatures;
 };
