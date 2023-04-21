@@ -18,7 +18,6 @@ import DarkModeManager from "../lib/dark-mode-manager";
 import Error from "../components/error";
 import GlobalContext from "../components/global-context";
 import NavigationSection from "../components/navigation";
-import { ProfileMap } from "../components/profile-map";
 import ScrollToTop from "../components/scroll-to-top";
 import { Session } from "../components/session-context";
 import ViewportOverlay from "../components/viewport-overlay";
@@ -109,21 +108,19 @@ function Site({ Component, pageProps, authentication }) {
         <ScrollToTop />
         <GlobalContext.Provider value={globalContext}>
           <Session authentication={authentication}>
-            <ProfileMap>
-              <div className="md:flex">
-                <NavigationSection />
-                <div className="min-w-0 shrink grow px-3 py-2 text-black dark:text-white md:px-8">
-                  {pageProps.serverSideError ? (
-                    <Error
-                      statusCode={pageProps.serverSideError.code}
-                      title={pageProps.serverSideError.description}
-                    />
-                  ) : (
-                    <Component {...pageProps} />
-                  )}
-                </div>
+            <div className="md:flex">
+              <NavigationSection />
+              <div className="min-w-0 shrink grow px-3 py-2 text-black dark:text-white md:px-8">
+                {pageProps.serverSideError ? (
+                  <Error
+                    statusCode={pageProps.serverSideError.code}
+                    title={pageProps.serverSideError.description}
+                  />
+                ) : (
+                  <Component {...pageProps} />
+                )}
               </div>
-            </ProfileMap>
+            </div>
           </Session>
         </GlobalContext.Provider>
       </div>

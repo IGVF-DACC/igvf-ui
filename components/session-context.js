@@ -50,44 +50,53 @@ export function Session({ authentication, children }) {
   const [dataProviderUrl, setDataProviderUrl] = useState(null);
   // Set to true once we start the process of signing into igvfd
   const isServerAuthPending = useRef(false);
-  // Set to true while retrieving /profiles
-  const isProfilesPending = useRef(false);
 
   const { getAccessTokenSilently, isAuthenticated, logout } = useAuth0();
   const router = useRouter();
 
-  // If we don't have them in state, get the session, session-properties, and profiles objects
-  // from igvfd. We mostly need this when the user reloads the page, as logging in also retrieves
-  // the session and session-properties objects. Because these requests can fail on certain pages,
-  // (e.g. 404 pages), we first request the URL of the data provider from the UI API so that we can
-  // perform requests to the data provider even on these pages.
+  // Get the data provider URL in case the user loaded a page that 404'd, in which case NextJS
+  // doesn't load environment variables, leaving us unable to retrieve the session and session-
+  // properties objects from igvfd. By getting the data provider URL, we can then get the session
+  // and session-properties objects using the full URL instead of just the path.
   useEffect(() => {
     if (!dataProviderUrl) {
       getDataProviderUrl().then((url) => {
         setDataProviderUrl(url);
       });
-    } else {
-      if (!session && dataProviderUrl) {
-        getSession(dataProviderUrl).then((sessionResponse) => {
-          setSession(sessionResponse);
-        });
-      }
-      if (!sessionProperties) {
-        getSessionProperties(dataProviderUrl).then(
-          (sessionPropertiesResponse) => {
-            setSessionProperties(sessionPropertiesResponse);
-          }
-        );
-      }
-      if (!profiles && !isProfilesPending.current) {
-        isProfilesPending.current = true;
-        getProfiles(session).then((profiles) => {
-          isProfilesPending.current = false;
-          setProfiles(profiles);
-        });
-      }
     }
-  }, [dataProviderUrl, profiles, session, sessionProperties]);
+  }, [dataProviderUrl]);
+
+  // Get the session object from igvfd if we don't already have it in state. We need this to get
+  // the CSRF token to sign into igvfd.
+  useEffect(() => {
+    if (!session && dataProviderUrl) {
+      getSession(dataProviderUrl).then((sessionResponse) => {
+        setSession(sessionResponse);
+      });
+    }
+  }, [dataProviderUrl, session]);
+
+  // Get the session-properties object from igvfd if we don't already have it in state. This gives
+  // us the user's name and email address, and whether they're an admin.
+  useEffect(() => {
+    if (!sessionProperties && dataProviderUrl) {
+      getSessionProperties(dataProviderUrl).then(
+        (sessionPropertiesResponse) => {
+          setSessionProperties(sessionPropertiesResponse);
+        }
+      );
+    }
+  }, [dataProviderUrl, sessionProperties]);
+
+  // Get all the schemas so that the several other places in the code that need schemas can get
+  // them from this context instead of doing a request to /profiles.
+  useEffect(() => {
+    if (!profiles && session) {
+      getProfiles(session).then((profiles) => {
+        setProfiles(profiles);
+      });
+    }
+  }, [profiles, session]);
 
   // If we detect a transition from Auth0's logged-out state to logged-in state, log the user into
   // igvfd. The callback that auth0-react calls after a successful Auth0 login exists outside the

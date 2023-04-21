@@ -9,7 +9,7 @@ describe("Test Add button", () => {
     cy.visit("/profiles");
     cy.wait(500);
 
-    cy.get("a[href='/labs#!add']").should("exist").click();
+    cy.get("a[href='/lab#!add']").should("exist").click();
 
     cy.get('[id="JSON Editor"]').should("exist");
 

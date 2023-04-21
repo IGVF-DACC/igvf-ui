@@ -1,88 +1,117 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { AddItemFromSchema } from "../../components/add";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
+import { AddLink } from "../../components/add";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-function ChildElement({ title, schemaKey, schemas, child, indentation }) {
-  const schema = schemas[schemaKey];
-  if (schema && schema.title) {
-    return (
-      <div className={`px-${indentation} my-1 flex items-center space-x-1`}>
-        <Link href={`${schema.$id.replace(".json", "")}`} className="block">
-          {title}
-        </Link>
-        <AddItemFromSchema schema={schema} label={`Add ${schema.title}`} />
-      </div>
-    );
-  }
-  if (Object.keys(child).length > 0) {
-    return (
-      <div className={`px-${indentation}`}>
-        <div className="font-semibold">{title}</div>
-        {Object.keys(child).map((childKey) => {
-          return (
-            <ChildElement
-              title={schemas[childKey] ? schemas[childKey].title : childKey}
-              schemaKey={childKey}
-              schemas={schemas}
-              child={child[childKey]}
-              indentation={indentation + 4}
-              key={childKey}
-            />
-          );
-        })}
-      </div>
-    );
-  }
-  return null;
+/**
+ * Returns true if the given object type is displayable in the UI. This also indicates that you
+ * can add and edit objects of this type.
+ * @param {string} objectType Object @type to check
+ * @param {object} schemas List of schemas to display in the list; directly from /profiles endpoint
+ * @param {object} tree Top of the _hierarchy tree at this level
+ * @returns {boolean} True if the object type is displayable/addable/editable
+ */
+function isDisplayableType(objectType, schemas, tree) {
+  return (
+    schemas[objectType]?.identifyingProperties?.length > 0 ||
+    Object.keys(tree).length > 0
+  );
 }
 
-ChildElement.propTypes = {
-  title: PropTypes.string.isRequired,
-  schemaKey: PropTypes.string.isRequired,
+/**
+ * Displays a schema element and its children. This component uses recursion, so every element at
+ * different times exists as a child and a parent -- possibly a parent with no children.
+ */
+function SubTree({ tree, objectType, schemas, collectionTitles }) {
+  const title = collectionTitles[objectType];
+  const schema = schemas[objectType];
+  const childObjectTypes = Object.keys(tree).filter((childObjectType) =>
+    isDisplayableType(childObjectType, schemas, tree[childObjectType])
+  );
+
+  return (
+    <div className="my-1">
+      {schema ? (
+        <div className="flex gap-1">
+          <Link href={`${schema.$id.replace(".json", "")}`} className="block">
+            {title}
+          </Link>
+          <AddLink schema={schema} label={`Add ${schema.title}`} />
+        </div>
+      ) : (
+        <div className="font-bold">{title}</div>
+      )}
+      {childObjectTypes.length > 0 && (
+        <div className="ml-4">
+          {childObjectTypes.map((childObjectType) => {
+            const child = tree[childObjectType];
+            return (
+              <SubTree
+                tree={child}
+                objectType={childObjectType}
+                schemas={schemas}
+                collectionTitles={collectionTitles}
+                key={childObjectType}
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+SubTree.propTypes = {
+  // Top of the _hierarchy tree to render at this level
+  tree: PropTypes.object.isRequired,
+  // @type for `tree`
+  objectType: PropTypes.string.isRequired,
+  // List of schemas to display in the list; directly from /profiles endpoint
   schemas: PropTypes.object.isRequired,
-  child: PropTypes.object.isRequired,
-  indentation: PropTypes.number.isRequired,
+  // Maps collection names to corresponding human-readable schema titles
+  collectionTitles: PropTypes.object.isRequired,
 };
 
-export default function SchemaList({ schemas, collectionTitles = null }) {
-  const schemaHierarchy = schemas._hierarchy;
-
+export default function Profiles({ schemas, collectionTitles = null }) {
+  const topLevelObjectTypes = Object.keys(schemas._hierarchy.Item).filter(
+    (objectType) =>
+      isDisplayableType(
+        objectType,
+        schemas,
+        schemas._hierarchy.Item[objectType]
+      )
+  );
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
       <>
-        {Object.keys(schemaHierarchy.Item).map((hierarchyKey) => {
-          if (hierarchyKey !== "AccessKey") {
-            const title = collectionTitles?.[hierarchyKey];
-            return (
-              <ChildElement
-                title={title || hierarchyKey}
-                schemaKey={hierarchyKey}
-                schemas={schemas}
-                child={schemaHierarchy.Item[hierarchyKey]}
-                indentation={0}
-                key={hierarchyKey}
-              />
-            );
-          }
-          return null;
+        {topLevelObjectTypes.map((objectType) => {
+          const topOfTree = schemas._hierarchy.Item[objectType];
+          return (
+            <SubTree
+              tree={topOfTree}
+              objectType={objectType}
+              schemas={schemas}
+              collectionTitles={collectionTitles}
+              key={objectType}
+            />
+          );
         })}
       </>
     </>
   );
 }
 
-SchemaList.propTypes = {
-  // schemas to display in the list
+Profiles.propTypes = {
+  // List of schemas to display in the list; directly from /profiles endpoint
   schemas: PropTypes.object.isRequired,
   // Map of collection names to corresponding schema titles
   collectionTitles: PropTypes.object,
