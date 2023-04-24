@@ -42,7 +42,7 @@ export default function RodentDonor({ item: rodentDonor, accessoryData }) {
         <SearchListItemTitle>
           {rodentDonor.strain} {rodentDonor.sex}
         </SearchListItemTitle>
-        {(lab || collections) && (
+        {(lab || collections || phenotypicFeatures) && (
           <SearchListItemMeta>
             {lab && <div key="lab">{lab.title}</div>}
             {collections && <div key="collections">{collections}</div>}
