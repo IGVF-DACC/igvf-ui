@@ -679,6 +679,63 @@ describe("Test the RodentDonor component", () => {
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
+
+  it("renders a RodentDonor item with accessory data", () => {
+    const item = {
+      "@id": "/rodent-donors/IGVFDO524ORO/",
+      "@type": ["RodentDonor", "Donor", "Item"],
+      accession: "IGVFDO524ORO",
+      aliases: [
+        "j-michael-cherry:alias_rodent_donor_1",
+        "j-michael-cherry:rodent_donor_with_arterial_blood_pressure_trait",
+      ],
+      award: {
+        component: "data coordination",
+        name: "HG012012",
+        "@id": "/awards/HG012012/",
+      },
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      sex: "male",
+      status: "released",
+      strain: "some name",
+      taxa: "Mus musculus",
+      uuid: "c37934b0-4269-4470-be53-9eac7b196447",
+      collections: ["ENCODE"],
+      phenotypic_features: ["/phenotypic-features/abc123/"],
+    };
+
+    const accessoryData = {
+      "/phenotypic-features/abc123/": {
+        feature: {
+          term_name: "a special feature",
+          term_id: "HELLO:12345",
+        },
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <RodentDonor item={item} accessoryData={accessoryData}/>
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^RodentDonor/);
+    expect(uniqueId).toHaveTextContent(/IGVFDO524ORO$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^some name male$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("ENCODE");
+    expect(meta).toHaveTextContent("a special feature");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
 });
 
 describe("Test the TechnicalSample component", () => {
