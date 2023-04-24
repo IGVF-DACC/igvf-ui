@@ -1,5 +1,5 @@
 // node_modules
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * These hooks let you use localStorage and sessionStorage in a way similar to React state.
@@ -21,18 +21,21 @@ import { useState } from "react";
  * ]
  */
 export function useLocalStorage(key, initialValue) {
-  const [value, setValue] = useState(() => {
-    const item =
-      typeof window !== "undefined" ? localStorage.getItem(key) : null;
-    return item ? JSON.parse(item) : initialValue;
-  });
+  const [value, setValue] = useState(initialValue);
 
   function setValueMethod(valueToStore) {
-    if (typeof window !== "undefined") {
-      setValue(valueToStore);
-      localStorage.setItem(key, JSON.stringify(valueToStore));
-    }
+    setValue(valueToStore);
+    localStorage.setItem(key, JSON.stringify(valueToStore));
   }
+
+  useEffect(() => {
+    // Now that the component has mounted, we can get the value from localStorage.
+    const item = localStorage.getItem(key);
+    const parsedItem = item ? JSON.parse(item) : initialValue;
+    if (parsedItem !== value) {
+      setValue(parsedItem);
+    }
+  }, [key, initialValue, value]);
 
   return [value, setValueMethod];
 }
@@ -48,18 +51,21 @@ export function useLocalStorage(key, initialValue) {
  * ]
  */
 export function useSessionStorage(key, initialValue) {
-  const [value, setValue] = useState(() => {
-    const item =
-      typeof window !== "undefined" ? window.sessionStorage.getItem(key) : null;
-    return item ? JSON.parse(item) : initialValue;
-  });
+  const [value, setValue] = useState(initialValue);
 
   function setValueMethod(valueToStore) {
-    if (typeof window !== "undefined") {
-      setValue(valueToStore);
-      window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
-    }
+    setValue(valueToStore);
+    window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
   }
+
+  useEffect(() => {
+    // Now that the component has mounted, we can get the value from sessionStorage.
+    const item = window.sessionStorage.getItem(key);
+    const parsedItem = item ? JSON.parse(item) : initialValue;
+    if (parsedItem !== value) {
+      setValue(parsedItem);
+    }
+  }, [key, initialValue, value]);
 
   return [value, setValueMethod];
 }

@@ -139,6 +139,9 @@ module.exports = {
         "min-2": "repeat(2, minmax(0, min-content))",
         "data-item": "fit-content(200px) 1fr",
       },
+      stroke: {
+        "nav-collapse": "var(--color-nav-collapse)",
+      },
       typography: {
         DEFAULT: {
           css: {

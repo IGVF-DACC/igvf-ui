@@ -110,6 +110,9 @@
   --color-data-label: #6b7280;
   --color-data-value: #000000;
 
+  /** Navigation collapse button */
+  --color-nav-collapse: #85abd6;
+
   /** Document tag colors */
   --color-document-autosql: #ca0032;
   --color-document-html: #487998;
@@ -198,14 +201,15 @@
   --color-data-label: #9ca3af;
   --color-data-value: #ffffff;
 
+  /** Navigation collapse button */
+  --color-nav-collapse: #4b627a;
+
   /** Typography */
   --color-code-background: #192339;
   --color-code-text: #e5e7eb;
 
   /** Modal borders */
   --color-modal-border: #68799c;
-
-  --color-button-text-info: #ffffff;
 }
 
 a {
