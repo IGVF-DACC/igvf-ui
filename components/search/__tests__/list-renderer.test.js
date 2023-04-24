@@ -717,7 +717,7 @@ describe("Test the RodentDonor component", () => {
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <RodentDonor item={item} accessoryData={accessoryData}/>
+        <RodentDonor item={item} accessoryData={accessoryData} />
       </SessionContext.Provider>
     );
 
