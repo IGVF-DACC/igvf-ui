@@ -8,7 +8,11 @@ import { pathToType } from "../lib/general";
 // <Link href="source.url">{source.name} - {productId} - {lotId}</Link>
 // If no url, then `{source.name} - {productId} - {lotId}`
 // We know if we have a lotId, then we have a productId
-export default function ProductInfo({ source = null, productId = null, lotId = null }) {
+export default function ProductInfo({
+  source = null,
+  productId = null,
+  lotId = null,
+}) {
   const prodLot = lotId ? `${productId} (${lotId})` : "";
   if (source) {
     const sourceType = pathToType(source["@id"]);
