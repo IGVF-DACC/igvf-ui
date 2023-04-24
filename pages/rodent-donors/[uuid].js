@@ -29,8 +29,8 @@ export default function RodentDonor({
   documents,
   parents,
   attribution = null,
-  phenotypicFeatures,
-  source,
+  phenotypicFeatures = [],
+  source = null,
 }) {
   return (
     <>
