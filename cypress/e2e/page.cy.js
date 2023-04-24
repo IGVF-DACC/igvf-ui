@@ -47,7 +47,8 @@ describe("Content-Change Tests", () => {
     cy.wait(2000);
 
     cy.visit("/test-section/subpage-in-progress#!edit");
-    cy.get("#title").clear().type("Updated Subpage Title");
+    cy.get("#title").clear();
+    cy.get("#title").type("Updated Subpage Title");
     cy.get("#status").select("Released");
     cy.get(`[aria-label="Save edits to page"]`).click();
     cy.delayForIndexing();
@@ -68,8 +69,10 @@ describe("Content-Change Tests", () => {
 
     // Change the name of the page and verify its URL changes.
     cy.visit("/test-section/subpage#!edit");
-    cy.get("#name").clear().type("new-subpage");
-    cy.get(`[aria-label="Save edits to page"]`).click();
+    cy.get("#name").clear();
+    cy.get("#name").type("new-subpage");
+    cy.get(`[aria-label="Save edits to page"]`);
+    cy.contains("Save").click();
     cy.delayForIndexing();
     cy.url().should("include", "/test-section/new-subpage");
 

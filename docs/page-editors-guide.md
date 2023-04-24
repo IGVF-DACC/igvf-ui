@@ -96,15 +96,7 @@ You create new pages by going to the Pages menu in the site navigation list to s
 
 The Help menu at the bottom of the navigation area goes to a generated help directory. The help pages on this page have a hierarchy with top-level help pages and their child pages listed under them.
 
-![Help directory screen shot](../public/pages/help-directory.png)
-
-The page paths determine where pages appear in the help directory.
-
-- The `/help/` page only contributes its title that appears in the header. None of its content gets displayed.
-- The top-level titles come from the titles of pages with the path `/help/{section name}/`. These pages appear as normal pages when the user clicks on them, and they normally display help for the overall topic section.
-- The second-level titles normally have more details about each topic section, and they have the path `/help/{section name}/{topic name}`.
-
-You can make pages that go deeper into the hierarchy, appearing indented from their already indented parents, but don’t go too deep or the help directory formatting might break at certain browser window widths. If we need help sections that go much deeper than the two levels in the example image, we might need to look at redesigning this help directory.
+See help-page-guide.md in this directory for a detailed guide for help pages.
 
 <a href="#images"></a>
 
