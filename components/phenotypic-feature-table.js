@@ -8,7 +8,7 @@ import SortableGrid from "./sortable-grid";
 const phenotypicFeaturesColumns = [
   {
     id: "phenotypic_feature_id",
-    title: "Phenotypic Feature",
+    title: "Feature Name",
     display: (source) => {
       const featureTerm = source.source.feature;
       return <Link href={source.source["@id"]}>{featureTerm.term_name}</Link>;
@@ -16,9 +16,8 @@ const phenotypicFeaturesColumns = [
   },
   {
     id: "feature",
-    title: "Feature",
+    title: "Feature ID",
     display: (source) => {
-      // If we found it, then use it, otherwise use the full path
       const termId = source.source.feature.term_id;
       return <Link href={source.source.feature["@id"]}>{termId}</Link>;
     },
@@ -26,10 +25,17 @@ const phenotypicFeaturesColumns = [
   {
     id: "quantity",
     title: "Quantity",
-    display: ({ source }) =>
-      `${source.quantity} ${source.quantity_units}${
-        source.quantity === 1 ? "" : "s"
-      }`,
+    display: ({ source }) => {
+      if (source.quantity) {
+        return (
+          <>
+            {source.quantity} {source.quantity_units}
+            {source.quantity === 1 ? "" : "s"}
+          </>
+        );
+      }
+      return null;
+    },
   },
   {
     id: "observation_date",

@@ -15,6 +15,7 @@ export default function ProductInfo({
 }) {
   const prodLot = lotId ? `${productId} (${lotId})` : "";
   if (source) {
+    console.log(source);
     const sourceType = pathToType(source["@id"]);
     if (sourceType === "sources") {
       return (

@@ -125,7 +125,7 @@ export async function getServerSideProps({ params, req }) {
       : [];
     const source = donor.source
       ? await request.getObject(donor.source["@id"])
-      : {};
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
