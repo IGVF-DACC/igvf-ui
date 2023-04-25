@@ -407,8 +407,8 @@ describe("Test the HumanDonor component", () => {
         status: "released",
         feature: {
           "@id": "/phenotype-terms/NCIT_C92648/",
-          "term_id": "NCIT:C92648",
-          "term_name": "Body Weight Measurement",
+          term_id: "NCIT:C92648",
+          term_name: "Body Weight Measurement",
         },
         quantity: 58,
         quantity_units: "kilogram",
@@ -427,8 +427,8 @@ describe("Test the HumanDonor component", () => {
         status: "released",
         feature: {
           "@id": "/phenotype-terms/NCIT_C92648/",
-          "term_id": "NCIT:C92648",
-          "term_name": "Body Weight Measurement",
+          term_id: "NCIT:C92648",
+          term_name: "Body Weight Measurement",
         },
         quantity: 58,
         quantity_units: "kilogram",

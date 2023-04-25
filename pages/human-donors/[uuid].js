@@ -94,7 +94,7 @@ export async function getServerSideProps({ params, req }) {
       : [];
     const phenotypeTermsList =
       phenotypicFeatures.length > 0
-        ?  phenotypicFeatures.map((phenotype) => phenotype.feature)
+        ? phenotypicFeatures.map((phenotype) => phenotype.feature)
         : [];
     const breadcrumbs = await buildBreadcrumbs(
       donor,

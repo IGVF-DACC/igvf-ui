@@ -19,7 +19,7 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
   const collections =
     humanDonor.collections?.length > 0 ? humanDonor.collections.join(", ") : "";
 
-    const phenotypicFeatures = humanDonor.phenotypic_features
+  const phenotypicFeatures = humanDonor.phenotypic_features
     ?.filter((path) => {
       const keys = Object.keys(accessoryData);
       return keys.includes(path);
