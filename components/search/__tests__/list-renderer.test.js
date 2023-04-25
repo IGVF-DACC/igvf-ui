@@ -405,7 +405,11 @@ describe("Test the HumanDonor component", () => {
         award: "/awards/HG012012/",
         notes: "Phenotypic feature of body weight",
         status: "released",
-        feature: "/phenotype-terms/NCIT_C92648/",
+        feature: {
+          "@id": "/phenotype-terms/NCIT_C92648/",
+          "term_id": "NCIT:C92648",
+          "term_name": "Body Weight Measurement",
+        },
         quantity: 58,
         quantity_units: "kilogram",
         schema_version: "1",
@@ -421,7 +425,11 @@ describe("Test the HumanDonor component", () => {
         lab: "/labs/j-michael-cherry/",
         award: "/awards/HG012012/",
         status: "released",
-        feature: "/phenotype-terms/NCIT_C92648/",
+        feature: {
+          "@id": "/phenotype-terms/NCIT_C92648/",
+          "term_id": "NCIT:C92648",
+          "term_name": "Body Weight Measurement",
+        },
         quantity: 58,
         quantity_units: "kilogram",
         schema_version: "1",
@@ -450,10 +458,10 @@ describe("Test the HumanDonor component", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Chongyuan Luo");
-    expect(meta).toHaveTextContent("Phenotypic feature of body weight");
+    expect(meta).toHaveTextContent("Body Weight Measurement");
     // The text "amount" should appear instead of whatever is in
     // The "notes" field if notes is not there, since it's not required
-    expect(meta).toHaveTextContent("Amount");
+    expect(meta).toHaveTextContent("58 kilograms");
     expect(meta).toHaveTextContent("ENCODE");
 
     const status = screen.getByTestId("search-list-item-quality");

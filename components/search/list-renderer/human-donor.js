@@ -18,7 +18,8 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
   const title = [ethnicities, sex].filter(Boolean);
   const collections =
     humanDonor.collections?.length > 0 ? humanDonor.collections.join(", ") : "";
-  const phenotypicFeatures = humanDonor.phenotypic_features
+
+    const phenotypicFeatures = humanDonor.phenotypic_features
     ?.filter((path) => {
       const keys = Object.keys(accessoryData);
       return keys.includes(path);
@@ -68,6 +69,7 @@ HumanDonor.getAccessoryDataPaths = (humanDonors) => {
   // A list of list of phenotypic features paths
   const phenotypicFeatures = humanDonors
     .map((humanDonor) => humanDonor.phenotypic_features)
-    .filter(Boolean);
-  return phenotypicFeatures.flat();
+    .filter(Boolean)
+    .flat(1);
+  return phenotypicFeatures;
 };
