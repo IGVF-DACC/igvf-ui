@@ -63,6 +63,7 @@ const renderers = {
   MeasurementSet,
   Page,
   PhenotypeTerm: OntologyTerm,
+  PlatformTerm: OntologyTerm,
   PrimaryCell: Biosample,
   Publication,
   ReferenceData: File,
