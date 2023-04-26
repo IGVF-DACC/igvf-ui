@@ -656,6 +656,7 @@ describe("Test the RodentDonor component", () => {
       strain: "some name",
       taxa: "Mus musculus",
       uuid: "c37934b0-4269-4470-be53-9eac7b196447",
+      collections: ["ENCODE"],
     };
 
     render(
@@ -673,9 +674,130 @@ describe("Test the RodentDonor component", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("ENCODE");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a RodentDonor item with accessory data", () => {
+    const item = {
+      "@id": "/rodent-donors/IGVFDO524ORO/",
+      "@type": ["RodentDonor", "Donor", "Item"],
+      accession: "IGVFDO524ORO",
+      aliases: [
+        "j-michael-cherry:alias_rodent_donor_1",
+        "j-michael-cherry:rodent_donor_with_arterial_blood_pressure_trait",
+      ],
+      award: {
+        component: "data coordination",
+        name: "HG012012",
+        "@id": "/awards/HG012012/",
+      },
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      sex: "male",
+      status: "released",
+      strain: "some name",
+      taxa: "Mus musculus",
+      uuid: "c37934b0-4269-4470-be53-9eac7b196447",
+      collections: ["ENCODE"],
+      phenotypic_features: [
+        "/phenotypic-features/abc123/",
+        "/phenotypic-features/123abc",
+        "/phenotypic-features/999",
+      ],
+    };
+
+    const accessoryData = {
+      "/phenotypic-features/abc123/": {
+        feature: {
+          term_name: "a special feature",
+          term_id: "HELLO:12345",
+        },
+      },
+      "/phenotypic-features/123abc": {
+        feature: {
+          term_name: "another quant feature",
+          term_id: "BYE:4567",
+        },
+        quantity: 20,
+        quantity_units: "kilogram",
+      },
+      "/phenotypic-features/999": {
+        feature: {
+          term_name: "one thing",
+          term_id: "ONE:111",
+        },
+        quantity: 1,
+        quantity_units: "gram",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <RodentDonor item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^RodentDonor/);
+    expect(uniqueId).toHaveTextContent(/IGVFDO524ORO$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^some name male$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("ENCODE");
+    expect(meta).toHaveTextContent("a special feature");
+    expect(meta).toHaveTextContent("20 kilograms");
+    expect(meta).toHaveTextContent("1 gram");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+
+    const paths = RodentDonor.getAccessoryDataPaths([item]);
+    expect(paths.sort()).toEqual(
+      [
+        "/phenotypic-features/abc123/",
+        "/phenotypic-features/123abc",
+        "/phenotypic-features/999",
+      ].sort()
+    );
+  });
+
+  it("rodent donor without collection", () => {
+    const item = {
+      "@id": "/rodent-donors/IGVFDO524OROXYZ/",
+      "@type": ["RodentDonor", "Donor", "Item"],
+      accession: "IGVFDO524OROXYZ",
+      aliases: [
+        "j-michael-cherry:alias_rodent_donor_1",
+        "j-michael-cherry:rodent_donor_with_arterial_blood_pressure_trait",
+      ],
+      award: {
+        component: "data coordination",
+        name: "HG012012",
+        "@id": "/awards/HG012012/",
+      },
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      sex: "male",
+      status: "released",
+      strain: "some name",
+      taxa: "Mus musculus",
+      uuid: "c37934b0-4269-4470-be53-9eac7b196447",
+    };
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <RodentDonor item={item} />
+      </SessionContext.Provider>
+    );
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).not.toHaveTextContent("ENCODE");
   });
 });
 

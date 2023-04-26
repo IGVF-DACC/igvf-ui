@@ -21,12 +21,16 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
+import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
+import ProductInfo from "../../components/product-info";
 
 export default function RodentDonor({
   donor,
   documents,
   parents,
   attribution = null,
+  phenotypicFeatures = [],
+  source = null,
 }) {
   return (
     <>
@@ -51,9 +55,27 @@ export default function RodentDonor({
                   <DataItemValue>{donor.genotype}</DataItemValue>
                 </>
               )}
+              {(donor.source || donor.lot_id) && (
+                <>
+                  <DataItemLabel>Source</DataItemLabel>
+                  <DataItemValue>
+                    <ProductInfo
+                      source={source}
+                      lotId={donor.lot_id}
+                      productId={donor.product_id}
+                    />
+                  </DataItemValue>
+                </>
+              )}
             </DonorDataItems>
           </DataArea>
         </DataPanel>
+        {phenotypicFeatures.length > 0 && (
+          <>
+            <DataAreaTitle>Phenotypic Features</DataAreaTitle>
+            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
+          </>
+        )}
         <ExternalResources resources={donor.external_resources} />
         {documents.length > 0 && (
           <>
@@ -76,6 +98,10 @@ RodentDonor.propTypes = {
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this donor
   attribution: PropTypes.object,
+  // Phenotypic Features of this donor
+  phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
+  // Source of donor
+  source: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -92,6 +118,14 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
+    const phenotypicFeatures = donor.phenotypic_features
+      ? await request.getMultipleObjects(donor.phenotypic_features, null, {
+          filterErrors: true,
+        })
+      : [];
+    const source = donor.source
+      ? await request.getObject(donor.source["@id"])
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
@@ -103,6 +137,8 @@ export async function getServerSideProps({ params, req }) {
         donor,
         documents,
         parents,
+        phenotypicFeatures,
+        source,
         pageContext: { title: donor.accession },
         breadcrumbs,
         attribution,

@@ -8,33 +8,34 @@ import SortableGrid from "./sortable-grid";
 const phenotypicFeaturesColumns = [
   {
     id: "phenotypic_feature_id",
-    title: "Phenotypic Feature",
-    display: ({ source }) => {
-      return (
-        <Link href={source["@id"]}>
-          {source.notes ? source.notes : source["@id"]}
-        </Link>
-      );
+    title: "Feature Name",
+    display: (source) => {
+      const featureTerm = source.source.feature;
+      return <Link href={source.source["@id"]}>{featureTerm.term_name}</Link>;
     },
   },
   {
     id: "feature",
-    title: "Feature",
-    display: (source, meta) => {
-      const terms = meta.phenotypeTermsList;
-      // Filter the list to contain only the term that matches the one in the source feature
-      const featureTerm = terms.find(
-        (term) => term["@id"] === source.source.feature
-      );
-      // If we found it, then use it, otherwise use the full path
-      const termId = featureTerm ? featureTerm.term_id : source.source.feature;
-      return <Link href={source.source.feature}>{termId}</Link>;
+    title: "Feature ID",
+    display: (source) => {
+      const termId = source.source.feature.term_id;
+      return <Link href={source.source.feature["@id"]}>{termId}</Link>;
     },
   },
   {
     id: "quantity",
     title: "Quantity",
-    display: ({ source }) => `${source.quantity} ${source.quantity_units}`,
+    display: ({ source }) => {
+      if (source.quantity) {
+        return (
+          <>
+            {source.quantity} {source.quantity_units}
+            {source.quantity === 1 ? "" : "s"}
+          </>
+        );
+      }
+      return null;
+    },
   },
   {
     id: "observation_date",
@@ -45,17 +46,13 @@ const phenotypicFeaturesColumns = [
 /**
  * Display a sortable table of the given treatments.
  */
-export default function PhenotypicFeatureTable({
-  phenotypicFeatures,
-  phenotypeTermsList,
-}) {
+export default function PhenotypicFeatureTable({ phenotypicFeatures }) {
   return (
     <DataGridContainer>
       <SortableGrid
         data={phenotypicFeatures}
         columns={phenotypicFeaturesColumns}
         keyProp="@id"
-        meta={{ phenotypeTermsList }}
       />
     </DataGridContainer>
   );
@@ -64,6 +61,4 @@ export default function PhenotypicFeatureTable({
 PhenotypicFeatureTable.propTypes = {
   // Phenotypic Features to display
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Phenotype Terms associated with the features
-  phenotypeTermsList: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

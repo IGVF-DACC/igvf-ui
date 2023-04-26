@@ -65,7 +65,7 @@ HumanDonor.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Parents of this donor
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Phenotypic Features of this donor with the feature term embedded
+  // Phenotypic Features of this donor
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
   // Phenotype terms associated with the above features
   phenotypeTermsList: PropTypes.arrayOf(PropTypes.object),
