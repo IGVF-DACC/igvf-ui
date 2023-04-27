@@ -709,6 +709,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             Phenotypes
           </NavigationHrefItem>
           <NavigationHrefItem
+            id="platform-terms"
+            href="/search?type=PlatformTerm"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Platforms
+          </NavigationHrefItem>
+          <NavigationHrefItem
             id="samples-terms"
             href="/search?type=SampleTerm"
             navigationClick={navigationClick}
