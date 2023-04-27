@@ -22,7 +22,6 @@ export default function HumanDonor({
   documents,
   parents,
   phenotypicFeatures,
-  phenotypeTermsList,
   attribution = null,
 }) {
   return (
@@ -41,7 +40,6 @@ export default function HumanDonor({
             <DataAreaTitle>Phenotypic Features</DataAreaTitle>
             <PhenotypicFeatureTable
               phenotypicFeatures={phenotypicFeatures}
-              phenotypeTermsList={phenotypeTermsList}
             />
           </>
         )}
@@ -67,8 +65,6 @@ HumanDonor.propTypes = {
   parents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Phenotypic Features of this donor
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
-  // Phenotype terms associated with the above features
-  phenotypeTermsList: PropTypes.arrayOf(PropTypes.object),
   // HumanDonor attribution
   attribution: PropTypes.object,
 };
@@ -92,10 +88,6 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
-    const phenotypeTermsList =
-      phenotypicFeatures.length > 0
-        ? phenotypicFeatures.map((phenotype) => phenotype.feature)
-        : [];
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
@@ -109,7 +101,6 @@ export async function getServerSideProps({ params, req }) {
         parents,
         pageContext: { title: donor.accession },
         phenotypicFeatures,
-        phenotypeTermsList,
         breadcrumbs,
         attribution,
       },
