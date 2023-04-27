@@ -38,9 +38,7 @@ export default function HumanDonor({
         {phenotypicFeatures.length > 0 && (
           <>
             <DataAreaTitle>Phenotypic Features</DataAreaTitle>
-            <PhenotypicFeatureTable
-              phenotypicFeatures={phenotypicFeatures}
-            />
+            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
           </>
         )}
         <ExternalResources resources={donor.external_resources} />

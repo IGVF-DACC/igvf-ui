@@ -488,7 +488,11 @@ describe("Test the HumanDonor component", () => {
 
     const paths = HumanDonor.getAccessoryDataPaths([item]);
     expect(paths.sort()).toEqual(
-      ["/phenotypic-features/123/", "/phenotypic-features/456/", "/phenotypic-features/111/"].sort()
+      [
+        "/phenotypic-features/123/",
+        "/phenotypic-features/456/",
+        "/phenotypic-features/111/",
+      ].sort()
     );
   });
 
