@@ -24,7 +24,6 @@ import React, {
   Children,
   isValidElement,
   useCallback,
-  useContext,
   useEffect,
   useState,
 } from "react";
@@ -35,11 +34,11 @@ import {
 } from "./animation";
 import { useAuthenticated } from "./authentication";
 import { useSessionStorage } from "./browser-storage";
+import { AUTH0_CLIENT_ID } from "../lib/constants";
 import { Button } from "./form-elements";
 import Icon from "./icon";
 import SiteLogo from "./logo";
 import Modal from "./modal";
-import SessionContext from "./session-context";
 // lib
 import { AUTH_ERROR_URI, UC } from "../lib/constants";
 
@@ -213,7 +212,6 @@ NavigationButtonNarrow.propTypes = {
  */
 function NavigationSignInItem({ id, isNarrowNav = false, children }) {
   const { isLoading, loginWithRedirect } = useAuth0();
-  const { setRedirectTo } = useContext(SessionContext);
 
   // Use different button-rendering components depending on whether the navigation is in wide mode
   // or narrow mode.
@@ -222,22 +220,24 @@ function NavigationSignInItem({ id, isNarrowNav = false, children }) {
     : NavigationButtonWide;
 
   /**
-   * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
-   * Redirect the post-login to the page the user currently views unless the current page is the
-   * authentication error one. We leave the rest of the provider authentication process to Auth0.
-   * We only know it was successful once `useAuth0` returns true in `isAuthenticated`.
+   * Called when the user clicks the Sign In button to begin the Auth0 authorization process. After
+   * Auth0 completes login, redirect to the page the user currently views unless the current page
+   * is the authentication error one, in which case we redirect to the home page so that the user
+   * doesn't see an out-of-date error page after a successful login.
    */
   function handleAuthClick() {
-    // Save the current path and query string in session storage so we can redirect to it after
-    // signin, unless the user is on the authentication-error page, in which case we redirect to
-    // the home page after sign-in so the user doesn't see an authentication error after a good
-    // sign-in.
-    setRedirectTo(
+    const returnUrl =
       window.location.pathname === AUTH_ERROR_URI
         ? "/"
-        : `${window.location.pathname}${window.location.search}`
-    );
-    loginWithRedirect();
+        : `${window.location.pathname}${window.location.search}`;
+    loginWithRedirect({
+      async openUrl(url) {
+        window.location.replace(url);
+      },
+      appState: {
+        returnTo: returnUrl,
+      },
+    });
   }
 
   return (
@@ -271,7 +271,7 @@ function NavigationSignOutItem({
   className = null,
   children,
 }) {
-  // True if signout warning modal open
+  // True if sign-out warning modal open
   const [isWarningOpen, setIsWarningOpen] = useState(false);
   const { logout, user } = useAuth0();
 
@@ -285,7 +285,12 @@ function NavigationSignOutItem({
    * Called when the user clicks the Sign Out button.
    */
   function handleAuthClick() {
-    logout({ returnTo: window.location.origin });
+    logout({
+      clientId: AUTH0_CLIENT_ID,
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    });
   }
 
   return (
@@ -318,7 +323,11 @@ function NavigationSignOutItem({
           >
             Cancel
           </Button>
-          <Button onClick={handleAuthClick} label={`Sign out ${user.name}`}>
+          <Button
+            onClick={handleAuthClick}
+            label={`Sign out ${user.name}`}
+            id="sign-out-confirm"
+          >
             Sign Out
           </Button>
         </Modal.Footer>
@@ -853,7 +862,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             >
               Profile
             </NavigationHrefItem>
-            <NavigationSignOutItem id="signout" isChildItem>
+            <NavigationSignOutItem id="sign-out" isChildItem>
               Sign Out
             </NavigationSignOutItem>
           </NavigationGroupItem>
@@ -909,7 +918,7 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
         </NavigationIcon>
       </NavigationHrefItem>
       {isAuthenticated ? (
-        <NavigationSignOutItem id="signout" isNarrowNav>
+        <NavigationSignOutItem id="sign-out" isNarrowNav>
           <Icon.UserSignedIn className="h-8 w-8" />
         </NavigationSignOutItem>
       ) : (

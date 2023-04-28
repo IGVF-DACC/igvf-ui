@@ -15,11 +15,10 @@ describe("Test that the post-login redirect goes to the correct URI", () => {
     cy.get("div").should("have.class", "border-panel bg-panel");
 
     // Sign in.
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(
       Cypress.env("AUTH_USERNAME"),
       Cypress.env("AUTH_PASSWORD"),
-      true
+      false
     );
     cy.contains("Cypress Testing");
     cy.wait(1000);
@@ -41,11 +40,10 @@ describe("Test that the post-login redirect goes to the correct URI", () => {
     );
 
     // Sign in.
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(
       Cypress.env("AUTH_USERNAME"),
       Cypress.env("AUTH_PASSWORD"),
-      true
+      false
     );
     cy.contains("Cypress Testing");
     cy.wait(1000);
@@ -65,11 +63,10 @@ describe("Test that the post-login redirect goes to the correct URI", () => {
     cy.get(`[role="table"]`);
 
     // Sign in.
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(
       Cypress.env("AUTH_USERNAME"),
       Cypress.env("AUTH_PASSWORD"),
-      true
+      false
     );
     cy.contains("Cypress Testing");
     cy.wait(1000);

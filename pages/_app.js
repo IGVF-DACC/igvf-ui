@@ -1,11 +1,11 @@
 // node_modules
 import { Auth0Provider } from "@auth0/auth0-react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import Script from "next/script";
 import PropTypes from "prop-types";
 import { useEffect, useMemo } from "react";
 // lib
-import onRedirectCallback from "../lib/authentication-redirect";
 import {
   AUTH0_AUDIENCE,
   AUTH0_CLIENT_ID,
@@ -18,13 +18,27 @@ import DarkModeManager from "../lib/dark-mode-manager";
 import Error from "../components/error";
 import GlobalContext from "../components/global-context";
 import NavigationSection from "../components/navigation";
+import { ProfileMap } from "../components/profile-map";
 import ScrollToTop from "../components/scroll-to-top";
 import { Session } from "../components/session-context";
 // CSS
 import "../styles/globals.css";
-import { ProfileMap } from "../components/profile-map";
 
 export default function App({ Component, pageProps }) {
+  const router = useRouter();
+
+  /**
+   * Called after the user signs in and auth0 redirects back to the application. We set the
+   * `appState` parameter with the URL the user viewed when they logged in, so we can redirect
+   * them back to that page after they log in here.
+   * @param {object} appState Contains the URL to redirect to after signing in
+   */
+  function onRedirectCallback(appState) {
+    if (appState?.returnTo) {
+      router.replace(appState.returnTo);
+    }
+  }
+
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
     const darkModeManager = new DarkModeManager();
@@ -100,11 +114,12 @@ export default function App({ Component, pageProps }) {
         <Auth0Provider
           domain={AUTH0_ISSUER_BASE_DOMAIN}
           clientId={AUTH0_CLIENT_ID}
-          redirectUri={typeof window !== "undefined" && window.location.origin}
-          audience={AUTH0_AUDIENCE}
           onRedirectCallback={onRedirectCallback}
-          useRefreshTokens={true}
-          cacheLocation="localstorage"
+          authorizationParams={{
+            redirect_uri:
+              typeof window !== "undefined" && window.location.origin,
+            audience: AUTH0_AUDIENCE,
+          }}
         >
           <GlobalContext.Provider value={globalContext}>
             <Session>

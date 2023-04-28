@@ -14,7 +14,6 @@ import { useRouter } from "next/router";
 import { createContext, useEffect, useRef, useState } from "react";
 // components
 import { useAuthenticated } from "./authentication";
-import { useSessionStorage } from "./browser-storage";
 // lib
 import {
   getSession,
@@ -43,8 +42,6 @@ export function Session({ children }) {
   const [session, setSession] = useState(null);
   // Holds the /profiles schemas
   const [profiles, setProfiles] = useState(null);
-  // Tracks the URL to redirect to after signing in
-  const [redirectTo, setRedirectTo] = useSessionStorage("post-signin-path", "");
   // Auth0 information
   const { getAccessTokenSilently, logout } = useAuth0();
   // Stable authenticated state
@@ -103,10 +100,6 @@ export function Session({ children }) {
             getSession().then((sessionResponse) => {
               setSession(sessionResponse);
               isServerAuthPending.current = false;
-              if (redirectTo) {
-                router.replace(redirectTo);
-                setRedirectTo("");
-              }
             });
           }
         });
@@ -116,10 +109,8 @@ export function Session({ children }) {
     getAccessTokenSilently,
     isAuthenticated,
     logout,
-    redirectTo,
     router,
     session,
-    setRedirectTo,
     setSession,
   ]);
 
@@ -155,7 +146,7 @@ export function Session({ children }) {
   }, [isAuthenticated, session, setSession]);
 
   return (
-    <SessionContext.Provider value={{ session, profiles, setRedirectTo }}>
+    <SessionContext.Provider value={{ session, profiles }}>
       {children}
     </SessionContext.Provider>
   );

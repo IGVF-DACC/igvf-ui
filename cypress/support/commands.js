@@ -27,61 +27,35 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 /**
- * Handle Auth0 login without the UI, but instead by writing to localstorage to simulate what the
- * Auth0 login would do. This code mostly copies:
- * https://github.com/charklewis/auth0-cypress
- * @param {string} username - The username to use for the login.
- * @param {string} password - The password to use for the login.
- * @param {boolean} isPrepSkipped - Whether or not to skip login prep.
+ * Login with auth0. This code mostly copies:
+ * https://www.youtube.com/watch?v=Fohrq5GZSD8
+ * @param {string} username The username to use for the login
+ * @param {string} password The password to use for the login
+ * @param {boolean} isHomeFirst True to visit the home page before logging in
  */
-Cypress.Commands.add("loginAuth0", (username, password, isPrepSkipped) => {
-  if (!isPrepSkipped) {
-    cy.visit("http://localhost:3000/");
-    cy.clearLocalStorage();
+Cypress.Commands.add("loginAuth0", (username, password, isHomeFirst = true) => {
+  const args = { username, password };
+
+  if (isHomeFirst) {
+    cy.visit("/");
   }
+  cy.get(`[data-testid="authenticate"]`).click();
 
-  const client_id = Cypress.env("AUTH_CLIENT_ID");
-  const client_secret = Cypress.env("AUTH_CLIENT_SECRET");
-  const audience = Cypress.env("AUTH_AUDIENCE");
-  const scope = "openid profile email offline_access";
-
-  cy.request({
-    method: "POST",
-    url: Cypress.env("AUTH_URL"),
-    body: {
-      grant_type: "password",
-      username,
-      password,
-      audience,
-      scope,
-      client_id,
-      client_secret,
-    },
-  }).then(({ body: { access_token, expires_in, id_token, token_type } }) => {
-    cy.window().then((window) => {
-      window.localStorage.setItem(
-        `@@auth0spajs@@::${client_id}::${audience}::${scope}`,
-        JSON.stringify({
-          body: {
-            client_id,
-            access_token,
-            id_token,
-            scope,
-            expires_in,
-            token_type,
-            decodedToken: {
-              user: JSON.parse(
-                Buffer.from(id_token.split(".")[1], "base64").toString("ascii")
-              ),
-            },
-            audience,
-          },
-          expiresAt: Math.floor(Date.now() / 1000) + expires_in,
-        })
-      );
-      cy.reload();
-    });
+  // Login on Auth0 through the auth0 sign-in page.
+  cy.origin("igvf-dacc.us.auth0.com", { args }, ({ username, password }) => {
+    cy.get("#1-email").type(username);
+    cy.get("#1-password").type(password);
+    cy.get("button[type=submit]").click();
   });
+});
+
+/**
+ * Logout of the site using the UI.
+ */
+Cypress.Commands.add("logoutAuth0", () => {
+  cy.get(`[data-testid="authenticate"]`).click();
+  cy.get(`[data-testid="sign-out"]`).click();
+  cy.get("#sign-out-confirm").click();
 });
 
 /**
