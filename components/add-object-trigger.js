@@ -3,13 +3,13 @@
  */
 
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import PropTypes from "prop-types";
 // components
-import { useAuthenticated } from "./authentication";
 import { ButtonLink } from "./form-elements";
 
 export default function AddObjectTrigger({ addSpec = null }) {
-  const isAuthenticated = useAuthenticated();
+  const { isAuthenticated } = useAuth0();
   if (addSpec) {
     return (
       <>

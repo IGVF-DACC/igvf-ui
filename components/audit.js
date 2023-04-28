@@ -1,4 +1,5 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import PropTypes from "prop-types";
@@ -8,7 +9,6 @@ import {
   standardAnimationTransition,
   standardAnimationVariants,
 } from "./animation";
-import { useAuthenticated } from "./authentication";
 import Icon from "./icon";
 
 /**
@@ -227,7 +227,7 @@ AuditLevelDetail.propTypes = {
  * and then can also open the audit narratives for each audit level.
  */
 export function AuditDetail({ item, auditState, className = null }) {
-  const isAuthenticated = useAuthenticated();
+  const { isAuthenticated } = useAuth0();
   const hasAudits = item.audit && Object.keys(item.audit).length > 0;
 
   return (
@@ -318,7 +318,7 @@ AuditDetail.propTypes = {
  * Displays the audit status button for an item.
  */
 export function AuditStatus({ item, auditState }) {
-  const isAuthenticated = useAuthenticated();
+  const { isAuthenticated } = useAuth0();
   const hasAudits = item.audit && Object.keys(item.audit).length > 0;
 
   if (hasAudits) {

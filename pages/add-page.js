@@ -1,9 +1,9 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 // components
-import { useAuthenticated } from "../components/authentication";
 import NoContent from "../components/no-content";
 import Page from "../components/page";
 // lib
@@ -13,7 +13,7 @@ export default function AddPage({ awards = null, labs = null, pages = null }) {
   // True if the user is editing a new page to add
   const [isNewPage, setAddingPage] = useState(false);
 
-  const isAuthenticated = useAuthenticated();
+  const { isAuthenticated } = useAuth0();
   const router = useRouter();
 
   useEffect(() => {
