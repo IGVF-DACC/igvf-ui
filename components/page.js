@@ -45,8 +45,9 @@ import SessionContext from "./session-context";
 import FetchRequest from "../lib/fetch-request";
 import {
   detectConflictingName,
-  savePage,
+  getPageTitleAndOrdering,
   rewriteBlockIds,
+  savePage,
   sliceBlocks,
 } from "../lib/page";
 
@@ -1000,10 +1001,13 @@ export default function Page({
     }
   }
 
+  // Get the displayable page title.
+  const { title } = getPageTitleAndOrdering(page);
+
   return (
     <PageCondition.Provider value={{ isDirty, setDirty, isNewPage }}>
       <Breadcrumbs />
-      <PagePreamble pageTitle={editablePageMeta.title} />
+      <PagePreamble pageTitle={title} />
       {activeError && (
         <FlashMessage
           message={activeError}

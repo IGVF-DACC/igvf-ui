@@ -1,43 +1,41 @@
 // node_modules
+import { EnvelopeIcon } from "@heroicons/react/20/solid";
+import _ from "lodash";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import Icon from "../components/icon";
 import NoContent from "../components/no-content";
 // lib
 import { UI_VERSION } from "../lib/constants";
 import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
-
-/**
- * Display the help-page title within the help banner.
- */
-function HelpBannerTitle({ title = "" }) {
-  if (title) {
-    return (
-      <h1 className="text-xl font-light text-black dark:text-white sm:text-3xl md:text-4xl xl:text-5xl">
-        {title}
-      </h1>
-    );
-  }
-  return null;
-}
-
-HelpBannerTitle.propTypes = {
-  // Title of the help page
-  title: PropTypes.string,
-};
+import { toShishkebabCase } from "../lib/general";
+import { getPageTitleAndOrdering } from "../lib/page";
 
 /**
  * Display the igvf-ui and igvfd version numbers.
  */
 function Versions({ serverVersion = "" }) {
-  if (UI_VERSION || serverVersion) {
+  const versions = [];
+  if (UI_VERSION) {
+    versions.push(
+      <div key="ui" data-testid="version-ui">{`UI:${UI_VERSION}`}</div>
+    );
+  }
+  if (serverVersion) {
+    versions.push(
+      <div
+        key="server"
+        data-testid="version-server"
+      >{`Server:${serverVersion}`}</div>
+    );
+  }
+
+  if (versions.length > 0) {
     return (
-      <div className="text-xs leading-tight text-gray-600 dark:text-gray-400">
-        {UI_VERSION && <div data-testid="version-ui">UI: {UI_VERSION}</div>}
-        {serverVersion && (
-          <div data-testid="version-server">Server: {serverVersion}</div>
-        )}
+      <div className="flex gap-2 text-xs font-semibold text-brand">
+        {versions}
       </div>
     );
   }
@@ -50,108 +48,173 @@ Versions.propTypes = {
 };
 
 /**
- * Display the help-page banner and its contents.
+ * Display email and Twitter links.
  */
-function HelpBanner({ children }) {
+function Social() {
   return (
-    <div className="flex aspect-ultra w-full flex-col justify-between border border-panel bg-help-banner bg-cover pb-1 pl-2 pt-2 dark:bg-help-banner-dark">
-      {children}
+    <div className="flex items-center gap-2">
+      <a
+        className="block"
+        href="mailto:igvf-portal-help@lists.stanford.edu"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Email the IGVF help desk"
+      >
+        <EnvelopeIcon className="h-6 w-6 fill-brand" />
+      </a>
+      <a
+        className="block"
+        href="https://twitter.com/IGVFConsortium"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="IGVF on Twitter"
+      >
+        <Icon.Twitter className="h-6 w-6" />
+      </a>
     </div>
   );
 }
 
 /**
- * Displays links to the given help subpages. This is mutually recursive with the
- * <HelpPageIndividual> component.
+ * Wrap the version and social links line at the top of the help page.
  */
-function HelpSubpages({ subpages }) {
+function Information({ children }) {
+  return (
+    <section className="flex items-center justify-end gap-2">
+      {children}
+    </section>
+  );
+}
+
+/**
+ * Display the help-page title within the help banner.
+ */
+function Title({ helpPageRoot }) {
+  if (helpPageRoot.title) {
+    return (
+      <h1 className="tight my-4 text-center text-xl font-bold text-black dark:text-gray-300 sm:text-2xl md:my-10 md:text-3xl lg:text-4xl">
+        {helpPageRoot.title}
+      </h1>
+    );
+  }
+  return null;
+}
+
+Title.propTypes = {
+  // Data for the help page from the data provider
+  helpPageRoot: PropTypes.shape({
+    // Title of the help page from the /help page object
+    title: PropTypes.string,
+  }),
+};
+
+/**
+ * Displays links to the given help subpages. This is mutually recursive with the
+ * <PageLink> component.
+ */
+function Subpages({ subpages }) {
+  const sortedSubpages = _.sortBy(subpages, (subpage) => {
+    const { ordering } = getPageTitleAndOrdering(subpage);
+    return ordering;
+  });
   return (
     <ul className="pl-4">
-      {subpages.map((subpage) => (
-        <HelpPageIndividual key={subpage["@id"]} page={subpage} />
+      {sortedSubpages.map((subpage) => (
+        <PageLink key={subpage["@id"]} page={subpage} />
       ))}
     </ul>
   );
 }
 
-HelpSubpages.propTypes = {
+Subpages.propTypes = {
   // Subpages to display in the list
   subpages: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 /**
  * Displays one link to a help page, as well as all of its sub-pages. This is mutually recursive
- * with the <HelpSubpages> component to allow multiple levels of nesting.
+ * with the <Subpages> component to allow multiple levels of nesting.
  */
-function HelpPageIndividual({ page }) {
-  // Determine the level of the help subpage by trimming the leading and trailing slashes
-  // from the subpage's path and gettings the individual path elements.
-  const trimmedPath = page["@id"].replace(/^\//, "").replace(/\/$/, "");
-  const pathElements = trimmedPath.split("/");
-
-  // Category pages have two elements in their paths: "help" and the category name.
-  const isCategoryPage = pathElements.length === 2;
-
+function PageLink({ page }) {
+  const { title } = getPageTitleAndOrdering(page);
   return (
-    <li className="my-2">
-      <Link
-        href={page["@id"]}
-        className={`block${
-          isCategoryPage ? " mb-2 text-2xl font-medium text-blue-600" : ""
-        }`}
-      >
-        {page.title}
+    <li
+      className="my-2 text-sm font-bold text-black dark:text-gray-300"
+      data-testid={`subcategory-title-${toShishkebabCase(title)}`}
+    >
+      <Link href={page["@id"]} className="block">
+        {title}
       </Link>
-      {page.subpages?.length > 0 && <HelpSubpages subpages={page.subpages} />}
+      {page.subpages?.length > 0 && <Subpages subpages={page.subpages} />}
     </li>
   );
 }
 
-HelpPageIndividual.propTypes = {
+PageLink.propTypes = {
   // Help page to display as a link
   page: PropTypes.object.isRequired,
 };
 
 /**
- * Displays the help category link and all of the category's sub-pages.
+ * Displays the help category and links to all of the category's sub-pages.
  */
-function HelpPageCategory({ categoryPage }) {
+function Category({ categoryPage, children }) {
+  const { title } = getPageTitleAndOrdering(categoryPage);
   return (
-    <div className="mb-8 shrink-0 grow md:basis-1/2 xl:basis-1/3">
-      <h2 className="mb-4 text-xl font-medium text-brand">
-        <Link href={categoryPage["@id"]}>{categoryPage.title}</Link>
+    <div data-testid={`category-title-${toShishkebabCase(title)}`}>
+      <h2 className="mb-4 border border-panel bg-panel px-2 py-4 text-lg font-semibold text-brand">
+        {title}
       </h2>
-      {categoryPage.subpages?.length > 0 && (
-        <HelpSubpages subpages={categoryPage.subpages} />
-      )}
+      {children}
     </div>
   );
 }
 
-HelpPageCategory.propTypes = {
+Category.propTypes = {
   // Help page category to display
   categoryPage: PropTypes.object.isRequired,
 };
+
+/**
+ * Show the main content of the help page: the help categories and links to the help pages beneath
+ * each.
+ */
+function HelpLinks({ children }) {
+  return (
+    <section className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+      {children}
+    </section>
+  );
+}
 
 /**
  * Displays the entire help page, including links to all of the help content pages.
  */
 export default function HelpPage({ helpPageRoot, serverVersion = "" }) {
   if (helpPageRoot?.subpages?.length > 0) {
+    // Sort the subpages by their ordering number encoded in their titles. Pages without ordering
+    // numbers get sorted at the end.
+    const subpages = _.sortBy(helpPageRoot.subpages, (subpage) => {
+      const { ordering } = getPageTitleAndOrdering(subpage);
+      return ordering;
+    });
+
     return (
       <>
-        <HelpBanner>
-          <HelpBannerTitle title={helpPageRoot.title} />
+        <Information>
           <Versions serverVersion={serverVersion} />
-        </HelpBanner>
-        <div className="mt-8 md:flex md:flex-wrap">
-          {helpPageRoot.subpages.map((categoryPage) => (
-            <HelpPageCategory
-              key={categoryPage["@id"]}
-              categoryPage={categoryPage}
-            />
+          <Social />
+        </Information>
+        <Title helpPageRoot={helpPageRoot} />
+        <HelpLinks>
+          {subpages.map((categoryPage) => (
+            <Category key={categoryPage["@id"]} categoryPage={categoryPage}>
+              {categoryPage.subpages?.length > 0 && (
+                <Subpages subpages={categoryPage.subpages} />
+              )}
+            </Category>
           ))}
-        </div>
+        </HelpLinks>
       </>
     );
   }
@@ -173,10 +236,10 @@ export async function getServerSideProps({ req }) {
     const root = await request.getObject("/", null);
     const serverVersion = root?.app_version || "";
 
-    // Get all help pages and their subpages.
+    // Get all non-deleted help pages and their subpages.
     let helpPageRoot = null;
-    const allHelpPages = pages["@graph"].filter((page) =>
-      page["@id"].startsWith("/help/")
+    const allHelpPages = pages["@graph"].filter(
+      (page) => page["@id"].startsWith("/help/") && page.status !== "deleted"
     );
 
     // Build the help-page hierarchy.

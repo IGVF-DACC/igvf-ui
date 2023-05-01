@@ -228,6 +228,22 @@ const Icon = {
       />
     </svg>
   ),
+  Twitter: ({ className = null, testid = "icon-twitter" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="#1DA1F2"
+      data-testid={testid}
+    >
+      <path
+        d="M20,3.8c-0.7,0.3-1.5,0.5-2.4,0.6c0.8-0.5,1.5-1.3,1.8-2.3c-0.8,0.5-1.7,0.8-2.6,1c-0.7-0.8-1.8-1.3-3-1.3
+	c-2.6,0-4.6,2.5-4,5C6.4,6.7,3.4,5.1,1.4,2.6C0.3,4.5,0.8,6.9,2.7,8.1C2,8.1,1.4,7.9,0.8,7.6c0,1.9,1.3,3.7,3.3,4.1
+	c-0.6,0.2-1.2,0.2-1.9,0.1c0.5,1.6,2,2.8,3.8,2.8c-1.7,1.4-3.9,2-6.1,1.7c1.8,1.2,4,1.8,6.3,1.8c7.6,0,11.9-6.4,11.7-12.2
+	C18.8,5.3,19.5,4.6,20,3.8z"
+      />
+    </svg>
+  ),
   UserSignedIn: ({ className = null, testid = "icon-user-signed-out" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -313,6 +329,10 @@ Icon.TableColumnsVisible.propTypes = {
   testid: PropTypes.string,
 };
 Icon.Treatment.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Twitter.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
