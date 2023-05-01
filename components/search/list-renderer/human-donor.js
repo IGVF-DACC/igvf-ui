@@ -18,14 +18,20 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
   const title = [ethnicities, sex].filter(Boolean);
   const collections =
     humanDonor.collections?.length > 0 ? humanDonor.collections.join(", ") : "";
+
   const phenotypicFeatures = humanDonor.phenotypic_features
     ?.filter((path) => {
-      return Boolean(accessoryData?.[path]);
+      const keys = Object.keys(accessoryData);
+      return keys.includes(path);
     })
     .map((path) => {
       const feature = accessoryData[path];
-      const notes = feature.notes ? feature.notes : "Amount";
-      return `${notes} ${feature.quantity} ${feature.quantity_units}`;
+      if (feature.quantity) {
+        return `${feature.feature.term_name} ${feature.quantity} ${
+          feature.quantity_units
+        }${feature.quantity === 1 ? "" : "s"}`;
+      }
+      return feature.feature.term_name;
     })
     .join(", ");
 
@@ -63,6 +69,7 @@ HumanDonor.getAccessoryDataPaths = (humanDonors) => {
   // A list of list of phenotypic features paths
   const phenotypicFeatures = humanDonors
     .map((humanDonor) => humanDonor.phenotypic_features)
-    .filter(Boolean);
-  return phenotypicFeatures.flat();
+    .filter(Boolean)
+    .flat(1);
+  return phenotypicFeatures;
 };
