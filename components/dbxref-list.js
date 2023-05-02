@@ -136,6 +136,34 @@ export const dbxrefPrefixMap = {
     pattern:
       "https://ontobee.org/ontology/OBI?iri=http://purl.obolibrary.org/obo/OBI_{0}",
   },
+  EFO: {
+    pattern:
+      "https://ontobee.org/ontology/EFO?iri=http://purl.obolibrary.org/obo/EFO_{0}",
+  },
+  HP: {
+    pattern:
+      "https://ontobee.org/ontology/HP?iri=http://purl.obolibrary.org/obo/HP_{0}",
+  },
+  MONDO: {
+    pattern:
+      "https://ontobee.org/ontology/MONDO?iri=http://purl.obolibrary.org/obo/MONDO_{0}",
+  },
+  NCIT: {
+    pattern:
+      "https://ontobee.org/ontology/NCIT?iri=http://purl.obolibrary.org/obo/NCIT_{0}",
+  },
+  DOID: {
+    pattern:
+      "https://ontobee.org/ontology/DOID?iri=http://purl.obolibrary.org/obo/DOID_{0}",
+  },
+  OBA: {
+    pattern:
+      "https://ontobee.org/ontology/OBA?iri=http://purl.obolibrary.org/obo/OBA_{0}",
+  },
+  UBERON: {
+    pattern:
+      "https://ontobee.org/ontology/UBERON?iri=http://purl.obolibrary.org/obo/UBERON_{0}",
+  },
 };
 
 /**
