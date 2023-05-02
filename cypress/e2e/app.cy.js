@@ -53,8 +53,8 @@ describe("Navigation", () => {
 
     cy.get("[data-testid=files]").click();
 
-    cy.get("[data-testid=reference-data]").click();
-    cy.url().should("include", "/search?type=ReferenceData");
+    cy.get("[data-testid=reference-file]").click();
+    cy.url().should("include", "/search?type=ReferenceFile");
     cy.get("[data-testid=search-results-view-switch]").should("exist");
     cy.get("[data-testid=form-select]").should("exist");
     cy.get("[data-testid=search-results-count]").should("exist");
@@ -63,8 +63,8 @@ describe("Navigation", () => {
       .its("length")
       .should("be.gte", 2);
 
-    cy.get("[data-testid=sequence-data]").click();
-    cy.url().should("include", "/search?type=SequenceData");
+    cy.get("[data-testid=sequence-file]").click();
+    cy.url().should("include", "/search?type=SequenceFile");
     cy.get("[data-testid=search-results-view-switch]").should("exist");
     cy.get("[data-testid=form-select]").should("exist");
     cy.get("[data-testid=search-results-count]").should("exist");
@@ -74,8 +74,8 @@ describe("Navigation", () => {
       .should("be.gte", 3);
 
     cy.get("[data-testid=files]").click();
-    cy.get("[data-testid=reference-data]").should("not.exist");
-    cy.get("[data-testid=sequence-data]").should("not.exist");
+    cy.get("[data-testid=reference-file]").should("not.exist");
+    cy.get("[data-testid=sequence-file]").should("not.exist");
     cy.get("[data-testid=file-sets]").click();
 
     cy.get("[data-testid=analysis-sets]").click();

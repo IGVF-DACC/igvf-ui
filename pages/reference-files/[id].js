@@ -22,8 +22,8 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 
-export default function ReferenceData({
-  referenceData,
+export default function ReferenceFile({
+  referenceFile,
   fileSet,
   documents,
   derivedFrom,
@@ -32,31 +32,31 @@ export default function ReferenceData({
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={referenceData}>
+      <EditableItem item={referenceFile}>
         <PagePreamble />
-        <ObjectPageHeader item={referenceData} />
+        <ObjectPageHeader item={referenceFile} />
         <DataPanel>
           <DataArea>
             <FileDataItems
-              file={referenceData}
+              file={referenceFile}
               fileSet={fileSet}
               derivedFrom={derivedFrom}
             >
-              {referenceData.assembly && (
+              {referenceFile.assembly && (
                 <>
                   <DataItemLabel>Genome Assembly</DataItemLabel>
-                  <DataItemValue>{referenceData.assembly}</DataItemValue>
+                  <DataItemValue>{referenceFile.assembly}</DataItemValue>
                 </>
               )}
-              {referenceData.source && (
+              {referenceFile.source && (
                 <>
                   <DataItemLabel>Source</DataItemLabel>
                   <DataItemValue>
                     <Link
-                      href={referenceData.source}
-                      key={referenceData.source}
+                      href={referenceFile.source}
+                      key={referenceFile.source}
                     >
-                      {referenceData.source}
+                      {referenceFile.source}
                     </Link>
                   </DataItemValue>
                 </>
@@ -76,56 +76,56 @@ export default function ReferenceData({
   );
 }
 
-ReferenceData.propTypes = {
-  // ReferenceData object to display
-  referenceData: PropTypes.object.isRequired,
+ReferenceFile.propTypes = {
+  // ReferenceFile object to display
+  referenceFile: PropTypes.object.isRequired,
   // File set that contains this file
   fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
-  // Attribution for this ReferenceData
+  // Attribution for this ReferenceFile
   attribution: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const referenceData = await request.getObject(
-    `/reference-data/${params.id}/`
+  const referenceFile = await request.getObject(
+    `/reference-files/${params.id}/`
   );
-  if (FetchRequest.isResponseSuccess(referenceData)) {
-    const fileSet = await request.getObject(referenceData.file_set, null);
-    const documents = referenceData.documents
-      ? await request.getMultipleObjects(referenceData.documents, null, {
+  if (FetchRequest.isResponseSuccess(referenceFile)) {
+    const fileSet = await request.getObject(referenceFile.file_set, null);
+    const documents = referenceFile.documents
+      ? await request.getMultipleObjects(referenceFile.documents, null, {
           filterErrors: true,
         })
       : [];
-    const derivedFrom = referenceData.derived_from
-      ? await request.getMultipleObjects(referenceData.derived_from, null, {
+    const derivedFrom = referenceFile.derived_from
+      ? await request.getMultipleObjects(referenceFile.derived_from, null, {
           filterErrors: true,
         })
       : [];
     const breadcrumbs = await buildBreadcrumbs(
-      referenceData,
+      referenceFile,
       "accession",
       req.headers.cookie
     );
     const attribution = await buildAttribution(
-      referenceData,
+      referenceFile,
       req.headers.cookie
     );
     return {
       props: {
-        referenceData,
+        referenceFile,
         fileSet,
         documents,
         derivedFrom,
-        pageContext: { title: referenceData.accession },
+        pageContext: { title: referenceFile.accession },
         breadcrumbs,
         attribution,
       },
     };
   }
-  return errorObjectToProps(referenceData);
+  return errorObjectToProps(referenceFile);
 }

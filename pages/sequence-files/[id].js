@@ -21,8 +21,8 @@ import DocumentTable from "../../components/document-table";
 import { FileDataItems } from "../../components/common-data-items";
 import buildAttribution from "../../lib/attribution";
 
-export default function SequenceData({
-  sequenceData,
+export default function SequenceFile({
+  sequenceFile,
   fileSet,
   documents,
   derivedFrom,
@@ -31,28 +31,28 @@ export default function SequenceData({
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={sequenceData}>
+      <EditableItem item={sequenceFile}>
         <PagePreamble />
-        <ObjectPageHeader item={sequenceData} />
+        <ObjectPageHeader item={sequenceFile} />
         <DataPanel>
           <DataArea>
             <FileDataItems
-              file={sequenceData}
+              file={sequenceFile}
               fileSet={fileSet}
               derivedFrom={derivedFrom}
             >
               <DataItemLabel>Sequencing Run</DataItemLabel>
-              <DataItemValue>{sequenceData.sequencing_run}</DataItemValue>
-              {sequenceData.read_count && (
+              <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
+              {sequenceFile.read_count && (
                 <>
                   <DataItemLabel>Read Count</DataItemLabel>
-                  <DataItemValue>{sequenceData.read_count}</DataItemValue>
+                  <DataItemValue>{sequenceFile.read_count}</DataItemValue>
                 </>
               )}
-              {sequenceData.mean_read_length && (
+              {sequenceFile.mean_read_length && (
                 <>
                   <DataItemLabel>Read Length</DataItemLabel>
-                  <DataItemValue>{sequenceData.mean_read_length}</DataItemValue>
+                  <DataItemValue>{sequenceFile.mean_read_length}</DataItemValue>
                 </>
               )}
             </FileDataItems>
@@ -70,9 +70,9 @@ export default function SequenceData({
   );
 }
 
-SequenceData.propTypes = {
-  // SequenceData object to display
-  sequenceData: PropTypes.object.isRequired,
+SequenceFile.propTypes = {
+  // SequenceFile object to display
+  sequenceFile: PropTypes.object.isRequired,
   // File set that contains this file
   fileSet: PropTypes.object,
   // Documents set associate with this file
@@ -85,39 +85,39 @@ SequenceData.propTypes = {
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sequenceData = await request.getObject(`/sequence-data/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(sequenceData)) {
-    const fileSet = await request.getObject(sequenceData.file_set, null);
-    const documents = sequenceData.documents
-      ? await request.getMultipleObjects(sequenceData.documents, null, {
+  const sequenceFile = await request.getObject(`/sequence-files/${params.id}/`);
+  if (FetchRequest.isResponseSuccess(sequenceFile)) {
+    const fileSet = await request.getObject(sequenceFile.file_set, null);
+    const documents = sequenceFile.documents
+      ? await request.getMultipleObjects(sequenceFile.documents, null, {
           filterErrors: true,
         })
       : [];
-    const derivedFrom = sequenceData.derived_from
-      ? await request.getMultipleObjects(sequenceData.derived_from, null, {
+    const derivedFrom = sequenceFile.derived_from
+      ? await request.getMultipleObjects(sequenceFile.derived_from, null, {
           filterErrors: true,
         })
       : [];
     const breadcrumbs = await buildBreadcrumbs(
-      sequenceData,
+      sequenceFile,
       "accession",
       req.headers.cookie
     );
     const attribution = await buildAttribution(
-      sequenceData,
+      sequenceFile,
       req.headers.cookie
     );
     return {
       props: {
-        sequenceData,
+        sequenceFile,
         fileSet,
         documents,
         derivedFrom,
-        pageContext: { title: sequenceData.accession },
+        pageContext: { title: sequenceFile.accession },
         breadcrumbs,
         attribution,
       },
     };
   }
-  return errorObjectToProps(sequenceData);
+  return errorObjectToProps(sequenceFile);
 }
