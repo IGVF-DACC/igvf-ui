@@ -11,6 +11,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import FileTable from "../../components/file-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { EditableItem } from "../../components/edit";
@@ -28,6 +29,7 @@ export default function AnalysisSet({
   documents,
   inputFileSets,
   donors,
+  files,
   samples,
   attribution = null,
 }) {
@@ -91,6 +93,12 @@ export default function AnalysisSet({
             )}
           </DataArea>
         </DataPanel>
+        {files.length > 0 && (
+          <>
+            <DataAreaTitle>Files</DataAreaTitle>
+            <FileTable files={files} />
+          </>
+        )}
         {documents.length > 0 && (
           <>
             <DataAreaTitle>Documents</DataAreaTitle>
@@ -107,6 +115,8 @@ AnalysisSet.propTypes = {
   analysisSet: PropTypes.object.isRequired,
   // Donors to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files to display
+  files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // input_file_sets to this analysis set
@@ -128,6 +138,11 @@ export async function getServerSideProps({ params, req }) {
       : [];
     const documents = analysisSet.documents
       ? await request.getMultipleObjects(analysisSet.documents, null, {
+          filterErrors: true,
+        })
+      : [];
+    const files = analysisSet.files
+      ? await request.getMultipleObjects(analysisSet.files, null, {
           filterErrors: true,
         })
       : [];
@@ -155,6 +170,7 @@ export async function getServerSideProps({ params, req }) {
         inputFileSets,
         documents,
         donors,
+        files,
         samples,
         pageContext: { title: analysisSet.accession },
         breadcrumbs,
