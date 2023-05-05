@@ -597,20 +597,20 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
-            id="reference-data"
-            href="/search?type=ReferenceData"
+            id="reference-file"
+            href="/search?type=ReferenceFile"
             navigationClick={navigationClick}
             isChildItem
           >
-            Reference Data
+            Reference Files
           </NavigationHrefItem>
           <NavigationHrefItem
-            id="sequence-data"
-            href="/search?type=SequenceData"
+            id="sequence-file"
+            href="/search?type=SequenceFile"
             navigationClick={navigationClick}
             isChildItem
           >
-            Sequence Data
+            Sequence Files
           </NavigationHrefItem>
         </NavigationGroupItem>
         <NavigationGroupItem

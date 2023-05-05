@@ -695,9 +695,9 @@ const profiles = {
     },
   },
 
-  ReferenceData: {
-    title: "Reference data",
-    $id: "/profiles/reference_data.json",
+  ReferenceFile: {
+    title: "Reference File",
+    $id: "/profiles/reference_file.json",
     required: [
       "award",
       "lab",
@@ -1083,9 +1083,9 @@ const profiles = {
     },
   },
 
-  SequenceData: {
-    title: "Sequence data",
-    $id: "/profiles/sequence_data.json",
+  SequenceFile: {
+    title: "Sequence File",
+    $id: "/profiles/sequence_file.json",
     required: [
       "award",
       "lab",

@@ -940,8 +940,8 @@ describe("Test User component", () => {
 describe("Test File component", () => {
   it("renders a File item with accessory data", () => {
     const item = {
-      "@id": "/reference-data/IGVFFI0000SQBR/",
-      "@type": ["ReferenceData", "File", "Item"],
+      "@id": "/reference-file/IGVFFI0000SQBR/",
+      "@type": ["ReferenceFile", "File", "Item"],
       accession: "IGVFFI0000SQBR",
       file_format: "txt",
       content_type: "sequence barcodes",
@@ -960,7 +960,7 @@ describe("Test File component", () => {
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Reference data/);
+    expect(uniqueId).toHaveTextContent(/^Reference File/);
     expect(uniqueId).toHaveTextContent(/IGVFFI0000SQBR$/);
 
     const title = screen.getByTestId("search-list-item-title");
@@ -976,8 +976,8 @@ describe("Test File component", () => {
 
   it("renders a File item without summary", () => {
     const item = {
-      "@id": "/reference-data/IGVFFI0000SQBR/",
-      "@type": ["ReferenceData", "File", "Item"],
+      "@id": "/reference-file/IGVFFI0000SQBR/",
+      "@type": ["ReferenceFile", "File", "Item"],
       accession: "IGVFFI0000SQBR",
       file_format: "txt",
       content_type: "sequence barcodes",
@@ -995,7 +995,7 @@ describe("Test File component", () => {
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Reference data/);
+    expect(uniqueId).toHaveTextContent(/^Reference File/);
     expect(uniqueId).toHaveTextContent(/IGVFFI0000SQBR$/);
 
     const title = screen.getByTestId("search-list-item-title");
