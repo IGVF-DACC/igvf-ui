@@ -11,6 +11,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import FileTable from "../../components/file-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { EditableItem } from "../../components/edit";
@@ -27,6 +28,7 @@ export default function CuratedSet({
   curatedSet,
   documents,
   donors,
+  files,
   samples,
   attribution = null,
 }) {
@@ -84,6 +86,12 @@ export default function CuratedSet({
             )}
           </DataArea>
         </DataPanel>
+        {files.length > 0 && (
+          <>
+            <DataAreaTitle>Files</DataAreaTitle>
+            <FileTable files={files} />
+          </>
+        )}
         {documents.length > 0 && (
           <>
             <DataAreaTitle>Documents</DataAreaTitle>
@@ -101,6 +109,8 @@ CuratedSet.propTypes = {
   curatedSet: PropTypes.object.isRequired,
   // Donors to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files to display
+  files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this curated set
@@ -128,6 +138,11 @@ export async function getServerSideProps({ params, req }) {
           filterErrors: true,
         })
       : [];
+    const files = curatedSet.files
+      ? await request.getMultipleObjects(curatedSet.files, null, {
+          filterErrors: true,
+        })
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       curatedSet,
       "accession",
@@ -139,6 +154,7 @@ export async function getServerSideProps({ params, req }) {
         curatedSet,
         documents,
         donors,
+        files,
         samples,
         pageContext: { title: curatedSet.accession },
         breadcrumbs,

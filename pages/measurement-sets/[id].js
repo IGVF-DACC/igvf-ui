@@ -13,6 +13,7 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileTable from "../../components/file-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
@@ -28,6 +29,7 @@ export default function MeasurementSet({
   assayTerm = null,
   documents,
   donors,
+  files,
   samples,
   attribution = null,
 }) {
@@ -96,6 +98,12 @@ export default function MeasurementSet({
             )}
           </DataArea>
         </DataPanel>
+        {files.length > 0 && (
+          <>
+            <DataAreaTitle>Files</DataAreaTitle>
+            <FileTable files={files} />
+          </>
+        )}
         {documents.length > 0 && (
           <>
             <DataAreaTitle>Documents</DataAreaTitle>
@@ -116,6 +124,8 @@ MeasurementSet.propTypes = {
   assayTerm: PropTypes.object,
   // Donors to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files to display
+  files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
@@ -136,6 +146,11 @@ export async function getServerSideProps({ params, req }) {
     );
     const documents = measurementSet.documents
       ? await request.getMultipleObjects(measurementSet.documents, null, {
+          filterErrors: true,
+        })
+      : [];
+    const files = measurementSet.files
+      ? await request.getMultipleObjects(measurementSet.files, null, {
           filterErrors: true,
         })
       : [];
@@ -166,6 +181,7 @@ export async function getServerSideProps({ params, req }) {
         assayTerm,
         documents,
         donors,
+        files,
         samples,
         pageContext: { title: measurementSet.accession },
         breadcrumbs,
