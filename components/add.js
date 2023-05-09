@@ -1,11 +1,11 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import { empty } from "empty-schema";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import { PropTypes } from "prop-types";
 import { useContext, useState, useEffect } from "react";
 // components
-import { useAuthenticated } from "./authentication";
 import { SaveCancelControl, useEditor } from "./edit";
 import EditJson, { canEdit } from "./edit-func";
 import FlashMessage from "./flash-message";
@@ -108,7 +108,7 @@ AddLink.propTypes = {
 
 export function AddInstancePage({ collection }) {
   const { session } = useContext(SessionContext);
-  const loggedIn = useAuthenticated();
+  const { isAuthenticated } = useAuth0();
 
   /**
    * The text is the current editor text of the underlying Ace editor component.
@@ -120,7 +120,7 @@ export function AddInstancePage({ collection }) {
   // Cannot add if not logged in or "add" not an action
   function addable(collection) {
     const canAdd = canEdit(collection, "add");
-    return loggedIn && canAdd;
+    return isAuthenticated && canAdd;
   }
 
   function jsonErrors(json) {

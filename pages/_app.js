@@ -1,11 +1,11 @@
 // node_modules
-import { Auth0Provider } from "@auth0/auth0-react";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import Script from "next/script";
 import PropTypes from "prop-types";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 // lib
-import onRedirectCallback from "../lib/authentication-redirect";
 import {
   AUTH0_AUDIENCE,
   AUTH0_CLIENT_ID,
@@ -18,13 +18,16 @@ import DarkModeManager from "../lib/dark-mode-manager";
 import Error from "../components/error";
 import GlobalContext from "../components/global-context";
 import NavigationSection from "../components/navigation";
+import { ProfileMap } from "../components/profile-map";
 import ScrollToTop from "../components/scroll-to-top";
 import { Session } from "../components/session-context";
+import ViewportOverlay from "../components/viewport-overlay";
 // CSS
 import "../styles/globals.css";
-import { ProfileMap } from "../components/profile-map";
 
-export default function App({ Component, pageProps }) {
+function Site({ Component, pageProps, authentication }) {
+  const { isLoading } = useAuth0();
+
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
     const darkModeManager = new DarkModeManager();
@@ -54,7 +57,7 @@ export default function App({ Component, pageProps }) {
   ]);
 
   return (
-    <>
+    <ViewportOverlay isEnabled={isLoading}>
       <Head>
         <title>{SITE_TITLE}</title>
         <meta
@@ -97,43 +100,83 @@ export default function App({ Component, pageProps }) {
       </Script>
       <div className="md:container">
         <ScrollToTop />
-        <Auth0Provider
-          domain={AUTH0_ISSUER_BASE_DOMAIN}
-          clientId={AUTH0_CLIENT_ID}
-          redirectUri={typeof window !== "undefined" && window.location.origin}
-          audience={AUTH0_AUDIENCE}
-          onRedirectCallback={onRedirectCallback}
-          useRefreshTokens={true}
-          cacheLocation="localstorage"
-        >
-          <GlobalContext.Provider value={globalContext}>
-            <Session>
-              <ProfileMap>
-                <div className="md:flex">
-                  <NavigationSection />
-                  <div className="min-w-0 shrink grow px-3 py-2 text-black dark:text-white md:px-8">
-                    {pageProps.serverSideError ? (
-                      <Error
-                        statusCode={pageProps.serverSideError.code}
-                        title={pageProps.serverSideError.description}
-                      />
-                    ) : (
-                      <Component {...pageProps} />
-                    )}
-                  </div>
+        <GlobalContext.Provider value={globalContext}>
+          <Session authentication={authentication}>
+            <ProfileMap>
+              <div className="md:flex">
+                <NavigationSection />
+                <div className="min-w-0 shrink grow px-3 py-2 text-black dark:text-white md:px-8">
+                  {pageProps.serverSideError ? (
+                    <Error
+                      statusCode={pageProps.serverSideError.code}
+                      title={pageProps.serverSideError.description}
+                    />
+                  ) : (
+                    <Component {...pageProps} />
+                  )}
                 </div>
-              </ProfileMap>
-            </Session>
-          </GlobalContext.Provider>
-        </Auth0Provider>
+              </div>
+            </ProfileMap>
+          </Session>
+        </GlobalContext.Provider>
       </div>
-    </>
+    </ViewportOverlay>
   );
 }
 
-App.propTypes = {
+Site.propTypes = {
   // Component to render for the page, as determined by nextjs router
   Component: PropTypes.elementType.isRequired,
   // Properties associated with the page to pass to `Component`
   pageProps: PropTypes.object.isRequired,
+  // Auth0 authentication state and transition setter
+  authentication: PropTypes.exact({
+    // True if Auth0 has authenticated but we haven't yet logged into igvfd
+    authTransitionPath: PropTypes.string.isRequired,
+    // Sets the `authTransitionPath` state
+    setAuthTransitionPath: PropTypes.func.isRequired,
+  }).isRequired,
 };
+
+export default function App(props) {
+  // Path user viewed when they logged in; also indicates Auth0 has auth'd but igvfd hasn't yet
+  const [authTransitionPath, setAuthTransitionPath] = useState("");
+
+  const router = useRouter();
+
+  /**
+   * Called after the user signs in and auth0 redirects back to the application. We set the
+   * `appState` parameter with the URL the user viewed when they logged in, so we can redirect
+   * them back to that page after they log in here.
+   * @param {object} appState Contains the URL to redirect to after signing in
+   */
+  function onRedirectCallback(appState) {
+    if (appState?.returnTo) {
+      router.replace(appState.returnTo);
+    }
+
+    // Indicate that Auth0 has completed authentication so Session context can log into igvfd, and
+    // reload this path if needed to see the authenticated content.
+    setAuthTransitionPath(appState?.returnTo || "");
+  }
+
+  return (
+    <Auth0Provider
+      domain={AUTH0_ISSUER_BASE_DOMAIN}
+      clientId={AUTH0_CLIENT_ID}
+      onRedirectCallback={onRedirectCallback}
+      authorizationParams={{
+        redirect_uri: typeof window !== "undefined" && window.location.origin,
+        audience: AUTH0_AUDIENCE,
+      }}
+    >
+      <Site
+        {...props}
+        authentication={{
+          authTransitionPath,
+          setAuthTransitionPath,
+        }}
+      />
+    </Auth0Provider>
+  );
+}

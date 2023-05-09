@@ -33,7 +33,6 @@ import {
   standardAnimationTransition,
   standardAnimationVariants,
 } from "./animation";
-import { useAuthenticated } from "./authentication";
 import { useSessionStorage } from "./browser-storage";
 import { Button } from "./form-elements";
 import Icon from "./icon";
@@ -41,7 +40,12 @@ import SiteLogo from "./logo";
 import Modal from "./modal";
 import SessionContext from "./session-context";
 // lib
-import { AUTH_ERROR_URI, UC } from "../lib/constants";
+import {
+  loginAuthProvider,
+  logoutAuthProvider,
+  logoutDataProvider,
+} from "../lib/authentication";
+import { UC } from "../lib/constants";
 
 /**
  * Icon for opening the sidebar navigation.
@@ -213,7 +217,6 @@ NavigationButtonNarrow.propTypes = {
  */
 function NavigationSignInItem({ id, isNarrowNav = false, children }) {
   const { isLoading, loginWithRedirect } = useAuth0();
-  const { setRedirectTo } = useContext(SessionContext);
 
   // Use different button-rendering components depending on whether the navigation is in wide mode
   // or narrow mode.
@@ -221,31 +224,12 @@ function NavigationSignInItem({ id, isNarrowNav = false, children }) {
     ? NavigationButtonNarrow
     : NavigationButtonWide;
 
-  /**
-   * Called when the user clicks the Sign In button to begin the Auth0 authorization process.
-   * Redirect the post-login to the page the user currently views unless the current page is the
-   * authentication error one. We leave the rest of the provider authentication process to Auth0.
-   * We only know it was successful once `useAuth0` returns true in `isAuthenticated`.
-   */
-  function handleAuthClick() {
-    // Save the current path and query string in session storage so we can redirect to it after
-    // signin, unless the user is on the authentication-error page, in which case we redirect to
-    // the home page after sign-in so the user doesn't see an authentication error after a good
-    // sign-in.
-    setRedirectTo(
-      window.location.pathname === AUTH_ERROR_URI
-        ? "/"
-        : `${window.location.pathname}${window.location.search}`
-    );
-    loginWithRedirect();
-  }
-
   return (
     <li>
       <NavigationButton
         id={id}
         isDisabled={isLoading}
-        onClick={handleAuthClick}
+        onClick={() => loginAuthProvider(loginWithRedirect)}
       >
         {children}
       </NavigationButton>
@@ -271,9 +255,12 @@ function NavigationSignOutItem({
   className = null,
   children,
 }) {
-  // True if signout warning modal open
+  // True if sign-out warning modal open
   const [isWarningOpen, setIsWarningOpen] = useState(false);
-  const { logout, user } = useAuth0();
+  // Session properties object
+  // Logged-in session-properties object
+  const { sessionProperties } = useContext(SessionContext);
+  const { logout } = useAuth0();
 
   // Use different button-rendering components depending on whether the navigation is in wide mode
   // or narrow mode.
@@ -282,10 +269,12 @@ function NavigationSignOutItem({
     : NavigationButtonWide;
 
   /**
-   * Called when the user clicks the Sign Out button.
+   * Called when the user clicks the Sign Out button. Log out of both the authentication provider
+   * and the data provider.
    */
   function handleAuthClick() {
-    logout({ returnTo: window.location.origin });
+    logoutAuthProvider(logout);
+    logoutDataProvider();
   }
 
   return (
@@ -305,7 +294,9 @@ function NavigationSignOutItem({
           onClose={() => setIsWarningOpen(false)}
           closeLabel="Cancel signing out"
         >
-          <h2 className="text-lg font-semibold">Sign Out {user.name}</h2>
+          <h2 className="text-lg font-semibold">
+            Sign Out {sessionProperties.user?.title || "User"}
+          </h2>
         </Modal.Header>
         <Modal.Body>
           Once you sign out, you only see publicly released data.
@@ -318,7 +309,11 @@ function NavigationSignOutItem({
           >
             Cancel
           </Button>
-          <Button onClick={handleAuthClick} label={`Sign out ${user.name}`}>
+          <Button
+            onClick={handleAuthClick}
+            label={`Sign out ${sessionProperties.user?.title || "User"}`}
+            id="sign-out-confirm"
+          >
             Sign Out
           </Button>
         </Modal.Footer>
@@ -509,8 +504,9 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
   // Holds the ids of the currently open parent navigation items
   const [openedParents, setOpenedParents] = React.useState([]);
   // Current Auth0 information
-  const { user } = useAuth0();
-  const isAuthenticated = useAuthenticated();
+  const { isAuthenticated } = useAuth0();
+  // Logged-in session-properties object
+  const { sessionProperties } = useContext(SessionContext);
 
   /**
    * Called when the user clicks a group navigation item to open or close it.
@@ -840,7 +836,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         {isAuthenticated ? (
           <NavigationGroupItem
             id="authenticate"
-            title={user.name}
+            title={sessionProperties.user?.title || "User"}
             icon={<Icon.UserSignedIn />}
             isGroupOpened={openedParents.includes("authenticate")}
             handleGroupClick={handleParentClick}
@@ -853,7 +849,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             >
               Profile
             </NavigationHrefItem>
-            <NavigationSignOutItem id="signout" isChildItem>
+            <NavigationSignOutItem id="sign-out" isChildItem>
               Sign Out
             </NavigationSignOutItem>
           </NavigationGroupItem>
@@ -888,7 +884,7 @@ NavigationExpanded.propTypes = {
 };
 
 function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
-  const isAuthenticated = useAuthenticated();
+  const { isAuthenticated } = useAuth0();
 
   return (
     <NavigationList className="w-full [&>ul>li]:my-2 [&>ul]:flex [&>ul]:flex-col [&>ul]:items-center">
@@ -909,7 +905,7 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
         </NavigationIcon>
       </NavigationHrefItem>
       {isAuthenticated ? (
-        <NavigationSignOutItem id="signout" isNarrowNav>
+        <NavigationSignOutItem id="sign-out" isNarrowNav>
           <Icon.UserSignedIn className="h-8 w-8" />
         </NavigationSignOutItem>
       ) : (

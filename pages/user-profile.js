@@ -21,9 +21,10 @@ export default function UserProfile({ sessionUser = null }) {
   const [accessKeys, setAccessKeys] = useState(
     sessionUser ? sessionUser.access_keys : []
   );
-  const { session } = useContext(SessionContext);
-
+  const { session, sessionProperties } = useContext(SessionContext);
   const { isLoading, user } = useAuth0();
+
+  const username = sessionProperties.user?.title || "User";
 
   /**
    * Called when the user adds a new access key.
@@ -56,9 +57,9 @@ export default function UserProfile({ sessionUser = null }) {
                     src={user.picture}
                     width={64}
                     height={64}
-                    alt={`${user.name}'s profile picture`}
+                    alt={`${username}'s profile picture`}
                   />
-                  <div className="ml-2">{user.name}</div>
+                  <div className="ml-2">{username}</div>
                 </div>
                 <CreateAccessKeyTrigger onAccessKeyChange={onAccessKeyChange} />
                 {accessKeys.length > 0 && (

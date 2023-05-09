@@ -29,7 +29,6 @@ describe("Test Edit button", () => {
   });
   // 2. Typing garbage shows errors
   it("Errors appear when typing invalid json", () => {
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
     cy.contains("Cypress Testing");
     cy.wait(1000);
@@ -56,7 +55,6 @@ describe("Test Edit button", () => {
   });
   // 3. Edit the json and save will update the content
   it("Edit and save will update the content", () => {
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
     cy.contains("Cypress Testing");
     cy.wait(1000);
@@ -110,7 +108,6 @@ describe("Test Edit button", () => {
   });
   // 4. Type garbage and save should show an error
   it("Saving a bad form should show an error", () => {
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
     cy.contains("Cypress Testing");
     cy.wait(1000);

@@ -2,7 +2,6 @@
 
 describe("Content-Change Tests", () => {
   it("should let you change and save the contents of a page", () => {
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
     cy.contains("Cypress Testing");
     cy.wait(1000);
@@ -62,7 +61,6 @@ describe("Content-Change Tests", () => {
   });
 
   it("should let you change the page hierarchy", () => {
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
     cy.contains("Cypress Testing");
     cy.wait(1000);
@@ -85,7 +83,6 @@ describe("Content-Change Tests", () => {
   });
 
   it("should update the help page when you add new help pages", () => {
-    cy.log(`CYPRESSENV: ${Cypress.env("AUTH_USERNAME")}`);
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
     cy.contains("Cypress Testing");
     cy.wait(1500);

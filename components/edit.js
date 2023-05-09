@@ -1,4 +1,5 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import React, { useContext, useState, useEffect } from "react";
@@ -7,7 +8,6 @@ import { Button, ButtonLink } from "./form-elements";
 import FlashMessage from "./flash-message";
 import EditJson, { canEdit } from "./edit-func";
 import SessionContext from "./session-context";
-import { useAuthenticated } from "./authentication";
 import PagePreamble from "./page-preamble";
 // lib
 import FetchRequest from "../lib/fetch-request";
@@ -92,12 +92,12 @@ export default function EditPage({ item }) {
 
   const path = item["@id"];
 
-  const loggedIn = useAuthenticated();
+  const { isAuthenticated } = useAuth0();
 
   function editable(item) {
     // cannot edit if not logged in or object not editable
     const editable = canEdit(item);
-    return loggedIn && editable;
+    return isAuthenticated && editable;
   }
 
   function jsonErrors(json) {

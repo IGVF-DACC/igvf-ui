@@ -6,6 +6,7 @@
  */
 
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import {
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
@@ -24,7 +25,6 @@ import {
   useState,
 } from "react";
 // components
-import { useAuthenticated } from "./authentication";
 import Breadcrumbs from "./breadcrumbs";
 import { DataPanel } from "./data-area";
 import FlashMessage from "./flash-message";
@@ -936,7 +936,7 @@ export default function Page({
   const [redirectToPage, setRedirectToPage] = useState("");
 
   const router = useRouter();
-  const isAuthenticated = useAuthenticated();
+  const { isAuthenticated } = useAuth0();
   const { session } = useContext(SessionContext);
 
   useEffect(() => {
