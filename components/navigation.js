@@ -295,7 +295,7 @@ function NavigationSignOutItem({
           closeLabel="Cancel signing out"
         >
           <h2 className="text-lg font-semibold">
-            Sign Out {sessionProperties.user?.title || "User"}
+            Sign Out {sessionProperties?.user?.title || "User"}
           </h2>
         </Modal.Header>
         <Modal.Body>
@@ -311,7 +311,7 @@ function NavigationSignOutItem({
           </Button>
           <Button
             onClick={handleAuthClick}
-            label={`Sign out ${sessionProperties.user?.title || "User"}`}
+            label={`Sign out ${sessionProperties?.user?.title || "User"}`}
             id="sign-out-confirm"
           >
             Sign Out
@@ -836,7 +836,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         {isAuthenticated ? (
           <NavigationGroupItem
             id="authenticate"
-            title={sessionProperties.user?.title || "User"}
+            title={sessionProperties?.user?.title || "User"}
             icon={<Icon.UserSignedIn />}
             isGroupOpened={openedParents.includes("authenticate")}
             handleGroupClick={handleParentClick}
