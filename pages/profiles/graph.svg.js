@@ -1,29 +1,39 @@
 // node_modules
-import Image from "next/image";
+import FetchRequest from "../../lib/fetch-request";
+import PropTypes from "prop-types";
 
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
-import PagePreamble from "../../components/page-preamble";
 import { DataPanel, DataAreaTitle } from "../../components/data-area";
+import PagePreamble from "../../components/page-preamble";
 
-export default function GraphSvg() {
+export default function GraphSvg({ graph }) {
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <>
-        <DataAreaTitle>Graph</DataAreaTitle>
-        <DataPanel>
-          <a href="https://api.data.igvf.org/profiles/graph.svg">
-            <Image
-              src="https://api.data.igvf.org/profiles/graph.svg"
-              height={5356}
-              width={4703}
-              alt="IGVF graph"
-            />
-          </a>
-        </DataPanel>
-      </>
+      <DataAreaTitle>Graph</DataAreaTitle>
+      <DataPanel>
+        <div
+          id="graph"
+          className="dark:[&>svg>g>polygon]:fill-transparent [&>svg]:h-full [&>svg]:w-auto overflow-y-auto"
+          dangerouslySetInnerHTML={{ __html: graph }}
+        />
+      </DataPanel>
     </>
   );
+}
+
+GraphSvg.propTypes = {
+  graph: PropTypes.string.isRequired,
+};
+
+export async function getServerSideProps({ req }) {
+  const request = new FetchRequest({ cookie: req.headers.cookie });
+  const graph = await request.getText("/profiles/graph.svg");
+  return {
+    props: {
+      graph,
+    },
+  };
 }

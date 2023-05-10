@@ -223,3 +223,19 @@ a {
 #page-content table th {
   background-color: #c0d0f0;
 }
+
+.dark #graph .node > text {
+  fill: #fff !important;
+}
+
+.dark #graph .node > polygon {
+  stroke: #fff !important;
+}
+
+.dark #graph .edge > path {
+  stroke: #fff !important;
+}
+
+.dark #graph .edge > polygon {
+  fill: #fff !important;
+}
