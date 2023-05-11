@@ -24,7 +24,7 @@ export default function UserProfile({ sessionUser = null }) {
   const { session, sessionProperties } = useContext(SessionContext);
   const { isLoading, user } = useAuth0();
 
-  const username = sessionProperties.user?.title || "User";
+  const username = sessionProperties?.user?.title || "User";
 
   /**
    * Called when the user adds a new access key.
