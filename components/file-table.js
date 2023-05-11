@@ -8,7 +8,7 @@ import Status from "./status";
 
 const filesColumns = [
   {
-    id: "file_id",
+    id: "accession",
     title: "Accession",
     display: ({ source }) => {
       return <Link href={source["@id"]}>{source.accession}</Link>;
