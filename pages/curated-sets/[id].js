@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
@@ -11,18 +12,17 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import { EditableItem } from "../../components/edit";
 // lib
+import AliasList from "../../components/alias-list";
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import AliasList from "../../components/alias-list";
 import SeparatedList from "../../components/separated-list";
-import Link from "next/link";
-import buildAttribution from "../../lib/attribution";
 
 export default function CuratedSet({
   curatedSet,

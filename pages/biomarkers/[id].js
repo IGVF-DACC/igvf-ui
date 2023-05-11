@@ -15,11 +15,11 @@ import { EditableItem } from "../../components/edit";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
+import buildAttribution from "../../lib/attribution";
+import { getBiomarkerTitle } from "../../lib/biomarker";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { getBiomarkerTitle } from "../../lib/biomarker";
-import buildAttribution from "../../lib/attribution";
 
 export default function Biomarker({ biomarker, gene, attribution = null }) {
   return (

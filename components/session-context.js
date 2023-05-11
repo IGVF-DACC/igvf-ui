@@ -16,6 +16,7 @@ import PropTypes from "prop-types";
 import { createContext, useEffect, useRef, useState } from "react";
 // lib
 import {
+  getDataProviderUrl,
   getSession,
   getSessionProperties,
   loginDataProvider,
@@ -45,45 +46,65 @@ export function Session({ authentication, children }) {
   const [sessionProperties, setSessionProperties] = useState(null);
   // Caches the /profiles schemas
   const [profiles, setProfiles] = useState(null);
+  // Caches the data provider URL
+  const [dataProviderUrl, setDataProviderUrl] = useState(null);
   // Set to true once we start the process of signing into igvfd
   const isServerAuthPending = useRef(false);
+  // Set to true while retrieving /profiles
+  const isProfilesPending = useRef(false);
 
   const { getAccessTokenSilently, isAuthenticated, logout } = useAuth0();
   const router = useRouter();
 
   // If we don't have them in state, get the session, session-properties, and profiles objects
   // from igvfd. We mostly need this when the user reloads the page, as logging in also retrieves
-  // the session and session-properties objects.
+  // the session and session-properties objects. Because these requests can fail on certain pages,
+  // (e.g. 404 pages), we first request the URL of the data provider from the UI API so that we can
+  // perform requests to the data provider even on these pages.
   useEffect(() => {
-    if (!session) {
-      getSession().then((sessionResponse) => {
-        setSession(sessionResponse);
+    if (!dataProviderUrl) {
+      getDataProviderUrl().then((url) => {
+        setDataProviderUrl(url);
       });
+    } else {
+      if (!session && dataProviderUrl) {
+        getSession(dataProviderUrl).then((sessionResponse) => {
+          setSession(sessionResponse);
+        });
+      }
+      if (!sessionProperties) {
+        getSessionProperties(dataProviderUrl).then(
+          (sessionPropertiesResponse) => {
+            setSessionProperties(sessionPropertiesResponse);
+          }
+        );
+      }
+      if (!profiles && !isProfilesPending.current) {
+        isProfilesPending.current = true;
+        getProfiles(session).then((profiles) => {
+          isProfilesPending.current = false;
+          setProfiles(profiles);
+        });
+      }
     }
-    if (!sessionProperties) {
-      getSessionProperties().then((sessionPropertiesResponse) => {
-        setSessionProperties(sessionPropertiesResponse);
-      });
-    }
-    if (!profiles) {
-      getProfiles(session).then((profiles) => {
-        setProfiles(profiles);
-      });
-    }
-  }, [profiles, session, sessionProperties]);
+  }, [dataProviderUrl, profiles, session, sessionProperties]);
 
   // If we detect a transition from Auth0's logged-out state to logged-in state, log the user into
   // igvfd. The callback that auth0-react calls after a successful Auth0 login exists outside the
   // Auth0Provider context, so we have to have that callback set an <App> state and then handle the
   // sign in to igvfd here, *within* the Auth0Provider context.
   useEffect(() => {
-    if (authentication.authTransitionPath && !isServerAuthPending.current) {
+    if (
+      authentication.authTransitionPath &&
+      !isServerAuthPending.current &&
+      dataProviderUrl
+    ) {
       // Get the logged-out session object from igvfd if we don't already have it in state. We
       // need this to get the CSRF token to sign into igvfd.
       isServerAuthPending.current = true;
       const serverSessionPromise = session
         ? Promise.resolve(session)
-        : getSession();
+        : getSession(dataProviderUrl);
       serverSessionPromise
         .then((signedOutSession) => {
           // Attempt to log into igvfd.
@@ -105,7 +126,7 @@ export function Session({ authentication, children }) {
           // the session context so that any downstream component can retrieve it without doing a
           // request to /session-properties.
           setSessionProperties(sessionPropertiesResponse);
-          return getSession();
+          return getSession(dataProviderUrl);
         })
         .then((signedInSession) => {
           // Set the logged-in session object in the session context so that any downstream
@@ -126,6 +147,7 @@ export function Session({ authentication, children }) {
     }
   }, [
     authentication,
+    dataProviderUrl,
     getAccessTokenSilently,
     isAuthenticated,
     logout,
