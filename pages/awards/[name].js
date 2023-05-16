@@ -19,8 +19,21 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import SeparatedList from "../../components/separated-list";
 
-export default function Award({ award, pis, contactPi }) {
-  return (
+export default function Award({ award, pis, contactPi, format = null }) {
+  return format === "json" ? (
+    <>
+      <Breadcrumbs />
+      <PagePreamble />
+
+      <DataPanel>
+        <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
+          <pre className="overflow-x-scroll p-1">
+            {JSON.stringify(award, null, 4)}
+          </pre>
+        </div>
+      </DataPanel>
+    </>
+  ) : (
     <>
       <Breadcrumbs />
       <EditableItem item={award}>
@@ -106,9 +119,12 @@ Award.propTypes = {
   pis: PropTypes.arrayOf(PropTypes.object).isRequired,
   // The contact Principal Investigator of the grant.
   contactPi: PropTypes.object,
+  // the format in the query
+  format: PropTypes.string,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const format = query.format ? query.format : null;
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const award = await request.getObject(`/awards/${params.name}/`);
   if (FetchRequest.isResponseSuccess(award)) {
@@ -131,6 +147,7 @@ export async function getServerSideProps({ params, req }) {
         award,
         pis,
         contactPi,
+        format,
         pageContext: { title: award.name },
         breadcrumbs,
       },
