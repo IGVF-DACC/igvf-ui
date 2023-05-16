@@ -15,11 +15,13 @@ import FileTable from "../../components/file-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { EditableItem } from "../../components/edit";
+import { JsonDisplay } from "../../components/json-display";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
+import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
 import Link from "next/link";
 import buildAttribution from "../../lib/attribution";
@@ -32,80 +34,83 @@ export default function AnalysisSet({
   files,
   samples,
   attribution = null,
+  isJson,
 }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={analysisSet}>
         <PagePreamble />
-        <ObjectPageHeader item={analysisSet} />
-        <DataPanel>
-          <DataArea>
-            {analysisSet.aliases?.length > 0 && (
-              <>
-                <DataItemLabel>Aliases</DataItemLabel>
-                <DataItemValue>
-                  <AliasList aliases={analysisSet.aliases} />
-                </DataItemValue>
-              </>
-            )}
-            {inputFileSets.length > 0 && (
-              <>
-                <DataItemLabel>Input File Sets</DataItemLabel>
-                <DataItemValue>
-                  <SeparatedList>
-                    {inputFileSets.map((file) => (
-                      <Link href={file["@id"]} key={file.uuid}>
-                        {file.accession}
-                      </Link>
-                    ))}
-                  </SeparatedList>
-                </DataItemValue>
-              </>
-            )}
-            {donors.length > 0 && (
-              <>
-                <DataItemLabel>Donors</DataItemLabel>
-                <DataItemValue>
-                  <SeparatedList>
-                    {donors.map((donor) => (
-                      <Link href={donor["@id"]} key={donor.uuid}>
-                        {donor.accession}
-                      </Link>
-                    ))}
-                  </SeparatedList>
-                </DataItemValue>
-              </>
-            )}
-            {samples.length > 0 && (
-              <>
-                <DataItemLabel>Samples</DataItemLabel>
-                <DataItemValue>
-                  <SeparatedList>
-                    {samples.map((sample) => (
-                      <Link href={sample["@id"]} key={sample.uuid}>
-                        {sample.accession}
-                      </Link>
-                    ))}
-                  </SeparatedList>
-                </DataItemValue>
-              </>
-            )}
-          </DataArea>
-        </DataPanel>
-        {files.length > 0 && (
-          <>
-            <DataAreaTitle>Files</DataAreaTitle>
-            <FileTable files={files} />
-          </>
-        )}
-        {documents.length > 0 && (
-          <>
-            <DataAreaTitle>Documents</DataAreaTitle>
-            <DocumentTable documents={documents} />
-          </>
-        )}
-        <Attribution attribution={attribution} />
+        <JsonDisplay item={analysisSet} isJsonFormat={isJson}>
+          <ObjectPageHeader item={analysisSet} />
+          <DataPanel>
+            <DataArea>
+              {analysisSet.aliases?.length > 0 && (
+                <>
+                  <DataItemLabel>Aliases</DataItemLabel>
+                  <DataItemValue>
+                    <AliasList aliases={analysisSet.aliases} />
+                  </DataItemValue>
+                </>
+              )}
+              {inputFileSets.length > 0 && (
+                <>
+                  <DataItemLabel>Input File Sets</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {inputFileSets.map((file) => (
+                        <Link href={file["@id"]} key={file.uuid}>
+                          {file.accession}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              {donors.length > 0 && (
+                <>
+                  <DataItemLabel>Donors</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {donors.map((donor) => (
+                        <Link href={donor["@id"]} key={donor.uuid}>
+                          {donor.accession}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              {samples.length > 0 && (
+                <>
+                  <DataItemLabel>Samples</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {samples.map((sample) => (
+                        <Link href={sample["@id"]} key={sample.uuid}>
+                          {sample.accession}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+            </DataArea>
+          </DataPanel>
+          {files.length > 0 && (
+            <>
+              <DataAreaTitle>Files</DataAreaTitle>
+              <FileTable files={files} />
+            </>
+          )}
+          {documents.length > 0 && (
+            <>
+              <DataAreaTitle>Documents</DataAreaTitle>
+              <DocumentTable documents={documents} />
+            </>
+          )}
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -125,9 +130,12 @@ AnalysisSet.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
   attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const analysisSet = await request.getObject(`/analysis-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(analysisSet)) {
@@ -175,6 +183,7 @@ export async function getServerSideProps({ params, req }) {
         pageContext: { title: analysisSet.accession },
         breadcrumbs,
         attribution,
+        isJson,
       },
     };
   }

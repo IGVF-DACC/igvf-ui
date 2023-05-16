@@ -9,6 +9,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { JsonDisplay } from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { EditableItem } from "../../components/edit";
@@ -17,96 +18,86 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { formatDateRange } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
 
-export default function Award({ award, pis, contactPi, format = null }) {
-  return format === "json" ? (
-    <>
-      <Breadcrumbs />
-      <PagePreamble />
-
-      <DataPanel>
-        <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
-          <pre className="overflow-x-scroll p-1">
-            {JSON.stringify(award, null, 4)}
-          </pre>
-        </div>
-      </DataPanel>
-    </>
-  ) : (
+export default function Award({ award, pis, contactPi, isJson }) {
+  return (
     <>
       <Breadcrumbs />
       <EditableItem item={award}>
         <PagePreamble />
-        <ObjectPageHeader item={award} />
-        <DataPanel>
-          <DataArea>
-            <DataItemLabel>Title</DataItemLabel>
-            <DataItemValue>{award.title}</DataItemValue>
-            {award.description && (
-              <>
-                <DataItemLabel>Description</DataItemLabel>
-                <DataItemValue>{award.description}</DataItemValue>
-              </>
-            )}
-            {pis.length > 0 && (
-              <>
-                <DataItemLabel>Principal Investigator(s)</DataItemLabel>
-                <DataItemValue>
-                  <SeparatedList>
-                    {pis.map((pi) => (
-                      <Link href={pi["@id"]} key={pi.uuid}>
-                        {pi.title}
-                      </Link>
-                    ))}
-                  </SeparatedList>
-                </DataItemValue>
-              </>
-            )}
-            {contactPi && (
-              <>
-                <DataItemLabel>Contact P.I.</DataItemLabel>
-                <DataItemValue>
-                  <Link href={contactPi["@id"]} key={contactPi.uuid}>
-                    {contactPi.title}
-                  </Link>
-                </DataItemValue>
-              </>
-            )}
-            {award.component && (
-              <>
-                <DataItemLabel>Component</DataItemLabel>
-                <DataItemValue>{award.component}</DataItemValue>
-              </>
-            )}
-            <DataItemLabel>Project</DataItemLabel>
-            <DataItemValue>{award.project}</DataItemValue>
-            {(award.start_date || award.end_date) && (
-              <>
-                <DataItemLabel>Grant Dates</DataItemLabel>
-                <DataItemValue>
-                  {formatDateRange(award.start_date, award.end_date)}
-                </DataItemValue>
-              </>
-            )}
-            {award.submitter_comment && (
-              <>
-                <DataItemLabel>Submitter Comment</DataItemLabel>
-                <DataItemValue>{award.submitter_comment}</DataItemValue>
-              </>
-            )}
-            {award.url && (
-              <>
-                <DataItemLabel>Additional Information</DataItemLabel>
-                <DataItemValue>
-                  <a href={award.url} target="_blank" rel="noreferrer">
-                    {award.url}
-                  </a>
-                </DataItemValue>
-              </>
-            )}
-          </DataArea>
-        </DataPanel>
+        <JsonDisplay item={award} isJsonFormat={isJson}>
+          <ObjectPageHeader item={award} />
+          <DataPanel>
+            <DataArea>
+              <DataItemLabel>Title</DataItemLabel>
+              <DataItemValue>{award.title}</DataItemValue>
+              {award.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{award.description}</DataItemValue>
+                </>
+              )}
+              {pis.length > 0 && (
+                <>
+                  <DataItemLabel>Principal Investigator(s)</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {pis.map((pi) => (
+                        <Link href={pi["@id"]} key={pi.uuid}>
+                          {pi.title}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              {contactPi && (
+                <>
+                  <DataItemLabel>Contact P.I.</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={contactPi["@id"]} key={contactPi.uuid}>
+                      {contactPi.title}
+                    </Link>
+                  </DataItemValue>
+                </>
+              )}
+              {award.component && (
+                <>
+                  <DataItemLabel>Component</DataItemLabel>
+                  <DataItemValue>{award.component}</DataItemValue>
+                </>
+              )}
+              <DataItemLabel>Project</DataItemLabel>
+              <DataItemValue>{award.project}</DataItemValue>
+              {(award.start_date || award.end_date) && (
+                <>
+                  <DataItemLabel>Grant Dates</DataItemLabel>
+                  <DataItemValue>
+                    {formatDateRange(award.start_date, award.end_date)}
+                  </DataItemValue>
+                </>
+              )}
+              {award.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{award.submitter_comment}</DataItemValue>
+                </>
+              )}
+              {award.url && (
+                <>
+                  <DataItemLabel>Additional Information</DataItemLabel>
+                  <DataItemValue>
+                    <a href={award.url} target="_blank" rel="noreferrer">
+                      {award.url}
+                    </a>
+                  </DataItemValue>
+                </>
+              )}
+            </DataArea>
+          </DataPanel>
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -119,12 +110,12 @@ Award.propTypes = {
   pis: PropTypes.arrayOf(PropTypes.object).isRequired,
   // The contact Principal Investigator of the grant.
   contactPi: PropTypes.object,
-  // the format in the query
-  format: PropTypes.string,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const format = query.format ? query.format : null;
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const award = await request.getObject(`/awards/${params.name}/`);
   if (FetchRequest.isResponseSuccess(award)) {
@@ -147,7 +138,7 @@ export async function getServerSideProps({ params, req, query }) {
         award,
         pis,
         contactPi,
-        format,
+        isJson,
         pageContext: { title: award.name },
         breadcrumbs,
       },

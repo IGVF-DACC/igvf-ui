@@ -1,10 +1,8 @@
 // node_modules
 import { CodeBracketIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
-import React from "react";
 // components
 import { ButtonLink } from "./form-elements";
-/* istanbul ignore file */
 
 export function JsonLink({ item }) {
   function removeTrailingSlash(url) {
