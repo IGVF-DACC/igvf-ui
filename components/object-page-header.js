@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { AuditDetail, useAudit } from "./audit";
 import { EditLink } from "./edit-func";
 import QualitySection from "./quality-section";
+import { JsonLink } from "./json-button";
 
 /**
  * Display the header above the data areas of an object page.
@@ -15,7 +16,10 @@ export default function ObjectPageHeader({ item }) {
     <>
       <div className="flex justify-between">
         <QualitySection item={item} auditState={auditState} />
-        <EditLink item={item} />
+        <div className="flex justify-end">
+          <EditLink item={item} />
+          <JsonLink item={item} />
+        </div>
       </div>
       <AuditDetail item={item} auditState={auditState} className="mb-2" />
     </>
