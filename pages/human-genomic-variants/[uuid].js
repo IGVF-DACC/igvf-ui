@@ -11,7 +11,7 @@ import {
 import { EditableItem } from "../../components/edit";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { JsonDisplay } from "../../components/json-display";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";

@@ -14,7 +14,7 @@ import {
 import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import { JsonDisplay } from "../../components/json-display";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
 // lib

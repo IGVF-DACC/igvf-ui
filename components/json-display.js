@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { DataPanel } from "./data-area";
 import ObjectPageHeader from "./object-page-header";
 
-export function JsonDisplay({ item, isJsonFormat, children }) {
+export default function JsonDisplay({ item, isJsonFormat, children }) {
   return (
     <>
       <ObjectPageHeader item={item} isJsonFormat={isJsonFormat} />

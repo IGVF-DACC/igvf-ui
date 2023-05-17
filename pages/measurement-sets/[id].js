@@ -14,7 +14,7 @@ import {
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
-import { JsonDisplay } from "../../components/json-display";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import AliasList from "../../components/alias-list";

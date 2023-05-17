@@ -10,7 +10,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
-import { JsonDisplay } from "../../components/json-display";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib

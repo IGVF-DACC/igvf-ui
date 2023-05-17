@@ -11,7 +11,7 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import NoContent from "../../components/no-content";
-import { JsonDisplay } from "../../components/json-display";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";

@@ -12,7 +12,7 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import FileTable from "../../components/file-table";
-import { JsonDisplay } from "../../components/json-display";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 import { EditableItem } from "../../components/edit";
 // lib

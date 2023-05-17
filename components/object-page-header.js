@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 // components
 import { AuditDetail, useAudit } from "./audit";
 import { EditLink } from "./edit-func";
-import QualitySection from "./quality-section";
 import { JsonViewLink, ObjectViewLink } from "./json-button";
+import QualitySection from "./quality-section";
 
 /**
  * Display the header above the data areas of an object page.
