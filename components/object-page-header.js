@@ -16,7 +16,7 @@ export default function ObjectPageHeader({ item }) {
     <>
       <div className="flex justify-between">
         <QualitySection item={item} auditState={auditState} />
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-1">
           <EditLink item={item} />
           <JsonLink item={item} />
         </div>

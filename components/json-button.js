@@ -3,11 +3,10 @@ import { CodeBracketIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
 import { ButtonLink } from "./form-elements";
+// lib
+import { removeTrailingSlash } from "../lib/general";
 
 export function JsonLink({ item }) {
-  function removeTrailingSlash(url) {
-    return url.endsWith("/") ? url.slice(0, url.length - 1) : url;
-  }
   const editPath = `${removeTrailingSlash(item["@id"])}?format=json`;
 
   return (

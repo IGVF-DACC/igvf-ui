@@ -5,6 +5,8 @@ import PropTypes from "prop-types";
 import React from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
+// lib
+import { removeTrailingSlash } from "../lib/general";
 /* istanbul ignore file */
 
 export function canEdit(item, actions = ["edit", "edit-json"]) {
@@ -123,10 +125,6 @@ EditJson.propTypes = {
 };
 
 export function EditLink({ item }) {
-  function removeTrailingSlash(url) {
-    return url.endsWith("/") ? url.slice(0, url.length - 1) : url;
-  }
-
   const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
   if (canEdit(item)) {
     return (
