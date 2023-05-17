@@ -1,3 +1,10 @@
+/**
+ * Button JsonViewLink and ObjectViewLink are used for swicthing views between object view and json format view.
+ * The JsonViewLink is displayed in ObjectPageHeader when there is no format in query for object view. Click
+ * JsonViewLink will switch to Json format view. The ObjectViewLink is displayed in ObjectPageHeader when the
+ * query is in JSON format for JSON format view. Click ObjectViewLink will switch to object view.
+ */
+
 // node_modules
 import {
   CodeBracketIcon,
