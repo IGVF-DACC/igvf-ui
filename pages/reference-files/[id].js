@@ -14,13 +14,14 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import ObjectPageHeader from "../../components/object-page-header";
+import { JsonDisplay } from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { isJsonFormat } from "../../lib/query-utils";
 
 export default function ReferenceFile({
   referenceFile,
@@ -28,49 +29,51 @@ export default function ReferenceFile({
   documents,
   derivedFrom,
   attribution = null,
+  isJson,
 }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={referenceFile}>
         <PagePreamble />
-        <ObjectPageHeader item={referenceFile} />
-        <DataPanel>
-          <DataArea>
-            <FileDataItems
-              file={referenceFile}
-              fileSet={fileSet}
-              derivedFrom={derivedFrom}
-            >
-              {referenceFile.assembly && (
-                <>
-                  <DataItemLabel>Genome Assembly</DataItemLabel>
-                  <DataItemValue>{referenceFile.assembly}</DataItemValue>
-                </>
-              )}
-              {referenceFile.source && (
-                <>
-                  <DataItemLabel>Source</DataItemLabel>
-                  <DataItemValue>
-                    <Link
-                      href={referenceFile.source}
-                      key={referenceFile.source}
-                    >
-                      {referenceFile.source}
-                    </Link>
-                  </DataItemValue>
-                </>
-              )}
-            </FileDataItems>
-          </DataArea>
-        </DataPanel>
-        {documents.length > 0 && (
-          <>
-            <DataAreaTitle>Documents</DataAreaTitle>
-            <DocumentTable documents={documents} />
-          </>
-        )}
-        <Attribution attribution={attribution} />
+        <JsonDisplay item={referenceFile} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <FileDataItems
+                file={referenceFile}
+                fileSet={fileSet}
+                derivedFrom={derivedFrom}
+              >
+                {referenceFile.assembly && (
+                  <>
+                    <DataItemLabel>Genome Assembly</DataItemLabel>
+                    <DataItemValue>{referenceFile.assembly}</DataItemValue>
+                  </>
+                )}
+                {referenceFile.source && (
+                  <>
+                    <DataItemLabel>Source</DataItemLabel>
+                    <DataItemValue>
+                      <Link
+                        href={referenceFile.source}
+                        key={referenceFile.source}
+                      >
+                        {referenceFile.source}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
+              </FileDataItems>
+            </DataArea>
+          </DataPanel>
+          {documents.length > 0 && (
+            <>
+              <DataAreaTitle>Documents</DataAreaTitle>
+              <DocumentTable documents={documents} />
+            </>
+          )}
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -87,9 +90,12 @@ ReferenceFile.propTypes = {
   derivedFrom: PropTypes.array,
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const referenceFile = await request.getObject(
     `/reference-files/${params.id}/`
@@ -124,6 +130,7 @@ export async function getServerSideProps({ params, req }) {
         pageContext: { title: referenceFile.accession },
         breadcrumbs,
         attribution,
+        isJson,
       },
     };
   }

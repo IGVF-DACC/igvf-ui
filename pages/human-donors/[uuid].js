@@ -8,13 +8,14 @@ import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import ExternalResources from "../../components/external-resources";
-import ObjectPageHeader from "../../components/object-page-header";
+import { JsonDisplay } from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
+import { isJsonFormat } from "../../lib/query-utils";
 import buildAttribution from "../../lib/attribution";
 
 export default function HumanDonor({
@@ -23,32 +24,34 @@ export default function HumanDonor({
   parents,
   phenotypicFeatures,
   attribution = null,
+  isJson,
 }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={donor}>
         <PagePreamble />
-        <ObjectPageHeader item={donor} />
-        <DataPanel>
-          <DataArea>
-            <DonorDataItems donor={donor} parents={parents} />
-          </DataArea>
-        </DataPanel>
-        {phenotypicFeatures.length > 0 && (
-          <>
-            <DataAreaTitle>Phenotypic Features</DataAreaTitle>
-            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
-          </>
-        )}
-        <ExternalResources resources={donor.external_resources} />
-        {documents.length > 0 && (
-          <>
-            <DataAreaTitle>Documents</DataAreaTitle>
-            <DocumentTable documents={documents} />
-          </>
-        )}
-        <Attribution attribution={attribution} />
+        <JsonDisplay item={donor} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <DonorDataItems donor={donor} parents={parents} />
+            </DataArea>
+          </DataPanel>
+          {phenotypicFeatures.length > 0 && (
+            <>
+              <DataAreaTitle>Phenotypic Features</DataAreaTitle>
+              <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
+            </>
+          )}
+          <ExternalResources resources={donor.external_resources} />
+          {documents.length > 0 && (
+            <>
+              <DataAreaTitle>Documents</DataAreaTitle>
+              <DocumentTable documents={documents} />
+            </>
+          )}
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -65,9 +68,12 @@ HumanDonor.propTypes = {
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
   // HumanDonor attribution
   attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = await request.getObject(`/human-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
@@ -101,6 +107,7 @@ export async function getServerSideProps({ params, req }) {
         phenotypicFeatures,
         breadcrumbs,
         attribution,
+        isJson,
       },
     };
   }

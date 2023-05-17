@@ -9,9 +9,9 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { EditableItem } from "../../components/edit";
 import { JsonDisplay } from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
-import { EditableItem } from "../../components/edit";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { formatDateRange } from "../../lib/dates";

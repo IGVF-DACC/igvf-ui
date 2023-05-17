@@ -14,7 +14,7 @@ import {
 import { EditableItem } from "../../components/edit";
 import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
-import ObjectPageHeader from "../../components/object-page-header";
+import { JsonDisplay } from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
 // lib
@@ -22,6 +22,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Tissue({
   tissue,
@@ -35,72 +36,74 @@ export default function Tissue({
   biomarkers,
   partOf,
   attribution = null,
+  isJson,
 }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={tissue}>
         <PagePreamble />
-        <ObjectPageHeader item={tissue} />
-        <DataPanel>
-          <DataArea>
-            <BiosampleDataItems
-              biosample={tissue}
-              source={source}
-              donors={donors}
-              biosampleTerm={biosampleTerm}
-              diseaseTerms={diseaseTerms}
-              pooledFrom={pooledFrom}
-              partOf={partOf}
-              options={{
-                dateObtainedTitle: "Date Harvested",
-              }}
-            >
-              {tissue.pmi && (
-                <>
-                  <DataItemLabel>Post-mortem Interval</DataItemLabel>
-                  <DataItemValue>
-                    {tissue.pmi}
-                    {tissue.pmi_units ? (
-                      <>
-                        {" "}
-                        {tissue.pmi_units}
-                        {tissue.pmi_units === 1 ? "" : "s"}
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </DataItemValue>
-                </>
-              )}
-              {tissue.preservation_method && (
-                <>
-                  <DataItemLabel>Preservation Method</DataItemLabel>
-                  <DataItemValue>{tissue.preservation_method}</DataItemValue>
-                </>
-              )}
-            </BiosampleDataItems>
-          </DataArea>
-        </DataPanel>
-        {biomarkers.length > 0 && (
-          <>
-            <DataAreaTitle>Biomarkers</DataAreaTitle>
-            <BiomarkerTable biomarkers={biomarkers} />
-          </>
-        )}
-        {treatments?.length > 0 && (
-          <>
-            <DataAreaTitle>Treatments</DataAreaTitle>
-            <TreatmentTable treatments={treatments} />
-          </>
-        )}
-        {documents.length > 0 && (
-          <>
-            <DataAreaTitle>Documents</DataAreaTitle>
-            <DocumentTable documents={documents} />
-          </>
-        )}
-        <Attribution attribution={attribution} />
+        <JsonDisplay item={tissue} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <BiosampleDataItems
+                biosample={tissue}
+                source={source}
+                donors={donors}
+                biosampleTerm={biosampleTerm}
+                diseaseTerms={diseaseTerms}
+                pooledFrom={pooledFrom}
+                partOf={partOf}
+                options={{
+                  dateObtainedTitle: "Date Harvested",
+                }}
+              >
+                {tissue.pmi && (
+                  <>
+                    <DataItemLabel>Post-mortem Interval</DataItemLabel>
+                    <DataItemValue>
+                      {tissue.pmi}
+                      {tissue.pmi_units ? (
+                        <>
+                          {" "}
+                          {tissue.pmi_units}
+                          {tissue.pmi_units === 1 ? "" : "s"}
+                        </>
+                      ) : (
+                        ""
+                      )}
+                    </DataItemValue>
+                  </>
+                )}
+                {tissue.preservation_method && (
+                  <>
+                    <DataItemLabel>Preservation Method</DataItemLabel>
+                    <DataItemValue>{tissue.preservation_method}</DataItemValue>
+                  </>
+                )}
+              </BiosampleDataItems>
+            </DataArea>
+          </DataPanel>
+          {biomarkers.length > 0 && (
+            <>
+              <DataAreaTitle>Biomarkers</DataAreaTitle>
+              <BiomarkerTable biomarkers={biomarkers} />
+            </>
+          )}
+          {treatments?.length > 0 && (
+            <>
+              <DataAreaTitle>Treatments</DataAreaTitle>
+              <TreatmentTable treatments={treatments} />
+            </>
+          )}
+          {documents.length > 0 && (
+            <>
+              <DataAreaTitle>Documents</DataAreaTitle>
+              <DocumentTable documents={documents} />
+            </>
+          )}
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -129,9 +132,12 @@ Tissue.propTypes = {
   partOf: PropTypes.object,
   // Attribution for this sample
   attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(tissue)) {
@@ -201,6 +207,7 @@ export async function getServerSideProps({ params, req }) {
         },
         breadcrumbs,
         attribution,
+        isJson,
       },
     };
   }

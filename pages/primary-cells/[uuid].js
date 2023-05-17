@@ -14,7 +14,7 @@ import {
 import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import ObjectPageHeader from "../../components/object-page-header";
+import { JsonDisplay } from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
 // lib
@@ -22,6 +22,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { isJsonFormat } from "../../lib/query-utils";
 
 export default function PrimaryCell({
   primaryCell,
@@ -35,55 +36,57 @@ export default function PrimaryCell({
   biomarkers,
   partOf,
   attribution = null,
+  isJson,
 }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={primaryCell}>
         <PagePreamble />
-        <ObjectPageHeader item={primaryCell} />
-        <DataPanel>
-          <DataArea>
-            <BiosampleDataItems
-              biosample={primaryCell}
-              source={source}
-              donors={donors}
-              biosampleTerm={biosampleTerm}
-              diseaseTerms={diseaseTerms}
-              pooledFrom={pooledFrom}
-              partOf={partOf}
-              options={{
-                dateObtainedTitle: "Date Harvested",
-              }}
-            >
-              {primaryCell.passage_number && (
-                <>
-                  <DataItemLabel>Passage Number</DataItemLabel>
-                  <DataItemValue>{primaryCell.passage_number}</DataItemValue>
-                </>
-              )}
-            </BiosampleDataItems>
-          </DataArea>
-        </DataPanel>
-        {biomarkers.length > 0 && (
-          <>
-            <DataAreaTitle>Biomarkers</DataAreaTitle>
-            <BiomarkerTable biomarkers={biomarkers} />
-          </>
-        )}
-        {treatments.length > 0 && (
-          <>
-            <DataAreaTitle>Treatments</DataAreaTitle>
-            <TreatmentTable treatments={treatments} />
-          </>
-        )}
-        {documents.length > 0 && (
-          <>
-            <DataAreaTitle>Documents</DataAreaTitle>
-            <DocumentTable documents={documents} />
-          </>
-        )}
-        <Attribution attribution={attribution} />
+        <JsonDisplay item={primaryCell} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <BiosampleDataItems
+                biosample={primaryCell}
+                source={source}
+                donors={donors}
+                biosampleTerm={biosampleTerm}
+                diseaseTerms={diseaseTerms}
+                pooledFrom={pooledFrom}
+                partOf={partOf}
+                options={{
+                  dateObtainedTitle: "Date Harvested",
+                }}
+              >
+                {primaryCell.passage_number && (
+                  <>
+                    <DataItemLabel>Passage Number</DataItemLabel>
+                    <DataItemValue>{primaryCell.passage_number}</DataItemValue>
+                  </>
+                )}
+              </BiosampleDataItems>
+            </DataArea>
+          </DataPanel>
+          {biomarkers.length > 0 && (
+            <>
+              <DataAreaTitle>Biomarkers</DataAreaTitle>
+              <BiomarkerTable biomarkers={biomarkers} />
+            </>
+          )}
+          {treatments.length > 0 && (
+            <>
+              <DataAreaTitle>Treatments</DataAreaTitle>
+              <TreatmentTable treatments={treatments} />
+            </>
+          )}
+          {documents.length > 0 && (
+            <>
+              <DataAreaTitle>Documents</DataAreaTitle>
+              <DocumentTable documents={documents} />
+            </>
+          )}
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -112,9 +115,12 @@ PrimaryCell.propTypes = {
   partOf: PropTypes.object,
   // Attribution for this sample
   attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(primaryCell)) {
@@ -186,6 +192,7 @@ export async function getServerSideProps({ params, req }) {
         },
         breadcrumbs,
         attribution,
+        isJson,
       },
     };
   }

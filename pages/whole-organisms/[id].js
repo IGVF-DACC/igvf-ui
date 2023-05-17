@@ -8,7 +8,7 @@ import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
 import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import ObjectPageHeader from "../../components/object-page-header";
+import { JsonDisplay } from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
 // lib
@@ -16,6 +16,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { isJsonFormat } from "../../lib/query-utils";
 
 export default function WholeOrganism({
   sample,
@@ -29,48 +30,50 @@ export default function WholeOrganism({
   biomarkers,
   partOf,
   attribution = null,
+  isJson,
 }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={sample}>
         <PagePreamble />
-        <ObjectPageHeader item={sample} />
-        <DataPanel>
-          <DataArea>
-            <BiosampleDataItems
-              biosample={sample}
-              source={source}
-              donors={donors}
-              biosampleTerm={biosampleTerm}
-              diseaseTerms={diseaseTerms}
-              pooledFrom={pooledFrom}
-              partOf={partOf}
-              options={{
-                dateObtainedTitle: "Date Obtained",
-              }}
-            ></BiosampleDataItems>
-          </DataArea>
-        </DataPanel>
-        {biomarkers.length > 0 && (
-          <>
-            <DataAreaTitle>Biomarkers</DataAreaTitle>
-            <BiomarkerTable biomarkers={biomarkers} />
-          </>
-        )}
-        {treatments.length > 0 && (
-          <>
-            <DataAreaTitle>Treatments</DataAreaTitle>
-            <TreatmentTable treatments={treatments} />
-          </>
-        )}
-        {documents.length > 0 && (
-          <>
-            <DataAreaTitle>Documents</DataAreaTitle>
-            <DocumentTable documents={documents} />
-          </>
-        )}
-        <Attribution attribution={attribution} />
+        <JsonDisplay item={sample} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <BiosampleDataItems
+                biosample={sample}
+                source={source}
+                donors={donors}
+                biosampleTerm={biosampleTerm}
+                diseaseTerms={diseaseTerms}
+                pooledFrom={pooledFrom}
+                partOf={partOf}
+                options={{
+                  dateObtainedTitle: "Date Obtained",
+                }}
+              ></BiosampleDataItems>
+            </DataArea>
+          </DataPanel>
+          {biomarkers.length > 0 && (
+            <>
+              <DataAreaTitle>Biomarkers</DataAreaTitle>
+              <BiomarkerTable biomarkers={biomarkers} />
+            </>
+          )}
+          {treatments.length > 0 && (
+            <>
+              <DataAreaTitle>Treatments</DataAreaTitle>
+              <TreatmentTable treatments={treatments} />
+            </>
+          )}
+          {documents.length > 0 && (
+            <>
+              <DataAreaTitle>Documents</DataAreaTitle>
+              <DocumentTable documents={documents} />
+            </>
+          )}
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -99,9 +102,12 @@ WholeOrganism.propTypes = {
   partOf: PropTypes.object,
   // Attribution for this sample
   attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sample = await request.getObject(`/whole-organisms/${params.id}/`);
   if (FetchRequest.isResponseSuccess(sample)) {
@@ -183,6 +189,7 @@ export async function getServerSideProps({ params, req }) {
         },
         breadcrumbs,
         attribution,
+        isJson,
       },
     };
   }

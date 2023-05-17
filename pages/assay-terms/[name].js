@@ -10,34 +10,36 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
-import ObjectPageHeader from "../../components/object-page-header";
+import { JsonDisplay } from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { isJsonFormat } from "../../lib/query-utils";
 
-export default function AssayOntologyTerm({ assayOntologyTerm, isA }) {
+export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={assayOntologyTerm}>
         <PagePreamble />
-        <ObjectPageHeader item={assayOntologyTerm} />
-        <DataPanel>
-          <DataArea>
-            <OntologyTermDataItems ontologyTerm={assayOntologyTerm} isA={isA}>
-              {assayOntologyTerm.category_slims.length > 0 && (
-                <>
-                  <DataItemLabel>Assay Category</DataItemLabel>
-                  <DataItemValue>
-                    {assayOntologyTerm.category_slims.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
-            </OntologyTermDataItems>
-          </DataArea>
-        </DataPanel>
+        <JsonDisplay item={assayOntologyTerm} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <OntologyTermDataItems ontologyTerm={assayOntologyTerm} isA={isA}>
+                {assayOntologyTerm.category_slims.length > 0 && (
+                  <>
+                    <DataItemLabel>Assay Category</DataItemLabel>
+                    <DataItemValue>
+                      {assayOntologyTerm.category_slims.join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
+              </OntologyTermDataItems>
+            </DataArea>
+          </DataPanel>
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -48,9 +50,12 @@ AssayOntologyTerm.propTypes = {
   assayOntologyTerm: PropTypes.object.isRequired,
   // List of term names
   isA: PropTypes.arrayOf(PropTypes.object),
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const assayOntologyTerm = await request.getObject(
     `/assay-terms/${params.name}/`
@@ -72,6 +77,7 @@ export async function getServerSideProps({ params, req }) {
         isA,
         pageContext: { title: assayOntologyTerm.term_id },
         breadcrumbs,
+        isJson,
       },
     };
   }
