@@ -88,7 +88,8 @@ function schemaToName(schema) {
  * A custom label can be suplied with the `label` prop.
  */
 export function AddLink({ schema, label = null }) {
-  if (canEdit(schema)) {
+  const { isAuthenticated } = useAuth0();
+  if (isAuthenticated && canEdit(schema)) {
     const schemaName = schemaToName(schema);
     if (schemaName) {
       const objectAddPath =

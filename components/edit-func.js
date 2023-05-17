@@ -1,4 +1,5 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import { PencilSquareIcon } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
@@ -130,9 +131,10 @@ EditJson.propTypes = {
 
 export function EditLink({ item }) {
   const { profiles } = useContext(SessionContext);
+  const { isAuthenticated } = useAuth0();
 
   const itemSchema = itemToSchema(item, profiles);
-  if (itemSchema && canEdit(itemSchema)) {
+  if (isAuthenticated && itemSchema && canEdit(itemSchema)) {
     const editPath = `${removeTrailingSlash(item["@id"])}#!edit`;
     return (
       <div className="mb-1 flex justify-end">
