@@ -4,6 +4,13 @@ import PropTypes from "prop-types";
 import { DataPanel } from "./data-area";
 import ObjectPageHeader from "./object-page-header";
 
+/**
+ * This function will display a raw JSON view for a given object if the query is in JSON format, otherwise it will display an object view.
+ * @param {*} item the object to display
+ * @param {*} isJsonFormat the bool value to check if the view should be raw JSON
+ * @param {*} children the children components to display
+ * @returns either a raw JSON view or a object view
+ */
 export default function JsonDisplay({ item, isJsonFormat, children }) {
   return (
     <>
