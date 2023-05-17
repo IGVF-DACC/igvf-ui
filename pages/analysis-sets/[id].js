@@ -1,12 +1,14 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AliasList from "../../components/alias-list";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
-  DataAreaTitle,
   DataItemLabel,
+  DataAreaTitle,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
@@ -15,15 +17,13 @@ import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
 // lib
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import AliasList from "../../components/alias-list";
 import { isJsonFormat } from "../../lib/query-utils";
-import SeparatedList from "../../components/separated-list";
-import Link from "next/link";
-import buildAttribution from "../../lib/attribution";
 
 export default function AnalysisSet({
   analysisSet,

@@ -35,6 +35,7 @@ import {
 } from "./animation";
 import { useSessionStorage } from "./browser-storage";
 import { Button } from "./form-elements";
+import GlobalContext from "./global-context";
 import Icon from "./icon";
 import SiteLogo from "./logo";
 import Modal from "./modal";
@@ -46,6 +47,7 @@ import {
   logoutDataProvider,
 } from "../lib/authentication";
 import { UC } from "../lib/constants";
+import linkReloadable from "../lib/link-reloadable";
 
 /**
  * Icon for opening the sidebar navigation.
@@ -345,6 +347,7 @@ function NavigationHrefItem({
   children,
 }) {
   const router = useRouter();
+  const { linkReload } = useContext(GlobalContext);
 
   // Use different button-rendering components depending on whether the navigation is in wide mode
   // or narrow mode.
@@ -354,9 +357,10 @@ function NavigationHrefItem({
 
   function onClick() {
     // Notify the main navigation component that the user has clicked a navigation item, then
-    // navigate to the href for the navigation item.
+    // navigate to the href for the navigation item, reloading the page if NextJS hasn't loaded
+    // environment variables on the current page.
     navigationClick();
-    router.push(href);
+    linkReloadable(href, linkReload, router);
   }
 
   return (

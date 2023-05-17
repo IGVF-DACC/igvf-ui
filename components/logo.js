@@ -1,5 +1,5 @@
-// node_modules
-import Link from "next/link";
+// components
+import Link from "./link-reloadable";
 
 export function Logo() {
   return (

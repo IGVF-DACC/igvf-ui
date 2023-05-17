@@ -19,7 +19,7 @@ export default function PageNavigation(items) {
       "rounded-full border border-transparent px-4 py-1 no-underline hover:border-nav-border hover:bg-nav-highlight";
     return (
       <nav className="text-center">
-        <ul className="mt-4 mb-12 inline-flex list-none flex-wrap justify-center border-b border-gray-200 px-0 dark:border-gray-700">
+        <ul className="mb-12 mt-4 inline-flex list-none flex-wrap justify-center border-b border-gray-200 px-0 dark:border-gray-700">
           {itemTitles.map((itemTitle, index) => {
             const href = items[itemTitle];
             const isUrl = isValidUrl(href);

@@ -26,6 +26,8 @@ import ViewportOverlay from "../components/viewport-overlay";
 import "../styles/globals.css";
 
 function Site({ Component, pageProps, authentication }) {
+  // Flag to indicate if <Link> components should cause page reload
+  const [isLinkReloadEnabled, setIsLinkReloadEnabled] = useState(false);
   const { isLoading } = useAuth0();
 
   useEffect(() => {
@@ -49,11 +51,16 @@ function Site({ Component, pageProps, authentication }) {
         type: pageProps.pageContext?.type || "",
       },
       breadcrumbs: pageProps.breadcrumbs || [],
+      linkReload: {
+        isEnabled: isLinkReloadEnabled,
+        setIsEnabled: setIsLinkReloadEnabled,
+      },
     };
   }, [
     pageProps.breadcrumbs,
     pageProps.pageContext?.title,
     pageProps.pageContext?.type,
+    isLinkReloadEnabled,
   ]);
 
   return (

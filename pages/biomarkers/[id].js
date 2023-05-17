@@ -15,11 +15,11 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
+import buildAttribution from "../../lib/attribution";
+import { getBiomarkerTitle } from "../../lib/biomarker";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { getBiomarkerTitle } from "../../lib/biomarker";
-import buildAttribution from "../../lib/attribution";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Biomarker({
