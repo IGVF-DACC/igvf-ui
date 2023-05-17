@@ -12,7 +12,6 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import FileTable from "../../components/file-table";
-import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { EditableItem } from "../../components/edit";
 import { JsonDisplay } from "../../components/json-display";
@@ -42,7 +41,6 @@ export default function AnalysisSet({
       <EditableItem item={analysisSet}>
         <PagePreamble />
         <JsonDisplay item={analysisSet} isJsonFormat={isJson}>
-          <ObjectPageHeader item={analysisSet} />
           <DataPanel>
             <DataArea>
               {analysisSet.aliases?.length > 0 && (

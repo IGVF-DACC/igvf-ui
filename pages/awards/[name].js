@@ -10,7 +10,6 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { JsonDisplay } from "../../components/json-display";
-import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { EditableItem } from "../../components/edit";
 // lib
@@ -28,7 +27,6 @@ export default function Award({ award, pis, contactPi, isJson }) {
       <EditableItem item={award}>
         <PagePreamble />
         <JsonDisplay item={award} isJsonFormat={isJson}>
-          <ObjectPageHeader item={award} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Title</DataItemLabel>
