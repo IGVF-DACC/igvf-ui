@@ -11,13 +11,14 @@ import {
 import DbxrefList from "../../components/dbxref-list";
 import ChromosomeLocations from "../../components/chromosome-locations";
 import { EditableItem } from "../../components/edit";
-import ObjectPageHeader from "../../components/object-page-header";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { isJsonFormat } from "../../lib/query-utils";
 
 function EnsemblLink({ geneid, taxa }) {
   const organism = taxa.replace(/ /g, "_");
@@ -35,66 +36,67 @@ EnsemblLink.propTypes = {
   taxa: PropTypes.string.isRequired,
 };
 
-export default function Gene({ gene }) {
+export default function Gene({ gene, isJson }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={gene}>
         <PagePreamble />
-        <ObjectPageHeader item={gene} />
-        <DataPanel>
-          <DataArea>
-            <DataItemLabel>Status</DataItemLabel>
-            <DataItemValue>
-              <Status status={gene.status} />
-            </DataItemValue>
-            <DataItemLabel>ENSEMBL GeneID</DataItemLabel>
-            <DataItemValue>
-              <EnsemblLink geneid={gene.geneid} taxa={gene.taxa} />
-            </DataItemValue>
-            <DataItemLabel>Gene Symbol</DataItemLabel>
-            <DataItemValue>{gene.symbol}</DataItemValue>
-            <DataItemLabel>Taxa</DataItemLabel>
-            <DataItemValue>{gene.taxa}</DataItemValue>
-            {gene.dbxrefs?.length > 0 && (
-              <>
-                <DataItemLabel>External Resources</DataItemLabel>
-                <DataItemValue>
-                  <DbxrefList
-                    dbxrefs={gene.dbxrefs}
-                    meta={{ taxa: gene.taxa }}
-                  />
-                </DataItemValue>
-              </>
-            )}
-            {gene.name && (
-              <>
-                <DataItemLabel>Name</DataItemLabel>
-                <DataItemValue>{gene.name}</DataItemValue>
-              </>
-            )}
-            {gene.synonyms?.length > 0 && (
-              <>
-                <DataItemLabel>Synonyms</DataItemLabel>
-                <DataItemValue>{gene.synonyms.join(", ")}</DataItemValue>
-              </>
-            )}
-            {gene.locations?.length > 0 && (
-              <>
-                <DataItemLabel>Gene Locations</DataItemLabel>
-                <DataItemValue>
-                  <ChromosomeLocations locations={gene.locations} />
-                </DataItemValue>
-              </>
-            )}
-            {gene.submitter_comment && (
-              <>
-                <DataItemLabel>Submitter Comment</DataItemLabel>
-                <DataItemValue>{gene.submitter_comment}</DataItemValue>
-              </>
-            )}
-          </DataArea>
-        </DataPanel>
+        <JsonDisplay item={gene} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <DataItemLabel>Status</DataItemLabel>
+              <DataItemValue>
+                <Status status={gene.status} />
+              </DataItemValue>
+              <DataItemLabel>ENSEMBL GeneID</DataItemLabel>
+              <DataItemValue>
+                <EnsemblLink geneid={gene.geneid} taxa={gene.taxa} />
+              </DataItemValue>
+              <DataItemLabel>Gene Symbol</DataItemLabel>
+              <DataItemValue>{gene.symbol}</DataItemValue>
+              <DataItemLabel>Taxa</DataItemLabel>
+              <DataItemValue>{gene.taxa}</DataItemValue>
+              {gene.dbxrefs?.length > 0 && (
+                <>
+                  <DataItemLabel>External Resources</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList
+                      dbxrefs={gene.dbxrefs}
+                      meta={{ taxa: gene.taxa }}
+                    />
+                  </DataItemValue>
+                </>
+              )}
+              {gene.name && (
+                <>
+                  <DataItemLabel>Name</DataItemLabel>
+                  <DataItemValue>{gene.name}</DataItemValue>
+                </>
+              )}
+              {gene.synonyms?.length > 0 && (
+                <>
+                  <DataItemLabel>Synonyms</DataItemLabel>
+                  <DataItemValue>{gene.synonyms.join(", ")}</DataItemValue>
+                </>
+              )}
+              {gene.locations?.length > 0 && (
+                <>
+                  <DataItemLabel>Gene Locations</DataItemLabel>
+                  <DataItemValue>
+                    <ChromosomeLocations locations={gene.locations} />
+                  </DataItemValue>
+                </>
+              )}
+              {gene.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{gene.submitter_comment}</DataItemValue>
+                </>
+              )}
+            </DataArea>
+          </DataPanel>
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -103,9 +105,12 @@ export default function Gene({ gene }) {
 Gene.propTypes = {
   // Data for gene displayed on the page
   gene: PropTypes.object.isRequired,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const gene = await request.getObject(`/genes/${params.id}/`);
   if (FetchRequest.isResponseSuccess(gene)) {
@@ -119,6 +124,7 @@ export async function getServerSideProps({ params, req }) {
         gene,
         pageContext: { title: gene.title },
         breadcrumbs,
+        isJson,
       },
     };
   }

@@ -11,7 +11,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
-import ObjectPageHeader from "../../components/object-page-header";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 import SoftwareVersionTable from "../../components/software-version-table";
 // lib
@@ -20,44 +20,51 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
+import { isJsonFormat } from "../../lib/query-utils";
 
-export default function Software({ software, versions, attribution = null }) {
+export default function Software({
+  software,
+  versions,
+  attribution = null,
+  isJson,
+}) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={software}>
         <PagePreamble />
-        <ObjectPageHeader item={software} />
-        <DataPanel>
-          <DataArea>
-            <DataItemLabel>Title</DataItemLabel>
-            <DataItemValue>{software.title}</DataItemValue>
-            <DataItemLabel>Description</DataItemLabel>
-            <DataItemValue>{software.description}</DataItemValue>
-            <DataItemLabel>Source URL</DataItemLabel>
-            <DataItemValue>
-              <a href={software.source_url} target="_blank" rel="noreferrer">
-                {software.source_url}
-              </a>
-            </DataItemValue>
-            {software.aliases?.length > 0 && (
-              <>
-                <DataItemLabel>Aliases</DataItemLabel>
-                <DataItemValue>
-                  <AliasList aliases={software.aliases} />
-                </DataItemValue>
-              </>
-            )}
-          </DataArea>
-        </DataPanel>
+        <JsonDisplay item={software} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <DataItemLabel>Title</DataItemLabel>
+              <DataItemValue>{software.title}</DataItemValue>
+              <DataItemLabel>Description</DataItemLabel>
+              <DataItemValue>{software.description}</DataItemValue>
+              <DataItemLabel>Source URL</DataItemLabel>
+              <DataItemValue>
+                <a href={software.source_url} target="_blank" rel="noreferrer">
+                  {software.source_url}
+                </a>
+              </DataItemValue>
+              {software.aliases?.length > 0 && (
+                <>
+                  <DataItemLabel>Aliases</DataItemLabel>
+                  <DataItemValue>
+                    <AliasList aliases={software.aliases} />
+                  </DataItemValue>
+                </>
+              )}
+            </DataArea>
+          </DataPanel>
 
-        {software.versions?.length > 0 && (
-          <>
-            <DataAreaTitle>Software Versions</DataAreaTitle>
-            <SoftwareVersionTable versions={versions} />
-          </>
-        )}
-        <Attribution attribution={attribution} />
+          {software.versions?.length > 0 && (
+            <>
+              <DataAreaTitle>Software Versions</DataAreaTitle>
+              <SoftwareVersionTable versions={versions} />
+            </>
+          )}
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -70,9 +77,12 @@ Software.propTypes = {
   versions: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this software
   attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const software = await request.getObject(`/software/${params.id}/`);
   if (FetchRequest.isResponseSuccess(software)) {
@@ -99,6 +109,7 @@ export async function getServerSideProps({ params, req }) {
         pageContext: { title: software.name },
         breadcrumbs,
         attribution,
+        isJson,
       },
     };
   }

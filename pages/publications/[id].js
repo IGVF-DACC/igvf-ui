@@ -13,86 +13,92 @@ import {
 import DbxrefList from "../../components/dbxref-list";
 import DocumentAttachmentLink from "../../components/document-link";
 import { EditableItem } from "../../components/edit";
-import ObjectPageHeader from "../../components/object-page-header";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { isJsonFormat } from "../../lib/query-utils";
 
-export default function Publication({ publication, attribution = null }) {
+export default function Publication({
+  publication,
+  attribution = null,
+  isJson,
+}) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={publication}>
         <PagePreamble />
-        <ObjectPageHeader item={publication} />
-        <DataPanel>
-          <DataArea>
-            <DataItemLabel>Title</DataItemLabel>
-            <DataItemValue>{publication.title}</DataItemValue>
-            {publication.authors && (
-              <>
-                <DataItemLabel>Authors</DataItemLabel>
-                <DataItemValue>{publication.authors}</DataItemValue>
-              </>
-            )}
-            {(publication.journal || publication.date_published) && (
-              <>
-                <DataItemLabel>Citation</DataItemLabel>
-                <DataItemValue>
-                  {publication.journal ? <i>{publication.journal}. </i> : ""}
-                  {publication.date_published ? (
-                    `${publication.date_published};`
-                  ) : (
-                    <span>&nbsp;</span>
-                  )}
-                  {publication.volume ? publication.volume : ""}
-                  {publication.issue ? `(${publication.issue})` : ""}
-                  {publication.page ? (
-                    `:${publication.page}.`
-                  ) : (
-                    <span>&nbsp;</span>
-                  )}
-                </DataItemValue>
-              </>
-            )}
-            {publication.abstract && (
-              <>
-                <DataItemLabel>Abstract</DataItemLabel>
-                <DataItemValue>{publication.abstract}</DataItemValue>
-              </>
-            )}
-            {publication.identifiers?.length > 0 && (
-              <>
-                <DataItemLabel>References</DataItemLabel>
-                <DataItemValue>
-                  <DbxrefList dbxrefs={publication.identifiers} />
-                </DataItemValue>
-              </>
-            )}
-            {publication.attachment && (
-              <>
-                <DataItemLabel>Download</DataItemLabel>
-                <DataItemValue>
-                  <DocumentAttachmentLink document={publication} />
-                </DataItemValue>
-                <DataItemLabel>Thumbnail</DataItemLabel>
-                <DataItemValue>
-                  <div className="flex w-28 items-center justify-center border p-1.5">
-                    <AttachmentThumbnail
-                      attachment={publication.attachment}
-                      ownerPath={publication["@id"]}
-                      alt={publication.title}
-                    />
-                  </div>
-                </DataItemValue>
-              </>
-            )}
-          </DataArea>
-        </DataPanel>
-        <Attribution attribution={attribution} />
+        <JsonDisplay item={publication} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <DataItemLabel>Title</DataItemLabel>
+              <DataItemValue>{publication.title}</DataItemValue>
+              {publication.authors && (
+                <>
+                  <DataItemLabel>Authors</DataItemLabel>
+                  <DataItemValue>{publication.authors}</DataItemValue>
+                </>
+              )}
+              {(publication.journal || publication.date_published) && (
+                <>
+                  <DataItemLabel>Citation</DataItemLabel>
+                  <DataItemValue>
+                    {publication.journal ? <i>{publication.journal}. </i> : ""}
+                    {publication.date_published ? (
+                      `${publication.date_published};`
+                    ) : (
+                      <span>&nbsp;</span>
+                    )}
+                    {publication.volume ? publication.volume : ""}
+                    {publication.issue ? `(${publication.issue})` : ""}
+                    {publication.page ? (
+                      `:${publication.page}.`
+                    ) : (
+                      <span>&nbsp;</span>
+                    )}
+                  </DataItemValue>
+                </>
+              )}
+              {publication.abstract && (
+                <>
+                  <DataItemLabel>Abstract</DataItemLabel>
+                  <DataItemValue>{publication.abstract}</DataItemValue>
+                </>
+              )}
+              {publication.identifiers?.length > 0 && (
+                <>
+                  <DataItemLabel>References</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList dbxrefs={publication.identifiers} />
+                  </DataItemValue>
+                </>
+              )}
+              {publication.attachment && (
+                <>
+                  <DataItemLabel>Download</DataItemLabel>
+                  <DataItemValue>
+                    <DocumentAttachmentLink document={publication} />
+                  </DataItemValue>
+                  <DataItemLabel>Thumbnail</DataItemLabel>
+                  <DataItemValue>
+                    <div className="flex w-28 items-center justify-center border p-1.5">
+                      <AttachmentThumbnail
+                        attachment={publication.attachment}
+                        ownerPath={publication["@id"]}
+                        alt={publication.title}
+                      />
+                    </div>
+                  </DataItemValue>
+                </>
+              )}
+            </DataArea>
+          </DataPanel>
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -103,9 +109,12 @@ Publication.propTypes = {
   publication: PropTypes.object.isRequired,
   // Attribution for this publication
   attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const publication = await request.getObject(`/publications/${params.id}/`);
   if (FetchRequest.isResponseSuccess(publication)) {
@@ -121,6 +130,7 @@ export async function getServerSideProps({ params, req }) {
         pageContext: { title: publication.title },
         breadcrumbs,
         attribution,
+        isJson,
       },
     };
   }

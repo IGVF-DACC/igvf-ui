@@ -10,7 +10,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
-import ObjectPageHeader from "../../components/object-page-header";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -20,6 +20,7 @@ import { DataAreaTitle } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { FileDataItems } from "../../components/common-data-items";
 import buildAttribution from "../../lib/attribution";
+import { isJsonFormat } from "../../lib/query-utils";
 
 export default function SequenceFile({
   sequenceFile,
@@ -27,44 +28,48 @@ export default function SequenceFile({
   documents,
   derivedFrom,
   attribution = null,
+  isJson,
 }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={sequenceFile}>
         <PagePreamble />
-        <ObjectPageHeader item={sequenceFile} />
-        <DataPanel>
-          <DataArea>
-            <FileDataItems
-              file={sequenceFile}
-              fileSet={fileSet}
-              derivedFrom={derivedFrom}
-            >
-              <DataItemLabel>Sequencing Run</DataItemLabel>
-              <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
-              {sequenceFile.read_count && (
-                <>
-                  <DataItemLabel>Read Count</DataItemLabel>
-                  <DataItemValue>{sequenceFile.read_count}</DataItemValue>
-                </>
-              )}
-              {sequenceFile.mean_read_length && (
-                <>
-                  <DataItemLabel>Read Length</DataItemLabel>
-                  <DataItemValue>{sequenceFile.mean_read_length}</DataItemValue>
-                </>
-              )}
-            </FileDataItems>
-          </DataArea>
-        </DataPanel>
-        {documents.length > 0 && (
-          <>
-            <DataAreaTitle>Documents</DataAreaTitle>
-            <DocumentTable documents={documents} />
-          </>
-        )}
-        <Attribution attribution={attribution} />
+        <JsonDisplay item={sequenceFile} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <FileDataItems
+                file={sequenceFile}
+                fileSet={fileSet}
+                derivedFrom={derivedFrom}
+              >
+                <DataItemLabel>Sequencing Run</DataItemLabel>
+                <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
+                {sequenceFile.read_count && (
+                  <>
+                    <DataItemLabel>Read Count</DataItemLabel>
+                    <DataItemValue>{sequenceFile.read_count}</DataItemValue>
+                  </>
+                )}
+                {sequenceFile.mean_read_length && (
+                  <>
+                    <DataItemLabel>Read Length</DataItemLabel>
+                    <DataItemValue>
+                      {sequenceFile.mean_read_length}
+                    </DataItemValue>
+                  </>
+                )}
+              </FileDataItems>
+            </DataArea>
+          </DataPanel>
+          {documents.length > 0 && (
+            <>
+              <DataAreaTitle>Documents</DataAreaTitle>
+              <DocumentTable documents={documents} />
+            </>
+          )}
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -81,9 +86,12 @@ SequenceFile.propTypes = {
   derivedFrom: PropTypes.array,
   // Attribution for this file
   attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sequenceFile = await request.getObject(`/sequence-files/${params.id}/`);
   if (FetchRequest.isResponseSuccess(sequenceFile)) {
@@ -116,6 +124,7 @@ export async function getServerSideProps({ params, req }) {
         pageContext: { title: sequenceFile.accession },
         breadcrumbs,
         attribution,
+        isJson,
       },
     };
   }
