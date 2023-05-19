@@ -27,7 +27,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function SignalFile({
   attribution = null,
   signalFile,
-  fileSet,
+  fileSet = null,
   documents,
   derivedFrom,
   referenceFiles,
@@ -110,11 +110,11 @@ SignalFile.propTypes = {
   // File set that contains this file
   fileSet: PropTypes.object,
   // Documents set associate with this file
-  documents: PropTypes.array,
+  documents: PropTypes.array.isRequired,
   // The file is derived from
-  derivedFrom: PropTypes.array,
+  derivedFrom: PropTypes.array.isRequired,
   // Attribution for this file
-  attribution: PropTypes.object,
+  attribution: PropTypes.object.isRequired,
   // The file is derived from
   referenceFiles: PropTypes.array.isRequired,
   // Is the format JSON?
