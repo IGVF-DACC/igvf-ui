@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import {
   Fallback,
   generateAccessoryDataPropertyMap,
+  getAccessoryData,
   getAccessoryDataPaths,
   getItemListsByType,
   getSearchListItemRenderer,
@@ -326,5 +327,69 @@ describe("Test search-result utility functions", () => {
     };
 
     expect(generateAccessoryDataPropertyMap(propertyObjects)).toEqual(expected);
+  });
+
+  test("getAccessoryData() with accessory data items", async () => {
+    const accessoryDataObjects = [
+      {
+        "@id": "/users/7d37a9ba-4a13-4b7e-a34d-d3ac13f62442/",
+        "@type": ["User", "Item"],
+      },
+      {
+        "@id": "/labs/j-michael-cherry/",
+        "@type": ["Lab", "Item"],
+      },
+    ];
+
+    window.fetch = jest.fn().mockImplementation((id) => {
+      const accessoryDataObject = accessoryDataObjects.find(
+        (object) => object["@id"] === id
+      );
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(accessoryDataObject),
+      });
+    });
+
+    const expectedAccessoryData = {
+      "/users/7d37a9ba-4a13-4b7e-a34d-d3ac13f62442/": {
+        "@id": "/users/7d37a9ba-4a13-4b7e-a34d-d3ac13f62442/",
+        "@type": ["User", "Item"],
+      },
+      "/labs/j-michael-cherry/": {
+        "@id": "/labs/j-michael-cherry/",
+        "@type": ["Lab", "Item"],
+      },
+    };
+
+    const itemListsByType = {
+      Award: [
+        {
+          "@id": "/awards/HG012009/",
+          "@type": ["Award", "Item"],
+        },
+        {
+          "@id": "/awards/HG012059/",
+          "@type": ["Award", "Item"],
+          contact_pi: "/users/7d37a9ba-4a13-4b7e-a34d-d3ac13f62442/",
+        },
+      ],
+      User: [
+        {
+          "@id": "/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/",
+          "@type": ["User", "Item"],
+          lab: "/labs/j-michael-cherry/",
+          title: "J. Michael Cherry",
+        },
+      ],
+    };
+
+    const accessoryData = await getAccessoryData(itemListsByType);
+    expect(accessoryData).toEqual(expectedAccessoryData);
+  });
+
+  test("getAccessoryData() with no accessory data items", async () => {
+    const accessoryData = await getAccessoryData({});
+    expect(accessoryData).toEqual(null);
   });
 });

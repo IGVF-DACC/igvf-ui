@@ -40,6 +40,7 @@ import Icon from "./icon";
 import SiteLogo from "./logo";
 import Modal from "./modal";
 import SessionContext from "./session-context";
+import SiteSearchTrigger from "./site-search-trigger";
 // lib
 import {
   loginAuthProvider,
@@ -386,6 +387,13 @@ NavigationHrefItem.propTypes = {
 };
 
 /**
+ * Wrapper for the site search icon while navigation is collapsed.
+ */
+function NavigationSearchItem({ children }) {
+  return <li>{children}</li>;
+}
+
+/**
  * Icon for expanding or collapsing a navigation group item.
  */
 function NavigationGroupExpandIcon({ isGroupOpened }) {
@@ -534,6 +542,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           isNavCollapsed={false}
         />
       )}
+      <SiteSearchTrigger isExpanded />
       <NavigationList className="p-4">
         <NavigationHrefItem
           id="awards"
@@ -926,6 +935,9 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
           <Icon.Brand />
         </NavigationIcon>
       </NavigationHrefItem>
+      <NavigationSearchItem>
+        <SiteSearchTrigger />
+      </NavigationSearchItem>
       {isAuthenticated ? (
         <NavigationSignOutItem id="sign-out" isNarrowNav>
           <Icon.UserSignedIn className="h-8 w-8" />

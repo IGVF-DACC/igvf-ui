@@ -61,6 +61,8 @@ module.exports = {
         "facet-group-button-selected":
           "var(--color-facet-group-button-selected-background)",
         "facet-title": "var(--color-facet-title-background)",
+
+        "site-search-header": "var(--color-site-search-header-background)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",

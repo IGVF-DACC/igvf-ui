@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function User({ item: user, accessoryData }) {
+export default function User({ item: user, accessoryData = null }) {
   const lab = accessoryData?.[user.lab];
 
   return (

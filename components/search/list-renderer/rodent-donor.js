@@ -11,27 +11,32 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function RodentDonor({ item: rodentDonor, accessoryData }) {
+export default function RodentDonor({
+  item: rodentDonor,
+  accessoryData = null,
+}) {
   const lab = rodentDonor.lab;
   const collections =
     rodentDonor.collections?.length > 0
       ? rodentDonor.collections.join(", ")
       : "";
-  const phenotypicFeatures = rodentDonor.phenotypic_features
-    ?.filter((path) => {
-      const keys = Object.keys(accessoryData);
-      return keys.includes(path);
-    })
-    .map((path) => {
-      const feature = accessoryData[path];
-      if (feature.quantity) {
-        return `${feature.feature.term_name} ${feature.quantity} ${
-          feature.quantity_units
-        }${feature.quantity === 1 ? "" : "s"}`;
-      }
-      return feature.feature.term_name;
-    })
-    .join(", ");
+  const phenotypicFeatures = accessoryData
+    ? rodentDonor.phenotypic_features
+        ?.filter((path) => {
+          const keys = Object.keys(accessoryData);
+          return keys.includes(path);
+        })
+        .map((path) => {
+          const feature = accessoryData[path];
+          if (feature.quantity) {
+            return `${feature.feature.term_name} ${feature.quantity} ${
+              feature.quantity_units
+            }${feature.quantity === 1 ? "" : "s"}`;
+          }
+          return feature.feature.term_name;
+        })
+        .join(", ")
+    : "";
   return (
     <SearchListItemContent>
       <SearchListItemMain>

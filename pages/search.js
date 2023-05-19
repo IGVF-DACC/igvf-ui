@@ -7,9 +7,8 @@ import { FacetSection, FacetTags } from "../components/facets";
 import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 import {
-  generateAccessoryDataPropertyMap,
+  getAccessoryData,
   getItemListsByType,
-  getAccessoryDataPaths,
   getSearchListItemRenderer,
   SearchListItem,
 } from "../components/search";
@@ -86,39 +85,15 @@ Search.propTypes = {
   accessoryData: PropTypes.object,
 };
 
-/**
- * Retrieve all needed accessory data for search results. Each search result item type might have
- * an accessory data path retrieval function. If so, call it and return the results. Remember that
- * the search results can contain a mix of item types, so this could get different accessory data
- * for each search result. null gets returned if no accessory data is needed.
- * @param {object} searchResults Search results from igvfd
- * @param {string} cookie Browser cookie for request authentication
- */
-async function getAccessoryData(searchResults, cookie) {
-  const itemListsByType = getItemListsByType(searchResults);
-  const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
-  if (accessoryDataPaths.length > 0) {
-    const request = new FetchRequest({ cookie });
-    const accessoryDataList = await request.getMultipleObjects(
-      accessoryDataPaths,
-      null,
-      {
-        filterErrors: true,
-      }
-    );
-    return generateAccessoryDataPropertyMap(accessoryDataList);
-  }
-  return null;
-}
-
 export async function getServerSideProps({ req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const queryParams = getQueryStringFromServerQuery(query);
   const searchResults = await request.getObject(`/search/?${queryParams}`);
 
   if (FetchRequest.isResponseSuccess(searchResults)) {
+    const itemListsByType = getItemListsByType(searchResults);
     const accessoryData = await getAccessoryData(
-      searchResults,
+      itemListsByType,
       req.headers.cookie
     );
     const breadcrumbs = await buildBreadcrumbs(

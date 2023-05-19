@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function HumanDonor({ item: humanDonor, accessoryData }) {
+export default function HumanDonor({ item: humanDonor, accessoryData = null }) {
   const ethnicities =
     humanDonor.ethnicities?.length > 0 ? humanDonor.ethnicities.join(", ") : "";
   const sex = humanDonor.sex || "";
@@ -19,21 +19,23 @@ export default function HumanDonor({ item: humanDonor, accessoryData }) {
   const collections =
     humanDonor.collections?.length > 0 ? humanDonor.collections.join(", ") : "";
 
-  const phenotypicFeatures = humanDonor.phenotypic_features
-    ?.filter((path) => {
-      const keys = Object.keys(accessoryData);
-      return keys.includes(path);
-    })
-    .map((path) => {
-      const feature = accessoryData[path];
-      if (feature.quantity) {
-        return `${feature.feature.term_name} ${feature.quantity} ${
-          feature.quantity_units
-        }${feature.quantity === 1 ? "" : "s"}`;
-      }
-      return feature.feature.term_name;
-    })
-    .join(", ");
+  const phenotypicFeatures = accessoryData
+    ? humanDonor.phenotypic_features
+        ?.filter((path) => {
+          const keys = Object.keys(accessoryData);
+          return keys.includes(path);
+        })
+        .map((path) => {
+          const feature = accessoryData[path];
+          if (feature.quantity) {
+            return `${feature.feature.term_name} ${feature.quantity} ${
+              feature.quantity_units
+            }${feature.quantity === 1 ? "" : "s"}`;
+          }
+          return feature.feature.term_name;
+        })
+        .join(", ")
+    : "";
 
   return (
     <SearchListItemContent>
