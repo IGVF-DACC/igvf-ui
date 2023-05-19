@@ -70,6 +70,7 @@ const renderers = {
   RodentDonor,
   SampleTerm: OntologyTerm,
   SequenceFile: File,
+  SignalFile: File,
   Software,
   SoftwareVersion,
   Source,
