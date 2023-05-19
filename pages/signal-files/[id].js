@@ -25,7 +25,7 @@ import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function SignalFile({
-  attribution = null,
+  attribution,
   signalFile,
   fileSet = null,
   documents,
