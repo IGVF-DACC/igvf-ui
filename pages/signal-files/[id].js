@@ -4,24 +4,25 @@ import Link from "next/link";
 // components
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileDataItems } from "../../components/common-data-items";
 import {
   DataArea,
+  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import ObjectPageHeader from "../../components/object-page-header";
+import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { DataAreaTitle } from "../../components/data-area";
-import DocumentTable from "../../components/document-table";
-import { FileDataItems } from "../../components/common-data-items";
-import buildAttribution from "../../lib/attribution";
+import { isJsonFormat } from "../../lib/query-utils";
 
 export default function SignalFile({
   attribution = null,
@@ -30,72 +31,74 @@ export default function SignalFile({
   documents,
   derivedFrom,
   referenceFiles,
+  isJson,
 }) {
   return (
     <>
       <Breadcrumbs />
       <EditableItem item={signalFile}>
         <PagePreamble />
-        <ObjectPageHeader item={signalFile} />
-        <DataPanel>
-          <DataArea>
-            <FileDataItems
-              file={signalFile}
-              fileSet={fileSet}
-              derivedFrom={derivedFrom}
-            >
-              {referenceFiles.length > 0 && (
+        <JsonDisplay item={signalFile} isJsonFormat={isJson}>
+          <DataPanel>
+            <DataArea>
+              <FileDataItems
+                file={signalFile}
+                fileSet={fileSet}
+                derivedFrom={derivedFrom}
+              >
+                {referenceFiles.length > 0 && (
+                  <>
+                    <DataItemLabel>Reference Files</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {referenceFiles.map((file) => (
+                          <Link href={file["@id"]} key={file.uuid}>
+                            {file.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
                 <>
-                  <DataItemLabel>Reference Files</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {referenceFiles.map((file) => (
-                        <Link href={file["@id"]} key={file.uuid}>
-                          {file.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
+                  <DataItemLabel>Strand Specificity</DataItemLabel>
+                  <DataItemValue>{signalFile.strand_specificity}</DataItemValue>
                 </>
-              )}
-              <>
-                <DataItemLabel>Strand Specificity</DataItemLabel>
-                <DataItemValue>{signalFile.strand_specificity}</DataItemValue>
-              </>
-              {"filtered" in signalFile && (
-                <>
-                  <DataItemLabel>Filtered</DataItemLabel>
-                  <DataItemValue>
-                    {signalFile.filtered ? "Yes" : "No"}
-                  </DataItemValue>
-                </>
-              )}
-              {"normalized" in signalFile && (
-                <>
-                  <DataItemLabel>Normalized</DataItemLabel>
-                  <DataItemValue>
-                    {signalFile.normalized ? "Yes" : "No"}
-                  </DataItemValue>
-                </>
-              )}
-              {signalFile.start_view_position && (
-                <>
-                  <DataItemLabel>Start View Position</DataItemLabel>
-                  <DataItemValue>
-                    {signalFile.start_view_position}
-                  </DataItemValue>
-                </>
-              )}
-            </FileDataItems>
-          </DataArea>
-        </DataPanel>
-        {documents.length > 0 && (
-          <>
-            <DataAreaTitle>Documents</DataAreaTitle>
-            <DocumentTable documents={documents} />
-          </>
-        )}
-        <Attribution attribution={attribution} />
+                {"filtered" in signalFile && (
+                  <>
+                    <DataItemLabel>Filtered</DataItemLabel>
+                    <DataItemValue>
+                      {signalFile.filtered ? "Yes" : "No"}
+                    </DataItemValue>
+                  </>
+                )}
+                {"normalized" in signalFile && (
+                  <>
+                    <DataItemLabel>Normalized</DataItemLabel>
+                    <DataItemValue>
+                      {signalFile.normalized ? "Yes" : "No"}
+                    </DataItemValue>
+                  </>
+                )}
+                {signalFile.start_view_position && (
+                  <>
+                    <DataItemLabel>Start View Position</DataItemLabel>
+                    <DataItemValue>
+                      {signalFile.start_view_position}
+                    </DataItemValue>
+                  </>
+                )}
+              </FileDataItems>
+            </DataArea>
+          </DataPanel>
+          {documents.length > 0 && (
+            <>
+              <DataAreaTitle>Documents</DataAreaTitle>
+              <DocumentTable documents={documents} />
+            </>
+          )}
+          <Attribution attribution={attribution} />
+        </JsonDisplay>
       </EditableItem>
     </>
   );
@@ -114,9 +117,12 @@ SignalFile.propTypes = {
   attribution: PropTypes.object,
   // The file is derived from
   referenceFiles: PropTypes.array.isRequired,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req }) {
+export async function getServerSideProps({ params, req, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const signalFile = await request.getObject(`/signal-files/${params.id}/`);
   if (FetchRequest.isResponseSuccess(signalFile)) {
@@ -150,6 +156,7 @@ export async function getServerSideProps({ params, req }) {
         breadcrumbs,
         attribution,
         referenceFiles,
+        isJson,
       },
     };
   }
