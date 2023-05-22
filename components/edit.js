@@ -12,6 +12,7 @@ import PagePreamble from "./page-preamble";
 // lib
 import FetchRequest from "../lib/fetch-request";
 import { sortedJson } from "../lib/general";
+import { itemToSchema } from "../lib/schema";
 /* istanbul ignore file */
 
 export function useEditor(action) {
@@ -88,7 +89,7 @@ SavedErrors.propTypes = {
 };
 
 export default function EditPage({ item }) {
-  const { session } = useContext(SessionContext);
+  const { profiles, session } = useContext(SessionContext);
 
   const path = item["@id"];
 
@@ -96,7 +97,8 @@ export default function EditPage({ item }) {
 
   function editable(item) {
     // cannot edit if not logged in or object not editable
-    const editable = canEdit(item);
+    const itemSchema = itemToSchema(item, profiles);
+    const editable = Boolean(itemSchema && canEdit(itemSchema));
     return isAuthenticated && editable;
   }
 

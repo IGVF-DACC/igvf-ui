@@ -9,7 +9,7 @@ import PagePreamble from "../../components/page-preamble";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { AddItemFromSchema } from "../../components/add";
+import { AddLink } from "../../components/add";
 
 export default function Schema({ schema, changelog }) {
   const html = marked(changelog);
@@ -18,11 +18,11 @@ export default function Schema({ schema, changelog }) {
       <Breadcrumbs />
       <PagePreamble />
       <div className="mb-2 flex justify-end">
-        <AddItemFromSchema schema={schema} label="Add" />
+        <AddLink schema={schema} label="Add" />
       </div>
       <DataPanel>
         <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
-          <pre className="overflow-x-scroll p-1">
+          <pre className="overflow-x-scroll p-1 text-xs">
             {JSON.stringify(schema, null, 4)}
           </pre>
         </div>

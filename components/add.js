@@ -10,11 +10,11 @@ import { SaveCancelControl, useEditor } from "./edit";
 import EditJson, { canEdit } from "./edit-func";
 import FlashMessage from "./flash-message";
 import { ButtonLink } from "./form-elements";
-import ProfileMapContext from "./profile-map";
 import SessionContext from "./session-context";
 // lib
 import FetchRequest from "../lib/fetch-request";
 import { urlWithoutParams, sortedJson } from "../lib/general";
+import { collectionToSchema } from "../lib/schema";
 /* istanbul ignore file */
 
 /**
@@ -73,41 +73,55 @@ function convertOptionalIntoRequiredSchema(schema) {
 }
 
 /**
+ * Extract a usable name from a schema object that we can use in a path to add or edit an object.
+ * Likely this doesn't match the real path, but igvfd can use this to redirect to the correct path.
+ * @param {object} schema Schema for a single type from /profiles
+ * @returns {string} Name of the schema; null if not found
+ */
+function schemaToName(schema) {
+  const matchingName = schema.$id.match(/^\/profiles\/(.*)\.json$/);
+  return matchingName ? matchingName[1] : null;
+}
+
+/**
  * Generates a button link to the #!add url for the given collection.
  * A custom label can be suplied with the `label` prop.
  */
-export function AddLink({ collection, label = null }) {
-  if (collection.status === "error") {
-    return;
-  }
-  const collectPath = collection["@type"].includes("PageCollection")
-    ? "/add-page#!edit"
-    : `${urlWithoutParams(collection["@id"])}#!add`;
+export function AddLink({ schema, label = null }) {
+  const { isAuthenticated } = useAuth0();
+  if (isAuthenticated && canEdit(schema)) {
+    const schemaName = schemaToName(schema);
+    if (schemaName) {
+      const objectAddPath =
+        schema.$id === "/profiles/page.json"
+          ? "/add-page#!edit"
+          : `/${schemaName}#!add`;
 
-  if (canEdit(collection, ["add"])) {
-    return (
-      <ButtonLink
-        label={label}
-        href={collectPath}
-        size="sm"
-        type="secondary"
-        hasIconOnly
-      >
-        <PlusIcon />
-      </ButtonLink>
-    );
+      return (
+        <ButtonLink
+          label={label}
+          href={objectAddPath}
+          size="sm"
+          type="secondary"
+          hasIconOnly
+        >
+          <PlusIcon />
+        </ButtonLink>
+      );
+    }
   }
+  return null;
 }
 
 AddLink.propTypes = {
-  // Collection object with no results in @graph
-  collection: PropTypes.object.isRequired,
+  // Schema for the collection to add to
+  schema: PropTypes.object.isRequired,
   // Label for the Add button
   label: PropTypes.string,
 };
 
 export function AddInstancePage({ collection }) {
-  const { session } = useContext(SessionContext);
+  const { profiles, session } = useContext(SessionContext);
   const { isAuthenticated } = useAuth0();
 
   /**
@@ -119,7 +133,8 @@ export function AddInstancePage({ collection }) {
 
   // Cannot add if not logged in or "add" not an action
   function addable(collection) {
-    const canAdd = canEdit(collection, "add");
+    const itemSchema = collectionToSchema(collection, profiles);
+    const canAdd = Boolean(itemSchema && canEdit(itemSchema));
     return isAuthenticated && canAdd;
   }
 
@@ -286,27 +301,4 @@ export function AddableItem({ collection, children }) {
 
 AddableItem.propTypes = {
   collection: PropTypes.object.isRequired,
-};
-
-/**
- * Given a schema, if the present user has sufficient permissions a
- * button is produced which points to the corresponding collection #!add
- * URL, allowing the user to Add an object of the schema type to the
- * collection.
- */
-export function AddItemFromSchema({ schema, label = "" }) {
-  const { profileMap } = useContext(ProfileMapContext);
-  const schemaId = schema.$id.match(/^\/profiles\/(.+).json$/)[1];
-  const collection = profileMap[schemaId];
-
-  if (collection) {
-    return <AddLink collection={collection} label={label} />;
-  }
-}
-
-AddItemFromSchema.propTypes = {
-  // Single schema for the object type to add
-  schema: PropTypes.object.isRequired,
-  // Label for the Add button to identify what's being added
-  label: PropTypes.string,
 };

@@ -1,19 +1,24 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import { PencilSquareIcon } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
-import React from "react";
+import { useContext } from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
+import SessionContext from "./session-context";
 // lib
 import { removeTrailingSlash } from "../lib/general";
+import { itemToSchema } from "../lib/schema";
 /* istanbul ignore file */
 
-export function canEdit(item, actions = ["edit", "edit-json"]) {
-  if ("actions" in item) {
-    return item.actions.find((act) => actions.includes(act.name)) !== undefined;
-  }
-  return false;
+/**
+ * Determines whether the given schema represents an object type that people can edit.
+ * @param {object} schema For type being tested for editability
+ * @returns {boolean} True if the schema represents an object type people can edit
+ */
+export function canEdit(schema) {
+  return Boolean(schema.identifyingProperties?.length > 0);
 }
 
 const Editor = dynamic(
@@ -125,8 +130,12 @@ EditJson.propTypes = {
 };
 
 export function EditLink({ item }) {
-  const editPath = `${removeTrailingSlash(item["@id"])}/#!edit`;
-  if (canEdit(item)) {
+  const { profiles } = useContext(SessionContext);
+  const { isAuthenticated } = useAuth0();
+
+  const itemSchema = itemToSchema(item, profiles);
+  if (isAuthenticated && itemSchema && canEdit(itemSchema)) {
+    const editPath = `${removeTrailingSlash(item["@id"])}#!edit`;
     return (
       <div className="mb-1 flex justify-end">
         <ButtonLink
