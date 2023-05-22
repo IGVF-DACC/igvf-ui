@@ -88,6 +88,8 @@ export default function SignalFile({
                     </DataItemValue>
                   </>
                 )}
+                <DataItemLabel>Content Summary</DataItemLabel>
+                <DataItemValue>{signalFile.content_summary}</DataItemValue>
               </FileDataItems>
             </DataArea>
           </DataPanel>
