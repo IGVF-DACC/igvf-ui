@@ -612,6 +612,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Sequence Files
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="signal-file"
+            href="/search?type=SignalFile"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Signal Files
+          </NavigationHrefItem>
         </NavigationGroupItem>
         <NavigationGroupItem
           id="file-sets"
