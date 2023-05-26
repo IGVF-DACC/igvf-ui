@@ -27,6 +27,10 @@ import { UC } from "../lib/constants";
 import FetchRequest from "../lib/fetch-request";
 import QueryString from "../lib/query-string";
 
+function getTypeTitle(searchResult, collectionTitles) {
+  return collectionTitles?.[searchResult.key] || searchResult.key;
+}
+
 /**
  * Displays the header for a single type's top hits.
  */
@@ -44,7 +48,7 @@ function TypeSectionHeader({
   query.addKeyValue("searchTerm", term);
 
   // Get the section title for the top-hits type.
-  const typeTitle = collectionTitles?.[searchResult.key] || searchResult.key;
+  const typeTitle = getTypeTitle(searchResult, collectionTitles);
 
   return (
     <div
@@ -140,6 +144,7 @@ TypeTopHits.propTypes = {
 export default function SiteSearch({ results, term, accessoryData = null }) {
   // Tracks the keys of opened type sections
   const [openedSections, setOpenedSections] = useState([]);
+  const { collectionTitles } = useContext(SessionContext);
 
   function onSectionOpenClick(sectionKey) {
     if (openedSections.includes(sectionKey)) {
@@ -163,6 +168,7 @@ export default function SiteSearch({ results, term, accessoryData = null }) {
         <ul>
           {results.map((result) => {
             const isSectionOpen = openedSections.includes(result.key);
+            const typeTitle = getTypeTitle(result, collectionTitles);
             return (
               <TypeSection key={result.key}>
                 <TypeSectionHeader
@@ -174,13 +180,16 @@ export default function SiteSearch({ results, term, accessoryData = null }) {
                 <AnimatePresence>
                   {isSectionOpen && (
                     <motion.div
-                      className="overflow-hidden text-sm leading-relaxed"
+                      className="overflow-hidden bg-gray-100 text-sm leading-relaxed dark:bg-gray-900"
                       initial="collapsed"
                       animate="open"
                       exit="collapsed"
                       transition={standardAnimationTransition}
                       variants={standardAnimationVariants}
                     >
+                      <div className="px-1 pt-0.5 text-center text-xs font-semibold uppercase text-gray-500">
+                        Top results for {typeTitle}
+                      </div>
                       <TypeTopHits topHits={result.top_hits.hits.hits}>
                         {(item) => {
                           const SearchListItemRenderer =
