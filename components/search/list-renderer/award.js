@@ -11,7 +11,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function Award({ item: award, accessoryData }) {
+export default function Award({ item: award, accessoryData = null }) {
   const contactPi = accessoryData?.[award.contact_pi];
   return (
     <SearchListItemContent>

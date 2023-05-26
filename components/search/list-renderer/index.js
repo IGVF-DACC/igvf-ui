@@ -7,6 +7,8 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// lib
+import FetchRequest from "../../../lib/fetch-request";
 
 /**
  * When you add a new renderer for a search-list item `@type`, likely in its own file in this
@@ -258,4 +260,28 @@ export function getItemListsByType(searchResults) {
     );
     return itemListsByTypeAcc;
   }, {});
+}
+
+/**
+ * Retrieve all needed accessory data for search results. Each search result item type might have
+ * an accessory data path retrieval function. If so, call it and return the results. Remember that
+ * the search results can contain a mix of item types, so this could get different accessory data
+ * for each search result. null gets returned if no accessory data is needed.
+ * @param {object} itemListsByType Search-result items keyed by item type
+ * @param {string} cookie Browser cookie for request authentication
+ */
+export async function getAccessoryData(itemListsByType, cookie) {
+  const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
+  if (accessoryDataPaths.length > 0) {
+    const request = new FetchRequest({ cookie });
+    const accessoryDataList = await request.getMultipleObjects(
+      accessoryDataPaths,
+      null,
+      {
+        filterErrors: true,
+      }
+    );
+    return generateAccessoryDataPropertyMap(accessoryDataList);
+  }
+  return null;
 }

@@ -22,6 +22,7 @@ import {
   loginDataProvider,
   logoutAuthProvider,
 } from "../lib/authentication";
+import getCollectionTitles from "../lib/collection-titles";
 import getProfiles from "../lib/profiles";
 /* istanbul ignore file */
 
@@ -46,6 +47,8 @@ export function Session({ authentication, children }) {
   const [sessionProperties, setSessionProperties] = useState(null);
   // Caches the /profiles schemas
   const [profiles, setProfiles] = useState(null);
+  // Caches the /collection-titles map
+  const [collectionTitles, setCollectionTitles] = useState(null);
   // Caches the data provider URL
   const [dataProviderUrl, setDataProviderUrl] = useState(null);
   // Set to true once we start the process of signing into igvfd
@@ -92,11 +95,21 @@ export function Session({ authentication, children }) {
   // them from this context instead of doing a request to /profiles.
   useEffect(() => {
     if (!profiles && session) {
-      getProfiles(session).then((profiles) => {
-        setProfiles(profiles);
+      getProfiles(session).then((response) => {
+        setProfiles(response);
       });
     }
   }, [profiles, session]);
+
+  // Get the mapping of @type, collection name, and schema name to corresponding human-readable
+  // names.
+  useEffect(() => {
+    if (!collectionTitles && session) {
+      getCollectionTitles(session).then((response) => {
+        setCollectionTitles(response);
+      });
+    }
+  });
 
   // If we detect a transition from Auth0's logged-out state to logged-in state, log the user into
   // igvfd. The callback that auth0-react calls after a successful Auth0 login exists outside the
@@ -166,7 +179,9 @@ export function Session({ authentication, children }) {
   ]);
 
   return (
-    <SessionContext.Provider value={{ session, sessionProperties, profiles }}>
+    <SessionContext.Provider
+      value={{ session, sessionProperties, profiles, collectionTitles }}
+    >
       {children}
     </SessionContext.Provider>
   );

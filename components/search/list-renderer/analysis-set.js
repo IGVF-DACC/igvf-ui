@@ -15,7 +15,10 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function AnalysisSet({ item: analysisSet, accessoryData }) {
+export default function AnalysisSet({
+  item: analysisSet,
+  accessoryData = null,
+}) {
   const summary = analysisSet.summary;
   const inputFileSetsKeys = analysisSet.input_file_sets;
   const inputFileSetsAccessions =

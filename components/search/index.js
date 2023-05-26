@@ -10,6 +10,7 @@ import ItemLink from "../item-link";
 
 import {
   generateAccessoryDataPropertyMap,
+  getAccessoryData,
   getAccessoryDataPaths,
   getItemListsByType,
   getSearchListItemRenderer,
@@ -25,7 +26,7 @@ function SearchListItem({ href, testid, children }) {
       data-testid={`search-list-item-${testid}`}
     >
       <ItemLink href={href} label={`View details for ${testid}`} />
-      <div className="grow py-4 px-2 sm:px-4">{children}</div>
+      <div className="grow px-2 py-4 sm:px-4">{children}</div>
     </li>
   );
 }
@@ -39,6 +40,7 @@ SearchListItem.propTypes = {
 
 export {
   generateAccessoryDataPropertyMap,
+  getAccessoryData,
   getAccessoryDataPaths,
   getItemListsByType,
   getSearchListItemRenderer,
