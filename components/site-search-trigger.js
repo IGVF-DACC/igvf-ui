@@ -81,7 +81,7 @@ function SearchTriggerCollapsed({ onClick }) {
       className="block"
       label="Search the site for a word or phrase"
     >
-      <MagnifyingGlassIcon className="h-8 w-8" />
+      <MagnifyingGlassIcon className="h-8 w-8 fill-black dark:fill-white" />
     </button>
   );
 }
