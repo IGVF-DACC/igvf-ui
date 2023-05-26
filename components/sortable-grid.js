@@ -276,9 +276,15 @@ export default function SortableGrid({
     }
   }
 
+  // Filter the columns to only include those that have a hide() function that returns false, or
+  // that don't have a hide() function at all.
+  const visibleColumns = columns.filter(
+    (column) => !column.hide || !column.hide(data, columns, meta)
+  );
+
   // Generate the cells within the header row. The column title can contain a string or a React
   // component.
-  const headerCells = columns.map((column) => {
+  const headerCells = visibleColumns.map((column) => {
     return {
       id: column.id,
       content: column.title,
@@ -297,24 +303,28 @@ export default function SortableGrid({
   ];
 
   // Make sure the `sortBy` column actually exists in the columns. Sort by the first column if not.
-  const sortByColumn = columns.find((column) => column.id === sortBy);
+  const sortByColumn = visibleColumns.find((column) => column.id === sortBy);
   if (!sortByColumn) {
-    setSortBy(columns[0].id);
+    setSortBy(visibleColumns[0].id);
     return null;
   }
 
   // Convert the data (simple array of objects) into a data grid array and render the table.
   const sortedData = initialSort.isSortingSuppressed
     ? data
-    : sortData(data, columns, sortBy, sortDirection);
-  const dataRows = convertObjectArrayToDataGrid(sortedData, columns, keyProp);
+    : sortData(data, visibleColumns, sortBy, sortDirection);
+  const dataRows = convertObjectArrayToDataGrid(
+    sortedData,
+    visibleColumns,
+    keyProp
+  );
   return (
     <DataGrid
       data={headerRow.concat(dataRows)}
       meta={{
         ...meta,
         sortBy,
-        columns,
+        columns: visibleColumns,
         sortDirection,
         handleSortClick,
         dataLength: dataRows.length,
