@@ -18,15 +18,19 @@ Don’t use a full URL for internal pages (pages that exist in igvf-ui) — use 
 
 ### Anchors
 
-You can link to a section elsewhere on the same page for the reader’s convenience. You make anchors using the `<a>` HTML tag at the location on the page that you want to link to and choosing a meaningful anchor name that’s suitable for a URL, so don’t go delving into spaces and special characters for the anchor name. You normally use only alphanumerics and dashes for anchor names. Here, an anchor named `#tissue-biosamples` gets inserted before a level 2 header:
+You can link to a section elsewhere on the same page for the reader’s convenience. You make anchors using the `<a>` HTML tag at the location on the page that you want to link to and choosing a meaningful anchor name that’s suitable for a URL, so don’t go delving into spaces and special characters for the anchor name. You normally use only alphanumerics and dashes for anchor names. Here, an anchor named `tissue-biosamples` gets inserted before a level 2 header:
 
 ```
-<a href="#tissue-biosamples"></a>
-
+<a name="tissue-biosamples"></a>
 ## Tissue Biosamples
 ```
 
 You can then use `#tissue-biosamples` as the link to have the browser scroll to this spot.
+
+```
+PAGE_NAV
+Tissue Biosamples=#tissue-biosamples
+```
 
 ## Example
 
@@ -39,6 +43,12 @@ Second Topic=/tissues/IGVFSM0000DDDD
 Third Topic=#third-topic
 Fourth Topic=https://www.genome.gov/
 Fifth Topic=#fifth-topic
+...
+<a name="first-topic"></a>
+...
+<a name="third-topic"></a>
+...
+<a name="fifth-topic"></a>
 ```
 
 “First Topic,” “Third Topic,” and “Fifth Topic” link to their anchors on the same page, so clicking them simply scrolls the page to those locations. “Second Topic” links to the IGVFSM0000DDDD tissue page on this site. “Fourth Topic” links to the NHGRI website.

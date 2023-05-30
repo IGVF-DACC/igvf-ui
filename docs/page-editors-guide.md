@@ -98,7 +98,7 @@ The Help menu at the bottom of the navigation area goes to a generated help dire
 
 See help-page-guide.md in this directory for a detailed guide for help pages.
 
-<a href="#images"></a>
+<a name="images"></a>
 
 ## Images
 
@@ -151,7 +151,7 @@ Some right-aligned text.
 
 Use these sparingly, as HTML tags tend to clutter the Markdown, making the page more difficult to edit. You can reduce the friction for yourself and future editors by using Markdown’s natural left alignment.
 
-<a href="#page-components"></a>
+<a name="page-components"></a>
 
 ## Page Components
 

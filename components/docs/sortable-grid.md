@@ -134,7 +134,7 @@ Use this property if the data for the cell needs displaying with something more 
 <br>
 <br>
 
-## <a name="#title-component-properties"></a>Title Component Properties
+## <a name="title-component-properties"></a>Title Component Properties
 
 When supplying a React component for a column configuration’s `title` property, this component receives the following props in addition to any you pass directly to the title component:
 
@@ -176,7 +176,7 @@ const CountDisplay = ({ columnConfiguration, sortBy, sortDirection, bold }) => {
 <br>
 <br>
 
-## <a name="#display-function-arguments"></a>Display Function Arguments
+## <a name="display-function-arguments"></a>Display Function Arguments
 
 The function you provide the `display` property of a column-configuration object receives these arguments:
 
