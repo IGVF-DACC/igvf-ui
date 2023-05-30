@@ -38,7 +38,7 @@ function AccessKeyDisplay({ accessKeyId, accessKeySecret }) {
   ];
 
   return (
-    <div className="my-5 w-full gap-3 border border-modal-border bg-gray-100 py-2.5 px-2 dark:bg-gray-800 md:grid md:w-auto md:auto-cols-min md:grid-cols-min-2 md:px-5">
+    <div className="my-5 w-full gap-3 border border-modal-border bg-gray-100 px-2 py-2.5 dark:bg-gray-800 md:grid md:w-auto md:auto-cols-min md:grid-cols-min-2 md:px-5">
       {rows.map((row) => {
         return (
           <Fragment key={row.label}>

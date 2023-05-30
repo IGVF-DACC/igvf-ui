@@ -16,7 +16,7 @@ export default function GraphSvg({ graph }) {
       <DataPanel>
         <div
           id="graph"
-          className="dark:[&>svg>g>polygon]:fill-transparent [&>svg]:h-full [&>svg]:w-auto overflow-y-auto"
+          className="overflow-y-auto dark:[&>svg>g>polygon]:fill-transparent [&>svg]:h-full [&>svg]:w-auto"
           dangerouslySetInnerHTML={{ __html: graph }}
         />
       </DataPanel>
