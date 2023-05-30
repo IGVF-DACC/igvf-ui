@@ -50,6 +50,7 @@ import User from "./user";
 import File from "./file";
 import Source from "./source";
 import HumanGenomicVariant from "./human-genomic-variant";
+import Modification from './modification';
 
 const renderers = {
   AlignmentFile: File,
@@ -65,6 +66,7 @@ const renderers = {
   InVitroSystem: Biosample,
   Lab,
   MeasurementSet,
+  Modification,
   Page,
   PhenotypeTerm: OntologyTerm,
   PhenotypicFeature,
