@@ -20,7 +20,12 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function Modification({ modification, gene, isJson, attribution = null }) {
+export default function Modification({
+  modification,
+  gene,
+  isJson,
+  attribution = null,
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -42,13 +47,25 @@ export default function Modification({ modification, gene, isJson, attribution =
               {modification.tagged_protein && (
                 <>
                   <DataItemLabel>Tagged Protein</DataItemLabel>
-                  <DataItemValue><Link href={modification.tagged_protein}>{gene.symbol}</Link></DataItemValue>
+                  <DataItemValue>
+                    <Link href={modification.tagged_protein}>
+                      {gene.symbol}
+                    </Link>
+                  </DataItemValue>
                 </>
               )}
               {modification.product_id && (
                 <>
-                <DataItemLabel>Product ID</DataItemLabel>
-                <DataItemValue><Link href={`https://www.addgene.org/${modification.product_id.split(":")[1]}/`}>{modification.product_id}</Link></DataItemValue>
+                  <DataItemLabel>Product ID</DataItemLabel>
+                  <DataItemValue>
+                    <Link
+                      href={`https://www.addgene.org/${
+                        modification.product_id.split(":")[1]
+                      }/`}
+                    >
+                      {modification.product_id}
+                    </Link>
+                  </DataItemValue>
                 </>
               )}
             </DataArea>
