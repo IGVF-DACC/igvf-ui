@@ -891,11 +891,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
                 Impersonate User
               </NavigationHrefItem>
             )}
-            <NavigationSignOutItem
-              id="signout"
-              isChildItem
-            ></NavigationSignOutItem>
-            <NavigationSignOutItem id="sign-out" isChildItem>
+            <NavigationSignOutItem id="signout" isChildItem>
               Sign Out
             </NavigationSignOutItem>
           </NavigationGroupItem>
