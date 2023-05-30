@@ -13,6 +13,7 @@ import HumanDonor from "../list-renderer/human-donor";
 import Lab from "../list-renderer/lab";
 import OntologyTerm from "../list-renderer/ontology-term";
 import Page from "../list-renderer/page";
+import PhenotypicFeature from "../list-renderer/phenotypic-feature";
 import Publication from "../list-renderer/publication";
 import RodentDonor from "../list-renderer/rodent-donor";
 import Software from "../list-renderer/software";
@@ -1655,5 +1656,78 @@ describe("Test the Human Genomic Variant component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title.textContent).toBe("chr1:100000000:TG:GC");
+  });
+});
+
+describe("Test PhenotypicFeature component", () => {
+  it("renders an PhenotypicFeature with observation_date and quantity", () => {
+    const item = {
+      status: "released",
+      feature: {
+        term_id: "NCIT:C92648",
+        term_name: "Body Weight Measurement",
+        "@id": "/phenotype-terms/NCIT_C92648/",
+      },
+      quantity: 58,
+      quantity_units: "kilogram",
+      observation_date: "2022-11-15",
+      "@id": "/phenotypic-features/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa/",
+      "@type": ["PhenotypicFeature", "Item"],
+      uuid: "ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa",
+      "@context": "/terms/",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PhenotypicFeature item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Phenotypic Feature/);
+    expect(uniqueId).toHaveTextContent(/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("Body Weight Measurement - 58 kilogram");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("2022-11-15");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders an ontology term with no observation_date and quantity", () => {
+    const item = {
+      status: "released",
+      feature: {
+        term_id: "NCIT:C92648",
+        term_name: "Body Weight Measurement",
+        "@id": "/phenotype-terms/NCIT_C92648/",
+      },
+      "@id": "/phenotypic-features/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa/",
+      "@type": ["PhenotypicFeature", "Item"],
+      uuid: "ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa",
+      "@context": "/terms/",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PhenotypicFeature item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Phenotypic Feature/);
+    expect(uniqueId).toHaveTextContent(/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("Body Weight Measurement");
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
   });
 });
