@@ -1697,7 +1697,7 @@ describe("Test PhenotypicFeature component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders an ontology term with no observation_date and quantity", () => {
+  it("renders PhenotypicFeature with no observation_date and quantity", () => {
     const item = {
       status: "released",
       feature: {
