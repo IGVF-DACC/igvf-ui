@@ -49,7 +49,7 @@ export default function PhenotypicFeature({
                   </DataItemValue>
                 </>
               )}
-              {phenotypicFeature.quantity && (
+              {phenotypicFeature.observation_date && (
                 <>
                   <DataItemLabel>Observation Date</DataItemLabel>
                   <DataItemValue>
