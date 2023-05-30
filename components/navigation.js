@@ -881,6 +881,20 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             >
               Profile
             </NavigationHrefItem>
+            {sessionProperties?.admin && (
+              <NavigationHrefItem
+                id="impersonate"
+                href="/impersonate-user"
+                navigationClick={navigationClick}
+                isChildItem
+              >
+                Impersonate User
+              </NavigationHrefItem>
+            )}
+            <NavigationSignOutItem
+              id="signout"
+              isChildItem
+            ></NavigationSignOutItem>
             <NavigationSignOutItem id="sign-out" isChildItem>
               Sign Out
             </NavigationSignOutItem>
