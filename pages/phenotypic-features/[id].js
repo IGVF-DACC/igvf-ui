@@ -26,6 +26,7 @@ export default function PhenotypicFeature({
   isJson,
   attribution = null,
 }) {
+  const feature = `${phenotypicFeature.feature.term_name} (${phenotypicFeature.feature.term_id})`;
   return (
     <>
       <Breadcrumbs />
@@ -36,9 +37,7 @@ export default function PhenotypicFeature({
             <DataArea>
               <DataItemLabel>Phenotypic Feature</DataItemLabel>
               <DataItemValue>
-                <Link href={phenotypicFeature.feature["@id"]}>
-                  {phenotypicFeature.feature.term_name}
-                </Link>
+                <Link href={phenotypicFeature.feature["@id"]}>{feature}</Link>
               </DataItemValue>
               {phenotypicFeature.quantity && (
                 <>
