@@ -19,6 +19,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { UC } from "../../lib/constants";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Treatment({ treatment, documents, isJson }) {
@@ -38,7 +39,7 @@ export default function Treatment({ treatment, documents, isJson }) {
               <DataItemValue>
                 {treatment.amount} {treatment.amount_units}
               </DataItemValue>
-              {treatment.duration && (
+              {truthyOrZero(treatment.duration) && (
                 <>
                   <DataItemLabel>Duration</DataItemLabel>
                   <DataItemValue>
@@ -47,7 +48,7 @@ export default function Treatment({ treatment, documents, isJson }) {
                   </DataItemValue>
                 </>
               )}
-              {treatment.pH && (
+              {truthyOrZero(treatment.pH) && (
                 <>
                   <DataItemLabel>pH</DataItemLabel>
                   <DataItemValue>{treatment.pH}</DataItemValue>
@@ -59,7 +60,7 @@ export default function Treatment({ treatment, documents, isJson }) {
                   <DataItemValue>{treatment.purpose}</DataItemValue>
                 </>
               )}
-              {treatment.post_treatment_time && (
+              {truthyOrZero(treatment.post_treatment_time) && (
                 <>
                   <DataItemLabel>Post-Treatment Time</DataItemLabel>
                   <DataItemValue>
@@ -69,7 +70,7 @@ export default function Treatment({ treatment, documents, isJson }) {
                   </DataItemValue>
                 </>
               )}
-              {treatment.temperature && (
+              {truthyOrZero(treatment.temperature) && (
                 <>
                   <DataItemLabel>Temperature</DataItemLabel>
                   <DataItemValue>
