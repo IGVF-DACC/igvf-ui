@@ -239,4 +239,33 @@ describe("SortableGrid", () => {
     const descriptionDiv = within(headers[1]).getByText("Description");
     expect(descriptionDiv).toHaveClass("bg-slate-100");
   });
+
+  it("hides columns conditionally", () => {
+    const columns = [
+      {
+        id: "accession",
+        title: "Accession",
+      },
+      {
+        id: "description",
+        title: "Description",
+        hide: (data, columns, meta) => meta.isSmallViewport,
+      },
+    ];
+
+    render(
+      <DataGridContainer>
+        <SortableGrid
+          data={data}
+          columns={columns}
+          meta={{ isSmallViewport: true }}
+          keyProp="uuid"
+        />
+      </DataGridContainer>
+    );
+
+    const headers = screen.getAllByRole("columnheader");
+    expect(headers).toHaveLength(1);
+    expect(headers[0]).toHaveTextContent("Accession");
+  });
 });

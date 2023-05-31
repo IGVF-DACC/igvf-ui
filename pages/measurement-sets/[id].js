@@ -11,11 +11,13 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { DataGridContainer } from "../../components/data-grid";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
+import SortableGrid from "../../components/sortable-grid";
+import Status from "../../components/status";
 // lib
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
@@ -25,16 +27,122 @@ import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
 
+/**
+ * Columns for the two file tables; both those with `illumina_read_type` (meta.hasReadType is true)
+ * and those without.
+ */
+const filesColumns = [
+  {
+    id: "accession",
+    title: "Accession",
+    display: ({ source }) => (
+      <Link href={source["@id"]}>{source.accession}</Link>
+    ),
+  },
+  {
+    id: "file_format",
+    title: "File Format",
+  },
+  {
+    id: "content_type",
+    title: "Content Type",
+  },
+  {
+    id: "illumina_read_type",
+    title: "Illumina Read Type",
+    hide: (data, columns, meta) => !meta.hasReadType,
+  },
+  {
+    id: "sequencing_run",
+    title: "Sequencing Run",
+  },
+  {
+    id: "sequencing_platform",
+    title: "Sequencing Platform",
+    display: (cell, meta) => {
+      const platform = meta.sequencingPlatforms.find(
+        (platform) => platform["@id"] === cell.source.sequencing_platform
+      );
+      return platform?.term_name || null;
+    },
+  },
+  {
+    id: "flowcell_id",
+    title: "Flowcell ID",
+  },
+  {
+    id: "lane",
+    title: "Lane",
+  },
+  {
+    id: "file_size",
+    title: "File Size",
+  },
+  {
+    id: "lab",
+    title: "Lab",
+    display: ({ source }) => source.lab?.title,
+  },
+  {
+    id: "status",
+    title: "Status",
+    display: ({ source }) => <Status status={source.status} />,
+  },
+];
+
+/**
+ * Display a sortable table of the given files, specifically for the MeasurementSet display.
+ */
+function MeasurementSetFileTable({
+  files,
+  sequencingPlatforms,
+  hasReadType = false,
+}) {
+  return (
+    <DataGridContainer>
+      <SortableGrid
+        data={files}
+        columns={filesColumns}
+        meta={{ sequencingPlatforms, hasReadType }}
+        keyProp="@id"
+      />
+    </DataGridContainer>
+  );
+}
+
+MeasurementSetFileTable.propTypes = {
+  // Files to display
+  files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Sequencing platform objects associated with `files`
+  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // True if files have illumina_read_type
+  hasReadType: PropTypes.bool,
+};
+
 export default function MeasurementSet({
   measurementSet,
   assayTerm = null,
   documents,
   donors,
   files,
+  sequencingPlatforms,
   samples,
   attribution = null,
   isJson,
 }) {
+  // Split files array into two arrays: those with illumina_read_type and those without.
+  const [filesWithReadType, filesWithoutReadType] = files.reduce(
+    (acc, file) => {
+      if (file.illumina_read_type) {
+        acc[0].push(file);
+      } else {
+        acc[1].push(file);
+      }
+      return acc;
+    },
+    [[], []]
+  );
+
   return (
     <>
       <Breadcrumbs />
@@ -100,10 +208,23 @@ export default function MeasurementSet({
               )}
             </DataArea>
           </DataPanel>
-          {files.length > 0 && (
+          {filesWithReadType.length > 0 && (
             <>
-              <DataAreaTitle>Files</DataAreaTitle>
-              <FileTable files={files} />
+              <DataAreaTitle>Sequencing Results (Illumina)</DataAreaTitle>
+              <MeasurementSetFileTable
+                files={filesWithReadType}
+                sequencingPlatforms={sequencingPlatforms}
+                hasReadType
+              />
+            </>
+          )}
+          {filesWithoutReadType.length > 0 && (
+            <>
+              <DataAreaTitle>Sequencing Results</DataAreaTitle>
+              <MeasurementSetFileTable
+                files={filesWithoutReadType}
+                sequencingPlatforms={sequencingPlatforms}
+              />
             </>
           )}
           {documents.length > 0 && (
@@ -129,6 +250,8 @@ MeasurementSet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Sequencing platform objects associated with `files`
+  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
@@ -155,11 +278,6 @@ export async function getServerSideProps({ params, req, query }) {
           filterErrors: true,
         })
       : [];
-    const files = measurementSet.files
-      ? await request.getMultipleObjects(measurementSet.files, null, {
-          filterErrors: true,
-        })
-      : [];
     const samples = measurementSet.samples
       ? await request.getMultipleObjects(measurementSet.samples, null, {
           filterErrors: true,
@@ -172,6 +290,26 @@ export async function getServerSideProps({ params, req, query }) {
         filterErrors: true,
       });
     }
+    const files = measurementSet.files
+      ? await request.getMultipleObjects(measurementSet.files, null, {
+          filterErrors: true,
+        })
+      : [];
+
+    // Use the files to retrieve all the sequencing platform objects they link to.
+    const sequencingPlatformPaths = files
+      .map((file) => file.sequencing_platform)
+      .filter((sequencingPlatform) => sequencingPlatform);
+    const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
+    const sequencingPlatforms =
+      uniqueSequencingPlatformPaths.length > 0
+        ? await request.getMultipleObjects(
+            uniqueSequencingPlatformPaths,
+            null,
+            { filterErrors: true }
+          )
+        : [];
+
     const breadcrumbs = await buildBreadcrumbs(
       measurementSet,
       "accession",
@@ -188,6 +326,7 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         files,
+        sequencingPlatforms,
         samples,
         pageContext: { title: measurementSet.accession },
         breadcrumbs,
