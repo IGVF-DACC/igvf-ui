@@ -51,6 +51,7 @@ import Source from "./source";
 import HumanGenomicVariant from "./human-genomic-variant";
 
 const renderers = {
+  AlignmentFile: File,
   AnalysisSet,
   AssayTerm: OntologyTerm,
   Award,
