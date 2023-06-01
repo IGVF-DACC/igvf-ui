@@ -138,7 +138,11 @@ export const dbxrefPrefixMap = {
   },
   EFO: {
     pattern:
-      "https://ontobee.org/ontology/EFO?iri=http://purl.obolibrary.org/obo/EFO_{0}",
+      "https://ontobee.org/ontology/EFO?iri=http://www.ebi.ac.uk/efo/EFO_{0}",
+  },
+  CL: {
+    pattern:
+      "https://ontobee.org/ontology/CL?iri=http://purl.obolibrary.org/obo/CL_{0}",
   },
   HP: {
     pattern:
