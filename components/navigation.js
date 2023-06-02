@@ -17,6 +17,7 @@ import {
   UserGroupIcon,
   PaperClipIcon,
   PencilSquareIcon,
+  SparklesIcon,
 } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
@@ -699,6 +700,16 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             <DocumentIcon />
           </NavigationIcon>
           Pages
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="phenotypic-features"
+          href="/search?type=PhenotypicFeature"
+          navigationClick={navigationClick}
+        >
+          <NavigationIcon>
+            <SparklesIcon />
+          </NavigationIcon>
+          Phenotypic Features
         </NavigationHrefItem>
         <NavigationHrefItem
           id="publications"
