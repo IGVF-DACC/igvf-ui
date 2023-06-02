@@ -12,6 +12,7 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -33,6 +34,7 @@ export default function PhenotypicFeature({
       <Breadcrumbs />
       <EditableItem item={phenotypicFeature}>
         <PagePreamble />
+        <ObjectPageHeader item={phenotypicFeature} isJsonFormat={isJson} />
         <JsonDisplay item={phenotypicFeature} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

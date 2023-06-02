@@ -11,6 +11,7 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -24,6 +25,7 @@ export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
       <Breadcrumbs />
       <EditableItem item={assayOntologyTerm}>
         <PagePreamble />
+        <ObjectPageHeader item={assayOntologyTerm} isJsonFormat={isJson} />
         <JsonDisplay item={assayOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

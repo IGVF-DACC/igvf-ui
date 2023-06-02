@@ -12,6 +12,7 @@ import {
 import { EditableItem } from "../../components/edit";
 import NoContent from "../../components/no-content";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -25,6 +26,7 @@ export default function User({ user, lab = null, isJson }) {
       <Breadcrumbs />
       <EditableItem item={user}>
         <PagePreamble />
+        <ObjectPageHeader item={user} isJsonFormat={isJson} />
         <JsonDisplay item={user} isJsonFormat={isJson}>
           {user.status || user.job_title || lab || user.email ? (
             <DataPanel>

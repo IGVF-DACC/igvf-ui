@@ -6,6 +6,7 @@ import { DataArea, DataPanel } from "../../components/data-area";
 import { OntologyTermDataItems } from "../../components/common-data-items";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -19,6 +20,7 @@ export default function PlatformOntologyTerm({ platformOntologyTerm, isJson }) {
       <Breadcrumbs />
       <EditableItem item={platformOntologyTerm}>
         <PagePreamble />
+        <ObjectPageHeader item={platformOntologyTerm} isJsonFormat={isJson} />
         <JsonDisplay item={platformOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

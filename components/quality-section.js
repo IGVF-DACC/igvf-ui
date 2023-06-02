@@ -10,7 +10,7 @@ import Status from "./status";
  */
 export default function QualitySection({ item, auditState }) {
   return (
-    <section className="mb-1 flex items-center gap-1">
+    <section className="flex items-center gap-1">
       {item.status && <Status status={item.status} />}
       <AuditStatus item={item} auditState={auditState} />
     </section>

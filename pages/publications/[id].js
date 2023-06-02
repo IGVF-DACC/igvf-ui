@@ -14,6 +14,7 @@ import DbxrefList from "../../components/dbxref-list";
 import DocumentAttachmentLink from "../../components/document-link";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -32,6 +33,7 @@ export default function Publication({
       <Breadcrumbs />
       <EditableItem item={publication}>
         <PagePreamble />
+        <ObjectPageHeader item={publication} isJsonFormat={isJson} />
         <JsonDisplay item={publication} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

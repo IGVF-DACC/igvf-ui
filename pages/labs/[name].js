@@ -11,6 +11,7 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
@@ -25,6 +26,7 @@ export default function Lab({ lab, awards = null, pi = null, isJson }) {
       <Breadcrumbs />
       <EditableItem item={lab}>
         <PagePreamble />
+        <ObjectPageHeader item={lab} isJsonFormat={isJson} />
         <JsonDisplay item={lab} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

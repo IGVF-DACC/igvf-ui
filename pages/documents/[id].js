@@ -14,6 +14,7 @@ import {
 import DocumentAttachmentLink from "../../components/document-link";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -28,6 +29,7 @@ export default function Document({ document, attribution = null, isJson }) {
       <Breadcrumbs />
       <EditableItem item={document}>
         <PagePreamble />
+        <ObjectPageHeader item={document} isJsonFormat={isJson} />
         <JsonDisplay item={document} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

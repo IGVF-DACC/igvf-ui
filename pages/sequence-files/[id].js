@@ -13,7 +13,9 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import { FileHeaderDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -36,6 +38,9 @@ export default function SequenceFile({
       <Breadcrumbs />
       <EditableItem item={sequenceFile}>
         <PagePreamble />
+        <ObjectPageHeader item={sequenceFile} isJsonFormat={isJson}>
+          <FileHeaderDownload file={sequenceFile} />
+        </ObjectPageHeader>
         <JsonDisplay item={sequenceFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

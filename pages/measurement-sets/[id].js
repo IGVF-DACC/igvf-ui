@@ -14,7 +14,9 @@ import {
 import { DataGridContainer } from "../../components/data-grid";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import { FileAccessionAndDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SortableGrid from "../../components/sortable-grid";
 import Status from "../../components/status";
@@ -35,9 +37,7 @@ const filesColumns = [
   {
     id: "accession",
     title: "Accession",
-    display: ({ source }) => (
-      <Link href={source["@id"]}>{source.accession}</Link>
-    ),
+    display: ({ source }) => <FileAccessionAndDownload file={source} />,
   },
   {
     id: "file_format",
@@ -148,6 +148,7 @@ export default function MeasurementSet({
       <Breadcrumbs />
       <EditableItem item={measurementSet}>
         <PagePreamble />
+        <ObjectPageHeader item={measurementSet} isJsonFormat={isJson} />
         <JsonDisplay item={measurementSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

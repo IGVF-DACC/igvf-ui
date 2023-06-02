@@ -12,6 +12,7 @@ import DbxrefList from "../../components/dbxref-list";
 import ChromosomeLocations from "../../components/chromosome-locations";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import Status from "../../components/status";
 // lib
@@ -42,6 +43,7 @@ export default function Gene({ gene, isJson }) {
       <Breadcrumbs />
       <EditableItem item={gene}>
         <PagePreamble />
+        <ObjectPageHeader item={gene} isJsonFormat={isJson} />
         <JsonDisplay item={gene} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

@@ -14,7 +14,9 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import { FileHeaderDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
@@ -38,6 +40,9 @@ export default function SignalFile({
       <Breadcrumbs />
       <EditableItem item={signalFile}>
         <PagePreamble />
+        <ObjectPageHeader item={signalFile} isJsonFormat={isJson}>
+          <FileHeaderDownload file={signalFile} />
+        </ObjectPageHeader>
         <JsonDisplay item={signalFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

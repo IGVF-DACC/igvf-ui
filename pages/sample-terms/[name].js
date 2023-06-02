@@ -12,6 +12,7 @@ import {
 import DbxrefList from "../../components/dbxref-list";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -25,6 +26,7 @@ export default function SampleOntologyTerm({ sampleOntologyTerm, isJson }) {
       <Breadcrumbs />
       <EditableItem item={sampleOntologyTerm}>
         <PagePreamble />
+        <ObjectPageHeader item={sampleOntologyTerm} isJsonFormat={isJson} />
         <JsonDisplay item={sampleOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

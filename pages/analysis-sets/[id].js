@@ -16,6 +16,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
@@ -40,6 +41,7 @@ export default function AnalysisSet({
       <Breadcrumbs />
       <EditableItem item={analysisSet}>
         <PagePreamble />
+        <ObjectPageHeader item={analysisSet} isJsonFormat={isJson} />
         <JsonDisplay item={analysisSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

@@ -155,7 +155,7 @@ export function EditLink({ item }) {
   if (isAuthenticated && itemSchema && canEdit(itemSchema)) {
     const editPath = `${removeTrailingSlash(item["@id"])}#!edit`;
     return (
-      <div className="mb-1 flex justify-end">
+      <div className="flex justify-end">
         <ButtonLink
           label="Edit"
           href={editPath}

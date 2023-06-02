@@ -6,6 +6,7 @@ import { DataArea, DataPanel } from "../../components/data-area";
 import { OntologyTermDataItems } from "../../components/common-data-items";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -22,6 +23,7 @@ export default function PhenotypeOntologyTerm({
       <Breadcrumbs />
       <EditableItem item={phenotypeOntologyTerm}>
         <PagePreamble />
+        <ObjectPageHeader item={phenotypeOntologyTerm} isJsonFormat={isJson} />
         <JsonDisplay item={phenotypeOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
