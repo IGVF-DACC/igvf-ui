@@ -607,6 +607,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
+            id="alignment-file"
+            href="/search?type=AlignmentFile"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Alignment Files
+          </NavigationHrefItem>
+          <NavigationHrefItem
             id="reference-file"
             href="/search?type=ReferenceFile"
             navigationClick={navigationClick}
