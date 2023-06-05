@@ -53,7 +53,7 @@ export function DataArea({ children }) {
  */
 export function DataAreaTitle({ children }) {
   return (
-    <h2 className="mt-4 mb-1 text-2xl font-light" data-testid="dataareatitle">
+    <h2 className="mb-1 mt-4 text-2xl font-light" data-testid="dataareatitle">
       {children}
     </h2>
   );

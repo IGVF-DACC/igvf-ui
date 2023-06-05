@@ -494,9 +494,9 @@ function ImageThumbnailAndPreview({ attachment, ownerPath, alt, size }) {
           data-testid="dialog-background"
           className="fixed inset-0 bg-white/80 dark:bg-white/40"
         />
-        <div className="fixed inset-0 overflow-y-auto py-8 px-3 text-center">
+        <div className="fixed inset-0 overflow-y-auto px-3 py-8 text-center">
           <CloseButton
-            className="absolute top-1 right-1"
+            className="absolute right-1 top-1"
             onClick={() => setIsPreviewOpen(false)}
             label="Close the full-size preview image"
           >

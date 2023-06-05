@@ -18,6 +18,7 @@ import {
   PaperClipIcon,
   PencilSquareIcon,
   SparklesIcon,
+  RectangleGroupIcon,
 } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
@@ -690,6 +691,16 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             <BeakerIcon />
           </NavigationIcon>
           Labs
+        </NavigationHrefItem>
+        <NavigationHrefItem
+          id="modification"
+          href="/search?type=Modification"
+          navigationClick={navigationClick}
+        >
+          <NavigationIcon>
+            <RectangleGroupIcon />
+          </NavigationIcon>
+          Modifications
         </NavigationHrefItem>
         <NavigationHrefItem
           id="pages"

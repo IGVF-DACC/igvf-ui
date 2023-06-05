@@ -56,7 +56,7 @@ export default function Select({
         >
           {children}
         </select>
-        <div className="pointer-events-none absolute top-0 right-0 bottom-0 my-auto h-5 w-5">
+        <div className="pointer-events-none absolute bottom-0 right-0 top-0 my-auto h-5 w-5">
           <ChevronDownIcon
             className={`h-full w-full ${
               isDisabled ? "fill-form-element-disabled" : "fill-form-element"
