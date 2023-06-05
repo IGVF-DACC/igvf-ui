@@ -18,8 +18,9 @@ $ docker compose up --build
 
 ```bash
 # In igvf-ui repo.
-# Note the build flag is only required if dependencies
-# (e.g. package.json) have changed.
+# Note the build flag is only required if dependencies (e.g. package.json) have changed.
+# igvf-ui branches change dependency versions frequently, so it makes sense to use the build flag
+# whenever you switch between igvf-ui branches, or the dev branch gets new branches merged in.
 $ docker compose up --build
 ```
 
