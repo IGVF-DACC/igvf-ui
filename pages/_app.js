@@ -29,7 +29,7 @@ function Site({ Component, pageProps, authentication }) {
   const [isLinkReloadEnabled, setIsLinkReloadEnabled] = useState(false);
   const { isLoading } = useAuth0();
   // Keep track of current dark mode settings
-  const [ isDarkMode, setIsDarkMode ] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
