@@ -28,6 +28,7 @@ const Editor = dynamic(
     require("ace-builds/src-noconflict/mode-json");
     require("ace-builds/src-noconflict/theme-solarized_light");
     require("ace-builds/src-noconflict/theme-solarized_dark");
+    require("ace-builds/src-noconflict/ext-language_tools");
     return ace;
   },
   {
