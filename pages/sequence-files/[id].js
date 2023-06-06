@@ -3,23 +3,24 @@ import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileDataItems } from "../../components/common-data-items";
 import {
   DataArea,
+  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import PagePreamble from "../../components/page-preamble";
 // lib
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { DataAreaTitle } from "../../components/data-area";
-import DocumentTable from "../../components/document-table";
-import { FileDataItems } from "../../components/common-data-items";
-import buildAttribution from "../../lib/attribution";
+import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function SequenceFile({
@@ -45,13 +46,13 @@ export default function SequenceFile({
               >
                 <DataItemLabel>Sequencing Run</DataItemLabel>
                 <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
-                {sequenceFile.read_count && (
+                {truthyOrZero(sequenceFile.read_count) && (
                   <>
                     <DataItemLabel>Read Count</DataItemLabel>
                     <DataItemValue>{sequenceFile.read_count}</DataItemValue>
                   </>
                 )}
-                {sequenceFile.mean_read_length && (
+                {truthyOrZero(sequenceFile.mean_read_length) && (
                   <>
                     <DataItemLabel>Read Length</DataItemLabel>
                     <DataItemValue>

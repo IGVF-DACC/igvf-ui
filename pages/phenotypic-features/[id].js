@@ -18,6 +18,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { truthyOrZero } from "../../lib/general";
 import { getPhenotypicFeatureTitle } from "../../lib/phenotypic-feature";
 import { isJsonFormat } from "../../lib/query-utils";
 
@@ -39,7 +40,7 @@ export default function PhenotypicFeature({
               <DataItemValue>
                 <Link href={phenotypicFeature.feature["@id"]}>{feature}</Link>
               </DataItemValue>
-              {phenotypicFeature.quantity && (
+              {truthyOrZero(phenotypicFeature.quantity) && (
                 <>
                   <DataItemLabel>Quantity</DataItemLabel>
                   <DataItemValue>

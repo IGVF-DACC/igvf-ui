@@ -16,6 +16,7 @@ import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
 // lib
 import { formatDate } from "../lib/dates";
+import { truthyOrZero } from "../lib/general";
 
 /**
  * Display the data items common to all donor-derived objects.
@@ -135,7 +136,7 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
-      {sample.starting_amount && (
+      {truthyOrZero(sample.starting_amount) && (
         <>
           <DataItemLabel>Starting Amount</DataItemLabel>
           <DataItemValue>
@@ -229,8 +230,12 @@ export function BiosampleDataItems({
 }) {
   return (
     <SampleDataItems sample={biosample} source={source}>
-      <DataItemLabel>Taxa</DataItemLabel>
-      <DataItemValue>{biosample.taxa}</DataItemValue>
+      {biosample.taxa && (
+        <>
+          <DataItemLabel>Taxa</DataItemLabel>
+          <DataItemValue>{biosample.taxa}</DataItemValue>
+        </>
+      )}
       {biosampleTerm && (
         <>
           <DataItemLabel>Biosample Term</DataItemLabel>
@@ -446,7 +451,7 @@ export function FileDataItems({ file, fileSet, derivedFrom, children }) {
           <DataItemValue>{file.content_md5sum}</DataItemValue>
         </>
       )}
-      {file.file_size && (
+      {truthyOrZero(file.file_size) && (
         <>
           <DataItemLabel>File Size</DataItemLabel>
           <DataItemValue>{file.file_size}</DataItemValue>
