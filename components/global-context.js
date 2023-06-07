@@ -9,6 +9,7 @@ const GlobalContext = React.createContext({
   site: {},
   page: {},
   breadcrumbs: [],
+  darkMode: {},
 });
 
 export default GlobalContext;

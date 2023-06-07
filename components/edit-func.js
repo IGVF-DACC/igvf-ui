@@ -3,10 +3,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { PencilSquareIcon } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
 import SessionContext from "./session-context";
+import GlobalContext from "./global-context";
 // lib
 import { removeTrailingSlash } from "../lib/general";
 import { itemToSchema } from "../lib/schema";
@@ -26,6 +27,8 @@ const Editor = dynamic(
     const ace = await import("react-ace");
     require("ace-builds/src-noconflict/mode-json");
     require("ace-builds/src-noconflict/theme-solarized_light");
+    require("ace-builds/src-noconflict/theme-solarized_dark");
+    require("ace-builds/src-noconflict/ext-language_tools");
     return ace;
   },
   {
@@ -36,7 +39,22 @@ const Editor = dynamic(
   }
 );
 
+const CONTRAST_MODE_LIGHT = "solarized_light";
+const CONTRAST_MODE_DARK = "solarized_dark";
+
 function JsonEditor({ text, onChange, enabled, errors = [] }) {
+  const { darkMode } = useContext(GlobalContext);
+
+  const [theme, setTheme] = useState(CONTRAST_MODE_LIGHT);
+
+  useEffect(() => {
+    if (darkMode.enabled) {
+      setTheme(CONTRAST_MODE_DARK);
+    } else {
+      setTheme(CONTRAST_MODE_LIGHT);
+    }
+  }, [darkMode.enabled]);
+
   const annotations = errors.map((msg) => ({
     row: 0,
     column: 0,
@@ -50,7 +68,7 @@ function JsonEditor({ text, onChange, enabled, errors = [] }) {
         <Editor
           value={text}
           mode="json"
-          theme="solarized_light"
+          theme={theme}
           name="JSON Editor"
           onLoad={() => ({})}
           onChange={onChange}

@@ -28,10 +28,12 @@ function Site({ Component, pageProps, authentication }) {
   // Flag to indicate if <Link> components should cause page reload
   const [isLinkReloadEnabled, setIsLinkReloadEnabled] = useState(false);
   const { isLoading } = useAuth0();
+  // Keep track of current dark mode settings
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
-    const darkModeManager = new DarkModeManager();
+    const darkModeManager = new DarkModeManager(setIsDarkMode);
     darkModeManager.installDarkModeListener();
     darkModeManager.setCurrentDarkMode();
 
@@ -54,12 +56,16 @@ function Site({ Component, pageProps, authentication }) {
         isEnabled: isLinkReloadEnabled,
         setIsEnabled: setIsLinkReloadEnabled,
       },
+      darkMode: {
+        enabled: isDarkMode,
+      },
     };
   }, [
     pageProps.breadcrumbs,
     pageProps.pageContext?.title,
     pageProps.pageContext?.type,
     isLinkReloadEnabled,
+    isDarkMode,
   ]);
 
   return (
