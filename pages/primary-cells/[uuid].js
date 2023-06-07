@@ -22,6 +22,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function PrimaryCell({
@@ -58,7 +59,7 @@ export default function PrimaryCell({
                   dateObtainedTitle: "Date Harvested",
                 }}
               >
-                {primaryCell.passage_number && (
+                {truthyOrZero(primaryCell.passage_number) && (
                   <>
                     <DataItemLabel>Passage Number</DataItemLabel>
                     <DataItemValue>{primaryCell.passage_number}</DataItemValue>

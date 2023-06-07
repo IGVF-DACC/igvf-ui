@@ -11,6 +11,7 @@ import {
 } from "./search-list-item";
 // lib
 import { UC } from "../../../lib/constants";
+import { truthyOrZero } from "../../../lib/general";
 
 export default function Treatment({ item: treatment }) {
   return (
@@ -20,7 +21,7 @@ export default function Treatment({ item: treatment }) {
           <SearchListItemType item={treatment} />
           {treatment.treatment_term_id}
         </SearchListItemUniqueId>
-        {treatment.duration ? (
+        {truthyOrZero(treatment.duration) ? (
           <SearchListItemTitle>
             {treatment.treatment_term_name} {UC.mdash}{" "}
             {treatment.treatment_type} {UC.mdash} {treatment.amount}{" "}

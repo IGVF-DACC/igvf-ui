@@ -33,7 +33,7 @@ export default function PlatformOntologyTerm({ platformOntologyTerm, isJson }) {
 
 PlatformOntologyTerm.propTypes = {
   // Platform ontology term to display
-  platformOntologyTerm: PropTypes.object.isRequied,
+  platformOntologyTerm: PropTypes.object.isRequired,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };

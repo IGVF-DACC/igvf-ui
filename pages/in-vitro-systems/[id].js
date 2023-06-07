@@ -23,6 +23,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function InVitroSystem({
@@ -71,7 +72,7 @@ export default function InVitroSystem({
                     </DataItemValue>
                   </>
                 )}
-                {inVitroSystem.passage_number && (
+                {truthyOrZero(inVitroSystem.passage_number) && (
                   <>
                     <DataItemLabel>Passage Number</DataItemLabel>
                     <DataItemValue>
