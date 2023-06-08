@@ -39,6 +39,7 @@ import { useSessionStorage } from "./browser-storage";
 import { Button } from "./form-elements";
 import GlobalContext from "./global-context";
 import Icon from "./icon";
+import IdSearchTrigger from "./id-search-trigger";
 import SiteLogo from "./logo";
 import Modal from "./modal";
 import SessionContext from "./session-context";
@@ -512,6 +513,18 @@ NavigationList.propTypes = {
 };
 
 /**
+ * Renders the search trigger buttons in the navigation.
+ */
+function NavigationSearchTriggers() {
+  return (
+    <div className="flex gap-1">
+      <SiteSearchTrigger isExpanded />
+      <IdSearchTrigger />
+    </div>
+  );
+}
+
+/**
  * Renders the navigation area for mobile and desktop.
  */
 function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
@@ -544,7 +557,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           isNavCollapsed={false}
         />
       )}
-      <SiteSearchTrigger isExpanded />
+      <NavigationSearchTriggers />
       <NavigationList className="p-4">
         <NavigationHrefItem
           id="awards"
