@@ -24,7 +24,7 @@ import { removeTrailingSlash } from "../lib/general";
 export function JsonViewLink({ item }) {
   const jsonPath = `${removeTrailingSlash(item["@id"])}?format=json`;
   return (
-    <div className="mb-1 flex justify-end">
+    <div className="flex justify-end">
       <ButtonLink
         label="Json view"
         href={jsonPath}
@@ -50,7 +50,7 @@ JsonViewLink.propTypes = {
 export function ObjectViewLink({ item }) {
   const objectPath = removeTrailingSlash(item["@id"]);
   return (
-    <div className="mb-1 flex justify-end">
+    <div className="flex justify-end">
       <ButtonLink
         label="Object view"
         href={objectPath}

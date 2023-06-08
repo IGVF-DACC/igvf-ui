@@ -15,6 +15,7 @@ import {
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -35,6 +36,7 @@ export default function TechnicalSample({
       <Breadcrumbs />
       <EditableItem item={sample}>
         <PagePreamble />
+        <ObjectPageHeader item={sample} isJsonFormat={isJson} />
         <JsonDisplay item={sample} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

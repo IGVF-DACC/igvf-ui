@@ -16,6 +16,7 @@ import {
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
 // lib
@@ -46,6 +47,7 @@ export default function InVitroSystem({
       <Breadcrumbs />
       <EditableItem item={inVitroSystem}>
         <PagePreamble />
+        <ObjectPageHeader item={inVitroSystem} isJsonFormat={isJson} />
         <JsonDisplay item={inVitroSystem} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

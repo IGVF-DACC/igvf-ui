@@ -14,7 +14,9 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import { FileHeaderDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -36,6 +38,9 @@ export default function ReferenceFile({
       <Breadcrumbs />
       <EditableItem item={referenceFile}>
         <PagePreamble />
+        <ObjectPageHeader item={referenceFile} isJsonFormat={isJson}>
+          <FileHeaderDownload file={referenceFile} />
+        </ObjectPageHeader>
         <JsonDisplay item={referenceFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

@@ -15,6 +15,7 @@ import { EditableItem } from "../../components/edit";
 import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
 // lib
@@ -43,6 +44,7 @@ export default function Tissue({
       <Breadcrumbs />
       <EditableItem item={tissue}>
         <PagePreamble />
+        <ObjectPageHeader item={tissue} isJsonFormat={isJson} />
         <JsonDisplay item={tissue} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

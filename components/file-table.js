@@ -1,8 +1,8 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataGridContainer } from "./data-grid";
+import { FileAccessionAndDownload } from "./file-download";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 
@@ -10,9 +10,7 @@ const filesColumns = [
   {
     id: "accession",
     title: "Accession",
-    display: ({ source }) => {
-      return <Link href={source["@id"]}>{source.accession}</Link>;
-    },
+    display: ({ source }) => <FileAccessionAndDownload file={source} />,
   },
   {
     id: "file_format",

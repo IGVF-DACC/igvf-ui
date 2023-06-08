@@ -9,6 +9,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { EditableItem } from "../../components/edit";
 // lib
@@ -24,6 +25,7 @@ export default function Source({ source, isJson }) {
       <Breadcrumbs />
       <EditableItem item={source}>
         <PagePreamble />
+        <ObjectPageHeader item={source} isJsonFormat={isJson} />
         <JsonDisplay item={source} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

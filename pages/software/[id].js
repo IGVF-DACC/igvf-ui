@@ -12,6 +12,7 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SoftwareVersionTable from "../../components/software-version-table";
 // lib
@@ -33,6 +34,7 @@ export default function Software({
       <Breadcrumbs />
       <EditableItem item={software}>
         <PagePreamble />
+        <ObjectPageHeader item={software} isJsonFormat={isJson} />
         <JsonDisplay item={software} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

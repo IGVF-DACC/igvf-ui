@@ -13,6 +13,7 @@ import {
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -28,6 +29,7 @@ export default function Treatment({ treatment, documents, isJson }) {
       <Breadcrumbs />
       <EditableItem item={treatment}>
         <PagePreamble />
+        <ObjectPageHeader item={treatment} isJsonFormat={isJson} />
         <JsonDisplay item={treatment} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

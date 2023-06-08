@@ -319,9 +319,13 @@ AuditDetail.propTypes = {
  */
 export function AuditStatus({ item, auditState }) {
   const { isAuthenticated } = useAuth0();
-  const hasAudits = item.audit && Object.keys(item.audit).length > 0;
+  const itemAuditLevels = item.audit
+    ? Object.keys(item.audit).filter((level) => {
+        return isAuthenticated || publicLevels.includes(level);
+      })
+    : [];
 
-  if (hasAudits) {
+  if (itemAuditLevels.length > 0) {
     // Make an array of the human-readable audit levels for screen readers.
     const auditLevelTexts = Object.keys(item.audit).map(
       (level) => auditMap[level]?.humanReadable || "Unknown"
@@ -340,19 +344,17 @@ export function AuditStatus({ item, auditState }) {
         } audits for ${auditLevelTexts.join(", ")}`}
         data-testid="audit-status-button"
       >
-        {Object.keys(item.audit).map((level) => {
-          if (isAuthenticated || publicLevels.includes(level)) {
-            const Icon = auditMap[level]?.Icon;
-            if (Icon) {
-              return (
-                <Icon
-                  className={`h-3 w-3 ${auditMap[level].color}`}
-                  key={level}
-                />
-              );
-            }
-            return null;
+        {itemAuditLevels.map((level) => {
+          const Icon = auditMap[level]?.Icon;
+          if (Icon) {
+            return (
+              <Icon
+                className={`h-3 w-3 ${auditMap[level].color}`}
+                key={level}
+              />
+            );
           }
+          return null;
         })}
       </button>
     );

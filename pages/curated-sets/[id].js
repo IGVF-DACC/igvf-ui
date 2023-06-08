@@ -15,6 +15,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
@@ -39,6 +40,7 @@ export default function CuratedSet({
       <Breadcrumbs />
       <EditableItem item={curatedSet}>
         <PagePreamble />
+        <ObjectPageHeader item={curatedSet} isJsonFormat={isJson} />
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>

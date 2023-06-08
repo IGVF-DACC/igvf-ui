@@ -15,6 +15,7 @@ import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
 // lib
@@ -44,6 +45,7 @@ export default function PrimaryCell({
       <Breadcrumbs />
       <EditableItem item={primaryCell}>
         <PagePreamble />
+        <ObjectPageHeader item={primaryCell} isJsonFormat={isJson} />
         <JsonDisplay item={primaryCell} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
