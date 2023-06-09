@@ -20,7 +20,7 @@ import {
   SparklesIcon,
   RectangleGroupIcon,
 } from "@heroicons/react/20/solid";
-import { useRouter } from "next/router";
+import Link from "next/link";
 import PropTypes from "prop-types";
 import React, {
   Children,
@@ -51,7 +51,6 @@ import {
   logoutDataProvider,
 } from "../lib/authentication";
 import { UC } from "../lib/constants";
-import linkReloadable from "../lib/link-reloadable";
 
 /**
  * Icon for opening the sidebar navigation.
@@ -160,60 +159,100 @@ function NavigationIcon({ isNarrowNav, children }) {
 }
 
 /**
- * Render the button for a navigation item with the navigation in wide mode, whether it actually
- * navigates or just opens the child items. Must use forwardRef to work with <Link>, if the
- * navigation item uses one.
+ * Generate the Tailwind CSS classes for a navigation item.
+ * @param {boolean} isNarrowNav True if navigation is collapsed
+ * @param {boolean} isChildItem True if this item is a child of another navigation item
+ * @returns {string} Tailwind CSS classes for the navigation item
  */
-function NavigationButtonWide({
+function navigationClasses(isNarrowNav, isChildItem) {
+  if (isNarrowNav) {
+    // For the collapsed-navigation case.
+    return "block h-8 w-8 text-black dark:text-gray-300";
+  }
+
+  // The expanded-navigation case.
+  const childClasses = isChildItem
+    ? "text-sm font-normal"
+    : "text-base font-medium";
+  return `flex w-full items-center rounded-full border border-transparent px-2 py-1 text-left text-white no-underline hover:bg-nav-highlight disabled:text-gray-500 md:text-black md:hover:border md:hover:border-nav-border md:hover:bg-nav-highlight md:dark:text-gray-200 ${childClasses}`;
+}
+
+/**
+ * Renders navigation items containing links to pages.
+ */
+function NavigationLink({
+  id,
+  href,
+  onClick,
+  isNarrowNav = false,
+  isChildItem = false,
+  children,
+}) {
+  // Helps determine if the link should reload the page or use NextJS navigation
+  const { linkReload } = useContext(GlobalContext);
+  const cssClasses = navigationClasses(isNarrowNav, isChildItem);
+
+  if (linkReload.isEnabled) {
+    return (
+      <a href={href} onClick={onClick} data-testid={id} className={cssClasses}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} onClick={onClick} data-testid={id} className={cssClasses}>
+      {children}
+    </Link>
+  );
+}
+
+NavigationLink.propTypes = {
+  // The id of the navigation item
+  id: PropTypes.string.isRequired,
+  // The URI for the navigation item
+  href: PropTypes.string.isRequired,
+  // The click handler for the navigation item; in addition to navigation
+  onClick: PropTypes.func.isRequired,
+  // True if the user has collapsed navigation
+  isNarrowNav: PropTypes.bool,
+  // True if this item is a child of another navigation item
+  isChildItem: PropTypes.bool,
+};
+
+/**
+ * Renders navigation buttons that perform actions.
+ */
+function NavigationButton({
   id,
   onClick,
+  isNarrowNav = false,
   isChildItem = false,
   isDisabled = false,
   children,
 }) {
+  const cssClasses = navigationClasses(isNarrowNav, isChildItem);
   return (
     <button
       onClick={onClick}
       data-testid={id}
       disabled={isDisabled}
-      className={`flex w-full items-center rounded-full border border-transparent px-2 py-1 text-left text-white no-underline hover:bg-nav-highlight disabled:text-gray-500 md:text-black md:hover:border md:hover:border-nav-border md:hover:bg-nav-highlight md:dark:text-gray-200 ${
-        isChildItem ? "text-sm font-normal" : "text-base font-medium"
-      }`}
+      className={cssClasses}
     >
       {children}
     </button>
   );
 }
 
-NavigationButtonWide.propTypes = {
+NavigationButton.propTypes = {
   // The id of the navigation item
   id: PropTypes.string.isRequired,
   // The click handler for the navigation item
   onClick: PropTypes.func.isRequired,
+  // True if the user has collapsed navigation
+  isNarrowNav: PropTypes.bool,
   // True if this item is a child of another navigation item
   isChildItem: PropTypes.bool,
-  // True if button should appear disabled
-  isDisabled: PropTypes.bool,
-};
-
-function NavigationButtonNarrow({ id, onClick, isDisabled = false, children }) {
-  return (
-    <button
-      onClick={onClick}
-      data-testid={id}
-      className="block h-8 w-8 text-black dark:text-gray-300"
-      disabled={isDisabled}
-    >
-      {children}
-    </button>
-  );
-}
-
-NavigationButtonNarrow.propTypes = {
-  // The id of the navigation item
-  id: PropTypes.string.isRequired,
-  // The click handler for the navigation item
-  onClick: PropTypes.func.isRequired,
   // True if button should appear disabled
   isDisabled: PropTypes.bool,
 };
@@ -224,18 +263,13 @@ NavigationButtonNarrow.propTypes = {
 function NavigationSignInItem({ id, isNarrowNav = false, children }) {
   const { isLoading, loginWithRedirect } = useAuth0();
 
-  // Use different button-rendering components depending on whether the navigation is in wide mode
-  // or narrow mode.
-  const NavigationButton = isNarrowNav
-    ? NavigationButtonNarrow
-    : NavigationButtonWide;
-
   return (
     <li>
       <NavigationButton
         id={id}
-        isDisabled={isLoading}
         onClick={() => loginAuthProvider(loginWithRedirect)}
+        isNarrowNav={isNarrowNav}
+        isDisabled={isLoading}
       >
         {children}
       </NavigationButton>
@@ -268,12 +302,6 @@ function NavigationSignOutItem({
   const { sessionProperties } = useContext(SessionContext);
   const { logout } = useAuth0();
 
-  // Use different button-rendering components depending on whether the navigation is in wide mode
-  // or narrow mode.
-  const NavigationButton = isNarrowNav
-    ? NavigationButtonNarrow
-    : NavigationButtonWide;
-
   /**
    * Called when the user clicks the Sign Out button. Log out of both the authentication provider
    * and the data provider.
@@ -289,6 +317,7 @@ function NavigationSignOutItem({
         <NavigationButton
           id={id}
           onClick={() => setIsWarningOpen(true)}
+          isNarrowNav={isNarrowNav}
           isChildItem={isChildItem}
         >
           {children}
@@ -340,7 +369,7 @@ NavigationSignOutItem.propTypes = {
 };
 
 /**
- * Renders a single navigation item.
+ * Renders a single navigation item that links to a URI.
  */
 function NavigationHrefItem({
   id,
@@ -350,28 +379,17 @@ function NavigationHrefItem({
   isNarrowNav = false,
   children,
 }) {
-  const router = useRouter();
-  const { linkReload } = useContext(GlobalContext);
-
-  // Use different button-rendering components depending on whether the navigation is in wide mode
-  // or narrow mode.
-  const NavigationButton = isNarrowNav
-    ? NavigationButtonNarrow
-    : NavigationButtonWide;
-
-  function onClick() {
-    // Notify the main navigation component that the user has clicked a navigation item, then
-    // navigate to the href for the navigation item, reloading the page if NextJS hasn't loaded
-    // environment variables on the current page.
-    navigationClick();
-    linkReloadable(href, linkReload, router);
-  }
-
   return (
     <li>
-      <NavigationButton id={id} onClick={onClick} isChildItem={isChildItem}>
+      <NavigationLink
+        id={id}
+        href={href}
+        onClick={navigationClick}
+        isNarrowNav={isNarrowNav}
+        isChildItem={isChildItem}
+      >
         {children}
-      </NavigationButton>
+      </NavigationLink>
     </li>
   );
 }
@@ -426,11 +444,15 @@ function NavigationGroupItem({
 }) {
   return (
     <li>
-      <NavigationButtonWide id={id} onClick={() => handleGroupClick(id)}>
+      <NavigationButton
+        id={id}
+        onClick={() => handleGroupClick(id)}
+        isNarrowNav={false}
+      >
         <NavigationIcon>{icon}</NavigationIcon>
         {title}
         <NavigationGroupExpandIcon isGroupOpened={isGroupOpened} />
-      </NavigationButtonWide>
+      </NavigationButton>
       <MobileCollapsableArea isOpen={isGroupOpened}>
         <ul className="ml-5">{children}</ul>
       </MobileCollapsableArea>
@@ -1013,7 +1035,7 @@ NavigationCollapsed.propTypes = {
 
 /**
  * Displays the full IGVF logo and the sidebar navigation collapse button.
-d */
+ */
 function NavigationLogo({ toggleNavCollapsed, isNavCollapsed }) {
   return (
     <div className="flex">

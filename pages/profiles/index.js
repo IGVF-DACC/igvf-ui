@@ -9,6 +9,7 @@ import PagePreamble from "../../components/page-preamble";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { toShishkebabCase } from "../../lib/general";
 
 /**
  * Returns true if the given object type is displayable in the UI. This also indicates that you
@@ -39,7 +40,10 @@ function SubTree({ tree, objectType, schemas, collectionTitles }) {
   return (
     <div className="my-1">
       {schema ? (
-        <div className="flex gap-1">
+        <div
+          className="flex gap-1"
+          data-testid={`schema-${toShishkebabCase(title)}`}
+        >
           <Link href={`${schema.$id.replace(".json", "")}`} className="block">
             {title}
           </Link>
