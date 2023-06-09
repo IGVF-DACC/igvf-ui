@@ -1,6 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
-import { useContext } from "react";
+import { Children, useContext } from "react";
 // components
 import { AuditDetail, useAudit } from "../../audit";
 import Icon from "../../icon";
@@ -30,7 +30,7 @@ export function SearchListItemType({ item }) {
   const type = item["@type"][0];
   const typeName = profiles?.[type]?.title || type;
   return (
-    <div className="mr-1 inline" data-testid="search-list-item-type">
+    <div className="inline" data-testid="search-list-item-type">
       {typeName}
     </div>
   );
@@ -45,12 +45,23 @@ SearchListItemType.propTypes = {
  * Display a search-list item's type and unique ID, often an accession.
  */
 export function SearchListItemUniqueId({ children }) {
+  // Copy the children but with a space inserted between each child (typically the type and unique
+  // ID) so that you can select their text separately.
+  const spacedChildren = Children.map(children, (child, i) => {
+    return (
+      <>
+        {child}
+        {i < children.length - 1 && <> </>}
+      </>
+    );
+  });
+
   return (
     <div
       className="text-xs leading-tight text-gray-500 dark:text-gray-400"
       data-testid="search-list-item-unique-id"
     >
-      {children}
+      {spacedChildren}
     </div>
   );
 }
