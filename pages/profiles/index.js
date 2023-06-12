@@ -1,10 +1,13 @@
 // node_modules
+import { Bars4Icon, TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
-import Breadcrumbs from "../../components/breadcrumbs";
 import { AddLink } from "../../components/add";
+import Breadcrumbs from "../../components/breadcrumbs";
+import { AttachedButtons, ButtonLink } from "../../components/form-elements";
 import PagePreamble from "../../components/page-preamble";
+import SchemaIcon from "../../components/schema-icon";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -27,6 +30,41 @@ function isDisplayableType(objectType, schemas, tree) {
 }
 
 /**
+ * Displays links to the search-list and report pages for the given schema object type.
+ */
+function SearchAndReportType({ type, title }) {
+  return (
+    <AttachedButtons>
+      <ButtonLink
+        href={`/search?type=${type}`}
+        label={`List view of all ${title} objects`}
+        type="secondary"
+        size="sm"
+        hasIconOnly
+      >
+        <Bars4Icon />
+      </ButtonLink>
+      <ButtonLink
+        href={`/report?type=${type}`}
+        label={`Report view of all ${title} objects`}
+        type="secondary"
+        size="sm"
+        hasIconOnly
+      >
+        <TableCellsIcon />
+      </ButtonLink>
+    </AttachedButtons>
+  );
+}
+
+SearchAndReportType.propTypes = {
+  // @type to search for
+  type: PropTypes.string.isRequired,
+  // Human-readable title for the schema
+  title: PropTypes.string.isRequired,
+};
+
+/**
  * Displays a schema element and its children. This component uses recursion, so every element at
  * different times exists as a child and a parent -- possibly a parent with no children.
  */
@@ -39,19 +77,27 @@ function SubTree({ tree, objectType, schemas, collectionTitles }) {
 
   return (
     <div className="my-1">
-      {schema ? (
-        <div
-          className="flex gap-1"
-          data-testid={`schema-${toShishkebabCase(title)}`}
-        >
-          <Link href={`${schema.$id.replace(".json", "")}`} className="block">
-            {title}
-          </Link>
-          <AddLink schema={schema} label={`Add ${schema.title}`} />
-        </div>
-      ) : (
-        <div className="font-bold">{title}</div>
-      )}
+      <div
+        className="flex items-center gap-1"
+        data-testid={`schema-${toShishkebabCase(title)}`}
+      >
+        <SchemaIcon type={objectType} />
+        {schema ? (
+          <>
+            <Link
+              href={`${schema.$id.replace(".json", "")}`}
+              aria-label={`View schema for ${title}`}
+              className="block"
+            >
+              {title}
+            </Link>
+            <SearchAndReportType type={objectType} title={title} />
+            <AddLink schema={schema} label={`Add ${schema.title}`} />
+          </>
+        ) : (
+          <div className="font-bold">{title}</div>
+        )}
+      </div>
       {childObjectTypes.length > 0 && (
         <div className="ml-4">
           {childObjectTypes.map((childObjectType) => {
@@ -116,7 +162,11 @@ export default function Profiles({ schemas, collectionTitles = null }) {
 
 Profiles.propTypes = {
   // List of schemas to display in the list; directly from /profiles endpoint
-  schemas: PropTypes.object.isRequired,
+  schemas: PropTypes.shape({
+    _hierarchy: PropTypes.shape({
+      Item: PropTypes.object.isRequired,
+    }).isRequired,
+  }),
   // Map of collection names to corresponding schema titles
   collectionTitles: PropTypes.object,
 };
