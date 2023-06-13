@@ -7,7 +7,7 @@ services:
     volumes:
       - "./cypress:/test/cypress"
       - "./docker/cypress/cypress-docker.config.js:/test/cypress.config.js"
-    command: cypress run
+    command: cypress run --browser chrome
     network_mode: "host"
     environment:
       - DISPLAY

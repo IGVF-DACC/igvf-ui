@@ -39,7 +39,7 @@ describe("Mobile menu tests", () => {
   it("shows a three-element breadcrumb on an individual schema page", () => {
     cy.visit("/");
     cy.get("[data-testid=profiles]").click();
-    cy.get("a").contains("Award").click();
+    cy.get(`[data-testid="schema-awards-grants"]`).contains("Award").click();
 
     cy.contains("h1", "Grant");
 
