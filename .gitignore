@@ -41,4 +41,3 @@ venv/
 /cypress/screenshots
 /cypress.env.json
 /.env
-/.idea
