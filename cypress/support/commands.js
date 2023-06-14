@@ -39,7 +39,7 @@ Cypress.Commands.add("loginAuth0", (username, password, isHomeFirst = true) => {
   if (isHomeFirst) {
     cy.visit("/");
   }
-  cy.get(`[data-testid="authenticate"]`).click();
+  cy.get(`[data-testid="navigation-authenticate"]`).click();
 
   // Login on Auth0 through the auth0 sign-in page.
   cy.origin("igvf-dacc.us.auth0.com", { args }, ({ username, password }) => {
@@ -53,8 +53,8 @@ Cypress.Commands.add("loginAuth0", (username, password, isHomeFirst = true) => {
  * Logout of the site using the UI.
  */
 Cypress.Commands.add("logoutAuth0", () => {
-  cy.get(`[data-testid="authenticate"]`).click();
-  cy.get(`[data-testid="sign-out"]`).click();
+  cy.get(`[data-testid="navigation-authenticate"]`).click();
+  cy.get(`[data-testid="navigation-sign-out"]`).click();
   cy.get("#sign-out-confirm").click();
 });
 

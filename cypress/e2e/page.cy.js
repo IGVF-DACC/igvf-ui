@@ -7,7 +7,9 @@ describe("Content-Change Tests", () => {
     cy.wait(1000);
 
     // Go to the page titled `Samples`.
-    cy.get(`[data-testid="pages"]`).click();
+    cy.get("[data-testid=navigation-data-model]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
+    cy.get(`[href="/search?type=Page"]`).click();
     cy.get(`[aria-label="View details for /test-section/subpage/"]`).click();
     cy.contains("Edit Page").click();
     cy.get("#block1").type("{enter}{enter}Updated content.");
@@ -88,8 +90,9 @@ describe("Content-Change Tests", () => {
     cy.wait(1500);
 
     // Make a new top-level help page.
-    cy.get("[data-testid=profiles]").click();
-    cy.get(`[label="Add Page"]`).click();
+    cy.get("[data-testid=navigation-data-model]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
+    cy.get(`[aria-label="Add Page"]`).click();
     cy.get("#block1").type("Test Help Category");
     cy.get("#name").type("test-help-category");
     cy.get("#title").type("Test Help Category");
@@ -99,12 +102,13 @@ describe("Content-Change Tests", () => {
     cy.get(`[aria-label="Save edits to page"]`).should("not.exist");
 
     // Make sure the new top-level help page appears as a category on the help page.
-    cy.get(`[data-testid="help"]`).click();
+    cy.get(`[data-testid="navigation-about"]`).click();
+    cy.get(`[data-testid="navigation-help"]`).click();
     cy.get("h2").should("contain", "Test Help Category");
 
     // Make a new top-level help page.
-    cy.get("[data-testid=profiles]").click();
-    cy.get(`[label="Add Page"]`).click();
+    cy.get("[data-testid=navigation-schemas]").click();
+    cy.get(`[aria-label="Add Page"]`).click();
     cy.get("#block1").type("Help Content Page");
     cy.get("#name").type("help-content");
     cy.get("#title").type("Help Content");
@@ -114,7 +118,7 @@ describe("Content-Change Tests", () => {
     cy.get(`[aria-label="Save edits to page"]`).should("not.exist");
 
     // Make sure the new help page appears as a regular help page.
-    cy.get(`[data-testid="help"]`).click();
+    cy.get(`[data-testid="navigation-help"]`).click();
     cy.get("a").should("contain", "Help Content");
   });
 });

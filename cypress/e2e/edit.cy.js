@@ -8,12 +8,14 @@ describe("Test Edit button", () => {
     cy.wait(1000);
 
     // Go to the users users
-    cy.get("[data-testid=users]").click();
+    cy.get("[data-testid=navigation-data-model]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
+    cy.get(`[aria-label="List view of all Users objects"]`).click();
     // Get the first user by:
     // <ul> element with data-testid == "search-list", get the first <li>
     // and a contained <a>, and click it
     cy.get("ul[data-testid=search-list] li:first a").click();
-    cy.get("a[label=Edit]").click();
+    cy.get("a[aria-label=Edit]").click();
 
     cy.url().should("include", "#!edit");
 
@@ -34,12 +36,14 @@ describe("Test Edit button", () => {
     cy.wait(1000);
 
     // Go to the users users
-    cy.get("[data-testid=users]").click();
+    cy.get("[data-testid=navigation-data-model]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
+    cy.get(`[aria-label="List view of all Users objects"]`).click();
     // Get the first user by:
     // <ul> element with data-testid == "search-list", get the first <li>
     // and a contained <a>, and click it
     cy.get("ul[data-testid=search-list] li:first a").click();
-    cy.get("a[label=Edit]").click();
+    cy.get("a[aria-label=Edit]").click();
 
     cy.url().should("include", "#!edit");
 
@@ -60,13 +64,15 @@ describe("Test Edit button", () => {
     cy.wait(1000);
 
     // Go to the users users
-    cy.get("[data-testid=users]").click();
+    cy.get("[data-testid=navigation-data-model]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
+    cy.get(`[aria-label="List view of all Users objects"]`).click();
     // Get the first user by:
     // <ul> element with data-testid == "search-list", get the first <li>
     // and a contained <a>, and click it
     cy.get("ul[data-testid=search-list] li:first a").click();
     cy.wait(2000);
-    cy.get("a[label=Edit]").click();
+    cy.get("a[aria-label=Edit]").click();
 
     cy.url().should("include", "#!edit");
 
@@ -113,12 +119,14 @@ describe("Test Edit button", () => {
     cy.wait(1000);
 
     // Go to the users users
-    cy.get("[data-testid=users]").click();
+    cy.get("[data-testid=navigation-data-model]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
+    cy.get(`[aria-label="List view of all Users objects"]`).click();
     // Get the first user by:
     // <ul> element with data-testid == "search-list", get the first <li>
     // and a contained <a>, and click it
     cy.get("ul[data-testid=search-list] li:first a").click();
-    cy.get("a[label=Edit]").click();
+    cy.get("a[aria-label=Edit]").click();
 
     cy.url().should("include", "#!edit");
 

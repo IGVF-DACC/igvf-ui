@@ -4,300 +4,43 @@ describe("Navigation", () => {
   it("should navigate to other pages from the home page", () => {
     cy.visit("/");
 
-    // Make sure all the navigation links work.
-    cy.get("[data-testid=awards]").click();
-    cy.url().should("include", "/search?type=Award");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
+    // Test Data Model submenus.
+    cy.get("[data-testid=navigation-data-model]").click();
 
-    cy.get("[data-testid=biomarkers]").click();
-    cy.url().should("include", "/search?type=Biomarker");
+    cy.get("[data-testid=navigation-overview]").click();
+    cy.url().should("include", "/profiles/graph.svg");
+    cy.get("h1").should("have.text", "Graph");
 
-    cy.get("[data-testid=documents]").click();
-    cy.url().should("include", "/search?type=Document");
-    cy.get("[data-testid=search-results-view-switch]").should("not.exist");
-    cy.get("[data-testid=form-select]").should("not.exist");
-    cy.get("[data-testid=search-results-count]").should("not.exist");
-    cy.get("[data-testid=search-list]").should("not.exist");
-
-    cy.get("[data-testid=donors]").click();
-
-    cy.get("[data-testid=human-donors]").click();
-    cy.url().should("include", "/search?type=HumanDonor");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=rodent-donors]").click();
-    cy.url().should("include", "/search?type=RodentDonor");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=donors]").click();
-    cy.get("[data-testid=human-donors]").should("not.exist");
-    cy.get("[data-testid=rodent-donors]").should("not.exist");
-
-    cy.get("[data-testid=files]").click();
-
-    cy.get("[data-testid=reference-file]").click();
-    cy.url().should("include", "/search?type=ReferenceFile");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=sequence-file]").click();
-    cy.url().should("include", "/search?type=SequenceFile");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 3);
-
-    cy.get("[data-testid=files]").click();
-    cy.get("[data-testid=reference-file]").should("not.exist");
-    cy.get("[data-testid=sequence-file]").should("not.exist");
-    cy.get("[data-testid=file-sets]").click();
-
-    cy.get("[data-testid=analysis-sets]").click();
-    cy.url().should("include", "/search?type=AnalysisSet");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=curated-sets]").click();
-    cy.url().should("include", "/search?type=CuratedSet");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 1);
-
-    cy.get("[data-testid=measurement-sets]").click();
-    cy.url().should("include", "/search?type=MeasurementSet");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 1);
-
-    cy.get("[data-testid=file-sets]").click();
-    cy.get("[data-testid=analysis-sets]").should("not.exist");
-    cy.get("[data-testid=curated-sets]").should("not.exist");
-    cy.get("[data-testid=measurement-sets]").should("not.exist");
-
-    cy.get("[data-testid=genes]").click();
-    cy.url().should("include", "/search?type=Gene");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=labs]").click();
-    cy.url().should("include", "/search?type=Lab");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=phenotypic-features]").click();
-    cy.url().should("include", "/search?type=PhenotypicFeature");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=publications]").click();
-    cy.url().should("include", "/search?type=Publication");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=ontologies]").click();
-
-    cy.get("[data-testid=assay-terms]").click();
-    cy.url().should("include", "/search?type=AssayTerm");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=phenotype-terms]").click();
-    cy.url().should("include", "/search?type=PhenotypeTerm");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=samples-terms]").click();
-    cy.url().should("include", "/search?type=SampleTerm");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=ontologies]").click();
-    cy.get("[data-testid=assay-terms]").should("not.exist");
-    cy.get("[data-testid=phenotype-terms]").should("not.exist");
-    cy.get("[data-testid=sample-terms]").should("not.exist");
-
-    cy.get("[data-testid=samples]").click();
-
-    cy.get("[data-testid=in-vitro-systems]").click();
-    cy.url().should("include", "/search?type=InVitroSystem");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 1);
-
-    cy.get("[data-testid=primary-cells]").click();
-    cy.url().should("include", "/search?type=PrimaryCell");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=technical-samples]").click();
-    cy.url().should("include", "/search?type=TechnicalSample");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=tissues]").click();
-    cy.url().should("include", "/search?type=Tissue");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=whole-organisms]").click();
-    cy.url().should("include", "/search?type=WholeOrganism");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=samples]").click();
-    cy.get("[data-testid=tissues]").should("not.exist");
-    cy.get("[data-testid=primary-cells]").should("not.exist");
-    cy.get("[data-testid=whole-organisms]").should("not.exist");
-    cy.get("[data-testid=technical-samples]").should("not.exist");
-
-    cy.get("[data-testid=software-parent]").click();
-
-    cy.get("[data-testid=software]").click();
-    cy.url().should("include", "/search?type=Software");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 1);
-
-    cy.get("[data-testid=software-versions]").click();
-    cy.url().should("include", "/search?type=SoftwareVersion");
-
-    cy.get("[data-testid=software-parent]").click();
-    cy.get("[data-testid=software]").should("not.exist");
-    cy.get("[data-testid=software-versions]").should("not.exist");
-
-    cy.get("[data-testid=sources]").click();
-    cy.url().should("include", "/search?type=Source");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=treatments]").click();
-    cy.url().should("include", "/search?type=Treatment");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=users]").click();
-    cy.url().should("include", "/search?type=User");
-    cy.get("[data-testid=search-results-view-switch]").should("exist");
-    cy.get("[data-testid=form-select]").should("exist");
-    cy.get("[data-testid=search-results-count]").should("exist");
-    cy.get("[data-testid=search-list]")
-      .find("li")
-      .its("length")
-      .should("be.gte", 2);
-
-    cy.get("[data-testid=profiles]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
     cy.url().should("include", "/profiles");
+    cy.get("h1").should("have.text", "Schemas");
+
+    // Test Data submenus.
+    cy.get("[data-testid=navigation-data]").click();
+
+    cy.get("[data-testid=navigation-datasets]").click();
+    cy.url().should("include", "/search?type=MeasurementSet");
+    cy.get("h1").should("exist"); // Actual title depends on data
+
+    cy.get("[data-testid=navigation-files]").click();
+    cy.url().should("include", "/search?type=File");
+    cy.get("h1").should("exist"); // Actual title depends on data
+
+    // Test Methodology submenus. Add to this once the pages these submenus link to exist.
+    cy.get("[data-testid=navigation-methodology]").click();
+
+    cy.get("[data-testid=navigation-genome-references]").click();
+    cy.url().should(
+      "include",
+      "/search?type=CuratedSet&curated_set_type=genome"
+    );
+    cy.get("h1").should("have.text", "Curated Set");
+
+    // Test About submenus.
+    cy.get("[data-testid=navigation-about]").click();
+
+    cy.get("[data-testid=navigation-help]").click();
+    cy.url().should("include", "/help");
+    cy.get("h1").should("exist"); // Actual title depends on data
   });
 });

@@ -6,22 +6,17 @@ describe("Must sign in to see current document objects", () => {
     cy.contains("Cypress Testing");
     cy.wait(1000);
 
-    // Go to the documents collection page.
-    cy.get("[data-testid=documents]").click();
-    cy.get(`[data-testid^="search-list-item"]`).should(
-      "have.length.at.least",
-      1
-    );
+    cy.visit("/");
+    cy.get("[data-testid=navigation-data-model]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
+    cy.get(`[href="/search?type=Document"]`).click();
 
     // Go to the first document in the list and go to its document object page.
-    cy.get(`[data-testid^="search-list-item"]`)
+    cy.get(`[data-testid^="search-list-item-"]`)
       .first()
       .find("a")
       .first()
       .click();
-    cy.url().then((url) => {
-      cy.log(url);
-    });
 
     // Make sure the document object page has a link to download the attachment.
     cy.url().should(

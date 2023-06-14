@@ -188,7 +188,6 @@ export function ButtonLink({
   return (
     <Link
       href={href}
-      label={label}
       aria-label={label}
       id={id}
       className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[type]} ${className}`}
@@ -238,7 +237,9 @@ export function AttachedButtons({ testid = null, className = "", children }) {
   const moddedChildren = React.Children.map(children, (child) => {
     if (React.isValidElement(child)) {
       return React.cloneElement(child, {
-        className: `${child.props.className} border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r`,
+        className: `${
+          child.props.className || ""
+        } border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r`,
       });
     }
     return child;
