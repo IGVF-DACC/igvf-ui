@@ -627,6 +627,40 @@ const profiles = {
     },
   },
 
+  InVitroSystem: {
+    title: "In Vitro System",
+    $id: "/profiles/in_vitro_system.json",
+    required: [
+      "award",
+      "lab",
+      "source",
+      "donors",
+      "biosample_term",
+      "classification",
+    ],
+    identifyingProperties: [
+      "uuid",
+      "accession",
+      "alternate_accessions",
+      "aliases",
+    ],
+    properties: {
+      accession: {
+        title: "Accession",
+        type: "string",
+      },
+      introduced_factors: {
+        title: "Introduced Factors",
+        type: "array",
+        items: {
+          title: "Treatment",
+          type: "string",
+          linkTo: "Treatment",
+        },
+      },
+    },
+  },
+
   Page: {
     title: "Page",
     $id: "/profiles/page.json",
