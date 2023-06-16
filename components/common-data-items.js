@@ -426,19 +426,23 @@ OntologyTermDataItems.propTypes = {
 /**
  * Display data items common to all file-derived objects.
  */
-export function FileDataItems({ file, fileSet, derivedFrom, children }) {
+export function FileDataItems({ file, fileSet = null, derivedFrom, children }) {
   return (
     <>
-      <DataItemLabel>File Set</DataItemLabel>
-      <DataItemValue>
-        <Link
-          href={fileSet["@id"]}
-          aria-label={`FileSet ${fileSet.accession}`}
-          key={fileSet.uuid}
-        >
-          {fileSet.accession}
-        </Link>
-      </DataItemValue>
+      {fileSet && (
+        <>
+          <DataItemLabel>File Set</DataItemLabel>
+          <DataItemValue>
+            <Link
+              href={fileSet["@id"]}
+              aria-label={`FileSet ${fileSet.accession}`}
+              key={fileSet.uuid}
+            >
+              {fileSet.accession}
+            </Link>
+          </DataItemValue>
+        </>
+      )}
       <DataItemLabel>File Format</DataItemLabel>
       <DataItemValue>{file.file_format}</DataItemValue>
       <DataItemLabel>Content Type</DataItemLabel>
@@ -500,7 +504,7 @@ FileDataItems.propTypes = {
   // file object common for all file types
   file: PropTypes.object.isRequired,
   // file set for this file
-  fileSet: PropTypes.object.isRequired,
+  fileSet: PropTypes.object,
   // files this file is derived from
   derivedFrom: PropTypes.array.isRequired,
 };
