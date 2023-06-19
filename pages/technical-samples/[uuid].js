@@ -29,6 +29,7 @@ export default function TechnicalSample({
   sample,
   documents,
   attribution = null,
+  source = null,
   isJson,
 }) {
   return (
@@ -40,7 +41,7 @@ export default function TechnicalSample({
         <JsonDisplay item={sample} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <SampleDataItems sample={sample} source={sample.source}>
+              <SampleDataItems sample={sample} source={source}>
                 {sample.date && (
                   <>
                     <DataItemLabel>Technical Sample Date</DataItemLabel>
@@ -94,6 +95,7 @@ export async function getServerSideProps({ params, req, query }) {
           filterErrors: true,
         })
       : [];
+    const source = await request.getObject(sample.source["@id"], null);
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       "accession",
@@ -104,6 +106,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         sample,
         documents,
+        source,
         pageContext: {
           title: sample.accession,
         },
