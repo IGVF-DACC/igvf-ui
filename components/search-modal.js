@@ -128,6 +128,7 @@ export default function SearchModal({
             </button>
             <input
               type="text"
+              data-testid="search-input"
               ref={inputRef}
               placeholder={searchBoxPlaceholder}
               spellCheck="false"

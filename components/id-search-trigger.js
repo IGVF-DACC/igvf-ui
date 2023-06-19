@@ -96,6 +96,7 @@ export default function IdSearchTrigger() {
       <button
         onClick={onTriggerClick}
         className="grow-0 rounded"
+        data-testid="id-search-trigger"
         title={`Go to an item${UC.rsquo}s page from its identifier (${UC.cmd}${UC.shift}K or ${UC.ctrl}${UC.shift}K)`}
       >
         <IdSearchIcon className="h-8 w-8 fill-gray-500" />

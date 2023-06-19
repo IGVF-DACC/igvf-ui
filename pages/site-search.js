@@ -25,6 +25,7 @@ import SessionContext from "../components/session-context";
 // lib
 import { UC } from "../lib/constants";
 import FetchRequest from "../lib/fetch-request";
+import { toShishkebabCase } from "../lib/general";
 import QueryString from "../lib/query-string";
 
 function getTypeTitle(searchResult, collectionTitles) {
@@ -115,13 +116,21 @@ TypeSectionHeader.propTypes = {
 /**
  * Display the top-hits results for one `@type` of searchTerm results.
  */
-function TypeSection({ children }) {
+function TypeSection({ type, children }) {
   return (
-    <li className="my-4 border border-data-border bg-panel first:mt-0 last:mb-0">
+    <li
+      className="my-4 border border-data-border bg-panel first:mt-0 last:mb-0"
+      data-testid={`site-search-type-section-${toShishkebabCase(type)}`}
+    >
       {children}
     </li>
   );
 }
+
+TypeSection.propTypes = {
+  // Object type for this section of search results
+  type: PropTypes.string.isRequired,
+};
 
 /**
  * Displays the list of top hits for a single type.
@@ -170,7 +179,7 @@ export default function SiteSearch({ results, term, accessoryData = null }) {
             const isSectionOpen = openedSections.includes(result.key);
             const typeTitle = getTypeTitle(result, collectionTitles);
             return (
-              <TypeSection key={result.key}>
+              <TypeSection type={result.key} key={result.key}>
                 <TypeSectionHeader
                   searchResult={result}
                   term={term}
