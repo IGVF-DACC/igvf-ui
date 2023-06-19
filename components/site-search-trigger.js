@@ -17,6 +17,7 @@ function SearchTriggerExpanded({ onClick }) {
     <button
       onClick={onClick}
       className="flex h-8 w-full grow items-center gap-2 rounded border border-panel bg-form-element p-2 text-form-element"
+      data-testid="site-search-trigger-expanded"
       label="Search the site for a word or phrase"
     >
       <MagnifyingGlassIcon className="h-4 w-4" />
@@ -38,6 +39,7 @@ function SearchTriggerCollapsed({ onClick }) {
     <button
       onClick={onClick}
       className="block"
+      id="site-search-trigger-collapsed"
       label="Search the site for a word or phrase"
     >
       <MagnifyingGlassIcon className="h-8 w-8 fill-black dark:fill-white" />
