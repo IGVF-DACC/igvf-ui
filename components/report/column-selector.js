@@ -43,7 +43,11 @@ ChangeAllControls.propTypes = {
  * to hide.
  */
 function CheckboxArea({ className = "", children }) {
-  return <div className={`md:flex md:flex-wrap ${className}`}>{children}</div>;
+  return (
+    <fieldset className={`md:flex md:flex-wrap ${className}`}>
+      {children}
+    </fieldset>
+  );
 }
 
 CheckboxArea.propTypes = {
