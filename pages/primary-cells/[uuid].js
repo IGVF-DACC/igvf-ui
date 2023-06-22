@@ -50,7 +50,7 @@ export default function PrimaryCell({
           <DataPanel>
             <DataArea>
               <BiosampleDataItems
-                biosample={primaryCell}
+                item={primaryCell}
                 source={source}
                 donors={donors}
                 biosampleTerm={biosampleTerm}

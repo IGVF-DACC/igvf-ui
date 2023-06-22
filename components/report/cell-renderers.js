@@ -12,9 +12,9 @@ import PropTypes from "prop-types";
 // components
 import ChromosomeLocations from "../chromosome-locations";
 import SeparatedList from "../separated-list";
+import UnspecifiedProperty from "../unspecified-property";
 // lib
 import { attachmentToServerHref } from "../../lib/attachment";
-import { truncateJson } from "../../lib/general";
 
 /**
  * Display the @id of an object as a link to the object's page. This works much like the `Path`
@@ -297,41 +297,10 @@ function UnknownObject({ id, source }) {
   }
 
   if (property) {
-    // Determine the display method for the embedded property depending on its type.
-    let displayedProperty = null;
-    if (typeof property === "string" || typeof property === "number") {
-      displayedProperty = property;
-    } else if (typeof property === "object") {
-      if (Array.isArray(property)) {
-        if (property.length > 0) {
-          if (typeof property[0] === "object") {
-            if (property[0]["@id"]) {
-              // Array of objects with @ids; join their @ids with commas.
-              displayedProperty = property
-                .map((item) => item["@id"])
-                .join(", ");
-            } else {
-              // Array of objects without @ids; display it as JSON.
-              displayedProperty = truncateJson(property);
-            }
-          } else {
-            // Array of simple types; join them with commas.
-            displayedProperty = property.join(", ");
-          }
-        }
-      } else {
-        if (property["@id"]) {
-          // The embedded property is an object with an @id. Display the @id.
-          displayedProperty = property["@id"];
-        } else {
-          // The embedded property is an object without an @id. Display it as JSON.
-          displayedProperty = truncateJson(property);
-        }
-      }
-    }
-
     return (
-      <div data-testid="cell-type-unknown-object">{displayedProperty}</div>
+      <div data-testid="cell-type-unknown-object">
+        <UnspecifiedProperty property={property} />
+      </div>
     );
   }
 

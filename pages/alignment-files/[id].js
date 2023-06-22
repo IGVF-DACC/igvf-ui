@@ -47,7 +47,7 @@ export default function AlignmentFile({
           <DataPanel>
             <DataArea>
               <FileDataItems
-                file={alignmentFile}
+                item={alignmentFile}
                 fileSet={fileSet}
                 derivedFrom={derivedFrom}
               >

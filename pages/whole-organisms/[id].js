@@ -43,7 +43,7 @@ export default function WholeOrganism({
           <DataPanel>
             <DataArea>
               <BiosampleDataItems
-                biosample={sample}
+                item={sample}
                 source={source}
                 donors={donors}
                 biosampleTerm={biosampleTerm}

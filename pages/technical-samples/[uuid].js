@@ -41,7 +41,7 @@ export default function TechnicalSample({
         <JsonDisplay item={sample} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <SampleDataItems sample={sample} source={source}>
+              <SampleDataItems item={sample} source={source}>
                 {sample.date && (
                   <>
                     <DataItemLabel>Technical Sample Date</DataItemLabel>

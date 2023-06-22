@@ -49,7 +49,7 @@ export default function Tissue({
           <DataPanel>
             <DataArea>
               <BiosampleDataItems
-                biosample={tissue}
+                item={tissue}
                 source={source}
                 donors={donors}
                 biosampleTerm={biosampleTerm}

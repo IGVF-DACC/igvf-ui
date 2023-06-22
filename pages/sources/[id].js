@@ -8,15 +8,15 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import { EditableItem } from "../../components/edit";
 // lib
+import AliasList from "../../components/alias-list";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import AliasList from "../../components/alias-list";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Source({ source, isJson }) {

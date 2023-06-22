@@ -45,7 +45,7 @@ export default function ReferenceFile({
           <DataPanel>
             <DataArea>
               <FileDataItems
-                file={referenceFile}
+                item={referenceFile}
                 fileSet={fileSet}
                 derivedFrom={derivedFrom}
               >

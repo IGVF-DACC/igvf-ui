@@ -47,7 +47,7 @@ export default function SignalFile({
           <DataPanel>
             <DataArea>
               <FileDataItems
-                file={signalFile}
+                item={signalFile}
                 fileSet={fileSet}
                 derivedFrom={derivedFrom}
               >

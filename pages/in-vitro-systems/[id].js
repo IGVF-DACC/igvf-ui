@@ -52,7 +52,7 @@ export default function InVitroSystem({
           <DataPanel>
             <DataArea>
               <BiosampleDataItems
-                biosample={inVitroSystem}
+                item={inVitroSystem}
                 source={source}
                 donors={donors}
                 biosampleTerm={biosampleTerm}

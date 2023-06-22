@@ -34,7 +34,7 @@ export default function HumanDonor({
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DonorDataItems donor={donor} parents={parents} />
+              <DonorDataItems item={donor} parents={parents} />
             </DataArea>
           </DataPanel>
           {phenotypicFeatures.length > 0 && (
