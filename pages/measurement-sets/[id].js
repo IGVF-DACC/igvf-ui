@@ -28,6 +28,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
+import { LOG_GET_SERVER_SIDE_REQUEST_TIME } from "../../lib/constants";
 
 /**
  * Columns for the two file tables; both those with `illumina_read_type` (meta.hasReadType is true)
@@ -264,6 +265,9 @@ MeasurementSet.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
+  if (LOG_GET_SERVER_SIDE_REQUEST_TIME) {
+    const start = performance.now();
+  }
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const measurementSet = await request.getObject(
@@ -320,6 +324,10 @@ export async function getServerSideProps({ params, req, query }) {
       measurementSet,
       req.headers.cookie
     );
+    if (LOG_GET_SERVER_SIDE_REQUEST_TIME) {
+      const duration = performance.now() - start;
+      console.log(`getServerSideProps /measurement-sets/${params.id}/: ${duration} ms`);
+    }
     return {
       props: {
         measurementSet,
