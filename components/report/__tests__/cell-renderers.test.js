@@ -912,7 +912,7 @@ describe("Page cell-rendering tests", () => {
       "cell-type-unknown-object"
     );
     expect(unknown).toHaveTextContent(
-      '{"blocks":[{"@id":"#block1","body":"# Donor Help This is some help text about donors.","@type":"mark...'
+      '{"blocks":[{"@id":"#block1","body":"# Donor Help This is some help text about donors.","@type":"markdown","direction":"ltr"}]}'
     );
   });
 
@@ -970,5 +970,366 @@ describe("Page cell-rendering tests", () => {
 
     const parentLink = within(cells[2]).queryByRole("link");
     expect(parentLink).toBeNull();
+  });
+});
+
+describe("Unknown-field cell-rendering tests", () => {
+  it("renders a simple unknown field", () => {
+    const COLUMN_UNKNOWN = 1;
+
+    const searchResults = {
+      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO499FAP/",
+          "@type": ["HumanDonor", "Item"],
+          unknown_field: "Unknown value",
+        },
+      ],
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/report",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+
+    const columns = generateColumns(searchResults, profiles);
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Test that the unknown field has the correct contents.
+    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent("Unknown value");
+  });
+
+  it("renders an unknown field containing an array of objects with @ids", () => {
+    const COLUMN_UNKNOWN = 1;
+
+    const searchResults = {
+      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO1080XFGV/",
+          "@type": ["HumanDonor", "Item"],
+          unknown_field: [
+            {
+              "@id": "/human-donors/IGVFDO8315PGTI/",
+              "@type": ["HumanDonor", "Item"],
+            },
+            {
+              "@id": "/human-donors/IGVFDO9208RPQQ/",
+              "@type": ["HumanDonor", "Item"],
+            },
+          ],
+        },
+      ],
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/report",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+
+    const columns = generateColumns(searchResults, profiles);
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Test that the unknown field has the correct contents.
+    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
+      "/human-donors/IGVFDO8315PGTI/, /human-donors/IGVFDO9208RPQQ/"
+    );
+  });
+
+  it("renders an unknown field containing an array simple objects", () => {
+    const COLUMN_UNKNOWN = 1;
+
+    const searchResults = {
+      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO1080XFGV/",
+          "@type": ["HumanDonor", "Item"],
+          unknown_field: ["IGVFDO8315PGTI", "IGVFDO9208RPQQ"],
+        },
+      ],
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/report",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+
+    const columns = generateColumns(searchResults, profiles);
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Test that the unknown field has the correct contents.
+    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
+      "IGVFDO8315PGTI, IGVFDO9208RPQQ"
+    );
+  });
+
+  it("renders an unknown field containing an object with an @id", () => {
+    const COLUMN_UNKNOWN = 1;
+
+    const searchResults = {
+      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO1080XFGV/",
+          "@type": ["HumanDonor", "Item"],
+          unknown_field: {
+            "@id": "/human-donors/IGVFDO8315PGTI/",
+            "@type": ["HumanDonor", "Item"],
+          },
+        },
+      ],
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/report",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+
+    const columns = generateColumns(searchResults, profiles);
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Test that the unknown field has the correct contents.
+    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
+      "/human-donors/IGVFDO8315PGTI/"
+    );
+  });
+
+  it("renders an unknown field containing an object with no @id", () => {
+    const COLUMN_UNKNOWN = 1;
+
+    const searchResults = {
+      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO1080XFGV/",
+          "@type": ["HumanDonor", "Item"],
+          unknown_field: {
+            prop0: "value0",
+            prop1: "value1",
+          },
+        },
+      ],
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/report",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+
+    const columns = generateColumns(searchResults, profiles);
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Test that the unknown field has the correct contents.
+    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
+      `{"prop0":"value0","prop1":"value1"}`
+    );
+  });
+
+  it("renders an unknown field containing an array of objects", () => {
+    const COLUMN_UNKNOWN = 1;
+
+    const searchResults = {
+      "@id":
+        "/report?type=InVitroSystem&field=%40id&field=introduced_factors.purpose",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/in-vitro-system/IGVFSM0000AAAZ/",
+          "@type": ["InVitroSystem", "Biosample", "Sample", "Item"],
+          introduced_factors: [
+            {
+              purpose: "selection",
+              "@id": "/treatments/10c05ac0-52a2-11e6-bdf4-0800200c9a66/",
+            },
+            {
+              purpose: "differentiation",
+              "@id": "/treatments/bd2cb34e-c72c-11ec-9d64-0242ac120002/",
+            },
+          ],
+        },
+      ],
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "InVitroSystem",
+          remove: "/report",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+
+    const columns = generateColumns(searchResults, profiles);
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Test that the unknown field has the correct contents.
+    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
+      "selection, differentiation"
+    );
   });
 });

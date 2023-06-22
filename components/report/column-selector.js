@@ -10,6 +10,7 @@ import SessionContext from "../session-context";
 import HiddenColumnsIndicator from "./hidden-columns-indicator";
 // lib
 import {
+  getManuallyEnteredColumnIds,
   getReportTypeColumnSpecs,
   getReportType,
   getVisibleReportColumnSpecs,
@@ -35,6 +36,41 @@ function ChangeAllControls({ onChangeAll }) {
 ChangeAllControls.propTypes = {
   // Called when the user wants to hide or show all columns at once
   onChangeAll: PropTypes.func.isRequired,
+};
+
+/**
+ * Wrapper for the group of checkboxes for the user to select which columns to display and which
+ * to hide.
+ */
+function CheckboxArea({ className = "", children }) {
+  return (
+    <fieldset className={`md:flex md:flex-wrap ${className}`}>
+      {children}
+    </fieldset>
+  );
+}
+
+CheckboxArea.propTypes = {
+  // Tailwind CSS classes to add to the checkbox area wrapper
+  className: PropTypes.string,
+};
+
+/**
+ * Wrapper for advisory notes within the column-selection modal.
+ */
+function Note({ className = "", children }) {
+  return (
+    <div
+      className={`text-center text-sm text-gray-500 dark:text-gray-300 md:flex-grow md:text-left ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+Note.propTypes = {
+  // Tailwind CSS classes to add to the note wrapper
+  className: PropTypes.string,
 };
 
 /**
@@ -64,6 +100,13 @@ export default function ColumnSelector({
     );
     const isAnyColumnHidden = columnSpecs.length > visibleColumnSpecs.length;
 
+    // Get visible columns not in the type's schema, indicating ones the user manually added to
+    // the query string.
+    const manuallyEnteredColumnIds = getManuallyEnteredColumnIds(
+      visibleColumnIds,
+      columnSpecs
+    );
+
     return (
       <>
         <Button onClick={() => setIsOpen(true)} className="w-full sm:w-auto">
@@ -81,33 +124,53 @@ export default function ColumnSelector({
           <Modal.Body>
             <div className="mb-3 md:flex md:items-center">
               <ChangeAllControls onChangeAll={onChangeAll} />
-              <div className="text-center text-sm text-gray-700 dark:text-gray-300 md:ml-2 md:flex-grow md:text-left">
+              <Note className="md:ml-2">
                 The <i>ID</i> column cannot be hidden
-              </div>
+              </Note>
             </div>
-            <fieldset>
-              <div className="md:flex md:flex-wrap">
-                {columnSpecs.map((columnSpec) => {
-                  if (columnSpec.id !== "@id") {
-                    const isVisible = visibleColumnIds.includes(columnSpec.id);
+            <CheckboxArea>
+              {columnSpecs.map((columnSpec) => {
+                if (columnSpec.id !== "@id") {
+                  const isVisible = visibleColumnIds.includes(columnSpec.id);
+                  return (
+                    <Checkbox
+                      key={columnSpec.id}
+                      name={columnSpec.id}
+                      checked={isVisible}
+                      onChange={() => onChange(columnSpec.id, isVisible)}
+                      className="block md:basis-1/2 lg:basis-1/3"
+                    >
+                      {columnSpec.title}
+                    </Checkbox>
+                  );
+                }
+
+                // Don't include @id property; @id is always visible.
+                return null;
+              })}
+            </CheckboxArea>
+            {manuallyEnteredColumnIds.length > 0 && (
+              <div className="mt-3 border-t pt-2">
+                <Note className="mb-2">
+                  Manually entered columns disappear as soon as you uncheck them
+                </Note>
+                <CheckboxArea>
+                  {manuallyEnteredColumnIds.map((columnId) => {
                     return (
                       <Checkbox
-                        key={columnSpec.id}
-                        name={columnSpec.id}
-                        checked={isVisible}
-                        onChange={() => onChange(columnSpec.id, isVisible)}
+                        key={columnId}
+                        name={columnId}
+                        checked={true}
+                        onChange={() => onChange(columnId, true)}
                         className="block md:basis-1/2 lg:basis-1/3"
                       >
-                        {columnSpec.title}
+                        {columnId}
                       </Checkbox>
                     );
-                  }
-
-                  // Don't include @id property; @id is always visible.
-                  return null;
-                })}
+                  })}
+                </CheckboxArea>
               </div>
-            </fieldset>
+            )}
           </Modal.Body>
 
           <Modal.Footer>

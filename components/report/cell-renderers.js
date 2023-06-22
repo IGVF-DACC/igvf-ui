@@ -14,11 +14,7 @@ import ChromosomeLocations from "../chromosome-locations";
 import SeparatedList from "../separated-list";
 // lib
 import { attachmentToServerHref } from "../../lib/attachment";
-
-/**
- * Maximum number of characters to display for a JSON object in a cell.
- */
-const MAX_CELL_JSON_LENGTH = 100;
+import { truncateJson } from "../../lib/general";
 
 /**
  * Display the @id of an object as a link to the object's page. This works much like the `Path`
@@ -275,28 +271,77 @@ SimpleArray.propTypes = {
 };
 
 /**
- * Display an object for which we have no dedicated renderer as stringified JSON. Truncate the
- * stringified JSON in the cell if it's longer than 100 characters. Display a button to open a
- * modal with the whole object's formatted JSON.
+ * Display an object for which we have no dedicated renderer. What it displays depends on the type
+ * of the object in `source`, basically having a primitive version of the renderers for known cell
+ * properties.
  */
 function UnknownObject({ id, source }) {
-  const unknownObject = source[id];
-  if (unknownObject) {
-    const json = JSON.stringify(unknownObject);
-    const displayJson =
-      json.length > MAX_CELL_JSON_LENGTH
-        ? `${json.substring(0, MAX_CELL_JSON_LENGTH)}...`
-        : json;
-
-    return <div data-testid="cell-type-unknown-object">{displayJson}</div>;
+  // Break the dotted-notation property into its components and walk the source object to find the
+  // embedded property. Nice to use a `reduce()` loop but we can't break out of those early.
+  const components = id.split(".");
+  let property = source;
+  for (let i = 0; i < components.length; i += 1) {
+    if (Array.isArray(property)) {
+      // Extract the specified property component from each element of the array.
+      const embeddedProperties = property.map((item) => item[components[i]]);
+      property = embeddedProperties.filter((item) => item).join(", ");
+    } else {
+      // Extract the specified property component from the embedded property.
+      property = property[components[i]];
+    }
+    if (!property) {
+      // A component of the dotted-notation property doesn't exist in the source object, so end
+      // the loop early, and display nothing in the cell.
+      break;
+    }
   }
+
+  if (property) {
+    // Determine the display method for the embedded property depending on its type.
+    let displayedProperty = null;
+    if (typeof property === "string" || typeof property === "number") {
+      displayedProperty = property;
+    } else if (typeof property === "object") {
+      if (Array.isArray(property)) {
+        if (property.length > 0) {
+          if (typeof property[0] === "object") {
+            if (property[0]["@id"]) {
+              // Array of objects with @ids; join their @ids with commas.
+              displayedProperty = property
+                .map((item) => item["@id"])
+                .join(", ");
+            } else {
+              // Array of objects without @ids; display it as JSON.
+              displayedProperty = truncateJson(property);
+            }
+          } else {
+            // Array of simple types; join them with commas.
+            displayedProperty = property.join(", ");
+          }
+        }
+      } else {
+        if (property["@id"]) {
+          // The embedded property is an object with an @id. Display the @id.
+          displayedProperty = property["@id"];
+        } else {
+          // The embedded property is an object without an @id. Display it as JSON.
+          displayedProperty = truncateJson(property);
+        }
+      }
+    }
+
+    return (
+      <div data-testid="cell-type-unknown-object">{displayedProperty}</div>
+    );
+  }
+
   return null;
 }
 
 UnknownObject.propTypes = {
-  // Property name for column
+  // Name of property to display, including dotted-notation properties, e.g. `submitted_by.title`
   id: PropTypes.string.isRequired,
-  // Object displayed in the current row
+  // Object displayed in a cell
   source: PropTypes.object.isRequired,
 };
 
@@ -368,11 +413,11 @@ export const propertyRenderers = {
 };
 
 export const typeRenderers = {
+  boolean: Boolean, // Boolean value
   path: Path, // Single path
   "path-array": PathArray, // Array of paths
-  "simple-array": SimpleArray, // Array of strings or numbers
   simple: null, // String, number, boolean, or null get default renderer
-  boolean: Boolean, // Boolean value
+  "simple-array": SimpleArray, // Array of strings or numbers
   unknown: UnknownObject, // Complex array or object with no dedicated renderer
   url: Url, // External URL string
 };
@@ -387,7 +432,7 @@ export const typeRenderers = {
  */
 export function detectPropertyTypes(property, profile) {
   const propertyDefinition = profile.properties[property];
-  let propertyType = "";
+  let propertyType = "unknown";
   if (propertyDefinition) {
     if (propertyDefinition.type === "array" && propertyDefinition.items) {
       // Array of somethings.
