@@ -91,7 +91,6 @@ export default function ColumnSelector({
     // Determine whether any column is hidden given the current report URL. Use this to determine
     // whether to display the "hidden columns" indicator.
     const columnSpecs = getReportTypeColumnSpecs(reportType, profiles);
-    console.log("COLUMNSPEC %o", columnSpecs);
     const visibleColumnSpecs = getVisibleReportColumnSpecs(
       searchResults,
       profiles
