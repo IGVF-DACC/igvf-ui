@@ -19,6 +19,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function Lab({ lab, awards = null, pi = null, isJson }) {
   return (
@@ -90,33 +91,35 @@ Lab.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const lab = await request.getObject(`/labs/${params.name}/`);
-  if (FetchRequest.isResponseSuccess(lab)) {
-    let awards = [];
-    if (lab.awards?.length > 0) {
-      const awardPaths = lab.awards.map((award) => award["@id"]);
-      awards = await request.getMultipleObjects(awardPaths, null, {
-        filterErrors: true,
-      });
-    }
-    const pi = await request.getObject(lab.pi, null);
-    const breadcrumbs = await buildBreadcrumbs(
-      lab,
-      "title",
-      req.headers.cookie
-    );
-    return {
-      props: {
+  return logTime(`/labs/${params.name}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const lab = await request.getObject(`/labs/${params.name}/`);
+    if (FetchRequest.isResponseSuccess(lab)) {
+      let awards = [];
+      if (lab.awards?.length > 0) {
+        const awardPaths = lab.awards.map((award) => award["@id"]);
+        awards = await request.getMultipleObjects(awardPaths, null, {
+          filterErrors: true,
+        });
+      }
+      const pi = await request.getObject(lab.pi, null);
+      const breadcrumbs = await buildBreadcrumbs(
         lab,
-        awards,
-        pi,
-        pageContext: { title: lab.title },
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(lab);
+        "title",
+        req.headers.cookie
+      );
+      return {
+        props: {
+          lab,
+          awards,
+          pi,
+          pageContext: { title: lab.title },
+          breadcrumbs,
+          isJson,
+        },
+      };
+    }
+    return errorObjectToProps(lab);
+  })({ params, req, query });
 }

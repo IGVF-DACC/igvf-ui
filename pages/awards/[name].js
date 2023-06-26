@@ -20,6 +20,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
+import { logTime } from "../../lib/general";
 
 export default function Award({ award, pis, contactPi, isJson }) {
   return (
@@ -115,34 +116,36 @@ Award.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const award = await request.getObject(`/awards/${params.name}/`);
-  if (FetchRequest.isResponseSuccess(award)) {
-    const pis =
-      award.pis?.length > 0
-        ? await request.getMultipleObjects(award.pis, null, {
-            filterErrors: true,
-          })
-        : [];
-    const contactPi = award.contact_pi
-      ? await request.getObject(award.contact_pi, null)
-      : null;
-    const breadcrumbs = await buildBreadcrumbs(
-      award,
-      "name",
-      req.headers.cookie
-    );
-    return {
-      props: {
+  return logTime(`/awards/${params.name}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const award = await request.getObject(`/awards/${params.name}/`);
+    if (FetchRequest.isResponseSuccess(award)) {
+      const pis =
+        award.pis?.length > 0
+          ? await request.getMultipleObjects(award.pis, null, {
+              filterErrors: true,
+            })
+          : [];
+      const contactPi = award.contact_pi
+        ? await request.getObject(award.contact_pi, null)
+        : null;
+      const breadcrumbs = await buildBreadcrumbs(
         award,
-        pis,
-        contactPi,
-        isJson,
-        pageContext: { title: award.name },
-        breadcrumbs,
-      },
-    };
-  }
-  return errorObjectToProps(award);
+        "name",
+        req.headers.cookie
+      );
+      return {
+        props: {
+          award,
+          pis,
+          contactPi,
+          isJson,
+          pageContext: { title: award.name },
+          breadcrumbs,
+        },
+      };
+    }
+    return errorObjectToProps(award);
+  })({ params, req, query });
 }

@@ -25,6 +25,8 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
+
 
 export default function AnalysisSet({
   analysisSet,
@@ -135,57 +137,71 @@ AnalysisSet.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const analysisSet = await request.getObject(`/analysis-sets/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(analysisSet)) {
-    const inputFileSets = analysisSet.input_file_sets
-      ? await request.getMultipleObjects(analysisSet.input_file_sets, null, {
-          filterErrors: true,
-        })
-      : [];
-    const documents = analysisSet.documents
-      ? await request.getMultipleObjects(analysisSet.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const files = analysisSet.files
-      ? await request.getMultipleObjects(analysisSet.files, null, {
-          filterErrors: true,
-        })
-      : [];
-    const samples = analysisSet.samples
-      ? await request.getMultipleObjects(analysisSet.samples, null, {
-          filterErrors: true,
-        })
-      : [];
-    let donors = [];
-    if (analysisSet.donors) {
-      const donorPaths = analysisSet.donors.map((donor) => donor["@id"]);
-      donors = await request.getMultipleObjects(donorPaths, null, {
-        filterErrors: true,
-      });
+  return logTime(
+    `/analysis-sets/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const analysisSet = await request.getObject(
+        `/analysis-sets/${params.id}/`
+      );
+      if (FetchRequest.isResponseSuccess(analysisSet)) {
+        const inputFileSets = analysisSet.input_file_sets
+          ? await request.getMultipleObjects(
+              analysisSet.input_file_sets,
+              null,
+              {
+                filterErrors: true,
+              }
+            )
+          : [];
+        const documents = analysisSet.documents
+          ? await request.getMultipleObjects(analysisSet.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const files = analysisSet.files
+          ? await request.getMultipleObjects(analysisSet.files, null, {
+              filterErrors: true,
+            })
+          : [];
+        const samples = analysisSet.samples
+          ? await request.getMultipleObjects(analysisSet.samples, null, {
+              filterErrors: true,
+            })
+          : [];
+        let donors = [];
+        if (analysisSet.donors) {
+          const donorPaths = analysisSet.donors.map((donor) => donor["@id"]);
+          donors = await request.getMultipleObjects(donorPaths, null, {
+            filterErrors: true,
+          });
+        }
+        const breadcrumbs = await buildBreadcrumbs(
+          analysisSet,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          analysisSet,
+          req.headers.cookie
+        );
+        return {
+          props: {
+            analysisSet,
+            inputFileSets,
+            documents,
+            donors,
+            files,
+            samples,
+            pageContext: { title: analysisSet.accession },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(analysisSet);
     }
-    const breadcrumbs = await buildBreadcrumbs(
-      analysisSet,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(analysisSet, req.headers.cookie);
-    return {
-      props: {
-        analysisSet,
-        inputFileSets,
-        documents,
-        donors,
-        files,
-        samples,
-        pageContext: { title: analysisSet.accession },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(analysisSet);
+  )({ params, req, query });
 }

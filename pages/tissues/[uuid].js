@@ -24,6 +24,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function Tissue({
   tissue,
@@ -139,79 +140,83 @@ Tissue.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const tissue = await request.getObject(`/tissues/${params.uuid}/`);
-  if (FetchRequest.isResponseSuccess(tissue)) {
-    const biosampleTerm = tissue.biosample_term
-      ? await request.getObject(tissue.biosample_term["@id"], null)
-      : null;
-    let diseaseTerms = [];
-    if (tissue.disease_terms?.length > 0) {
-      const diseaseTermPaths = tissue.disease_terms.map((term) => term["@id"]);
-      diseaseTerms = tissue.disease_terms
-        ? await request.getMultipleObjects(diseaseTermPaths, null, {
+  return logTime(`/tissues/${params.uuid}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const tissue = await request.getObject(`/tissues/${params.uuid}/`);
+    if (FetchRequest.isResponseSuccess(tissue)) {
+      const biosampleTerm = tissue.biosample_term
+        ? await request.getObject(tissue.biosample_term["@id"], null)
+        : null;
+      let diseaseTerms = [];
+      if (tissue.disease_terms?.length > 0) {
+        const diseaseTermPaths = tissue.disease_terms.map(
+          (term) => term["@id"]
+        );
+        diseaseTerms = tissue.disease_terms
+          ? await request.getMultipleObjects(diseaseTermPaths, null, {
+              filterErrors: true,
+            })
+          : [];
+      }
+      const documents = tissue.documents
+        ? await request.getMultipleObjects(tissue.documents, null, {
             filterErrors: true,
           })
         : [];
-    }
-    const documents = tissue.documents
-      ? await request.getMultipleObjects(tissue.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const donors = tissue.donors
-      ? await request.getMultipleObjects(tissue.donors, null, {
-          filterErrors: true,
-        })
-      : [];
-    const source = await request.getObject(tissue.source["@id"], null);
-    const treatments = tissue.treatments
-      ? await request.getMultipleObjects(tissue.treatments, null, {
-          filterErrors: true,
-        })
-      : [];
-    const pooledFrom =
-      tissue.pooled_from?.length > 0
-        ? await request.getMultipleObjects(tissue.pooled_from, null, {
+      const donors = tissue.donors
+        ? await request.getMultipleObjects(tissue.donors, null, {
             filterErrors: true,
           })
         : [];
-    const partOf = tissue.part_of
-      ? await request.getObject(tissue.part_of, null)
-      : null;
-    const biomarkers =
-      tissue.biomarkers?.length > 0
-        ? await request.getMultipleObjects(tissue.biomarkers, null, {
+      const source = await request.getObject(tissue.source["@id"], null);
+      const treatments = tissue.treatments
+        ? await request.getMultipleObjects(tissue.treatments, null, {
             filterErrors: true,
           })
         : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      tissue,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(tissue, req.headers.cookie);
-    return {
-      props: {
+      const pooledFrom =
+        tissue.pooled_from?.length > 0
+          ? await request.getMultipleObjects(tissue.pooled_from, null, {
+              filterErrors: true,
+            })
+          : [];
+      const partOf = tissue.part_of
+        ? await request.getObject(tissue.part_of, null)
+        : null;
+      const biomarkers =
+        tissue.biomarkers?.length > 0
+          ? await request.getMultipleObjects(tissue.biomarkers, null, {
+              filterErrors: true,
+            })
+          : [];
+      const breadcrumbs = await buildBreadcrumbs(
         tissue,
-        documents,
-        donors,
-        source,
-        treatments,
-        biosampleTerm,
-        diseaseTerms,
-        pooledFrom,
-        partOf,
-        biomarkers,
-        pageContext: {
-          title: `${tissue.biosample_term.term_name} — ${tissue.accession}`,
+        "accession",
+        req.headers.cookie
+      );
+      const attribution = await buildAttribution(tissue, req.headers.cookie);
+      return {
+        props: {
+          tissue,
+          documents,
+          donors,
+          source,
+          treatments,
+          biosampleTerm,
+          diseaseTerms,
+          pooledFrom,
+          partOf,
+          biomarkers,
+          pageContext: {
+            title: `${tissue.biosample_term.term_name} — ${tissue.accession}`,
+          },
+          breadcrumbs,
+          attribution,
+          isJson,
         },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(tissue);
+      };
+    }
+    return errorObjectToProps(tissue);
+  })({ params, req, query });
 }

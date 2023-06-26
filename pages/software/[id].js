@@ -22,6 +22,7 @@ import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function Software({
   software,
@@ -84,36 +85,38 @@ Software.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const software = await request.getObject(`/software/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(software)) {
-    const award = await request.getObject(software.award["@id"], null);
-    const lab = await request.getObject(software.lab["@id"], null);
-    const versions =
-      software.versions.length > 0
-        ? await request.getMultipleObjects(software.versions, null, {
-            filterErrors: true,
-          })
-        : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      software,
-      "name",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(software, req.headers.cookie);
-    return {
-      props: {
+  return logTime(`/software/${params.id}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const software = await request.getObject(`/software/${params.id}/`);
+    if (FetchRequest.isResponseSuccess(software)) {
+      const award = await request.getObject(software.award["@id"], null);
+      const lab = await request.getObject(software.lab["@id"], null);
+      const versions =
+        software.versions.length > 0
+          ? await request.getMultipleObjects(software.versions, null, {
+              filterErrors: true,
+            })
+          : [];
+      const breadcrumbs = await buildBreadcrumbs(
         software,
-        award,
-        lab,
-        versions,
-        pageContext: { title: software.name },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(software);
+        "name",
+        req.headers.cookie
+      );
+      const attribution = await buildAttribution(software, req.headers.cookie);
+      return {
+        props: {
+          software,
+          award,
+          lab,
+          versions,
+          pageContext: { title: software.name },
+          breadcrumbs,
+          attribution,
+          isJson,
+        },
+      };
+    }
+    return errorObjectToProps(software);
+  })({ params, req, query });
 }

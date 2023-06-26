@@ -20,6 +20,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function Modification({
   modification,
@@ -91,34 +92,36 @@ Modification.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const modification = await request.getObject(
-    `/modifications/${params.uuid}/`
-  );
-  if (FetchRequest.isResponseSuccess(modification)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      modification,
-      "summary",
-      req.headers.cookie
+  logTime(`/modifications/${params.uuid}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const modification = await request.getObject(
+      `/modifications/${params.uuid}/`
     );
-    const attribution = await buildAttribution(
-      modification,
-      req.headers.cookie
-    );
-    const gene = await request.getObject(modification.tagged_protein, null);
-    return {
-      props: {
+    if (FetchRequest.isResponseSuccess(modification)) {
+      const breadcrumbs = await buildBreadcrumbs(
         modification,
-        pageContext: {
-          title: modification.summary,
+        "summary",
+        req.headers.cookie
+      );
+      const attribution = await buildAttribution(
+        modification,
+        req.headers.cookie
+      );
+      const gene = await request.getObject(modification.tagged_protein, null);
+      return {
+        props: {
+          modification,
+          pageContext: {
+            title: modification.summary,
+          },
+          breadcrumbs,
+          gene,
+          attribution,
+          isJson,
         },
-        breadcrumbs,
-        gene,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(modification);
+      };
+    }
+    return errorObjectToProps(modification);
+  })({ params, req, query });
 }

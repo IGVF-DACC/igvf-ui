@@ -19,7 +19,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { truthyOrZero } from "../../lib/general";
+import { logTime, truthyOrZero } from "../../lib/general";
 import { getPhenotypicFeatureTitle } from "../../lib/phenotypic-feature";
 import { isJsonFormat } from "../../lib/query-utils";
 
@@ -78,31 +78,36 @@ PhenotypicFeature.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const phenotypicFeature = await request.getObject(
-    `/phenotypic-features/${params.id}/`
-  );
-  if (FetchRequest.isResponseSuccess(phenotypicFeature)) {
-    const attribution = await buildAttribution(
-      phenotypicFeature,
-      req.headers.cookie
-    );
-    const title = getPhenotypicFeatureTitle(phenotypicFeature);
-    const breadcrumbs = await buildBreadcrumbs(
-      phenotypicFeature,
-      "uuid",
-      req.headers.cookie
-    );
-    return {
-      props: {
-        phenotypicFeature,
-        pageContext: { title },
-        breadcrumbs,
-        isJson,
-        attribution,
-      },
-    };
-  }
-  return errorObjectToProps(phenotypicFeature);
+  logTime(
+    `/phenotypic-features/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const phenotypicFeature = await request.getObject(
+        `/phenotypic-features/${params.id}/`
+      );
+      if (FetchRequest.isResponseSuccess(phenotypicFeature)) {
+        const attribution = await buildAttribution(
+          phenotypicFeature,
+          req.headers.cookie
+        );
+        const title = getPhenotypicFeatureTitle(phenotypicFeature);
+        const breadcrumbs = await buildBreadcrumbs(
+          phenotypicFeature,
+          "uuid",
+          req.headers.cookie
+        );
+        return {
+          props: {
+            phenotypicFeature,
+            pageContext: { title },
+            breadcrumbs,
+            isJson,
+            attribution,
+          },
+        };
+      }
+      return errorObjectToProps(phenotypicFeature);
+    }
+  )({ params, req, query });
 }

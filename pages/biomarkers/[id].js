@@ -22,6 +22,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function Biomarker({
   biomarker,
@@ -97,28 +98,36 @@ Biomarker.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const biomarker = await request.getObject(`/biomarkers/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(biomarker)) {
-    const gene = await request.getObject(biomarker.gene, null);
-    const breadcrumbs = await buildBreadcrumbs(
-      biomarker,
-      "name",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(biomarker, req.headers.cookie);
-    const title = getBiomarkerTitle(biomarker);
-    return {
-      props: {
-        biomarker,
-        gene,
-        pageContext: { title },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(biomarker);
+  return logTime(
+    `/biomarkers/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const biomarker = await request.getObject(`/biomarkers/${params.id}/`);
+      if (FetchRequest.isResponseSuccess(biomarker)) {
+        const gene = await request.getObject(biomarker.gene, null);
+        const breadcrumbs = await buildBreadcrumbs(
+          biomarker,
+          "name",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          biomarker,
+          req.headers.cookie
+        );
+        const title = getBiomarkerTitle(biomarker);
+        return {
+          props: {
+            biomarker,
+            gene,
+            pageContext: { title },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(biomarker);
+    }
+  )({ params, req, query });
 }

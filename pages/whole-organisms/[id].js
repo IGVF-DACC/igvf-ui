@@ -18,6 +18,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function WholeOrganism({
   sample,
@@ -109,91 +110,100 @@ WholeOrganism.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sample = await request.getObject(`/whole-organisms/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(sample)) {
-    const biosampleTerm = sample.biosample_term
-      ? await request.getObject(sample.biosample_term["@id"], null)
-      : null;
-    let diseaseTerms = [];
-    if (sample.disease_terms?.length > 0) {
-      const diseaseTermPaths = sample.disease_terms.map(
-        (diseaseTerm) => diseaseTerm["@id"]
-      );
-      diseaseTerms = await request.getMultipleObjects(diseaseTermPaths, null, {
-        filterErrors: true,
-      });
-    }
-    const documents = sample.documents
-      ? await request.getMultipleObjects(sample.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const donors = sample.donors
-      ? await request.getMultipleObjects(sample.donors, null, {
-          filterErrors: true,
-        })
-      : [];
-    const source = await request.getObject(sample.source["@id"], null);
-    let treatments = [];
-    if (sample.treatments?.length > 0) {
-      const treatmentPaths = sample.treatments.map(
-        (treatment) => treatment["@id"]
-      );
-      treatments = await request.getMultipleObjects(treatmentPaths, null, {
-        filterErrors: true,
-      });
-    }
-    const pooledFrom =
-      sample.pooled_from?.length > 0
-        ? await request.getMultipleObjects(sample.pooled_from, null, {
-            filterErrors: true,
-          })
-        : [];
-    const biomarkers =
-      sample.biomarkers?.length > 0
-        ? await request.getMultipleObjects(
-            // Biomarkers are embedded in whole organism, so we map
-            // to get as a list of IDs for the request
-            sample.biomarkers.map((m) => m["@id"]),
+  return logTime(
+    `/whole-organisms/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const sample = await request.getObject(`/whole-organisms/${params.id}/`);
+      if (FetchRequest.isResponseSuccess(sample)) {
+        const biosampleTerm = sample.biosample_term
+          ? await request.getObject(sample.biosample_term["@id"], null)
+          : null;
+        let diseaseTerms = [];
+        if (sample.disease_terms?.length > 0) {
+          const diseaseTermPaths = sample.disease_terms.map(
+            (diseaseTerm) => diseaseTerm["@id"]
+          );
+          diseaseTerms = await request.getMultipleObjects(
+            diseaseTermPaths,
             null,
             {
               filterErrors: true,
             }
-          )
-        : [];
-    const partOf = sample.part_of
-      ? await request.getObject(sample.part_of, null)
-      : null;
-    const breadcrumbs = await buildBreadcrumbs(
-      sample,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(sample, req.headers.cookie);
-    return {
-      props: {
-        sample,
-        documents,
-        donors,
-        source,
-        treatments,
-        biosampleTerm,
-        diseaseTerms,
-        pooledFrom,
-        partOf,
-        biomarkers,
-        pageContext: {
-          title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
-            sample.accession
-          }`,
-        },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(sample);
+          );
+        }
+        const documents = sample.documents
+          ? await request.getMultipleObjects(sample.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const donors = sample.donors
+          ? await request.getMultipleObjects(sample.donors, null, {
+              filterErrors: true,
+            })
+          : [];
+        const source = await request.getObject(sample.source["@id"], null);
+        let treatments = [];
+        if (sample.treatments?.length > 0) {
+          const treatmentPaths = sample.treatments.map(
+            (treatment) => treatment["@id"]
+          );
+          treatments = await request.getMultipleObjects(treatmentPaths, null, {
+            filterErrors: true,
+          });
+        }
+        const pooledFrom =
+          sample.pooled_from?.length > 0
+            ? await request.getMultipleObjects(sample.pooled_from, null, {
+                filterErrors: true,
+              })
+            : [];
+        const biomarkers =
+          sample.biomarkers?.length > 0
+            ? await request.getMultipleObjects(
+                // Biomarkers are embedded in whole organism, so we map
+                // to get as a list of IDs for the request
+                sample.biomarkers.map((m) => m["@id"]),
+                null,
+                {
+                  filterErrors: true,
+                }
+              )
+            : [];
+        const partOf = sample.part_of
+          ? await request.getObject(sample.part_of, null)
+          : null;
+        const breadcrumbs = await buildBreadcrumbs(
+          sample,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(sample, req.headers.cookie);
+        return {
+          props: {
+            sample,
+            documents,
+            donors,
+            source,
+            treatments,
+            biosampleTerm,
+            diseaseTerms,
+            pooledFrom,
+            partOf,
+            biomarkers,
+            pageContext: {
+              title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
+                sample.accession
+              }`,
+            },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(sample);
+    }
+  )({ params, req, query });
 }

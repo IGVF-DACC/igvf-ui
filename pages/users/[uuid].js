@@ -19,6 +19,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function User({ user, lab = null, isJson }) {
   return (
@@ -80,25 +81,27 @@ User.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const user = await request.getObject(`/users/${params.uuid}/`);
-  if (FetchRequest.isResponseSuccess(user)) {
-    const lab = await request.getObject(user.lab, null);
-    const breadcrumbs = await buildBreadcrumbs(
-      user,
-      "title",
-      req.headers.cookie
-    );
-    return {
-      props: {
+  return logTime(`/users/${params.uuid}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const user = await request.getObject(`/users/${params.uuid}/`);
+    if (FetchRequest.isResponseSuccess(user)) {
+      const lab = await request.getObject(user.lab, null);
+      const breadcrumbs = await buildBreadcrumbs(
         user,
-        lab,
-        pageContext: { title: user.title },
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(user);
+        "title",
+        req.headers.cookie
+      );
+      return {
+        props: {
+          user,
+          lab,
+          pageContext: { title: user.title },
+          breadcrumbs,
+          isJson,
+        },
+      };
+    }
+    return errorObjectToProps(user);
+  })({ params, req, query });
 }

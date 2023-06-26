@@ -25,6 +25,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function CuratedSet({
   curatedSet,
@@ -127,49 +128,57 @@ CuratedSet.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const curatedSet = await request.getObject(`/curated-sets/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(curatedSet)) {
-    const documents = curatedSet.documents
-      ? await request.getMultipleObjects(curatedSet.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const samples = curatedSet.samples
-      ? await request.getMultipleObjects(curatedSet.samples, null, {
-          filterErrors: true,
-        })
-      : [];
-    const donors = curatedSet.donors
-      ? await request.getMultipleObjects(curatedSet.donors, null, {
-          filterErrors: true,
-        })
-      : [];
-    const files = curatedSet.files
-      ? await request.getMultipleObjects(curatedSet.files, null, {
-          filterErrors: true,
-        })
-      : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      curatedSet,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(curatedSet, req.headers.cookie);
-    return {
-      props: {
-        curatedSet,
-        documents,
-        donors,
-        files,
-        samples,
-        pageContext: { title: curatedSet.accession },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(curatedSet);
+  return logTime(
+    `/curated-sets/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const curatedSet = await request.getObject(`/curated-sets/${params.id}/`);
+      if (FetchRequest.isResponseSuccess(curatedSet)) {
+        const documents = curatedSet.documents
+          ? await request.getMultipleObjects(curatedSet.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const samples = curatedSet.samples
+          ? await request.getMultipleObjects(curatedSet.samples, null, {
+              filterErrors: true,
+            })
+          : [];
+        const donors = curatedSet.donors
+          ? await request.getMultipleObjects(curatedSet.donors, null, {
+              filterErrors: true,
+            })
+          : [];
+        const files = curatedSet.files
+          ? await request.getMultipleObjects(curatedSet.files, null, {
+              filterErrors: true,
+            })
+          : [];
+        const breadcrumbs = await buildBreadcrumbs(
+          curatedSet,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          curatedSet,
+          req.headers.cookie
+        );
+        return {
+          props: {
+            curatedSet,
+            documents,
+            donors,
+            files,
+            samples,
+            pageContext: { title: curatedSet.accession },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(curatedSet);
+    }
+  )({ params, req, query });
 }

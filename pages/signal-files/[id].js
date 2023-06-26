@@ -25,6 +25,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function SignalFile({
   attribution,
@@ -129,43 +130,51 @@ SignalFile.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const signalFile = await request.getObject(`/signal-files/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(signalFile)) {
-    const fileSet = await request.getObject(signalFile.file_set, null);
-    const documents = signalFile.documents
-      ? await request.getMultipleObjects(signalFile.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const derivedFrom = signalFile.derived_from
-      ? await request.getMultipleObjects(signalFile.derived_from, null, {
-          filterErrors: true,
-        })
-      : [];
-    const referenceFiles = signalFile.reference_files
-      ? await request.getMultipleObjects(signalFile.reference_files, null)
-      : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      signalFile,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(signalFile, req.headers.cookie);
-    return {
-      props: {
-        signalFile,
-        fileSet,
-        documents,
-        derivedFrom,
-        pageContext: { title: signalFile.accession },
-        breadcrumbs,
-        attribution,
-        referenceFiles,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(signalFile);
+  return logTime(
+    `/signal-files/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const signalFile = await request.getObject(`/signal-files/${params.id}/`);
+      if (FetchRequest.isResponseSuccess(signalFile)) {
+        const fileSet = await request.getObject(signalFile.file_set, null);
+        const documents = signalFile.documents
+          ? await request.getMultipleObjects(signalFile.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const derivedFrom = signalFile.derived_from
+          ? await request.getMultipleObjects(signalFile.derived_from, null, {
+              filterErrors: true,
+            })
+          : [];
+        const referenceFiles = signalFile.reference_files
+          ? await request.getMultipleObjects(signalFile.reference_files, null)
+          : [];
+        const breadcrumbs = await buildBreadcrumbs(
+          signalFile,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          signalFile,
+          req.headers.cookie
+        );
+        return {
+          props: {
+            signalFile,
+            fileSet,
+            documents,
+            derivedFrom,
+            pageContext: { title: signalFile.accession },
+            breadcrumbs,
+            attribution,
+            referenceFiles,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(signalFile);
+    }
+  )({ params, req, query });
 }

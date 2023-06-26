@@ -18,6 +18,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
   return (
@@ -57,31 +58,36 @@ AssayOntologyTerm.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const assayOntologyTerm = await request.getObject(
-    `/assay-terms/${params.name}/`
-  );
-  if (FetchRequest.isResponseSuccess(assayOntologyTerm)) {
-    const isA = assayOntologyTerm.is_a
-      ? await request.getMultipleObjects(assayOntologyTerm.is_a, null, {
-          filterErrors: true,
-        })
-      : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      assayOntologyTerm,
-      "term_id",
-      req.headers.cookie
-    );
-    return {
-      props: {
-        assayOntologyTerm,
-        isA,
-        pageContext: { title: assayOntologyTerm.term_id },
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(assayOntologyTerm);
+  return logTime(
+    `/assay-terms/${params.name}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const assayOntologyTerm = await request.getObject(
+        `/assay-terms/${params.name}/`
+      );
+      if (FetchRequest.isResponseSuccess(assayOntologyTerm)) {
+        const isA = assayOntologyTerm.is_a
+          ? await request.getMultipleObjects(assayOntologyTerm.is_a, null, {
+              filterErrors: true,
+            })
+          : [];
+        const breadcrumbs = await buildBreadcrumbs(
+          assayOntologyTerm,
+          "term_id",
+          req.headers.cookie
+        );
+        return {
+          props: {
+            assayOntologyTerm,
+            isA,
+            pageContext: { title: assayOntologyTerm.term_id },
+            breadcrumbs,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(assayOntologyTerm);
+    }
+  )({ params, req, query });
 }

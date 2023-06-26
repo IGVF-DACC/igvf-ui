@@ -22,6 +22,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function Publication({
   publication,
@@ -116,25 +117,35 @@ Publication.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const publication = await request.getObject(`/publications/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(publication)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      publication,
-      "title",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(publication, req.headers.cookie);
-    return {
-      props: {
-        publication,
-        pageContext: { title: publication.title },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(publication);
+  return logTime(
+    `/publications/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const publication = await request.getObject(
+        `/publications/${params.id}/`
+      );
+      if (FetchRequest.isResponseSuccess(publication)) {
+        const breadcrumbs = await buildBreadcrumbs(
+          publication,
+          "title",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          publication,
+          req.headers.cookie
+        );
+        return {
+          props: {
+            publication,
+            pageContext: { title: publication.title },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(publication);
+    }
+  )({ params, req, query });
 }

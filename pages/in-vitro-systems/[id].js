@@ -24,7 +24,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { truthyOrZero } from "../../lib/general";
+import { logTime, truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function InVitroSystem({
@@ -140,94 +140,110 @@ InVitroSystem.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const inVitroSystem = await request.getObject(
-    `/in-vitro-systems/${params.id}/`
-  );
-  if (FetchRequest.isResponseSuccess(inVitroSystem)) {
-    const biosampleTerm = inVitroSystem.biosample_term
-      ? await request.getObject(inVitroSystem.biosample_term["@id"], null)
-      : null;
-    let diseaseTerms = [];
-    if (inVitroSystem.disease_terms) {
-      const diseaseTermPaths = inVitroSystem.disease_terms.map(
-        (diseaseTerm) => diseaseTerm["@id"]
+  return logTime(
+    `/in-vitro-systems/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const inVitroSystem = await request.getObject(
+        `/in-vitro-systems/${params.id}/`
       );
-      diseaseTerms = await request.getMultipleObjects(diseaseTermPaths, null, {
-        filterErrors: true,
-      });
-    }
-    const documents = inVitroSystem.documents
-      ? await request.getMultipleObjects(inVitroSystem.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const donors = inVitroSystem.donors
-      ? await request.getMultipleObjects(inVitroSystem.donors, null, {
-          filterErrors: true,
-        })
-      : [];
-    const source = await request.getObject(inVitroSystem.source["@id"], null);
-    let treatments = [];
-    if (inVitroSystem.treatments) {
-      const treatmentPaths = inVitroSystem.treatments.map(
-        (treatment) => treatment["@id"]
-      );
-      treatments = await request.getMultipleObjects(treatmentPaths, null, {
-        filterErrors: true,
-      });
-    }
-    const pooledFrom =
-      inVitroSystem.pooled_from?.length > 0
-        ? await request.getMultipleObjects(inVitroSystem.pooled_from, null, {
+      if (FetchRequest.isResponseSuccess(inVitroSystem)) {
+        const biosampleTerm = inVitroSystem.biosample_term
+          ? await request.getObject(inVitroSystem.biosample_term["@id"], null)
+          : null;
+        let diseaseTerms = [];
+        if (inVitroSystem.disease_terms) {
+          const diseaseTermPaths = inVitroSystem.disease_terms.map(
+            (diseaseTerm) => diseaseTerm["@id"]
+          );
+          diseaseTerms = await request.getMultipleObjects(
+            diseaseTermPaths,
+            null,
+            {
+              filterErrors: true,
+            }
+          );
+        }
+        const documents = inVitroSystem.documents
+          ? await request.getMultipleObjects(inVitroSystem.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const donors = inVitroSystem.donors
+          ? await request.getMultipleObjects(inVitroSystem.donors, null, {
+              filterErrors: true,
+            })
+          : [];
+        const source = await request.getObject(
+          inVitroSystem.source["@id"],
+          null
+        );
+        let treatments = [];
+        if (inVitroSystem.treatments) {
+          const treatmentPaths = inVitroSystem.treatments.map(
+            (treatment) => treatment["@id"]
+          );
+          treatments = await request.getMultipleObjects(treatmentPaths, null, {
             filterErrors: true,
-          })
-        : [];
-    const partOf = inVitroSystem.part_of
-      ? await request.getObject(inVitroSystem.part_of, null)
-      : null;
-    const targetedSampleTerm = inVitroSystem.targeted_sample_term
-      ? await request.getObject(inVitroSystem.targeted_sample_term, null)
-      : null;
-    const biomarkers =
-      inVitroSystem.biomarkers?.length > 0
-        ? await request.getMultipleObjects(inVitroSystem.biomarkers, null, {
-            filterErrors: true,
-          })
-        : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      inVitroSystem,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(
-      inVitroSystem,
-      req.headers.cookie
-    );
-    return {
-      props: {
-        inVitroSystem,
-        biosampleTerm,
-        diseaseTerms,
-        documents,
-        donors,
-        source,
-        treatments,
-        pooledFrom,
-        partOf,
-        targetedSampleTerm,
-        biomarkers,
-        pageContext: {
-          title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
-            inVitroSystem.accession
-          }`,
-        },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(inVitroSystem);
+          });
+        }
+        const pooledFrom =
+          inVitroSystem.pooled_from?.length > 0
+            ? await request.getMultipleObjects(
+                inVitroSystem.pooled_from,
+                null,
+                {
+                  filterErrors: true,
+                }
+              )
+            : [];
+        const partOf = inVitroSystem.part_of
+          ? await request.getObject(inVitroSystem.part_of, null)
+          : null;
+        const targetedSampleTerm = inVitroSystem.targeted_sample_term
+          ? await request.getObject(inVitroSystem.targeted_sample_term, null)
+          : null;
+        const biomarkers =
+          inVitroSystem.biomarkers?.length > 0
+            ? await request.getMultipleObjects(inVitroSystem.biomarkers, null, {
+                filterErrors: true,
+              })
+            : [];
+        const breadcrumbs = await buildBreadcrumbs(
+          inVitroSystem,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          inVitroSystem,
+          req.headers.cookie
+        );
+        return {
+          props: {
+            inVitroSystem,
+            biosampleTerm,
+            diseaseTerms,
+            documents,
+            donors,
+            source,
+            treatments,
+            pooledFrom,
+            partOf,
+            targetedSampleTerm,
+            biomarkers,
+            pageContext: {
+              title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
+                inVitroSystem.accession
+              }`,
+            },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(inVitroSystem);
+    }
+  )({ params, req, query });
 }

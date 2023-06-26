@@ -13,6 +13,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function PlatformOntologyTerm({ platformOntologyTerm, isJson }) {
   return (
@@ -41,25 +42,30 @@ PlatformOntologyTerm.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const platformOntologyTerm = await request.getObject(
-    `/platform-terms/${params.name}/`
-  );
-  if (FetchRequest.isResponseSuccess(platformOntologyTerm)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      platformOntologyTerm,
-      "term_id",
-      req.headers.cookie
-    );
-    return {
-      props: {
-        platformOntologyTerm,
-        pageContext: { title: platformOntologyTerm.term_id },
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(platformOntologyTerm);
+  return logTime(
+    `/platform-terms/${params.name}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const platformOntologyTerm = await request.getObject(
+        `/platform-terms/${params.name}/`
+      );
+      if (FetchRequest.isResponseSuccess(platformOntologyTerm)) {
+        const breadcrumbs = await buildBreadcrumbs(
+          platformOntologyTerm,
+          "term_id",
+          req.headers.cookie
+        );
+        return {
+          props: {
+            platformOntologyTerm,
+            pageContext: { title: platformOntologyTerm.term_id },
+            breadcrumbs,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(platformOntologyTerm);
+    }
+  )({ params, req, query });
 }

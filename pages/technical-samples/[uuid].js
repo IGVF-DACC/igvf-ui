@@ -24,6 +24,7 @@ import { formatDate } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function TechnicalSample({
   sample,
@@ -86,35 +87,37 @@ TechnicalSample.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sample = await request.getObject(`/technical-samples/${params.uuid}/`);
-  if (FetchRequest.isResponseSuccess(sample)) {
-    const documents = sample.documents
-      ? await request.getMultipleObjects(sample.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const source = await request.getObject(sample.source["@id"], null);
-    const breadcrumbs = await buildBreadcrumbs(
-      sample,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(sample, req.headers.cookie);
-    return {
-      props: {
+  return logTime(`/technical-samples/${params.uuid}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const sample = await request.getObject(`/technical-samples/${params.uuid}/`);
+    if (FetchRequest.isResponseSuccess(sample)) {
+      const documents = sample.documents
+        ? await request.getMultipleObjects(sample.documents, null, {
+            filterErrors: true,
+          })
+        : [];
+      const source = await request.getObject(sample.source["@id"], null);
+      const breadcrumbs = await buildBreadcrumbs(
         sample,
-        documents,
-        source,
-        pageContext: {
-          title: sample.accession,
+        "accession",
+        req.headers.cookie
+      );
+      const attribution = await buildAttribution(sample, req.headers.cookie);
+      return {
+        props: {
+          sample,
+          documents,
+          source,
+          pageContext: {
+            title: sample.accession,
+          },
+          breadcrumbs,
+          attribution,
+          isJson,
         },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(sample);
+      };
+    }
+    return errorObjectToProps(sample);
+  })({ params, req, query });
 }

@@ -18,6 +18,7 @@ import PagePreamble from "../../components/page-preamble";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import humanGenomicVariantTitle from "../../lib/human-genomic-variant-title";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function HumanGenomicVariant({ variant, isJson }) {
   // reference_sequence/refseq_id
@@ -77,24 +78,29 @@ HumanGenomicVariant.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const variant = await request.getObject(
-    `/human-genomic-variants/${params.uuid}/`
-  );
-  if (FetchRequest.isResponseSuccess(variant)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      variant,
-      "position",
-      req.headers.cookie
-    );
-    return {
-      props: {
-        variant,
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(variant);
+  return logTime(
+    `/human-genomic-variants/${params.uuid}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const variant = await request.getObject(
+        `/human-genomic-variants/${params.uuid}/`
+      );
+      if (FetchRequest.isResponseSuccess(variant)) {
+        const breadcrumbs = await buildBreadcrumbs(
+          variant,
+          "position",
+          req.headers.cookie
+        );
+        return {
+          props: {
+            variant,
+            breadcrumbs,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(variant);
+    }
+  )({ params, req, query });
 }

@@ -18,6 +18,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function Source({ source, isJson }) {
   return (
@@ -70,23 +71,25 @@ Source.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const source = await request.getObject(`/sources/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(source)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      source,
-      "name",
-      req.headers.cookie
-    );
-    return {
-      props: {
+  return logTime(`/sources/${params.id}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const source = await request.getObject(`/sources/${params.id}/`);
+    if (FetchRequest.isResponseSuccess(source)) {
+      const breadcrumbs = await buildBreadcrumbs(
         source,
-        pageContext: { title: source.name },
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(source);
+        "name",
+        req.headers.cookie
+      );
+      return {
+        props: {
+          source,
+          pageContext: { title: source.name },
+          breadcrumbs,
+          isJson,
+        },
+      };
+    }
+    return errorObjectToProps(source);
+  })({ params, req, query });
 }

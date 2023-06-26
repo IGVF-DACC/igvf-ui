@@ -17,6 +17,7 @@ import FetchRequest from "../../lib/fetch-request";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import { isJsonFormat } from "../../lib/query-utils";
 import buildAttribution from "../../lib/attribution";
+import { logTime } from "../../lib/general";
 
 export default function HumanDonor({
   donor,
@@ -73,43 +74,45 @@ HumanDonor.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const donor = await request.getObject(`/human-donors/${params.uuid}/`);
-  if (FetchRequest.isResponseSuccess(donor)) {
-    const documents = donor.documents
-      ? await request.getMultipleObjects(donor.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const parents = donor.parents
-      ? await request.getMultipleObjects(donor.parents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const phenotypicFeatures = donor.phenotypic_features
-      ? await request.getMultipleObjects(donor.phenotypic_features, null, {
-          filterErrors: true,
-        })
-      : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      donor,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(donor, req.headers.cookie);
-    return {
-      props: {
+  logTime(`/human-donors/${params.uuid}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const donor = await request.getObject(`/human-donors/${params.uuid}/`);
+    if (FetchRequest.isResponseSuccess(donor)) {
+      const documents = donor.documents
+        ? await request.getMultipleObjects(donor.documents, null, {
+            filterErrors: true,
+          })
+        : [];
+      const parents = donor.parents
+        ? await request.getMultipleObjects(donor.parents, null, {
+            filterErrors: true,
+          })
+        : [];
+      const phenotypicFeatures = donor.phenotypic_features
+        ? await request.getMultipleObjects(donor.phenotypic_features, null, {
+            filterErrors: true,
+          })
+        : [];
+      const breadcrumbs = await buildBreadcrumbs(
         donor,
-        documents,
-        parents,
-        pageContext: { title: donor.accession },
-        phenotypicFeatures,
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(donor);
+        "accession",
+        req.headers.cookie
+      );
+      const attribution = await buildAttribution(donor, req.headers.cookie);
+      return {
+        props: {
+          donor,
+          documents,
+          parents,
+          pageContext: { title: donor.accession },
+          phenotypicFeatures,
+          breadcrumbs,
+          attribution,
+          isJson,
+        },
+      };
+    }
+    return errorObjectToProps(donor);
+  })({ params, req, query });
 }

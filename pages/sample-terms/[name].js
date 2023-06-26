@@ -19,6 +19,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function SampleOntologyTerm({ sampleOntologyTerm, isJson }) {
   return (
@@ -88,25 +89,30 @@ SampleOntologyTerm.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sampleOntologyTerm = await request.getObject(
-    `/sample-terms//${params.name}/`
-  );
-  if (FetchRequest.isResponseSuccess(sampleOntologyTerm)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      sampleOntologyTerm,
-      "term_id",
-      req.headers.cookie
-    );
-    return {
-      props: {
-        sampleOntologyTerm,
-        pageContext: { title: sampleOntologyTerm.term_id },
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(sampleOntologyTerm);
+  return logTime(
+    `/sample-terms//${params.name}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const sampleOntologyTerm = await request.getObject(
+        `/sample-terms//${params.name}/`
+      );
+      if (FetchRequest.isResponseSuccess(sampleOntologyTerm)) {
+        const breadcrumbs = await buildBreadcrumbs(
+          sampleOntologyTerm,
+          "term_id",
+          req.headers.cookie
+        );
+        return {
+          props: {
+            sampleOntologyTerm,
+            pageContext: { title: sampleOntologyTerm.term_id },
+            breadcrumbs,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(sampleOntologyTerm);
+    }
+  )({ params, req, query });
 }

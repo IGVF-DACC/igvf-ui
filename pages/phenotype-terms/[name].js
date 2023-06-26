@@ -13,6 +13,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function PhenotypeOntologyTerm({
   phenotypeOntologyTerm,
@@ -44,25 +45,30 @@ PhenotypeOntologyTerm.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const phenotypeOntologyTerm = await request.getObject(
-    `/phenotype-terms/${params.name}/`
-  );
-  if (FetchRequest.isResponseSuccess(phenotypeOntologyTerm)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      phenotypeOntologyTerm,
-      "term_id",
-      req.headers.cookie
-    );
-    return {
-      props: {
-        phenotypeOntologyTerm,
-        pageContext: { title: phenotypeOntologyTerm.term_id },
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(phenotypeOntologyTerm);
+  return logTime(
+    `/phenotype-terms/${params.name}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const phenotypeOntologyTerm = await request.getObject(
+        `/phenotype-terms/${params.name}/`
+      );
+      if (FetchRequest.isResponseSuccess(phenotypeOntologyTerm)) {
+        const breadcrumbs = await buildBreadcrumbs(
+          phenotypeOntologyTerm,
+          "term_id",
+          req.headers.cookie
+        );
+        return {
+          props: {
+            phenotypeOntologyTerm,
+            pageContext: { title: phenotypeOntologyTerm.term_id },
+            breadcrumbs,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(phenotypeOntologyTerm);
+    }
+  )({ params, req, query });
 }

@@ -20,7 +20,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { UC } from "../../lib/constants";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { truthyOrZero } from "../../lib/general";
+import { logTime, truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Treatment({ treatment, documents, isJson }) {
@@ -121,29 +121,34 @@ Treatment.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const treatment = await request.getObject(`/treatments/${params.uuid}/`);
-  if (FetchRequest.isResponseSuccess(treatment)) {
-    const documents = treatment.documents
-      ? await request.getMultipleObjects(treatment.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      treatment,
-      "treatment_term_id",
-      req.headers.cookie
-    );
-    return {
-      props: {
-        treatment,
-        documents,
-        pageContext: { title: treatment.treatment_term_id },
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(treatment);
+  return logTime(
+    `/treatments/${params.uuid}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const treatment = await request.getObject(`/treatments/${params.uuid}/`);
+      if (FetchRequest.isResponseSuccess(treatment)) {
+        const documents = treatment.documents
+          ? await request.getMultipleObjects(treatment.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const breadcrumbs = await buildBreadcrumbs(
+          treatment,
+          "treatment_term_id",
+          req.headers.cookie
+        );
+        return {
+          props: {
+            treatment,
+            documents,
+            pageContext: { title: treatment.treatment_term_id },
+            breadcrumbs,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(treatment);
+    }
+  )({ params, req, query });
 }

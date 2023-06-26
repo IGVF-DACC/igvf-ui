@@ -22,6 +22,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function Document({ document, attribution = null, isJson }) {
   return (
@@ -111,25 +112,27 @@ Document.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const document = await request.getObject(`/documents/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(document)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      document,
-      "description",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(document, req.headers.cookie);
-    return {
-      props: {
+  return logTime(`/documents/${params.id}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const document = await request.getObject(`/documents/${params.id}/`);
+    if (FetchRequest.isResponseSuccess(document)) {
+      const breadcrumbs = await buildBreadcrumbs(
         document,
-        pageContext: { title: document.description },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(document);
+        "description",
+        req.headers.cookie
+      );
+      const attribution = await buildAttribution(document, req.headers.cookie);
+      return {
+        props: {
+          document,
+          pageContext: { title: document.description },
+          breadcrumbs,
+          attribution,
+          isJson,
+        },
+      };
+    }
+    return errorObjectToProps(document);
+  })({ params, req, query });
 }

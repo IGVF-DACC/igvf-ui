@@ -25,6 +25,8 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
+
 
 export default function AlignmentFile({
   attribution,
@@ -111,46 +113,56 @@ AlignmentFile.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const alignmentFile = await request.getObject(`/signal-files/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(alignmentFile)) {
-    const fileSet = await request.getObject(alignmentFile.file_set, null);
-    const documents = alignmentFile.documents
-      ? await request.getMultipleObjects(alignmentFile.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const derivedFrom = alignmentFile.derived_from
-      ? await request.getMultipleObjects(alignmentFile.derived_from, null, {
-          filterErrors: true,
-        })
-      : [];
-    const referenceFiles = alignmentFile.reference_files
-      ? await request.getMultipleObjects(alignmentFile.reference_files, null)
-      : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      alignmentFile,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(
-      alignmentFile,
-      req.headers.cookie
-    );
-    return {
-      props: {
-        alignmentFile,
-        fileSet,
-        documents,
-        derivedFrom,
-        pageContext: { title: alignmentFile.accession },
-        breadcrumbs,
-        attribution,
-        referenceFiles,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(alignmentFile);
+  return logTime(
+    `/signal-files/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const alignmentFile = await request.getObject(
+        `/signal-files/${params.id}/`
+      );
+      if (FetchRequest.isResponseSuccess(alignmentFile)) {
+        const fileSet = await request.getObject(alignmentFile.file_set, null);
+        const documents = alignmentFile.documents
+          ? await request.getMultipleObjects(alignmentFile.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const derivedFrom = alignmentFile.derived_from
+          ? await request.getMultipleObjects(alignmentFile.derived_from, null, {
+              filterErrors: true,
+            })
+          : [];
+        const referenceFiles = alignmentFile.reference_files
+          ? await request.getMultipleObjects(
+              alignmentFile.reference_files,
+              null
+            )
+          : [];
+        const breadcrumbs = await buildBreadcrumbs(
+          alignmentFile,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          alignmentFile,
+          req.headers.cookie
+        );
+        return {
+          props: {
+            alignmentFile,
+            fileSet,
+            documents,
+            derivedFrom,
+            pageContext: { title: alignmentFile.accession },
+            breadcrumbs,
+            attribution,
+            referenceFiles,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(alignmentFile);
+    }
+  )({ params, req, query });
 }

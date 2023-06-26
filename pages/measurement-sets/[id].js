@@ -28,7 +28,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
-import { LOG_GET_SERVER_SIDE_REQUEST_TIME } from "../../lib/constants";
+import { logTime } from "../../lib/general";
 
 /**
  * Columns for the two file tables; both those with `illumina_read_type` (meta.hasReadType is true)
@@ -265,84 +265,86 @@ MeasurementSet.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  if (LOG_GET_SERVER_SIDE_REQUEST_TIME) {
-    const start = performance.now();
-  }
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const measurementSet = await request.getObject(
-    `/measurement-sets/${params.id}/`
-  );
-  if (FetchRequest.isResponseSuccess(measurementSet)) {
-    const assayTerm = await request.getObject(
-      measurementSet.assay_term["@id"],
-      null
-    );
-    const documents = measurementSet.documents
-      ? await request.getMultipleObjects(measurementSet.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const samples = measurementSet.samples
-      ? await request.getMultipleObjects(measurementSet.samples, null, {
-          filterErrors: true,
-        })
-      : [];
-    let donors = [];
-    if (measurementSet.donors) {
-      const donorPaths = measurementSet.donors.map((donor) => donor["@id"]);
-      donors = await request.getMultipleObjects(donorPaths, null, {
-        filterErrors: true,
-      });
-    }
-    const files = measurementSet.files
-      ? await request.getMultipleObjects(measurementSet.files, null, {
-          filterErrors: true,
-        })
-      : [];
+  return logTime(
+    `/measurement-sets/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const measurementSet = await request.getObject(
+        `/measurement-sets/${params.id}/`
+      );
+      if (FetchRequest.isResponseSuccess(measurementSet)) {
+        const assayTerm = await request.getObject(
+          measurementSet.assay_term["@id"],
+          null
+        );
+        const documents = measurementSet.documents
+          ? await request.getMultipleObjects(measurementSet.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const samples = measurementSet.samples
+          ? await request.getMultipleObjects(measurementSet.samples, null, {
+              filterErrors: true,
+            })
+          : [];
+        let donors = [];
+        if (measurementSet.donors) {
+          const donorPaths = measurementSet.donors.map((donor) => donor["@id"]);
+          donors = await request.getMultipleObjects(donorPaths, null, {
+            filterErrors: true,
+          });
+        }
+        const files = measurementSet.files
+          ? await request.getMultipleObjects(measurementSet.files, null, {
+              filterErrors: true,
+            })
+          : [];
 
-    // Use the files to retrieve all the sequencing platform objects they link to.
-    const sequencingPlatformPaths = files
-      .map((file) => file.sequencing_platform)
-      .filter((sequencingPlatform) => sequencingPlatform);
-    const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
-    const sequencingPlatforms =
-      uniqueSequencingPlatformPaths.length > 0
-        ? await request.getMultipleObjects(
-            uniqueSequencingPlatformPaths,
-            null,
-            { filterErrors: true }
-          )
-        : [];
+        // Use the files to retrieve all the sequencing platform objects they link to.
+        const sequencingPlatformPaths = files
+          .map((file) => file.sequencing_platform)
+          .filter((sequencingPlatform) => sequencingPlatform);
+        const uniqueSequencingPlatformPaths = [
+          ...new Set(sequencingPlatformPaths),
+        ];
+        const sequencingPlatforms =
+          uniqueSequencingPlatformPaths.length > 0
+            ? await request.getMultipleObjects(
+                uniqueSequencingPlatformPaths,
+                null,
+                { filterErrors: true }
+              )
+            : [];
 
-    const breadcrumbs = await buildBreadcrumbs(
-      measurementSet,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(
-      measurementSet,
-      req.headers.cookie
-    );
-    if (LOG_GET_SERVER_SIDE_REQUEST_TIME) {
-      const duration = performance.now() - start;
-      console.log(`getServerSideProps /measurement-sets/${params.id}/: ${duration} ms`);
+        const breadcrumbs = await buildBreadcrumbs(
+          measurementSet,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          measurementSet,
+          req.headers.cookie
+        );
+        // logTime2(start, `/measurement-sets/${params.id}`);
+        // console.log(`/measurement-sets/${params.id}: ${performance.now() - start} ms`)
+        return {
+          props: {
+            measurementSet,
+            assayTerm,
+            documents,
+            donors,
+            files,
+            sequencingPlatforms,
+            samples,
+            pageContext: { title: measurementSet.accession },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(measurementSet);
     }
-    return {
-      props: {
-        measurementSet,
-        assayTerm,
-        documents,
-        donors,
-        files,
-        sequencingPlatforms,
-        samples,
-        pageContext: { title: measurementSet.accession },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(measurementSet);
+  )({ params, req, query });
 }

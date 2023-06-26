@@ -20,6 +20,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 function EnsemblLink({ geneid, taxa }) {
   const organism = taxa.replace(/ /g, "_");
@@ -112,23 +113,25 @@ Gene.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const gene = await request.getObject(`/genes/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(gene)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      gene,
-      "title",
-      req.headers.cookie
-    );
-    return {
-      props: {
+  return logTime(`/genes/${params.id}/`, async ({ params, req, query }) => {
+    const isJson = isJsonFormat(query);
+    const request = new FetchRequest({ cookie: req.headers.cookie });
+    const gene = await request.getObject(`/genes/${params.id}/`);
+    if (FetchRequest.isResponseSuccess(gene)) {
+      const breadcrumbs = await buildBreadcrumbs(
         gene,
-        pageContext: { title: gene.title },
-        breadcrumbs,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(gene);
+        "title",
+        req.headers.cookie
+      );
+      return {
+        props: {
+          gene,
+          pageContext: { title: gene.title },
+          breadcrumbs,
+          isJson,
+        },
+      };
+    }
+    return errorObjectToProps(gene);
+  })({ params, req, query });
 }

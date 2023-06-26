@@ -22,7 +22,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { truthyOrZero } from "../../lib/general";
+import { logTime, truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function SequenceFile({
@@ -97,42 +97,49 @@ SequenceFile.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sequenceFile = await request.getObject(`/sequence-files/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(sequenceFile)) {
-    const fileSet = await request.getObject(sequenceFile.file_set, null);
-    const documents = sequenceFile.documents
-      ? await request.getMultipleObjects(sequenceFile.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const derivedFrom = sequenceFile.derived_from
-      ? await request.getMultipleObjects(sequenceFile.derived_from, null, {
-          filterErrors: true,
-        })
-      : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      sequenceFile,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(
-      sequenceFile,
-      req.headers.cookie
-    );
-    return {
-      props: {
-        sequenceFile,
-        fileSet,
-        documents,
-        derivedFrom,
-        pageContext: { title: sequenceFile.accession },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(sequenceFile);
+  return logTime(
+    `/sequence-files/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const sequenceFile = await request.getObject(
+        `/sequence-files/${params.id}/`
+      );
+      if (FetchRequest.isResponseSuccess(sequenceFile)) {
+        const fileSet = await request.getObject(sequenceFile.file_set, null);
+        const documents = sequenceFile.documents
+          ? await request.getMultipleObjects(sequenceFile.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const derivedFrom = sequenceFile.derived_from
+          ? await request.getMultipleObjects(sequenceFile.derived_from, null, {
+              filterErrors: true,
+            })
+          : [];
+        const breadcrumbs = await buildBreadcrumbs(
+          sequenceFile,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          sequenceFile,
+          req.headers.cookie
+        );
+        return {
+          props: {
+            sequenceFile,
+            fileSet,
+            documents,
+            derivedFrom,
+            pageContext: { title: sequenceFile.accession },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(sequenceFile);
+    }
+  )({ params, req, query });
 }

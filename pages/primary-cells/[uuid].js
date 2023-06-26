@@ -23,7 +23,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { truthyOrZero } from "../../lib/general";
+import { logTime, truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function PrimaryCell({
@@ -123,81 +123,95 @@ PrimaryCell.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
-  if (FetchRequest.isResponseSuccess(primaryCell)) {
-    const biosampleTerm = primaryCell.biosample_term
-      ? await request.getObject(primaryCell.biosample_term["@id"], null)
-      : null;
-    let diseaseTerms = [];
-    if (primaryCell.disease_terms?.length > 0) {
-      const diseaseTermPaths = primaryCell.disease_terms.map(
-        (diseaseTerm) => diseaseTerm["@id"]
+  return logTime(
+    `/primary-cells/${params.uuid}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const primaryCell = await request.getObject(
+        `/primary-cells/${params.uuid}/`
       );
-      diseaseTerms = await request.getMultipleObjects(diseaseTermPaths, null, {
-        filterErrors: true,
-      });
+      if (FetchRequest.isResponseSuccess(primaryCell)) {
+        const biosampleTerm = primaryCell.biosample_term
+          ? await request.getObject(primaryCell.biosample_term["@id"], null)
+          : null;
+        let diseaseTerms = [];
+        if (primaryCell.disease_terms?.length > 0) {
+          const diseaseTermPaths = primaryCell.disease_terms.map(
+            (diseaseTerm) => diseaseTerm["@id"]
+          );
+          diseaseTerms = await request.getMultipleObjects(
+            diseaseTermPaths,
+            null,
+            {
+              filterErrors: true,
+            }
+          );
+        }
+        const documents = primaryCell.documents
+          ? await request.getMultipleObjects(primaryCell.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const donors = primaryCell.donors
+          ? await request.getMultipleObjects(primaryCell.donors, null, {
+              filterErrors: true,
+            })
+          : [];
+        const source = await request.getObject(primaryCell.source["@id"], null);
+        const treatments = primaryCell.treatments
+          ? await request.getMultipleObjects(primaryCell.treatments, null, {
+              filterErrors: true,
+            })
+          : [];
+        const pooledFrom =
+          primaryCell.pooled_from?.length > 0
+            ? await request.getMultipleObjects(primaryCell.pooled_from, null, {
+                filterErrors: true,
+              })
+            : [];
+        const partOf = primaryCell.part_of
+          ? await request.getObject(primaryCell.part_of, null)
+          : null;
+        const biomarkers =
+          primaryCell.biomarkers?.length > 0
+            ? await request.getMultipleObjects(primaryCell.biomarkers, null, {
+                filterErrors: true,
+              })
+            : [];
+        const breadcrumbs = await buildBreadcrumbs(
+          primaryCell,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          primaryCell,
+          req.headers.cookie
+        );
+        return {
+          props: {
+            primaryCell,
+            biosampleTerm,
+            diseaseTerms,
+            documents,
+            donors,
+            source,
+            treatments,
+            pooledFrom,
+            partOf,
+            biomarkers,
+            pageContext: {
+              title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
+                primaryCell.accession
+              }`,
+            },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(primaryCell);
     }
-    const documents = primaryCell.documents
-      ? await request.getMultipleObjects(primaryCell.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const donors = primaryCell.donors
-      ? await request.getMultipleObjects(primaryCell.donors, null, {
-          filterErrors: true,
-        })
-      : [];
-    const source = await request.getObject(primaryCell.source["@id"], null);
-    const treatments = primaryCell.treatments
-      ? await request.getMultipleObjects(primaryCell.treatments, null, {
-          filterErrors: true,
-        })
-      : [];
-    const pooledFrom =
-      primaryCell.pooled_from?.length > 0
-        ? await request.getMultipleObjects(primaryCell.pooled_from, null, {
-            filterErrors: true,
-          })
-        : [];
-    const partOf = primaryCell.part_of
-      ? await request.getObject(primaryCell.part_of, null)
-      : null;
-    const biomarkers =
-      primaryCell.biomarkers?.length > 0
-        ? await request.getMultipleObjects(primaryCell.biomarkers, null, {
-            filterErrors: true,
-          })
-        : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      primaryCell,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(primaryCell, req.headers.cookie);
-    return {
-      props: {
-        primaryCell,
-        biosampleTerm,
-        diseaseTerms,
-        documents,
-        donors,
-        source,
-        treatments,
-        pooledFrom,
-        partOf,
-        biomarkers,
-        pageContext: {
-          title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
-            primaryCell.accession
-          }`,
-        },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(primaryCell);
+  )({ params, req, query });
 }

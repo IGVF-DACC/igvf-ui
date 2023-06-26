@@ -24,6 +24,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { logTime } from "../../lib/general";
 
 export default function ReferenceFile({
   referenceFile,
@@ -100,44 +101,49 @@ ReferenceFile.propTypes = {
 };
 
 export async function getServerSideProps({ params, req, query }) {
-  const isJson = isJsonFormat(query);
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const referenceFile = await request.getObject(
-    `/reference-files/${params.id}/`
-  );
-  if (FetchRequest.isResponseSuccess(referenceFile)) {
-    const fileSet = await request.getObject(referenceFile.file_set, null);
-    const documents = referenceFile.documents
-      ? await request.getMultipleObjects(referenceFile.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const derivedFrom = referenceFile.derived_from
-      ? await request.getMultipleObjects(referenceFile.derived_from, null, {
-          filterErrors: true,
-        })
-      : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      referenceFile,
-      "accession",
-      req.headers.cookie
-    );
-    const attribution = await buildAttribution(
-      referenceFile,
-      req.headers.cookie
-    );
-    return {
-      props: {
-        referenceFile,
-        fileSet,
-        documents,
-        derivedFrom,
-        pageContext: { title: referenceFile.accession },
-        breadcrumbs,
-        attribution,
-        isJson,
-      },
-    };
-  }
-  return errorObjectToProps(referenceFile);
+  return logTime(
+    `/reference-files/${params.id}/`,
+    async ({ params, req, query }) => {
+      const isJson = isJsonFormat(query);
+      const request = new FetchRequest({ cookie: req.headers.cookie });
+      const referenceFile = await request.getObject(
+        `/reference-files/${params.id}/`
+      );
+      if (FetchRequest.isResponseSuccess(referenceFile)) {
+        const fileSet = await request.getObject(referenceFile.file_set, null);
+        const documents = referenceFile.documents
+          ? await request.getMultipleObjects(referenceFile.documents, null, {
+              filterErrors: true,
+            })
+          : [];
+        const derivedFrom = referenceFile.derived_from
+          ? await request.getMultipleObjects(referenceFile.derived_from, null, {
+              filterErrors: true,
+            })
+          : [];
+        const breadcrumbs = await buildBreadcrumbs(
+          referenceFile,
+          "accession",
+          req.headers.cookie
+        );
+        const attribution = await buildAttribution(
+          referenceFile,
+          req.headers.cookie
+        );
+        return {
+          props: {
+            referenceFile,
+            fileSet,
+            documents,
+            derivedFrom,
+            pageContext: { title: referenceFile.accession },
+            breadcrumbs,
+            attribution,
+            isJson,
+          },
+        };
+      }
+      return errorObjectToProps(referenceFile);
+    }
+  )({ params, req, query });
 }
