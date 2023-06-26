@@ -268,7 +268,7 @@ export async function getServerSideProps({ req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const term = query.term;
   const topHitsResults = await request.getObject(
-    `/top-hits-raw?searchTerm=${term}`
+    `/top-hits-raw?query=${term}`
   );
   const itemListsByType = getTopHitsItemListsByType(topHitsResults);
   const accessoryData = await getAccessoryData(
