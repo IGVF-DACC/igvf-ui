@@ -46,7 +46,7 @@ function TypeSectionHeader({
   // Build a query for the list and report views for the top-hits search type.
   const query = new QueryString();
   query.addKeyValue("type", searchResult.key);
-  query.addKeyValue("searchTerm", term);
+  query.addKeyValue("query", term);
 
   // Get the section title for the top-hits type.
   const typeTitle = getTypeTitle(searchResult, collectionTitles);
@@ -114,7 +114,7 @@ TypeSectionHeader.propTypes = {
 };
 
 /**
- * Display the top-hits results for one `@type` of searchTerm results.
+ * Display the top-hits results for one `@type` of query results.
  */
 function TypeSection({ type, children }) {
   return (

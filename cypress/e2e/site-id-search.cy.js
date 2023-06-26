@@ -32,7 +32,7 @@ describe("Test site search", () => {
         cy.get(`[aria-label^="View search list for"]`).click();
         cy.url().should(
           "match",
-          /\/search\?type=[a-zA-Z0-9]+&searchTerm=cherry$/
+          /\/search\?type=[a-zA-Z0-9]+&query=cherry$/
         );
         cy.go("back");
 
@@ -40,7 +40,7 @@ describe("Test site search", () => {
         cy.get(`[aria-label^="View search report for"]`).click();
         cy.url().should(
           "match",
-          /\/report\?type=[a-zA-Z0-9]+&searchTerm=cherry$/
+          /\/report\?type=[a-zA-Z0-9]+&query=cherry$/
         );
       });
   });

@@ -9,7 +9,7 @@ These components render each of the items that appear when you go to the `/searc
 The results of this search only contain Measurement set objects. However:
 
 ```
-/search?searchTerm=cherry
+/search?query=cherry
 ```
 
 The results can contain a mix of types, so consider each search-result item as standing independently from the others.
