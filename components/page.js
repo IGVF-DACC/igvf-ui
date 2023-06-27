@@ -1028,7 +1028,11 @@ export default function Page({
         <>
           {isAuthenticated && <EditPageTrigger href={router.asPath} />}
           <DataPanel>
-            <div data-testid="page-blocks" className="prose dark:prose-invert">
+            <div
+              data-testid="page-blocks"
+              id="page-content"
+              className="prose dark:prose-invert"
+            >
               {editableBlocks.map((block) => {
                 if (block["@type"] === BLOCK_TYPE_MARKDOWN) {
                   return (

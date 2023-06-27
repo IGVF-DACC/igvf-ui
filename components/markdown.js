@@ -4,6 +4,27 @@ import { marked } from "marked";
 import PropTypes from "prop-types";
 
 /**
+ * marked extension to wrap tables in a div with a CSS class to allow the table to scroll
+ * horizontally.
+ */
+const renderer = {
+  table(header, body) {
+    return `<div class="markdown-table">
+        <table>
+          ${header}
+          ${body}
+        </table>
+      </div>`;
+  },
+};
+
+marked.use({
+  renderer,
+  mangle: false,
+  headerIds: false,
+});
+
+/**
  * This component provides a convenient way to render markdown as HTML while filtering out
  * dangerous content.
  */
