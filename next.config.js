@@ -1,7 +1,7 @@
 /**
  * Change the UI version number for each igvf-ui release.
  */
-const UI_VERSION = "4.2.0";
+const UI_VERSION = "5.0.0";
 
 module.exports = {
   reactStrictMode: false,
