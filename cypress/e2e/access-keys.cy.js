@@ -7,8 +7,8 @@ describe("Exercise access keys", () => {
     cy.wait(1000);
 
     // Go to the user profile page.
-    cy.get("[data-testid=authenticate]").click();
-    cy.get("[data-testid=profile]").click();
+    cy.get("[data-testid=navigation-authenticate]").click();
+    cy.get("[data-testid=navigation-profile]").click();
 
     // Create an access key.
     cy.contains("Create Access Key").click();
@@ -52,6 +52,6 @@ describe("Exercise access keys", () => {
     cy.get(`[aria-label^="Reset access key"]`).should("have.length", 0);
 
     // Close the user menu.
-    cy.get("[data-testid=authenticate]").click();
+    cy.get("[data-testid=navigation-authenticate]").click();
   });
 });

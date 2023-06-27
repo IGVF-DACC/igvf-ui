@@ -61,6 +61,48 @@ const Icon = {
       <circle cx="10" cy="10" r="10" />
     </svg>
   ),
+  Data: ({ className = null, testid = "icon-data" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path
+        d="M16.8,3H3.2C2.5,3,2,3.5,2,4.2v8.6C2,13.5,2.5,14,3.2,14h4.9c-0.3,0.9-0.6,1.5-1.1,2.2C6.7,16.6,7,17,7.4,17h5.2
+	c0.4,0,0.7-0.5,0.4-0.8c-0.5-0.7-0.8-1.3-1.1-2.2h4.9c0.7,0,1.2-0.5,1.2-1.2V4.2C18,3.5,17.5,3,16.8,3z M16.8,11.3
+	c0,0.3-0.2,0.5-0.5,0.5H3.8c-0.3,0-0.5-0.2-0.5-0.5V4.7c0-0.3,0.2-0.5,0.5-0.5h12.5c0.3,0,0.5,0.2,0.5,0.5V11.3z"
+      />
+      <path d="M6.7,6H4.5C4.2,6,4,5.7,4,5.4v0c0-0.3,0.2-0.5,0.5-0.5h2.2c0.3,0,0.5,0.2,0.5,0.5v0C7.2,5.7,7,6,6.7,6z" />
+      <path d="M15.5,6h-7C8.2,6,8,5.7,8,5.4v0c0-0.3,0.2-0.5,0.5-0.5h7c0.3,0,0.5,0.2,0.5,0.5v0C16,5.7,15.8,6,15.5,6z" />
+      <path d="M10.7,11H4.5C4.2,11,4,10.8,4,10.5v0C4,10.2,4.2,10,4.5,10h6.2c0.3,0,0.5,0.2,0.5,0.5v0C11.2,10.8,10.9,11,10.7,11z" />
+      <path d="M15.5,11h-3.1c-0.3,0-0.5-0.2-0.5-0.5v0c0-0.3,0.2-0.5,0.5-0.5h3.1c0.3,0,0.5,0.2,0.5,0.5v0C16,10.8,15.8,11,15.5,11z" />
+      <path d="M10,9.3H7.3C7,9.3,6.8,9.1,6.8,8.8v0c0-0.3,0.2-0.5,0.5-0.5H10c0.3,0,0.5,0.2,0.5,0.5v0C10.5,9.1,10.2,9.3,10,9.3z" />
+      <path d="M5.5,9.3h-1C4.2,9.3,4,9.1,4,8.8v0c0-0.3,0.2-0.5,0.5-0.5h1C5.8,8.3,6,8.6,6,8.8v0C6,9.1,5.8,9.3,5.5,9.3z" />
+      <path d="M15.5,9.3h-3.7c-0.3,0-0.5-0.2-0.5-0.5v0c0-0.3,0.2-0.5,0.5-0.5h3.7c0.3,0,0.5,0.2,0.5,0.5v0C16,9.1,15.8,9.3,15.5,9.3z" />
+      <path d="M7.9,7.6H4.5C4.2,7.6,4,7.4,4,7.1v0c0-0.3,0.2-0.5,0.5-0.5h3.4c0.3,0,0.5,0.2,0.5,0.5v0C8.4,7.4,8.2,7.6,7.9,7.6z" />
+      <path d="M12.2,7.6H9.7c-0.3,0-0.5-0.2-0.5-0.5v0c0-0.3,0.2-0.5,0.5-0.5h2.5c0.3,0,0.5,0.2,0.5,0.5v0C12.7,7.4,12.5,7.6,12.2,7.6z" />
+      <path d="M15.5,7.6H14c-0.3,0-0.5-0.2-0.5-0.5v0c0-0.3,0.2-0.5,0.5-0.5h1.5c0.3,0,0.5,0.2,0.5,0.5v0C16,7.4,15.8,7.6,15.5,7.6z" />
+    </svg>
+  ),
+  DataModel: ({ className = null, testid = "icon-data-model" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path
+        d="M17.2,11.9H16l-3.6-3.8C12.8,7.9,13,7.6,13,7.3V2.9c0-0.5-0.4-0.8-0.8-0.8H7.8C7.4,2.1,7,2.5,7,2.9v4.4
+	c0,0.4,0.2,0.6,0.5,0.8L4,11.9H2.8c-0.5,0-0.8,0.4-0.8,0.8v4.4c0,0.5,0.4,0.8,0.8,0.8h4.4c0.5,0,0.8-0.4,0.8-0.8v-4.4
+	c0-0.5-0.4-0.8-0.8-0.8H6l3.5-3.8h0.9l3.5,3.8h-1.2c-0.5,0-0.8,0.4-0.8,0.8v4.4c0,0.5,0.4,0.8,0.8,0.8h4.4c0.5,0,0.8-0.4,0.8-0.8
+	v-4.4C18,12.3,17.6,11.9,17.2,11.9z"
+      />
+    </svg>
+  ),
+
   Donor: ({ className = null, testid = "icon-donor" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -73,6 +115,22 @@ const Icon = {
         d="M15,1.4H5L0,10l5,8.6h10l5-8.6L15,1.4z M13.3,12.1l-0.7,0.6v4.9H7.5v-4.9L6.7,12V7.8c0-0.9,0.7-1.6,1.6-1.6H10
 	c-1,0-1.9-0.8-1.9-1.9c0-1,0.8-1.9,1.9-1.9s1.9,0.8,1.9,1.9c0,1-0.8,1.9-1.9,1.9h1.7c0.9,0,1.6,0.7,1.6,1.6V12.1z"
       />
+    </svg>
+  ),
+  EllipsisHorizontal: ({
+    className = null,
+    testid = "icon-ellipsis-horizontal",
+  }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 36 8"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <circle cx="18" cy="4" r="3.4" />
+      <circle cx="31.6" cy="4" r="3.4" />
+      <circle cx="4.4" cy="4" r="3.4" />
     </svg>
   ),
   FileSet: ({ className = null, testid = "icon-fileset" }) => (
@@ -128,22 +186,22 @@ const Icon = {
       />
     </svg>
   ),
-  EllipsisHorizontal: ({
-    className = null,
-    testid = "icon-ellipsis-horizontal",
-  }) => (
+  Methodology: ({ className = null, testid = "icon-methodology" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      viewBox="0 0 36 8"
+      viewBox="0 0 20 20"
       fill="currentColor"
       data-testid={testid}
     >
-      <circle cx="18" cy="4" r="3.4" />
-      <circle cx="31.6" cy="4" r="3.4" />
-      <circle cx="4.4" cy="4" r="3.4" />
+      <circle cx="10" cy="4.5" r="2.5" />
+      <circle cx="15.5" cy="10" r="2.5" />
+      <circle cx="10" cy="15.5" r="2.5" />
+      <circle cx="4.5" cy="10" r="2.5" />
+      <path d="M16,16H4V4h12V16z M5,15h10V5H5V15z" />
     </svg>
   ),
+
   Sample: ({ className = null, testid = "icon-sample" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -292,6 +350,14 @@ Icon.Circle.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
+Icon.Data.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.DataModel.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
 Icon.Donor.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
@@ -309,6 +375,10 @@ Icon.Filter.propTypes = {
   testid: PropTypes.string,
 };
 Icon.Gene.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Methodology.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };

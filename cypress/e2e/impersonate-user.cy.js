@@ -6,8 +6,8 @@ describe("Impersonate user tests", () => {
     cy.contains("Cypress Testing");
     cy.wait(1000);
 
-    cy.get("[data-testid=authenticate]").click();
-    cy.get("[data-testid=impersonate]").click();
+    cy.get("[data-testid=navigation-authenticate]").click();
+    cy.get("[data-testid=navigation-impersonate]").click();
     cy.url().should("include", "/impersonate-user");
 
     cy.get("h1").contains("Impersonate User");
@@ -18,8 +18,10 @@ describe("Impersonate user tests", () => {
     cy.get(`[aria-label^="Impersonate"]`).should("have.length.gte", 4);
 
     cy.get(`[aria-label^="Impersonate J. Michael Cherry"]`).first().click();
-    cy.get("[data-testid=authenticate]").contains("J. Michael Cherry");
-    cy.get("[data-testid=authenticate]").click();
-    cy.get("[data-testid=impersonate]").should("not.exist");
+    cy.get("[data-testid=navigation-authenticate]").contains(
+      "J. Michael Cherry"
+    );
+    cy.get("[data-testid=navigation-authenticate]").click();
+    cy.get("[data-testid=navigation-impersonate]").should("not.exist");
   });
 });

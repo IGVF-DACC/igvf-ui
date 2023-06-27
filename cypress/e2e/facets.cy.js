@@ -66,7 +66,7 @@ describe("Facet tests", () => {
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
 
     // Check we can transition to the report view with the facets.
-    cy.get(`[label="Select report view"]`).click();
+    cy.get(`[aria-label="Select report view"]`).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
       "1 item"

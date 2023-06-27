@@ -2,23 +2,11 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CodeBracketIcon,
   Bars2Icon,
-  BeakerIcon,
-  BookmarkIcon,
-  CircleStackIcon,
-  DocumentIcon,
-  DocumentTextIcon,
   InformationCircleIcon,
   MinusIcon,
   PlusIcon,
   QuestionMarkCircleIcon,
-  TagIcon,
-  UserGroupIcon,
-  PaperClipIcon,
-  PencilSquareIcon,
-  SparklesIcon,
-  RectangleGroupIcon,
 } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
@@ -194,14 +182,24 @@ function NavigationLink({
 
   if (linkReload.isEnabled) {
     return (
-      <a href={href} onClick={onClick} data-testid={id} className={cssClasses}>
+      <a
+        href={href}
+        onClick={onClick}
+        data-testid={`navigation-${id}`}
+        className={cssClasses}
+      >
         {children}
       </a>
     );
   }
 
   return (
-    <Link href={href} onClick={onClick} data-testid={id} className={cssClasses}>
+    <Link
+      href={href}
+      onClick={onClick}
+      data-testid={`navigation-${id}`}
+      className={cssClasses}
+    >
       {children}
     </Link>
   );
@@ -235,7 +233,7 @@ function NavigationButton({
   return (
     <button
       onClick={onClick}
-      data-testid={id}
+      data-testid={`navigation-${id}`}
       disabled={isDisabled}
       className={cssClasses}
     >
@@ -581,344 +579,113 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
       )}
       <NavigationSearchTriggers />
       <NavigationList className="p-4">
-        <NavigationHrefItem
-          id="awards"
-          href="/search?type=Award"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <Icon.Award />
-          </NavigationIcon>
-          Awards
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="biomarkers"
-          href="/search?type=Biomarker"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <BookmarkIcon />
-          </NavigationIcon>
-          Biomarkers
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="documents"
-          href="/search?type=Document"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <PaperClipIcon />
-          </NavigationIcon>
-          Documents
-        </NavigationHrefItem>
         <NavigationGroupItem
-          id="donors"
-          title="Donors"
-          icon={<Icon.Donor />}
-          isGroupOpened={openedParents.includes("donors")}
+          id="data"
+          title="Data"
+          icon={<Icon.Data />}
+          isGroupOpened={openedParents.includes("data")}
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
-            id="human-donors"
-            href="/search?type=HumanDonor"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Human Donors
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="rodent-donors"
-            href="/search?type=RodentDonor"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Rodent Donors
-          </NavigationHrefItem>
-        </NavigationGroupItem>
-        <NavigationGroupItem
-          id="files"
-          title="Files"
-          icon={<DocumentTextIcon />}
-          isGroupOpened={openedParents.includes("files")}
-          handleGroupClick={handleParentClick}
-        >
-          <NavigationHrefItem
-            id="alignment-file"
-            href="/search?type=AlignmentFile"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Alignment Files
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="reference-file"
-            href="/search?type=ReferenceFile"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Reference Files
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="sequence-file"
-            href="/search?type=SequenceFile"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Sequence Files
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="signal-file"
-            href="/search?type=SignalFile"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Signal Files
-          </NavigationHrefItem>
-        </NavigationGroupItem>
-        <NavigationGroupItem
-          id="file-sets"
-          title="File sets"
-          icon={<Icon.FileSet />}
-          isGroupOpened={openedParents.includes("file-sets")}
-          handleGroupClick={handleParentClick}
-        >
-          <NavigationHrefItem
-            id="analysis-sets"
-            href="/search?type=AnalysisSet"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Analysis Sets
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="curated-sets"
-            href="/search?type=CuratedSet"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Curated Sets
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="measurement-sets"
+            id="datasets"
             href="/search?type=MeasurementSet"
             navigationClick={navigationClick}
             isChildItem
           >
-            Measurement Sets
+            Datasets
+          </NavigationHrefItem>
+          <NavigationHrefItem
+            id="files"
+            href="/search?type=File"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Files
           </NavigationHrefItem>
         </NavigationGroupItem>
-        <NavigationHrefItem
-          id="genes"
-          href="/search?type=Gene"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <Icon.Gene />
-          </NavigationIcon>
-          Genes
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="labs"
-          href="/search?type=Lab"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <BeakerIcon />
-          </NavigationIcon>
-          Labs
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="modification"
-          href="/search?type=Modification"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <RectangleGroupIcon />
-          </NavigationIcon>
-          Modifications
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="pages"
-          href="/search?type=Page"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <DocumentIcon />
-          </NavigationIcon>
-          Pages
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="phenotypic-features"
-          href="/search?type=PhenotypicFeature"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <SparklesIcon />
-          </NavigationIcon>
-          Phenotypic Features
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="publications"
-          href="/search?type=Publication"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <PencilSquareIcon />
-          </NavigationIcon>
-          Publications
-        </NavigationHrefItem>
+
         <NavigationGroupItem
-          id="ontologies"
-          title="Ontologies"
-          icon={<TagIcon />}
-          isGroupOpened={openedParents.includes("ontologies")}
+          id="methodology"
+          title="Methodology"
+          icon={<Icon.Methodology />}
+          isGroupOpened={openedParents.includes("methodology")}
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
-            id="assay-terms"
-            href="/search?type=AssayTerm"
+            id="experimental-standards"
+            href="/methodology/experimental_standards"
             navigationClick={navigationClick}
             isChildItem
           >
-            Assays
+            Experimental Standards
           </NavigationHrefItem>
           <NavigationHrefItem
-            id="phenotype-terms"
-            href="/search?type=PhenotypeTerm"
+            id="computational-standards"
+            href="/methodology/computational_standards"
             navigationClick={navigationClick}
             isChildItem
           >
-            Phenotypes
+            Computational Standards
           </NavigationHrefItem>
           <NavigationHrefItem
-            id="platform-terms"
-            href="/search?type=PlatformTerm"
+            id="genome-references"
+            href="/search?type=CuratedSet&curated_set_type=genome"
             navigationClick={navigationClick}
             isChildItem
           >
-            Platforms
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="samples-terms"
-            href="/search?type=SampleTerm"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Samples
+            Genome References
           </NavigationHrefItem>
         </NavigationGroupItem>
+
         <NavigationGroupItem
-          id="samples"
-          title="Samples"
-          icon={<Icon.Sample />}
-          isGroupOpened={openedParents.includes("samples")}
+          id="data-model"
+          title="Data Model"
+          icon={<Icon.DataModel />}
+          isGroupOpened={openedParents.includes("data-model")}
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
-            id="in-vitro-systems"
-            href="/search?type=InVitroSystem"
+            id="overview"
+            href="/profiles/graph.svg"
             navigationClick={navigationClick}
             isChildItem
           >
-            In Vitro Systems
+            Overview
           </NavigationHrefItem>
           <NavigationHrefItem
-            id="tissues"
-            href="/search?type=Tissue"
+            id="schemas"
+            href="/profiles"
             navigationClick={navigationClick}
             isChildItem
           >
-            Tissues
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="primary-cells"
-            href="/search?type=PrimaryCell"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Primary Cells
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="whole-organisms"
-            href="/search?type=WholeOrganism"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Whole Organisms
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="technical-samples"
-            href="/search?type=TechnicalSample"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Technical Samples
+            Schemas
           </NavigationHrefItem>
         </NavigationGroupItem>
-        <NavigationHrefItem
-          id="profiles"
-          href="/profiles"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <CodeBracketIcon />
-          </NavigationIcon>
-          Schemas
-        </NavigationHrefItem>
+
         <NavigationGroupItem
-          id="software-parent"
-          title="Software"
-          icon={<CircleStackIcon />}
-          isGroupOpened={openedParents.includes("software-parent")}
+          id="about"
+          title="About"
+          icon={<InformationCircleIcon />}
+          isGroupOpened={openedParents.includes("about")}
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
-            id="software"
-            href="/search?type=Software"
+            id="policies"
+            href="/policies"
             navigationClick={navigationClick}
             isChildItem
           >
-            Software
+            Policies
           </NavigationHrefItem>
           <NavigationHrefItem
-            id="software-versions"
-            href="/search?type=SoftwareVersion"
+            id="help"
+            href="/help"
             navigationClick={navigationClick}
             isChildItem
           >
-            Software Versions
+            Help
           </NavigationHrefItem>
         </NavigationGroupItem>
-        <NavigationHrefItem
-          id="sources"
-          href="/search?type=Source"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <InformationCircleIcon />
-          </NavigationIcon>
-          Sources
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="treatments"
-          href="/search?type=Treatment"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <Icon.Treatment />
-          </NavigationIcon>
-          Treatments
-        </NavigationHrefItem>
-        <NavigationHrefItem
-          id="users"
-          href="/search?type=User"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <UserGroupIcon />
-          </NavigationIcon>
-          Users
-        </NavigationHrefItem>
         {isAuthenticated ? (
           <NavigationGroupItem
             id="authenticate"
@@ -957,16 +724,6 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             Sign In
           </NavigationSignInItem>
         )}
-        <NavigationHrefItem
-          id="help"
-          href="/help"
-          navigationClick={navigationClick}
-        >
-          <NavigationIcon>
-            <QuestionMarkCircleIcon />
-          </NavigationIcon>
-          Help
-        </NavigationHrefItem>
       </NavigationList>
     </>
   );
