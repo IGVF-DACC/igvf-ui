@@ -30,18 +30,12 @@ describe("Test site search", () => {
 
         // Click the list button and make sure it takes us to the list page.
         cy.get(`[aria-label^="View search list for"]`).click();
-        cy.url().should(
-          "match",
-          /\/search\?type=[a-zA-Z0-9]+&searchTerm=cherry$/
-        );
+        cy.url().should("match", /\/search\?type=[a-zA-Z0-9]+&query=cherry$/);
         cy.go("back");
 
         // Click the list button and make sure it takes us to the list page.
         cy.get(`[aria-label^="View search report for"]`).click();
-        cy.url().should(
-          "match",
-          /\/report\?type=[a-zA-Z0-9]+&searchTerm=cherry$/
-        );
+        cy.url().should("match", /\/report\?type=[a-zA-Z0-9]+&query=cherry$/);
       });
   });
 
