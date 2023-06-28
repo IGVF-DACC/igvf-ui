@@ -27,7 +27,6 @@ import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 import { logTime } from "../../lib/general";
 
-
 export default function AlignmentFile({
   attribution,
   alignmentFile,
