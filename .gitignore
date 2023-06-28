@@ -8,6 +8,7 @@
 # testing
 /coverage
 /cypress/videos
+/cypress/screenshots
 cypress.env.json
 
 # next.js
@@ -31,13 +32,12 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-.vscode
+/.env
 venv/
+
+# editors
+.vscode
 
 # vercel
 .vercel
-
-/cypress/videos
-/cypress/screenshots
-/cypress.env.json
-/.env
+/next-env.d.ts

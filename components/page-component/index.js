@@ -30,6 +30,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/page-components
+import ChevronNavigation from "./chevron-navigation";
 import ImageAligned from "./image-aligned";
 import PageNavigation from "./page-navigation";
 import SampleCount from "./sample-count";
@@ -42,6 +43,7 @@ import VideoYouTube from "./video-youtube";
  * this object.
  */
 const componentMap = {
+  CHEVRON_NAV: ChevronNavigation,
   IMAGE_ALIGNED: ImageAligned,
   PAGE_NAV: PageNavigation,
   SAMPLE_COUNT: SampleCount,
