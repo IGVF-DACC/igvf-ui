@@ -45,7 +45,7 @@ export default function SequenceFile({
           <DataPanel>
             <DataArea>
               <FileDataItems
-                file={sequenceFile}
+                item={sequenceFile}
                 fileSet={fileSet}
                 derivedFrom={derivedFrom}
               >

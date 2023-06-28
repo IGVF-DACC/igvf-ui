@@ -27,7 +27,7 @@ export default function PhenotypeOntologyTerm({
         <JsonDisplay item={phenotypeOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <OntologyTermDataItems ontologyTerm={phenotypeOntologyTerm} />
+              <OntologyTermDataItems item={phenotypeOntologyTerm} />
             </DataArea>
           </DataPanel>
         </JsonDisplay>

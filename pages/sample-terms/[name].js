@@ -38,7 +38,7 @@ export default function SampleOntologyTerm({ sampleOntologyTerm, isJson }) {
                   </DataItemValue>
                 </>
               )}
-              <OntologyTermDataItems ontologyTerm={sampleOntologyTerm}>
+              <OntologyTermDataItems item={sampleOntologyTerm}>
                 {sampleOntologyTerm.organ_slims.length > 0 && (
                   <>
                     <DataItemLabel>Organs</DataItemLabel>

@@ -1,14 +1,21 @@
 // node_modules
 import PropTypes from "prop-types";
 // lib
+import buildAttribution from "../lib/attribution";
 import buildBreadcrumbs from "../lib/breadcrumbs";
 import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
+import { isJsonFormat } from "../lib/query-utils";
 // components
 import { AddableItem } from "../components/add";
+import Breadcrumbs from "../components/breadcrumbs";
 import { DataPanel } from "../components/data-area";
+import { EditableItem } from "../components/edit";
+import JsonDisplay from "../components/json-display";
+import ObjectPageHeader from "../components/object-page-header";
 import Page from "../components/page";
 import PagePreamble from "../components/page-preamble";
+import UnknownTypePanel from "../components/unknown-type-panel";
 
 /**
  * Extract a reasonable title from a collection or object.
@@ -28,6 +35,8 @@ export default function FallbackObject({
   awards = null,
   labs = null,
   pages = null,
+  attribution = null,
+  isJson = false,
 }) {
   if (generic) {
     // Pages get displayed as markdown.
@@ -35,17 +44,36 @@ export default function FallbackObject({
       return <Page page={generic} awards={awards} labs={labs} pages={pages} />;
     }
 
-    // Rendering an individual object as JSON.
+    // Display collection and search pages as JSON. This case also covers adding new objects.
+    if (
+      generic["@type"].includes("Collection") ||
+      generic["@type"].includes("Search")
+    ) {
+      return (
+        <>
+          <PagePreamble />
+          <AddableItem collection={generic}>
+            <DataPanel>
+              <div className="overflow-x-auto border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
+                <pre className="p-1">{JSON.stringify(generic, null, 4)}</pre>
+              </div>
+            </DataPanel>
+          </AddableItem>
+        </>
+      );
+    }
+
+    // Render an individual object as a generated formatted page.
     return (
       <>
-        <PagePreamble />
-        <AddableItem collection={generic}>
-          <DataPanel>
-            <div className="overflow-x-auto border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
-              <pre className="p-1">{JSON.stringify(generic, null, 4)}</pre>
-            </div>
-          </DataPanel>
-        </AddableItem>
+        <Breadcrumbs />
+        <EditableItem item={generic}>
+          <PagePreamble />
+          <ObjectPageHeader item={generic} isJsonFormat={isJson} />
+          <JsonDisplay item={generic} isJsonFormat={isJson}>
+            <UnknownTypePanel item={generic} attribution={attribution} />
+          </JsonDisplay>
+        </EditableItem>
       </>
     );
   }
@@ -61,9 +89,14 @@ FallbackObject.propTypes = {
   labs: PropTypes.arrayOf(PropTypes.object),
   // Collection of all pages; only for Page type objects
   pages: PropTypes.arrayOf(PropTypes.object),
+  // Attribution objects for the generic object
+  attribution: PropTypes.object,
+  // True if the page should render as JSON
+  isJson: PropTypes.bool,
 };
 
-export async function getServerSideProps({ req, resolvedUrl }) {
+export async function getServerSideProps({ req, resolvedUrl, query }) {
+  const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const generic = await request.getObject(resolvedUrl);
   if (FetchRequest.isResponseSuccess(generic)) {
@@ -82,14 +115,17 @@ export async function getServerSideProps({ req, resolvedUrl }) {
         req.headers.cookie
       );
     }
+    const attribution = await buildAttribution(generic, req.headers.cookie);
     return {
       props: {
         generic,
         awards: awards ? awards["@graph"] : null,
         labs: labs ? labs["@graph"] : null,
         pages: pages ? pages["@graph"] : null,
+        attribution,
         pageContext: { title: extractTitle(generic) },
         breadcrumbs,
+        isJson,
       },
     };
   }

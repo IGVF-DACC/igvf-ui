@@ -24,7 +24,7 @@ export default function PlatformOntologyTerm({ platformOntologyTerm, isJson }) {
         <JsonDisplay item={platformOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <OntologyTermDataItems ontologyTerm={platformOntologyTerm} />
+              <OntologyTermDataItems item={platformOntologyTerm} />
             </DataArea>
           </DataPanel>
         </JsonDisplay>

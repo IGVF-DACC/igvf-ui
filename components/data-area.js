@@ -19,7 +19,7 @@ import PropTypes from "prop-types";
 export function DataPanel({ className = "", children }) {
   return (
     <div
-      className={`border border-panel bg-panel p-4 ${className}`}
+      className={`border border-panel bg-panel p-4 @container ${className}`}
       data-testid="datapanel"
     >
       {children}
@@ -40,7 +40,7 @@ DataPanel.propTypes = {
 export function DataArea({ children }) {
   return (
     <div
-      className="md:grid md:grid-cols-data-item md:gap-4"
+      className="@md:grid @md:grid-cols-data-item @md:gap-4"
       data-testid="dataarea"
     >
       {children}
@@ -65,7 +65,7 @@ export function DataAreaTitle({ children }) {
 export function DataItemLabel({ className = "", children }) {
   return (
     <div
-      className={`mt-4 break-words font-semibold text-data-label first:mt-0 dark:text-gray-400 md:mt-0 ${className}`}
+      className={`mt-4 break-words font-semibold text-data-label first:mt-0 @md:mt-0 dark:text-gray-400 ${className}`}
       data-testid="dataitemlabel"
     >
       {children}
@@ -84,7 +84,7 @@ DataItemLabel.propTypes = {
 export function DataItemValue({ children }) {
   return (
     <div
-      className="mb-4 font-medium text-data-value last:mb-0 md:mb-0"
+      className="mb-4 font-medium text-data-value last:mb-0 @md:mb-0 @md:min-w-0"
       data-testid="dataitemvalue"
     >
       {children}

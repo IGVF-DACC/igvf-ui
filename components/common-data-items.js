@@ -3,6 +3,11 @@
  * derive from others, so you would typically use these components to display properties within a
  * parent schema so that the components displaying objects for the child schemas can all display
  * the same parent properties.
+ *
+ * Each common data item renderer component in this module should include a `commonProperties`
+ * property that lists the properties it displays. That lets the `UnknownTypePanel` component know
+ * which remaining properties to display as generic properties. Be careful to maintain this list so
+ * we don't have duplicate or missing properties for objects that don't have a custom page renderer.
  */
 
 // node_modules
@@ -21,28 +26,28 @@ import { truthyOrZero } from "../lib/general";
 /**
  * Display the data items common to all donor-derived objects.
  */
-export function DonorDataItems({ donor, parents, children }) {
+export function DonorDataItems({ item, parents = null, children }) {
   return (
     <>
-      {donor.taxa && (
+      {item.taxa && (
         <>
           <DataItemLabel>Taxa</DataItemLabel>
-          <DataItemValue>{donor.taxa}</DataItemValue>
+          <DataItemValue>{item.taxa}</DataItemValue>
         </>
       )}
-      {donor.ethnicities?.length > 0 && (
+      {item.ethnicities?.length > 0 && (
         <>
           <DataItemLabel>Ethnicities</DataItemLabel>
-          <DataItemValue>{donor.ethnicities.join(", ")}</DataItemValue>
+          <DataItemValue>{item.ethnicities.join(", ")}</DataItemValue>
         </>
       )}
-      {donor.sex && (
+      {item.sex && (
         <>
           <DataItemLabel>Sex</DataItemLabel>
-          <DataItemValue>{donor.sex}</DataItemValue>
+          <DataItemValue>{item.sex}</DataItemValue>
         </>
       )}
-      {parents.length > 0 && (
+      {parents?.length > 0 && (
         <>
           <DataItemLabel>Parents</DataItemLabel>
           <DataItemValue>
@@ -61,39 +66,39 @@ export function DonorDataItems({ donor, parents, children }) {
         </>
       )}
       {children}
-      {donor.submitter_comment && (
+      {item.submitter_comment && (
         <>
           <DataItemLabel>Submitter Comment</DataItemLabel>
-          <DataItemValue>{donor.submitter_comment}</DataItemValue>
+          <DataItemValue>{item.submitter_comment}</DataItemValue>
         </>
       )}
-      {donor.revoke_detail && (
+      {item.revoke_detail && (
         <>
           <DataItemLabel>Revoke Detail</DataItemLabel>
-          <DataItemValue>{donor.revoke_detail}</DataItemValue>
+          <DataItemValue>{item.revoke_detail}</DataItemValue>
         </>
       )}
-      {donor.aliases?.length > 0 && (
+      {item.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
           <DataItemValue>
-            <AliasList aliases={donor.aliases} />
+            <AliasList aliases={item.aliases} />
           </DataItemValue>
         </>
       )}
-      {donor.references?.length > 0 && (
+      {item.references?.length > 0 && (
         <>
           <DataItemLabel>References</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={donor.references} />
+            <DbxrefList dbxrefs={item.references} />
           </DataItemValue>
         </>
       )}
-      {donor.url && (
+      {item.url && (
         <>
           <DataItemLabel>URL</DataItemLabel>
           <DataItemValue>
-            <Link href={donor.url}>{donor.url}</Link>
+            <Link href={item.url}>{item.url}</Link>
           </DataItemValue>
         </>
       )}
@@ -103,16 +108,27 @@ export function DonorDataItems({ donor, parents, children }) {
 
 DonorDataItems.propTypes = {
   // Object derived from donor.json schema
-  donor: PropTypes.object.isRequired,
+  item: PropTypes.object.isRequired,
   // Parents of this donor
-  parents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  parents: PropTypes.arrayOf(PropTypes.object),
 };
+
+DonorDataItems.commonProperties = [
+  "aliases",
+  "ethnicities",
+  "references",
+  "revoke_detail",
+  "sex",
+  "submitter_comment",
+  "taxa",
+  "url",
+];
 
 /**
  * Display data items common to all sample-derived objects.
  */
 export function SampleDataItems({
-  sample,
+  item,
   source = null,
   options = {
     dateObtainedTitle: "Date Obtained",
@@ -122,79 +138,79 @@ export function SampleDataItems({
   return (
     <>
       <DataItemLabel>Summary</DataItemLabel>
-      <DataItemValue>{sample.summary}</DataItemValue>
+      <DataItemValue>{item.summary}</DataItemValue>
       {children}
-      {(sample.lot_id || source) && (
+      {(item.lot_id || source) && (
         <>
           <DataItemLabel>Source</DataItemLabel>
           <DataItemValue>
             <ProductInfo
-              lotId={sample.lot_id}
-              productId={sample.product_id}
+              lotId={item.lot_id}
+              productId={item.product_id}
               source={source}
             />
           </DataItemValue>
         </>
       )}
-      {truthyOrZero(sample.starting_amount) && (
+      {truthyOrZero(item.starting_amount) && (
         <>
           <DataItemLabel>Starting Amount</DataItemLabel>
           <DataItemValue>
-            {sample.starting_amount}
-            {sample.starting_amount_units ? (
-              <> {sample.starting_amount_units}</>
+            {item.starting_amount}
+            {item.starting_amount_units ? (
+              <> {item.starting_amount_units}</>
             ) : (
               ""
             )}
           </DataItemValue>
         </>
       )}
-      {sample.date_obtained && (
+      {item.date_obtained && (
         <>
           <DataItemLabel>{options.dateObtainedTitle}</DataItemLabel>
-          <DataItemValue>{formatDate(sample.date_obtained)}</DataItemValue>
+          <DataItemValue>{formatDate(item.date_obtained)}</DataItemValue>
         </>
       )}
-      {sample.url && (
+      {item.url && (
         <>
           <DataItemLabel>Additional Information</DataItemLabel>
           <DataItemValue>
             <a
               className="break-all"
-              href={sample.url}
+              href={item.url}
               target="_blank"
               rel="noreferrer"
             >
-              {sample.url}
+              {item.url}
             </a>
           </DataItemValue>
         </>
       )}
-      {sample.dbxrefs?.length > 0 && (
+      {item.dbxrefs?.length > 0 && (
         <>
           <DataItemLabel>External Resources</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={sample.dbxrefs} />
+            <DbxrefList dbxrefs={item.dbxrefs} />
           </DataItemValue>
         </>
       )}
-      {sample.submitter_comment && (
+      {item.submitter_comment && (
         <>
           <DataItemLabel>Submitter Comment</DataItemLabel>
-          <DataItemValue>{sample.submitter_comment}</DataItemValue>
+          <DataItemValue>{item.submitter_comment}</DataItemValue>
         </>
       )}
-      {sample.revoke_detail && (
+      {item.revoke_detail && (
         <>
           <DataItemLabel>Revoke Detail</DataItemLabel>
-          <DataItemValue>{sample.revoke_detail}</DataItemValue>
+          <DataItemValue>{item.revoke_detail}</DataItemValue>
         </>
       )}
-      {sample.aliases && (
+      {item.aliases && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
           <DataItemValue>
-            <AliasList aliases={sample.aliases} />
+            <AliasList aliases={item.aliases} />
           </DataItemValue>
         </>
       )}
@@ -204,7 +220,7 @@ export function SampleDataItems({
 
 SampleDataItems.propTypes = {
   // Object derived from the sample.json schema
-  sample: PropTypes.object.isRequired,
+  item: PropTypes.object.isRequired,
   // Source lab or source for this sample
   source: PropTypes.object,
   // General options to alter the display of the data items
@@ -214,26 +230,39 @@ SampleDataItems.propTypes = {
   }),
 };
 
+SampleDataItems.commonProperties = [
+  "aliases",
+  "date_obtained",
+  "dbxrefs",
+  "lot_id",
+  "revoke_detail",
+  "starting_amount",
+  "starting_amount_units",
+  "summary",
+  "url",
+  "submitter_comment",
+];
+
 /**
  * Display data items common to all biosample-derived objects.
  */
 export function BiosampleDataItems({
-  biosample,
+  item,
   source = null,
-  donors = [],
+  donors = null,
   biosampleTerm = null,
   diseaseTerms = null,
-  pooledFrom,
-  partOf,
+  pooledFrom = null,
+  partOf = null,
   classification = null,
   children,
 }) {
   return (
-    <SampleDataItems sample={biosample} source={source}>
-      {biosample.taxa && (
+    <SampleDataItems item={item} source={source}>
+      {item.taxa && (
         <>
           <DataItemLabel>Taxa</DataItemLabel>
-          <DataItemValue>{biosample.taxa}</DataItemValue>
+          <DataItemValue>{item.taxa}</DataItemValue>
         </>
       )}
       {biosampleTerm && (
@@ -250,34 +279,34 @@ export function BiosampleDataItems({
           <DataItemValue>{classification}</DataItemValue>
         </>
       )}
-      {biosample.sex && (
+      {item.sex && (
         <>
           <DataItemLabel>Sex</DataItemLabel>
-          <DataItemValue>{biosample.sex}</DataItemValue>
+          <DataItemValue>{item.sex}</DataItemValue>
         </>
       )}
       <>
         <DataItemLabel>Age</DataItemLabel>
         <DataItemValue>
-          {biosample.age === "unknown"
-            ? biosample.embryonic
+          {item.age === "unknown"
+            ? item.embryonic
               ? "Embryonic"
               : "unknown"
-            : biosample.embryonic
-            ? `Emryonic ${biosample.age}`
-            : biosample.age}
-          {biosample.age_units ? (
+            : item.embryonic
+            ? `Embryonic ${item.age}`
+            : item.age}
+          {item.age_units ? (
             <>
               {" "}
-              {biosample.age_units}
-              {biosample.age !== "1" ? "s" : ""}
+              {item.age_units}
+              {item.age !== "1" ? "s" : ""}
             </>
           ) : (
             ""
           )}
         </DataItemValue>
       </>
-      {pooledFrom.length > 0 && (
+      {pooledFrom?.length > 0 && (
         <>
           <DataItemLabel>Biosample(s) Pooled From</DataItemLabel>
           <DataItemValue>
@@ -313,15 +342,13 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
-      {biosample.nih_institutional_certification && (
+      {item.nih_institutional_certification && (
         <>
           <DataItemLabel>NIH Institutional Certification</DataItemLabel>
-          <DataItemValue>
-            {biosample.nih_institutional_certification}
-          </DataItemValue>
+          <DataItemValue>{item.nih_institutional_certification}</DataItemValue>
         </>
       )}
-      {donors.length > 0 && (
+      {donors?.length > 0 && (
         <>
           <DataItemLabel>Donors</DataItemLabel>
           <DataItemValue>
@@ -342,7 +369,7 @@ export function BiosampleDataItems({
 
 BiosampleDataItems.propTypes = {
   // Object derived from the biosample.json schema
-  biosample: PropTypes.object.isRequired,
+  item: PropTypes.object.isRequired,
   // Source lab or source for this biosample
   source: PropTypes.object,
   // Donors for this biosample
@@ -359,17 +386,25 @@ BiosampleDataItems.propTypes = {
   classification: PropTypes.string,
 };
 
+BiosampleDataItems.commonProperties = [
+  "age",
+  "age_units",
+  "nih_institutional_certification",
+  "sex",
+  "taxa",
+];
+
 /**
  * Display data items common to all ontology-term-derived objects.
  */
-export function OntologyTermDataItems({ ontologyTerm, isA, children }) {
+export function OntologyTermDataItems({ item, isA, children }) {
   return (
     <>
       <DataItemLabel>Term Name</DataItemLabel>
-      <DataItemValue>{ontologyTerm.term_name}</DataItemValue>
+      <DataItemValue>{item.term_name}</DataItemValue>
       <DataItemLabel>External Reference</DataItemLabel>
       <DataItemValue>
-        <DbxrefList dbxrefs={[ontologyTerm.term_id]} />
+        <DbxrefList dbxrefs={[item.term_id]} />
       </DataItemValue>
       {isA?.length > 0 && (
         <>
@@ -385,31 +420,31 @@ export function OntologyTermDataItems({ ontologyTerm, isA, children }) {
           </DataItemValue>
         </>
       )}
-      {ontologyTerm.synonyms.length > 0 && (
+      {item.synonyms.length > 0 && (
         <>
           <DataItemLabel>Synonyms</DataItemLabel>
-          <DataItemValue>{ontologyTerm.synonyms.join(", ")}</DataItemValue>
+          <DataItemValue>{item.synonyms.join(", ")}</DataItemValue>
         </>
       )}
-      {ontologyTerm.aliases?.length > 0 && (
+      {item.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
           <DataItemValue>
-            <AliasList aliases={ontologyTerm.aliases} />
+            <AliasList aliases={item.aliases} />
           </DataItemValue>
         </>
       )}
-      {ontologyTerm.summary && (
+      {item.summary && (
         <>
           <DataItemLabel>Summary</DataItemLabel>
-          <DataItemValue>{ontologyTerm.summary}</DataItemValue>
+          <DataItemValue>{item.summary}</DataItemValue>
         </>
       )}
       {children}
-      {ontologyTerm.submitter_comment && (
+      {item.submitter_comment && (
         <>
           <DataItemLabel>Submitter Comment</DataItemLabel>
-          <DataItemValue>{ontologyTerm.submitter_comment}</DataItemValue>
+          <DataItemValue>{item.submitter_comment}</DataItemValue>
         </>
       )}
     </>
@@ -418,15 +453,29 @@ export function OntologyTermDataItems({ ontologyTerm, isA, children }) {
 
 OntologyTermDataItems.propTypes = {
   // Ontology term object
-  ontologyTerm: PropTypes.object.isRequired,
+  item: PropTypes.object.isRequired,
   // List of term names
   isA: PropTypes.arrayOf(PropTypes.object),
 };
 
+OntologyTermDataItems.commonProperties = [
+  "aliases",
+  "submitter_comment",
+  "summary",
+  "synonyms",
+  "term_id",
+  "term_name",
+];
+
 /**
  * Display data items common to all file-derived objects.
  */
-export function FileDataItems({ file, fileSet = null, derivedFrom, children }) {
+export function FileDataItems({
+  item,
+  fileSet = null,
+  derivedFrom = null,
+  children,
+}) {
   return (
     <>
       {fileSet && (
@@ -444,24 +493,24 @@ export function FileDataItems({ file, fileSet = null, derivedFrom, children }) {
         </>
       )}
       <DataItemLabel>File Format</DataItemLabel>
-      <DataItemValue>{file.file_format}</DataItemValue>
+      <DataItemValue>{item.file_format}</DataItemValue>
       <DataItemLabel>Content Type</DataItemLabel>
-      <DataItemValue>{file.content_type}</DataItemValue>
+      <DataItemValue>{item.content_type}</DataItemValue>
       <DataItemLabel>md5sum</DataItemLabel>
-      <DataItemValue>{file.md5sum}</DataItemValue>
-      {file.content_md5sum && (
+      <DataItemValue>{item.md5sum}</DataItemValue>
+      {item.content_md5sum && (
         <>
           <DataItemLabel>Content MD5sum</DataItemLabel>
-          <DataItemValue>{file.content_md5sum}</DataItemValue>
+          <DataItemValue>{item.content_md5sum}</DataItemValue>
         </>
       )}
-      {truthyOrZero(file.file_size) && (
+      {truthyOrZero(item.file_size) && (
         <>
           <DataItemLabel>File Size</DataItemLabel>
-          <DataItemValue>{file.file_size}</DataItemValue>
+          <DataItemValue>{item.file_size}</DataItemValue>
         </>
       )}
-      {derivedFrom.length > 0 && (
+      {derivedFrom?.length > 0 && (
         <>
           <DataItemLabel>Derived From</DataItemLabel>
           <DataItemValue>
@@ -480,19 +529,19 @@ export function FileDataItems({ file, fileSet = null, derivedFrom, children }) {
         </>
       )}
       {children}
-      {file.aliases?.length > 0 && (
+      {item.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
           <DataItemValue>
-            <AliasList aliases={file.aliases} />
+            <AliasList aliases={item.aliases} />
           </DataItemValue>
         </>
       )}
-      {file.dbxrefs?.length > 0 && (
+      {item.dbxrefs?.length > 0 && (
         <>
           <DataItemLabel>External Resources</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={file.dbxrefs} />
+            <DbxrefList dbxrefs={item.dbxrefs} />
           </DataItemValue>
         </>
       )}
@@ -502,9 +551,61 @@ export function FileDataItems({ file, fileSet = null, derivedFrom, children }) {
 
 FileDataItems.propTypes = {
   // file object common for all file types
-  file: PropTypes.object.isRequired,
+  item: PropTypes.object.isRequired,
   // file set for this file
   fileSet: PropTypes.object,
   // files this file is derived from
-  derivedFrom: PropTypes.array.isRequired,
+  derivedFrom: PropTypes.array,
 };
+
+FileDataItems.commonProperties = [
+  "aliases",
+  "content_md5sum",
+  "content_type",
+  "dbxrefs",
+  "file_format",
+  "file_size",
+  "md5sum",
+];
+
+/**
+ * `UnknownTypePanel` uses the following data and functions to use common data item renderers based
+ * on the parent type of unknown objects.
+ */
+
+/**
+ * When adding a new common data item renderer component, add the @type that it handles as a key to
+ * this object, and the corresponding component as the value. Keep the object keys in alphabetical
+ * order to make them easier to find by visually scanning. This lets `UnknownTypePanel` find the
+ * appropriate common data item renderer component for the parent type of an unknown object type.
+ */
+const commonDataRenderers = {
+  Biosample: BiosampleDataItems,
+  Donor: DonorDataItems,
+  File: FileDataItems,
+  OntologyTerm: OntologyTermDataItems,
+};
+
+/**
+ * Data item renderer to use when no common data item renderer exists for the given unknown item's
+ * parent type. It just lets `UnknownTypePanel` render all the unknown item's properties without
+ * any common properties.
+ */
+function EmptyDataItems({ children }) {
+  return <>{children}</>;
+}
+
+/**
+ * Find a common data item renderer component, if any, appropriate for the given unknown item
+ * object. Normally an appropriate renderer handles the unknown object's parent type. Return that
+ * React component, or the `EmptyDataItems` renderer if none found.
+ * @param {object} item Generic object
+ * @returns {React.Component} Common data item renderer component
+ */
+export function findCommonDataRenderer(item) {
+  const definedCommonDataTypes = Object.keys(commonDataRenderers);
+  const commonDataType = item["@type"].find((type) =>
+    definedCommonDataTypes.includes(type)
+  );
+  return commonDataType ? commonDataRenderers[commonDataType] : EmptyDataItems;
+}

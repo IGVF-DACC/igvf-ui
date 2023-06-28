@@ -44,7 +44,7 @@ export default function RodentDonor({
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DonorDataItems donor={donor} parents={parents}>
+              <DonorDataItems item={donor} parents={parents}>
                 <DataItemLabel>Strain</DataItemLabel>
                 <DataItemValue>{donor.strain}</DataItemValue>
                 {donor.strain_background && (

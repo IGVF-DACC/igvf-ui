@@ -29,7 +29,7 @@ export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
         <JsonDisplay item={assayOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <OntologyTermDataItems ontologyTerm={assayOntologyTerm} isA={isA}>
+              <OntologyTermDataItems item={assayOntologyTerm} isA={isA}>
                 {assayOntologyTerm.category_slims.length > 0 && (
                   <>
                     <DataItemLabel>Assay Category</DataItemLabel>
