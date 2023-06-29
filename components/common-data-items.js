@@ -434,12 +434,6 @@ export function OntologyTermDataItems({ item, isA, children }) {
           </DataItemValue>
         </>
       )}
-      {item.summary && (
-        <>
-          <DataItemLabel>Summary</DataItemLabel>
-          <DataItemValue>{item.summary}</DataItemValue>
-        </>
-      )}
       {children}
       {item.submitter_comment && (
         <>
@@ -461,7 +455,6 @@ OntologyTermDataItems.propTypes = {
 OntologyTermDataItems.commonProperties = [
   "aliases",
   "submitter_comment",
-  "summary",
   "synonyms",
   "term_id",
   "term_name",
