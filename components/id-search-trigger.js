@@ -76,7 +76,11 @@ export default function IdSearchTrigger() {
   // Set up the command-key equivalent for triggering the ID modal.
   useEffect(() => {
     function onSearchKeypress(event) {
-      if ((event.key === "k" || event.key === "K") && event.shiftKey) {
+      if (
+        (event.key === "k" || event.key === "K") &&
+        event.shiftKey &&
+        (event.metaKey || event.ctrlKey)
+      ) {
         event.preventDefault();
         event.stopPropagation();
         setIsInputOpen(true);
