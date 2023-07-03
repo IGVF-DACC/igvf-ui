@@ -1,23 +1,22 @@
-// node_Modules
+// node_modules
 import PropTypes from "prop-types";
+// components/facets
+import facetRegistry from "./facet-registry";
 
 /**
  * Displays a single facet with its title and terms.
  */
 export default function Facet({ facet, children }) {
+  const Title = facetRegistry.title.lookup(facet.field);
+
   return (
     <div
       key={facet.field}
       className="my-4 first:mt-0 last:mb-0"
       data-testid={`facet-${facet.field}`}
     >
-      <h2
-        className="mb-1 bg-facet-title text-center text-base font-medium text-facet-title"
-        data-testid={`facettitle-${facet.field}`}
-      >
-        {facet.title}
-      </h2>
-      <ul>{children}</ul>
+      <Title facet={facet} />
+      {children}
     </div>
   );
 }

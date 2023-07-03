@@ -2,12 +2,12 @@
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 // components/facets
-import FacetTerm from "./facet-term";
 import Facet from "./facet";
 // components
 import Icon from "../icon";
+// components/facets
+import facetRegistry from "./facet-registry";
 // lib
-import QueryString from "../../lib/query-string";
 import { splitPathAndQueryString } from "../../lib/query-utils";
 
 /**
@@ -108,50 +108,34 @@ FacetGroupButton.propTypes = {
  */
 export function FacetGroup({ searchResults, group = null }) {
   const router = useRouter();
-
-  // Generate a query based on the current URL to update once the user clicks a facet term.
-  const { path, queryString } = splitPathAndQueryString(searchResults["@id"]);
-  const query = new QueryString(queryString);
+  const { path } = splitPathAndQueryString(searchResults["@id"]);
 
   // Get all the facet objects from the search results that are in the facet group.
   const facetsInGroup = getFacetsInGroup(searchResults, group);
 
   /**
-   * When the user clicks a facet term, add or remove it from the query string and navigate
-   * to the new URL.
-   * @param {string} field Field of the facet that the user clicked a term within
-   * @param {string} term Term that the user clicked within a facet
+   * When a user selection in the facet terms changes, receive the updated query string and
+   * navigate to the new URL.
+   * @param {string} queryString Updated query string from the facet terms
    */
-  function onTermClick(field, term) {
-    const matchingTerms = query.getKeyValues(field);
-    if (matchingTerms.includes(term.key)) {
-      query.deleteKeyValue(field, term.key);
-    } else {
-      query.addKeyValue(field, term.key);
-    }
-    router.push(`${path}?${query.format()}`);
+  function updateQuery(queryString) {
+    router.push(`${path}?${queryString}`);
   }
 
   return (
     <>
       {facetsInGroup.map((facet) => {
+        const Terms = facetRegistry.terms.lookup(facet.field);
+
         // Find the facet object in the search results that matches the facet field in the facet
         // group.
-        const fieldTerms = query.getKeyValues(facet.field);
         return (
           <Facet key={facet.field} facet={facet}>
-            {facet.terms.map((term) => {
-              const isChecked = fieldTerms.includes(term.key);
-              return (
-                <FacetTerm
-                  key={term.key}
-                  field={facet.field}
-                  term={term}
-                  isChecked={isChecked}
-                  onClick={onTermClick}
-                />
-              );
-            })}
+            <Terms
+              searchResults={searchResults}
+              facet={facet}
+              updateQuery={updateQuery}
+            />
           </Facet>
         );
       })}
