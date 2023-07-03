@@ -224,8 +224,16 @@ a {
   border: 1px solid gray;
 }
 
+#page-content .markdown-table {
+  overflow-x: auto;
+}
+
 #page-content table th {
   background-color: #c0d0f0;
+}
+
+.dark #page-content table th {
+  background-color: #414651;
 }
 
 .dark #graph .node > text {
