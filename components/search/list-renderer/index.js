@@ -150,7 +150,7 @@ export function getSearchListItemRenderer(item) {
  */
 function getAccessoryDataPathsGenerator(itemType) {
   const renderer = renderers[itemType];
-  return renderer?.getAccessoryDataPaths || null;
+  return renderer.getAccessoryDataPaths || null;
 }
 
 /**
