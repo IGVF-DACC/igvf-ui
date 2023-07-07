@@ -236,6 +236,18 @@ a {
   background-color: #414651;
 }
 
+/* Path for the chevron navigation shape */
+.chevron-shape {
+  clip-path: polygon(
+    calc(100% - 22px) 0,
+    100% 50%,
+    calc(100% - 22px) 100%,
+    0% 100%,
+    22px 50%,
+    0% 0%
+  );
+}
+
 .dark #graph .node > text {
   fill: #fff !important;
 }
