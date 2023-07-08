@@ -13,7 +13,19 @@ services:
       - BACKEND_URL=http://nginx:8000
       - PUBLIC_BACKEND_URL=http://localhost:8000
     ports:
-      - "3000:3000"
+      - "3001:3001"
+
+  nginx:
+    build:
+      context: ./docker/nginx/
+    image: igvf-ui-nginx
+    volumes:
+      - "./docker/nginx/docker.conf:/etc/nginx/nginx.conf"
+    command: nginx -c /etc/nginx/nginx.conf -g 'daemon off; pid /dev/null;'
+    ports:
+      - "3000:80"
+    depends_on:
+      - nextjs
 
 networks:
   default:
