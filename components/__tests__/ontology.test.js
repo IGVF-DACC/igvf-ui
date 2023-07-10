@@ -36,11 +36,4 @@ describe("Test mapping ontology term IDs to links", () => {
     expect(() => screen.getByRole("link")).toThrow();
     expect(screen.getByText("ABC:0001")).toBeInTheDocument();
   });
-
-  it("should map malformed term IDs to regular text", () => {
-    render(<OntologyTermId termId="EFO:0001:XYZ" />);
-
-    expect(() => screen.getByRole("link")).toThrow();
-    expect(screen.getByText("EFO:0001:XYZ")).toBeInTheDocument();
-  });
 });

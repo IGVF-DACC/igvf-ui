@@ -11,6 +11,7 @@ import MeasurementSet from "../list-renderer/measurement-set";
 import Gene from "../list-renderer/gene";
 import HumanDonor from "../list-renderer/human-donor";
 import Lab from "../list-renderer/lab";
+import Model from "../list-renderer/model";
 import OntologyTerm from "../list-renderer/ontology-term";
 import Page from "../list-renderer/page";
 import PhenotypicFeature from "../list-renderer/phenotypic-feature";
@@ -1726,6 +1727,86 @@ describe("Test PhenotypicFeature component", () => {
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the Model component", () => {
+  it("renders a model item without a summary", () => {
+    const item = {
+      "@id": "/models/IGVFDS1234MODL/",
+      "@type": ["Model", "FileSet", "Item"],
+      accession: "IGVFDS1234MODL",
+      aliases: ["igvf:xpresso"],
+      award: { "@id": "/awards/HG012012/", component: "data coordination" },
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      model_name: "Xpresso",
+      prediction_objects: ["genes", "coding variants"],
+      status: "released",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Model item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Model/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS1234MODL$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/Xpresso/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).not.toHaveTextContent("IGVFDS1234MODL");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a model item with a summary", () => {
+    const item = {
+      "@id": "/models/IGVFDS1234MODL/",
+      "@type": ["Model", "FileSet", "Item"],
+      accession: "IGVFDS1234MODL",
+      aliases: ["igvf:xpresso"],
+      award: { "@id": "/awards/HG012012/", component: "data coordination" },
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      model_name: "Xpresso",
+      prediction_objects: ["genes", "coding variants"],
+      summary: "IGVFDS1234MODL",
+      status: "released",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Model item={item} />
+      </SessionContext.Provider>
+    );
+    screen.debug();
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Model/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS1234MODL$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/Xpresso/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("IGVFDS1234MODL");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
