@@ -2,11 +2,15 @@
 import PropTypes from "prop-types";
 // components
 import Checkbox from "../checkbox";
+// components/facets
+import facetRegistry from "./facet-registry";
 
 /**
  * Display a single term in a facet with a checkbox.
  */
 export default function FacetTerm({ field, term, isChecked, onClick }) {
+  const TermLabel = facetRegistry.termLabel.lookup(field);
+
   return (
     <li data-testid={`facetterm-${term.key}`}>
       <Checkbox
@@ -17,10 +21,7 @@ export default function FacetTerm({ field, term, isChecked, onClick }) {
         onChange={() => onClick(field, term)}
         className="cursor-pointer rounded border border-transparent px-2 py-1 hover:border-data-border"
       >
-        <div className="flex grow items-center justify-between gap-2 text-sm font-normal leading-[1.1]">
-          <div>{term.key}</div>
-          <div>{term.doc_count}</div>
-        </div>
+        <TermLabel term={term} />
       </Checkbox>
     </li>
   );

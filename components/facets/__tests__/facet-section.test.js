@@ -77,6 +77,17 @@ describe("Test <FacetSection> component", () => {
           appended: false,
           open_on_load: false,
         },
+        {
+          field: "audit.WARNING.category",
+          title: "Audit category: WARNING",
+          terms: [
+            {
+              key: "missing plasmid map",
+              doc_count: 2,
+            },
+          ],
+          total: 3,
+        },
       ],
       filters: [
         {
@@ -95,7 +106,7 @@ describe("Test <FacetSection> component", () => {
 
     // Check for the correct number of facets.
     const facetSections = screen.getAllByTestId(/^facet-/);
-    expect(facetSections).toHaveLength(2);
+    expect(facetSections).toHaveLength(3);
 
     // Make sure the first facet has the correct title.
     const facetTitle = within(facetSections[0]).getByRole("heading", {
@@ -116,6 +127,12 @@ describe("Test <FacetSection> component", () => {
     expect(terms).toHaveLength(1);
     expect(terms[0]).toHaveTextContent(/^released/);
     expect(terms[0]).toHaveTextContent(/7$/);
+
+    // Make sure the third facet has the correct title.
+    const auditFacetTitle = within(facetSections[2]).getByRole("heading", {
+      name: /^Audit Warning$/,
+    });
+    expect(auditFacetTitle).toBeInTheDocument();
   });
 
   it("renders the correct facets with facet groups", () => {

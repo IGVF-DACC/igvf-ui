@@ -93,7 +93,7 @@ InternalActionIcon.propTypes = {
 /**
  * Maps an audit level to an icon and color.
  */
-const auditMap = {
+export const auditMap = {
   ERROR: {
     Icon: ErrorIcon,
     color: "fill-red-500",
