@@ -68,8 +68,8 @@ SearchAndReportType.propTypes = {
  * Displays a schema element and its children. This component uses recursion, so every element at
  * different times exists as a child and a parent -- possibly a parent with no children.
  */
-function SubTree({ tree, objectType, schemas, collectionTitles }) {
-  const title = collectionTitles[objectType];
+function SubTree({ tree, objectType, schemas, collectionTitles = null }) {
+  const title = collectionTitles?.[objectType] || objectType;
   const schema = schemas[objectType];
   const childObjectTypes = Object.keys(tree).filter((childObjectType) =>
     isDisplayableType(childObjectType, schemas, tree[childObjectType])
