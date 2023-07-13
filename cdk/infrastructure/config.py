@@ -3,6 +3,7 @@ from copy import deepcopy
 from aws_cdk import Environment
 
 from dataclasses import dataclass
+from dataclasses import field
 
 from infrastructure.constructs.existing import igvf_dev
 from infrastructure.constructs.existing import igvf_prod
@@ -125,7 +126,9 @@ class Config:
     tags: List[Tuple[str, str]]
     url_prefix: Optional[str] = None
     use_subdomain: bool = True
-    common: Common = Common()
+    common: Common = field(
+        default_factory=Common
+    )
 
 
 @dataclass
@@ -137,7 +140,9 @@ class PipelineConfig:
     account_and_region: Environment
     tags: List[Tuple[str, str]]
     cross_account_keys: bool = False
-    common: Common = Common()
+    common: Common = field(
+        default_factory=Common
+    )
 
 
 def get_raw_config_from_name(name: str, **kwargs: Any) -> Dict[str, Any]:
