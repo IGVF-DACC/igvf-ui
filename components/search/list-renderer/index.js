@@ -37,6 +37,7 @@ import Gene from "./gene";
 import HumanDonor from "./human-donor";
 import Lab from "./lab";
 import MeasurementSet from "./measurement-set";
+import Model from "./model";
 import OntologyTerm from "./ontology-term";
 import Page from "./page";
 import PhenotypicFeature from "./phenotypic-feature";
@@ -66,6 +67,7 @@ const renderers = {
   InVitroSystem: Biosample,
   Lab,
   MeasurementSet,
+  Model,
   Modification,
   Page,
   PhenotypeTerm: OntologyTerm,

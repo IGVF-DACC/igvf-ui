@@ -8,7 +8,7 @@ export default function AliasList({ aliases }) {
   return (
     <>
       {aliases.map((alias) => (
-        <div key={alias} className="mb-1.5 break-all">
+        <div key={alias} className="break-all">
           {alias}
         </div>
       ))}
