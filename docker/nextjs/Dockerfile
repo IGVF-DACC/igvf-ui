@@ -1,4 +1,4 @@
-FROM node:18.16.0-alpine
+FROM node:18.16.1-bookworm-slim
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
