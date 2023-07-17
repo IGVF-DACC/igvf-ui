@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Clone igvfd
           environment:
-            - IGVFD_BRANCH: dev
+            - IGVFD_BRANCH: try-nginx
           command: |
             git clone https://github.com/IGVF-DACC/igvfd.git --branch $IGVFD_BRANCH
       - run:
