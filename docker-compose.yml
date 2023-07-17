@@ -19,7 +19,7 @@ services:
     ports:
       - "3001:3001"
 
-  nginx:
+  nginxfe:
     build:
       context: ./docker/nginx/
     image: igvf-ui-nginx
