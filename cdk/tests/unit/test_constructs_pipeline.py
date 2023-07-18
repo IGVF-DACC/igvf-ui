@@ -1015,6 +1015,32 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                 ]
                             },
                             'RunOrder': 1
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Build',
+                                'Owner': 'AWS',
+                                'Provider': 'CodeBuild',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'ProjectName': {
+                                    'Ref': 'TestProductionDeploymentPipelineCodePipelineAssetsDockerAsset25EFC821F'
+                                }
+                            },
+                            'InputArtifacts': [
+                                {
+                                    'Name': 'SynthStep_Output'
+                                }
+                            ],
+                            'Name': 'DockerAsset2',
+                            'RoleArn': {
+                                'Fn::GetAtt': [
+                                    'TestProductionDeploymentPipelineCodePipelineCodeBuildActionRole650FEAB8',
+                                    'Arn'
+                                ]
+                            },
+                            'RunOrder': 1
                         }
                     ],
                     'Name': 'Assets'
