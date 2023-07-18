@@ -4,7 +4,6 @@
 const UI_VERSION = "6.0.0";
 
 module.exports = {
-  trailingSlash: true,
   reactStrictMode: false,
   images: {
     domains: [
