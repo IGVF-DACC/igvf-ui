@@ -427,6 +427,32 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
                                 ]
                             },
                             'RunOrder': 1
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Build',
+                                'Owner': 'AWS',
+                                'Provider': 'CodeBuild',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'ProjectName': {
+                                    'Ref': 'TestDemoDeploymentPipelineCodePipelineAssetsDockerAsset226FE0B63'
+                                }
+                            },
+                            'InputArtifacts': [
+                                {
+                                    'Name': 'SynthStep_Output'
+                                }
+                            ],
+                            'Name': 'DockerAsset2',
+                            'RoleArn': {
+                                'Fn::GetAtt': [
+                                    'TestDemoDeploymentPipelineCodePipelineCodeBuildActionRoleD3A8E8C4',
+                                    'Arn'
+                                ]
+                            },
+                            'RunOrder': 1
                         }
                     ],
                     'Name': 'Assets'
