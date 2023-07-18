@@ -25,78 +25,33 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
         1
     )
     template.has_resource_properties(
-        'AWS::ECS::Service',
-        {
-            'Cluster': {
-                'Ref': 'EcsDefaultClusterMnL3mNNYNTestVpc4872C696'
-            },
-            'DeploymentConfiguration': {
-                'DeploymentCircuitBreaker': {
-                    'Enable': True,
-                    'Rollback': True
-                },
-                'MaximumPercent': 200,
-                'MinimumHealthyPercent': 50
-            },
-            'DeploymentController': {
-                'Type': 'ECS'
-            },
-            'DesiredCount': 4,
-            'EnableECSManagedTags': False,
-            'EnableExecuteCommand': True,
-            'HealthCheckGracePeriodSeconds': 60,
-            'LaunchType': 'FARGATE',
-            'LoadBalancers': [
-                {
-                    'ContainerName': 'nextjs',
-                    'ContainerPort': 3000,
-                    'TargetGroupArn': {
-                        'Ref': 'TestFrontendFargateLBPublicListenerECSGroup92AD1119'
-                    }
-                }
-            ],
-            'NetworkConfiguration': {
-                'AwsvpcConfiguration': {
-                    'AssignPublicIp': 'ENABLED',
-                    'SecurityGroups': [
-                        {
-                            'Fn::GetAtt': [
-                                'TestFrontendFargateServiceSecurityGroup9DFF92D3',
-                                'GroupId'
-                            ]
-                        }
-                    ],
-                    'Subnets': [
-                        {
-                            'Ref': 'TestVpcpublicSubnet1Subnet4F70BC85'
-                        },
-                        {
-                            'Ref': 'TestVpcpublicSubnet2Subnet96FF72E6'
-                        }
-                    ]
-                }
-            },
-            'Tags': [
-                {
-                    'Key': 'backend_url',
-                    'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
-                },
-                {
-                    'Key': 'branch',
-                    'Value': 'some-branch'
-                }
-            ],
-            'TaskDefinition': {
-                'Ref': 'TestFrontendFargateTaskDef5DCA46EA',
-            }
-        }
-    )
-    template.has_resource_properties(
         'AWS::ECS::TaskDefinition',
         {
             'ContainerDefinitions': [
                 {
                     'Essential': True,
+                    'LogConfiguration': {
+                        'LogDriver': 'awslogs',
+                        'Options': {
+                            'awslogs-group': {
+                                'Ref': 'TestFrontendFargateTaskDefnginxfeLogGroupEB332E29'
+                            },
+                            'awslogs-stream-prefix': 'nginxfe',
+                            'awslogs-region': {
+                                'Ref': 'AWS::Region'
+                            },
+                            'mode': 'non-blocking'
+                        }
+                    },
+                    'Name': 'nginxfe',
+                    'PortMappings': [
+                        {
+                            'ContainerPort': 80,
+                            'Protocol': 'tcp'
+                        }
+                    ]
+                },
+                {
                     'Environment': [
                         {
                             'Name': 'NODE_ENV',
@@ -107,11 +62,12 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                             'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
                         }
                     ],
+                    'Essential': True,
                     'LogConfiguration': {
                         'LogDriver': 'awslogs',
                         'Options': {
                             'awslogs-group': {
-                                'Ref': 'TestFrontendFargateTaskDefnextjsLogGroup59CC3BA2'
+                                'Ref': 'TestFrontendFargateTaskDefApplicationContainerLogGroupB905B11F'
                             },
                             'awslogs-stream-prefix': 'nextjs',
                             'awslogs-region': {
@@ -120,13 +76,7 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                             'mode': 'non-blocking'
                         }
                     },
-                    'Name': 'nextjs',
-                    'PortMappings': [
-                        {
-                            'ContainerPort': 3000,
-                            'Protocol': 'tcp'
-                        }
-                    ]
+                    'Name': 'nextjs'
                 }
             ],
             'Cpu': '2048',
@@ -157,6 +107,74 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                     'TestFrontendFargateTaskDefTaskRole92D4E800',
                     'Arn'
                 ]
+            }
+        }
+    )
+    template.has_resource_properties(
+        'AWS::ECS::Service',
+        {
+            'Cluster': {
+                'Ref': 'EcsDefaultClusterMnL3mNNYNTestVpc4872C696'
+            },
+            'DeploymentConfiguration': {
+                'DeploymentCircuitBreaker': {
+                    'Enable': True,
+                    'Rollback': True
+                },
+                'MaximumPercent': 200,
+                'MinimumHealthyPercent': 50
+            },
+            'DeploymentController': {
+                'Type': 'ECS'
+            },
+            'DesiredCount': 4,
+            'EnableECSManagedTags': False,
+            'EnableExecuteCommand': True,
+            'HealthCheckGracePeriodSeconds': 60,
+            'LaunchType': 'FARGATE',
+            'LoadBalancers': [
+                {
+                    'ContainerName': 'nginxfe',
+                    'ContainerPort': 80,
+                    'TargetGroupArn': {
+                        'Ref': 'TestFrontendFargateLBPublicListenerECSGroup92AD1119'
+                    }
+                }
+            ],
+            'NetworkConfiguration': {
+                'AwsvpcConfiguration': {
+                    'AssignPublicIp': 'ENABLED',
+                    'SecurityGroups': [
+                        {
+                            'Fn::GetAtt': [
+                                'TestFrontendFargateServiceSecurityGroup9DFF92D3',
+                                'GroupId'
+                            ]
+                        }
+                    ],
+                    'Subnets': [
+                        {
+                            'Ref': 'TestVpcpublicSubnet1Subnet4F70BC85'
+                        },
+                        {
+                            'Ref': 'TestVpcpublicSubnet2Subnet96FF72E6'
+                        }
+                    ]
+                }
+            },
+            'ServiceName': 'Frontend',
+            'Tags': [
+                {
+                    'Key': 'backend_url',
+                    'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
+                },
+                {
+                    'Key': 'branch',
+                    'Value': 'some-branch'
+                }
+            ],
+            'TaskDefinition': {
+                'Ref': 'TestFrontendFargateTaskDef5DCA46EA'
             }
         }
     )
@@ -251,8 +269,8 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                     'GroupId'
                 ]
             },
-            'FromPort': 3000,
-            'ToPort': 3000
+            'FromPort': 80,
+            'ToPort': 80
         }
     )
     template.has_resource_properties(
@@ -349,7 +367,20 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                         'Effect': 'Allow',
                         'Resource': {
                             'Fn::GetAtt': [
-                                'TestFrontendFargateTaskDefnextjsLogGroup59CC3BA2',
+                                'TestFrontendFargateTaskDefnginxfeLogGroupEB332E29',
+                                'Arn'
+                            ]
+                        }
+                    },
+                    {
+                        'Action': [
+                            'logs:CreateLogStream',
+                            'logs:PutLogEvents'
+                        ],
+                        'Effect': 'Allow',
+                        'Resource': {
+                            'Fn::GetAtt': [
+                                'TestFrontendFargateTaskDefApplicationContainerLogGroupB905B11F',
                                 'Arn'
                             ]
                         }

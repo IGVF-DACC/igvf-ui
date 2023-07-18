@@ -54,6 +54,7 @@ class Frontend(Construct):
 
     props: FrontendProps
     application_image: ContainerImage
+    nginx_image: ContainerImage
     domain_name: str
     fargate_service: ApplicationLoadBalancedFargateService
 
@@ -70,6 +71,7 @@ class Frontend(Construct):
         self._define_docker_assets()
         self._define_domain_name()
         self._define_fargate_service()
+        self._add_application_container_to_task()
         self._configure_health_check()
         self._add_tags_to_fargate_service()
         self._enable_exec_command()
@@ -80,6 +82,9 @@ class Frontend(Construct):
         self.application_image = ContainerImage.from_asset(
             '../',
             file='docker/nextjs/Dockerfile',
+        )
+        self.nginx_image = ContainerImage.from_asset(
+            '../docker/nginx/',
         )
 
     def _define_domain_name(self) -> None:
@@ -93,9 +98,11 @@ class Frontend(Construct):
             )
 
     def _define_fargate_service(self) -> None:
+        container_name = 'nginxfe'
         self.fargate_service = ApplicationLoadBalancedFargateService(
             self,
             'Fargate',
+            service_name='Frontend',
             vpc=self.props.existing_resources.network.vpc,
             cpu=self.props.cpu,
             desired_count=self.props.desired_count,
@@ -103,15 +110,10 @@ class Frontend(Construct):
                 rollback=True,
             ),
             task_image_options=ApplicationLoadBalancedTaskImageOptions(
-                container_name='nextjs',
-                container_port=3000,
-                image=self.application_image,
-                environment={
-                    'NODE_ENV': 'production',
-                    'BACKEND_URL': self.props.config.backend_url,
-                },
+                container_name=container_name,
+                image=self.nginx_image,
                 log_driver=LogDriver.aws_logs(
-                    stream_prefix='nextjs',
+                    stream_prefix=container_name,
                     mode=AwsLogDriverMode.NON_BLOCKING,
                 ),
             ),
@@ -122,6 +124,22 @@ class Frontend(Construct):
             domain_zone=self.props.existing_resources.domain.zone,
             domain_name=self.domain_name,
             redirect_http=True,
+        )
+
+    def _add_application_container_to_task(self) -> None:
+        container_name = 'nextjs'
+        self.fargate_service.task_definition.add_container(
+            'ApplicationContainer',
+            container_name=container_name,
+            image=self.application_image,
+            environment={
+                'NODE_ENV': 'production',
+                'BACKEND_URL': self.props.config.backend_url,
+            },
+            logging=LogDriver.aws_logs(
+                stream_prefix=container_name,
+                mode=AwsLogDriverMode.NON_BLOCKING,
+            ),
         )
 
     def _configure_health_check(self) -> None:
