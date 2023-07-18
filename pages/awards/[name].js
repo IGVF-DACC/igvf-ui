@@ -22,7 +22,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
 import { logTime } from "../../lib/general";
 
-export default function Award({ award, pis, contactPi, isJson }) {
+export default function Award({ award, isJson }) {
   return (
     <>
       <Breadcrumbs />
@@ -40,12 +40,12 @@ export default function Award({ award, pis, contactPi, isJson }) {
                   <DataItemValue>{award.description}</DataItemValue>
                 </>
               )}
-              {pis.length > 0 && (
+              {award.pis?.length > 0 && (
                 <>
                   <DataItemLabel>Principal Investigator(s)</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {pis.map((pi) => (
+                      {award.pis.map((pi) => (
                         <Link href={pi["@id"]} key={pi.uuid}>
                           {pi.title}
                         </Link>
@@ -54,12 +54,12 @@ export default function Award({ award, pis, contactPi, isJson }) {
                   </DataItemValue>
                 </>
               )}
-              {contactPi && (
+              {award.contact_pi && (
                 <>
                   <DataItemLabel>Contact P.I.</DataItemLabel>
                   <DataItemValue>
-                    <Link href={contactPi["@id"]} key={contactPi.uuid}>
-                      {contactPi.title}
+                    <Link href={award.contact_pi["@id"]} key={award.contact_pi.uuid}>
+                      {award.contact_pi.title}
                     </Link>
                   </DataItemValue>
                 </>
@@ -108,9 +108,9 @@ Award.propTypes = {
   // Award data to display on the page
   award: PropTypes.object.isRequired,
   // Principal investigator data associated with `award`
-  pis: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // pis: PropTypes.arrayOf(PropTypes.object).isRequired,
   // The contact Principal Investigator of the grant.
-  contactPi: PropTypes.object,
+  // contactPi: PropTypes.object,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
@@ -119,17 +119,17 @@ export async function getServerSideProps({ params, req, query }) {
   return logTime(`/awards/${params.name}/`, async ({ params, req, query }) => {
     const isJson = isJsonFormat(query);
     const request = new FetchRequest({ cookie: req.headers.cookie });
-    const award = await request.getObject(`/awards/${params.name}?frame=object/`);
+    const award = await request.getObject(`/awards/${params.name}`);
     if (FetchRequest.isResponseSuccess(award)) {
-      const pis =
-        award.pis?.length > 0
-          ? await request.getMultipleObjects(award.pis, null, {
-              filterErrors: true,
-            })
-          : [];
-      const contactPi = award.contact_pi
-        ? await request.getObject(award.contact_pi, null)
-        : null;
+      // const pis =
+      //   award.pis?.length > 0
+      //     ? await request.getMultipleObjects(award.pis, null, {
+      //         filterErrors: true,
+      //       })
+      //     : [];
+      // const contactPi = award.contact_pi
+      //   ? await request.getObject(award.contact_pi, null)
+      //   : null;
       const breadcrumbs = await buildBreadcrumbs(
         award,
         "name",
@@ -138,8 +138,8 @@ export async function getServerSideProps({ params, req, query }) {
       return {
         props: {
           award,
-          pis,
-          contactPi,
+          // pis,
+          // contactPi,
           isJson,
           pageContext: { title: award.name },
           breadcrumbs,
