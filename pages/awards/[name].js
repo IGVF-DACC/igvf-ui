@@ -119,7 +119,7 @@ export async function getServerSideProps({ params, req, query }) {
   return logTime(`/awards/${params.name}/`, async ({ params, req, query }) => {
     const isJson = isJsonFormat(query);
     const request = new FetchRequest({ cookie: req.headers.cookie });
-    const award = await request.getObject(`/awards/${params.name}/`);
+    const award = await request.getObject(`/awards/${params.name}?frame=object/`);
     if (FetchRequest.isResponseSuccess(award)) {
       const pis =
         award.pis?.length > 0
