@@ -17,7 +17,7 @@ services:
       - BACKEND_URL=http://nginx:8000
       - PUBLIC_BACKEND_URL=http://localhost:8000
     ports:
-      - "3001:3001"
+      - "3001:3000"
 
   nginxfe:
     build:
@@ -27,7 +27,7 @@ services:
       - "./docker/nginx/docker.conf:/etc/nginx/nginx.conf"
     command: nginx -c /etc/nginx/nginx.conf -g 'daemon off; pid /dev/null;'
     ports:
-      - "3000:80"
+      - "3000:8000"
     depends_on:
       - nextjs
 
