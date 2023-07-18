@@ -21,7 +21,7 @@ services:
     image: igvf-ui-nginx
     command: nginx -c /etc/nginx/nginx.conf -g 'daemon off; pid /dev/null;'
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
       - nextjs
 
