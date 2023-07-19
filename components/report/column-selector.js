@@ -140,7 +140,7 @@ export default function ColumnSelector({
                       onChange={() => onChange(columnSpec.id, isVisible)}
                       className="block md:basis-1/2 lg:basis-1/3"
                     >
-                      {columnSpec.title}
+                      {columnSpec.title || columnSpec.id}
                     </Checkbox>
                   );
                 }

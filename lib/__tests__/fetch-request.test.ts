@@ -1,5 +1,9 @@
 import _ from "lodash";
 import FetchRequest from "../fetch-request";
+import { DataProviderObject } from "../../globals";
+import type { ErrorObject } from "../fetch-request.d";
+
+declare const global: { window?: Window };
 
 describe("Test improper authentications get detected", () => {
   it("detects and throws with improper authentication", () => {
@@ -79,6 +83,9 @@ describe("Test GET requests to the data provider", () => {
     });
     expect(labItem).toBeTruthy();
     expect(_.isEqual(labItem, mockData)).toBeTruthy();
+    expect(
+      FetchRequest.isResponseSuccess(labItem as DataProviderObject)
+    ).toBeTruthy();
   });
 
   it("retrieves multiple items from the server correctly", async () => {
@@ -158,11 +165,13 @@ describe("Test GET requests to the data provider", () => {
     });
 
     const request = new FetchRequest();
-    const labItem = await request.getObject("/labs/j-michael-cherry/");
+    const labItem = (await request.getObject(
+      "/labs/j-michael-cherry/"
+    )) as DataProviderObject;
     expect(labItem).toBeTruthy();
     expect(labItem["@type"]).toContain("NetworkError");
     expect(labItem.status).toEqual("error");
-    expect(labItem.code).toEqual("NETWORK");
+    expect(labItem.code).toEqual(503);
     expect(FetchRequest.isResponseSuccess(labItem)).toBeFalsy();
   });
 
@@ -182,12 +191,16 @@ describe("Test GET requests to the data provider", () => {
       })
     );
 
+    type defaultError = {
+      notOK: string;
+    };
+
     const request = new FetchRequest();
     const labItem = await request.getObject("/labs/j-michael-cherry/", {
       notOK: "nope",
     });
     expect(labItem).toBeTruthy();
-    expect(labItem.notOK).toEqual("nope");
+    expect((labItem as defaultError).notOK).toEqual("nope");
   });
 
   it("returns a default error value on a network error", async () => {
@@ -195,12 +208,16 @@ describe("Test GET requests to the data provider", () => {
       throw "Mock request error";
     });
 
+    type defaultError = {
+      notOK: string;
+    };
+
     const request = new FetchRequest();
     const labItem = await request.getObject("/labs/j-michael-cherry/", {
       notOK: "nope",
     });
     expect(labItem).toBeTruthy();
-    expect(labItem.notOK).toEqual("nope");
+    expect((labItem as defaultError).notOK).toEqual("nope");
   });
 });
 
@@ -232,14 +249,16 @@ describe("Test URL-specific fetch requests", () => {
     });
 
     const request = new FetchRequest();
-    const session = await request.getObjectByUrl(
+    const labItem = (await request.getObjectByUrl(
       "http://localhost:8000/labs/j-michael-cherry/"
-    );
-    expect(session).toBeTruthy();
-    expect(session["@type"]).toContain("NetworkError");
-    expect(session.status).toEqual("error");
-    expect(session.code).toEqual("NETWORK");
-    expect(FetchRequest.isResponseSuccess(session)).toBeFalsy();
+    )) as ErrorObject;
+    expect(labItem).toBeTruthy();
+    expect(labItem["@type"]).toContain("NetworkError");
+    expect(labItem.status).toEqual("error");
+    expect(labItem.code).toEqual(503);
+    expect(
+      FetchRequest.isResponseSuccess(labItem as unknown as DataProviderObject)
+    ).toBeFalsy();
   });
 
   it("returns a specific error on throw", async () => {
@@ -296,9 +315,9 @@ describe("Test URL-specific fetch requests", () => {
     );
 
     const request = new FetchRequest();
-    const session = await request.getObjectByUrl(
+    const session = (await request.getObjectByUrl(
       "http://localhost:8000/session"
-    );
+    )) as ErrorObject;
     expect(session).toBeTruthy();
     expect(session.status).toEqual("error");
     expect(session.code).toEqual(404);
@@ -337,7 +356,7 @@ describe("Text fetch requests", () => {
     );
 
     const request = new FetchRequest();
-    const markdown = await request.getText("/markdown/path");
+    const markdown = (await request.getText("/markdown/path")) as ErrorObject;
     expect(typeof markdown).toEqual("object");
     expect(markdown["@type"]).toContain("HTTPNotFound");
   });
@@ -370,12 +389,14 @@ describe("Text fetch requests", () => {
     });
 
     const request = new FetchRequest();
-    const markdown = await request.getText("/markdown/path");
+    const markdown = (await request.getText("/markdown/path")) as ErrorObject;
     expect(markdown).toBeTruthy();
     expect(markdown["@type"]).toContain("NetworkError");
     expect(markdown.status).toEqual("error");
-    expect(markdown.code).toEqual("NETWORK");
-    expect(FetchRequest.isResponseSuccess(markdown)).toBeFalsy();
+    expect(markdown.code).toEqual(503);
+    expect(
+      FetchRequest.isResponseSuccess(markdown as unknown as DataProviderObject)
+    ).toBeFalsy();
   });
 
   it("returns a default value for a network error on a text request", async () => {
@@ -418,7 +439,7 @@ describe("POST fetch requests", () => {
     expect(labItem).toBeTruthy();
     expect(labItem["@type"]).toContain("NetworkError");
     expect(labItem.status).toEqual("error");
-    expect(labItem.code).toEqual("NETWORK");
+    expect(labItem.code).toEqual(503);
   });
 });
 
@@ -450,7 +471,7 @@ describe("PUT fetch requests", () => {
     expect(labItem).toBeTruthy();
     expect(labItem["@type"]).toContain("NetworkError");
     expect(labItem.status).toEqual("error");
-    expect(labItem.code).toEqual("NETWORK");
+    expect(labItem.code).toEqual(503);
   });
 });
 
@@ -482,7 +503,7 @@ describe("PATCH fetch requests", () => {
     expect(labItem).toBeTruthy();
     expect(labItem["@type"]).toContain("NetworkError");
     expect(labItem.status).toEqual("error");
-    expect(labItem.code).toEqual("NETWORK");
+    expect(labItem.code).toEqual(503);
   });
 
   describe("Test backend (/api/) requests", () => {
@@ -550,8 +571,8 @@ describe("Test getMultipleObjectsBulk()", () => {
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      null,
-      ["name"]
+      ["name"],
+      null
     );
     expect(labItems).toBeTruthy();
     expect(labItems).toHaveLength(2);
@@ -585,8 +606,8 @@ describe("Test getMultipleObjectsBulk()", () => {
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      null,
-      []
+      [],
+      null
     );
     expect(labItems).toBeTruthy();
     expect(labItems).toHaveLength(2);
@@ -634,14 +655,24 @@ describe("Test getMultipleObjectsBulk()", () => {
     });
 
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
-    const labItems = await request.getMultipleObjectsBulk(paths, null, [
-      "name",
-    ]);
+    const labItems = await request.getMultipleObjectsBulk(
+      paths,
+      ["name"],
+      null
+    );
     expect(labItems).toBeTruthy();
     expect(labItems).toHaveLength(100);
   });
 
-  it("detects a network error", async () => {
+  it("retrieves no items from an empty array", async () => {
+    // Make sure passing an empty array returns an empty array.
+    const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
+    const noLabItems = await request.getMultipleObjectsBulk([], ["name"], null);
+    expect(noLabItems).toBeTruthy();
+    expect(noLabItems).toHaveLength(0);
+  });
+
+  it("detects a network error and returns the specified error value", async () => {
     window.fetch = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         ok: false,
@@ -652,17 +683,39 @@ describe("Test getMultipleObjectsBulk()", () => {
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      null,
-      ["name"]
+      ["name"],
+      null
     );
     expect(labItems).toBeFalsy();
   });
 
-  it("retrieves no items from an empty array", async () => {
-    // Make sure passing an empty array returns an empty array.
+  it("detects a network error and returns the default error value", async () => {
+    window.fetch = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve(null),
+      });
+    });
+
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
-    const noLabItems = await request.getMultipleObjectsBulk([], null, ["name"]);
-    expect(noLabItems).toBeTruthy();
-    expect(noLabItems).toHaveLength(0);
+    const labItems = await request.getMultipleObjectsBulk(
+      ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
+      ["name"]
+    );
+    expect(labItems).toBeTruthy();
+    const errorResult = labItems as ErrorObject;
+    expect(errorResult["@type"]).toContain("NetworkError");
+    expect(errorResult.status).toEqual("error");
+    expect(errorResult.code).toEqual(503);
+    expect(FetchRequest.isResponseSuccess(errorResult)).toBeFalsy();
+  });
+});
+
+describe("Test static isResponseSuccess function", () => {
+  it("returns true for a successful response", () => {
+    const response = {
+      status: "success",
+    };
+    expect(FetchRequest.isResponseSuccess(response)).toBeTruthy();
   });
 });

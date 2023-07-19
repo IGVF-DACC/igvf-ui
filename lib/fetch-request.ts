@@ -28,6 +28,20 @@
 // lib
 import { API_URL, SERVER_URL, BACKEND_URL, MAX_URL_LENGTH } from "./constants";
 
+// TYPES
+// root
+import type {
+  DatabaseObject,
+  DataProviderObject,
+  SessionObject,
+} from "../globals.d";
+// lib
+import type {
+  ErrorObject,
+  FetchMethod,
+  FetchRequestInitializer,
+} from "./fetch-request.d";
+
 const FETCH_METHOD = {
   GET: "GET",
   HEAD: "HEAD",
@@ -44,14 +58,10 @@ Object.freeze(FETCH_METHOD);
 /**
  * fetch() methods that allow a `body` in the options object.
  */
-const METHODS_ALLOWING_BODY = [
-  FETCH_METHOD.POST,
-  FETCH_METHOD.PUT,
-  FETCH_METHOD.PATCH,
-];
+const METHODS_ALLOWING_BODY: Array<FetchMethod> = ["POST", "PUT", "PATCH"];
 Object.freeze(METHODS_ALLOWING_BODY);
 
-const PAYLOAD_FORMAT = {
+const PAYLOAD_FORMAT: { [key: string]: string } = {
   JSON: "application/json",
   HTML: "text/html",
   TEXT: "text/plain",
@@ -65,7 +75,7 @@ const PAYLOAD_FORMAT = {
 };
 Object.freeze(PAYLOAD_FORMAT);
 
-export const HTTP_STATUS_CODE = {
+export const HTTP_STATUS_CODE: { [key: string]: number } = {
   OK: 200,
   CREATED: 201,
   ACCEPTED: 202,
@@ -112,10 +122,10 @@ Object.freeze(HTTP_STATUS_CODE);
 /**
  * Standard returned response for a network error.
  */
-const NETWORK_ERROR_RESPONSE = {
+const NETWORK_ERROR_RESPONSE: ErrorObject = {
   "@type": ["NetworkError", "Error"],
   status: "error",
-  code: "NETWORK",
+  code: HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,
   title: "Unknown error",
   description: "An unknown error occurred.",
   detail: "An unknown error occurred.",
@@ -133,7 +143,7 @@ const MAX_PATH_QUERY_LENGTH_ESTIMATE = 50;
  * @param {string} path Path or paths to requested resource
  * @returns {void}
  */
-function logRequest(method, path) {
+function logRequest(method: string, path: string): void {
   const date = new Date().toISOString();
   console.log(`SVRREQ [${date}] ${method} ${path}`);
 }
@@ -146,24 +156,34 @@ function logRequest(method, path) {
  * }
  */
 export default class FetchRequest {
-  #headers = {};
-  #backend = false;
+  private headers = new Headers();
+  private backend = false;
 
   /**
    * Determine whether the response object indicates an error of any kind occurred, whether an
    * error detected by the server, or a network error. Objects without an `@type` property return
    * true (success).
-   * @param {object} response Response object from fetch()
+   * @param {DataProviderObject|ErrorObject} response Response object from fetch()
    * @returns {boolean} True if response is a successful response
    */
-  static isResponseSuccess(response) {
-    return !response["@type"]?.includes("Error");
+  static isResponseSuccess(
+    response: DataProviderObject | ErrorObject
+  ): boolean {
+    if (
+      typeof response === "object" &&
+      response !== null &&
+      "@type" in response
+    ) {
+      const types = (response as DatabaseObject)["@type"];
+      return !types.includes("Error");
+    }
+    return true;
   }
 
-  constructor(authentication) {
-    let cookie;
-    let session;
-    let backend;
+  constructor(authentication?: FetchRequestInitializer) {
+    let cookie: string | undefined;
+    let session: SessionObject | undefined;
+    let backend: boolean | undefined;
 
     if (authentication) {
       ({ cookie, session, backend } = authentication);
@@ -173,28 +193,29 @@ export default class FetchRequest {
         );
       }
       if (!backend) {
-        if (this.#isServer && session) {
+        if (this.isServer && session) {
           throw new Error(
             "Server-side requests requires a cookie, but a session was provided."
           );
         }
-        if (!this.#isServer && cookie) {
+        if (!this.isServer && cookie) {
           throw new Error(
             "Client-side requests requires a session, but a cookie was provided."
           );
         }
       }
     }
-    if (cookie || session) {
-      if (this.#isServer) {
-        this.#headers.Cookie = cookie;
-      } else if (!backend) {
-        this.#headers["X-CSRF-Token"] = session._csrft_;
-      }
+
+    // Initialize the HTTP request headers.
+    if (cookie && this.isServer) {
+      this.headers.append("Cookie", cookie);
+    }
+    if (session && !this.isServer && !backend) {
+      this.headers.append("X-CSRF-Token", session._csrft_);
     }
 
     if (backend) {
-      this.#backend = true;
+      this.backend = true;
     }
   }
 
@@ -208,7 +229,10 @@ export default class FetchRequest {
    *     query-string elements
    * @returns {Array<Array<string>>} Array of arrays (groups) of paths
    */
-  #pathsIntoPathGroups(paths, adjustment) {
+  private pathsIntoPathGroups(
+    paths: Array<string>,
+    adjustment: number
+  ): Array<Array<string>> {
     // Calculate the maximum number of paths that can fit into a query string.
     const maxGroupSize = Math.floor(
       (MAX_URL_LENGTH - adjustment) / MAX_PATH_QUERY_LENGTH_ESTIMATE
@@ -217,7 +241,7 @@ export default class FetchRequest {
     // Break the paths into groups of maxGroupSize. Each group gets converted to a query string
     // and sent as a single request.
     const pathGroups = paths.reduce(
-      (groups, path) => {
+      (groups: Array<Array<string>>, path: string) => {
         const lastGroup = groups[groups.length - 1];
         if (lastGroup.length < maxGroupSize) {
           // The last group in the array of groups still has room for a new path.
@@ -237,59 +261,63 @@ export default class FetchRequest {
    * Determine whether this class object is being used on the server or not.
    * @returns {boolean} True if this class object exists on server, false for client
    */
-  get #isServer() {
+  private get isServer(): boolean {
     return typeof window === "undefined";
   }
 
   /**
    * Client and server requests have to go through different URLs. Call this to get the URL
    * appropriate for the current request.
+   * @returns {string} URL to use for the current request
    */
-  get #baseUrl() {
-    if (this.#backend) {
+  private get baseUrl(): string {
+    if (this.backend) {
       return SERVER_URL;
     }
-    return this.#isServer ? BACKEND_URL : API_URL;
+    return this.isServer ? BACKEND_URL : API_URL;
   }
 
   /**
    * Build the complete request URL for the given path, appropriate for client and server requests.
    * @param {string} path Path to append to the base URL
-   * @param {boolean} isDbRequest True to get data from database instead of search engine
+   * @param {boolean} isDbRequest? True to get data from database instead of search engine
    * @returns {string} Complete URL for the given path
    */
-  #pathUrl(path, isDbRequest) {
+  private pathUrl(path: string, isDbRequest = false): string {
     const pathHasQuery = path.includes("?");
     const dbRequestQuery = isDbRequest
       ? `${pathHasQuery ? "&" : "?"}datastore=database`
       : "";
-    return `${this.#baseUrl}${path}${dbRequestQuery}`;
+    return `${this.baseUrl}${path}${dbRequestQuery}`;
   }
 
   /**
    * Build the options object for a fetch() request, including the headers.
    * @param {string} method Method to use for the request
    * @param {object} options Unnamed parameter indicating request options
-   * @param {object} options.payload Object to send as the request body
-   * @param {string} options.accept Accept header to send with the request
-   * @param {string} options.contentType Content-Type header to send with the request
-   * @returns {object} Options object for fetch()
+   * @param {object} options.payload? Object to send as the request body
+   * @param {string} options.accept? Accept header to send with the request
+   * @param {string} options.contentType? Content-Type header to send with the request
+   * @returns {RequestInit} Options object for fetch()
    */
-  #buildOptions(method, { payload, accept, contentType }) {
-    const headers = this.#headers;
-    if (accept) {
-      headers.Accept = accept;
+  private buildOptions(
+    method: FetchMethod,
+    additional: { payload?: object; accept?: string; contentType?: string }
+  ): RequestInit {
+    if (additional.accept) {
+      this.headers.set("Accept", additional.accept);
     }
-    if (contentType) {
-      headers["Content-Type"] = contentType;
+    if (additional.contentType) {
+      this.headers.set("Content-Type", additional.contentType);
     }
-    const options = {
+    const options: RequestInit = {
       method,
       credentials: "include",
-      headers,
+      redirect: "follow",
+      headers: this.headers,
     };
-    if (payload && METHODS_ALLOWING_BODY.includes(method)) {
-      options.body = JSON.stringify(payload);
+    if (additional.payload && METHODS_ALLOWING_BODY.includes(method)) {
+      options.body = JSON.stringify(additional.payload);
     }
     return options;
   }
@@ -297,26 +325,31 @@ export default class FetchRequest {
   /**
    * Request the object with the given path.
    * @param {string} path Path to requested resource
-   * @param {*} defaultErrorValue Value to return if the request fails; error object if not given
-   * @param {object} options indicating request options
+   * @param {T} defaultErrorValue Value to return if the request fails; error object if not given
+   * @param {object} options? indicating request options
    * @param {boolean} options.isDbRequest True to get data from database instead of search engine
-   * @returns {object} Requested object or error object
+   * @returns {Promise<DataProviderObject|ErrorObject|T>} Requested object, error object, or
+   *  `defaultErrorValue` if given and the request fails
    */
-  async getObject(path, defaultErrorValue, options = {}) {
-    const headerOptions = this.#buildOptions(FETCH_METHOD.GET, {
+  public async getObject<T>(
+    path: string,
+    defaultErrorValue?: T,
+    options = { isDbRequest: false }
+  ): Promise<DataProviderObject | ErrorObject | T> {
+    const headerOptions = this.buildOptions("GET", {
       accept: PAYLOAD_FORMAT.JSON,
-      redirect: "follow",
     });
     try {
       logRequest("getObject", path);
       const response = await fetch(
-        this.#pathUrl(path, options.isDbRequest),
+        this.pathUrl(path, options.isDbRequest),
         headerOptions
       );
       if (!response.ok && defaultErrorValue !== undefined) {
         return defaultErrorValue;
       }
-      return response.json();
+      const results = (await response.json()) as DataProviderObject;
+      return results;
     } catch (error) {
       console.log(error);
       return defaultErrorValue === undefined
@@ -328,13 +361,15 @@ export default class FetchRequest {
   /**
    * Request the object with the given URL, including protocol and domain.
    * @param {string} url Full URL to requested resource
-   * @param {*} defaultErrorValue Value to return if the request fails; error object if not given
-   * @returns {object} Requested object or error object
+   * @param {T} defaultErrorValue? Value to return if the request fails; error object if not given
+   * @returns {Promise<DataProviderObject|ErrorObject|T>} Requested object or error object
    */
-  async getObjectByUrl(url, defaultErrorValue) {
-    const headerOptions = this.#buildOptions(FETCH_METHOD.GET, {
+  public async getObjectByUrl<T>(
+    url: string,
+    defaultErrorValue?: T
+  ): Promise<DataProviderObject | ErrorObject | T> {
+    const headerOptions = this.buildOptions("GET", {
       accept: PAYLOAD_FORMAT.JSON,
-      redirect: "follow",
     });
     try {
       logRequest("getObjectByUrl", url);
@@ -357,19 +392,23 @@ export default class FetchRequest {
    * paths that result in a request error places this default value in that array entry,
    * otherwise those entries are filled with the error object.
    * @param {array} paths Array of paths to requested resources
-   * @param {*} defaultErrorValue Value to return if the request fails; error object if not given
-   * @param {object} options Options for these requests
+   * @param {T} defaultErrorValue Value to return if the request fails; error object if not given
+   * @param {object} options? Options for these requests
    * @param {boolean} options.filterErrors True to filter errored requests from the returned array
-   * @returns {array} Array of requested objects
+   * @returns {Promise<Array<DataProviderObject|ErrorObject|T>>} Array of requested objects
    */
-  async getMultipleObjects(paths, defaultErrorValue, options = {}) {
+  public async getMultipleObjects<T>(
+    paths: Array<string>,
+    defaultErrorValue: T,
+    options = { filterErrors: false }
+  ): Promise<Array<DataProviderObject | ErrorObject | T>> {
     logRequest("getMultipleObjects", `[${paths.join(", ")}]`);
     const results =
       paths.length > 0
         ? await Promise.all(
             paths.map((path) => this.getObject(path, defaultErrorValue))
           )
-        : [];
+        : await Promise.resolve([]);
     return options.filterErrors
       ? results.filter((result) => result !== defaultErrorValue)
       : results;
@@ -378,13 +417,21 @@ export default class FetchRequest {
   /**
    * Same as the `getMultipleObjects()` method, but instead of requesting each individual object in
    * parallel, it instead requests a `/search`, passing in the `@id` of every requested object, as
-   * well as the fields needed for each object.
+   * well as the fields needed for each object. This can cause a query string too long to fit in a
+   * URL, so break the paths into groups of paths, each group mapping to an individual request.
+   * request. Unlike `getMultipleObjects()`, this method never returns an array that could contain
+   * entries for failed requests. It instead either returns an array of successfully requested
+   * objects, or a single error value.
    * @param {Array<string>} paths Path of each object to request
-   * @param {<any>} defaultErrorValue Value to return if the request fails; error object if not given
    * @param {Array<string>} fields Properties of each object to retrieve
-   * @returns {Array<object>} Array of requested objects
+   * @param {<T>} defaultErrorValue? Value to return if the request fails; error object if not given
+   * @returns {Promise<Array<DataProviderObject> | T>} Array of requested objects
    */
-  async getMultipleObjectsBulk(paths, defaultErrorValue, fields) {
+  async getMultipleObjectsBulk<T>(
+    paths: Array<string>,
+    fields: Array<string>,
+    defaultErrorValue?: T
+  ): Promise<Array<DataProviderObject> | ErrorObject | T> {
     logRequest("getMultipleObjectsBulk", `[${paths.join(", ")}]`);
 
     if (paths.length > 0) {
@@ -394,7 +441,7 @@ export default class FetchRequest {
       // Break the paths into groups of MAX_PATH_GROUP_SIZE, each group mapping to a data-provider
       // request. This reduces the lengths of the query strings to fit within the data provider's
       // limits.
-      const pathGroups = this.#pathsIntoPathGroups(paths, fieldQuery.length);
+      const pathGroups = this.pathsIntoPathGroups(paths, fieldQuery.length);
 
       // For each group of paths, request the objects as search results. Send these requests in
       // parallel.
@@ -406,22 +453,27 @@ export default class FetchRequest {
             `/search/?${query}&limit=${group.length}`,
             null
           );
-          if (response?.["@graph"]) {
+          if ((response as DataProviderObject)?.["@graph"]) {
             // Add the results to the array of results.
-            return response["@graph"];
+            return (response as DataProviderObject)["@graph"];
           }
 
-          // The response was an error. Add an empty array to the path groups, so that segment of
-          // results gets skipped.
+          // The request failed. Add a null to the array of results so that we know to return an
+          // error as the method result.
           return null;
         })
       );
 
-      // Flatten the results array of arrays into a single array.
-      const flattenedResults = results.flat();
-      return flattenedResults.includes(null)
-        ? defaultErrorValue
-        : flattenedResults;
+      // Flatten the results array of arrays into a single array of strings and nulls.
+      const flattenedResults =
+        results.flat() as Array<DataProviderObject | null>;
+      if (flattenedResults.includes(null)) {
+        // At least one request failed. Return an error.
+        return defaultErrorValue === undefined
+          ? NETWORK_ERROR_RESPONSE
+          : defaultErrorValue;
+      }
+      return flattenedResults as Array<DataProviderObject>;
     }
     return [];
   }
@@ -429,26 +481,34 @@ export default class FetchRequest {
   /**
    * Request the collection (e.g. "users") with the given path.
    * @param {string} collection Name of the collection to request
-   * @param {*} defaultErrorValue Value to return if the request fails; error object if not given
-   * @returns {object} Collection data including all its members in @graph
+   * @param {T} defaultErrorValue? Value to return if the request fails; error object if not
+   *   given
+   * @returns {Promise<DataProviderObject | T>} Collection data including all its members in @graph
    */
-  async getCollection(collection, defaultErrorValue) {
+  public async getCollection<T>(
+    collection: string,
+    defaultErrorValue?: T
+  ): Promise<DataProviderObject | ErrorObject | T> {
     return this.getObject(`/${collection}/?limit=all`, defaultErrorValue);
   }
 
   /**
    * Request text file string with the given path.
    * @param {string} path Path to the requested resource
-   * @param {*} defaultErrorValue Value to return if the request fails; error object if not given
-   * @returns {string/object} Requested string, or error object if `defaultErrorValue` not given
+   * @param {T} defaultErrorValue? Value to return if the request fails; error object if not given
+   * @returns {Promise<string|DataProviderObject|T>} Requested string, or error object if
+   *   `defaultErrorValue` not given
    */
-  async getText(path, defaultErrorValue) {
-    const options = this.#buildOptions(FETCH_METHOD.GET, {
+  public async getText<T>(
+    path: string,
+    defaultErrorValue?: T
+  ): Promise<string | ErrorObject | T> {
+    const options = this.buildOptions("GET", {
       accept: PAYLOAD_FORMAT.TEXT,
     });
     try {
       logRequest("getText", path);
-      const response = await fetch(this.#pathUrl(path), options);
+      const response = await fetch(this.pathUrl(path), options);
       if (!response.ok && defaultErrorValue !== undefined) {
         return defaultErrorValue;
       }
@@ -465,17 +525,20 @@ export default class FetchRequest {
    * Send a POST request with the given object.
    * @param {string} path Path to resource to post to
    * @param {object} payload Object to post
-   * @returns Response from POST request
+   * @returns {Promise<DataProviderObject|ErrorObject>} Response from POST request
    */
-  async postObject(path, payload) {
+  public async postObject(
+    path: string,
+    payload: object
+  ): Promise<DataProviderObject | ErrorObject> {
     logRequest("postObject", path);
-    const options = this.#buildOptions(FETCH_METHOD.POST, {
+    const options = this.buildOptions("POST", {
       accept: PAYLOAD_FORMAT.JSON,
       contentType: PAYLOAD_FORMAT.JSON,
       payload,
     });
     try {
-      const response = await fetch(this.#pathUrl(path), options);
+      const response = await fetch(this.pathUrl(path), options);
       return response.json();
     } catch (error) {
       console.log(error);
@@ -486,18 +549,21 @@ export default class FetchRequest {
   /**
    * Write the given object with a PUT request.
    * @param {string} path Path to resource to put
-   * @param {*} payload Object to put at the given path
-   * @returns {object} Response from PUT request
+   * @param {object} payload Object to put at the given path
+   * @returns {Promise<DataProviderObject|ErrorObject>} Response from PUT request
    */
-  async putObject(path, payload) {
-    const options = this.#buildOptions(FETCH_METHOD.PUT, {
+  public async putObject(
+    path: string,
+    payload: object
+  ): Promise<DataProviderObject | ErrorObject> {
+    const options = this.buildOptions("PUT", {
       accept: PAYLOAD_FORMAT.JSON,
       contentType: PAYLOAD_FORMAT.JSON,
       payload,
     });
     try {
       logRequest("putObject", path);
-      const response = await fetch(this.#pathUrl(path), options);
+      const response = await fetch(this.pathUrl(path), options);
       return response.json();
     } catch (error) {
       console.log(error);
@@ -509,17 +575,20 @@ export default class FetchRequest {
    * Patch the object at the given path with the given payload.
    * @param {string} path Path to resource to patch
    * @param {object} payload Object to merge into patched object
-   * @returns Response from PATCH request
+   * @returns {DataProviderObject|ErrorObject} Response from PATCH request
    */
-  async patchObject(path, payload) {
-    const options = this.#buildOptions(FETCH_METHOD.PATCH, {
+  public async patchObject(
+    path: string,
+    payload: object
+  ): Promise<DataProviderObject | ErrorObject> {
+    const options = this.buildOptions("PATCH", {
       accept: PAYLOAD_FORMAT.JSON,
       contentType: PAYLOAD_FORMAT.JSON,
       payload,
     });
     try {
       logRequest("patchObject", path);
-      const response = await fetch(this.#pathUrl(path), options);
+      const response = await fetch(this.pathUrl(path), options);
       return response.json();
     } catch (error) {
       console.log(error);
