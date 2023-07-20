@@ -1795,7 +1795,6 @@ describe("Test the Model component", () => {
         <Model item={item} />
       </SessionContext.Provider>
     );
-    screen.debug();
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/Model/);
