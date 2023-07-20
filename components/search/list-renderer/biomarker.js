@@ -12,16 +12,18 @@ import {
 } from "./search-list-item";
 // lib
 import { getBiomarkerTitle } from "../../../lib/biomarker";
+import { getBiomarkerSearchIdentifier } from "../../../lib/biomarker";
 
 export default function Biomarker({ item: biomarker }) {
   const title = getBiomarkerTitle(biomarker);
+  const searchIdentifier = getBiomarkerSearchIdentifier(biomarker);
 
   return (
     <SearchListItemContent>
       <SearchListItemMain>
         <SearchListItemUniqueId>
           <SearchListItemType item={biomarker} />
-          {biomarker.uuid}
+          {searchIdentifier}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{title}</SearchListItemTitle>
         <SearchListItemMeta>
