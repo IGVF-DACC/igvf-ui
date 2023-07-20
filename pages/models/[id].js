@@ -59,20 +59,6 @@ export default function Model({
                   </DataItemValue>
                 </>
               )}
-              {inputFileSets.length > 0 && (
-                <>
-                  <DataItemLabel>Input File Sets</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {inputFileSets.map((file) => (
-                        <Link href={file["@id"]} key={file.uuid}>
-                          {file.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
               {model.prediction_objects.length > 0 && (
                 <>
                   <DataItemLabel>Prediction Objects</DataItemLabel>
