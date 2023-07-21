@@ -427,6 +427,32 @@ def test_constructs_pipeline_initialize_demo_deployment_pipeline_construct(mocke
                                 ]
                             },
                             'RunOrder': 1
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Build',
+                                'Owner': 'AWS',
+                                'Provider': 'CodeBuild',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'ProjectName': {
+                                    'Ref': 'TestDemoDeploymentPipelineCodePipelineAssetsDockerAsset226FE0B63'
+                                }
+                            },
+                            'InputArtifacts': [
+                                {
+                                    'Name': 'SynthStep_Output'
+                                }
+                            ],
+                            'Name': 'DockerAsset2',
+                            'RoleArn': {
+                                'Fn::GetAtt': [
+                                    'TestDemoDeploymentPipelineCodePipelineCodeBuildActionRoleD3A8E8C4',
+                                    'Arn'
+                                ]
+                            },
+                            'RunOrder': 1
                         }
                     ],
                     'Name': 'Assets'
@@ -687,6 +713,32 @@ def test_constructs_pipeline_initialize_dev_deployment_pipeline_construct(mocker
                                 }
                             ],
                             'Name': 'DockerAsset1',
+                            'RoleArn': {
+                                'Fn::GetAtt': [
+                                    'DevDeploymentPipelineCodePipelineCodeBuildActionRole393D1655',
+                                    'Arn'
+                                ]
+                            },
+                            'RunOrder': 1
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Build',
+                                'Owner': 'AWS',
+                                'Provider': 'CodeBuild',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'ProjectName': {
+                                    'Ref': 'DevDeploymentPipelineCodePipelineAssetsDockerAsset2845D1B67'
+                                }
+                            },
+                            'InputArtifacts': [
+                                {
+                                    'Name': 'SynthStep_Output'
+                                }
+                            ],
+                            'Name': 'DockerAsset2',
                             'RoleArn': {
                                 'Fn::GetAtt': [
                                     'DevDeploymentPipelineCodePipelineCodeBuildActionRole393D1655',
@@ -956,6 +1008,32 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                 }
                             ],
                             'Name': 'DockerAsset1',
+                            'RoleArn': {
+                                'Fn::GetAtt': [
+                                    'TestProductionDeploymentPipelineCodePipelineCodeBuildActionRole650FEAB8',
+                                    'Arn'
+                                ]
+                            },
+                            'RunOrder': 1
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Build',
+                                'Owner': 'AWS',
+                                'Provider': 'CodeBuild',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'ProjectName': {
+                                    'Ref': 'TestProductionDeploymentPipelineCodePipelineAssetsDockerAsset25EFC821F'
+                                }
+                            },
+                            'InputArtifacts': [
+                                {
+                                    'Name': 'SynthStep_Output'
+                                }
+                            ],
+                            'Name': 'DockerAsset2',
                             'RoleArn': {
                                 'Fn::GetAtt': [
                                     'TestProductionDeploymentPipelineCodePipelineCodeBuildActionRole650FEAB8',

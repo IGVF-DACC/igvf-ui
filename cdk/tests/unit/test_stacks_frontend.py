@@ -40,8 +40,8 @@ def test_stacks_frontend_initialize_frontend_stack(config):
             'LaunchType': 'FARGATE',
             'LoadBalancers': [
                 {
-                    'ContainerName': 'nextjs',
-                    'ContainerPort': 3000,
+                    'ContainerName': 'nginxfe',
+                    'ContainerPort': 80,
                     'TargetGroupArn': {
                         'Ref': 'FrontendFargateLBPublicListenerECSGroupB493F3AB'
                     }
@@ -64,6 +64,7 @@ def test_stacks_frontend_initialize_frontend_stack(config):
                     ]
                 }
             },
+            'ServiceName': 'Frontend',
             'Tags': [
                 {
                     'Key': 'backend_url',

@@ -113,7 +113,9 @@ AlignmentFile.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const alignmentFile = await request.getObject(`/signal-files/${params.id}/`);
+  const alignmentFile = await request.getObject(
+    `/alignment-files/${params.id}/`
+  );
   if (FetchRequest.isResponseSuccess(alignmentFile)) {
     const fileSet = await request.getObject(alignmentFile.file_set, null);
     const documents = alignmentFile.documents
