@@ -47,8 +47,12 @@ export function DonorDataItems({ item, parents = null, children }) {
           <DataItemValue>{item.sex}</DataItemValue>
         </>
       )}
-      <DataItemLabel>Virtual</DataItemLabel>
-      <DataItemValue>{item.virtual ? "True" : "False"}</DataItemValue>
+      {item.virtual && (
+        <>
+          <DataItemLabel>Virtual</DataItemLabel>
+          <DataItemValue>{item.virtual ? "Yes" : "No"}</DataItemValue>
+        </>
+      )}
       {parents?.length > 0 && (
         <>
           <DataItemLabel>Parents</DataItemLabel>
