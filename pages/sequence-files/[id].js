@@ -20,6 +20,7 @@ import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
@@ -103,14 +104,10 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(sequenceFile)) {
     const fileSet = await request.getObject(sequenceFile.file_set, null);
     const documents = sequenceFile.documents
-      ? await request.getMultipleObjects(sequenceFile.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(sequenceFile.documents, request)
       : [];
     const derivedFrom = sequenceFile.derived_from
-      ? await request.getMultipleObjects(sequenceFile.derived_from, null, {
-          filterErrors: true,
-        })
+      ? await requestFiles(sequenceFile.derived_from, request)
       : [];
     const breadcrumbs = await buildBreadcrumbs(
       sequenceFile,

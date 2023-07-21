@@ -41,5 +41,11 @@ Award.propTypes = {
 };
 
 Award.getAccessoryDataPaths = (items) => {
-  return items.map((item) => item.contact_pi).filter(Boolean);
+  return [
+    {
+      type: "User",
+      paths: items.map((item) => item.contact_pi).filter(Boolean),
+      fields: ["title"],
+    },
+  ];
 };

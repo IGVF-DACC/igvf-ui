@@ -164,19 +164,23 @@ export default function GenericRenderer({ item }) {
 }
 ```
 
-Currently, this would display “undefined” for the phenotype term `term_name` property because the `feature` property just contains the path to the `lab` object as a string. To fix this, tell the search-result system the path to the phenotype term object you need by adding the `getAccessoryDataPaths()` property to your functional component. For the `<GenericRenderer>` example:
+Currently, this would display “undefined” for the Feature `term_name` property because the `feature` property just contains the path to the Feature object as a string. To fix this, tell the search-result system the path to the Feature object you need by adding the `getAccessoryDataPaths()` property to your functional component, as well as the specific fields of the Feature object you need. For the `<GenericRenderer>` example:
 
 ```js
 GenericRenderer.getAccessoryDataPaths = (items) => {
-   return items.
-    .map((item) => item.feature)
-    .filter(Boolean);
+  return [
+    {
+      type: "Feature",
+      paths: items.map((item) => item.feature).filter(Boolean),
+      fields: ["term_name"],
+    },
+  ];
 };
 ```
 
 ### Generating Accessory Data Paths
 
-The accessory-data function gets called only on the NextJS server before the browser receives any data, so don’t reference any browser variables in this function. The parameter passes in an array of _all_ results in the search-results object from igvfd that match the `@type` your renderer handles. The function must return an array of paths of the objects to request from igvfd.
+The accessory-data function gets called only on the NextJS server before the browser receives any data, so don’t reference any browser variables in this function. The parameter passes in an array of _all_ results in the search-results object from igvfd that match the `@type` your renderer handles.
 
 As an example, if the `@graph` property of search results contains something like this:
 
@@ -187,7 +191,7 @@ As an example, if the `@graph` property of search results contains something lik
     "@type": ["Generic", "Item"],
     accession: "IGVF000AAA",
     title: "Title for one result",
-    feature: "/phenotypic_feature/001/",
+    feature: "/feature/001/",
   },
   {
     "@id": "/somethings/100",
@@ -200,22 +204,33 @@ As an example, if the `@graph` property of search results contains something lik
     @type: ["Generic", "Item"],
     accession: "IGVF000BBB",
     title: "Title for one result",
-    feature: "/phenotypic_feature/002/",
+    feature: "/feature/002/",
   },
 ]
 ```
 
-Once the NextJS server receives this search-result data, it discovers that the objects with an `@type` of `Generic` get rendered by the `<GenericRenderer>` component. It collects both the `Generic` results into one array and passes that to `GenericRenderer.getAccessoryDataPaths()`. It also finds the renderer for the `OtherType` object, if any, and calls that with the object in a single-item array with the `OtherType` `@type`.
+Once the NextJS server receives this search-result data, it discovers that the objects with an `@type` of `Generic` gets rendered by the `<GenericRenderer>` component. It collects just the `Generic` results into a single array and passes that to `GenericRenderer.getAccessoryDataPaths()` -- the OtherType object doesn’t get included, as an array containing that object gets passed to the `getAccessoryDataPaths()` method for the renderer that handles that type, if that method exists.
 
-The `getAccessoryDataPaths()` must then determine the paths to all linked objects needed to render all the search-list items for the `@type` this method handles and return them as a an array of paths. Duplicates don’t cause a single object to get requested multiple times because these paths get deduplicated. The method should remove any undefined elements though. From the example above:
+The `getAccessoryDataPaths()` must then determine the paths to all linked objects needed to render all the search-list items for the `@type` this method handles and return them within an array of objects with this form:
 
+```js
+[
+  {
+    type: "@type of the objects included in the `paths` property",
+    paths: [
+      "Array of paths to all linked objects matching the `@type` of the `type` property",
+    ],
+    fields: ["Array of properties needed in the linked objects"],
+  },
+  {
+    type: "@type of other objects needed to render the search results",
+    paths: ["Array of paths to those objects"],
+    fields: ["Array of properties needed for those objects"],
+  },
+];
 ```
-return items.
-  .map((item) => item.feature)
-  .filter(Boolean);
-```
 
-This takes all the `Generic` items passed to it and maps them to the `feature` property paths within. It then filters out the undefined ones and returns the resulting array of paths. The search-list code then uses these paths to retrieve these objects.
+In the `getAccessoryDataPaths` method example above, you can see it only needs to retrieve the objects linked from the `feature` property of the search results, and it needs just the `term_name` property of those linked objects. You can include duplicate paths in the `paths` array without causing duplicate requests to the data provider because these paths get deduplicated. This method should remove any undefined elements though.
 
 ### Using Accessory Data
 

@@ -24,6 +24,11 @@ import Status from "../../components/status";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import {
+  requestDocuments,
+  requestDonors,
+  requestFiles,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -272,24 +277,18 @@ export async function getServerSideProps({ params, req, query }) {
       null
     );
     const documents = measurementSet.documents
-      ? await request.getMultipleObjects(measurementSet.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(measurementSet.documents, request)
       : [];
     let donors = [];
     if (measurementSet.donors) {
       const donorPaths = measurementSet.donors.map((donor) => donor["@id"]);
-      donors = await request.getMultipleObjects(donorPaths, null, {
-        filterErrors: true,
-      });
+      donors = await requestDonors(donorPaths, request);
     }
-    const filePaths = measurementSet.files.map((file) => file["@id"]);
-    const files =
-      filePaths.length > 0
-        ? await request.getMultipleObjects(filePaths, null, {
-            filterErrors: true,
-          })
-        : [];
+    let files = [];
+    if (measurementSet.files.length > 0) {
+      const filePaths = measurementSet.files.map((file) => file["@id"]) || [];
+      files = await requestFiles(filePaths, request);
+    }
 
     // Use the files to retrieve all the sequencing platform objects they link to.
     const sequencingPlatformPaths = files
@@ -298,11 +297,7 @@ export async function getServerSideProps({ params, req, query }) {
     const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
     const sequencingPlatforms =
       uniqueSequencingPlatformPaths.length > 0
-        ? await request.getMultipleObjects(
-            uniqueSequencingPlatformPaths,
-            null,
-            { filterErrors: true }
-          )
+        ? await requestFiles(uniqueSequencingPlatformPaths, request)
         : [];
 
     const breadcrumbs = await buildBreadcrumbs(

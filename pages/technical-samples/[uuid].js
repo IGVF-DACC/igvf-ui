@@ -20,6 +20,7 @@ import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestDocuments } from "../../lib/common-requests";
 import { formatDate } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -91,9 +92,7 @@ export async function getServerSideProps({ params, req, query }) {
   const sample = await request.getObject(`/technical-samples/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(sample)) {
     const documents = sample.documents
-      ? await request.getMultipleObjects(sample.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(sample.documents, request)
       : [];
     const source = await request.getObject(sample.source["@id"], null);
     const breadcrumbs = await buildBreadcrumbs(

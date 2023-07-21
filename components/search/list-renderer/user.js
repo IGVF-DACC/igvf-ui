@@ -41,5 +41,12 @@ User.propTypes = {
 };
 
 User.getAccessoryDataPaths = (items) => {
-  return items.map((item) => item.lab).filter(Boolean);
+  const labs = items.map((item) => item.lab).filter(Boolean);
+  return [
+    {
+      type: "Lab",
+      paths: labs,
+      fields: ["title"],
+    },
+  ];
 };

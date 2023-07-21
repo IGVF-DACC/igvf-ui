@@ -22,6 +22,7 @@ import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -57,7 +58,7 @@ export default function SignalFile({
                     <DataItemValue>
                       <SeparatedList>
                         {referenceFiles.map((file) => (
-                          <Link href={file["@id"]} key={file.uuid}>
+                          <Link href={file["@id"]} key={file["@id"]}>
                             {file.accession}
                           </Link>
                         ))}
@@ -135,17 +136,13 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(signalFile)) {
     const fileSet = await request.getObject(signalFile.file_set, null);
     const documents = signalFile.documents
-      ? await request.getMultipleObjects(signalFile.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(signalFile.documents, request)
       : [];
     const derivedFrom = signalFile.derived_from
-      ? await request.getMultipleObjects(signalFile.derived_from, null, {
-          filterErrors: true,
-        })
+      ? await requestFiles(signalFile.derived_from, request)
       : [];
     const referenceFiles = signalFile.reference_files
-      ? await request.getMultipleObjects(signalFile.reference_files, null)
+      ? await requestFiles(signalFile.reference_files, request)
       : [];
     const breadcrumbs = await buildBreadcrumbs(
       signalFile,

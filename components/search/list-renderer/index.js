@@ -18,14 +18,34 @@ import FetchRequest from "../../../lib/fetch-request";
  * them visually.
  *
  * Some search-list item types display data not available in the search results, so we need to
- * request that data from the server. For these, you can add the `getAccessoryDataPaths` function
- * as a property of the renderer component function. This function should return an array of
- * `@id`s for the data you need to display. The `generateAccessoryDataPropertyMap` function will
- * then generate a map of `@id`s to property names, which you can use to look up the data in the
- * `accessoryData` prop passed to the renderer.
+ * request that data from the server. For these, add the `getAccessoryDataPaths` function as a
+ * property of the renderer component function. This function returns an array of objects that
+ * indicates the paths to the data to retrieve, and the fields to retrieve for each path. For
+ * example:
+ * ```
+ * [
+ *   {
+ *     type: "OntologyTerm",
+ *     paths: [
+ *       "/terms/ENCODE:0009897/",
+ *       "/terms/ENCODE:0009898/",
+ *     ],
+ *     fields: [
+ *       "term_id",
+ *     ],
+ *   },
+ * ]
+ * ```
+ * The `type` property contains the `@type` of the data to retrieve. The `paths` property contains
+ * an array of paths to the data to retrieve. The `fields` property contains an array of property
+ * names to retrieve from the objects at each path. Each object in this array represents a
+ * different `@type` of data to retrieve, so don't combine the paths of multiple types of objects
+ * into one object of this array. You can return duplicate paths in the `paths` array as they get
+ * deduplicated later, but the `paths` array should not contain any null or undefined values.
  *
- * This is the root file with utility functions to handle both search-list renderers and accessory
- * data-path generators, as the latter relies on the former.
+ * The `getAccessoryDataPaths` function gets called with a homogeneous array of search-result items
+ * matching the `@type` of object its renderer handles -- search results of other types get
+ * filtered out and passed to renderers for those types.
  */
 import AnalysisSet from "./analysis-set";
 import Award from "./award";
@@ -158,37 +178,81 @@ function getAccessoryDataPathsGenerator(itemType) {
 /**
  * For all item types that have an accessory data-paths generator function, call that function
  * with all the search-result items of that type to get the paths to all the items we need to
- * retrieve for that type. Then concatenate all the paths from all the search-result item types
- * into one array, deduplicated.
+ * retrieve for that type, as well as the fields (properties) for each object of that type. Then
+ * generate an object keyed by item type, with each value an object containing the paths and fields
+ * for that type. For example:
+ * ```
+ * {
+ *   OntologyTerm: {
+ *     paths: [
+ *       "/terms/ENCODE:0009897/",
+ *       "/terms/ENCODE:0009898/",
+ *     ],
+ *     fields: [
+ *       "term_id",
+ *     ],
+ *   },
+ *   Biosample: {
+ *     paths: [
+ *       "/biosamples/ENCBS000AAA/",
+ *     ],
+ *     fields: [
+ *       "accession",
+ *       "biosample_ontology.term_id",
+ *     ],
+ *   },
+ * }
+ * ```
+ * concatenate all the paths and fields from all the search-result items each type and deduplicate
+ * the paths.
  * @param {object} itemListsByType Search-result items keyed by item type
  * @returns {array} Array of unique accessory data paths
  */
 export function getAccessoryDataPaths(itemListsByType) {
   // For each item type, get its accessory data paths generator function, if any. Pass that
-  // function the list of items of that type, and concatenate all the paths from all the item
-  // types into one array.
-  const accessoryDataPaths = Object.keys(itemListsByType).reduce(
-    (paths, itemType) => {
+  // function the list of items of that type, and concatenate all the resulting paths and fields
+  // that we'll request from the data provider into one array.
+  const accessoryDataPathsAndFields = Object.keys(itemListsByType).reduce(
+    (pathsAndFieldsForType, itemType) => {
       const accessoryDataPathGenerator =
         getAccessoryDataPathsGenerator(itemType);
       if (accessoryDataPathGenerator) {
-        const dataPathsForType = accessoryDataPathGenerator(
+        const pathsAndFields = accessoryDataPathGenerator(
           itemListsByType[itemType]
         );
 
-        // Add the paths for the objects for one type to the paths for all the other types.
-        return paths.concat(dataPathsForType);
+        // Add the requested paths and fields for the objects for one type to the requested paths
+        // and fields for all the other types.
+        return pathsAndFieldsForType.concat(pathsAndFields);
       }
 
       // No accessory data path generator for this type, so just return the paths we've collected
       // so far.
-      return paths;
+      return pathsAndFieldsForType;
     },
     []
   );
 
-  // Deduplicate the paths to all the accessory data objects we need to retrieve from igvfd.
-  return [...new Set(accessoryDataPaths)];
+  // We now have an array of objects, each containing the type of object to request from the data
+  // provider, an array of paths to request for that type, and an array of fields to request for
+  // each path of that type. Combine all these into an array described in the comment for this
+  // function.
+  return accessoryDataPathsAndFields.reduce(
+    (pathsAndFieldsAcc, { type, paths, fields }) => {
+      const pathsAndFields = pathsAndFieldsAcc[type] || {
+        paths: [],
+        fields: [],
+      };
+      return {
+        ...pathsAndFieldsAcc,
+        [type]: {
+          paths: [...new Set(pathsAndFields.paths.concat(paths))],
+          fields: [...new Set(pathsAndFields.fields.concat(fields))],
+        },
+      };
+    },
+    {}
+  );
 }
 
 /**
@@ -278,17 +342,40 @@ export function getItemListsByType(searchResults) {
  * @param {string} cookie Browser cookie for request authentication
  */
 export async function getAccessoryData(itemListsByType, cookie) {
-  const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
-  if (accessoryDataPaths.length > 0) {
-    const request = new FetchRequest({ cookie });
-    const accessoryDataList = await request.getMultipleObjects(
-      accessoryDataPaths,
-      null,
-      {
-        filterErrors: true,
+  if (Object.keys(itemListsByType).length > 0) {
+    const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
+    const accessoryDataTypes = Object.keys(accessoryDataPaths);
+    if (accessoryDataTypes.length > 0) {
+      const requests = accessoryDataTypes.map(async (type) => {
+        const request = new FetchRequest({ cookie });
+        const objects = await request.getMultipleObjectsBulk(
+          accessoryDataPaths[type].paths,
+          null,
+          accessoryDataPaths[type].fields
+        );
+
+        // Return an object with the objects retrieved for a type, as well as the type to help
+        // identify the objects when debugging. The type otherwise doesn't get used.
+        return { type, objects };
+      });
+
+      // Send all the requests at once and wait for them all to complete.
+      const accessoryDataList = await Promise.all(requests);
+
+      // Generate a map of all the accessory data objects keyed by @id.
+      if (accessoryDataList.length > 0) {
+        const accessoryData = accessoryDataList.reduce(
+          (accessoryDataAcc, { objects }) => {
+            const propertyMap = generateAccessoryDataPropertyMap(objects);
+            return { ...accessoryDataAcc, ...propertyMap };
+          },
+          {}
+        );
+
+        // Return the accessory data map.
+        return accessoryData;
       }
-    );
-    return generateAccessoryDataPropertyMap(accessoryDataList);
+    }
   }
   return null;
 }

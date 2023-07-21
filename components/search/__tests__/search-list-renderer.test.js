@@ -146,9 +146,10 @@ describe("Test accessory data-path functions", () => {
 
     // Test that getAccessoryDataPaths gets all the paths of the objects to retrieve for the search
     // results, and deduplicates them.
-    const expectedAccessoryDataPaths = ["/labs/j-michael-cherry/"];
+    const expectedAccessoryDataPaths = {
+      Lab: { fields: ["title"], paths: ["/labs/j-michael-cherry/"] },
+    };
     const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
-    console.log("ITEM LISTS %o", accessoryDataPaths);
     expect(accessoryDataPaths).toEqual(expectedAccessoryDataPaths);
   });
 });
@@ -340,21 +341,45 @@ describe("Test search-result utility functions", () => {
   });
 
   test("getAccessoryData() with accessory data items", async () => {
-    const accessoryDataObjects = [
-      {
-        "@id": "/users/7d37a9ba-4a13-4b7e-a34d-d3ac13f62442/",
-        "@type": ["User", "Item"],
-      },
-      {
-        "@id": "/labs/j-michael-cherry/",
-        "@type": ["Lab", "Item"],
-      },
-    ];
+    const accessoryDataObjectsUser = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/",
+          "@type": ["User", "Item"],
+          lab: "/labs/j-michael-cherry/",
+          title: "J. Michael Cherry",
+        },
+      ],
+      "@id":
+        "/search/?field=title&@id=/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/&limit=7",
+      "@type": ["Search"],
+      title: "Search",
+      total: 1,
+    };
+
+    const accessoryDataObjectsLab = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/labs/j-michael-cherry/",
+          "@type": ["Lab", "Item"],
+          title: "J. Michael Cherry",
+        },
+      ],
+      "@id": "/search/?field=title&@id=/labs/j-michael-cherry/&limit=17",
+      "@type": ["Search"],
+      title: "Search",
+      total: 17,
+    };
 
     window.fetch = jest.fn().mockImplementation((id) => {
-      const accessoryDataObject = accessoryDataObjects.find(
-        (object) => object["@id"] === id
-      );
+      const path = id.match(/^\/search\/\?field=\S+&@id=(\S+\/)&limit=1/)[1];
+      const collection = path.match(/^\/(\S+)\/\S+\/$/)[1];
+      const accessoryDataObject =
+        collection === "users"
+          ? accessoryDataObjectsUser
+          : accessoryDataObjectsLab;
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve(accessoryDataObject),
@@ -362,13 +387,16 @@ describe("Test search-result utility functions", () => {
     });
 
     const expectedAccessoryData = {
-      "/users/7d37a9ba-4a13-4b7e-a34d-d3ac13f62442/": {
-        "@id": "/users/7d37a9ba-4a13-4b7e-a34d-d3ac13f62442/",
+      "/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/": {
+        "@id": "/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/",
         "@type": ["User", "Item"],
+        lab: "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry",
       },
       "/labs/j-michael-cherry/": {
         "@id": "/labs/j-michael-cherry/",
         "@type": ["Lab", "Item"],
+        title: "J. Michael Cherry",
       },
     };
 
@@ -381,7 +409,7 @@ describe("Test search-result utility functions", () => {
         {
           "@id": "/awards/HG012059/",
           "@type": ["Award", "Item"],
-          contact_pi: "/users/7d37a9ba-4a13-4b7e-a34d-d3ac13f62442/",
+          contact_pi: "/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/",
         },
       ],
       User: [

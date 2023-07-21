@@ -15,6 +15,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestOntologyTerms } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -64,9 +65,7 @@ export async function getServerSideProps({ params, req, query }) {
   );
   if (FetchRequest.isResponseSuccess(assayOntologyTerm)) {
     const isA = assayOntologyTerm.is_a
-      ? await request.getMultipleObjects(assayOntologyTerm.is_a, null, {
-          filterErrors: true,
-        })
+      ? await requestOntologyTerms(assayOntologyTerm.is_a, request)
       : [];
     const breadcrumbs = await buildBreadcrumbs(
       assayOntologyTerm,

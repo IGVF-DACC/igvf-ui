@@ -21,6 +21,7 @@ import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -108,14 +109,10 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(referenceFile)) {
     const fileSet = await request.getObject(referenceFile.file_set, null);
     const documents = referenceFile.documents
-      ? await request.getMultipleObjects(referenceFile.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(referenceFile.documents, request)
       : [];
     const derivedFrom = referenceFile.derived_from
-      ? await request.getMultipleObjects(referenceFile.derived_from, null, {
-          filterErrors: true,
-        })
+      ? await requestFiles(referenceFile.derived_from, request)
       : [];
     const breadcrumbs = await buildBreadcrumbs(
       referenceFile,

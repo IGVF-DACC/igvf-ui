@@ -19,6 +19,10 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import {
+  requestDocuments,
+  requestPhenotypicFeatures,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
@@ -28,7 +32,6 @@ import buildAttribution from "../../lib/attribution";
 export default function HumanDonor({
   donor,
   documents,
-  parents,
   phenotypicFeatures,
   attribution = null,
   isJson,
@@ -42,7 +45,7 @@ export default function HumanDonor({
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DonorDataItems item={donor} parents={parents} />
+              <DonorDataItems item={donor} />
               {donor.human_donor_identifiers?.length > 0 && (
                 <>
                   <DataItemLabel>Identifiers</DataItemLabel>
@@ -78,8 +81,6 @@ HumanDonor.propTypes = {
   donor: PropTypes.object.isRequired,
   // Documents associated with human donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Parents of this donor
-  parents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Phenotypic Features of this donor
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
   // HumanDonor attribution
@@ -94,19 +95,10 @@ export async function getServerSideProps({ params, req, query }) {
   const donor = await request.getObject(`/human-donors/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(donor)) {
     const documents = donor.documents
-      ? await request.getMultipleObjects(donor.documents, null, {
-          filterErrors: true,
-        })
-      : [];
-    const parents = donor.parents
-      ? await request.getMultipleObjects(donor.parents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(donor.documents, request)
       : [];
     const phenotypicFeatures = donor.phenotypic_features
-      ? await request.getMultipleObjects(donor.phenotypic_features, null, {
-          filterErrors: true,
-        })
+      ? await requestPhenotypicFeatures(donor.phenotypic_features, request)
       : [];
     const breadcrumbs = await buildBreadcrumbs(
       donor,
@@ -118,7 +110,6 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         donor,
         documents,
-        parents,
         pageContext: { title: donor.accession },
         phenotypicFeatures,
         breadcrumbs,

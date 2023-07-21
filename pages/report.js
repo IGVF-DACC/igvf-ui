@@ -36,7 +36,10 @@ import {
   getSortColumn,
   schemaColumnsToColumnSpecs,
 } from "../lib/report";
-import { composeSearchResultsPageTitle } from "../lib/search-results";
+import {
+  composeSearchResultsPageTitle,
+  stripLimitQueryIfNeeded,
+} from "../lib/search-results";
 
 /**
  * Update the given query string to show or hide a column.
@@ -240,6 +243,18 @@ Report.propTypes = {
 };
 
 export async function getServerSideProps({ req, query }) {
+  // if the limit= query parameter exists, redirect to this page without it if its value is > 1000
+  // or if it has more than one value.
+  const limitlessRedirect = stripLimitQueryIfNeeded(query);
+  if (limitlessRedirect) {
+    return {
+      redirect: {
+        destination: `/report/?${limitlessRedirect}`,
+        permanent: true,
+      },
+    };
+  }
+
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const queryParams = getQueryStringFromServerQuery(query);
   const searchResults = await request.getObject(`/report/?${queryParams}`);

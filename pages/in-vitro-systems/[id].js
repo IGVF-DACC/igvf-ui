@@ -22,6 +22,14 @@ import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import {
+  requestBiomarkers,
+  requestBiosamples,
+  requestDocuments,
+  requestDonors,
+  requestOntologyTerms,
+  requestTreatments,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
@@ -131,7 +139,7 @@ InVitroSystem.propTypes = {
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Part of Biosample
   partOf: PropTypes.object,
-  // The targeted endpoint biosample resulting from differentation or reprogramming
+  // The targeted endpoint biosample resulting from differentiation or reprogramming
   targetedSampleTerm: PropTypes.object,
   // Attribution for this sample
   attribution: PropTypes.object,
@@ -154,19 +162,13 @@ export async function getServerSideProps({ params, req, query }) {
       const diseaseTermPaths = inVitroSystem.disease_terms.map(
         (diseaseTerm) => diseaseTerm["@id"]
       );
-      diseaseTerms = await request.getMultipleObjects(diseaseTermPaths, null, {
-        filterErrors: true,
-      });
+      diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
     }
     const documents = inVitroSystem.documents
-      ? await request.getMultipleObjects(inVitroSystem.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(inVitroSystem.documents, request)
       : [];
     const donors = inVitroSystem.donors
-      ? await request.getMultipleObjects(inVitroSystem.donors, null, {
-          filterErrors: true,
-        })
+      ? await requestDonors(inVitroSystem.donors, request)
       : [];
     const source = await request.getObject(inVitroSystem.source["@id"], null);
     let treatments = [];
@@ -174,15 +176,11 @@ export async function getServerSideProps({ params, req, query }) {
       const treatmentPaths = inVitroSystem.treatments.map(
         (treatment) => treatment["@id"]
       );
-      treatments = await request.getMultipleObjects(treatmentPaths, null, {
-        filterErrors: true,
-      });
+      treatments = await requestTreatments(treatmentPaths, request);
     }
     const pooledFrom =
       inVitroSystem.pooled_from?.length > 0
-        ? await request.getMultipleObjects(inVitroSystem.pooled_from, null, {
-            filterErrors: true,
-          })
+        ? await requestBiosamples(inVitroSystem.pooled_from, request)
         : [];
     const partOf = inVitroSystem.part_of
       ? await request.getObject(inVitroSystem.part_of, null)
@@ -192,9 +190,7 @@ export async function getServerSideProps({ params, req, query }) {
       : null;
     const biomarkers =
       inVitroSystem.biomarkers?.length > 0
-        ? await request.getMultipleObjects(inVitroSystem.biomarkers, null, {
-            filterErrors: true,
-          })
+        ? await requestBiomarkers(inVitroSystem.biomarkers, request)
         : [];
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,

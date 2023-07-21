@@ -26,7 +26,7 @@ import { truthyOrZero } from "../lib/general";
 /**
  * Display the data items common to all donor-derived objects.
  */
-export function DonorDataItems({ item, parents = null, children }) {
+export function DonorDataItems({ item, children }) {
   return (
     <>
       {item.taxa && (
@@ -51,24 +51,6 @@ export function DonorDataItems({ item, parents = null, children }) {
         <>
           <DataItemLabel>Virtual</DataItemLabel>
           <DataItemValue>True</DataItemValue>
-        </>
-      )}
-      {parents?.length > 0 && (
-        <>
-          <DataItemLabel>Parents</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList>
-              {parents.map((parent) => (
-                <Link
-                  href={parent["@id"]}
-                  key={parent.uuid}
-                  aria-label={`Parent Donor ${parent.accession}`}
-                >
-                  {parent.accession}
-                </Link>
-              ))}
-            </SeparatedList>
-          </DataItemValue>
         </>
       )}
       {children}
@@ -115,8 +97,6 @@ export function DonorDataItems({ item, parents = null, children }) {
 DonorDataItems.propTypes = {
   // Object derived from donor.json schema
   item: PropTypes.object.isRequired,
-  // Parents of this donor
-  parents: PropTypes.arrayOf(PropTypes.object),
 };
 
 DonorDataItems.commonProperties = [
@@ -318,7 +298,7 @@ export function BiosampleDataItems({
           <DataItemValue>
             <SeparatedList>
               {pooledFrom.map((biosample) => (
-                <Link href={biosample["@id"]} key={biosample.uuid}>
+                <Link href={biosample["@id"]} key={biosample["@id"]}>
                   {biosample.accession}
                 </Link>
               ))}

@@ -21,6 +21,14 @@ import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import {
+  requestBiomarkers,
+  requestBiosamples,
+  requestDocuments,
+  requestDonors,
+  requestOntologyTerms,
+  requestTreatments,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
@@ -135,40 +143,28 @@ export async function getServerSideProps({ params, req, query }) {
       const diseaseTermPaths = primaryCell.disease_terms.map(
         (diseaseTerm) => diseaseTerm["@id"]
       );
-      diseaseTerms = await request.getMultipleObjects(diseaseTermPaths, null, {
-        filterErrors: true,
-      });
+      diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
     }
     const documents = primaryCell.documents
-      ? await request.getMultipleObjects(primaryCell.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(primaryCell.documents, request)
       : [];
     const donors = primaryCell.donors
-      ? await request.getMultipleObjects(primaryCell.donors, null, {
-          filterErrors: true,
-        })
+      ? await requestDonors(primaryCell.donors, request)
       : [];
     const source = await request.getObject(primaryCell.source["@id"], null);
     const treatments = primaryCell.treatments
-      ? await request.getMultipleObjects(primaryCell.treatments, null, {
-          filterErrors: true,
-        })
+      ? await requestTreatments(primaryCell.treatments, request)
       : [];
     const pooledFrom =
       primaryCell.pooled_from?.length > 0
-        ? await request.getMultipleObjects(primaryCell.pooled_from, null, {
-            filterErrors: true,
-          })
+        ? await requestBiosamples(primaryCell.pooled_from, request)
         : [];
     const partOf = primaryCell.part_of
       ? await request.getObject(primaryCell.part_of, null)
       : null;
     const biomarkers =
       primaryCell.biomarkers?.length > 0
-        ? await request.getMultipleObjects(primaryCell.biomarkers, null, {
-            filterErrors: true,
-          })
+        ? await requestBiomarkers(primaryCell.biomarkers, request)
         : [];
     const breadcrumbs = await buildBreadcrumbs(
       primaryCell,

@@ -22,6 +22,11 @@ import SeparatedList from "../../components/separated-list";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import {
+  requestDocuments,
+  requestDonors,
+  requestFiles,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -129,22 +134,14 @@ export async function getServerSideProps({ params, req, query }) {
   const curatedSet = await request.getObject(`/curated-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(curatedSet)) {
     const documents = curatedSet.documents
-      ? await request.getMultipleObjects(curatedSet.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(curatedSet.documents, request)
       : [];
     const donors = curatedSet.donors
-      ? await request.getMultipleObjects(curatedSet.donors, null, {
-          filterErrors: true,
-        })
+      ? await requestDonors(curatedSet.donors, request)
       : [];
     const filePaths = curatedSet.files.map((file) => file["@id"]);
     const files =
-      filePaths.length > 0
-        ? await request.getMultipleObjects(filePaths, null, {
-            filterErrors: true,
-          })
-        : [];
+      filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
     const breadcrumbs = await buildBreadcrumbs(
       curatedSet,
       "accession",

@@ -16,6 +16,7 @@ import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestAwards } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -97,9 +98,7 @@ export async function getServerSideProps({ params, req, query }) {
     let awards = [];
     if (lab.awards?.length > 0) {
       const awardPaths = lab.awards.map((award) => award["@id"]);
-      awards = await request.getMultipleObjects(awardPaths, null, {
-        filterErrors: true,
-      });
+      awards = await requestAwards(awardPaths, request);
     }
     const pi = await request.getObject(lab.pi, null);
     const breadcrumbs = await buildBreadcrumbs(

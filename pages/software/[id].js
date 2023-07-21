@@ -17,6 +17,7 @@ import PagePreamble from "../../components/page-preamble";
 import SoftwareVersionTable from "../../components/software-version-table";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestSoftwareVersions } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
@@ -92,9 +93,7 @@ export async function getServerSideProps({ params, req, query }) {
     const lab = await request.getObject(software.lab["@id"], null);
     const versions =
       software.versions.length > 0
-        ? await request.getMultipleObjects(software.versions, null, {
-            filterErrors: true,
-          })
+        ? await requestSoftwareVersions(software.versions, request)
         : [];
     const breadcrumbs = await buildBreadcrumbs(
       software,

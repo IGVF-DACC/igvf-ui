@@ -38,7 +38,7 @@ export default function Attribution({ attribution = null }) {
                 <DataItemValue>
                   <SeparatedList>
                     {attribution.pis.map((pi) => (
-                      <Link href={pi["@id"]} key={pi.uuid}>
+                      <Link href={pi["@id"]} key={pi["@id"]}>
                         {pi.title}
                       </Link>
                     ))}
