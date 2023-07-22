@@ -48,8 +48,8 @@ config: Dict[str, Any] = {
     'environment': {
         'demo': {
             'frontend': {
-                'cpu': 1024,
-                'memory_limit_mib': 2048,
+                'cpu': 2048,
+                'memory_limit_mib': 4096,
                 'desired_count': 1,
                 'max_capacity': 4,
             },
@@ -60,8 +60,8 @@ config: Dict[str, Any] = {
         },
         'dev': {
             'frontend': {
-                'cpu': 1024,
-                'memory_limit_mib': 2048,
+                'cpu': 2048,
+                'memory_limit_mib': 4096,
                 'desired_count': 1,
                 'max_capacity': 4,
             },
@@ -71,8 +71,8 @@ config: Dict[str, Any] = {
         },
         'staging': {
             'frontend': {
-                'cpu': 1024,
-                'memory_limit_mib': 2048,
+                'cpu': 2048,
+                'memory_limit_mib': 4096,
                 'desired_count': 1,
                 'max_capacity': 4,
             },
@@ -83,8 +83,8 @@ config: Dict[str, Any] = {
         },
         'sandbox': {
             'frontend': {
-                'cpu': 1024,
-                'memory_limit_mib': 2048,
+                'cpu': 2048,
+                'memory_limit_mib': 4096,
                 'desired_count': 1,
                 'max_capacity': 4,
             },
@@ -95,8 +95,8 @@ config: Dict[str, Any] = {
         },
         'production': {
             'frontend': {
-                'cpu': 1024,
-                'memory_limit_mib': 2048,
+                'cpu': 2048,
+                'memory_limit_mib': 4096,
                 'desired_count': 1,
                 'max_capacity': 4,
             },
