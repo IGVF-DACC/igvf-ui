@@ -108,7 +108,7 @@ describe("Test ID search", () => {
       "860c4750-8d3c-40f5-8f2c-90c5e5d19e88"
     );
     cy.get(
-      `[aria-label="Search for 860c4750-8d3c-40f5-8f2c-90c5e5d19e88/"]`
+      `[aria-label="Search for 860c4750-8d3c-40f5-8f2c-90c5e5d19e88"]`
     ).click();
     cy.url().should("include", "/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/");
   });
