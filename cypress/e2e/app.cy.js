@@ -12,18 +12,18 @@ describe("Navigation", () => {
     cy.get("h1").should("have.text", "Graph");
 
     cy.get("[data-testid=navigation-schemas]").click();
-    cy.url().should("include", "/profiles");
+    cy.url().should("include", "/profiles/");
     cy.get("h1").should("have.text", "Schemas");
 
     // Test Data submenus.
     cy.get("[data-testid=navigation-data]").click();
 
     cy.get("[data-testid=navigation-datasets]").click();
-    cy.url().should("include", "/search?type=MeasurementSet");
+    cy.url().should("include", "/search/?type=MeasurementSet");
     cy.get("h1").should("exist"); // Actual title depends on data
 
     cy.get("[data-testid=navigation-files]").click();
-    cy.url().should("include", "/search?type=File");
+    cy.url().should("include", "/search/?type=File");
     cy.get("h1").should("exist"); // Actual title depends on data
 
     // Test Methodology submenus. Add to this once the pages these submenus link to exist.
@@ -32,7 +32,7 @@ describe("Navigation", () => {
     cy.get("[data-testid=navigation-genome-references]").click();
     cy.url().should(
       "include",
-      "/search?type=CuratedSet&curated_set_type=genome"
+      "/search/?type=CuratedSet&curated_set_type=genome"
     );
     cy.get("h1").should("have.text", "Curated Set");
 

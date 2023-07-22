@@ -9,7 +9,7 @@ describe("Content-Change Tests", () => {
     // Go to the page titled `Samples`.
     cy.get("[data-testid=navigation-data-model]").click();
     cy.get("[data-testid=navigation-schemas]").click();
-    cy.get(`[href="/search?type=Page"]`).click();
+    cy.get(`[href="/search/?type=Page"]`).click();
     cy.get(`[aria-label="View details for /test-section/subpage/"]`).click();
     cy.contains("Edit Page").click();
     cy.get("#block1").type("{enter}{enter}Updated content.");
@@ -47,13 +47,13 @@ describe("Content-Change Tests", () => {
     cy.contains("Cypress Testing");
     cy.wait(2000);
 
-    cy.visit("/test-section/subpage-in-progress#!edit");
+    cy.visit("/test-section/subpage-in-progress/#!edit");
     cy.get("#title").clear();
     cy.get("#title").type("Updated Subpage Title");
     cy.get("#status").select("Released");
     cy.get(`[aria-label="Save edits to page"]`).click();
     cy.delayForIndexing();
-    cy.visit("/search?type=Page");
+    cy.visit("/search/?type=Page");
     cy.get(
       `[data-testid="search-list-item-/test-section/subpage-in-progress/"]`
     ).within(() => {
@@ -68,20 +68,20 @@ describe("Content-Change Tests", () => {
     cy.wait(1000);
 
     // Change the name of the page and verify its URL changes.
-    cy.visit("/test-section/subpage#!edit");
+    cy.visit("/test-section/subpage/#!edit");
     cy.get("#name").clear();
     cy.get("#name").type("new-subpage");
     cy.get(`[aria-label="Save edits to page"]`);
     cy.contains("Save").click();
     cy.delayForIndexing();
-    cy.url().should("include", "/test-section/new-subpage");
+    cy.url().should("include", "/test-section/new-subpage/");
 
     // Change the page's parent and verify its URL changes.
     cy.contains("Edit Page").click();
     cy.get(`[aria-label="Parent testpage list item"]`).click();
     cy.get(`[aria-label="Save edits to page"]`).click();
     cy.delayForIndexing();
-    cy.url().should("include", "/testpage/new-subpage");
+    cy.url().should("include", "/testpage/new-subpage/");
   });
 
   it("should update the help page when you add new help pages", () => {
