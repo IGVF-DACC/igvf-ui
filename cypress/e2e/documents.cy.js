@@ -9,7 +9,7 @@ describe("Must sign in to see current document objects", () => {
     cy.visit("/");
     cy.get("[data-testid=navigation-data-model]").click();
     cy.get("[data-testid=navigation-schemas]").click();
-    cy.get(`[href="/search?type=Document"]`).click();
+    cy.get(`[href="/search/?type=Document"]`).click();
 
     // Go to the first document in the list and go to its document object page.
     cy.get(`[data-testid^="search-list-item-"]`)
@@ -27,7 +27,7 @@ describe("Must sign in to see current document objects", () => {
 
     // Go to a treatment with documents and make sure the document table appears.
     cy.visit(
-      "http://localhost:3000/treatments/10c05ac0-52a2-11e6-bdf4-0800200c9a66"
+      "http://localhost:3000/treatments/10c05ac0-52a2-11e6-bdf4-0800200c9a66/"
     );
     cy.contains("Cypress Testing");
     cy.get("[role=table]").find("[aria-label^=Download]");

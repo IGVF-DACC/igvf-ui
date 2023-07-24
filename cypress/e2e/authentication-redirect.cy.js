@@ -4,7 +4,7 @@ describe("Test that the post-login redirect goes to the correct URI", () => {
     cy.visit("/");
     cy.get("[data-testid=navigation-data]").click();
     cy.get("[data-testid=navigation-datasets]").click();
-    cy.url().should("include", "/search?type=MeasurementSet");
+    cy.url().should("include", "/search/?type=MeasurementSet");
 
     // Sign in.
     cy.loginAuth0(
@@ -16,6 +16,6 @@ describe("Test that the post-login redirect goes to the correct URI", () => {
     cy.wait(1000);
 
     // Confirm that we redirect back to the gene page.
-    cy.url().should("include", "/search?type=MeasurementSet");
+    cy.url().should("include", "/search/?type=MeasurementSet");
   });
 });

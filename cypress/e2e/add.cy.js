@@ -6,10 +6,10 @@ describe("Test Add button", () => {
     cy.contains("Cypress Testing");
     cy.wait(1000);
 
-    cy.visit("/profiles");
+    cy.visit("/profiles/");
     cy.wait(500);
 
-    cy.get("a[href='/lab#!add']").should("exist").click();
+    cy.get("a[href='/lab/#!add']").should("exist").click();
 
     cy.get('[id="JSON Editor"]').should("exist");
 
