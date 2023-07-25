@@ -169,11 +169,13 @@ export async function getServerSideProps({ params, req, query }) {
           filterErrors: true,
         })
       : [];
-    const files = model.files
-      ? await request.getMultipleObjects(model.files, null, {
-          filterErrors: true,
-        })
-      : [];
+    const filePaths = model.files.map((file) => file["@id"]);
+    const files =
+      filePaths.length > 0
+        ? await request.getMultipleObjects(filePaths, null, {
+            filterErrors: true,
+          })
+        : [];
 
     const breadcrumbs = await buildBreadcrumbs(
       model,

@@ -126,7 +126,6 @@ export default function MeasurementSet({
   donors,
   files,
   sequencingPlatforms,
-  samples,
   attribution = null,
   isJson,
 }) {
@@ -193,13 +192,13 @@ export default function MeasurementSet({
                   </DataItemValue>
                 </>
               )}
-              {samples.length > 0 && (
+              {measurementSet.samples?.length > 0 && (
                 <>
                   <DataItemLabel>Samples</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample.uuid}>
+                      {measurementSet.samples.map((sample) => (
+                        <Link href={sample["@id"]} key={sample["@id"]}>
                           {sample.accession}
                         </Link>
                       ))}
@@ -253,8 +252,6 @@ MeasurementSet.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform objects associated with `files`
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Samples to display
-  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this measurement set
@@ -279,11 +276,6 @@ export async function getServerSideProps({ params, req, query }) {
           filterErrors: true,
         })
       : [];
-    const samples = measurementSet.samples
-      ? await request.getMultipleObjects(measurementSet.samples, null, {
-          filterErrors: true,
-        })
-      : [];
     let donors = [];
     if (measurementSet.donors) {
       const donorPaths = measurementSet.donors.map((donor) => donor["@id"]);
@@ -291,11 +283,13 @@ export async function getServerSideProps({ params, req, query }) {
         filterErrors: true,
       });
     }
-    const files = measurementSet.files
-      ? await request.getMultipleObjects(measurementSet.files, null, {
-          filterErrors: true,
-        })
-      : [];
+    const filePaths = measurementSet.files.map((file) => file["@id"]);
+    const files =
+      filePaths.length > 0
+        ? await request.getMultipleObjects(filePaths, null, {
+            filterErrors: true,
+          })
+        : [];
 
     // Use the files to retrieve all the sequencing platform objects they link to.
     const sequencingPlatformPaths = files
@@ -328,7 +322,6 @@ export async function getServerSideProps({ params, req, query }) {
         donors,
         files,
         sequencingPlatforms,
-        samples,
         pageContext: { title: measurementSet.accession },
         breadcrumbs,
         attribution,
