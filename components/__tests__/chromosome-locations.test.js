@@ -29,7 +29,7 @@ describe("Test the ChromosomeLocations component", () => {
 
   it("should render a list of gene locations with Tailwind CSS classes on the ul", () => {
     render(
-      <ChromosomeLocations locations={locations} className="absolute top-0" />
+      <ChromosomeLocations locations={locations} className="absolute top-0" />,
     );
     const list = screen.getAllByRole("list");
     expect(list.length).toBe(1);
@@ -54,7 +54,7 @@ describe("Test the ChromosomeLocation component", () => {
 
   it("should render a single gene location with Tailwind CSS classes on the wrapper div", () => {
     render(
-      <ChromosomeLocation location={location} className="absolute top-0" />
+      <ChromosomeLocation location={location} className="absolute top-0" />,
     );
     const div = screen.getAllByTestId("chromosome-location");
     expect(div.length).toBe(1);

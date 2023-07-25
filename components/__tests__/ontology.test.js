@@ -25,7 +25,7 @@ describe("Test mapping ontology term IDs to links", () => {
 
     expect(screen.getByRole("link")).toHaveAttribute(
       "href",
-      "http://www.ebi.ac.uk/efo/EFO_0001"
+      "http://www.ebi.ac.uk/efo/EFO_0001",
     );
     expect(screen.getByRole("link")).toHaveTextContent("EFO:0001");
   });

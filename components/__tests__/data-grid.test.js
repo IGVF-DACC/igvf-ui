@@ -48,7 +48,7 @@ describe("DataGrid", () => {
     render(
       <DataGridContainer>
         <DataGrid data={data} />
-      </DataGridContainer>
+      </DataGridContainer>,
     );
 
     const table = screen.getByRole("table");
@@ -115,7 +115,7 @@ describe("DataGrid", () => {
     render(
       <DataGridContainer className="bg-slate-900">
         <DataGrid data={data} meta={{ color: "#ffff00" }} />
-      </DataGridContainer>
+      </DataGridContainer>,
     );
 
     const table = screen.getByRole("table");

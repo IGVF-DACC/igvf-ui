@@ -5,7 +5,7 @@ describe("Test the <TextField> component", () => {
   it("renders a text field and reacts to typing in it", () => {
     const onChange = jest.fn();
     render(
-      <TextField label="Test" name="test" value="test" onChange={onChange} />
+      <TextField label="Test" name="test" value="test" onChange={onChange} />,
     );
 
     const input = screen.getByRole("textbox");
@@ -21,7 +21,7 @@ describe("Test the <TextField> component", () => {
         value="test"
         onChange={onChange}
         isSpellCheckDisabled
-      />
+      />,
     );
 
     const input = screen.getByRole("textbox");
@@ -39,7 +39,7 @@ describe("Test the <TextField> component", () => {
         value="test"
         onChange={onChange}
         isDisabled
-      />
+      />,
     );
 
     const input = screen.getByRole("textbox");

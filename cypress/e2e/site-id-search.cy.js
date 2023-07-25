@@ -10,7 +10,7 @@ describe("Test site search", () => {
     cy.get("h1").contains("Items with “cherry”");
     cy.get(`[data-testid^="site-search-type-section-"]`).should(
       "have.length.least",
-      1
+      1,
     );
 
     // Check that we can work with the first top-items section.
@@ -21,7 +21,7 @@ describe("Test site search", () => {
         cy.get(`[aria-label^="Expand top matches for"]`).click();
         cy.get(`[data-testid^="search-list-item-"]`).should(
           "have.length.least",
-          1
+          1,
         );
 
         // Collapse the first top-items section and make sure it hides the items.
@@ -62,7 +62,7 @@ describe("Test site search", () => {
     cy.visit("/");
     cy.get(`[data-testid^="site-search-trigger"]`).click();
     cy.get(
-      `[aria-label="Enter the recent search, cherry, into the search box"]`
+      `[aria-label="Enter the recent search, cherry, into the search box"]`,
     ).click();
     cy.get(`[data-testid="search-input"]`).should("have.value", "cherry");
     cy.get(`[aria-label="Search for cherry"]`).click();
@@ -75,7 +75,7 @@ describe("Test ID search", () => {
     cy.visit("/");
     cy.get(`[data-testid="id-search-trigger"]`).click();
     cy.get(`[data-testid="search-input"]`).type(
-      "860c4750-8d3c-40f5-8f2c-90c5e5d19e88{enter}"
+      "860c4750-8d3c-40f5-8f2c-90c5e5d19e88{enter}",
     );
     cy.url().should("include", "/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/");
   });
@@ -93,7 +93,7 @@ describe("Test ID search", () => {
     // Search the site for a UUID and make sure we then go to that object's page.
     cy.get(`[data-testid^="id-search-trigger"]`).click();
     cy.get(`[data-testid="search-input"]`).type(
-      "860c4750-8d3c-40f5-8f2c-90c5e5d19e88{enter}"
+      "860c4750-8d3c-40f5-8f2c-90c5e5d19e88{enter}",
     );
     cy.url().should("include", "/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/");
 
@@ -101,14 +101,14 @@ describe("Test ID search", () => {
     cy.visit("/");
     cy.get(`[data-testid^="id-search-trigger"]`).click();
     cy.get(
-      `[aria-label="Enter the recent search, 860c4750-8d3c-40f5-8f2c-90c5e5d19e88, into the search box"]`
+      `[aria-label="Enter the recent search, 860c4750-8d3c-40f5-8f2c-90c5e5d19e88, into the search box"]`,
     ).click();
     cy.get(`[data-testid="search-input"]`).should(
       "have.value",
-      "860c4750-8d3c-40f5-8f2c-90c5e5d19e88"
+      "860c4750-8d3c-40f5-8f2c-90c5e5d19e88",
     );
     cy.get(
-      `[aria-label="Search for 860c4750-8d3c-40f5-8f2c-90c5e5d19e88"]`
+      `[aria-label="Search for 860c4750-8d3c-40f5-8f2c-90c5e5d19e88"]`,
     ).click();
     cy.url().should("include", "/users/860c4750-8d3c-40f5-8f2c-90c5e5d19e88/");
   });

@@ -19,7 +19,7 @@ import FetchRequest from "../lib/fetch-request";
 export default function UserProfile({ sessionUser = null }) {
   // Keeps a current copy of the access keys for handling adds/deletes w/o relying on indexing.
   const [accessKeys, setAccessKeys] = useState(
-    sessionUser ? sessionUser.access_keys : []
+    sessionUser ? sessionUser.access_keys : [],
   );
   const { session, sessionProperties } = useContext(SessionContext);
   const { isLoading, user } = useAuth0();

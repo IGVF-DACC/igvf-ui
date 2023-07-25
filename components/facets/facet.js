@@ -30,7 +30,7 @@ Facet.propTypes = {
       PropTypes.shape({
         key: PropTypes.string.isRequired,
         doc_count: PropTypes.number.isRequired,
-      })
+      }),
     ).isRequired,
   }).isRequired,
 };

@@ -47,13 +47,13 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const phenotypeOntologyTerm = await request.getObject(
-    `/phenotype-terms/${params.name}/`
+    `/phenotype-terms/${params.name}/`,
   );
   if (FetchRequest.isResponseSuccess(phenotypeOntologyTerm)) {
     const breadcrumbs = await buildBreadcrumbs(
       phenotypeOntologyTerm,
       "term_id",
-      req.headers.cookie
+      req.headers.cookie,
     );
     return {
       props: {

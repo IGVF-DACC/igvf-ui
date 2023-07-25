@@ -91,13 +91,13 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sampleOntologyTerm = await request.getObject(
-    `/sample-terms//${params.name}/`
+    `/sample-terms//${params.name}/`,
   );
   if (FetchRequest.isResponseSuccess(sampleOntologyTerm)) {
     const breadcrumbs = await buildBreadcrumbs(
       sampleOntologyTerm,
       "term_id",
-      req.headers.cookie
+      req.headers.cookie,
     );
     return {
       props: {

@@ -47,7 +47,7 @@ export default function UnknownTypePanel({ item, attribution = null }) {
   const genericProperties = Object.keys(item).filter(
     (property) =>
       !commonProperties.includes(property) &&
-      !PROPERTIES_TO_OMIT.includes(property)
+      !PROPERTIES_TO_OMIT.includes(property),
   );
 
   return (

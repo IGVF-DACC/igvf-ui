@@ -3,16 +3,16 @@ import QueryString from "../query-string";
 describe("QueryString Class", () => {
   it("Returns given query string unmodified", () => {
     let query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type=ReferenceEpigenome&assay_title=Histone+ChIP-seq"
+      "type=Experiment&assay_term_id=OBI:0000716&type=ReferenceEpigenome&assay_title=Histone+ChIP-seq",
     );
     expect(query.format()).toEqual(
-      "type=Experiment&assay_term_id=OBI:0000716&type=ReferenceEpigenome&assay_title=Histone+ChIP-seq"
+      "type=Experiment&assay_term_id=OBI:0000716&type=ReferenceEpigenome&assay_title=Histone+ChIP-seq",
     );
     query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=ReferenceEpigenome&assay_title=Histone+ChIP-seq"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=ReferenceEpigenome&assay_title=Histone+ChIP-seq",
     );
     expect(query.format()).toEqual(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=ReferenceEpigenome&assay_title=Histone+ChIP-seq"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=ReferenceEpigenome&assay_title=Histone+ChIP-seq",
     );
   });
 
@@ -31,7 +31,7 @@ describe("QueryString Class", () => {
 
   it("Finds all values matching a key", () => {
     const query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type=ReferenceEpigenome&assay_title!=Histone+ChIP-seq"
+      "type=Experiment&assay_term_id=OBI:0000716&type=ReferenceEpigenome&assay_title!=Histone+ChIP-seq",
     );
     let matchingValues = query.getKeyValues("type");
     expect(matchingValues).toHaveLength(2);
@@ -58,35 +58,35 @@ describe("QueryString Class", () => {
     expect(query.format()).toEqual("type=Experiment&assay_term_id=OBI:0000716");
     query.addKeyValue("type", "Annotation", "NEGATIVE");
     expect(query.format()).toEqual(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     query.addKeyValue("age", 1);
     expect(query.format()).toEqual(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation&age=1"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation&age=1",
     );
   });
 
   it("Deletes all keys of a value", () => {
     let query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation",
     );
     query.deleteKeyValue("type");
     expect(query.format()).toEqual("assay_term_id=OBI:0000716");
 
     query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation",
     );
     query.deleteKeyValue("type", "Experiment");
     expect(query.format()).toEqual("assay_term_id=OBI:0000716&type=Annotation");
 
     query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     query.deleteKeyValue("type");
     expect(query.format()).toEqual("assay_term_id=OBI:0000716");
 
     query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     query.deleteKeyValue("type", "Annotation");
     expect(query.format()).toEqual("type=Experiment&assay_term_id=OBI:0000716");
@@ -94,27 +94,27 @@ describe("QueryString Class", () => {
 
   it("Replaces all keys with a new value", () => {
     let query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation",
     );
     query.replaceKeyValue("type", "Biosample");
     expect(query.format()).toEqual("assay_term_id=OBI:0000716&type=Biosample");
 
     query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation",
     );
     query.replaceKeyValue("assay_term_id", "OBI:0001919");
     expect(query.format()).toEqual(
-      "type=Experiment&type=Annotation&assay_term_id=OBI:0001919"
+      "type=Experiment&type=Annotation&assay_term_id=OBI:0001919",
     );
 
     query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     query.replaceKeyValue("type", "Biosample");
     expect(query.format()).toEqual("assay_term_id=OBI:0000716&type=Biosample");
 
     query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     query.replaceKeyValue("type", "Biosample", "NEGATIVE");
     expect(query.format()).toEqual("assay_term_id=OBI:0000716&type!=Biosample");
@@ -122,21 +122,21 @@ describe("QueryString Class", () => {
 
   it("Creates an independent clone", () => {
     const query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     const queryCopy = query.clone();
     queryCopy.addKeyValue("assay_title", "Histone ChIP-seq", "NEGATIVE");
     expect(query.format()).toEqual(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     expect(queryCopy.format()).toEqual(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation&assay_title!=Histone+ChIP-seq"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation&assay_title!=Histone+ChIP-seq",
     );
   });
 
   it("Counts the number of query keys", () => {
     const query = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     const allKeysCount = query.queryCount();
     expect(allKeysCount).toEqual(3);
@@ -150,40 +150,40 @@ describe("QueryString Class", () => {
 describe("Test query string equal() static method", () => {
   it("detects equal query strings with terms in the same order", () => {
     const query1 = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     const query2 = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     expect(QueryString.equal(query1, query2)).toEqual(true);
   });
 
   it("detects equal query strings with terms in a different order", () => {
     const query1 = new QueryString(
-      "type=Experiment&type!=Annotation&assay_term_id=OBI:0000716"
+      "type=Experiment&type!=Annotation&assay_term_id=OBI:0000716",
     );
     const query2 = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     expect(QueryString.equal(query1, query2)).toEqual(true);
   });
 
   it("detects unequal query strings with terms in the same order", () => {
     const query1 = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type=Annotation",
     );
     const query2 = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     expect(QueryString.equal(query1, query2)).toEqual(false);
   });
 
   it("detects unequal query strings with terms in a different order", () => {
     const query1 = new QueryString(
-      "type=Experiment&type=Annotation&assay_term_id=OBI:0000716"
+      "type=Experiment&type=Annotation&assay_term_id=OBI:0000716",
     );
     const query2 = new QueryString(
-      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
+      "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation",
     );
     expect(QueryString.equal(query1, query2)).toEqual(false);
   });
@@ -191,7 +191,7 @@ describe("Test query string equal() static method", () => {
   it("detects mismatch if query1 contains a subset of matching elements to query2", () => {
     const query1 = new QueryString("type=Experiment&assay_term_id=OBI:0000716");
     const query2 = new QueryString(
-      "type=Experiment&type=Annotation&assay_term_id=OBI:0000716"
+      "type=Experiment&type=Annotation&assay_term_id=OBI:0000716",
     );
     expect(QueryString.equal(query1, query2)).toEqual(false);
   });
@@ -199,7 +199,7 @@ describe("Test query string equal() static method", () => {
   it("detects match if query1 contains a subset of matching elements to query2 with subset match", () => {
     const query1 = new QueryString("type=Experiment&assay_term_id=OBI:0000716");
     const query2 = new QueryString(
-      "type=Experiment&type=Annotation&assay_term_id=OBI:0000716"
+      "type=Experiment&type=Annotation&assay_term_id=OBI:0000716",
     );
     expect(QueryString.equal(query1, query2, "SUBSET")).toEqual(true);
   });

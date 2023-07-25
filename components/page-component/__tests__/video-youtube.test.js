@@ -11,7 +11,7 @@ describe("Test the VIDEO_YOUTUBE page component", () => {
     expect(iframe).toBeInTheDocument();
     expect(iframe).toHaveAttribute(
       "src",
-      "https://www.youtube.com/embed/8yrnf4oG95Y"
+      "https://www.youtube.com/embed/8yrnf4oG95Y",
     );
   });
 
@@ -19,7 +19,7 @@ describe("Test the VIDEO_YOUTUBE page component", () => {
     render(
       <PageComponent
         spec={`VIDEO_YOUTUBE${UC.newline}id=8yrnf4oG95Y${UC.newline}start=250`}
-      />
+      />,
     );
 
     // Make sure an iframe appears and has the correct src attribute.
@@ -27,7 +27,7 @@ describe("Test the VIDEO_YOUTUBE page component", () => {
     expect(iframe).toBeInTheDocument();
     expect(iframe).toHaveAttribute(
       "src",
-      "https://www.youtube.com/embed/8yrnf4oG95Y?start=250"
+      "https://www.youtube.com/embed/8yrnf4oG95Y?start=250",
     );
   });
 

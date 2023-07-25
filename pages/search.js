@@ -109,12 +109,12 @@ export async function getServerSideProps({ req, query }) {
     const itemListsByType = getItemListsByType(searchResults);
     const accessoryData = await getAccessoryData(
       itemListsByType,
-      req.headers.cookie
+      req.headers.cookie,
     );
     const breadcrumbs = await buildBreadcrumbs(
       searchResults,
       "",
-      req.headers.cookie
+      req.headers.cookie,
     );
     return {
       props: {

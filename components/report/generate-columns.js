@@ -56,7 +56,7 @@ export default function generateColumns(searchResults, profiles) {
     const DisplayComponent = getColumnRenderer(
       reportType,
       column.id,
-      profiles[reportType]
+      profiles[reportType],
     );
     if (DisplayComponent) {
       column.display = DisplayComponent;

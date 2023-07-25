@@ -158,7 +158,7 @@ export default function SiteSearch({ results, term, accessoryData = null }) {
   function onSectionOpenClick(sectionKey) {
     if (openedSections.includes(sectionKey)) {
       setOpenedSections(
-        openedSections.filter((section) => section !== sectionKey)
+        openedSections.filter((section) => section !== sectionKey),
       );
     } else {
       setOpenedSections(openedSections.concat(sectionKey));
@@ -257,7 +257,7 @@ function getTopHitsItemListsByType(topHitsResults) {
   const list = {};
   buckets.forEach((bucket) => {
     list[bucket.key] = bucket.top_hits.hits.hits.map(
-      (hit) => hit._source.embedded
+      (hit) => hit._source.embedded,
     );
   });
   return list;
@@ -271,7 +271,7 @@ export async function getServerSideProps({ req, query }) {
   const itemListsByType = getTopHitsItemListsByType(topHitsResults);
   const accessoryData = await getAccessoryData(
     itemListsByType,
-    req.headers.cookie
+    req.headers.cookie,
   );
   return {
     props: {

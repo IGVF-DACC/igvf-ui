@@ -69,7 +69,7 @@ describe("SortableGrid", () => {
     render(
       <DataGridContainer>
         <SortableGrid data={data} columns={columns} />
-      </DataGridContainer>
+      </DataGridContainer>,
     );
 
     const table = screen.getByRole("table");
@@ -178,7 +178,7 @@ describe("SortableGrid", () => {
     render(
       <DataGridContainer>
         <SortableGrid data={data} columns={columns} keyProp="uuid" />
-      </DataGridContainer>
+      </DataGridContainer>,
     );
 
     let cells = screen.getAllByRole("cell");
@@ -232,7 +232,7 @@ describe("SortableGrid", () => {
           keyProp="uuid"
           initialSort={{ columnId: "doesnt_exist" }}
         />
-      </DataGridContainer>
+      </DataGridContainer>,
     );
 
     const headers = screen.getAllByRole("columnheader");
@@ -261,7 +261,7 @@ describe("SortableGrid", () => {
           meta={{ isSmallViewport: true }}
           keyProp="uuid"
         />
-      </DataGridContainer>
+      </DataGridContainer>,
     );
 
     const headers = screen.getAllByRole("columnheader");

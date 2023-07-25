@@ -15,7 +15,7 @@ describe("page-component tests", () => {
     // Add an image aligned component.
     cy.get("#block1-type").select("Component");
     cy.get("#block1").type(
-      "IMAGE_ALIGNED{enter}src=/pages/igvf-winter-logo.png{enter}alt=IGVF Logo{enter}width=33%"
+      "IMAGE_ALIGNED{enter}src=/pages/igvf-winter-logo.png{enter}alt=IGVF Logo{enter}width=33%",
     );
 
     // Fill in the metadata and save the page.
@@ -44,7 +44,7 @@ describe("page-component tests", () => {
     // Add an image aligned component.
     cy.get("#block1-type").select("Component");
     cy.get("#block1").type(
-      "PAGE_NAV{enter}Item 1=#item1{enter}Item 2=#item2{enter}Item 3=#item3"
+      "PAGE_NAV{enter}Item 1=#item1{enter}Item 2=#item2{enter}Item 3=#item3",
     );
 
     // Fill in the metadata and save the page.
@@ -82,7 +82,7 @@ describe("page-component tests", () => {
     // Add an image aligned component.
     cy.get("#block1-type").select("Component");
     cy.get("#block1").type(
-      "VIDEO_YOUTUBE{enter}id=Q8TXgCzxEnw{enter}start=200"
+      "VIDEO_YOUTUBE{enter}id=Q8TXgCzxEnw{enter}start=200",
     );
 
     // Fill in the metadata and save the page.
@@ -95,7 +95,7 @@ describe("page-component tests", () => {
     cy.get("iframe").should(
       "have.attr",
       "src",
-      "https://www.youtube.com/embed/Q8TXgCzxEnw?start=200"
+      "https://www.youtube.com/embed/Q8TXgCzxEnw?start=200",
     );
   });
 });

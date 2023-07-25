@@ -50,7 +50,7 @@ export function splitPathAndQueryString(pathMaybeWithQuery: string): {
   if (firstQuestionMarkIndex !== -1) {
     const path = pathMaybeWithQuery.substring(0, firstQuestionMarkIndex);
     const queryString = pathMaybeWithQuery.substring(
-      firstQuestionMarkIndex + 1
+      firstQuestionMarkIndex + 1,
     );
     return { path, queryString };
   }

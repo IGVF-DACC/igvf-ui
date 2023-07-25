@@ -36,7 +36,7 @@ const Editor = dynamic(
       return <div>Loading...</div>;
     },
     ssr: false,
-  }
+  },
 );
 
 const CONTRAST_MODE_LIGHT = "solarized_light";

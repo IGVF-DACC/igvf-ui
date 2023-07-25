@@ -201,7 +201,7 @@ class DbxrefProcessor extends Curie {
           this.curie,
           this.prefix,
           this.id,
-          this.#meta
+          this.#meta,
         );
         urlPattern = altUrlPattern || urlPattern;
         id = altId || id;

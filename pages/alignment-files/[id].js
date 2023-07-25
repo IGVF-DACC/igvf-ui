@@ -136,11 +136,11 @@ export async function getServerSideProps({ params, req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       alignmentFile,
       "accession",
-      req.headers.cookie
+      req.headers.cookie,
     );
     const attribution = await buildAttribution(
       alignmentFile,
-      req.headers.cookie
+      req.headers.cookie,
     );
     return {
       props: {

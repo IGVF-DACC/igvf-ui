@@ -34,12 +34,12 @@ describe("Test the <Facet> component", () => {
             />
           );
         })}
-      </Facet>
+      </Facet>,
     );
 
     // Make sure the facet title has the correct contents.
     expect(screen.getByTestId(`facettitle-${facet.field}`)).toHaveTextContent(
-      facet.title
+      facet.title,
     );
 
     // Make sure the facet has the correct number of terms and the correct contents.

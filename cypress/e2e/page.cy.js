@@ -55,7 +55,7 @@ describe("Content-Change Tests", () => {
     cy.delayForIndexing();
     cy.visit("/search/?type=Page");
     cy.get(
-      `[data-testid="search-list-item-/test-section/subpage-in-progress/"]`
+      `[data-testid="search-list-item-/test-section/subpage-in-progress/"]`,
     ).within(() => {
       cy.contains("Updated Subpage Title");
       cy.contains("released");

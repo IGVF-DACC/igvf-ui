@@ -13,7 +13,7 @@ describe("Test the document attachment link", () => {
     render(<DocumentAttachmentLink document={document} />);
     const link = screen.getByRole("link");
     expect(link.href).toBe(
-      `http://localhost/documents/bcb5f3c8-d5e9-40d2-805f-4274f940c36d/@@download/attachment/Antibody_Characterization_IGVF.pdf`
+      `http://localhost/documents/bcb5f3c8-d5e9-40d2-805f-4274f940c36d/@@download/attachment/Antibody_Characterization_IGVF.pdf`,
     );
     screen.getByLabelText("Download Antibody_Characterization_IGVF.pdf");
   });

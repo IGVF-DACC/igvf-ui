@@ -58,7 +58,7 @@ function sortData(data, columns, sortBy, sortDirections) {
     return _.orderBy(
       data,
       (item) => sortedColumnConfig.sorter(item),
-      sortDirections
+      sortDirections,
     );
   }
 
@@ -68,7 +68,7 @@ function sortData(data, columns, sortBy, sortDirections) {
     return _.orderBy(
       data,
       (item) => sortedColumnConfig.value(item).toString().toLowerCase(),
-      [sortDirections]
+      [sortDirections],
     );
   }
 
@@ -216,7 +216,7 @@ HeaderCell.propTypes = {
       content: PropTypes.any.isRequired,
       // Role for the cell -- "columnheader" for column headers; default "cell"
       role: PropTypes.string,
-    })
+    }),
   ).isRequired,
   // 0-based index of the current header cell within `cells`
   cellIndex: PropTypes.number.isRequired,
@@ -254,7 +254,7 @@ export default function SortableGrid({
   const [sortBy, setSortBy] = useState(initialSort.columnId || columns[0].id);
   // Whether the currently sorted column is sorted in ascending or descending order
   const [sortDirection, setSortDirection] = useState(
-    initialSort.direction || SORT_DIRECTIONS.ASC
+    initialSort.direction || SORT_DIRECTIONS.ASC,
   );
 
   /**
@@ -267,7 +267,7 @@ export default function SortableGrid({
       setSortDirection(
         sortDirection === SORT_DIRECTIONS.ASC
           ? SORT_DIRECTIONS.DESC
-          : SORT_DIRECTIONS.ASC
+          : SORT_DIRECTIONS.ASC,
       );
     } else {
       // Unsorted column clicked; sort by this column ascending.
@@ -279,7 +279,7 @@ export default function SortableGrid({
   // Filter the columns to only include those that have a hide() function that returns false, or
   // that don't have a hide() function at all.
   const visibleColumns = columns.filter(
-    (column) => !column.hide || !column.hide(data, columns, meta)
+    (column) => !column.hide || !column.hide(data, columns, meta),
   );
 
   // Generate the cells within the header row. The column title can contain a string or a React
@@ -316,7 +316,7 @@ export default function SortableGrid({
   const dataRows = convertObjectArrayToDataGrid(
     sortedData,
     visibleColumns,
-    keyProp
+    keyProp,
   );
   return (
     <DataGrid

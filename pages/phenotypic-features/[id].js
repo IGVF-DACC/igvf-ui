@@ -81,18 +81,18 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const phenotypicFeature = await request.getObject(
-    `/phenotypic-features/${params.id}/`
+    `/phenotypic-features/${params.id}/`,
   );
   if (FetchRequest.isResponseSuccess(phenotypicFeature)) {
     const attribution = await buildAttribution(
       phenotypicFeature,
-      req.headers.cookie
+      req.headers.cookie,
     );
     const title = getPhenotypicFeatureTitle(phenotypicFeature);
     const breadcrumbs = await buildBreadcrumbs(
       phenotypicFeature,
       "uuid",
-      req.headers.cookie
+      req.headers.cookie,
     );
     return {
       props: {

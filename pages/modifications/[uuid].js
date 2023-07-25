@@ -94,17 +94,17 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const modification = await request.getObject(
-    `/modifications/${params.uuid}/`
+    `/modifications/${params.uuid}/`,
   );
   if (FetchRequest.isResponseSuccess(modification)) {
     const breadcrumbs = await buildBreadcrumbs(
       modification,
       "summary",
-      req.headers.cookie
+      req.headers.cookie,
     );
     const attribution = await buildAttribution(
       modification,
-      req.headers.cookie
+      req.headers.cookie,
     );
     const gene = await request.getObject(modification.tagged_protein, null);
     return {

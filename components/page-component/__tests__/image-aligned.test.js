@@ -7,13 +7,13 @@ describe("Test IMAGE_ALIGNED page component", () => {
     render(
       <PageComponent
         spec={`IMAGE_ALIGNED${UC.newline}src=/images/placeholder.png${UC.newline}alt=Placeholder image${UC.newline}width=50%${UC.newline}align=left`}
-      />
+      />,
     );
 
     // Test the <picture> element.
     const picture = screen.getByTestId("image-aligned");
     expect(picture).toHaveClass(
-      "block first:mt-0 last:mb-0 float-left mr-3 my-2"
+      "block first:mt-0 last:mb-0 float-left mr-3 my-2",
     );
     expect(picture).toHaveStyle("width: 50%;");
 
@@ -24,7 +24,7 @@ describe("Test IMAGE_ALIGNED page component", () => {
 
     // Test that there is no <figcaption> element.
     expect(
-      screen.queryByTestId("image-aligned-caption")
+      screen.queryByTestId("image-aligned-caption"),
     ).not.toBeInTheDocument();
   });
 
@@ -32,13 +32,13 @@ describe("Test IMAGE_ALIGNED page component", () => {
     render(
       <PageComponent
         spec={`IMAGE_ALIGNED${UC.newline}src=/images/placeholder.png${UC.newline}alt=Placeholder image${UC.newline}width=50%${UC.newline}align=right${UC.newline}caption=This is a caption`}
-      />
+      />,
     );
 
     // Test the <picture> element.
     const picture = screen.getByTestId("image-aligned");
     expect(picture).toHaveClass(
-      "block first:mt-0 last:mb-0 float-right ml-3 my-2"
+      "block first:mt-0 last:mb-0 float-right ml-3 my-2",
     );
     expect(picture).toHaveStyle("width: 50%;");
 
@@ -57,7 +57,7 @@ describe("Test IMAGE_ALIGNED page component", () => {
     render(
       <PageComponent
         spec={`IMAGE_ALIGNED${UC.newline}src=/images/placeholder.png${UC.newline}alt=Placeholder image${UC.newline}caption=This is a caption`}
-      />
+      />,
     );
 
     // Test the <picture> element.
@@ -80,7 +80,7 @@ describe("Test IMAGE_ALIGNED page component", () => {
     render(
       <PageComponent
         spec={`IMAGE_ALIGNED${UC.newline}alt=Placeholder image${UC.newline}width=50%${UC.newline}align=left`}
-      />
+      />,
     );
 
     // Test that there is no <picture> element.
@@ -91,7 +91,7 @@ describe("Test IMAGE_ALIGNED page component", () => {
     render(
       <PageComponent
         spec={`IMAGE_ALIGNED${UC.newline}src=/images/placeholder.png${UC.newline}width=50%${UC.newline}align=left`}
-      />
+      />,
     );
 
     // Test that there is no <picture> element.

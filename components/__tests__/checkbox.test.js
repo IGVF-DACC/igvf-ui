@@ -8,7 +8,7 @@ describe("Test the <Checkbox> component", () => {
     render(
       <Checkbox checked={false} name="checkbox-test" onChange={onChange}>
         Label for testing
-      </Checkbox>
+      </Checkbox>,
     );
     const label = screen.getByLabelText("Label for testing");
     expect(label).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe("Test the <Checkbox> component", () => {
         className="my-5"
       >
         Label for testing
-      </Checkbox>
+      </Checkbox>,
     );
 
     const label = screen.getByTestId("checkbox-label");

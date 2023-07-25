@@ -109,7 +109,7 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const referenceFile = await request.getObject(
-    `/reference-files/${params.id}/`
+    `/reference-files/${params.id}/`,
   );
   if (FetchRequest.isResponseSuccess(referenceFile)) {
     const fileSet = await request.getObject(referenceFile.file_set, null);
@@ -122,11 +122,11 @@ export async function getServerSideProps({ params, req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       referenceFile,
       "accession",
-      req.headers.cookie
+      req.headers.cookie,
     );
     const attribution = await buildAttribution(
       referenceFile,
-      req.headers.cookie
+      req.headers.cookie,
     );
     return {
       props: {

@@ -60,7 +60,7 @@ describe("Test GET requests to the data provider", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve(mockData),
-      })
+      }),
     );
 
     const request = new FetchRequest();
@@ -73,7 +73,7 @@ describe("Test GET requests to the data provider", () => {
       undefined,
       {
         isDbRequest: true,
-      }
+      },
     );
     expect(labItem).toBeTruthy();
     expect(_.isEqual(labItem, mockData)).toBeTruthy();
@@ -111,14 +111,14 @@ describe("Test GET requests to the data provider", () => {
             mockData.find((data) => url === data["@id"]) || null;
           return Promise.resolve(matchingData);
         },
-      })
+      }),
     );
 
     // Retrieve multiple lab items without filtering error results.
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
     let labItems = await request.getMultipleObjects(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      null
+      null,
     );
     expect(labItems).toBeTruthy();
     expect(labItems).toHaveLength(3);
@@ -127,7 +127,7 @@ describe("Test GET requests to the data provider", () => {
     labItems = await request.getMultipleObjects(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
       null,
-      { filterErrors: true }
+      { filterErrors: true },
     );
     expect(labItems).toBeTruthy();
     expect(labItems).toHaveLength(2);
@@ -150,7 +150,7 @@ describe("Test GET requests to the data provider", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve(mockData),
-      })
+      }),
     );
 
     const request = new FetchRequest();
@@ -188,7 +188,7 @@ describe("Test GET requests to the data provider", () => {
             description: "The resource could not be found.",
             detail: "URL",
           }),
-      })
+      }),
     );
 
     type defaultError = {
@@ -232,12 +232,12 @@ describe("Test URL-specific fetch requests", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve(mockData),
-      })
+      }),
     );
 
     const request = new FetchRequest();
     const session = await request.getObjectByUrl(
-      "http://localhost:8000/session"
+      "http://localhost:8000/session",
     );
     expect(session).toBeTruthy();
     expect(_.isEqual(session, mockData)).toBeTruthy();
@@ -269,7 +269,7 @@ describe("Test URL-specific fetch requests", () => {
     const request = new FetchRequest();
     const session = await request.getObjectByUrl(
       "http://localhost:8000/labs/j-michael-cherry/",
-      null
+      null,
     );
     expect(session).toBeNull();
   });
@@ -287,13 +287,13 @@ describe("Test URL-specific fetch requests", () => {
             description: "The resource could not be found.",
             detail: "URL",
           }),
-      })
+      }),
     );
 
     const request = new FetchRequest();
     const session = await request.getObjectByUrl(
       "http://localhost:8000/session",
-      null
+      null,
     );
     expect(session).toBeNull();
   });
@@ -311,7 +311,7 @@ describe("Test URL-specific fetch requests", () => {
             description: "The resource could not be found.",
             detail: "URL",
           }),
-      })
+      }),
     );
 
     const request = new FetchRequest();
@@ -331,7 +331,7 @@ describe("Text fetch requests", () => {
       Promise.resolve({
         ok: true,
         text: () => Promise.resolve(mockData),
-      })
+      }),
     );
 
     const request = new FetchRequest();
@@ -352,7 +352,7 @@ describe("Text fetch requests", () => {
             description: "The resource could not be found.",
             detail: "URL",
           }),
-      })
+      }),
     );
 
     const request = new FetchRequest();
@@ -374,7 +374,7 @@ describe("Text fetch requests", () => {
             description: "The resource could not be found.",
             detail: "URL",
           }),
-      })
+      }),
     );
 
     const request = new FetchRequest();
@@ -407,7 +407,7 @@ describe("Text fetch requests", () => {
     const request = new FetchRequest();
     const markdown = await request.getText(
       "/markdown/path",
-      "Proxima Centauri"
+      "Proxima Centauri",
     );
     expect(markdown).toEqual("Proxima Centauri");
   });
@@ -419,7 +419,7 @@ describe("POST fetch requests", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ status: "success" }),
-      })
+      }),
     );
 
     const request = new FetchRequest();
@@ -449,7 +449,7 @@ describe("PUT fetch requests", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ status: "success" }),
-      })
+      }),
     );
 
     const request = new FetchRequest();
@@ -481,7 +481,7 @@ describe("PATCH fetch requests", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ status: "success" }),
-      })
+      }),
     );
 
     const request = new FetchRequest();
@@ -530,12 +530,12 @@ describe("PATCH fetch requests", () => {
         Promise.resolve({
           ok: true,
           json: () => Promise.resolve(mockData),
-        })
+        }),
       );
 
       const request = new FetchRequest({ backend: true });
       const awardProfiles = await request.getObject(
-        "/api/mapprofile?profile=award"
+        "/api/mapprofile?profile=award",
       );
       expect(awardProfiles).toEqual(mockData);
     });

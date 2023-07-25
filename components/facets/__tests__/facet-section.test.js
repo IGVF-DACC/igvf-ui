@@ -218,7 +218,7 @@ describe("Test <FacetSection> component", () => {
       screen.queryByTestId(/^facetgroup-buttons$/);
     expect(facetGroupButtonSection).toBeInTheDocument();
     const facetGroupButtons = within(facetGroupButtonSection).getAllByRole(
-      "button"
+      "button",
     );
     expect(facetGroupButtons).toHaveLength(2);
 
@@ -367,7 +367,7 @@ describe("Test <FacetSection> component", () => {
     const facetGroupButtonSection =
       screen.queryByTestId(/^facetgroup-buttons$/);
     const facetGroupButtons = within(facetGroupButtonSection).getAllByRole(
-      "button"
+      "button",
     );
     expect(facetGroupButtons).toHaveLength(2);
 
@@ -375,11 +375,11 @@ describe("Test <FacetSection> component", () => {
     // has an aria label indicating it's not.
     expect(facetGroupButtons[0]).toHaveAttribute(
       "aria-label",
-      "Assay selected filter group"
+      "Assay selected filter group",
     );
     expect(facetGroupButtons[1]).toHaveAttribute(
       "aria-label",
-      "Quality filter group"
+      "Quality filter group",
     );
 
     // Click the second button and check that its new aria label indicates it's selected and the
@@ -387,11 +387,11 @@ describe("Test <FacetSection> component", () => {
     fireEvent.click(facetGroupButtons[1]);
     expect(facetGroupButtons[0]).toHaveAttribute(
       "aria-label",
-      "Assay filter group"
+      "Assay filter group",
     );
     expect(facetGroupButtons[1]).toHaveAttribute(
       "aria-label",
-      "Quality selected filter group"
+      "Quality selected filter group",
     );
   });
 });

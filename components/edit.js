@@ -105,7 +105,11 @@ export default function EditPage({ item }) {
   function jsonErrors(json) {
     // cannot save if we cannot edit or if the JSON is wrong
     try {
-      JSON.parse(json);
+      const parsed = JSON.parse(json);
+      const stringed = JSON.stringify(parsed);
+      if (json.length !== stringed.length) {
+        return ["Duplicate keys"];
+      }
       return [];
     } catch (err) {
       // Save the error
@@ -240,7 +244,7 @@ export default function EditPage({ item }) {
             }
             onClose={() => {
               const filteredErrors = saveErrors.filter(
-                (e) => e.description !== error.description
+                (e) => e.description !== error.description,
               );
               setSaveErrors(filteredErrors);
             }}

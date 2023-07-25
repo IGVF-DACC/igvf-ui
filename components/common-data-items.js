@@ -644,7 +644,7 @@ function EmptyDataItems({ children }) {
 export function findCommonDataRenderer(item) {
   const definedCommonDataTypes = Object.keys(commonDataRenderers);
   const commonDataType = item["@type"].find((type) =>
-    definedCommonDataTypes.includes(type)
+    definedCommonDataTypes.includes(type),
   );
   return commonDataType ? commonDataRenderers[commonDataType] : EmptyDataItems;
 }

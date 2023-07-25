@@ -63,18 +63,18 @@ describe("Test the document table", () => {
 
     // Check the contents of the table.
     const pageLinks = screen.getAllByLabelText(
-      "View page for document Pathology high resolution image."
+      "View page for document Pathology high resolution image.",
     );
     expect(pageLinks).toHaveLength(1);
     expect(pageLinks[0].href).toEqual(
-      "http://localhost/documents/ad1f3c3e-23bf-4e33-3b4d-7333eb1ba33e"
+      "http://localhost/documents/ad1f3c3e-23bf-4e33-3b4d-7333eb1ba33e",
     );
     const downloadLinks = screen.getAllByLabelText(
-      "Download hnRNPA1_aviva-1_WB_HeLa_Fu.TIF"
+      "Download hnRNPA1_aviva-1_WB_HeLa_Fu.TIF",
     );
     expect(downloadLinks).toHaveLength(1);
     expect(downloadLinks[0].href).toEqual(
-      "http://localhost/documents/ad1f3c3e-23bf-4e33-3b4d-7333eb1ba33e/@@download/attachment/hnRNPA1_aviva-1_WB_HeLa_Fu.TIF"
+      "http://localhost/documents/ad1f3c3e-23bf-4e33-3b4d-7333eb1ba33e/@@download/attachment/hnRNPA1_aviva-1_WB_HeLa_Fu.TIF",
     );
   });
 });

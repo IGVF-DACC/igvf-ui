@@ -184,12 +184,12 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const measurementSet = await request.getObject(
-    `/measurement-sets/${params.id}/`
+    `/measurement-sets/${params.id}/`,
   );
   if (FetchRequest.isResponseSuccess(measurementSet)) {
     const assayTerm = await request.getObject(
       measurementSet.assay_term["@id"],
-      null
+      null,
     );
     const documents = measurementSet.documents
       ? await requestDocuments(measurementSet.documents, request)
@@ -218,11 +218,11 @@ export async function getServerSideProps({ params, req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       measurementSet,
       "accession",
-      req.headers.cookie
+      req.headers.cookie,
     );
     const attribution = await buildAttribution(
       measurementSet,
-      req.headers.cookie
+      req.headers.cookie,
     );
     return {
       props: {

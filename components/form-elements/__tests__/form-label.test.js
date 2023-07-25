@@ -8,7 +8,7 @@ describe("Test the FormLabel component", () => {
     const label = screen.getByText("Label Test");
     expect(label).toBeInTheDocument();
     expect(label).toHaveClass(
-      "flex items-center font-semibold text-data-label"
+      "flex items-center font-semibold text-data-label",
     );
     expect(screen.queryByTestId("icon-splat")).not.toBeInTheDocument();
   });
@@ -19,7 +19,7 @@ describe("Test the FormLabel component", () => {
     const label = screen.getByText("Label Test");
     expect(label).toBeInTheDocument();
     expect(label).toHaveClass(
-      "flex items-center font-semibold text-data-label"
+      "flex items-center font-semibold text-data-label",
     );
     expect(screen.queryByTestId("icon-splat")).toBeInTheDocument();
   });
@@ -30,7 +30,7 @@ describe("Test the FormLabel component", () => {
     const label = screen.getByText("Label Test");
     expect(label).toBeInTheDocument();
     expect(label).toHaveClass(
-      "my-8 flex items-center font-semibold text-data-label"
+      "my-8 flex items-center font-semibold text-data-label",
     );
   });
 
@@ -39,7 +39,7 @@ describe("Test the FormLabel component", () => {
       <div>
         <FormLabel htmlFor="select-element">Label Test</FormLabel>
         <input type="text" id="select-element" />
-      </div>
+      </div>,
     );
 
     const label = screen.getByText("Label Test");

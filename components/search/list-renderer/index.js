@@ -234,7 +234,7 @@ export function getAccessoryDataPaths(itemListsByType) {
       // so far.
       return pathsAndFieldsForType;
     },
-    []
+    [],
   );
 
   // We now have an array of objects, each containing the type of object to request from the data
@@ -293,7 +293,7 @@ export function getAccessoryDataPaths(itemListsByType) {
 export function generateAccessoryDataPropertyMap(propertyObjects) {
   return propertyObjects.reduce(
     (map, term) => ({ ...map, [term["@id"]]: term }),
-    {}
+    {},
   );
 }
 
@@ -331,7 +331,7 @@ export function getItemListsByType(searchResults) {
   const itemTypes = getRenderableItemTypes(searchResults);
   return itemTypes.reduce((itemListsByTypeAcc, itemType) => {
     itemListsByTypeAcc[itemType] = searchResults["@graph"].filter(
-      (item) => item["@type"][0] === itemType
+      (item) => item["@type"][0] === itemType,
     );
     return itemListsByTypeAcc;
   }, {});

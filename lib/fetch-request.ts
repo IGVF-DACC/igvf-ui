@@ -189,18 +189,18 @@ export default class FetchRequest {
       ({ cookie, session, backend } = authentication);
       if (cookie && session) {
         throw new Error(
-          "Must authenticate with either cookie (server-side requests) or session (client-side requests) but not both"
+          "Must authenticate with either cookie (server-side requests) or session (client-side requests) but not both",
         );
       }
       if (!backend) {
         if (this.isServer && session) {
           throw new Error(
-            "Server-side requests requires a cookie, but a session was provided."
+            "Server-side requests requires a cookie, but a session was provided.",
           );
         }
         if (!this.isServer && cookie) {
           throw new Error(
-            "Client-side requests requires a session, but a cookie was provided."
+            "Client-side requests requires a session, but a cookie was provided.",
           );
         }
       }
@@ -406,7 +406,7 @@ export default class FetchRequest {
     const results =
       paths.length > 0
         ? await Promise.all(
-            paths.map((path) => this.getObject(path, defaultErrorValue))
+            paths.map((path) => this.getObject(path, defaultErrorValue)),
           )
         : await Promise.resolve([]);
     return options.filterErrors

@@ -107,7 +107,7 @@ export async function getServerSideProps({ params, req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       software,
       "name",
-      req.headers.cookie
+      req.headers.cookie,
     );
     const attribution = await buildAttribution(software, req.headers.cookie);
     return {

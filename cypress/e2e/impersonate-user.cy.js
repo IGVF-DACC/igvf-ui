@@ -19,7 +19,7 @@ describe("Impersonate user tests", () => {
 
     cy.get(`[aria-label^="Impersonate J. Michael Cherry"]`).first().click();
     cy.get("[data-testid=navigation-authenticate]").contains(
-      "J. Michael Cherry"
+      "J. Michael Cherry",
     );
     cy.get("[data-testid=navigation-authenticate]").click();
     cy.get("[data-testid=navigation-impersonate]").should("not.exist");

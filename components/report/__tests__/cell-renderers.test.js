@@ -157,7 +157,7 @@ describe("Test cell renderers in search results", () => {
               CustomHeaderCell={ReportHeaderCell}
             />
           </DataGridContainer>
-        </SessionContext.Provider>
+        </SessionContext.Provider>,
       );
 
       const cells = screen.getAllByRole("cell");
@@ -178,10 +178,10 @@ describe("Test cell renderers in search results", () => {
       const piLinks = within(cells[COLUMN_PI]).getAllByRole("link");
       expect(piLinks).toHaveLength(2);
       expect(piLinks[0]).toHaveTextContent(
-        "/users/bb7f009f-8541-4066-ab7e-acbcf587e9f5/"
+        "/users/bb7f009f-8541-4066-ab7e-acbcf587e9f5/",
       );
       expect(piLinks[1]).toHaveTextContent(
-        "/users/84b1815e-2d39-4396-91ff-2ae3043d06db/"
+        "/users/84b1815e-2d39-4396-91ff-2ae3043d06db/",
       );
 
       // Check @type column has correct comma-separated text.
@@ -191,16 +191,16 @@ describe("Test cell renderers in search results", () => {
       const submittedByLink = cells[COLUMN_SUBMITTED_BY].querySelector("a");
       expect(submittedByLink).toHaveAttribute(
         "href",
-        "/users/3787a0ac-f13a-40fc-a524-69628b04cd59"
+        "/users/3787a0ac-f13a-40fc-a524-69628b04cd59",
       );
       expect(submittedByLink).toHaveTextContent(
-        "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/"
+        "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/",
       );
 
       // Check the URL column has a link with the correct text.
       const urlLink = cells[COLUMN_URL].querySelector("a");
       expect(urlLink).toHaveTextContent(
-        "https://www.genome.gov/Funded-Programs-Projects/Impact-of-Genomic-Variation-on-Function-Consortium"
+        "https://www.genome.gov/Funded-Programs-Projects/Impact-of-Genomic-Variation-on-Function-Consortium",
       );
 
       // Check that the proposed_by column has a null value because no data exists.
@@ -211,10 +211,10 @@ describe("Test cell renderers in search results", () => {
       const verifiedByLink = cells[COLUMN_VERIFIED_BY].querySelector("a");
       expect(verifiedByLink).toHaveAttribute(
         "href",
-        "/users/3787a0ac-f13a-40fc-a524-69628b04cd59"
+        "/users/3787a0ac-f13a-40fc-a524-69628b04cd59",
       );
       expect(verifiedByLink).toHaveTextContent(
-        "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/"
+        "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/",
       );
 
       // Check that an empty array of paths renders nothing.
@@ -227,14 +227,14 @@ describe("Test cell renderers in search results", () => {
 
       // Check that the array of embedded objects renders an array of paths.
       const studiedByLinks = within(cells[COLUMN_STUDIED_BY]).getAllByRole(
-        "link"
+        "link",
       );
       expect(studiedByLinks).toHaveLength(2);
       expect(studiedByLinks[0]).toHaveTextContent(
-        "/users/592ff43b-be20-4ad3-9d97-b65f714cd199/"
+        "/users/592ff43b-be20-4ad3-9d97-b65f714cd199/",
       );
       expect(studiedByLinks[1]).toHaveTextContent(
-        "/users/a8390b04-ec45-41bf-b168-7f07d4d15262/"
+        "/users/a8390b04-ec45-41bf-b168-7f07d4d15262/",
       );
     });
   });
@@ -305,7 +305,7 @@ describe("Boolean cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
@@ -383,13 +383,13 @@ describe("`attachment` cell rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
     const attachmentLink = cells[COLUMN_ATTACHMENT].querySelector("a");
     expect(attachmentLink).toHaveTextContent(
-      "Antibody_Characterization_IGVF.pdf"
+      "Antibody_Characterization_IGVF.pdf",
     );
   });
 
@@ -438,7 +438,7 @@ describe("`attachment` cell rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
@@ -503,7 +503,7 @@ describe("`external_resources` cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
@@ -511,7 +511,7 @@ describe("`external_resources` cell-rendering tests", () => {
     const attachmentLink = cells[COLUMN_EXTERNAL_RESOURCES].querySelector("a");
     expect(attachmentLink).toHaveTextContent("GenBank: S78558.");
     expect(cells[COLUMN_EXTERNAL_RESOURCES]).toHaveTextContent(
-      "BRCA1 {exon 23, internal fragment} [human, serous papillary ovarian adenocarcinoma, patient sample 61, Genomic Mutant, 68 nt]"
+      "BRCA1 {exon 23, internal fragment} [human, serous papillary ovarian adenocarcinoma, patient sample 61, Genomic Mutant, 68 nt]",
     );
   });
 
@@ -567,7 +567,7 @@ describe("`external_resources` cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
@@ -575,7 +575,7 @@ describe("`external_resources` cell-rendering tests", () => {
     const attachmentLink = cells[COLUMN_EXTERNAL_RESOURCES].querySelector("a");
     expect(attachmentLink).toBeNull();
     expect(cells[COLUMN_EXTERNAL_RESOURCES]).toHaveTextContent(
-      "GenBank: S78558."
+      "GenBank: S78558.",
     );
   });
 
@@ -625,7 +625,7 @@ describe("`external_resources` cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
@@ -680,7 +680,7 @@ describe("`external_resources` cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
@@ -757,13 +757,13 @@ describe("Gene `locations` cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
     // Test that `locations` has the correct contents.
     const geneLocation = within(cells[COLUMN_LOCATIONS]).getAllByRole(
-      "listitem"
+      "listitem",
     );
     expect(geneLocation).toHaveLength(2);
     expect(geneLocation[0]).toHaveTextContent("chr18:50282343-50288322");
@@ -825,12 +825,12 @@ describe("Gene `locations` cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
     const geneLocation = within(cells[COLUMN_LOCATIONS]).queryAllByRole(
-      "listitem"
+      "listitem",
     );
     expect(geneLocation).toHaveLength(0);
   });
@@ -899,7 +899,7 @@ describe("Page cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
@@ -909,10 +909,10 @@ describe("Page cell-rendering tests", () => {
 
     // Layout should show truncated JSON.
     const unknown = within(cells[COLUMN_LAYOUT]).getByTestId(
-      "cell-type-unknown-object"
+      "cell-type-unknown-object",
     );
     expect(unknown).toHaveTextContent(
-      '{"blocks":[{"@id":"#block1","body":"# Donor Help This is some help text about donors.","@type":"markdown","direction":"ltr"}]}'
+      '{"blocks":[{"@id":"#block1","body":"# Donor Help This is some help text about donors.","@type":"markdown","direction":"ltr"}]}',
     );
   });
 
@@ -964,7 +964,7 @@ describe("Page cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
@@ -1020,7 +1020,7 @@ describe("Unknown-field cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
@@ -1083,13 +1083,13 @@ describe("Unknown-field cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
     // Test that the unknown field has the correct contents.
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      "/human-donors/IGVFDO8315PGTI/, /human-donors/IGVFDO9208RPQQ/"
+      "/human-donors/IGVFDO8315PGTI/, /human-donors/IGVFDO9208RPQQ/",
     );
   });
 
@@ -1139,13 +1139,13 @@ describe("Unknown-field cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
     // Test that the unknown field has the correct contents.
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      "IGVFDO8315PGTI, IGVFDO9208RPQQ"
+      "IGVFDO8315PGTI, IGVFDO9208RPQQ",
     );
   });
 
@@ -1198,13 +1198,13 @@ describe("Unknown-field cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
     // Test that the unknown field has the correct contents.
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      "/human-donors/IGVFDO8315PGTI/"
+      "/human-donors/IGVFDO8315PGTI/",
     );
   });
 
@@ -1257,13 +1257,13 @@ describe("Unknown-field cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
     // Test that the unknown field has the correct contents.
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      `{"prop0":"value0","prop1":"value1"}`
+      `{"prop0":"value0","prop1":"value1"}`,
     );
   });
 
@@ -1323,13 +1323,13 @@ describe("Unknown-field cell-rendering tests", () => {
             CustomHeaderCell={ReportHeaderCell}
           />
         </DataGridContainer>
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const cells = screen.getAllByRole("cell");
 
     // Test that the unknown field has the correct contents.
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      "selection, differentiation"
+      "selection, differentiation",
     );
   });
 });

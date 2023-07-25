@@ -21,11 +21,11 @@ describe("Breadcrumb tests", () => {
     cy.get("[data-testid='/']").should("have.text", "Home");
     cy.get("[data-testid='/search?type=CuratedSet']").should(
       "have.text",
-      "Curated Set"
+      "Curated Set",
     );
     cy.get("[data-testid='/curated-sets/IGVFDS0000AAAA/']").should(
       "have.text",
-      "IGVFDS0000AAAA"
+      "IGVFDS0000AAAA",
     );
   });
 

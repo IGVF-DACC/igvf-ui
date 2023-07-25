@@ -47,7 +47,7 @@ describe("Test OntologyTerm component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <OntologyTerm item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -78,7 +78,7 @@ describe("Test OntologyTerm component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <OntologyTerm item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -113,7 +113,7 @@ describe("Test Award component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Award item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -122,7 +122,7 @@ describe("Test Award component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      "Linking Variants to Multi-scale Phenotypes via a Synthesis of Subnetwork Inference and Deep Learning"
+      "Linking Variants to Multi-scale Phenotypes via a Synthesis of Subnetwork Inference and Deep Learning",
     );
 
     const meta = screen.getByTestId("search-list-item-meta");
@@ -147,7 +147,7 @@ describe("Test Award component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Award item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -156,7 +156,7 @@ describe("Test Award component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      "Linking Variants to Multi-scale Phenotypes via a Synthesis of Subnetwork Inference and Deep Learning"
+      "Linking Variants to Multi-scale Phenotypes via a Synthesis of Subnetwork Inference and Deep Learning",
     );
 
     const meta = screen.queryByTestId("search-list-item-meta");
@@ -196,7 +196,7 @@ describe("Test Award component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Award item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -205,7 +205,7 @@ describe("Test Award component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      "Linking Variants to Multi-scale Phenotypes via a Synthesis of Subnetwork Inference and Deep Learning"
+      "Linking Variants to Multi-scale Phenotypes via a Synthesis of Subnetwork Inference and Deep Learning",
     );
 
     const meta = screen.getByTestId("search-list-item-meta");
@@ -255,7 +255,7 @@ describe("Test the Biosample component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Biosample item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -419,18 +419,18 @@ describe("Test Document component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Document item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/^Document/);
     expect(uniqueId).toHaveTextContent(
-      /mouse_H3K4me3_07-473_validation_Hardison.pdf$/
+      /mouse_H3K4me3_07-473_validation_Hardison.pdf$/,
     );
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      /^Characterization of a sample using immunofluorescence.$/
+      /^Characterization of a sample using immunofluorescence.$/,
     );
 
     const meta = screen.getByTestId("search-list-item-meta");
@@ -459,7 +459,7 @@ describe("Test Gene component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Gene item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -492,7 +492,7 @@ describe("Test Gene component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Gene item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -597,7 +597,7 @@ describe("Test the HumanDonor component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <HumanDonor item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -650,7 +650,7 @@ describe("Test the HumanDonor component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <HumanDonor item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -683,7 +683,7 @@ describe("Test the HumanDonor component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <HumanDonor item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -719,7 +719,7 @@ describe("Test the Lab component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Lab item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -751,7 +751,7 @@ describe("Test the Lab component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Lab item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -785,7 +785,7 @@ describe("Test the Page component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Page item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -829,7 +829,7 @@ describe("Test the RodentDonor component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <RodentDonor item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -905,7 +905,7 @@ describe("Test the RodentDonor component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <RodentDonor item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -965,7 +965,7 @@ describe("Test the RodentDonor component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <RodentDonor item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).not.toHaveTextContent("ENCODE");
@@ -998,7 +998,7 @@ describe("Test the TechnicalSample component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <TechnicalSample item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1036,7 +1036,7 @@ describe("Test User component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <User item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1071,7 +1071,7 @@ describe("Test User component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <User item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1105,7 +1105,7 @@ describe("Test File component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <File item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1140,7 +1140,7 @@ describe("Test File component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <File item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1259,7 +1259,7 @@ describe("Test the AnalysisSet component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <AnalysisSet item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1274,7 +1274,7 @@ describe("Test the AnalysisSet component", () => {
     expect(meta).toHaveTextContent("IGVFDS3099XPLN");
 
     const supplement = screen.queryByTestId(
-      "search-list-item-supplement-content"
+      "search-list-item-supplement-content",
     );
     expect(supplement).toHaveTextContent("IGVFDS3099XPLN");
 
@@ -1300,7 +1300,7 @@ describe("Test the AnalysisSet component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <AnalysisSet item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1342,7 +1342,7 @@ describe("Test the CuratedSet component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <CuratedSet item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1378,7 +1378,7 @@ describe("Test the CuratedSet component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <CuratedSet item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1418,7 +1418,7 @@ describe("Test the MeasurementSet component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <MeasurementSet item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1455,7 +1455,7 @@ describe("Test the MeasurementSet component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <MeasurementSet item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1489,7 +1489,7 @@ describe("Test the Software component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Software item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1526,7 +1526,7 @@ describe("Test the SoftwareVersion component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <SoftwareVersion item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1560,7 +1560,7 @@ describe("Test the Source component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Source item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1603,7 +1603,7 @@ describe("Test the Publication component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Publication item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1612,13 +1612,13 @@ describe("Test the Publication component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      /^An integrated encyclopedia of DNA elements in the human genome$/
+      /^An integrated encyclopedia of DNA elements in the human genome$/,
     );
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent(
-      "ENCODE Project Consortium, Bernstein BE, Birney E, Dunham I, Green ED, Gunter C, Snyder M."
+      "ENCODE Project Consortium, Bernstein BE, Birney E, Dunham I, Green ED, Gunter C, Snyder M.",
     );
     expect(meta).toHaveTextContent("Nature. 2012-09-06;489(7414):57-74.");
 
@@ -1646,7 +1646,7 @@ describe("Test the Publication component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Publication item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1655,7 +1655,7 @@ describe("Test the Publication component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      /^An integrated encyclopedia of DNA elements in the human genome$/
+      /^An integrated encyclopedia of DNA elements in the human genome$/,
     );
 
     const meta = screen.queryByTestId("search-list-item-meta");
@@ -1685,7 +1685,7 @@ describe("Test the Publication component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Publication item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1694,7 +1694,7 @@ describe("Test the Publication component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      /^An integrated encyclopedia of DNA elements in the human genome$/
+      /^An integrated encyclopedia of DNA elements in the human genome$/,
     );
 
     const meta = screen.getByTestId("search-list-item-meta");
@@ -1722,7 +1722,7 @@ describe("Test the Publication component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Publication item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1731,7 +1731,7 @@ describe("Test the Publication component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      /^An integrated encyclopedia of DNA elements in the human genome$/
+      /^An integrated encyclopedia of DNA elements in the human genome$/,
     );
 
     const meta = screen.getByTestId("search-list-item-meta");
@@ -1764,7 +1764,7 @@ describe("Test the Biomarker component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Biomarker item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1799,7 +1799,7 @@ describe("Test the Treatment component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Treatment item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1808,7 +1808,7 @@ describe("Test the Treatment component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title.textContent).toBe(
-      "resorcinol — chemical — 10 μg/mL — 30 minute"
+      "resorcinol — chemical — 10 μg/mL — 30 minute",
     );
   });
 
@@ -1829,7 +1829,7 @@ describe("Test the Treatment component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Treatment item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1864,7 +1864,7 @@ describe("Test the Human Genomic Variant component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <HumanGenomicVariant item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1897,7 +1897,7 @@ describe("Test PhenotypicFeature component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <PhenotypicFeature item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1931,7 +1931,7 @@ describe("Test PhenotypicFeature component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <PhenotypicFeature item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -1970,7 +1970,7 @@ describe("Test the Model component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Model item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -2009,7 +2009,7 @@ describe("Test the Model component", () => {
     render(
       <SessionContext.Provider value={{ profiles }}>
         <Model item={item} />
-      </SessionContext.Provider>
+      </SessionContext.Provider>,
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");

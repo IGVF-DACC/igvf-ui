@@ -18,7 +18,7 @@ import { splitPathAndQueryString } from "../../lib/query-utils";
  */
 function getSelectedFacetTermsInGroup(searchResults, facetGroup) {
   return facetGroup.facet_fields.filter((facetField) =>
-    searchResults.filters.find((filter) => filter.field === facetField)
+    searchResults.filters.find((filter) => filter.field === facetField),
   );
 }
 
@@ -32,7 +32,7 @@ function getSelectedFacetTermsInGroup(searchResults, facetGroup) {
 export function getFacetsInGroup(searchResults, facetGroup) {
   if (facetGroup) {
     return searchResults.facets.filter((facet) =>
-      facetGroup.facet_fields.includes(facet.field)
+      facetGroup.facet_fields.includes(facet.field),
     );
   }
   return searchResults.facets.filter((facet) => facet.field !== "type");

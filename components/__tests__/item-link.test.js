@@ -24,7 +24,7 @@ describe("Test ItemLink component", () => {
     const linkWithoutLabel = screen.getByRole("link");
     expect(linkWithoutLabel).toBeInTheDocument();
     expect(linkWithoutLabel.href).toBe(
-      "http://localhost/labs/j-michael-cherry"
+      "http://localhost/labs/j-michael-cherry",
     );
 
     const link = screen.queryByLabelText("J. Michael Cherry");

@@ -7,7 +7,7 @@ describe("SeparatedList", () => {
       <SeparatedList>
         <a key="1">Item 1</a>
         <a key="2">Item 2</a>
-      </SeparatedList>
+      </SeparatedList>,
     );
 
     // Result shows the two test items with a single comma.
@@ -20,7 +20,7 @@ describe("SeparatedList", () => {
       <SeparatedList separator=".">
         <a key="1">Item 1</a>
         <a key="2">Item 2</a>
-      </SeparatedList>
+      </SeparatedList>,
     );
 
     // Result shows the two test items with a single period separator.
@@ -32,7 +32,7 @@ describe("SeparatedList", () => {
     render(
       <SeparatedList separator={<span data-testid="comma">, </span>}>
         <a key="1">Item 1</a>
-      </SeparatedList>
+      </SeparatedList>,
     );
 
     // Result shows a single test item and no separator.
