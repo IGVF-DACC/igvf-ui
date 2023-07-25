@@ -32,7 +32,6 @@ export default function AnalysisSet({
   inputFileSets,
   donors,
   files,
-  samples,
   attribution = null,
   isJson,
 }) {
@@ -81,13 +80,13 @@ export default function AnalysisSet({
                   </DataItemValue>
                 </>
               )}
-              {samples.length > 0 && (
+              {analysisSet.samples?.length > 0 && (
                 <>
                   <DataItemLabel>Samples</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample.uuid}>
+                      {analysisSet.samples.map((sample) => (
+                        <Link href={sample["@id"]} key={sample["@id"]}>
                           {sample.accession}
                         </Link>
                       ))}
@@ -122,8 +121,6 @@ AnalysisSet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Samples to display
-  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // input_file_sets to this analysis set
   inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
@@ -149,16 +146,13 @@ export async function getServerSideProps({ params, req, query }) {
           filterErrors: true,
         })
       : [];
-    const files = analysisSet.files
-      ? await request.getMultipleObjects(analysisSet.files, null, {
-          filterErrors: true,
-        })
-      : [];
-    const samples = analysisSet.samples
-      ? await request.getMultipleObjects(analysisSet.samples, null, {
-          filterErrors: true,
-        })
-      : [];
+    const filePaths = analysisSet.files.map((file) => file["@id"]);
+    const files =
+      filePaths.length > 0
+        ? await request.getMultipleObjects(filePaths, null, {
+            filterErrors: true,
+          })
+        : [];
     let donors = [];
     if (analysisSet.donors) {
       const donorPaths = analysisSet.donors.map((donor) => donor["@id"]);
@@ -179,7 +173,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         files,
-        samples,
         pageContext: { title: analysisSet.accession },
         breadcrumbs,
         attribution,

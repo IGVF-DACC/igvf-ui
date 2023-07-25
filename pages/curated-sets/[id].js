@@ -31,7 +31,6 @@ export default function CuratedSet({
   documents,
   donors,
   files,
-  samples,
   attribution = null,
   isJson,
 }) {
@@ -74,13 +73,13 @@ export default function CuratedSet({
                   </DataItemValue>
                 </>
               )}
-              {samples.length > 0 && (
+              {curatedSet.samples?.length > 0 && (
                 <>
                   <DataItemLabel>Samples</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample.uuid}>
+                      {curatedSet.samples.map((sample) => (
+                        <Link href={sample["@id"]} key={sample["@id"]}>
                           {sample.accession}
                         </Link>
                       ))}
@@ -116,8 +115,6 @@ CuratedSet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Samples to display
-  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this curated set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this curated set
@@ -136,21 +133,18 @@ export async function getServerSideProps({ params, req, query }) {
           filterErrors: true,
         })
       : [];
-    const samples = curatedSet.samples
-      ? await request.getMultipleObjects(curatedSet.samples, null, {
-          filterErrors: true,
-        })
-      : [];
     const donors = curatedSet.donors
       ? await request.getMultipleObjects(curatedSet.donors, null, {
           filterErrors: true,
         })
       : [];
-    const files = curatedSet.files
-      ? await request.getMultipleObjects(curatedSet.files, null, {
-          filterErrors: true,
-        })
-      : [];
+    const filePaths = curatedSet.files.map((file) => file["@id"]);
+    const files =
+      filePaths.length > 0
+        ? await request.getMultipleObjects(filePaths, null, {
+            filterErrors: true,
+          })
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       curatedSet,
       "accession",
@@ -163,7 +157,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         files,
-        samples,
         pageContext: { title: curatedSet.accession },
         breadcrumbs,
         attribution,
