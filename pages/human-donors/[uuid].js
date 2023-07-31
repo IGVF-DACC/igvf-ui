@@ -4,7 +4,13 @@ import PropTypes from "prop-types";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { DonorDataItems } from "../../components/common-data-items";
-import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
+import {
+  DataArea,
+  DataAreaTitle,
+  DataItemLabel,
+  DataItemValue,
+  DataPanel,
+} from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import ExternalResources from "../../components/external-resources";
@@ -37,6 +43,14 @@ export default function HumanDonor({
           <DataPanel>
             <DataArea>
               <DonorDataItems item={donor} parents={parents} />
+              {donor.human_donor_identifiers?.length > 0 && (
+                <>
+                  <DataItemLabel>Identifiers</DataItemLabel>
+                  <DataItemValue>
+                    {donor.human_donor_identifiers.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {phenotypicFeatures.length > 0 && (
