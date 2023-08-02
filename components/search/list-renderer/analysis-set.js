@@ -15,16 +15,12 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function AnalysisSet({
-  item: analysisSet,
-  accessoryData = null,
-}) {
+export default function AnalysisSet({ item: analysisSet }) {
   const summary = analysisSet.summary;
-  const inputFileSetsKeys = analysisSet.input_file_sets;
   const inputFileSetsAccessions =
-    inputFileSetsKeys && accessoryData
-      ? inputFileSetsKeys.map((key) => accessoryData[key].accession)
-      : null;
+    analysisSet.input_file_sets?.length > 0
+      ? analysisSet.input_file_sets.map((fileSet) => fileSet.accession)
+      : [];
 
   return (
     <SearchListItemContent>
@@ -38,11 +34,11 @@ export default function AnalysisSet({
           <div key="lab">{analysisSet.lab.title}</div>
           {summary && <div key="summary">{summary}</div>}
         </SearchListItemMeta>
-        {inputFileSetsAccessions && (
+        {inputFileSetsAccessions.length > 0 && (
           <SearchListItemSupplement>
             <SearchListItemSupplementSection>
               <SearchListItemSupplementLabel>
-                Input file sets
+                Input File Sets
               </SearchListItemSupplementLabel>
               <SearchListItemSupplementContent>
                 {inputFileSetsAccessions.join(", ")}
@@ -59,13 +55,4 @@ export default function AnalysisSet({
 AnalysisSet.propTypes = {
   // Single analysis set search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
-  // Accessory data to display for all search-result objects
-  accessoryData: PropTypes.object,
-};
-
-AnalysisSet.getAccessoryDataPaths = (analysisSets) => {
-  const fileSets = analysisSets
-    .map((analysisSet) => analysisSet.input_file_sets)
-    .filter(Boolean);
-  return fileSets.flat();
 };

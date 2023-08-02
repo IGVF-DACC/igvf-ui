@@ -29,7 +29,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Model({
   model,
-  inputFileSets,
   softwareVersion = null,
   documents,
   files,
@@ -67,14 +66,14 @@ export default function Model({
                   </DataItemValue>
                 </>
               )}
-              {inputFileSets.length > 0 && (
+              {model.input_file_sets?.length > 0 && (
                 <>
                   <DataItemLabel>Input File Sets</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {inputFileSets.map((file) => (
-                        <Link href={file["@id"]} key={file.uuid}>
-                          {file.accession}
+                      {model.input_file_sets.map((fileSet) => (
+                        <Link href={fileSet["@id"]} key={fileSet["@id"]}>
+                          {fileSet.accession}
                         </Link>
                       ))}
                     </SeparatedList>
@@ -137,8 +136,6 @@ export default function Model({
 Model.propTypes = {
   // Model to display
   model: PropTypes.object.isRequired,
-  // Input file sets associated with this model
-  inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Software version associated with this model
   softwareVersion: PropTypes.object,
   // Files to display
@@ -156,11 +153,6 @@ export async function getServerSideProps({ params, req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const model = await request.getObject(`/models/${params.id}/`);
   if (FetchRequest.isResponseSuccess(model)) {
-    const inputFileSets = model.input_file_sets
-      ? await request.getMultipleObjects(model.input_file_sets, null, {
-          filterErrors: true,
-        })
-      : [];
     const softwareVersion = model.software_version
       ? await request.getObject(model.software_version, null)
       : null;
@@ -187,7 +179,6 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         model,
-        inputFileSets,
         softwareVersion,
         documents,
         files,

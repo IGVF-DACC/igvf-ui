@@ -29,7 +29,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function AnalysisSet({
   analysisSet,
   documents,
-  inputFileSets,
   donors,
   files,
   attribution = null,
@@ -52,14 +51,14 @@ export default function AnalysisSet({
                   </DataItemValue>
                 </>
               )}
-              {inputFileSets.length > 0 && (
+              {analysisSet.input_file_sets?.length > 0 && (
                 <>
                   <DataItemLabel>Input File Sets</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {inputFileSets.map((file) => (
-                        <Link href={file["@id"]} key={file.uuid}>
-                          {file.accession}
+                      {analysisSet.input_file_sets.map((fileSet) => (
+                        <Link href={fileSet["@id"]} key={fileSet["@id"]}>
+                          {fileSet.accession}
                         </Link>
                       ))}
                     </SeparatedList>
@@ -121,8 +120,6 @@ AnalysisSet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // input_file_sets to this analysis set
-  inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
@@ -136,11 +133,6 @@ export async function getServerSideProps({ params, req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const analysisSet = await request.getObject(`/analysis-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(analysisSet)) {
-    const inputFileSets = analysisSet.input_file_sets
-      ? await request.getMultipleObjects(analysisSet.input_file_sets, null, {
-          filterErrors: true,
-        })
-      : [];
     const documents = analysisSet.documents
       ? await request.getMultipleObjects(analysisSet.documents, null, {
           filterErrors: true,
@@ -169,7 +161,6 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         analysisSet,
-        inputFileSets,
         documents,
         donors,
         files,

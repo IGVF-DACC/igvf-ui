@@ -42,7 +42,13 @@ describe("Test accessory data-path functions", () => {
           "@id": "/analysis-sets/IGVFDS9588HSLV/",
           "@type": ["AnalysisSet", "FileSet", "Item"],
           accession: "IGVFDS9588HSLV",
-          input_file_sets: ["/analysis-sets/IGVFDS4723JTXI/"],
+          input_file_sets: [
+            {
+              aliases: ["igvf:basic_analysis_set"],
+              accession: "IGVFDS9352GHMN",
+              "@id": "/analysis-sets/IGVFDS9352GHMN/",
+            },
+          ],
           status: "released",
           uuid: "dd171b83-cbd9-4d06-4aa1-b77ab49569cd",
         },
@@ -100,7 +106,13 @@ describe("Test accessory data-path functions", () => {
           "@id": "/analysis-sets/IGVFDS9588HSLV/",
           "@type": ["AnalysisSet", "FileSet", "Item"],
           accession: "IGVFDS9588HSLV",
-          input_file_sets: ["/analysis-sets/IGVFDS4723JTXI/"],
+          input_file_sets: [
+            {
+              aliases: ["igvf:basic_analysis_set"],
+              accession: "IGVFDS9352GHMN",
+              "@id": "/analysis-sets/IGVFDS9352GHMN/",
+            },
+          ],
           status: "released",
           uuid: "dd171b83-cbd9-4d06-4aa1-b77ab49569cd",
         },
@@ -134,11 +146,9 @@ describe("Test accessory data-path functions", () => {
 
     // Test that getAccessoryDataPaths gets all the paths of the objects to retrieve for the search
     // results, and deduplicates them.
-    const expectedAccessoryDataPaths = [
-      "/labs/j-michael-cherry/",
-      "/analysis-sets/IGVFDS4723JTXI/",
-    ];
+    const expectedAccessoryDataPaths = ["/labs/j-michael-cherry/"];
     const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
+    console.log("ITEM LISTS %o", accessoryDataPaths);
     expect(accessoryDataPaths).toEqual(expectedAccessoryDataPaths);
   });
 });
