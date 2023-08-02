@@ -22,7 +22,7 @@
     "isomorphic-dompurify": "^1.0.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
-    "marked": "^5.0.3",
+    "marked": "^6.0.0",
     "next": "^13.0.3",
     "pretty-format": "^29.5.0",
     "prop-types": "^15.8.1",
@@ -47,7 +47,7 @@
     "jest-environment-jsdom": "^29.0.2",
     "postcss": "^8.4.14",
     "prettier": "^3.0.0",
-    "prettier-plugin-tailwindcss": "^0.3.0",
+    "prettier-plugin-tailwindcss": "^0.4.1",
     "pretty-format": "^29.5.0",
     "tailwindcss": "^3.1.8"
   }

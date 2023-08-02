@@ -1025,7 +1025,13 @@ describe("Test the AnalysisSet component", () => {
       },
       status: "released",
       summary: "IGVFDS3099XPLN",
-      input_file_sets: ["/analysis-sets/IGVFDS3099XPLN/"],
+      input_file_sets: [
+        {
+          aliases: ["igvf:basic_analysis_set"],
+          accession: "IGVFDS3099XPLN",
+          "@id": "/analysis-sets/IGVFDS3099XPLN/",
+        },
+      ],
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
     };
 
@@ -1061,9 +1067,6 @@ describe("Test the AnalysisSet component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
-
-    const paths = AnalysisSet.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/analysis-sets/IGVFDS3099XPLN/"]);
   });
 
   it("renders an AnalysisSet item without accessory data and summary", () => {
