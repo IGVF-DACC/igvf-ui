@@ -1,29 +1,33 @@
 // node_modules
-import { ArrowDownOnSquareIcon } from "@heroicons/react/20/solid";
+import { ArrowDownTrayIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // lib
 import { API_URL } from "../lib/constants";
+import { ButtonLink } from "./form-elements";
 
 /**
  * Display a file-download link and download icon. Only files with an `upload_status` of
  * `validated` show a download link.
  */
-export function FileDownload({ file, className = "h-4 w-4" }) {
-  const fileName = file.href.substr(file.href.lastIndexOf("/") + 1);
+export function FileDownload({
+  file,
+  className = "",
+}) {
 
   return (
     <>
-      {file.upload_status === "validated" && (
-        <a
-          aria-label={`Download file ${file.accession}`}
-          href={`${API_URL}${file.href}`}
-          download={fileName}
-          data-bypass="true"
-        >
-          <ArrowDownOnSquareIcon className={className} />
-        </a>
-      )}
+      <ButtonLink
+        label={`Download file ${file.accession}`}
+        href={`${API_URL}${file.href}`}
+        type="secondary"
+        size="sm"
+        isDisabled={file.upload_status !== "validated"}
+        hasIconOnly
+        className={`${className}`}
+      >
+        <ArrowDownTrayIcon />
+      </ButtonLink>
     </>
   );
 }

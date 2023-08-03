@@ -29,18 +29,36 @@ import React from "react";
 const commonButtonClasses =
   "flex items-center justify-center border font-semibold leading-none";
 
+function enabledButtonTypeClass(bType) {
+  return [
+    `bg-button-${bType}`,
+    `border-button-${bType}`,
+    `text-button-${bType}`,
+    `fill-button-${bType}`,
+  ]; //disabled:bg-button-primary-disabled disabled:border-button-primary-disabled disabled:text-button-primary-disabled disabled:fill-button-primary-disabled`
+}
+
+function disabledButtonTypeClass(bType, pseudoClass = "") {
+  const pc = pseudoClass !== "" ? `${pseudoClass}:` : "";
+  return enabledButtonTypeClass(bType).map((c) => `${pc}${c}-disabled`);
+}
+
 /**
  * Background colors for each of the button types.
  */
 const buttonTypeClasses = {
-  primary:
-    "bg-button-primary border-button-primary text-button-primary fill-button-primary disabled:bg-button-primary-disabled disabled:border-button-primary-disabled disabled:text-button-primary-disabled disabled:fill-button-primary-disabled",
-  secondary:
-    "bg-button-secondary border-button-secondary text-button-secondary fill-button-secondary disabled:bg-button-secondary-disabled disabled:border-button-secondary-disabled disabled:text-button-secondary-disabled disabled:fill-button-secondary-disabled",
-  warning:
-    "bg-button-warning border-button-warning text-button-warning fill-button-warning disabled:bg-button-warning-disabled disabled:border-button-warning-disabled disabled:text-button-warning-disabled disabled:fill-button-warning-disabled",
-  selected:
-    "bg-button-selected border-button-selected text-button-selected fill-button-selected disabled:bg-button-selected-disabled disabled:border-button-selected-disabled disabled:text-button-selected-disabled disabled:fill-button-selected-disabled",
+  primary: `${enabledButtonTypeClass("primary").join(
+    " "
+  )} ${disabledButtonTypeClass("primary", "disabled").join(" ")}`,
+  secondary: `${enabledButtonTypeClass("secondary").join(
+    " "
+  )} ${disabledButtonTypeClass("secondary", "disabled").join(" ")}`,
+  warning: `${enabledButtonTypeClass("warning").join(
+    " "
+  )} ${disabledButtonTypeClass("warning", "disabled").join(" ")}`,
+  selected: `${enabledButtonTypeClass("selected").join(
+    " "
+  )} ${disabledButtonTypeClass("selected", "disabled").join(" ")}`,
 };
 
 /**
@@ -161,8 +179,8 @@ Button.propTypes = {
 Button.displayName = "Button";
 
 /**
- * Displays a button that links to a URL instead of performing an action. You cannot disable these
- * the way you can disable a button. Instead, hide inoperable link buttons.
+ * Displays a button that links to a URL instead of performing an action. When these
+ * are "disabled" they show just the children element using the "disabled" CSS.
  *
  * <ButtonLink href="/path/to/page">
  *   Go Here!
@@ -176,6 +194,7 @@ export function ButtonLink({
   size = "md",
   hasIconOnly = false,
   hasIconCircleOnly = false,
+  isDisabled = false,
   className = "",
   children,
 }) {
@@ -185,7 +204,17 @@ export function ButtonLink({
     hasIconCircleOnly
   );
 
-  return (
+  return isDisabled ? (
+    <div
+      aria-label={label}
+      id={id}
+      className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${disabledButtonTypeClass(
+        type
+      ).join(" ")} ${className}`}
+    >
+      {children}
+    </div>
+  ) : (
     <Link
       href={href}
       aria-label={label}
@@ -212,6 +241,8 @@ ButtonLink.propTypes = {
   hasIconOnly: PropTypes.bool,
   // True for buttons that only contain an icon in a circular button
   hasIconCircleOnly: PropTypes.bool,
+  // Is Disabled
+  isDisabled: PropTypes.bool,
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
 };
