@@ -347,10 +347,11 @@ export async function getAccessoryData(itemListsByType, cookie) {
     const accessoryDataTypes = Object.keys(accessoryDataPaths);
     if (accessoryDataTypes.length > 0) {
       const requests = accessoryDataTypes.map(async (type) => {
+        // Get the objects for this type. Any network errors get returned as an empty array.
         const request = new FetchRequest({ cookie });
         const objects = await request.getMultipleObjectsBulk(
           accessoryDataPaths[type].paths,
-          null,
+          [],
           accessoryDataPaths[type].fields
         );
 
