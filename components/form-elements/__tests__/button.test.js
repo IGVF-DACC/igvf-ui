@@ -97,6 +97,17 @@ describe("ButtonLink component", () => {
     expect(container.firstChild).toHaveClass("border-button-selected");
     expect(container.firstChild).toHaveClass("text-button-selected");
   });
+
+  it("renders a selected button with the correct classes when disabled", () => {
+    const { container } = render(
+      <ButtonLink href="#" type="selected" isDisabled>
+        Secondary
+      </ButtonLink>
+    );
+    expect(container.firstChild).toHaveClass("bg-button-selected-disabled");
+    expect(container.firstChild).toHaveClass("border-button-selected-disabled");
+    expect(container.firstChild).toHaveClass("text-button-selected-disabled");
+  });
 });
 
 describe("Test the Tailwind CSS classes resulting from using the `hasIconOnly` flag", () => {

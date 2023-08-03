@@ -29,15 +29,28 @@ import React from "react";
 const commonButtonClasses =
   "flex items-center justify-center border font-semibold leading-none";
 
+/**
+ * Generates a list of tailwind CSS classes for a particular button type when enabled
+ * @param {String} bType Button Type, either primary, secondary, warning, or selected
+ * @returns a list of CSS classes specialized for the button type
+ */
 function enabledButtonTypeClass(bType) {
   return [
     `bg-button-${bType}`,
     `border-button-${bType}`,
     `text-button-${bType}`,
     `fill-button-${bType}`,
-  ]; //disabled:bg-button-primary-disabled disabled:border-button-primary-disabled disabled:text-button-primary-disabled disabled:fill-button-primary-disabled`
+  ];
 }
 
+/**
+ * Like `enabledButtonTypeClass` but switching to the `disabled` variant
+ * @param {String} bType Button Type, either primary, secondary, warning, or selected
+ * @param {String} pseudoClass If specified, then this will be prepended to each class
+ * in the list e.g. for "disabled": "bg-button-secondary-disabled" becomes
+ * "disabled:bg-button-secondary-disabled"`
+ * @returns List of disabled variant of the button tailwind CSS classes
+ */
 function disabledButtonTypeClass(bType, pseudoClass = "") {
   const pc = pseudoClass !== "" ? `${pseudoClass}:` : "";
   return enabledButtonTypeClass(bType).map((c) => `${pc}${c}-disabled`);
