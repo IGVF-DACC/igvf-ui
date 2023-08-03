@@ -10,11 +10,7 @@ import { ButtonLink } from "./form-elements";
  * Display a file-download link and download icon. Only files with an `upload_status` of
  * `validated` show a download link.
  */
-export function FileDownload({
-  file,
-  className = "",
-}) {
-
+export function FileDownload({ file, className = "" }) {
   return (
     <>
       <ButtonLink
