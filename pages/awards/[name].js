@@ -15,6 +15,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestUsers } from "../../lib/common-requests";
 import { formatDateRange } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -45,7 +46,7 @@ export default function Award({ award, pis, contactPi, isJson }) {
                   <DataItemValue>
                     <SeparatedList>
                       {pis.map((pi) => (
-                        <Link href={pi["@id"]} key={pi.uuid}>
+                        <Link href={pi["@id"]} key={pi["@id"]}>
                           {pi.title}
                         </Link>
                       ))}
@@ -120,11 +121,7 @@ export async function getServerSideProps({ params, req, query }) {
   const award = await request.getObject(`/awards/${params.name}/`);
   if (FetchRequest.isResponseSuccess(award)) {
     const pis =
-      award.pis?.length > 0
-        ? await request.getMultipleObjects(award.pis, null, {
-            filterErrors: true,
-          })
-        : [];
+      award.pis?.length > 0 ? await requestUsers(award.pis, request) : [];
     const contactPi = award.contact_pi
       ? await request.getObject(award.contact_pi, null)
       : null;

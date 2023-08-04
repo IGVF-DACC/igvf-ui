@@ -22,6 +22,11 @@ import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import {
+  requestDocuments,
+  requestDonors,
+  requestFiles,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -134,23 +139,15 @@ export async function getServerSideProps({ params, req, query }) {
   const analysisSet = await request.getObject(`/analysis-sets/${params.id}/`);
   if (FetchRequest.isResponseSuccess(analysisSet)) {
     const documents = analysisSet.documents
-      ? await request.getMultipleObjects(analysisSet.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(analysisSet.documents, request)
       : [];
     const filePaths = analysisSet.files.map((file) => file["@id"]);
     const files =
-      filePaths.length > 0
-        ? await request.getMultipleObjects(filePaths, null, {
-            filterErrors: true,
-          })
-        : [];
+      filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
     let donors = [];
     if (analysisSet.donors) {
       const donorPaths = analysisSet.donors.map((donor) => donor["@id"]);
-      donors = await request.getMultipleObjects(donorPaths, null, {
-        filterErrors: true,
-      });
+      donors = await requestDonors(donorPaths, request);
     }
     const breadcrumbs = await buildBreadcrumbs(
       analysisSet,

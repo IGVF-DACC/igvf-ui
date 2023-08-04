@@ -21,6 +21,14 @@ import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import {
+  requestBiomarkers,
+  requestBiosamples,
+  requestDocuments,
+  requestDonors,
+  requestOntologyTerms,
+  requestTreatments,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -149,42 +157,28 @@ export async function getServerSideProps({ params, req, query }) {
     let diseaseTerms = [];
     if (tissue.disease_terms?.length > 0) {
       const diseaseTermPaths = tissue.disease_terms.map((term) => term["@id"]);
-      diseaseTerms = tissue.disease_terms
-        ? await request.getMultipleObjects(diseaseTermPaths, null, {
-            filterErrors: true,
-          })
-        : [];
+      diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
     }
     const documents = tissue.documents
-      ? await request.getMultipleObjects(tissue.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(tissue.documents, request)
       : [];
     const donors = tissue.donors
-      ? await request.getMultipleObjects(tissue.donors, null, {
-          filterErrors: true,
-        })
+      ? await requestDonors(tissue.donors, request)
       : [];
     const source = await request.getObject(tissue.source["@id"], null);
     const treatments = tissue.treatments
-      ? await request.getMultipleObjects(tissue.treatments, null, {
-          filterErrors: true,
-        })
+      ? await requestTreatments(tissue.treatments, request)
       : [];
     const pooledFrom =
       tissue.pooled_from?.length > 0
-        ? await request.getMultipleObjects(tissue.pooled_from, null, {
-            filterErrors: true,
-          })
+        ? await requestBiosamples(tissue.pooled_from, request)
         : [];
     const partOf = tissue.part_of
       ? await request.getObject(tissue.part_of, null)
       : null;
     const biomarkers =
       tissue.biomarkers?.length > 0
-        ? await request.getMultipleObjects(tissue.biomarkers, null, {
-            filterErrors: true,
-          })
+        ? await requestBiomarkers(tissue.biomarkers, request)
         : [];
     const breadcrumbs = await buildBreadcrumbs(
       tissue,

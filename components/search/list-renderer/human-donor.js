@@ -73,5 +73,11 @@ HumanDonor.getAccessoryDataPaths = (humanDonors) => {
     .map((humanDonor) => humanDonor.phenotypic_features)
     .filter(Boolean)
     .flat(1);
-  return phenotypicFeatures;
+  return [
+    {
+      type: "PhenotypicFeature",
+      paths: phenotypicFeatures,
+      fields: ["quantity", "quantity_units", "feature"],
+    },
+  ];
 };

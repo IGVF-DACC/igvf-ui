@@ -23,6 +23,7 @@ import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -157,17 +158,11 @@ export async function getServerSideProps({ params, req, query }) {
       ? await request.getObject(model.software_version, null)
       : null;
     const documents = model.documents
-      ? await request.getMultipleObjects(model.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(model.documents, request)
       : [];
     const filePaths = model.files.map((file) => file["@id"]);
     const files =
-      filePaths.length > 0
-        ? await request.getMultipleObjects(filePaths, null, {
-            filterErrors: true,
-          })
-        : [];
+      filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
 
     const breadcrumbs = await buildBreadcrumbs(
       model,

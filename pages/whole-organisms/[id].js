@@ -15,6 +15,14 @@ import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import {
+  requestBiomarkers,
+  requestBiosamples,
+  requestDocuments,
+  requestDonors,
+  requestOntologyTerms,
+  requestTreatments,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -121,19 +129,13 @@ export async function getServerSideProps({ params, req, query }) {
       const diseaseTermPaths = sample.disease_terms.map(
         (diseaseTerm) => diseaseTerm["@id"]
       );
-      diseaseTerms = await request.getMultipleObjects(diseaseTermPaths, null, {
-        filterErrors: true,
-      });
+      diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
     }
     const documents = sample.documents
-      ? await request.getMultipleObjects(sample.documents, null, {
-          filterErrors: true,
-        })
+      ? await requestDocuments(sample.documents, request)
       : [];
     const donors = sample.donors
-      ? await request.getMultipleObjects(sample.donors, null, {
-          filterErrors: true,
-        })
+      ? await requestDonors(sample.donors, request)
       : [];
     const source = await request.getObject(sample.source["@id"], null);
     let treatments = [];
@@ -141,26 +143,19 @@ export async function getServerSideProps({ params, req, query }) {
       const treatmentPaths = sample.treatments.map(
         (treatment) => treatment["@id"]
       );
-      treatments = await request.getMultipleObjects(treatmentPaths, null, {
-        filterErrors: true,
-      });
+      treatments = await requestTreatments(treatmentPaths, request);
     }
     const pooledFrom =
       sample.pooled_from?.length > 0
-        ? await request.getMultipleObjects(sample.pooled_from, null, {
-            filterErrors: true,
-          })
+        ? await requestBiosamples(sample.pooled_from, request)
         : [];
     const biomarkers =
       sample.biomarkers?.length > 0
-        ? await request.getMultipleObjects(
+        ? await requestBiomarkers(
             // Biomarkers are embedded in whole organism, so we map
             // to get as a list of IDs for the request
             sample.biomarkers.map((m) => m["@id"]),
-            null,
-            {
-              filterErrors: true,
-            }
+            request
           )
         : [];
     const partOf = sample.part_of

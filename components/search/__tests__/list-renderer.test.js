@@ -215,7 +215,13 @@ describe("Test Award component", () => {
     expect(status).toHaveTextContent("current");
 
     const paths = Award.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/users/04e6e85d-3737-454e-8a3b-6f8cb2317f00/"]);
+    expect(paths).toEqual([
+      {
+        type: "User",
+        paths: ["/users/04e6e85d-3737-454e-8a3b-6f8cb2317f00/"],
+        fields: ["title"],
+      },
+    ]);
   });
 });
 
@@ -489,13 +495,17 @@ describe("Test the HumanDonor component", () => {
     expect(status).toHaveTextContent("released");
 
     const paths = HumanDonor.getAccessoryDataPaths([item]);
-    expect(paths.sort()).toEqual(
-      [
-        "/phenotypic-features/123/",
-        "/phenotypic-features/456/",
-        "/phenotypic-features/111/",
-      ].sort()
-    );
+    expect(paths.sort()).toEqual([
+      {
+        type: "PhenotypicFeature",
+        paths: [
+          "/phenotypic-features/123/",
+          "/phenotypic-features/456/",
+          "/phenotypic-features/111/",
+        ],
+        fields: ["quantity", "quantity_units", "feature"],
+      },
+    ]);
   });
 
   it("renders a human donor item without accessory data", () => {
@@ -792,13 +802,17 @@ describe("Test the RodentDonor component", () => {
     expect(status).toHaveTextContent("released");
 
     const paths = RodentDonor.getAccessoryDataPaths([item]);
-    expect(paths.sort()).toEqual(
-      [
-        "/phenotypic-features/abc123/",
-        "/phenotypic-features/123abc",
-        "/phenotypic-features/999",
-      ].sort()
-    );
+    expect(paths).toEqual([
+      {
+        type: "PhenotypicFeature",
+        paths: [
+          "/phenotypic-features/abc123/",
+          "/phenotypic-features/123abc",
+          "/phenotypic-features/999",
+        ],
+        fields: ["quantity", "quantity_units", "feature"],
+      },
+    ]);
   });
 
   it("rodent donor without collection", () => {
@@ -909,7 +923,13 @@ describe("Test User component", () => {
     expect(meta).toHaveTextContent("Christina Leslie, MSKCC");
 
     const paths = User.getAccessoryDataPaths([item]);
-    expect(paths).toEqual(["/labs/christina-leslie/"]);
+    expect(paths).toEqual([
+      {
+        type: "Lab",
+        paths: ["/labs/christina-leslie/"],
+        fields: ["title"],
+      },
+    ]);
   });
 
   it("renders a User item without accessory data", () => {
