@@ -155,11 +155,7 @@ export async function getServerSideProps({ params, req, query }) {
   );
   if (FetchRequest.isResponseSuccess(inVitroSystem)) {
     const sampleTerms =
-      inVitroSystem.sample_terms?.length > 0
-        ? await request.getMultipleObjects(inVitroSystem.sample_terms, null, {
-            filterErrors: true,
-          })
-        : [];
+      inVitroSystem.sample_terms?.length > 0 ? inVitroSystem.sample_terms : [];
     let diseaseTerms = [];
     if (inVitroSystem.disease_terms) {
       const diseaseTermPaths = inVitroSystem.disease_terms.map(
@@ -174,11 +170,7 @@ export async function getServerSideProps({ params, req, query }) {
       ? await requestDonors(inVitroSystem.donors, request)
       : [];
     const sources =
-      inVitroSystem.sources?.length > 0
-        ? await request.getMultipleObjects(inVitroSystem.sources, null, {
-            filterErrors: true,
-          })
-        : [];
+      inVitroSystem.sources?.length > 0 ? inVitroSystem.sources : [];
     let treatments = [];
     if (inVitroSystem.treatments) {
       const treatmentPaths = inVitroSystem.treatments.map(

@@ -122,11 +122,7 @@ export async function getServerSideProps({ params, req, query }) {
   const sample = await request.getObject(`/whole-organisms/${params.id}/`);
   if (FetchRequest.isResponseSuccess(sample)) {
     const sampleTerms =
-      sample.sample_terms?.length > 0
-        ? await request.getMultipleObjects(sample.sample_terms, null, {
-            filterErrors: true,
-          })
-        : [];
+      sample.sample_terms?.length > 0 ? sample.sample_terms : [];
     let diseaseTerms = [];
     if (sample.disease_terms?.length > 0) {
       const diseaseTermPaths = sample.disease_terms.map(
@@ -140,12 +136,7 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = sample.donors
       ? await requestDonors(sample.donors, request)
       : [];
-    const sources =
-      sample.sources?.length > 0
-        ? await request.getMultipleObjects(sample.sources, null, {
-            filterErrors: true,
-          })
-        : [];
+    const sources = sample.sources?.length > 0 ? sample.sources : [];
     let treatments = [];
     if (sample.treatments?.length > 0) {
       const treatmentPaths = sample.treatments.map(

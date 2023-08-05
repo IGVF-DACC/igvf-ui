@@ -136,11 +136,7 @@ export async function getServerSideProps({ params, req, query }) {
   const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(primaryCell)) {
     const sampleTerms =
-      primaryCell.sample_terms?.length > 0
-        ? await request.getMultipleObjects(primaryCell.sample_terms, null, {
-            filterErrors: true,
-          })
-        : [];
+      primaryCell.sample_terms?.length > 0 ? primaryCell.sample_terms : [];
     let diseaseTerms = [];
     if (primaryCell.disease_terms?.length > 0) {
       const diseaseTermPaths = primaryCell.disease_terms.map(
@@ -154,12 +150,7 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = primaryCell.donors
       ? await requestDonors(primaryCell.donors, request)
       : [];
-    const sources =
-      primaryCell.sources?.length > 0
-        ? await request.getMultipleObjects(primaryCell.sources, null, {
-            filterErrors: true,
-          })
-        : [];
+    const sources = primaryCell.sources?.length > 0 ? primaryCell.sources : [];
     const treatments = primaryCell.treatments
       ? await requestTreatments(primaryCell.treatments, request)
       : [];

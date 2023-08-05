@@ -251,27 +251,14 @@ export function BiosampleDataItems({
           <DataItemValue>{item.taxa}</DataItemValue>
         </>
       )}
-
-      {sources?.length > 0 && (
-        <>
-          <DataItemLabel>Source(s) Taxa</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList>
-              {sources.map((source) => (
-                <DataItemValue>{source.taxa}</DataItemValue>
-              ))}
-            </SeparatedList>
-          </DataItemValue>
-        </>
-      )}
       {sampleTerms?.length > 0 && (
         <>
           <DataItemLabel>Sample Term(s)</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {sampleTerms.map((sample_term) => (
-                <Link href={sample_term["@id"]} key={sample_term.uuid}>
-                  {sample_term.accession}
+                <Link href={sample_term["@id"]} key={sample_term["@id"]}>
+                  {sample_term.term_name}
                 </Link>
               ))}
             </SeparatedList>

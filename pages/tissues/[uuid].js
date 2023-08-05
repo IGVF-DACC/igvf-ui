@@ -37,7 +37,7 @@ export default function Tissue({
   tissue,
   donors,
   documents,
-  source = null,
+  sources = null,
   treatments,
   sampleTerms = null,
   diseaseTerms,
@@ -58,7 +58,7 @@ export default function Tissue({
             <DataArea>
               <BiosampleDataItems
                 item={tissue}
-                source={source}
+                sources={sources}
                 donors={donors}
                 sampleTerms={sampleTerms}
                 diseaseTerms={diseaseTerms}
@@ -127,7 +127,7 @@ Tissue.propTypes = {
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Source lab or source for this sample
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample ontology for this sample
@@ -152,11 +152,7 @@ export async function getServerSideProps({ params, req, query }) {
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(tissue)) {
     const sampleTerms =
-      tissue.sample_terms?.length > 0
-        ? await request.getMultipleObjects(tissue.sample_terms, null, {
-            filterErrors: true,
-          })
-        : [];
+      tissue.sample_terms?.length > 0 ? tissue.sample_terms : [];
     let diseaseTerms = [];
     if (tissue.disease_terms?.length > 0) {
       const diseaseTermPaths = tissue.disease_terms.map((term) => term["@id"]);
@@ -168,7 +164,7 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = tissue.donors
       ? await requestDonors(tissue.donors, request)
       : [];
-    const source = await request.getObject(tissue.source["@id"], null);
+    const sources = tissue.sources?.length > 0 ? tissue.sources : [];
     const treatments = tissue.treatments
       ? await requestTreatments(tissue.treatments, request)
       : [];
@@ -194,7 +190,7 @@ export async function getServerSideProps({ params, req, query }) {
         tissue,
         documents,
         donors,
-        source,
+        sources,
         treatments,
         sampleTerms,
         diseaseTerms,

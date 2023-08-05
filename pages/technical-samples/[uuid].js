@@ -94,12 +94,7 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = sample.documents
       ? await requestDocuments(sample.documents, request)
       : [];
-    const sources =
-      sample.sources?.length > 0
-        ? await request.getMultipleObjects(sample.sources, null, {
-            filterErrors: true,
-          })
-        : [];
+    const sources = sample.sources?.length > 0 ? sample.sources : [];
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       "accession",
