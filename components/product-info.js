@@ -9,23 +9,23 @@ import { pathToType } from "../lib/general";
 // If no url, then `{source.name} - {productId} - {lotId}`
 // We know if we have a lotId, then we have a productId
 export default function ProductInfo({
-  source = null,
+  sources = null,
   productId = null,
   lotId = null,
 }) {
   const prodLot = lotId ? `${productId} (${lotId})` : "";
-  if (source) {
-    const sourceType = pathToType(source["@id"]);
+  if (sources.length > 0) {
+    const sourceType = pathToType(sources[0]["@id"]);
     if (sourceType === "sources") {
       return (
         <>
-          {source.url ? (
+          {sources[0].url ? (
             <>
-              <Link href={source.url}>{source.name}</Link> {prodLot}
+              <Link href={sources[0].url}>{sources[0].name}</Link> {prodLot}
             </>
           ) : (
             <>
-              {source.name} {prodLot}
+              {sources[0].name} {prodLot}
             </>
           )}
         </>
@@ -34,7 +34,7 @@ export default function ProductInfo({
     if (sourceType === "labs") {
       return (
         <>
-          <Link href={source["@id"]}>{source.title}</Link> {prodLot}
+          <Link href={sources[0]["@id"]}>{sources[0].title}</Link> {prodLot}
         </>
       );
     }
@@ -44,7 +44,7 @@ export default function ProductInfo({
 
 ProductInfo.propTypes = {
   // Source
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Product ID
   productId: PropTypes.string,
   // Lot ID

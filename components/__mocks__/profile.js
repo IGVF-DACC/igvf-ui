@@ -306,10 +306,10 @@ const profiles = {
   Biosample: {
     title: "Biosample",
     $id: "/profiles/biosample.json",
-    required: ["award", "lab", "source", "donors", "taxa", "biosample_term"],
+    required: ["award", "lab", "source", "donors", "taxa", "sample_terms"],
     properties: {
-      biosample_term: {
-        title: "Biosample Term",
+      sample_terms: {
+        title: "Sample Terms",
         description: "Ontology term identifying a biosample.",
         type: "string",
         linkTo: "SampleTerm",
@@ -635,7 +635,7 @@ const profiles = {
       "lab",
       "source",
       "donors",
-      "biosample_term",
+      "sample_terms",
       "classification",
     ],
     identifyingProperties: [
@@ -3373,7 +3373,7 @@ const profiles = {
     $schema: "https://json-schema.org/draft/2020-12/schema",
     description: "Schema for submiting a whole organism sample.",
     type: "object",
-    required: ["award", "lab", "source", "donors", "taxa", "biosample_term"],
+    required: ["award", "lab", "source", "donors", "taxa", "sample_terms"],
     identifyingProperties: [
       "uuid",
       "accession",
@@ -3642,8 +3642,8 @@ const profiles = {
         type: "string",
         enum: ["minute", "hour", "day", "week", "month", "year"],
       },
-      biosample_term: {
-        title: "Biosample Term",
+      sample_terms: {
+        title: "Sample Terms",
         description: "Ontology term identifying a biosample.",
         type: "string",
         linkTo: "SampleTerm",

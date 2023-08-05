@@ -30,7 +30,7 @@ export default function TechnicalSample({
   sample,
   documents,
   attribution = null,
-  source = null,
+  sources = null,
   isJson,
 }) {
   return (
@@ -42,7 +42,7 @@ export default function TechnicalSample({
         <JsonDisplay item={sample} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <SampleDataItems item={sample} source={source}>
+              <SampleDataItems item={sample} sources={sources}>
                 {sample.date && (
                   <>
                     <DataItemLabel>Technical Sample Date</DataItemLabel>
@@ -53,8 +53,8 @@ export default function TechnicalSample({
                 <DataItemValue>{sample.sample_material}</DataItemValue>
                 <DataItemLabel>Technical Sample Term</DataItemLabel>
                 <DataItemValue>
-                  <Link href={sample.technical_sample_term["@id"]}>
-                    {sample.technical_sample_term.term_name}
+                  <Link href={sample.sample_terms[0]["@id"]}>
+                    {sample.sample_terms[0].term_name}
                   </Link>
                 </DataItemValue>
               </SampleDataItems>
@@ -79,7 +79,7 @@ TechnicalSample.propTypes = {
   // Documents associated with this technical sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Source lab or source for this technical sample
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this technical sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -94,7 +94,12 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = sample.documents
       ? await requestDocuments(sample.documents, request)
       : [];
-    const source = await request.getObject(sample.source["@id"], null);
+    const sources =
+      sample.sources?.length > 0
+        ? await request.getMultipleObjects(sample.sources, null, {
+            filterErrors: true,
+          })
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       "accession",
@@ -105,7 +110,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         sample,
         documents,
-        source,
+        sources,
         pageContext: {
           title: sample.accession,
         },

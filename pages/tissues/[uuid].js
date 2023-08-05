@@ -39,7 +39,7 @@ export default function Tissue({
   documents,
   source = null,
   treatments,
-  biosampleTerm = null,
+  sampleTerms = null,
   diseaseTerms,
   pooledFrom,
   biomarkers,
@@ -60,7 +60,7 @@ export default function Tissue({
                 item={tissue}
                 source={source}
                 donors={donors}
-                biosampleTerm={biosampleTerm}
+                sampleTerms={sampleTerms}
                 diseaseTerms={diseaseTerms}
                 pooledFrom={pooledFrom}
                 partOf={partOf}
@@ -131,7 +131,7 @@ Tissue.propTypes = {
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample ontology for this sample
-  biosampleTerm: PropTypes.object,
+  sampleTerms: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
@@ -151,9 +151,12 @@ export async function getServerSideProps({ params, req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(tissue)) {
-    const biosampleTerm = tissue.biosample_term
-      ? await request.getObject(tissue.biosample_term["@id"], null)
-      : null;
+    const sampleTerms =
+      tissue.sample_terms?.length > 0
+        ? await request.getMultipleObjects(tissue.sample_terms, null, {
+            filterErrors: true,
+          })
+        : [];
     let diseaseTerms = [];
     if (tissue.disease_terms?.length > 0) {
       const diseaseTermPaths = tissue.disease_terms.map((term) => term["@id"]);
@@ -193,13 +196,13 @@ export async function getServerSideProps({ params, req, query }) {
         donors,
         source,
         treatments,
-        biosampleTerm,
+        sampleTerms,
         diseaseTerms,
         pooledFrom,
         partOf,
         biomarkers,
         pageContext: {
-          title: `${tissue.biosample_term.term_name} — ${tissue.accession}`,
+          title: `${tissue.sample_terms[0].term_name} — ${tissue.accession}`,
         },
         breadcrumbs,
         attribution,
