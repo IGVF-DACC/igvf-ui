@@ -128,7 +128,7 @@ export function SampleDataItems({
       {children}
       {(item.lot_id || sources) && (
         <>
-          <DataItemLabel>Source</DataItemLabel>
+          <DataItemLabel>Sources</DataItemLabel>
           <DataItemValue>
             <ProductInfo
               lotId={item.lot_id}
@@ -208,7 +208,7 @@ SampleDataItems.propTypes = {
   // Object derived from the sample.json schema
   item: PropTypes.object.isRequired,
   // Source lab or source for this sample
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // General options to alter the display of the data items
   options: PropTypes.shape({
     // Title of date_obtained property
@@ -253,7 +253,7 @@ export function BiosampleDataItems({
       )}
       {sampleTerms?.length > 0 && (
         <>
-          <DataItemLabel>Sample Term(s)</DataItemLabel>
+          <DataItemLabel>Sample Terms</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {sampleTerms.map((sample_term) => (
@@ -367,7 +367,7 @@ BiosampleDataItems.propTypes = {
   // Donors for this biosample
   donors: PropTypes.array,
   // Sample ontology for the biosample
-  sampleTerms: PropTypes.object,
+  sampleTerms: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for the biosample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From
