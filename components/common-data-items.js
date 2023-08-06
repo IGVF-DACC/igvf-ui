@@ -256,9 +256,9 @@ export function BiosampleDataItems({
           <DataItemLabel>Sample Terms</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
-              {sampleTerms.map((sample_term) => (
-                <Link href={sample_term["@id"]} key={sample_term["@id"]}>
-                  {sample_term.term_name}
+              {sampleTerms.map((sampleTerm) => (
+                <Link href={sampleTerm["@id"]} key={sampleTerm["@id"]}>
+                  {sampleTerm.term_name}
                 </Link>
               ))}
             </SeparatedList>
