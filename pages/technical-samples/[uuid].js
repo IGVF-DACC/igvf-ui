@@ -30,7 +30,6 @@ export default function TechnicalSample({
   sample,
   documents,
   attribution = null,
-  sources = null,
   isJson,
 }) {
   return (
@@ -42,7 +41,7 @@ export default function TechnicalSample({
         <JsonDisplay item={sample} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <SampleDataItems item={sample} sources={sources}>
+              <SampleDataItems item={sample} sources={sample.sources}>
                 {sample.date && (
                   <>
                     <DataItemLabel>Technical Sample Date</DataItemLabel>
@@ -78,8 +77,6 @@ TechnicalSample.propTypes = {
   sample: PropTypes.object.isRequired,
   // Documents associated with this technical sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Source lab or source for this technical sample
-  sources: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this technical sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -94,7 +91,6 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = sample.documents
       ? await requestDocuments(sample.documents, request)
       : [];
-    const sources = sample.sources?.length > 0 ? sample.sources : [];
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       "accession",
@@ -105,7 +101,6 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         sample,
         documents,
-        sources,
         pageContext: {
           title: sample.accession,
         },

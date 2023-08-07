@@ -9,7 +9,7 @@ import { pathToType } from "../lib/general";
 // If no url, then `{source.name} - {productId} - {lotId}`
 // We know if we have a lotId, then we have a productId
 export default function ProductInfo({
-  sources = null,
+  sources = [],
   productId = null,
   lotId = null,
 }) {

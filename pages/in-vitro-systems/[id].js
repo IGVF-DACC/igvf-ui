@@ -37,11 +37,9 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function InVitroSystem({
   inVitroSystem,
-  sampleTerms = null,
   diseaseTerms,
   documents,
   donors,
-  sources = null,
   treatments,
   pooledFrom,
   biomarkers,
@@ -61,9 +59,9 @@ export default function InVitroSystem({
             <DataArea>
               <BiosampleDataItems
                 item={inVitroSystem}
-                sources={sources}
+                sources={inVitroSystem.sources}
                 donors={donors}
-                sampleTerms={sampleTerms}
+                sampleTerms={inVitroSystem.sample_terms}
                 diseaseTerms={diseaseTerms}
                 pooledFrom={pooledFrom}
                 partOf={partOf}
@@ -121,16 +119,12 @@ export default function InVitroSystem({
 InVitroSystem.propTypes = {
   // In Vitro System sample to display
   inVitroSystem: PropTypes.object.isRequired,
-  // Biosample ontology for this sample
-  sampleTerms: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Source lab or source for this sample
-  sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
@@ -154,8 +148,6 @@ export async function getServerSideProps({ params, req, query }) {
     `/in-vitro-systems/${params.id}/`
   );
   if (FetchRequest.isResponseSuccess(inVitroSystem)) {
-    const sampleTerms =
-      inVitroSystem.sample_terms?.length > 0 ? inVitroSystem.sample_terms : [];
     let diseaseTerms = [];
     if (inVitroSystem.disease_terms) {
       const diseaseTermPaths = inVitroSystem.disease_terms.map(
@@ -169,8 +161,6 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = inVitroSystem.donors
       ? await requestDonors(inVitroSystem.donors, request)
       : [];
-    const sources =
-      inVitroSystem.sources?.length > 0 ? inVitroSystem.sources : [];
     let treatments = [];
     if (inVitroSystem.treatments) {
       const treatmentPaths = inVitroSystem.treatments.map(
@@ -204,11 +194,9 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         inVitroSystem,
-        sampleTerms,
         diseaseTerms,
         documents,
         donors,
-        sources,
         treatments,
         pooledFrom,
         partOf,
@@ -216,7 +204,9 @@ export async function getServerSideProps({ params, req, query }) {
         biomarkers,
         pageContext: {
           title: `${
-            sampleTerms.length > 0 ? `${sampleTerms[0].term_name} — ` : ""
+            inVitroSystem.sample_terms?.length > 0
+              ? `${inVitroSystem.sample_terms[0].term_name} — `
+              : ""
           }${inVitroSystem.accession}`,
         },
         breadcrumbs,
