@@ -203,11 +203,7 @@ export async function getServerSideProps({ params, req, query }) {
         targetedSampleTerm,
         biomarkers,
         pageContext: {
-          title: `${
-            inVitroSystem.sample_terms?.length > 0
-              ? `${inVitroSystem.sample_terms[0].term_name} — `
-              : ""
-          }${inVitroSystem.accession}`,
+          title: `${inVitroSystem.sample_terms[0].term_name} — ${inVitroSystem.accession}`,
         },
         breadcrumbs,
         attribution,

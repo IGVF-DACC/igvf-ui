@@ -168,11 +168,7 @@ export async function getServerSideProps({ params, req, query }) {
         partOf,
         biomarkers,
         pageContext: {
-          title: `${
-            sample.sample_terms?.length > 0
-              ? `${sample.sample_terms[0].term_name} — `
-              : ""
-          }${sample.accession}`,
+          title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,
         },
         breadcrumbs,
         attribution,

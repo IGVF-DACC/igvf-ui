@@ -102,7 +102,7 @@ export async function getServerSideProps({ params, req, query }) {
         sample,
         documents,
         pageContext: {
-          title: sample.accession,
+          title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,
         },
         breadcrumbs,
         attribution,
