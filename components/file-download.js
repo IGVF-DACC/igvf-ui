@@ -7,6 +7,7 @@ import { API_URL } from "../lib/constants";
 import { ButtonLink } from "./form-elements";
 
 const FILE_NOT_FOUND = "file not found";
+const PENDING = "pending";
 
 /**
  * Display a file-download link and download icon. Files without an `upload_status` of
@@ -20,7 +21,7 @@ export function FileDownload({ file, className = "" }) {
         href={`${API_URL}${file.href}`}
         type="secondary"
         size="sm"
-        isDisabled={file.upload_status === FILE_NOT_FOUND}
+        isDisabled={[FILE_NOT_FOUND, PENDING].includes(file.upload_status)}
         hasIconOnly
         className={`${className}`}
       >
