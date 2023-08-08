@@ -9,8 +9,8 @@ import { ButtonLink } from "./form-elements";
 const FILE_NOT_FOUND = "file not found";
 
 /**
- * Display a file-download link and download icon. Only files with an `upload_status` of
- * `validated` show a download link.
+ * Display a file-download link and download icon. Files without an `upload_status` of
+ * `file not found` show a download link.
  */
 export function FileDownload({ file, className = "" }) {
   return (
