@@ -6,6 +6,8 @@ import PropTypes from "prop-types";
 import { API_URL } from "../lib/constants";
 import { ButtonLink } from "./form-elements";
 
+const FILE_NOT_FOUND = "file not found";
+
 /**
  * Display a file-download link and download icon. Only files with an `upload_status` of
  * `validated` show a download link.
@@ -18,7 +20,7 @@ export function FileDownload({ file, className = "" }) {
         href={`${API_URL}${file.href}`}
         type="secondary"
         size="sm"
-        isDisabled={file.upload_status !== "validated"}
+        isDisabled={file.upload_status === FILE_NOT_FOUND}
         hasIconOnly
         className={`${className}`}
       >
