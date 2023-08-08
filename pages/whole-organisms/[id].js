@@ -31,9 +31,8 @@ export default function WholeOrganism({
   sample,
   donors,
   documents,
-  source = null,
+  sources,
   treatments,
-  biosampleTerm = null,
   diseaseTerms,
   pooledFrom,
   biomarkers,
@@ -52,9 +51,9 @@ export default function WholeOrganism({
             <DataArea>
               <BiosampleDataItems
                 item={sample}
-                source={source}
+                sources={sources}
                 donors={donors}
-                biosampleTerm={biosampleTerm}
+                sampleTerms={sample.sample_terms}
                 diseaseTerms={diseaseTerms}
                 pooledFrom={pooledFrom}
                 partOf={partOf}
@@ -97,11 +96,9 @@ WholeOrganism.propTypes = {
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Source lab or source for this sample
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Biosample ontology for this sample
-  biosampleTerm: PropTypes.object,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
@@ -121,9 +118,6 @@ export async function getServerSideProps({ params, req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sample = await request.getObject(`/whole-organisms/${params.id}/`);
   if (FetchRequest.isResponseSuccess(sample)) {
-    const biosampleTerm = sample.biosample_term
-      ? await request.getObject(sample.biosample_term["@id"], null)
-      : null;
     let diseaseTerms = [];
     if (sample.disease_terms?.length > 0) {
       const diseaseTermPaths = sample.disease_terms.map(
@@ -137,7 +131,13 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = sample.donors
       ? await requestDonors(sample.donors, request)
       : [];
-    const source = await request.getObject(sample.source["@id"], null);
+    let sources = [];
+    if (sample.sources?.length > 0) {
+      const sourcePaths = sample.sources.map((source) => source["@id"]);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
+    }
     let treatments = [];
     if (sample.treatments?.length > 0) {
       const treatmentPaths = sample.treatments.map(
@@ -172,17 +172,14 @@ export async function getServerSideProps({ params, req, query }) {
         sample,
         documents,
         donors,
-        source,
+        sources,
         treatments,
-        biosampleTerm,
         diseaseTerms,
         pooledFrom,
         partOf,
         biomarkers,
         pageContext: {
-          title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
-            sample.accession
-          }`,
+          title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,
         },
         breadcrumbs,
         attribution,

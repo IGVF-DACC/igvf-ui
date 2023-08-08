@@ -16,7 +16,7 @@ describe("Facet tests", () => {
 
     // Make sure we have some facets appearing.
     cy.get(`[data-testid^="facet-"]`).should("have.length.gte", 5);
-    cy.get(`[data-testid="facet-biosample_term.term_name"]`).should("exist");
+    cy.get(`[data-testid="facet-sample_terms.term_name"]`).should("exist");
 
     // Make sure we have some search results.
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 4);
@@ -24,21 +24,19 @@ describe("Facet tests", () => {
     // Make sure clicking a facet term has an effect.
     cy.get(`[aria-label^="HUES8"]`).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
-    cy.get(`[aria-label="Clear Biosample Term filter for HUES8"]`).should(
+    cy.get(`[aria-label="Clear Sample Terms filter for HUES8"]`).should(
       "exist"
     );
     cy.get(`[aria-label^="HUES8"]`).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 4);
-    cy.get(`[aria-label="Clear Biosample Term filter for HUES8"]`).should(
+    cy.get(`[aria-label="Clear Sample Terms filter for HUES8"]`).should(
       "not.exist"
     );
 
     // Click another facet group and make sure a new set of facets appears.
     cy.get(`[aria-label="Provenance filter group"]`).click();
     cy.get(`[data-testid^="facet-"]`).should("have.length.gte", 4);
-    cy.get(`[data-testid="facet-biosample_term.term_name"]`).should(
-      "not.exist"
-    );
+    cy.get(`[data-testid="facet-sample_terms.term_name"]`).should("not.exist");
     cy.get(`[data-testid="facet-collections"]`).should("exist");
 
     // Make sure we have some search results.

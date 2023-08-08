@@ -36,11 +36,10 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function PrimaryCell({
   primaryCell,
-  biosampleTerm = null,
   diseaseTerms,
   documents,
   donors,
-  source = null,
+  sources,
   treatments,
   pooledFrom,
   biomarkers,
@@ -59,9 +58,9 @@ export default function PrimaryCell({
             <DataArea>
               <BiosampleDataItems
                 item={primaryCell}
-                source={source}
+                sources={sources}
                 donors={donors}
-                biosampleTerm={biosampleTerm}
+                sampleTerms={primaryCell.sample_terms}
                 diseaseTerms={diseaseTerms}
                 pooledFrom={pooledFrom}
                 partOf={partOf}
@@ -106,8 +105,6 @@ export default function PrimaryCell({
 PrimaryCell.propTypes = {
   // Primary-cell sample to display
   primaryCell: PropTypes.object.isRequired,
-  // Biosample ontology for this sample
-  biosampleTerm: PropTypes.object,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
@@ -115,7 +112,7 @@ PrimaryCell.propTypes = {
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Source lab or source for this sample
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
@@ -135,9 +132,6 @@ export async function getServerSideProps({ params, req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(primaryCell)) {
-    const biosampleTerm = primaryCell.biosample_term
-      ? await request.getObject(primaryCell.biosample_term["@id"], null)
-      : null;
     let diseaseTerms = [];
     if (primaryCell.disease_terms?.length > 0) {
       const diseaseTermPaths = primaryCell.disease_terms.map(
@@ -151,7 +145,13 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = primaryCell.donors
       ? await requestDonors(primaryCell.donors, request)
       : [];
-    const source = await request.getObject(primaryCell.source["@id"], null);
+    let sources = [];
+    if (primaryCell.sources?.length > 0) {
+      const sourcePaths = primaryCell.sources.map((source) => source["@id"]);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
+    }
     const treatments = primaryCell.treatments
       ? await requestTreatments(primaryCell.treatments, request)
       : [];
@@ -175,19 +175,16 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         primaryCell,
-        biosampleTerm,
         diseaseTerms,
         documents,
         donors,
-        source,
+        sources,
         treatments,
         pooledFrom,
         partOf,
         biomarkers,
         pageContext: {
-          title: `${biosampleTerm ? `${biosampleTerm.term_name} — ` : ""}${
-            primaryCell.accession
-          }`,
+          title: `${primaryCell.sample_terms[0].term_name} — ${primaryCell.accession}`,
         },
         breadcrumbs,
         attribution,

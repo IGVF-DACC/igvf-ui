@@ -35,7 +35,7 @@ export default function RodentDonor({
   documents,
   attribution = null,
   phenotypicFeatures = [],
-  source = null,
+  sources = null,
   isJson,
 }) {
   return (
@@ -62,12 +62,12 @@ export default function RodentDonor({
                     <DataItemValue>{donor.genotype}</DataItemValue>
                   </>
                 )}
-                {(donor.source || donor.lot_id) && (
+                {(donor.sources?.length > 0 || donor.lot_id) && (
                   <>
-                    <DataItemLabel>Source</DataItemLabel>
+                    <DataItemLabel>Sources</DataItemLabel>
                     <DataItemValue>
                       <ProductInfo
-                        source={source}
+                        sources={sources}
                         lotId={donor.lot_id}
                         productId={donor.product_id}
                       />
@@ -107,7 +107,7 @@ RodentDonor.propTypes = {
   // Phenotypic Features of this donor
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
   // Source of donor
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
@@ -123,9 +123,13 @@ export async function getServerSideProps({ params, req, query }) {
     const phenotypicFeatures = donor.phenotypic_features
       ? await requestPhenotypicFeatures(donor.phenotypic_features, request)
       : [];
-    const source = donor.source
-      ? await request.getObject(donor.source["@id"])
-      : null;
+    let sources = [];
+    if (donor.sources?.length > 0) {
+      const sourcePaths = donor.sources.map((source) => source["@id"]);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
+    }
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
@@ -137,7 +141,7 @@ export async function getServerSideProps({ params, req, query }) {
         donor,
         documents,
         phenotypicFeatures,
-        source,
+        sources,
         pageContext: { title: donor.accession },
         breadcrumbs,
         attribution,

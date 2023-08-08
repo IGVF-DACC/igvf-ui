@@ -37,9 +37,8 @@ export default function Tissue({
   tissue,
   donors,
   documents,
-  source = null,
+  sources,
   treatments,
-  biosampleTerm = null,
   diseaseTerms,
   pooledFrom,
   biomarkers,
@@ -58,9 +57,9 @@ export default function Tissue({
             <DataArea>
               <BiosampleDataItems
                 item={tissue}
-                source={source}
+                sources={sources}
                 donors={donors}
-                biosampleTerm={biosampleTerm}
+                sampleTerms={tissue.sample_terms}
                 diseaseTerms={diseaseTerms}
                 pooledFrom={pooledFrom}
                 partOf={partOf}
@@ -127,11 +126,9 @@ Tissue.propTypes = {
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Source lab or source for this sample
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Biosample ontology for this sample
-  biosampleTerm: PropTypes.object,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
@@ -151,9 +148,6 @@ export async function getServerSideProps({ params, req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = await request.getObject(`/tissues/${params.uuid}/`);
   if (FetchRequest.isResponseSuccess(tissue)) {
-    const biosampleTerm = tissue.biosample_term
-      ? await request.getObject(tissue.biosample_term["@id"], null)
-      : null;
     let diseaseTerms = [];
     if (tissue.disease_terms?.length > 0) {
       const diseaseTermPaths = tissue.disease_terms.map((term) => term["@id"]);
@@ -165,7 +159,13 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = tissue.donors
       ? await requestDonors(tissue.donors, request)
       : [];
-    const source = await request.getObject(tissue.source["@id"], null);
+    let sources = [];
+    if (tissue.sources?.length > 0) {
+      const sourcePaths = tissue.sources.map((source) => source["@id"]);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
+    }
     const treatments = tissue.treatments
       ? await requestTreatments(tissue.treatments, request)
       : [];
@@ -191,15 +191,14 @@ export async function getServerSideProps({ params, req, query }) {
         tissue,
         documents,
         donors,
-        source,
+        sources,
         treatments,
-        biosampleTerm,
         diseaseTerms,
         pooledFrom,
         partOf,
         biomarkers,
         pageContext: {
-          title: `${tissue.biosample_term.term_name} — ${tissue.accession}`,
+          title: `${tissue.sample_terms[0].term_name} — ${tissue.accession}`,
         },
         breadcrumbs,
         attribution,

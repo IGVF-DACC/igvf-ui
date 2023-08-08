@@ -115,7 +115,7 @@ DonorDataItems.commonProperties = [
  */
 export function SampleDataItems({
   item,
-  source = null,
+  sources = null,
   options = {
     dateObtainedTitle: "Date Obtained",
   },
@@ -126,14 +126,14 @@ export function SampleDataItems({
       <DataItemLabel>Summary</DataItemLabel>
       <DataItemValue>{item.summary}</DataItemValue>
       {children}
-      {(item.lot_id || source) && (
+      {(item.lot_id || sources) && (
         <>
-          <DataItemLabel>Source</DataItemLabel>
+          <DataItemLabel>Sources</DataItemLabel>
           <DataItemValue>
             <ProductInfo
               lotId={item.lot_id}
               productId={item.product_id}
-              source={source}
+              sources={sources}
             />
           </DataItemValue>
         </>
@@ -208,7 +208,7 @@ SampleDataItems.propTypes = {
   // Object derived from the sample.json schema
   item: PropTypes.object.isRequired,
   // Source lab or source for this sample
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // General options to alter the display of the data items
   options: PropTypes.shape({
     // Title of date_obtained property
@@ -234,9 +234,9 @@ SampleDataItems.commonProperties = [
  */
 export function BiosampleDataItems({
   item,
-  source = null,
+  sources = null,
   donors = null,
-  biosampleTerm = null,
+  sampleTerms = null,
   diseaseTerms = null,
   pooledFrom = null,
   partOf = null,
@@ -244,18 +244,24 @@ export function BiosampleDataItems({
   children,
 }) {
   return (
-    <SampleDataItems item={item} source={source}>
+    <SampleDataItems item={item} sources={sources}>
       {item.taxa && (
         <>
           <DataItemLabel>Taxa</DataItemLabel>
           <DataItemValue>{item.taxa}</DataItemValue>
         </>
       )}
-      {biosampleTerm && (
+      {sampleTerms?.length > 0 && (
         <>
-          <DataItemLabel>Biosample Term</DataItemLabel>
+          <DataItemLabel>Sample Terms</DataItemLabel>
           <DataItemValue>
-            <Link href={biosampleTerm["@id"]}>{biosampleTerm.term_name}</Link>
+            <SeparatedList>
+              {sampleTerms.map((sampleTerm) => (
+                <Link href={sampleTerm["@id"]} key={sampleTerm["@id"]}>
+                  {sampleTerm.term_name}
+                </Link>
+              ))}
+            </SeparatedList>
           </DataItemValue>
         </>
       )}
@@ -357,11 +363,11 @@ BiosampleDataItems.propTypes = {
   // Object derived from the biosample.json schema
   item: PropTypes.object.isRequired,
   // Source lab or source for this biosample
-  source: PropTypes.object,
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Donors for this biosample
   donors: PropTypes.array,
   // Sample ontology for the biosample
-  biosampleTerm: PropTypes.object,
+  sampleTerms: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for the biosample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From

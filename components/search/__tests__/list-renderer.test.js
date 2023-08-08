@@ -236,9 +236,12 @@ describe("Test the Biosample component", () => {
         name: "HG012012",
         "@id": "/awards/HG012012/",
       },
-      biosample_term: {
-        term_name: "motor neuron",
-      },
+      sample_terms: [
+        {
+          term_name: "motor neuron",
+          "@id": "/sample-terms/CL_0011001/",
+        },
+      ],
       lab: {
         title: "J. Michael Cherry, Stanford",
       },
@@ -861,9 +864,12 @@ describe("Test the TechnicalSample component", () => {
         title: "J. Michael Cherry, Stanford",
       },
       status: "archived",
-      technical_sample_term: {
-        term_name: "technical sample",
-      },
+      sample_terms: [
+        {
+          term_name: "technical sample",
+          "@id": "/sample-terms/NTR_0000637/",
+        },
+      ],
       uuid: "f12ab44c-bba8-46cc-9f3d-6a192eb09e7e",
       summary: "Technical Sample Summary",
     };
