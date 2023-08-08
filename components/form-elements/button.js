@@ -41,6 +41,12 @@ const buttonTypeClasses = {
     "bg-button-warning border-button-warning text-button-warning fill-button-warning disabled:bg-button-warning-disabled disabled:border-button-warning-disabled disabled:text-button-warning-disabled disabled:fill-button-warning-disabled",
   selected:
     "bg-button-selected border-button-selected text-button-selected fill-button-selected disabled:bg-button-selected-disabled disabled:border-button-selected-disabled disabled:text-button-selected-disabled disabled:fill-button-selected-disabled",
+  primaryDisabled:
+    "bg-button-primary-disabled border-button-primary-disabled text-button-primary-disabled fill-button-primary-disabled",
+  secondaryDisabled:
+    "bg-button-secondary-disabled border-button-secondary-disabled text-button-secondary-disabled fill-button-secondary-disabled",
+  warningDisabled:
+    "bg-button-warning-disabled border-button-warning-disabled text-button-warning-disabled fill-button-warning-disabled",
 };
 
 /**
@@ -161,8 +167,8 @@ Button.propTypes = {
 Button.displayName = "Button";
 
 /**
- * Displays a button that links to a URL instead of performing an action. You cannot disable these
- * the way you can disable a button. Instead, hide inoperable link buttons.
+ * Displays a button that links to a URL instead of performing an action. When these
+ * are "disabled" they show just the children element using the "disabled" CSS.
  *
  * <ButtonLink href="/path/to/page">
  *   Go Here!
@@ -176,6 +182,7 @@ export function ButtonLink({
   size = "md",
   hasIconOnly = false,
   hasIconCircleOnly = false,
+  isDisabled = false,
   className = "",
   children,
 }) {
@@ -185,7 +192,17 @@ export function ButtonLink({
     hasIconCircleOnly
   );
 
-  return (
+  const disabledType = `${type}Disabled`;
+
+  return isDisabled ? (
+    <div
+      aria-label={label}
+      id={id}
+      className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[disabledType]} ${className}`}
+    >
+      {children}
+    </div>
+  ) : (
     <Link
       href={href}
       aria-label={label}
@@ -212,6 +229,8 @@ ButtonLink.propTypes = {
   hasIconOnly: PropTypes.bool,
   // True for buttons that only contain an icon in a circular button
   hasIconCircleOnly: PropTypes.bool,
+  // Is Disabled
+  isDisabled: PropTypes.bool,
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
 };
