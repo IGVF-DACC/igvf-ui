@@ -105,7 +105,9 @@ describe("ButtonLink component", () => {
       </ButtonLink>
     );
     expect(container.firstChild).toHaveClass("bg-button-secondary-disabled");
-    expect(container.firstChild).toHaveClass("border-button-secondary-disabled");
+    expect(container.firstChild).toHaveClass(
+      "border-button-secondary-disabled"
+    );
     expect(container.firstChild).toHaveClass("text-button-secondary-disabled");
   });
 });
