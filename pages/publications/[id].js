@@ -71,14 +71,10 @@ export default function Publication({
                   <DataItemValue>{publication.abstract}</DataItemValue>
                 </>
               )}
-              {publication.identifiers?.length > 0 && (
-                <>
-                  <DataItemLabel>References</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList dbxrefs={publication.identifiers} />
-                  </DataItemValue>
-                </>
-              )}
+              <DataItemLabel>References</DataItemLabel>
+              <DataItemValue>
+                <DbxrefList dbxrefs={publication.publication_identifiers} />
+              </DataItemValue>
               {publication.attachment && (
                 <>
                   <DataItemLabel>Download</DataItemLabel>

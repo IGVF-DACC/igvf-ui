@@ -17,7 +17,7 @@ export default function Publication({ item: publication }) {
       <SearchListItemMain>
         <SearchListItemUniqueId>
           <SearchListItemType item={publication} />
-          {publication.identifiers[0]}
+          {publication.publication_identifiers[0]}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{publication.title}</SearchListItemTitle>
         <SearchListItemMeta>
