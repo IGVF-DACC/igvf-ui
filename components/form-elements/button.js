@@ -30,48 +30,23 @@ const commonButtonClasses =
   "flex items-center justify-center border font-semibold leading-none";
 
 /**
- * Generates a list of tailwind CSS classes for a particular button type when enabled
- * @param {String} bType Button Type, either primary, secondary, warning, or selected
- * @returns a list of CSS classes specialized for the button type
- */
-function enabledButtonTypeClass(bType) {
-  return [
-    `bg-button-${bType}`,
-    `border-button-${bType}`,
-    `text-button-${bType}`,
-    `fill-button-${bType}`,
-  ];
-}
-
-/**
- * Like `enabledButtonTypeClass` but switching to the `disabled` variant
- * @param {String} bType Button Type, either primary, secondary, warning, or selected
- * @param {String} pseudoClass If specified, then this will be prepended to each class
- * in the list e.g. for "disabled": "bg-button-secondary-disabled" becomes
- * "disabled:bg-button-secondary-disabled"`
- * @returns List of disabled variant of the button tailwind CSS classes
- */
-function disabledButtonTypeClass(bType, pseudoClass = "") {
-  const pc = pseudoClass !== "" ? `${pseudoClass}:` : "";
-  return enabledButtonTypeClass(bType).map((c) => `${pc}${c}-disabled`);
-}
-
-/**
  * Background colors for each of the button types.
  */
 const buttonTypeClasses = {
-  primary: `${enabledButtonTypeClass("primary").join(
-    " "
-  )} ${disabledButtonTypeClass("primary", "disabled").join(" ")}`,
-  secondary: `${enabledButtonTypeClass("secondary").join(
-    " "
-  )} ${disabledButtonTypeClass("secondary", "disabled").join(" ")}`,
-  warning: `${enabledButtonTypeClass("warning").join(
-    " "
-  )} ${disabledButtonTypeClass("warning", "disabled").join(" ")}`,
-  selected: `${enabledButtonTypeClass("selected").join(
-    " "
-  )} ${disabledButtonTypeClass("selected", "disabled").join(" ")}`,
+  primary:
+    "bg-button-primary border-button-primary text-button-primary fill-button-primary disabled:bg-button-primary-disabled disabled:border-button-primary-disabled disabled:text-button-primary-disabled disabled:fill-button-primary-disabled",
+  secondary:
+    "bg-button-secondary border-button-secondary text-button-secondary fill-button-secondary disabled:bg-button-secondary-disabled disabled:border-button-secondary-disabled disabled:text-button-secondary-disabled disabled:fill-button-secondary-disabled",
+  warning:
+    "bg-button-warning border-button-warning text-button-warning fill-button-warning disabled:bg-button-warning-disabled disabled:border-button-warning-disabled disabled:text-button-warning-disabled disabled:fill-button-warning-disabled",
+  selected:
+    "bg-button-selected border-button-selected text-button-selected fill-button-selected disabled:bg-button-selected-disabled disabled:border-button-selected-disabled disabled:text-button-selected-disabled disabled:fill-button-selected-disabled",
+  primaryDisabled:
+    "bg-button-primary-disabled border-button-primary-disabled text-button-primary-disabled fill-button-primary-disabled",
+  secondaryDisabled:
+    "bg-button-secondary-disabled border-button-secondary-disabled text-button-secondary-disabled fill-button-secondary-disabled",
+  warningDisabled:
+    "bg-button-warning-disabled border-button-warning-disabled text-button-warning-disabled fill-button-warning-disabled",
 };
 
 /**
@@ -217,13 +192,13 @@ export function ButtonLink({
     hasIconCircleOnly
   );
 
+  const disabledType = `${type}Disabled`;
+
   return isDisabled ? (
     <div
       aria-label={label}
       id={id}
-      className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${disabledButtonTypeClass(
-        type
-      ).join(" ")} ${className}`}
+      className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[disabledType]} ${className}`}
     >
       {children}
     </div>
