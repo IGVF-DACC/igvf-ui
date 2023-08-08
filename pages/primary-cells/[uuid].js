@@ -39,6 +39,7 @@ export default function PrimaryCell({
   diseaseTerms,
   documents,
   donors,
+  sources,
   treatments,
   pooledFrom,
   biomarkers,
@@ -57,7 +58,7 @@ export default function PrimaryCell({
             <DataArea>
               <BiosampleDataItems
                 item={primaryCell}
-                sources={primaryCell.sources}
+                sources={sources}
                 donors={donors}
                 sampleTerms={primaryCell.sample_terms}
                 diseaseTerms={diseaseTerms}
@@ -110,6 +111,8 @@ PrimaryCell.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Source lab or source for this sample
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
@@ -142,6 +145,13 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = primaryCell.donors
       ? await requestDonors(primaryCell.donors, request)
       : [];
+    let sources = [];
+    if (primaryCell.sources?.length > 0) {
+      const sourcePaths = primaryCell.sources.map((source) => source["@id"]);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
+    }
     const treatments = primaryCell.treatments
       ? await requestTreatments(primaryCell.treatments, request)
       : [];
@@ -168,6 +178,7 @@ export async function getServerSideProps({ params, req, query }) {
         diseaseTerms,
         documents,
         donors,
+        sources,
         treatments,
         pooledFrom,
         partOf,

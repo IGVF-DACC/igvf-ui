@@ -40,6 +40,7 @@ export default function InVitroSystem({
   diseaseTerms,
   documents,
   donors,
+  sources,
   treatments,
   pooledFrom,
   biomarkers,
@@ -59,7 +60,7 @@ export default function InVitroSystem({
             <DataArea>
               <BiosampleDataItems
                 item={inVitroSystem}
-                sources={inVitroSystem.sources}
+                sources={sources}
                 donors={donors}
                 sampleTerms={inVitroSystem.sample_terms}
                 diseaseTerms={diseaseTerms}
@@ -125,6 +126,8 @@ InVitroSystem.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Source lab or source for this sample
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
@@ -161,6 +164,13 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = inVitroSystem.donors
       ? await requestDonors(inVitroSystem.donors, request)
       : [];
+    let sources = [];
+    if (inVitroSystem.sources?.length > 0) {
+      const sourcePaths = inVitroSystem.sources.map((source) => source["@id"]);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
+    }
     let treatments = [];
     if (inVitroSystem.treatments) {
       const treatmentPaths = inVitroSystem.treatments.map(
@@ -197,6 +207,7 @@ export async function getServerSideProps({ params, req, query }) {
         diseaseTerms,
         documents,
         donors,
+        sources,
         treatments,
         pooledFrom,
         partOf,

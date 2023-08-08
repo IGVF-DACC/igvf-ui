@@ -37,6 +37,7 @@ export default function Tissue({
   tissue,
   donors,
   documents,
+  sources,
   treatments,
   diseaseTerms,
   pooledFrom,
@@ -56,7 +57,7 @@ export default function Tissue({
             <DataArea>
               <BiosampleDataItems
                 item={tissue}
-                sources={tissue.sources}
+                sources={sources}
                 donors={donors}
                 sampleTerms={tissue.sample_terms}
                 diseaseTerms={diseaseTerms}
@@ -124,6 +125,8 @@ Tissue.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Source lab or source for this sample
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
@@ -156,6 +159,13 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = tissue.donors
       ? await requestDonors(tissue.donors, request)
       : [];
+    let sources = [];
+    if (tissue.sources?.length > 0) {
+      const sourcePaths = tissue.sources.map((source) => source["@id"]);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
+    }
     const treatments = tissue.treatments
       ? await requestTreatments(tissue.treatments, request)
       : [];
@@ -181,6 +191,7 @@ export async function getServerSideProps({ params, req, query }) {
         tissue,
         documents,
         donors,
+        sources,
         treatments,
         diseaseTerms,
         pooledFrom,

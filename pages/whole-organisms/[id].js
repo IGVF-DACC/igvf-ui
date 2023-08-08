@@ -31,6 +31,7 @@ export default function WholeOrganism({
   sample,
   donors,
   documents,
+  sources,
   treatments,
   diseaseTerms,
   pooledFrom,
@@ -50,7 +51,7 @@ export default function WholeOrganism({
             <DataArea>
               <BiosampleDataItems
                 item={sample}
-                sources={sample.sources}
+                sources={sources}
                 donors={donors}
                 sampleTerms={sample.sample_terms}
                 diseaseTerms={diseaseTerms}
@@ -94,6 +95,8 @@ WholeOrganism.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Source lab or source for this sample
+  sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
@@ -128,6 +131,13 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = sample.donors
       ? await requestDonors(sample.donors, request)
       : [];
+    let sources = [];
+    if (sample.sources?.length > 0) {
+      const sourcePaths = sample.sources.map((source) => source["@id"]);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
+    }
     let treatments = [];
     if (sample.treatments?.length > 0) {
       const treatmentPaths = sample.treatments.map(
@@ -162,6 +172,7 @@ export async function getServerSideProps({ params, req, query }) {
         sample,
         documents,
         donors,
+        sources,
         treatments,
         diseaseTerms,
         pooledFrom,

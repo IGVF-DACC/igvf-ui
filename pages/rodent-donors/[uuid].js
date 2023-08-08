@@ -123,7 +123,13 @@ export async function getServerSideProps({ params, req, query }) {
     const phenotypicFeatures = donor.phenotypic_features
       ? await requestPhenotypicFeatures(donor.phenotypic_features, request)
       : [];
-    const sources = donor.sources?.length > 0 ? donor.sources : [];
+    let sources = [];
+    if (donor.sources?.length > 0) {
+      const sourcePaths = donor.sources.map((source) => source["@id"]);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
+    }
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       "accession",
