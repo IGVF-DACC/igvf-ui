@@ -51,7 +51,7 @@ export default function TechnicalSample({
                 )}
                 <DataItemLabel>Sample Material</DataItemLabel>
                 <DataItemValue>{sample.sample_material}</DataItemValue>
-                <DataItemLabel>Technical Sample Term</DataItemLabel>
+                <DataItemLabel>Sample Terms</DataItemLabel>
                 <DataItemValue>
                   <Link href={sample.sample_terms[0]["@id"]}>
                     {sample.sample_terms[0].term_name}
