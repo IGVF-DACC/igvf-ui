@@ -80,13 +80,13 @@ export default function SequenceFile({
                     <DataItemValue>{sequenceFile.lane}</DataItemValue>
                   </>
                 )}
-                {"flowcell_id" in sequenceFile && (
+                {sequenceFile.flowcell_id && (
                   <>
                     <DataItemLabel>Flowcell ID</DataItemLabel>
                     <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
                   </>
                 )}
-                {"illumina_read_type" in sequenceFile && (
+                {sequenceFile.illumina_read_type && (
                   <>
                     <DataItemLabel>Illumina Read Type</DataItemLabel>
                     <DataItemValue>{sequenceFile.illumina_read_type}</DataItemValue>
