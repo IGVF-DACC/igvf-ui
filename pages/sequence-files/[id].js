@@ -89,16 +89,16 @@ export default function SequenceFile({
                 {sequenceFile.illumina_read_type && (
                   <>
                     <DataItemLabel>Illumina Read Type</DataItemLabel>
-                    <DataItemValue>{sequenceFile.illumina_read_type}</DataItemValue>
+                    <DataItemValue>
+                      {sequenceFile.illumina_read_type}
+                    </DataItemValue>
                   </>
                 )}
                 {seqSpec && (
                   <>
                     <DataItemLabel>Associated seqspec File</DataItemLabel>
                     <DataItemValue>
-                      <Link href={seqSpec["@id"]}>
-                        {seqSpec.accession}
-                      </Link>
+                      <Link href={seqSpec["@id"]}>{seqSpec.accession}</Link>
                     </DataItemValue>
                   </>
                 )}
