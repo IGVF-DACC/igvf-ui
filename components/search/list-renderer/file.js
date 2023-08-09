@@ -9,12 +9,16 @@ import {
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
+  SearchListItemSupplement,
+  SearchListItemSupplementSection,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementContent,
 } from "./search-list-item";
 
 export default function File({ item: file }) {
   const titleElements = [file.file_format, file.content_type];
   const summary = file.summary;
-
+  const fileSetAccession = file.file_set ? file.file_set.accession: "";
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -26,7 +30,19 @@ export default function File({ item: file }) {
         <SearchListItemMeta>
           <div key="lab">{file.lab.title}</div>
           {summary && <div key="summary">{summary}</div>}
-        </SearchListItemMeta>
+          </SearchListItemMeta>
+        {"file_set" in file && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                File Set
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                {fileSetAccession}
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={file} />
     </SearchListItemContent>

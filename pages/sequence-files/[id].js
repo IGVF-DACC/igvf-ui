@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -34,6 +35,8 @@ export default function SequenceFile({
   derivedFrom,
   attribution = null,
   isJson,
+  seqSpec = null,
+  sequencingPlatform = null,
 }) {
   return (
     <>
@@ -71,6 +74,44 @@ export default function SequenceFile({
                     </DataItemValue>
                   </>
                 )}
+                {truthyOrZero(sequenceFile.lane) && (
+                  <>
+                    <DataItemLabel>Lane</DataItemLabel>
+                    <DataItemValue>{sequenceFile.lane}</DataItemValue>
+                  </>
+                )}
+                {"flowcell_id" in sequenceFile && (
+                  <>
+                    <DataItemLabel>Flowcell ID</DataItemLabel>
+                    <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
+                  </>
+                )}
+                {"illumina_read_type" in sequenceFile && (
+                  <>
+                    <DataItemLabel>Illumina Read Type</DataItemLabel>
+                    <DataItemValue>{sequenceFile.illumina_read_type}</DataItemValue>
+                  </>
+                )}
+                {seqSpec && (
+                  <>
+                    <DataItemLabel>Associated seqspec File</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={seqSpec["@id"]}>
+                        {seqSpec.accession}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
+                {sequencingPlatform && (
+                  <>
+                    <DataItemLabel>Sequencing Platform</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={sequencingPlatform["@id"]}>
+                        {sequencingPlatform.term_name}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
               </FileDataItems>
             </DataArea>
           </DataPanel>
@@ -100,6 +141,10 @@ SequenceFile.propTypes = {
   attribution: PropTypes.object,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
+  // Linked seqspec configuration file
+  seqSpec: PropTypes.object,
+  // Sequencing platform ontology term object
+  sequencingPlatform: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req, query }) {
@@ -114,6 +159,12 @@ export async function getServerSideProps({ params, req, query }) {
     const derivedFrom = sequenceFile.derived_from
       ? await requestFiles(sequenceFile.derived_from, request)
       : [];
+    const seqSpec = sequenceFile.seqspec
+      ? await request.getObject(sequenceFile.seqspec, null)
+      : null;
+    const sequencingPlatform = sequenceFile.sequencing_platform
+      ? await request.getObject(sequenceFile.sequencing_platform, null)
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
       sequenceFile,
       "accession",
@@ -133,6 +184,8 @@ export async function getServerSideProps({ params, req, query }) {
         breadcrumbs,
         attribution,
         isJson,
+        seqSpec,
+        sequencingPlatform,
       },
     };
   }
