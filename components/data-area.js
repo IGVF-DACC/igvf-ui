@@ -10,7 +10,11 @@
  * </DataPanel>
  */
 
+// node_modules
+import { BarsArrowDownIcon, BarsArrowUpIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
+// components
+import { Button } from "./form-elements";
 
 /**
  * Displays a panel -- typically to display data items for an object, but you can use this for
@@ -81,13 +85,63 @@ DataItemLabel.propTypes = {
 /**
  * Display the value of a data item label/value pair.
  */
-export function DataItemValue({ children }) {
+export function DataItemValue({ className = "", children }) {
   return (
     <div
-      className="mb-4 font-medium text-data-value last:mb-0 @md:mb-0 @md:min-w-0"
+      className={`mb-4 font-medium text-data-value last:mb-0 @md:mb-0 @md:min-w-0 ${className}`}
       data-testid="dataitemvalue"
     >
       {children}
     </div>
   );
 }
+
+DataItemValue.propTypes = {
+  // Additional Tailwind CSS classes to apply to the <div> element
+  className: PropTypes.string,
+};
+
+/**
+ * Displays a button to expand or collapse a data item value. This button only appears if `isExpandable`
+ * holds true. Place this button within a <DataItemLabel> element, just after the label text.
+ */
+export function DataItemValueExpandButton({
+  isExpandable,
+  isExpanded,
+  onClick,
+}) {
+  return (
+    <>
+      {isExpandable && (
+        <Button
+          type="secondary"
+          size="sm"
+          hasIconOnly
+          className="ml-1"
+          onClick={() => onClick(!isExpanded)}
+        >
+          {isExpanded ? (
+            <BarsArrowUpIcon
+              data-testid="data-item-value-collapse-icon"
+              className="h-4 w-4"
+            />
+          ) : (
+            <BarsArrowDownIcon
+              data-testid="data-item-value-expand-icon"
+              className="h-4 w-4"
+            />
+          )}
+        </Button>
+      )}
+    </>
+  );
+}
+
+DataItemValueExpandButton.propTypes = {
+  // True if the data area is expandable
+  isExpandable: PropTypes.bool.isRequired,
+  // True if the data area is expanded
+  isExpanded: PropTypes.bool.isRequired,
+  // Function called when the user clicks the expand/collapse button
+  onClick: PropTypes.func.isRequired,
+};
