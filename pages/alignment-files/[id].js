@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import Link from "next/link";
 // components
-import AlternateAccessions from "../../components/AlternateAccessions";
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
