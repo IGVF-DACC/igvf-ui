@@ -2,8 +2,8 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
-import Attribution from "../../components/attribution";
 import AlternateAccessions from "../../components/alternate-accessions";
+import Attribution from "../../components/attribution";
 import BiomarkerTable from "../../components/biomarker-table";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
