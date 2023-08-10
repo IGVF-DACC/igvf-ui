@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/AlternateAccessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
@@ -32,7 +33,6 @@ import {
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
-import AlternateAccession from "../../components/alternate-accessions";
 
 export default function Tissue({
   tissue,
@@ -52,7 +52,7 @@ export default function Tissue({
       <Breadcrumbs />
       <EditableItem item={tissue}>
         <PagePreamble>
-          <AlternateAccession
+          <AlternateAccessions
             alternateAccessions={tissue.alternate_accessions}
           />
         </PagePreamble>

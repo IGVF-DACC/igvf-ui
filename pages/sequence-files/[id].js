@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/AlternateAccessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -25,7 +26,6 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
-import AlternateAccession from "../../components/alternate-accessions";
 
 export default function SequenceFile({
   sequenceFile,
@@ -40,7 +40,7 @@ export default function SequenceFile({
       <Breadcrumbs />
       <EditableItem item={sequenceFile}>
         <PagePreamble>
-          <AlternateAccession
+          <AlternateAccessions
             alternateAccessions={sequenceFile.alternate_accessions}
           />
         </PagePreamble>

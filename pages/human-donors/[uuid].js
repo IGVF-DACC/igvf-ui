@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/AlternateAccessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { DonorDataItems } from "../../components/common-data-items";
@@ -28,7 +29,6 @@ import FetchRequest from "../../lib/fetch-request";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import { isJsonFormat } from "../../lib/query-utils";
 import buildAttribution from "../../lib/attribution";
-import AlternateAccession from "../../components/alternate-accessions";
 
 export default function HumanDonor({
   donor,
@@ -42,7 +42,7 @@ export default function HumanDonor({
       <Breadcrumbs />
       <EditableItem item={donor}>
         <PagePreamble>
-          <AlternateAccession
+          <AlternateAccessions
             alternateAccessions={donor.alternate_accessions}
           />
         </PagePreamble>

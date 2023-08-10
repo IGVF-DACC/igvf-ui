@@ -3,6 +3,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AliasList from "../../components/alias-list";
+import AlternateAccessions from "../../components/AlternateAccessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -30,7 +31,6 @@ import {
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
-import AlternateAccession from "../../components/alternate-accessions";
 
 export default function AnalysisSet({
   analysisSet,
@@ -45,7 +45,7 @@ export default function AnalysisSet({
       <Breadcrumbs />
       <EditableItem item={analysisSet}>
         <PagePreamble>
-          <AlternateAccession
+          <AlternateAccessions
             alternateAccessions={analysisSet.alternate_accessions}
           />
         </PagePreamble>

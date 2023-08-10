@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/AlternateAccessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { DonorDataItems } from "../../components/common-data-items";
@@ -29,7 +30,6 @@ import buildAttribution from "../../lib/attribution";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import ProductInfo from "../../components/product-info";
 import { isJsonFormat } from "../../lib/query-utils";
-import AlternateAccession from "../../components/alternate-accessions";
 
 export default function RodentDonor({
   donor,
@@ -44,7 +44,7 @@ export default function RodentDonor({
       <Breadcrumbs />
       <EditableItem item={donor}>
         <PagePreamble>
-          <AlternateAccession
+          <AlternateAccessions
             alternateAccessions={donor.alternate_accessions}
           />
         </PagePreamble>

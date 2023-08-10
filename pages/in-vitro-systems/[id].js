@@ -3,6 +3,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
+import AlternateAccessions from "../../components/AlternateAccessions";
 import BiomarkerTable from "../../components/biomarker-table";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
@@ -34,7 +35,6 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
-import AlternateAccession from "../../components/alternate-accessions";
 
 export default function InVitroSystem({
   inVitroSystem,
@@ -55,7 +55,7 @@ export default function InVitroSystem({
       <Breadcrumbs />
       <EditableItem item={inVitroSystem}>
         <PagePreamble>
-          <AlternateAccession
+          <AlternateAccessions
             alternateAccessions={inVitroSystem.alternate_accessions}
           />
         </PagePreamble>

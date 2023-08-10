@@ -2,6 +2,7 @@
 import PropTypes from "prop-types";
 import Link from "next/link";
 // components
+import AlternateAccessions from "../../components/AlternateAccessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -26,7 +27,6 @@ import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
-import AlternateAccession from "../../components/alternate-accessions";
 
 export default function AlignmentFile({
   attribution,
@@ -42,7 +42,7 @@ export default function AlignmentFile({
       <Breadcrumbs />
       <EditableItem item={alignmentFile}>
         <PagePreamble>
-          <AlternateAccession
+          <AlternateAccessions
             alternateAccessions={alignmentFile.alternate_accessions}
           />
         </PagePreamble>

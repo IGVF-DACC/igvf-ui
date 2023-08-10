@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/AlternateAccessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -33,7 +34,6 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
-import AlternateAccession from "../../components/alternate-accessions";
 
 /**
  * Columns for the two file tables; both those with `illumina_read_type` (meta.hasReadType is true)
@@ -153,7 +153,7 @@ export default function MeasurementSet({
       <Breadcrumbs />
       <EditableItem item={measurementSet}>
         <PagePreamble>
-          <AlternateAccession
+          <AlternateAccessions
             alternateAccessions={measurementSet.alternate_accessions}
           />
         </PagePreamble>
