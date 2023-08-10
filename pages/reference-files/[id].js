@@ -25,6 +25,7 @@ import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function ReferenceFile({
   referenceFile,
@@ -38,7 +39,11 @@ export default function ReferenceFile({
     <>
       <Breadcrumbs />
       <EditableItem item={referenceFile}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={referenceFile.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={referenceFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={referenceFile} />
         </ObjectPageHeader>

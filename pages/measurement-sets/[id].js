@@ -33,6 +33,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
+import AlternateAccession from "../../components/alternate-accessions";
 
 /**
  * Columns for the two file tables; both those with `illumina_read_type` (meta.hasReadType is true)
@@ -151,7 +152,11 @@ export default function MeasurementSet({
     <>
       <Breadcrumbs />
       <EditableItem item={measurementSet}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={measurementSet.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={measurementSet} isJsonFormat={isJson} />
         <JsonDisplay item={measurementSet} isJsonFormat={isJson}>
           <DataPanel>

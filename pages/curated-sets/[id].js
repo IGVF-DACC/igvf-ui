@@ -30,6 +30,7 @@ import {
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function CuratedSet({
   curatedSet,
@@ -43,7 +44,11 @@ export default function CuratedSet({
     <>
       <Breadcrumbs />
       <EditableItem item={curatedSet}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={curatedSet.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={curatedSet} isJsonFormat={isJson} />
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <DataPanel>

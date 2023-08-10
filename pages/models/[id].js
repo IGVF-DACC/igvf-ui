@@ -27,6 +27,7 @@ import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function Model({
   model,
@@ -40,7 +41,11 @@ export default function Model({
     <>
       <Breadcrumbs />
       <EditableItem item={model}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={model.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={model} isJsonFormat={isJson} />
         <JsonDisplay item={model} isJsonFormat={isJson}>
           <DataPanel>

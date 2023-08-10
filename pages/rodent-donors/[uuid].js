@@ -29,6 +29,7 @@ import buildAttribution from "../../lib/attribution";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import ProductInfo from "../../components/product-info";
 import { isJsonFormat } from "../../lib/query-utils";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function RodentDonor({
   donor,
@@ -42,7 +43,11 @@ export default function RodentDonor({
     <>
       <Breadcrumbs />
       <EditableItem item={donor}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={donor.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={donor} isJsonFormat={isJson} />
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <DataPanel>

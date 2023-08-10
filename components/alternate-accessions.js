@@ -4,16 +4,14 @@ import PropTypes from "prop-types";
 /**
  * // Display the alternate accessions, normally below the header line in objects.
  */
-export const AlternateAccession = (alternate_accessions) => {
-  const { altAcc } = alternate_accessions;
-
-  if (altAcc && altAcc.length > 0) {
+export default function AlternateAccession({ alternateAccessions = [] }) {
+  if (alternateAccessions?.length > 0) {
     return (
-      <h4 className="alternate-accessions">
-        {altAcc.length === 1 ? (
-          <span>Alternate accession: {altAcc[0]}</span>
+      <h4 className="text-gray-500">
+        {alternateAccessions.length === 1 ? (
+          <span>Alternate Accession: {alternateAccessions[0]}</span>
         ) : (
-          <span>Alternate accessions: {altAcc.join(", ")}</span>
+          <span>Alternate Accessions: {alternateAccessions.join(", ")}</span>
         )}
       </h4>
     );
@@ -21,12 +19,8 @@ export const AlternateAccession = (alternate_accessions) => {
 
   // No alternate accessions to display.
   return null;
-};
+}
 
 AlternateAccession.propTypes = {
-  altAcc: PropTypes.arrayOf(PropTypes.string).isRequired, // Array of alternate accession strings
-};
-
-AlternateAccession.defaultProps = {
-  altAcc: null,
+  alternateAccessions: PropTypes.arrayOf(PropTypes.string), // Array of alternate accession strings
 };

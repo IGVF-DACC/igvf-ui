@@ -28,6 +28,7 @@ import FetchRequest from "../../lib/fetch-request";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import { isJsonFormat } from "../../lib/query-utils";
 import buildAttribution from "../../lib/attribution";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function HumanDonor({
   donor,
@@ -40,7 +41,11 @@ export default function HumanDonor({
     <>
       <Breadcrumbs />
       <EditableItem item={donor}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={donor.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={donor} isJsonFormat={isJson} />
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <DataPanel>

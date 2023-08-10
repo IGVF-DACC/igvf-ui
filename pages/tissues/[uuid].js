@@ -32,6 +32,7 @@ import {
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function Tissue({
   tissue,
@@ -50,7 +51,11 @@ export default function Tissue({
     <>
       <Breadcrumbs />
       <EditableItem item={tissue}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={tissue.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={tissue} isJsonFormat={isJson} />
         <JsonDisplay item={tissue} isJsonFormat={isJson}>
           <DataPanel>

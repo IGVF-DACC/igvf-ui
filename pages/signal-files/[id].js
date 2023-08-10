@@ -26,6 +26,7 @@ import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function SignalFile({
   attribution,
@@ -40,7 +41,11 @@ export default function SignalFile({
     <>
       <Breadcrumbs />
       <EditableItem item={signalFile}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={signalFile.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={signalFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={signalFile} />
         </ObjectPageHeader>

@@ -25,6 +25,7 @@ import { formatDate } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function TechnicalSample({
   sample,
@@ -37,7 +38,11 @@ export default function TechnicalSample({
     <>
       <Breadcrumbs />
       <EditableItem item={sample}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={sample.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={sample} isJsonFormat={isJson} />
         <JsonDisplay item={sample} isJsonFormat={isJson}>
           <DataPanel>

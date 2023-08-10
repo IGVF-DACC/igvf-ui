@@ -26,7 +26,7 @@ import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
-import { AlternateAccession } from "../../components/alternate-accessions";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function AlignmentFile({
   attribution,
@@ -41,8 +41,11 @@ export default function AlignmentFile({
     <>
       <Breadcrumbs />
       <EditableItem item={alignmentFile}>
-        <PagePreamble />
-        <AlternateAccession altAcc={alignmentFile.alternate_accessions} />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={alignmentFile.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={alignmentFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={alignmentFile} />
         </ObjectPageHeader>

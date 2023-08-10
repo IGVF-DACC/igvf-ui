@@ -33,6 +33,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
+import AlternateAccession from "../../components/alternate-accessions";
 
 export default function PrimaryCell({
   primaryCell,
@@ -51,7 +52,11 @@ export default function PrimaryCell({
     <>
       <Breadcrumbs />
       <EditableItem item={primaryCell}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccession
+            alternateAccessions={primaryCell.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={primaryCell} isJsonFormat={isJson} />
         <JsonDisplay item={primaryCell} isJsonFormat={isJson}>
           <DataPanel>
