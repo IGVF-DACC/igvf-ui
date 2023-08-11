@@ -58,6 +58,16 @@ export default function SequenceFile({
                 fileSet={fileSet}
                 derivedFrom={derivedFrom}
               >
+                {sequencingPlatform && (
+                  <>
+                    <DataItemLabel>Sequencing Platform</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={sequencingPlatform["@id"]}>
+                        {sequencingPlatform.term_name}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
                 <DataItemLabel>Sequencing Run</DataItemLabel>
                 <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
                 {truthyOrZero(sequenceFile.read_count) && (
@@ -74,16 +84,16 @@ export default function SequenceFile({
                     </DataItemValue>
                   </>
                 )}
-                {truthyOrZero(sequenceFile.lane) && (
-                  <>
-                    <DataItemLabel>Lane</DataItemLabel>
-                    <DataItemValue>{sequenceFile.lane}</DataItemValue>
-                  </>
-                )}
                 {sequenceFile.flowcell_id && (
                   <>
                     <DataItemLabel>Flowcell ID</DataItemLabel>
                     <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
+                  </>
+                )}
+                {truthyOrZero(sequenceFile.lane) && (
+                  <>
+                    <DataItemLabel>Lane</DataItemLabel>
+                    <DataItemValue>{sequenceFile.lane}</DataItemValue>
                   </>
                 )}
                 {sequenceFile.illumina_read_type && (
@@ -102,13 +112,11 @@ export default function SequenceFile({
                     </DataItemValue>
                   </>
                 )}
-                {sequencingPlatform && (
+                {sequenceFile.validation_error_detail && (
                   <>
-                    <DataItemLabel>Sequencing Platform</DataItemLabel>
+                    <DataItemLabel>Validation Error Detail</DataItemLabel>
                     <DataItemValue>
-                      <Link href={sequencingPlatform["@id"]}>
-                        {sequencingPlatform.term_name}
-                      </Link>
+                      {sequenceFile.validation_error_detail}
                     </DataItemValue>
                   </>
                 )}
