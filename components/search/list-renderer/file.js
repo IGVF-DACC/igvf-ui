@@ -21,6 +21,7 @@ export default function File({ item: file, accessoryData = null }) {
     file.content_summary || file.content_type,
     file.illumina_read_type,
   ].filter(Boolean);
+  const summary = file.summary;
   const fileSet = accessoryData?.[file.file_set];
 
   return (
@@ -33,6 +34,7 @@ export default function File({ item: file, accessoryData = null }) {
         <SearchListItemTitle>{titleElements.join(" - ")}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{file.lab.title}</div>
+          {summary && <div key="summary">{summary}</div>}
           {file.dbxrefs && <div key="external resources">{file.dbxrefs}</div>}
         </SearchListItemMeta>
         {fileSet && (
