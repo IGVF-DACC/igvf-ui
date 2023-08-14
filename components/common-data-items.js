@@ -224,9 +224,9 @@ SampleDataItems.commonProperties = [
   "revoke_detail",
   "starting_amount",
   "starting_amount_units",
+  "submitter_comment",
   "summary",
   "url",
-  "submitter_comment",
 ];
 
 /**
@@ -271,10 +271,34 @@ export function BiosampleDataItems({
           <DataItemValue>{classification}</DataItemValue>
         </>
       )}
+      {item.virtual && (
+        <>
+          <DataItemLabel>Virtual</DataItemLabel>
+          <DataItemValue>True</DataItemValue>
+        </>
+      )}
+      {item.embryonic && (
+        <>
+          <DataItemLabel>Embryonic</DataItemLabel>
+          <DataItemValue>True</DataItemValue>
+        </>
+      )}
+      {item.description && (
+        <>
+          <DataItemLabel>Description</DataItemLabel>
+          <DataItemValue>{item.description}</DataItemValue>
+        </>
+      )}
       {item.sex && (
         <>
           <DataItemLabel>Sex</DataItemLabel>
           <DataItemValue>{item.sex}</DataItemValue>
+        </>
+      )}
+      {item.cellular_sub_pool && (
+        <>
+          <DataItemLabel>Cellular Sub Pool</DataItemLabel>
+          <DataItemValue>{item.cellular_sub_pool}</DataItemValue>
         </>
       )}
       <>
@@ -381,9 +405,13 @@ BiosampleDataItems.propTypes = {
 BiosampleDataItems.commonProperties = [
   "age",
   "age_units",
+  "cellular_sub_pool",
+  "description",
+  "embryonic",
   "nih_institutional_certification",
   "sex",
   "taxa",
+  "virtual",
 ];
 
 /**
