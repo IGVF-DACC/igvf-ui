@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import BiomarkerTable from "../../components/biomarker-table";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -53,7 +54,11 @@ export default function InVitroSystem({
     <>
       <Breadcrumbs />
       <EditableItem item={inVitroSystem}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={inVitroSystem.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={inVitroSystem} isJsonFormat={isJson} />
         <JsonDisplay item={inVitroSystem} isJsonFormat={isJson}>
           <DataPanel>

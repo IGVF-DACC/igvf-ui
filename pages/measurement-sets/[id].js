@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -151,7 +152,11 @@ export default function MeasurementSet({
     <>
       <Breadcrumbs />
       <EditableItem item={measurementSet}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={measurementSet.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={measurementSet} isJsonFormat={isJson} />
         <JsonDisplay item={measurementSet} isJsonFormat={isJson}>
           <DataPanel>

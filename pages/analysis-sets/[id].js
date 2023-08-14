@@ -3,6 +3,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AliasList from "../../components/alias-list";
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -43,7 +44,11 @@ export default function AnalysisSet({
     <>
       <Breadcrumbs />
       <EditableItem item={analysisSet}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={analysisSet.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={analysisSet} isJsonFormat={isJson} />
         <JsonDisplay item={analysisSet} isJsonFormat={isJson}>
           <DataPanel>

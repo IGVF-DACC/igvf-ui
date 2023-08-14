@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -38,7 +39,11 @@ export default function ReferenceFile({
     <>
       <Breadcrumbs />
       <EditableItem item={referenceFile}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={referenceFile.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={referenceFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={referenceFile} />
         </ObjectPageHeader>

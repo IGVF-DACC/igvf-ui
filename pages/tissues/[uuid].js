@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
@@ -50,7 +51,11 @@ export default function Tissue({
     <>
       <Breadcrumbs />
       <EditableItem item={tissue}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={tissue.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={tissue} isJsonFormat={isJson} />
         <JsonDisplay item={tissue} isJsonFormat={isJson}>
           <DataPanel>

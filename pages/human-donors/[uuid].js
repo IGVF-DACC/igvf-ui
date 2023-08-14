@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { DonorDataItems } from "../../components/common-data-items";
@@ -40,7 +41,11 @@ export default function HumanDonor({
     <>
       <Breadcrumbs />
       <EditableItem item={donor}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={donor.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={donor} isJsonFormat={isJson} />
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <DataPanel>

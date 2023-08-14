@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -38,7 +39,11 @@ export default function SequenceFile({
     <>
       <Breadcrumbs />
       <EditableItem item={sequenceFile}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={sequenceFile.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={sequenceFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={sequenceFile} />
         </ObjectPageHeader>

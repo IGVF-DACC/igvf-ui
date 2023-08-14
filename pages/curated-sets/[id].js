@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -43,7 +44,11 @@ export default function CuratedSet({
     <>
       <Breadcrumbs />
       <EditableItem item={curatedSet}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={curatedSet.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={curatedSet} isJsonFormat={isJson} />
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <DataPanel>

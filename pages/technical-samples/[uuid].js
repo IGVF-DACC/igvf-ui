@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { SampleDataItems } from "../../components/common-data-items";
@@ -37,7 +38,11 @@ export default function TechnicalSample({
     <>
       <Breadcrumbs />
       <EditableItem item={sample}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={sample.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={sample} isJsonFormat={isJson} />
         <JsonDisplay item={sample} isJsonFormat={isJson}>
           <DataPanel>

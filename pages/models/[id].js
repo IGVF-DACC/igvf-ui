@@ -3,6 +3,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AliasList from "../../components/alias-list";
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -40,7 +41,11 @@ export default function Model({
     <>
       <Breadcrumbs />
       <EditableItem item={model}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={model.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={model} isJsonFormat={isJson} />
         <JsonDisplay item={model} isJsonFormat={isJson}>
           <DataPanel>
