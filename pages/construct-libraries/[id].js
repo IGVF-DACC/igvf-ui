@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 // components
 import AliasList from "../../components/alias-list";
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import ChromosomeLocations from "../../components/chromosome-locations";
@@ -225,7 +226,11 @@ export default function ConstructLibrary({
     <>
       <Breadcrumbs />
       <EditableItem item={constructLibrary}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={constructLibrary.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={constructLibrary} isJsonFormat={isJson} />
         <JsonDisplay item={constructLibrary} isJsonFormat={isJson}>
           <DataPanel>
