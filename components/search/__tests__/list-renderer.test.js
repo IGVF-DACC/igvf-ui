@@ -1214,6 +1214,15 @@ it("renders a File item with accessory data", () => {
 
   const supplement = screen.queryByTestId("search-list-item-supplement");
   expect(supplement).toHaveTextContent("IGVFDS1099XPXL");
+
+  const paths = File.getAccessoryDataPaths([item]);
+  expect(paths).toEqual([
+    {
+      type: "File",
+      paths: ["/analysis-sets/IGVFDS1099XPXL/"],
+      fields: ["accession"],
+    },
+  ]);
 });
 
 describe("Test the AnalysisSet component", () => {
