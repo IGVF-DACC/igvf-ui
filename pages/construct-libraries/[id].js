@@ -346,7 +346,6 @@ export default function ConstructLibrary({
               </>
             )}
           </LibraryDetails>
-          <DataItemLabel>Selection Criteria</DataItemLabel>
           {files.length > 0 && (
             <>
               <DataAreaTitle>Sequencing Results</DataAreaTitle>
