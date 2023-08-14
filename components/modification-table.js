@@ -28,7 +28,7 @@ const modificationsColumns = [
 ];
 
 /**
- * Display a sortable table of the given treatments.
+ * Display a sortable table of the given modifications.
  */
 export default function ModificationsTable({ modifications }) {
   return (
@@ -44,5 +44,5 @@ export default function ModificationsTable({ modifications }) {
 
 ModificationsTable.propTypes = {
   // Modifications to display
-  modifications: PropTypes.arrayOf(PropTypes.object),
+  modifications: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

@@ -151,7 +151,7 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
-      {truthyOrZero(item.sorted_fraction) && (
+      {item.sorted_fraction && (
         <>
           <DataItemLabel>Sorted Fraction</DataItemLabel>
           <DataItemValue>
