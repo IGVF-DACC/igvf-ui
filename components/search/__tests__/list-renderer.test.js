@@ -1087,7 +1087,7 @@ describe("Test User component", () => {
 });
 
 describe("Test File component", () => {
-  it("renders a File item with accessory data", () => {
+  it("renders a File item with a summary", () => {
     const item = {
       "@id": "/reference-file/IGVFFI0000SQBR/",
       "@type": ["ReferenceFile", "File", "Item"],
@@ -1100,22 +1100,11 @@ describe("Test File component", () => {
       summary: "IGVFFI0000SQBR",
       uuid: "fa9feeb4-28ba-4356-8c24-50f4e6562029",
       status: "released",
-      file_set: "/analysis-sets/IGVFDS1099XPXL/",
-    };
-    const accessoryData = {
-      "/analysis-sets/IGVFDS1099XPXL/": {
-        "@id": "/analysis-sets/IGVFDS1099XPXL/",
-        "@type": ["AnalysisSet", "FileSet", "Item"],
-        accession: "IGVFDS1099XPXL",
-        lab: "/labs/lea-starita/",
-        award: "/awards/HG012012/",
-        uuid: "e3a11f9a-6da6-40e4-8334-3a6c98e39935",
-      },
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <File item={item} accessoryData={accessoryData} />
+        <File item={item} />
       </SessionContext.Provider>
     );
 
@@ -1132,9 +1121,6 @@ describe("Test File component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
-
-    const supplement = screen.queryByTestId("search-list-item-supplement");
-    expect(supplement).toHaveTextContent("IGVFDS1099XPXL");
   });
 
   it("renders a File item without summary", () => {
@@ -1171,6 +1157,60 @@ describe("Test File component", () => {
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
+});
+
+it("renders a File item with accessory data", () => {
+  const item = {
+    "@id": "/sequence-file/IGVFFI0000SEQU/",
+    "@type": ["SequenceFile", "File", "Item"],
+    accession: "IGVFFI0000SEQU",
+    file_format: "fastq",
+    content_type: "reads",
+    lab: {
+      title: "J. Michael Cherry, Stanford",
+    },
+    summary: "IGVFFI0000SEQU",
+    uuid: "1aaaa72d-92da-4c7a -93af-388f56d559ac",
+    status: "released",
+    file_set: "/analysis-sets/IGVFDS1099XPXL/",
+    dbxrefs: "SRA:SRR12345",
+    illumina_read_type: "R1",
+    sequencing_run: 1,
+  };
+  const accessoryData = {
+    "/analysis-sets/IGVFDS1099XPXL/": {
+      "@id": "/analysis-sets/IGVFDS1099XPXL/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS1099XPXL",
+      lab: "/labs/lea-starita/",
+      award: "/awards/HG012012/",
+      uuid: "e3a11f9a-6da6-40e4-8334-3a6c98e39935",
+    },
+  };
+
+  render(
+    <SessionContext.Provider value={{ profiles }}>
+      <File item={item} accessoryData={accessoryData} />
+    </SessionContext.Provider>
+  );
+
+  const uniqueId = screen.getByTestId("search-list-item-unique-id");
+  expect(uniqueId).toHaveTextContent(/^Sequence File/);
+  expect(uniqueId).toHaveTextContent(/IGVFFI0000SEQU$/);
+
+  const title = screen.getByTestId("search-list-item-title");
+  expect(title).toHaveTextContent(/^fastq - reads - R1$/);
+
+  const meta = screen.getByTestId("search-list-item-meta");
+  expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+  expect(meta).toHaveTextContent("IGVFFI0000SEQU");
+  expect(meta).toHaveTextContent("SRA:SRR12345");
+
+  const status = screen.getByTestId("search-list-item-quality");
+  expect(status).toHaveTextContent("released");
+
+  const supplement = screen.queryByTestId("search-list-item-supplement");
+  expect(supplement).toHaveTextContent("IGVFDS1099XPXL");
 });
 
 describe("Test the AnalysisSet component", () => {
