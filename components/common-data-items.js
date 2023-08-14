@@ -151,6 +151,21 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
+      {truthyOrZero(item.sorted_fraction) && (
+        <>
+          <DataItemLabel>Sorted Fraction</DataItemLabel>
+          <DataItemValue>
+            <Link href={item.sorted_fraction["@id"]}>
+              {item.sorted_fraction.accession}
+            </Link>
+            {item.sorted_fraction_detail ? (
+              <> {item.sorted_fraction_detail}</>
+            ) : (
+              ""
+            )}
+          </DataItemValue>
+        </>
+      )}
       {item.date_obtained && (
         <>
           <DataItemLabel>{options.dateObtainedTitle}</DataItemLabel>
