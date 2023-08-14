@@ -10,6 +10,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -54,6 +55,14 @@ export default function Software({
                   <DataItemLabel>Aliases</DataItemLabel>
                   <DataItemValue>
                     <AliasList aliases={software.aliases} />
+                  </DataItemValue>
+                </>
+              )}
+              {software.publication_identifiers?.length > 0 && (
+                <>
+                  <DataItemLabel>Publication Identifiers</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList dbxrefs={software.publication_identifiers} />
                   </DataItemValue>
                 </>
               )}

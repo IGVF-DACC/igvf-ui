@@ -71,7 +71,7 @@ export default function Publication({
                   <DataItemValue>{publication.abstract}</DataItemValue>
                 </>
               )}
-              <DataItemLabel>References</DataItemLabel>
+              <DataItemLabel>Publication Identifers</DataItemLabel>
               <DataItemValue>
                 <DbxrefList dbxrefs={publication.publication_identifiers} />
               </DataItemValue>

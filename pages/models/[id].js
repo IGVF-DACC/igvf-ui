@@ -110,11 +110,11 @@ export default function Model({
                   </DataItemValue>
                 </>
               )}
-              {model.references?.length > 0 && (
+              {model.publication_identifiers?.length > 0 && (
                 <>
-                  <DataItemLabel>References</DataItemLabel>
+                  <DataItemLabel>Publication Identifiers</DataItemLabel>
                   <DataItemValue>
-                    <DbxrefList dbxrefs={model.references} />
+                    <DbxrefList dbxrefs={model.publication_identifiers} />
                   </DataItemValue>
                 </>
               )}
