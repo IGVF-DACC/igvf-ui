@@ -1156,6 +1156,9 @@ describe("Test File component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+
+    const supplement = screen.queryByTestId("search-list-item-supplement");
+    expect(supplement).toBeNull();
   });
 });
 
