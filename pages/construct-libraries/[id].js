@@ -15,6 +15,7 @@ import {
   DataItemValueExpandButton,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
@@ -246,6 +247,16 @@ export default function ConstructLibrary({
                   <DataItemLabel>Aliases</DataItemLabel>
                   <DataItemValue>
                     <AliasList aliases={constructLibrary.aliases} />
+                  </DataItemValue>
+                </>
+              )}
+              {constructLibrary.publication_identifiers && (
+                <>
+                  <DataItemLabel>Publication Identifiers</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList
+                      dbxrefs={constructLibrary.publication_identifiers}
+                    />
                   </DataItemValue>
                 </>
               )}
