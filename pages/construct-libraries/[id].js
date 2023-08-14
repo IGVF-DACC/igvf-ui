@@ -185,15 +185,6 @@ function LibraryDetails({ library, clonedGenes, children }) {
       </Reporter>
     );
   }
-  if (specificDetails) {
-    return (
-      <>
-        {specificDetails}
-        <DataItemValue>{library.scope}</DataItemValue>
-        <DataItemLabel>Selection Criteria</DataItemLabel>
-      </>
-    );
-  }
   return null;
 }
 
