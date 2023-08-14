@@ -278,20 +278,6 @@ export default function ConstructLibrary({
               )}
               <DataItemLabel>Summary</DataItemLabel>
               <DataItemValue>{constructLibrary.summary}</DataItemValue>
-              {associatedDiseases.length > 0 && (
-                <>
-                  <DataItemLabel>Associated Diseases</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {associatedDiseases.map((disease) => (
-                        <Link href={disease["@id"]} key={disease["@id"]}>
-                          {disease.term_name}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
             </DataArea>
           </DataPanel>
           <LibraryDetails library={constructLibrary} clonedGenes={clonedGenes}>
@@ -301,6 +287,20 @@ export default function ConstructLibrary({
             <DataItemValue>
               {constructLibrary.selection_criteria.join(", ")}
             </DataItemValue>
+            {associatedDiseases.length > 0 && (
+              <>
+                <DataItemLabel>Associated Diseases</DataItemLabel>
+                <DataItemValue>
+                  <SeparatedList>
+                    {associatedDiseases.map((disease) => (
+                      <Link href={disease["@id"]} key={disease["@id"]}>
+                        {disease.term_name}
+                      </Link>
+                    ))}
+                  </SeparatedList>
+                </DataItemValue>
+              </>
+            )}
             {displayableTargetedLoci.length > 0 && (
               <>
                 <DataItemLabel className="flex items-baseline">
