@@ -44,7 +44,7 @@ export default function File({ item: file, accessoryData = null }) {
                 File Set
               </SearchListItemSupplementLabel>
               <SearchListItemSupplementContent>
-                {fileSet.summary}
+                {fileSet.accession}
               </SearchListItemSupplementContent>
             </SearchListItemSupplementSection>
           </SearchListItemSupplement>
@@ -67,7 +67,7 @@ File.getAccessoryDataPaths = (items) => {
     {
       type: "File",
       paths: items.map((item) => item.file_set).filter(Boolean),
-      fields: ["summary"],
+      fields: ["accession"],
     },
   ];
 };

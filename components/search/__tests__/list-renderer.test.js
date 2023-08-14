@@ -1100,11 +1100,22 @@ describe("Test File component", () => {
       summary: "IGVFFI0000SQBR",
       uuid: "fa9feeb4-28ba-4356-8c24-50f4e6562029",
       status: "released",
+      file_set: "/analysis-sets/IGVFDS1099XPXL/",
+    };
+    const accessoryData = {
+      "/analysis-sets/IGVFDS1099XPXL/": {
+        "@id": "/analysis-sets/IGVFDS1099XPXL/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+        accession: "IGVFDS1099XPXL",
+        lab: "/labs/lea-starita/",
+        award: "/awards/HG012012/",
+        uuid: "e3a11f9a-6da6-40e4-8334-3a6c98e39935",
+      },
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <File item={item} />
+        <File item={item} accessoryData={accessoryData} />
       </SessionContext.Provider>
     );
 
@@ -1121,6 +1132,9 @@ describe("Test File component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+
+    const supplement = screen.queryByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent("IGVFDS1099XPXL");
   });
 
   it("renders a File item without summary", () => {
