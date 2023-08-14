@@ -351,8 +351,8 @@ export async function getAccessoryData(itemListsByType, cookie) {
         const request = new FetchRequest({ cookie });
         const objects = await request.getMultipleObjectsBulk(
           accessoryDataPaths[type].paths,
-          [],
-          accessoryDataPaths[type].fields
+          accessoryDataPaths[type].fields,
+          []
         );
 
         // Return an object with the objects retrieved for a type, as well as the type to help

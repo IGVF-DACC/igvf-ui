@@ -1,3 +1,6 @@
+// types
+import { NextJsServerQuery } from "../globals";
+
 /**
  * Build a query string from the NextJS `serverQuery` object passed in server-side requests.
  * Repeated key=value pairs in `serverQuery` get deduplicated in the generated query string.
@@ -8,10 +11,12 @@
  *
  * serverQuery: { a: "1", b: ["2", "3"], c: "4" }
  * URL query string: a=1&b=2&b=3&c=4
- * @param {object} searchParams Query string keys and values as object
+ * @param {NextJsServerQuery} searchQuery Query string keys and values as object
  * @returns {string} Composed query string
  */
-export function getQueryStringFromServerQuery(serverQuery) {
+export function getQueryStringFromServerQuery(
+  serverQuery: NextJsServerQuery
+): string {
   return Object.keys(serverQuery)
     .map((queryKey) => {
       const value = serverQuery[queryKey];
@@ -36,7 +41,10 @@ export function getQueryStringFromServerQuery(serverQuery) {
  * @returns {string} `.path` Path or URL portion without query string
  * @returns {string} `.queryString` Query-string portion of path without leading question mark
  */
-export function splitPathAndQueryString(pathMaybeWithQuery) {
+export function splitPathAndQueryString(pathMaybeWithQuery: string): {
+  path: string;
+  queryString: string;
+} {
   // Done in this weird way in case a malformed URL with multiple question marks gets passed in.
   const firstQuestionMarkIndex = pathMaybeWithQuery.indexOf("?");
   if (firstQuestionMarkIndex !== -1) {
@@ -52,10 +60,10 @@ export function splitPathAndQueryString(pathMaybeWithQuery) {
 }
 
 /**
- * Check if the format is JSON for a giving query.
- * @param {object} query An object representing the query string, including dynamic route parameters.
+ * Check if the NextJS server query specifies format=JSON.
+ * @param {NextJsServerQuery} query NextJS query for a server-side request
  * @returns {boolean} if the format is JSON
  */
-export function isJsonFormat(query) {
+export function isJsonFormat(query: NextJsServerQuery): boolean {
   return query.format === "json";
 }

@@ -6,7 +6,7 @@
  * @param {string} value Query-string value that needs encoding
  * @return {string} URL-encoded query-string value.
  */
-export function encodeUriElement(value) {
+export function encodeUriElement(value: string): string {
   return encodeURIComponent(value)
     .replace(/\(/g, "%28")
     .replace(/\)/g, "%29")
@@ -20,6 +20,6 @@ export function encodeUriElement(value) {
  * @param {string} value URL-encoded value from a key-value query-string pair
  * @return {string} Unencoded query-string value
  */
-export function decodeUriElement(value) {
+export function decodeUriElement(value: string): string {
   return decodeURIComponent(value.replace(/\+/g, "%20"));
 }

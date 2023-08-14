@@ -38,16 +38,25 @@ describe("QueryString Class", () => {
     expect(matchingValues[0]).toEqual("Experiment");
     expect(matchingValues[1]).toEqual("ReferenceEpigenome");
 
-    matchingValues = query.getKeyValues("assay_title", QueryString.NEG);
+    matchingValues = query.getKeyValues("assay_title", "NEGATIVE");
     expect(matchingValues).toHaveLength(1);
     expect(matchingValues[0]).toEqual("Histone ChIP-seq");
+  });
+
+  it("handles a corrupt query string", () => {
+    const query = new QueryString(
+      "type=Experiment&assay_term_id=OBI:0000716&type=ReferenceEpigenome&=Hello&assay_title!=Histone+ChIP-seq"
+    );
+    expect(query.format()).toEqual(
+      "type=Experiment&assay_term_id=OBI:0000716&type=ReferenceEpigenome&assay_title!=Histone+ChIP-seq"
+    );
   });
 
   it("Adds a key/value pair", () => {
     const query = new QueryString("type=Experiment");
     query.addKeyValue("assay_term_id", "OBI:0000716");
     expect(query.format()).toEqual("type=Experiment&assay_term_id=OBI:0000716");
-    query.addKeyValue("type", "Annotation", QueryString.NEG);
+    query.addKeyValue("type", "Annotation", "NEGATIVE");
     expect(query.format()).toEqual(
       "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
     );
@@ -107,7 +116,7 @@ describe("QueryString Class", () => {
     query = new QueryString(
       "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
     );
-    query.replaceKeyValue("type", "Biosample", QueryString.NEG);
+    query.replaceKeyValue("type", "Biosample", "NEGATIVE");
     expect(query.format()).toEqual("assay_term_id=OBI:0000716&type!=Biosample");
   });
 
@@ -116,7 +125,7 @@ describe("QueryString Class", () => {
       "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
     );
     const queryCopy = query.clone();
-    queryCopy.addKeyValue("assay_title", "Histone ChIP-seq", QueryString.NEG);
+    queryCopy.addKeyValue("assay_title", "Histone ChIP-seq", "NEGATIVE");
     expect(query.format()).toEqual(
       "type=Experiment&assay_term_id=OBI:0000716&type!=Annotation"
     );
@@ -192,6 +201,6 @@ describe("Test query string equal() static method", () => {
     const query2 = new QueryString(
       "type=Experiment&type=Annotation&assay_term_id=OBI:0000716"
     );
-    expect(QueryString.equal(query1, query2, QueryString.SUBSET)).toEqual(true);
+    expect(QueryString.equal(query1, query2, "SUBSET")).toEqual(true);
   });
 });
