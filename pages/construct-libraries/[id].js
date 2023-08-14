@@ -43,7 +43,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 /**
  * Display the expression vector library details as a comma-separated list of links to gene objects.
  */
-function ExpressionVector({ clonedGenes }) {
+function ExpressionVector({ clonedGenes, children }) {
   return (
     <>
       <DataAreaTitle>Expression Vector Library Details</DataAreaTitle>
@@ -59,6 +59,7 @@ function ExpressionVector({ clonedGenes }) {
               ))}
             </SeparatedList>
           </DataItemValue>
+          {children}
         </DataArea>
       </DataPanel>
     </>
@@ -73,7 +74,7 @@ ExpressionVector.propTypes = {
 /**
  * Display the guide library details.
  */
-function Guide({ guideLibraryDetails }) {
+function Guide({ guideLibraryDetails, children }) {
   return (
     <>
       <DataAreaTitle>Guide Library Details</DataAreaTitle>
@@ -107,6 +108,7 @@ function Guide({ guideLibraryDetails }) {
                 </DataItemValue>
               </>
             )}
+          {children}
         </DataArea>
       </DataPanel>
     </>
@@ -121,7 +123,7 @@ Guide.propTypes = {
 /**
  * Display the reporter library details.
  */
-function Reporter({ reporterLibraryDetails }) {
+function Reporter({ reporterLibraryDetails, children }) {
   return (
     <>
       <DataAreaTitle>Reporter Library Details</DataAreaTitle>
@@ -145,6 +147,7 @@ function Reporter({ reporterLibraryDetails }) {
                 </DataItemValue>
               </>
             )}
+          {children}
         </DataArea>
       </DataPanel>
     </>
@@ -162,16 +165,33 @@ Reporter.propTypes = {
  * types of library details must exist in the library object. We still check all three types in
  * case the data is malformed.
  */
-function LibraryDetails({ library, clonedGenes }) {
+function LibraryDetails({ library, clonedGenes, children }) {
   if (library.expression_vector_library_details) {
-    return <ExpressionVector clonedGenes={clonedGenes} />;
+    return (
+      <ExpressionVector clonedGenes={clonedGenes}>{children}</ExpressionVector>
+    );
   }
   if (library.guide_library_details) {
-    return <Guide guideLibraryDetails={library.guide_library_details} />;
+    return (
+      <Guide guideLibraryDetails={library.guide_library_details}>
+        {children}
+      </Guide>
+    );
   }
   if (library.reporter_library_details) {
     return (
-      <Reporter reporterLibraryDetails={library.reporter_library_details} />
+      <Reporter reporterLibraryDetails={library.reporter_library_details}>
+        {children}
+      </Reporter>
+    );
+  }
+  if (specificDetails) {
+    return (
+      <>
+        {specificDetails}
+        <DataItemValue>{library.scope}</DataItemValue>
+        <DataItemLabel>Selection Criteria</DataItemLabel>
+      </>
     );
   }
   return null;
@@ -267,12 +287,6 @@ export default function ConstructLibrary({
               )}
               <DataItemLabel>Summary</DataItemLabel>
               <DataItemValue>{constructLibrary.summary}</DataItemValue>
-              <DataItemLabel>Scope</DataItemLabel>
-              <DataItemValue>{constructLibrary.scope}</DataItemValue>
-              <DataItemLabel>Selection Criteria</DataItemLabel>
-              <DataItemValue>
-                {constructLibrary.selection_criteria.join(", ")}
-              </DataItemValue>
               {associatedDiseases.length > 0 && (
                 <>
                   <DataItemLabel>Associated Diseases</DataItemLabel>
@@ -287,56 +301,61 @@ export default function ConstructLibrary({
                   </DataItemValue>
                 </>
               )}
-              {displayableTargetedGeneList.length > 0 && (
-                <>
-                  <DataItemLabel className="flex items-baseline">
-                    Targeted Genes
-                    <DataItemValueExpandButton
-                      isExpandable={isTargetedGenesExpandable}
-                      isExpanded={isTargetedGenesExpanded}
-                      onClick={setIsTargetedGenesExpanded}
-                    />
-                  </DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {displayableTargetedGeneList.map((gene) => (
-                        <Link href={gene["@id"]} key={gene["@id"]}>
-                          {gene.geneid}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                    {isTargetedGenesTruncated && (
-                      <Icon.EllipsisHorizontal className="h-1 mt-2" />
-                    )}
-                  </DataItemValue>
-                </>
-              )}
-              {displayableTargetedLoci.length > 0 && (
-                <>
-                  <DataItemLabel className="flex items-baseline">
-                    Targeted Loci
-                    <DataItemValueExpandButton
-                      isExpandable={isTargetedLociExpandable}
-                      isExpanded={isTargetedLociExpanded}
-                      onClick={setIsTargetedLociExpanded}
-                    />
-                  </DataItemLabel>
-                  <DataItemValue>
-                    <ChromosomeLocations locations={displayableTargetedLoci} />
-                    {isTargetedLociTruncated && (
-                      <div className="flex items-center h-6">
-                        <Icon.EllipsisHorizontal className="h-1 ml-1" />
-                      </div>
-                    )}
-                  </DataItemValue>
-                </>
-              )}
             </DataArea>
           </DataPanel>
-          <LibraryDetails
-            library={constructLibrary}
-            clonedGenes={clonedGenes}
-          />
+          <LibraryDetails library={constructLibrary} clonedGenes={clonedGenes}>
+            <DataItemLabel>Scope</DataItemLabel>
+            <DataItemValue>{constructLibrary.scope}</DataItemValue>
+            <DataItemLabel>Selection Criteria</DataItemLabel>
+            <DataItemValue>
+              {constructLibrary.selection_criteria.join(", ")}
+            </DataItemValue>
+            {displayableTargetedLoci.length > 0 && (
+              <>
+                <DataItemLabel className="flex items-baseline">
+                  Targeted Loci
+                  <DataItemValueExpandButton
+                    isExpandable={isTargetedLociExpandable}
+                    isExpanded={isTargetedLociExpanded}
+                    onClick={setIsTargetedLociExpanded}
+                  />
+                </DataItemLabel>
+                <DataItemValue>
+                  <ChromosomeLocations locations={displayableTargetedLoci} />
+                  {isTargetedLociTruncated && (
+                    <div className="flex items-center h-6">
+                      <Icon.EllipsisHorizontal className="h-1 ml-1" />
+                    </div>
+                  )}
+                </DataItemValue>
+              </>
+            )}
+            {displayableTargetedGeneList.length > 0 && (
+              <>
+                <DataItemLabel className="flex items-baseline">
+                  Targeted Genes
+                  <DataItemValueExpandButton
+                    isExpandable={isTargetedGenesExpandable}
+                    isExpanded={isTargetedGenesExpanded}
+                    onClick={setIsTargetedGenesExpanded}
+                  />
+                </DataItemLabel>
+                <DataItemValue>
+                  <SeparatedList>
+                    {displayableTargetedGeneList.map((gene) => (
+                      <Link href={gene["@id"]} key={gene["@id"]}>
+                        {gene.geneid}
+                      </Link>
+                    ))}
+                  </SeparatedList>
+                  {isTargetedGenesTruncated && (
+                    <Icon.EllipsisHorizontal className="h-1 mt-2" />
+                  )}
+                </DataItemValue>
+              </>
+            )}
+          </LibraryDetails>
+          <DataItemLabel>Selection Criteria</DataItemLabel>
           {files.length > 0 && (
             <>
               <DataAreaTitle>Sequencing Results</DataAreaTitle>
