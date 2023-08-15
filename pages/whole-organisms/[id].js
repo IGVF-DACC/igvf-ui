@@ -10,6 +10,7 @@ import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ModificationsTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
@@ -68,6 +69,12 @@ export default function WholeOrganism({
               ></BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {sample.modifications?.length > 0 && (
+            <>
+              <DataAreaTitle>Modifications</DataAreaTitle>
+              <ModificationsTable modifications={sample.modifications} />
+            </>
+          )}
           {biomarkers.length > 0 && (
             <>
               <DataAreaTitle>Biomarkers</DataAreaTitle>

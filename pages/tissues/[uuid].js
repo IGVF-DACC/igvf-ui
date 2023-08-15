@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -16,6 +17,7 @@ import { EditableItem } from "../../components/edit";
 import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import JsonDisplay from "../../components/json-display";
+import ModificationsTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
@@ -95,9 +97,27 @@ export default function Tissue({
                     <DataItemValue>{tissue.preservation_method}</DataItemValue>
                   </>
                 )}
+                {tissue.ccf_id && (
+                  <>
+                    <DataItemLabel>
+                      Common Coordinate Framework Identifier
+                    </DataItemLabel>
+                    <Link
+                      href={`https://portal.hubmapconsortium.org/browse/sample/${tissue.ccf_id}`}
+                    >
+                      {tissue.ccf_id}
+                    </Link>
+                  </>
+                )}
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {tissue.modifications?.length > 0 && (
+            <>
+              <DataAreaTitle>Modifications</DataAreaTitle>
+              <ModificationsTable modifications={tissue.modifications} />
+            </>
+          )}
           {biomarkers.length > 0 && (
             <>
               <DataAreaTitle>Biomarkers</DataAreaTitle>

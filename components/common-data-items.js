@@ -126,6 +126,18 @@ export function SampleDataItems({
       <DataItemLabel>Summary</DataItemLabel>
       <DataItemValue>{item.summary}</DataItemValue>
       {children}
+      {item.virtual && (
+        <>
+          <DataItemLabel>Virtual</DataItemLabel>
+          <DataItemValue>True</DataItemValue>
+        </>
+      )}
+      {item.description && (
+        <>
+          <DataItemLabel>Description</DataItemLabel>
+          <DataItemValue>{item.description}</DataItemValue>
+        </>
+      )}
       {(item.lot_id || sources) && (
         <>
           <DataItemLabel>Sources</DataItemLabel>
@@ -145,6 +157,21 @@ export function SampleDataItems({
             {item.starting_amount}
             {item.starting_amount_units ? (
               <> {item.starting_amount_units}</>
+            ) : (
+              ""
+            )}
+          </DataItemValue>
+        </>
+      )}
+      {item.sorted_fraction && (
+        <>
+          <DataItemLabel>Sorted Fraction</DataItemLabel>
+          <DataItemValue>
+            <Link href={item.sorted_fraction["@id"]}>
+              {item.sorted_fraction.accession}
+            </Link>
+            {item.sorted_fraction_detail ? (
+              <> {item.sorted_fraction_detail}</>
             ) : (
               ""
             )}
@@ -220,13 +247,15 @@ SampleDataItems.commonProperties = [
   "aliases",
   "date_obtained",
   "dbxrefs",
+  "description",
   "lot_id",
   "revoke_detail",
   "starting_amount",
   "starting_amount_units",
+  "submitter_comment",
   "summary",
   "url",
-  "submitter_comment",
+  "virtual",
 ];
 
 /**
@@ -271,10 +300,22 @@ export function BiosampleDataItems({
           <DataItemValue>{classification}</DataItemValue>
         </>
       )}
+      {item.embryonic && (
+        <>
+          <DataItemLabel>Embryonic</DataItemLabel>
+          <DataItemValue>True</DataItemValue>
+        </>
+      )}
       {item.sex && (
         <>
           <DataItemLabel>Sex</DataItemLabel>
           <DataItemValue>{item.sex}</DataItemValue>
+        </>
+      )}
+      {item.cellular_sub_pool && (
+        <>
+          <DataItemLabel>Cellular Sub Pool</DataItemLabel>
+          <DataItemValue>{item.cellular_sub_pool}</DataItemValue>
         </>
       )}
       <>
@@ -381,6 +422,8 @@ BiosampleDataItems.propTypes = {
 BiosampleDataItems.commonProperties = [
   "age",
   "age_units",
+  "cellular_sub_pool",
+  "embryonic",
   "nih_institutional_certification",
   "sex",
   "taxa",

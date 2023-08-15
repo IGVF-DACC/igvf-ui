@@ -17,6 +17,7 @@ import {
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import ModificationsTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import TreatmentTable from "../../components/treatment-table";
@@ -76,6 +77,16 @@ export default function InVitroSystem({
                   dateObtainedTitle: "Date Collected",
                 }}
               >
+                {inVitroSystem.originated_from && (
+                  <>
+                    <DataItemLabel>Originated From Biosample</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={inVitroSystem.originated_from["@id"]}>
+                        {inVitroSystem.originated_from.accession}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
                 {targetedSampleTerm && (
                   <>
                     <DataItemLabel>Targeted Sample Term</DataItemLabel>
@@ -94,9 +105,28 @@ export default function InVitroSystem({
                     </DataItemValue>
                   </>
                 )}
+                {truthyOrZero(inVitroSystem.time_post_change) && (
+                  <>
+                    <DataItemLabel>Time Post Change</DataItemLabel>
+                    <DataItemValue>
+                      {inVitroSystem.time_post_change}
+                      {inVitroSystem.time_post_change_units ? (
+                        <> {inVitroSystem.time_post_change_units}</>
+                      ) : (
+                        ""
+                      )}
+                    </DataItemValue>
+                  </>
+                )}
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {inVitroSystem.modifications?.length > 0 && (
+            <>
+              <DataAreaTitle>Modifications</DataAreaTitle>
+              <ModificationsTable modifications={inVitroSystem.modifications} />
+            </>
+          )}
           {biomarkers.length > 0 && (
             <>
               <DataAreaTitle>Biomarkers</DataAreaTitle>
@@ -107,6 +137,14 @@ export default function InVitroSystem({
             <>
               <DataAreaTitle>Treatments</DataAreaTitle>
               <TreatmentTable treatments={treatments} />
+            </>
+          )}
+          {inVitroSystem.cell_fate_change_treatments?.length > 0 && (
+            <>
+              <DataAreaTitle>Cell Fate Change Treatments</DataAreaTitle>
+              <TreatmentTable
+                treatments={inVitroSystem.cell_fate_change_treatments}
+              />
             </>
           )}
           {documents.length > 0 && (
