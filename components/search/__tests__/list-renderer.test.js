@@ -1176,7 +1176,7 @@ it("renders a File item with accessory data", () => {
     uuid: "1aaaa72d-92da-4c7a -93af-388f56d559ac",
     status: "released",
     file_set: "/analysis-sets/IGVFDS1099XPXL/",
-    dbxrefs: "SRA:SRR12345",
+    dbxrefs: ["SRA:SRR12345"],
     illumina_read_type: "R1",
     sequencing_run: 1,
   };
