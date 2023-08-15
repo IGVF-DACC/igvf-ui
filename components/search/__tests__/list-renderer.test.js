@@ -1184,7 +1184,7 @@ it("renders a File item with accessory data", () => {
     "/analysis-sets/IGVFDS1099XPXL/": {
       "@id": "/analysis-sets/IGVFDS1099XPXL/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
-      accession: "IGVFDS1099XPXL",
+      summary: "IGVFDS1099XPXL",
       lab: "/labs/lea-starita/",
       award: "/awards/HG012012/",
       uuid: "e3a11f9a-6da6-40e4-8334-3a6c98e39935",
@@ -1220,7 +1220,7 @@ it("renders a File item with accessory data", () => {
     {
       type: "File",
       paths: ["/analysis-sets/IGVFDS1099XPXL/"],
-      fields: ["accession"],
+      fields: ["summary"],
     },
   ]);
 });
