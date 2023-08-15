@@ -126,6 +126,18 @@ export function SampleDataItems({
       <DataItemLabel>Summary</DataItemLabel>
       <DataItemValue>{item.summary}</DataItemValue>
       {children}
+      {item.virtual && (
+        <>
+          <DataItemLabel>Virtual</DataItemLabel>
+          <DataItemValue>True</DataItemValue>
+        </>
+      )}
+      {item.description && (
+        <>
+          <DataItemLabel>Description</DataItemLabel>
+          <DataItemValue>{item.description}</DataItemValue>
+        </>
+      )}
       {(item.lot_id || sources) && (
         <>
           <DataItemLabel>Sources</DataItemLabel>
@@ -235,6 +247,7 @@ SampleDataItems.commonProperties = [
   "aliases",
   "date_obtained",
   "dbxrefs",
+  "description",
   "lot_id",
   "revoke_detail",
   "starting_amount",
@@ -242,6 +255,7 @@ SampleDataItems.commonProperties = [
   "submitter_comment",
   "summary",
   "url",
+  "virtual",
 ];
 
 /**
@@ -286,22 +300,10 @@ export function BiosampleDataItems({
           <DataItemValue>{classification}</DataItemValue>
         </>
       )}
-      {item.virtual && (
-        <>
-          <DataItemLabel>Virtual</DataItemLabel>
-          <DataItemValue>True</DataItemValue>
-        </>
-      )}
       {item.embryonic && (
         <>
           <DataItemLabel>Embryonic</DataItemLabel>
           <DataItemValue>True</DataItemValue>
-        </>
-      )}
-      {item.description && (
-        <>
-          <DataItemLabel>Description</DataItemLabel>
-          <DataItemValue>{item.description}</DataItemValue>
         </>
       )}
       {item.sex && (
@@ -421,12 +423,10 @@ BiosampleDataItems.commonProperties = [
   "age",
   "age_units",
   "cellular_sub_pool",
-  "description",
   "embryonic",
   "nih_institutional_certification",
   "sex",
   "taxa",
-  "virtual",
 ];
 
 /**
