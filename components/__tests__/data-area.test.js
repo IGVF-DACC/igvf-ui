@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
+  DataItemValueExpandButton,
   DataPanel,
 } from "../data-area";
 import Status from "../status";
@@ -71,5 +72,62 @@ describe("Test the DataArea component", () => {
 
     const title = screen.getByTestId("dataitemvalue");
     expect(title).toBeInTheDocument();
+  });
+});
+
+describe("Test the DataItemValueExpandButton component", () => {
+  it("renders the collapsed button and calls the onClick handler", () => {
+    const onClick = jest.fn();
+    render(
+      <DataItemValueExpandButton
+        isExpandable={true}
+        isExpanded={false}
+        onClick={onClick}
+      />
+    );
+
+    const button = screen.getByRole("button");
+    expect(button).toBeInTheDocument();
+    expect(button.firstChild).toHaveAttribute(
+      "data-testid",
+      "data-item-value-expand-icon"
+    );
+
+    fireEvent.click(button);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it("renders the expanded button and calls the onClick handler", () => {
+    const onClick = jest.fn();
+    render(
+      <DataItemValueExpandButton
+        isExpandable={true}
+        isExpanded={true}
+        onClick={onClick}
+      />
+    );
+
+    const button = screen.getByRole("button");
+    expect(button).toBeInTheDocument();
+    expect(button.firstChild).toHaveAttribute(
+      "data-testid",
+      "data-item-value-collapse-icon"
+    );
+
+    fireEvent.click(button);
+    expect(onClick).toHaveBeenCalled();
+  });
+
+  it("renders nothing if the item is not expandable", () => {
+    render(
+      <DataItemValueExpandButton
+        isExpandable={false}
+        isExpanded={true}
+        onClick={jest.fn()}
+      />
+    );
+
+    const button = screen.queryByRole("button");
+    expect(button).not.toBeInTheDocument();
   });
 });

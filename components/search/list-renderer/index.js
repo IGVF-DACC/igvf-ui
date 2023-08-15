@@ -51,6 +51,7 @@ import AnalysisSet from "./analysis-set";
 import Award from "./award";
 import Biomarker from "./biomarker";
 import Biosample from "./biosample";
+import ConstructLibrary from "./construct-library";
 import CuratedSet from "./curated-set";
 import Document from "./document";
 import Gene from "./gene";
@@ -79,6 +80,7 @@ const renderers = {
   AssayTerm: OntologyTerm,
   Award,
   Biomarker,
+  ConstructLibrary,
   CuratedSet,
   Document,
   Gene,

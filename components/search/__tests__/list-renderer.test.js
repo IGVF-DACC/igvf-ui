@@ -4,6 +4,7 @@ import SessionContext from "../../session-context";
 import Award from "../list-renderer/award";
 import AnalysisSet from "../list-renderer/analysis-set";
 import Biosample from "../list-renderer/biosample";
+import ConstructLibrary from "../list-renderer/construct-library";
 import CuratedSet from "../list-renderer/curated-set";
 import Document from "../list-renderer/document";
 import File from "../list-renderer/file";
@@ -263,6 +264,126 @@ describe("Test the Biosample component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent("biosample summary");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test ConstructLibrary component", () => {
+  it("renders a ConstructLibrary component with reporter library details", () => {
+    const item = {
+      "@id": "/construct-libraries/IGVFDS3140KDHS/",
+      "@type": ["ConstructLibrary", "FileSet", "Item"],
+      accession: "IGVFDS3140KDHS",
+      aliases: ["igvf:basic_construct_library_1"],
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      reporter_library_details: {
+        average_insert_size: 270,
+      },
+      scope: "genes",
+      selection_criteria: ["accessible genome regions"],
+      status: "released",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <ConstructLibrary item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Construct Library IGVFDS3140KDHS/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^Reporter library of accessible genome regions$/
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a ConstructLibrary component with guide library details", () => {
+    const item = {
+      "@id": "/construct-libraries/IGVFDS0000CSLB/",
+      "@type": ["ConstructLibrary", "FileSet", "Item"],
+      accession: "IGVFDS0000CSLB",
+      aliases: ["igvf:basic_construct_library_2"],
+      guide_library_details: {
+        guide_type: "sgRNA",
+      },
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      scope: "genome-wide",
+      selection_criteria: ["TF binding sites", "disease-associated variants"],
+      status: "released",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <ConstructLibrary item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Construct Library IGVFDS0000CSLB/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^Guide library of TF binding sites and 1 other selection criterion$/
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a ConstructLibrary component with expression vector library details", () => {
+    const item = {
+      "@id": "/construct-libraries/IGVFDS7866HNNG/",
+      "@type": ["ConstructLibrary", "FileSet", "Item"],
+      accession: "IGVFDS7866HNNG",
+      aliases: ["igvf:basic_construct_library_0"],
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      scope: "loci",
+      selection_criteria: [
+        "transcription start sites",
+        "accessible genome regions",
+        "candidate cis-regulatory elements",
+      ],
+      status: "released",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <ConstructLibrary item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Construct Library IGVFDS7866HNNG/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^Expression Vector library of transcription start sites and 2 other selection criteria$/
+    );
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");

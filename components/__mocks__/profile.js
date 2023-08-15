@@ -337,6 +337,87 @@ const profiles = {
     },
   },
 
+  ConstructLibrary: {
+    title: "Construct Library",
+    $id: "/profiles/construct_library.json",
+    required: ["document_type", "description", "attachment", "lab", "award"],
+    oneOf: [
+      {
+        required: [
+          "expression_vector_library_details",
+          "award",
+          "lab",
+          "selection_criteria",
+          "scope",
+        ],
+      },
+      {
+        required: [
+          "guide_library_details",
+          "award",
+          "lab",
+          "selection_criteria",
+          "scope",
+        ],
+      },
+      {
+        required: [
+          "reporter_library_details",
+          "award",
+          "lab",
+          "selection_criteria",
+          "scope",
+        ],
+      },
+    ],
+    identifyingProperties: [
+      "uuid",
+      "aliases",
+      "accession",
+      "alternate_accessions",
+    ],
+    properties: {
+      accession: {
+        title: "Accession",
+        type: "string",
+      },
+      aliases: {
+        title: "Aliases",
+        type: "array",
+      },
+      expression_vector_library_details: {
+        title: "Expression Vector Library Details",
+        description:
+          "Details about a construct library supplying specific gene(s) to be expressed in a sample.",
+        type: "object",
+      },
+      guide_library_details: {
+        title: "Guide Library Details",
+        type: "object",
+      },
+      lab: {
+        title: "Lab",
+        type: "string",
+      },
+      reporter_library_details: {
+        title: "Reporter Library Details",
+        type: "object",
+      },
+      scope: {
+        title: "Library Construct Scope",
+        type: "string",
+      },
+      selection_criteria: {
+        title: "Selection Criteria",
+        type: "array",
+      },
+      status: {
+        title: "Status",
+        type: "string",
+      },
+    },
+  },
+
   Document: {
     title: "Document",
     $id: "/profiles/document.json",

@@ -3,6 +3,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
+import AliasList from "../../components/alias-list";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -12,17 +13,14 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import { DataGridContainer } from "../../components/data-grid";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import { FileAccessionAndDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import SortableGrid from "../../components/sortable-grid";
-import Status from "../../components/status";
+import SeparatedList from "../../components/separated-list";
+import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
-import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
@@ -33,97 +31,6 @@ import {
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
-import SeparatedList from "../../components/separated-list";
-
-/**
- * Columns for the two file tables; both those with `illumina_read_type` (meta.hasReadType is true)
- * and those without.
- */
-const filesColumns = [
-  {
-    id: "accession",
-    title: "Accession",
-    display: ({ source }) => <FileAccessionAndDownload file={source} />,
-  },
-  {
-    id: "file_format",
-    title: "File Format",
-  },
-  {
-    id: "content_type",
-    title: "Content Type",
-  },
-  {
-    id: "illumina_read_type",
-    title: "Illumina Read Type",
-    hide: (data, columns, meta) => !meta.hasReadType,
-  },
-  {
-    id: "sequencing_run",
-    title: "Sequencing Run",
-  },
-  {
-    id: "sequencing_platform",
-    title: "Sequencing Platform",
-    display: (cell, meta) => {
-      const platform = meta.sequencingPlatforms.find(
-        (platform) => platform["@id"] === cell.source.sequencing_platform
-      );
-      return platform?.term_name || null;
-    },
-  },
-  {
-    id: "flowcell_id",
-    title: "Flowcell ID",
-  },
-  {
-    id: "lane",
-    title: "Lane",
-  },
-  {
-    id: "file_size",
-    title: "File Size",
-  },
-  {
-    id: "lab",
-    title: "Lab",
-    display: ({ source }) => source.lab?.title,
-  },
-  {
-    id: "status",
-    title: "Status",
-    display: ({ source }) => <Status status={source.status} />,
-  },
-];
-
-/**
- * Display a sortable table of the given files, specifically for the MeasurementSet display.
- */
-function MeasurementSetFileTable({
-  files,
-  sequencingPlatforms,
-  hasReadType = false,
-}) {
-  return (
-    <DataGridContainer>
-      <SortableGrid
-        data={files}
-        columns={filesColumns}
-        meta={{ sequencingPlatforms, hasReadType }}
-        keyProp="@id"
-      />
-    </DataGridContainer>
-  );
-}
-
-MeasurementSetFileTable.propTypes = {
-  // Files to display
-  files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Sequencing platform objects associated with `files`
-  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // True if files have illumina_read_type
-  hasReadType: PropTypes.bool,
-};
 
 export default function MeasurementSet({
   measurementSet,
@@ -221,7 +128,7 @@ export default function MeasurementSet({
           {filesWithReadType.length > 0 && (
             <>
               <DataAreaTitle>Sequencing Results (Illumina)</DataAreaTitle>
-              <MeasurementSetFileTable
+              <SequencingFileTable
                 files={filesWithReadType}
                 sequencingPlatforms={sequencingPlatforms}
                 hasReadType
@@ -231,7 +138,7 @@ export default function MeasurementSet({
           {filesWithoutReadType.length > 0 && (
             <>
               <DataAreaTitle>Sequencing Results</DataAreaTitle>
-              <MeasurementSetFileTable
+              <SequencingFileTable
                 files={filesWithoutReadType}
                 sequencingPlatforms={sequencingPlatforms}
               />
