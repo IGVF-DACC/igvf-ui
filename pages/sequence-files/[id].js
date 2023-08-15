@@ -90,7 +90,7 @@ export default function SequenceFile({
                     <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
                   </>
                 )}
-                {truthyOrZero(sequenceFile.lane) && (
+                {sequenceFile.lane && (
                   <>
                     <DataItemLabel>Lane</DataItemLabel>
                     <DataItemValue>{sequenceFile.lane}</DataItemValue>

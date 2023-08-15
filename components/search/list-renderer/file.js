@@ -35,7 +35,9 @@ export default function File({ item: file, accessoryData = null }) {
         <SearchListItemMeta>
           <div key="lab">{file.lab.title}</div>
           {summary && <div key="summary">{summary}</div>}
-          {file.dbxrefs && <div key="external resources">{file.dbxrefs}</div>}
+          {file.dbxrefs && (
+            <div key="external resources">{file.dbxrefs.join(", ")}</div>
+          )}
         </SearchListItemMeta>
         {fileSet && (
           <SearchListItemSupplement>
