@@ -101,6 +101,14 @@ export default function SignalFile({
                 )}
                 <DataItemLabel>Content Summary</DataItemLabel>
                 <DataItemValue>{signalFile.content_summary}</DataItemValue>
+                {sequenceFile.validation_error_detail && (
+                  <>
+                    <DataItemLabel>Validation Error Detail</DataItemLabel>
+                    <DataItemValue>
+                      {sequenceFile.validation_error_detail}
+                    </DataItemValue>
+                  </>
+                )}
               </FileDataItems>
             </DataArea>
           </DataPanel>
