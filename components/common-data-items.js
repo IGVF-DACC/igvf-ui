@@ -259,6 +259,8 @@ SampleDataItems.commonProperties = [
   "lot_id",
   "publication_identifiers",
   "revoke_detail",
+  "sorted_fraction",
+  "sorted_fraction_detail",
   "starting_amount",
   "starting_amount_units",
   "submitter_comment",
