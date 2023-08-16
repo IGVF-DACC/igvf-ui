@@ -12,27 +12,6 @@ import {
 } from "./search-list-item";
 
 export default function Treatment({ item: treatment }) {
-  const amountAndUnits =
-    treatment.amount !== undefined && treatment.amount_units !== undefined
-      ? `${treatment.amount} ${treatment.amount_units}${
-          treatment.amount === 1 ? "" : "s"
-        }`
-      : "";
-  const durationAndUnits =
-    treatment.duration !== undefined && treatment.duration_units !== undefined
-      ? `${treatment.duration} ${treatment.duration_units}${
-          treatment.duration === 1 ? "" : "s"
-        }`
-      : "";
-  const depletion = treatment.depletion ? "depletion" : "";
-  const titleElements = [
-    treatment.treatment_term_name,
-    treatment.treatment_type,
-    amountAndUnits,
-    durationAndUnits,
-    depletion,
-    treatment.purpose,
-  ].filter(Boolean);
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -42,7 +21,7 @@ export default function Treatment({ item: treatment }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{treatment.title}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{treatment.lab}</div>
+          <div key="lab">{treatment.lab.title}</div>
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={treatment} />

@@ -118,20 +118,22 @@ export default function Treatment({
                   </DataItemValue>
                 </>
               )}
+              {(treatment.lot_id ||
+                treatment.product_id ||
+                sources.length > 0) && (
+                <>
+                  <DataItemLabel>Sources</DataItemLabel>
+                  <DataItemValue>
+                    <ProductInfo
+                      lotId={treatment.lot_id}
+                      productId={treatment.product_id}
+                      sources={sources}
+                    />
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
-          {(treatment.lot_id || treatment.product_id || sources) && (
-            <>
-              <DataItemLabel>Sources</DataItemLabel>
-              <DataItemValue>
-                <ProductInfo
-                  lotId={treatment.lot_id}
-                  productId={treatment.product_id}
-                  sources={sources}
-                />
-              </DataItemValue>
-            </>
-          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>
