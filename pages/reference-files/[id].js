@@ -13,6 +13,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
@@ -50,11 +51,7 @@ export default function ReferenceFile({
         <JsonDisplay item={referenceFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={referenceFile}
-                fileSet={fileSet}
-                derivedFrom={derivedFrom}
-              >
+              <FileDataItems item={referenceFile} fileSet={fileSet}>
                 {referenceFile.assembly && (
                   <>
                     <DataItemLabel>Genome Assembly</DataItemLabel>
@@ -77,6 +74,20 @@ export default function ReferenceFile({
               </FileDataItems>
             </DataArea>
           </DataPanel>
+          {derivedFrom?.length > 0 && (
+            <>
+              <DataAreaTitle>
+                Files {sequenceFile.accession} derives from
+              </DataAreaTitle>
+              <DerivedFromTable derivedFrom={derivedFrom} />
+            </>
+          )}
+          {fileFormatSpecifications.length > 0 && (
+            <>
+              <DataAreaTitle>File Format Specifications</DataAreaTitle>
+              <DocumentTable documents={fileFormatSpecifications} />
+            </>
+          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>
