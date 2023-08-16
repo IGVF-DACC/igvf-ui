@@ -1923,10 +1923,10 @@ const profiles = {
         type: "string",
         enum: ["Homo sapiens", "Mus musculus", "Saccharomyces"],
       },
-      references: {
+      publication_identifiers: {
         title: "References",
         description:
-          "The references that provide more information about the object.",
+          "The publication identifiers that provide more information about the object.",
         type: "array",
         minItems: 1,
         uniqueItems: true,
@@ -2478,10 +2478,10 @@ const profiles = {
     $id: "/profiles/software.json",
     identifyingProperties: ["uuid", "aliases", "name"],
     properties: {
-      references: {
+      publication_identifiers: {
         title: "References",
         description:
-          "The references that provide more information about the object.",
+          "The publication identifiers that provide more information about the object.",
         type: "array",
         minItems: 1,
         uniqueItems: true,
@@ -2675,10 +2675,10 @@ const profiles = {
     identifyingProperties: ["uuid", "aliases", "software.name-version"],
 
     properties: {
-      references: {
+      publication_identifiers: {
         title: "References",
         description:
-          "The references that provide more information about the object.",
+          "The publication identifiers that provide more information about the object.",
         type: "array",
         minItems: 1,
         uniqueItems: true,
@@ -3467,10 +3467,10 @@ const profiles = {
         type: "string",
         enum: ["Homo sapiens", "Mus musculus", "Saccharomyces"],
       },
-      references: {
+      publication_identifiers: {
         title: "References",
         description:
-          "The references that provide more information about the object.",
+          "The publication identifiers that provide more information about the object.",
         type: "array",
         minItems: 1,
         uniqueItems: true,

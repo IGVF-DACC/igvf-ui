@@ -74,11 +74,11 @@ export function DonorDataItems({ item, children }) {
           </DataItemValue>
         </>
       )}
-      {item.references?.length > 0 && (
+      {item.publication_identifiers?.length > 0 && (
         <>
-          <DataItemLabel>References</DataItemLabel>
+          <DataItemLabel>Publication Identifiers</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={item.references} />
+            <DbxrefList dbxrefs={item.publication_identifiers} />
           </DataItemValue>
         </>
       )}
@@ -102,7 +102,7 @@ DonorDataItems.propTypes = {
 DonorDataItems.commonProperties = [
   "aliases",
   "ethnicities",
-  "references",
+  "publication_identifiers",
   "revoke_detail",
   "sex",
   "submitter_comment",
@@ -227,6 +227,14 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
+      {item.publication_identifiers && (
+        <>
+          <DataItemLabel>Publication Identifiers</DataItemLabel>
+          <DataItemValue>
+            <DbxrefList dbxrefs={item.publication_identifiers} />
+          </DataItemValue>
+        </>
+      )}
     </>
   );
 }
@@ -249,6 +257,7 @@ SampleDataItems.commonProperties = [
   "dbxrefs",
   "description",
   "lot_id",
+  "publication_identifiers",
   "revoke_detail",
   "starting_amount",
   "starting_amount_units",

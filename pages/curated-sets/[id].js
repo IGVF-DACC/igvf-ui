@@ -12,6 +12,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
@@ -66,6 +67,14 @@ export default function CuratedSet({
                   <DataItemLabel>Aliases</DataItemLabel>
                   <DataItemValue>
                     <AliasList aliases={curatedSet.aliases} />
+                  </DataItemValue>
+                </>
+              )}
+              {curatedSet.publication_identifiers?.length > 0 && (
+                <>
+                  <DataItemLabel>Publication Identifiers</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList dbxrefs={curatedSet.publication_identifiers} />
                   </DataItemValue>
                 </>
               )}

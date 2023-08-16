@@ -13,6 +13,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
@@ -58,6 +59,14 @@ export default function AnalysisSet({
                   <DataItemLabel>Aliases</DataItemLabel>
                   <DataItemValue>
                     <AliasList aliases={analysisSet.aliases} />
+                  </DataItemValue>
+                </>
+              )}
+              {analysisSet.publication_identifiers?.length > 0 && (
+                <>
+                  <DataItemLabel>Publication Identifiers</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList dbxrefs={analysisSet.publication_identifiers} />
                   </DataItemValue>
                 </>
               )}

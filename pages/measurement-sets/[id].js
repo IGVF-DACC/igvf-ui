@@ -13,6 +13,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
@@ -92,6 +93,16 @@ export default function MeasurementSet({
                   <DataItemLabel>Aliases</DataItemLabel>
                   <DataItemValue>
                     <AliasList aliases={measurementSet.aliases} />
+                  </DataItemValue>
+                </>
+              )}
+              {measurementSet.publication_identifiers?.length > 0 && (
+                <>
+                  <DataItemLabel>Publication Identifiers</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList
+                      dbxrefs={measurementSet.publication_identifiers}
+                    />
                   </DataItemValue>
                 </>
               )}
