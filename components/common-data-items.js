@@ -15,7 +15,13 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AliasList from "./alias-list";
-import { DataItemLabel, DataItemValue } from "./data-area";
+import {
+  DataItemLabel,
+  DataItemValue,
+  DataPanel,
+  DataArea,
+  DataAreaTitle,
+} from "./data-area";
 import DbxrefList from "./dbxref-list";
 import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
@@ -509,81 +515,85 @@ OntologyTermDataItems.commonProperties = [
 /**
  * Display data items common to all file-derived objects.
  */
-export function FileDataItems({
-  item,
-  fileSet = null,
-  derivedFrom = null,
-  children,
-}) {
+export function FileDataItems({ item, fileSet = null, children }) {
   return (
     <>
-      {fileSet && (
-        <>
-          <DataItemLabel>File Set</DataItemLabel>
-          <DataItemValue>
-            <Link
-              href={fileSet["@id"]}
-              aria-label={`FileSet ${fileSet.accession}`}
-              key={fileSet.uuid}
-            >
-              {fileSet.accession}
-            </Link>
-          </DataItemValue>
-        </>
-      )}
-      <DataItemLabel>File Format</DataItemLabel>
-      <DataItemValue>{item.file_format}</DataItemValue>
-      <DataItemLabel>Content Type</DataItemLabel>
-      <DataItemValue>{item.content_type}</DataItemValue>
-      <DataItemLabel>md5sum</DataItemLabel>
-      <DataItemValue>{item.md5sum}</DataItemValue>
-      {item.content_md5sum && (
-        <>
-          <DataItemLabel>Content MD5sum</DataItemLabel>
-          <DataItemValue>{item.content_md5sum}</DataItemValue>
-        </>
-      )}
-      {truthyOrZero(item.file_size) && (
-        <>
-          <DataItemLabel>File Size</DataItemLabel>
-          <DataItemValue>{item.file_size}</DataItemValue>
-        </>
-      )}
-      {derivedFrom?.length > 0 && (
-        <>
-          <DataItemLabel>Derived From</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList>
-              {derivedFrom.map((file) => (
+      <DataPanel>
+        <DataArea>
+          {fileSet && (
+            <>
+              <DataItemLabel>File Set</DataItemLabel>
+              <DataItemValue>
                 <Link
-                  href={file["@id"]}
-                  aria-label={`file ${file.accession}`}
-                  key={file.accession}
+                  href={fileSet["@id"]}
+                  aria-label={`FileSet ${fileSet.accession}`}
+                  key={fileSet.uuid}
                 >
-                  {file.accession}
+                  {fileSet.accession}
                 </Link>
-              ))}
-            </SeparatedList>
-          </DataItemValue>
-        </>
-      )}
+              </DataItemValue>
+            </>
+          )}
+          <DataItemLabel>File Format</DataItemLabel>
+          <DataItemValue>{item.file_format}</DataItemValue>
+          <DataItemLabel>Content Type</DataItemLabel>
+          <DataItemValue>{item.content_type}</DataItemValue>
+          {item.content_summary && (
+            <>
+              <DataItemLabel>Content Summary</DataItemLabel>
+              <DataItemValue>{item.content_summary}</DataItemValue>
+            </>
+          )}
+          {item.aliases?.length > 0 && (
+            <>
+              <DataItemLabel>Aliases</DataItemLabel>
+              <DataItemValue>
+                <AliasList aliases={item.aliases} />
+              </DataItemValue>
+            </>
+          )}
+          {item.dbxrefs?.length > 0 && (
+            <>
+              <DataItemLabel>External Resources</DataItemLabel>
+              <DataItemValue>
+                <DbxrefList dbxrefs={item.dbxrefs} />
+              </DataItemValue>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
+      <DataAreaTitle>File Content Details</DataAreaTitle>
+      <DataPanel>
+        <DataArea>
+          <DataItemLabel>md5sum</DataItemLabel>
+          <DataItemValue>{item.md5sum}</DataItemValue>
+          {item.content_md5sum && (
+            <>
+              <DataItemLabel>Content MD5sum</DataItemLabel>
+              <DataItemValue>{item.content_md5sum}</DataItemValue>
+            </>
+          )}
+          {truthyOrZero(item.file_size) && (
+            <>
+              <DataItemLabel>File Size</DataItemLabel>
+              <DataItemValue>{item.file_size}</DataItemValue>
+            </>
+          )}
+          {item.submitted_file_name && (
+            <>
+              <DataItemLabel>Submitted File Name</DataItemLabel>
+              <DataItemValue>{item.submitted_file_name}</DataItemValue>
+            </>
+          )}
+          {item.validation_error_detail && (
+            <>
+              <DataItemLabel>Validation Error Detail</DataItemLabel>
+              <DataItemValue>{item.validation_error_detail}</DataItemValue>
+            </>
+          )}
+        </DataArea>
+      </DataPanel>
       {children}
-      {item.aliases?.length > 0 && (
-        <>
-          <DataItemLabel>Aliases</DataItemLabel>
-          <DataItemValue>
-            <AliasList aliases={item.aliases} />
-          </DataItemValue>
-        </>
-      )}
-      {item.dbxrefs?.length > 0 && (
-        <>
-          <DataItemLabel>External Resources</DataItemLabel>
-          <DataItemValue>
-            <DbxrefList dbxrefs={item.dbxrefs} />
-          </DataItemValue>
-        </>
-      )}
     </>
   );
 }
@@ -601,10 +611,13 @@ FileDataItems.commonProperties = [
   "aliases",
   "content_md5sum",
   "content_type",
+  "content_summary",
   "dbxrefs",
   "file_format",
   "file_size",
   "md5sum",
+  "submitted_file_name",
+  "validation_error_detail",
 ];
 
 /**

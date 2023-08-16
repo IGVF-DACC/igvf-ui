@@ -13,6 +13,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
@@ -33,6 +34,7 @@ export default function SequenceFile({
   fileSet,
   documents,
   derivedFrom,
+  fileFormatSpecifications,
   attribution = null,
   isJson,
   seqSpec = null,
@@ -51,78 +53,78 @@ export default function SequenceFile({
           <FileHeaderDownload file={sequenceFile} />
         </ObjectPageHeader>
         <JsonDisplay item={sequenceFile} isJsonFormat={isJson}>
+          <FileDataItems item={sequenceFile} fileSet={fileSet}></FileDataItems>
+          <DataAreaTitle>Sequencing Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={sequenceFile}
-                fileSet={fileSet}
-                derivedFrom={derivedFrom}
-              >
-                {sequencingPlatform && (
-                  <>
-                    <DataItemLabel>Sequencing Platform</DataItemLabel>
-                    <DataItemValue>
-                      <Link href={sequencingPlatform["@id"]}>
-                        {sequencingPlatform.term_name}
-                      </Link>
-                    </DataItemValue>
-                  </>
-                )}
-                <DataItemLabel>Sequencing Run</DataItemLabel>
-                <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
-                {truthyOrZero(sequenceFile.read_count) && (
-                  <>
-                    <DataItemLabel>Read Count</DataItemLabel>
-                    <DataItemValue>{sequenceFile.read_count}</DataItemValue>
-                  </>
-                )}
-                {truthyOrZero(sequenceFile.mean_read_length) && (
-                  <>
-                    <DataItemLabel>Read Length</DataItemLabel>
-                    <DataItemValue>
-                      {sequenceFile.mean_read_length}
-                    </DataItemValue>
-                  </>
-                )}
-                {sequenceFile.flowcell_id && (
-                  <>
-                    <DataItemLabel>Flowcell ID</DataItemLabel>
-                    <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
-                  </>
-                )}
-                {sequenceFile.lane && (
-                  <>
-                    <DataItemLabel>Lane</DataItemLabel>
-                    <DataItemValue>{sequenceFile.lane}</DataItemValue>
-                  </>
-                )}
-                {sequenceFile.illumina_read_type && (
-                  <>
-                    <DataItemLabel>Illumina Read Type</DataItemLabel>
-                    <DataItemValue>
-                      {sequenceFile.illumina_read_type}
-                    </DataItemValue>
-                  </>
-                )}
-                {seqSpec && (
-                  <>
-                    <DataItemLabel>Associated seqspec File</DataItemLabel>
-                    <DataItemValue>
-                      <Link href={seqSpec["@id"]}>{seqSpec.accession}</Link>
-                    </DataItemValue>
-                  </>
-                )}
-                {sequenceFile.validation_error_detail && (
-                  <>
-                    <DataItemLabel>Validation Error Detail</DataItemLabel>
-                    <DataItemValue>
-                      {sequenceFile.validation_error_detail}
-                    </DataItemValue>
-                  </>
-                )}
-              </FileDataItems>
+              {sequencingPlatform && (
+                <>
+                  <DataItemLabel>Sequencing Platform</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={sequencingPlatform["@id"]}>
+                      {sequencingPlatform.term_name}
+                    </Link>
+                  </DataItemValue>
+                </>
+              )}
+              <DataItemLabel>Sequencing Run</DataItemLabel>
+              <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
+              {truthyOrZero(sequenceFile.read_count) && (
+                <>
+                  <DataItemLabel>Read Count</DataItemLabel>
+                  <DataItemValue>{sequenceFile.read_count}</DataItemValue>
+                </>
+              )}
+              {truthyOrZero(sequenceFile.mean_read_length) && (
+                <>
+                  <DataItemLabel>Read Length</DataItemLabel>
+                  <DataItemValue>{sequenceFile.mean_read_length}</DataItemValue>
+                </>
+              )}
+              {sequenceFile.flowcell_id && (
+                <>
+                  <DataItemLabel>Flowcell ID</DataItemLabel>
+                  <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
+                </>
+              )}
+              {sequenceFile.lane && (
+                <>
+                  <DataItemLabel>Lane</DataItemLabel>
+                  <DataItemValue>{sequenceFile.lane}</DataItemValue>
+                </>
+              )}
+              {sequenceFile.illumina_read_type && (
+                <>
+                  <DataItemLabel>Illumina Read Type</DataItemLabel>
+                  <DataItemValue>
+                    {sequenceFile.illumina_read_type}
+                  </DataItemValue>
+                </>
+              )}
+              {seqSpec && (
+                <>
+                  <DataItemLabel>Associated seqspec File</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={seqSpec["@id"]}>{seqSpec.accession}</Link>
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
+          {derivedFrom?.length > 0 && (
+            <>
+              <DataAreaTitle>
+                Files {sequenceFile.accession} derives from
+              </DataAreaTitle>
+              <DerivedFromTable derivedFrom={derivedFrom} />
+            </>
+          )}
+          {fileFormatSpecifications.length > 0 && (
+            <>
+              <DataAreaTitle>File Format Specifications</DataAreaTitle>
+              <DocumentTable documents={fileFormatSpecifications} />
+            </>
+          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>
@@ -145,6 +147,8 @@ SequenceFile.propTypes = {
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
+  // Set of documents for file specifications
+  fileFormatSpecifications: PropTypes.array,
   // Attribution for this file
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -167,6 +171,9 @@ export async function getServerSideProps({ params, req, query }) {
     const derivedFrom = sequenceFile.derived_from
       ? await requestFiles(sequenceFile.derived_from, request)
       : [];
+    const fileFormatSpecifications = sequenceFile.file_format_specifications
+      ? await requestDocuments(sequenceFile.file_format_specifications, request)
+      : [];
     const seqSpec = sequenceFile.seqspec
       ? await request.getObject(sequenceFile.seqspec, null)
       : null;
@@ -188,6 +195,7 @@ export async function getServerSideProps({ params, req, query }) {
         fileSet,
         documents,
         derivedFrom,
+        fileFormatSpecifications,
         pageContext: { title: sequenceFile.accession },
         breadcrumbs,
         attribution,
