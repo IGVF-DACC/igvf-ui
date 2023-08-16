@@ -33,6 +33,7 @@ export default function ReferenceFile({
   fileSet,
   documents,
   derivedFrom,
+  fileFormatSpecifications,
   attribution = null,
   isJson,
 }) {
@@ -49,35 +50,39 @@ export default function ReferenceFile({
           <FileHeaderDownload file={referenceFile} />
         </ObjectPageHeader>
         <JsonDisplay item={referenceFile} isJsonFormat={isJson}>
-          <DataPanel>
-            <DataArea>
-              <FileDataItems item={referenceFile} fileSet={fileSet}>
-                {referenceFile.assembly && (
-                  <>
-                    <DataItemLabel>Genome Assembly</DataItemLabel>
-                    <DataItemValue>{referenceFile.assembly}</DataItemValue>
-                  </>
-                )}
-                {referenceFile.source && (
-                  <>
-                    <DataItemLabel>Source</DataItemLabel>
-                    <DataItemValue>
-                      <Link
-                        href={referenceFile.source}
-                        key={referenceFile.source}
-                      >
-                        {referenceFile.source}
-                      </Link>
-                    </DataItemValue>
-                  </>
-                )}
-              </FileDataItems>
-            </DataArea>
-          </DataPanel>
+          <FileDataItems item={referenceFile} fileSet={fileSet}></FileDataItems>
+          {("assembly" in referenceFile || "source_url" in referenceFile) && (
+            <>
+              <DataAreaTitle>Reference Details</DataAreaTitle>
+              <DataPanel>
+                <DataArea>
+                  {referenceFile.assembly && (
+                    <>
+                      <DataItemLabel>Genome Assembly</DataItemLabel>
+                      <DataItemValue>{referenceFile.assembly}</DataItemValue>
+                    </>
+                  )}
+                  {referenceFile.source_url && (
+                    <>
+                      <DataItemLabel>Source URL</DataItemLabel>
+                      <DataItemValue>
+                        <Link
+                          href={referenceFile.source_url}
+                          key={referenceFile.source_url}
+                        >
+                          {referenceFile.source_url}
+                        </Link>
+                      </DataItemValue>
+                    </>
+                  )}
+                </DataArea>
+              </DataPanel>
+            </>
+          )}
           {derivedFrom?.length > 0 && (
             <>
               <DataAreaTitle>
-                Files {sequenceFile.accession} derives from
+                Files {referenceFile.accession} derives from
               </DataAreaTitle>
               <DerivedFromTable derivedFrom={derivedFrom} />
             </>
@@ -110,6 +115,8 @@ ReferenceFile.propTypes = {
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
+  // Set of documents for file specifications
+  fileFormatSpecifications: PropTypes.array,
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -130,6 +137,12 @@ export async function getServerSideProps({ params, req, query }) {
     const derivedFrom = referenceFile.derived_from
       ? await requestFiles(referenceFile.derived_from, request)
       : [];
+    const fileFormatSpecifications = referenceFile.file_format_specifications
+      ? await requestDocuments(
+          referenceFile.file_format_specifications,
+          request
+        )
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       referenceFile,
       "accession",
@@ -145,6 +158,7 @@ export async function getServerSideProps({ params, req, query }) {
         fileSet,
         documents,
         derivedFrom,
+        fileFormatSpecifications,
         pageContext: { title: referenceFile.accession },
         breadcrumbs,
         attribution,
