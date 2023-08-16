@@ -126,6 +126,9 @@ export const dbxrefPrefixMap = {
   RefSeq: {
     pattern: "https://www.ncbi.nlm.nih.gov/nuccore/{0}",
   },
+  SRA: {
+    pattern: "https://www.ncbi.nlm.nih.gov/Traces/sra/?run={0}",
+  },
   UniProtKB: {
     pattern: "http://www.uniprot.org/uniprot/{0}",
   },

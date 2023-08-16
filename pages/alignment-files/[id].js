@@ -35,6 +35,7 @@ export default function AlignmentFile({
   fileSet = null,
   documents,
   derivedFrom,
+  fileFormatSpecifications,
   referenceFiles,
   isJson,
 }) {
@@ -51,40 +52,40 @@ export default function AlignmentFile({
           <FileHeaderDownload file={alignmentFile} />
         </ObjectPageHeader>
         <JsonDisplay item={alignmentFile} isJsonFormat={isJson}>
+          <FileDataItems item={alignmentFile} fileSet={fileSet}></FileDataItems>
+          <DataAreaTitle>Alignment Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={alignmentFile} fileSet={fileSet}>
-                {referenceFiles.length > 0 && (
-                  <>
-                    <DataItemLabel>Reference Files</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {referenceFiles.map((file) => (
-                          <Link href={file["@id"]} key={file["@id"]}>
-                            {file.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
+              {referenceFiles.length > 0 && (
                 <>
-                  <DataItemLabel>Redacted</DataItemLabel>
+                  <DataItemLabel>Reference Files</DataItemLabel>
                   <DataItemValue>
-                    {alignmentFile.redacted ? "Yes" : "No"}
+                    <SeparatedList>
+                      {referenceFiles.map((file) => (
+                        <Link href={file["@id"]} key={file["@id"]}>
+                          {file.accession}
+                        </Link>
+                      ))}
+                    </SeparatedList>
                   </DataItemValue>
                 </>
-                <DataItemLabel>Filtered</DataItemLabel>
+              )}
+              <>
+                <DataItemLabel>Redacted</DataItemLabel>
                 <DataItemValue>
-                  {alignmentFile.filtered ? "Yes" : "No"}
+                  {alignmentFile.redacted ? "Yes" : "No"}
                 </DataItemValue>
-              </FileDataItems>
+              </>
+              <DataItemLabel>Filtered</DataItemLabel>
+              <DataItemValue>
+                {alignmentFile.filtered ? "Yes" : "No"}
+              </DataItemValue>
             </DataArea>
           </DataPanel>
           {derivedFrom?.length > 0 && (
             <>
               <DataAreaTitle>
-                Files {sequenceFile.accession} derives from
+                Files {alignmentFile.accession} derives from
               </DataAreaTitle>
               <DerivedFromTable derivedFrom={derivedFrom} />
             </>
@@ -117,6 +118,8 @@ AlignmentFile.propTypes = {
   documents: PropTypes.array.isRequired,
   // The file is derived from
   derivedFrom: PropTypes.array.isRequired,
+  // Set of documents for file specifications
+  fileFormatSpecifications: PropTypes.array,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // The file is derived from
@@ -139,6 +142,12 @@ export async function getServerSideProps({ params, req, query }) {
     const derivedFrom = alignmentFile.derived_from
       ? await requestFiles(alignmentFile.derived_from, request)
       : [];
+    const fileFormatSpecifications = alignmentFile.file_format_specifications
+      ? await requestDocuments(
+          alignmentFile.file_format_specifications,
+          request
+        )
+      : [];
     const referenceFiles = alignmentFile.reference_files
       ? await requestFiles(alignmentFile.reference_files, request)
       : [];
@@ -157,6 +166,7 @@ export async function getServerSideProps({ params, req, query }) {
         fileSet,
         documents,
         derivedFrom,
+        fileFormatSpecifications,
         pageContext: { title: alignmentFile.accession },
         breadcrumbs,
         attribution,
