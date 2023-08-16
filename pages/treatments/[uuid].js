@@ -16,6 +16,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
@@ -38,10 +39,21 @@ export default function Treatment({ treatment, documents, isJson }) {
               <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
               <DataItemLabel>Treatment Type</DataItemLabel>
               <DataItemValue>{treatment.treatment_type}</DataItemValue>
-              <DataItemLabel>Amount</DataItemLabel>
-              <DataItemValue>
-                {treatment.amount} {treatment.amount_units}
-              </DataItemValue>
+              {truthyOrZero(treatment.amount) && (
+                <>
+                  <DataItemLabel>Amount</DataItemLabel>
+                  <DataItemValue>
+                    {treatment.amount} {treatment.amount_units}
+                    {treatment.amount === 1 ? "" : "s"}
+                  </DataItemValue>
+                </>
+              )}
+              {treatment.depletion && (
+                <>
+                  <DataItemLabel>Depletion</DataItemLabel>
+                  <DataItemValue>{treatment.depletion}</DataItemValue>
+                </>
+              )}
               {truthyOrZero(treatment.duration) && (
                 <>
                   <DataItemLabel>Duration</DataItemLabel>
@@ -100,12 +112,25 @@ export default function Treatment({ treatment, documents, isJson }) {
               )}
             </DataArea>
           </DataPanel>
+          {(treatment.lot_id || treatment.product_id || treatment.sources) && (
+            <>
+              <DataItemLabel>Sources</DataItemLabel>
+              <DataItemValue>
+                <ProductInfo
+                  lotId={item.lot_id}
+                  productId={item.product_id}
+                  sources={sources}
+                />
+              </DataItemValue>
+            </>
+          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>
               <DocumentTable documents={documents} />
             </>
           )}
+          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>
@@ -117,6 +142,8 @@ Treatment.propTypes = {
   treatment: PropTypes.object.isRequired,
   // Documents treatment
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Attribution for this treatment
+  attribution: PropTypes.object,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
@@ -134,12 +161,14 @@ export async function getServerSideProps({ params, req, query }) {
       "treatment_term_id",
       req.headers.cookie
     );
+    const attribution = await buildAttribution(sample, req.headers.cookie);
     return {
       props: {
         treatment,
         documents,
         pageContext: { title: treatment.treatment_term_id },
         breadcrumbs,
+        attribution,
         isJson,
       },
     };
