@@ -13,6 +13,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
@@ -52,11 +53,7 @@ export default function AlignmentFile({
         <JsonDisplay item={alignmentFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={alignmentFile}
-                fileSet={fileSet}
-                derivedFrom={derivedFrom}
-              >
+              <FileDataItems item={alignmentFile} fileSet={fileSet}>
                 {referenceFiles.length > 0 && (
                   <>
                     <DataItemLabel>Reference Files</DataItemLabel>
@@ -81,11 +78,23 @@ export default function AlignmentFile({
                 <DataItemValue>
                   {alignmentFile.filtered ? "Yes" : "No"}
                 </DataItemValue>
-                <DataItemLabel>Content Summary</DataItemLabel>
-                <DataItemValue>{alignmentFile.content_summary}</DataItemValue>
               </FileDataItems>
             </DataArea>
           </DataPanel>
+          {derivedFrom?.length > 0 && (
+            <>
+              <DataAreaTitle>
+                Files {sequenceFile.accession} derives from
+              </DataAreaTitle>
+              <DerivedFromTable derivedFrom={derivedFrom} />
+            </>
+          )}
+          {fileFormatSpecifications.length > 0 && (
+            <>
+              <DataAreaTitle>File Format Specifications</DataAreaTitle>
+              <DocumentTable documents={fileFormatSpecifications} />
+            </>
+          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>
