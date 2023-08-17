@@ -23,6 +23,11 @@ export default function Model({ item: model }) {
         <SearchListItemMeta>
           <div key="lab">{model.lab.title}</div>
           {model.summary && <div key="summary">{model.summary}</div>}
+          {model.alternate_accessions?.length > 0 && (
+            <div key="alternate_accessions">
+              Alternate Accessions: {model.alternate_accessions.join(", ")}
+            </div>
+          )}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={model} />

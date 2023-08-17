@@ -22,6 +22,12 @@ export default function TechnicalSample({ item: technicalSample }) {
         <SearchListItemTitle>{technicalSample.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{technicalSample.lab.title}</div>
+          {technicalSample.alternate_accessions?.length > 0 && (
+            <div key="alternate_accessions">
+              Alternate Accessions:{" "}
+              {technicalSample.alternate_accessions.join(", ")}
+            </div>
+          )}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={technicalSample} />

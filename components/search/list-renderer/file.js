@@ -38,6 +38,11 @@ export default function File({ item: file, accessoryData = null }) {
           {file.dbxrefs && (
             <div key="external resources">{file.dbxrefs.join(", ")}</div>
           )}
+          {file.alternate_accessions?.length > 0 && (
+            <div key="alternate_accessions">
+              Alternate Accessions: {file.alternate_accessions.join(", ")}
+            </div>
+          )}
         </SearchListItemMeta>
         {fileSet && (
           <SearchListItemSupplement>

@@ -25,6 +25,11 @@ export default function CuratedSet({ item: curatedSet }) {
         <SearchListItemMeta>
           <div key="lab">{curatedSet.lab.title}</div>
           {summary && <div key="summary">{summary}</div>}
+          {curatedSet.alternate_accessions?.length > 0 && (
+            <div key="alternate_accessions">
+              Alternate Accessions: {curatedSet.alternate_accessions.join(", ")}
+            </div>
+          )}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={curatedSet} />

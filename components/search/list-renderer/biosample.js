@@ -22,6 +22,11 @@ export default function Biosample({ item: biosample }) {
         <SearchListItemTitle>{biosample.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{biosample.lab.title}</div>
+          {biosample.alternate_accessions?.length > 0 && (
+            <div key="alternate_accessions">
+              Alternate Accessions: {biosample.alternate_accessions.join(", ")}
+            </div>
+          )}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={biosample} />
