@@ -1,9 +1,11 @@
 // node_modules
-import { useAuth0 } from "@auth0/auth0-react";
-import { PencilSquareIcon } from "@heroicons/react/20/solid";
 import dynamic from "next/dynamic";
+import findDuplicatedPropertyKeys from "find-duplicated-property-keys";
+import { PencilSquareIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useContext, useEffect, useState } from "react";
+import _ from "lodash";
 // components
 import { Button, ButtonLink } from "./form-elements";
 import SessionContext from "./session-context";
@@ -22,6 +24,21 @@ export function canEdit(schema) {
   return Boolean(schema.identifyingProperties?.length > 0);
 }
 
+function jsonErrors(json) {
+  // cannot save if we cannot edit or if the JSON is wrong
+  try {
+    JSON.parse(json);
+    const r = findDuplicatedPropertyKeys(json);
+    if (r.length > 0) {
+      return [`duplicate key: '${r[0].key}'`];
+    }
+    return [];
+  } catch (err) {
+    // Save the error
+    return [err.message];
+  }
+}
+
 const Editor = dynamic(
   async () => {
     const ace = await import("react-ace");
@@ -36,16 +53,23 @@ const Editor = dynamic(
       return <div>Loading...</div>;
     },
     ssr: false,
-  },
+  }
 );
 
 const CONTRAST_MODE_LIGHT = "solarized_light";
 const CONTRAST_MODE_DARK = "solarized_dark";
 
-function JsonEditor({ text, onChange, enabled, errors = [] }) {
+export default function JsonEditor({
+  text,
+  onChange,
+  enabled,
+  onError = null,
+}) {
   const { darkMode } = useContext(GlobalContext);
 
   const [theme, setTheme] = useState(CONTRAST_MODE_LIGHT);
+
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     if (darkMode.enabled) {
@@ -54,6 +78,21 @@ function JsonEditor({ text, onChange, enabled, errors = [] }) {
       setTheme(CONTRAST_MODE_LIGHT);
     }
   }, [darkMode.enabled]);
+
+  useEffect(() => {
+    const newErrors = jsonErrors(text);
+    // If we have a new error,
+    // or if we previously had an error but now have [] then set Errors
+    if (
+      (newErrors.length > 0 && !_.isEqual(newErrors, errors)) ||
+      (newErrors.length === 0 && errors.length > 0)
+    ) {
+      if (onError !== null) {
+        onError(newErrors);
+      }
+      setErrors(newErrors);
+    }
+  }, [text, errors, onError]);
 
   const annotations = errors.map((msg) => ({
     row: 0,
@@ -103,10 +142,8 @@ JsonEditor.propTypes = {
   // When false, the text field on the editor cannot be changed, and when true
   // editing is allowed
   enabled: PropTypes.bool.isRequired,
-  // If there are any errors in the text, these are passed on to the react-ace `annotations`
-  // prop and are rendered in the editor component. Array elements are the error
-  // messages as strings.
-  errors: PropTypes.array,
+  // If defined, then this is called if the parsed text produces any JSON parse errors
+  onError: PropTypes.func,
 };
 
 function ControlButton({ onClick, isDisabled = false, children }) {
@@ -122,30 +159,27 @@ ControlButton.propTypes = {
   isDisabled: PropTypes.bool,
 };
 
-export default function EditJson({
-  text,
-  onChange,
-  enabled = true,
-  errors = [],
-}) {
-  return (
-    <div className="relative m-px w-full border-2 border-solid border-slate-300">
-      <JsonEditor
-        text={text}
-        onChange={onChange}
-        enabled={enabled}
-        errors={errors}
-      />
-    </div>
-  );
-}
+// export default function EditJson({
+//   text,
+//   onChange,
+//   enabled = true,
+// }) {
+//   return (
+//     <div className="relative m-px w-full border-2 border-solid border-slate-300">
+//       <JsonEditor
+//         text={text}
+//         onChange={onChange}
+//         enabled={enabled}
+//       />
+//     </div>
+//   );
+// }
 
-EditJson.propTypes = {
-  text: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  enabled: PropTypes.bool,
-  errors: PropTypes.array,
-};
+// EditJson.propTypes = {
+//   text: PropTypes.string.isRequired,
+//   onChange: PropTypes.func.isRequired,
+//   enabled: PropTypes.bool,
+// };
 
 export function EditLink({ item }) {
   const { profiles } = useContext(SessionContext);
