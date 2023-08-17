@@ -23,7 +23,11 @@ import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFileSets,
+  requestFiles,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -33,6 +37,7 @@ export default function ReferenceFile({
   fileSet,
   documents,
   derivedFrom,
+  derivedFromFileSets,
   fileFormatSpecifications,
   attribution = null,
   isJson,
@@ -84,7 +89,10 @@ export default function ReferenceFile({
               <DataAreaTitle>
                 Files {referenceFile.accession} derives from
               </DataAreaTitle>
-              <DerivedFromTable derivedFrom={derivedFrom} />
+              <DerivedFromTable
+                derivedFrom={derivedFrom}
+                derivedFromFileSets={derivedFromFileSets}
+              />
             </>
           )}
           {fileFormatSpecifications.length > 0 && (
@@ -115,6 +123,8 @@ ReferenceFile.propTypes = {
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
+  // Filesets derived from files belong to
+  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array,
   // Attribution for this ReferenceFile
@@ -137,6 +147,14 @@ export async function getServerSideProps({ params, req, query }) {
     const derivedFrom = referenceFile.derived_from
       ? await requestFiles(referenceFile.derived_from, request)
       : [];
+    const derivedFromFileSetPaths = derivedFrom
+      .map((file) => file.file_set)
+      .filter((fileSet) => fileSet);
+    const uniqueDerivedFromFileSetPaths = [...new Set(derivedFromFileSetPaths)];
+    const derivedFromFileSets =
+      uniqueDerivedFromFileSetPaths.length > 0
+        ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
+        : [];
     const fileFormatSpecifications = referenceFile.file_format_specifications
       ? await requestDocuments(
           referenceFile.file_format_specifications,
@@ -158,6 +176,7 @@ export async function getServerSideProps({ params, req, query }) {
         fileSet,
         documents,
         derivedFrom,
+        derivedFromFileSets,
         fileFormatSpecifications,
         pageContext: { title: referenceFile.accession },
         breadcrumbs,

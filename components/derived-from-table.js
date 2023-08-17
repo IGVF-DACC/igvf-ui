@@ -18,12 +18,14 @@ const columns = [
   {
     id: "file_set",
     title: "File Set",
-    display: (source) => {
-      return (
-        <Link href={source.source.file_set}>
-          {source.source.file_set.slice(-15, -1)}
-        </Link>
+    display: (cell, meta) => {
+      const fileSet = meta.derivedFromFileSets.find(
+        (fileSet) => fileSet["@id"] === cell.source.file_set
       );
+      <Link href={fileSet["@id"]}>{fileSet?.accession}</Link>;
+      return fileSet ? (
+        <Link href={fileSet["@id"]}>{fileSet?.accession}</Link>
+      ) : null;
     },
   },
   {
@@ -49,10 +51,15 @@ const columns = [
   },
 ];
 
-export default function DerivedFromTable({ derivedFrom }) {
+export default function DerivedFromTable({ derivedFrom, derivedFromFileSets }) {
   return (
     <DataGridContainer>
-      <SortableGrid data={derivedFrom} columns={columns} />
+      <SortableGrid
+        data={derivedFrom}
+        columns={columns}
+        meta={{ derivedFromFileSets }}
+        keyProp="@id"
+      />
     </DataGridContainer>
   );
 }
@@ -60,4 +67,6 @@ export default function DerivedFromTable({ derivedFrom }) {
 DerivedFromTable.propTypes = {
   // Files to display in the table
   derivedFrom: PropTypes.array.isRequired,
+  // Filesets of the files
+  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
