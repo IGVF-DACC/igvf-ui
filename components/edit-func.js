@@ -94,6 +94,8 @@ export default function JsonEditor({
     }
   }, [text, errors, onError]);
 
+  // Create the annotations used by the editor from error text that will
+  // show the JSON parse error
   const annotations = errors.map((msg) => ({
     row: 0,
     column: 0,
@@ -158,28 +160,6 @@ ControlButton.propTypes = {
   onClick: PropTypes.func,
   isDisabled: PropTypes.bool,
 };
-
-// export default function EditJson({
-//   text,
-//   onChange,
-//   enabled = true,
-// }) {
-//   return (
-//     <div className="relative m-px w-full border-2 border-solid border-slate-300">
-//       <JsonEditor
-//         text={text}
-//         onChange={onChange}
-//         enabled={enabled}
-//       />
-//     </div>
-//   );
-// }
-
-// EditJson.propTypes = {
-//   text: PropTypes.string.isRequired,
-//   onChange: PropTypes.func.isRequired,
-//   enabled: PropTypes.bool,
-// };
 
 export function EditLink({ item }) {
   const { profiles } = useContext(SessionContext);

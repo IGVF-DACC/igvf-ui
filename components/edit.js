@@ -102,21 +102,6 @@ export default function EditPage({ item }) {
     return isAuthenticated && editable;
   }
 
-  // function jsonErrors(json) {
-  //   // cannot save if we cannot edit or if the JSON is wrong
-  //   try {
-  //     JSON.parse(json);
-  //     const r = findDuplicatedPropertyKeys(json);
-  //     if (r.length > 0) {
-  //       return [`duplicate key: '${r[0].key}'`];
-  //     }
-  //     return [];
-  //   } catch (err) {
-  //     // Save the error
-  //     return [err.message];
-  //   }
-  // }
-
   /**
    * The text is the current editor text of the underlying Ace editor component.
    */
