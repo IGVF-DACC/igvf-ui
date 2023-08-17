@@ -603,8 +603,6 @@ FileDataItems.propTypes = {
   item: PropTypes.object.isRequired,
   // file set for this file
   fileSet: PropTypes.object,
-  // files this file is derived from
-  derivedFrom: PropTypes.array,
 };
 
 FileDataItems.commonProperties = [
