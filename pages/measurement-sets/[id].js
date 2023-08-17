@@ -32,7 +32,7 @@ import {
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { SplitIlluminaSequenceFiles } from "../../lib/files";
+import { splitIlluminaSequenceFiles } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function MeasurementSet({
@@ -46,7 +46,7 @@ export default function MeasurementSet({
   isJson,
 }) {
   const { filesWithReadType, filesWithoutReadType } =
-    SplitIlluminaSequenceFiles(files);
+    splitIlluminaSequenceFiles(files);
 
   return (
     <>

@@ -20,7 +20,7 @@ export type IlluminaSequenceFiles = {
  * @param {Array<DatabaseObject>} files Array of files to split
  * @returns {IlluminaSequenceFiles} Arrays of files with and without the `illumina_read_type`
  */
-export function SplitIlluminaSequenceFiles(
+export function splitIlluminaSequenceFiles(
   files: Array<DatabaseObject>
 ): IlluminaSequenceFiles {
   return files.reduce(

@@ -1,7 +1,7 @@
-import { SplitIlluminaSequenceFiles } from "../files";
+import { splitIlluminaSequenceFiles } from "../files";
 import type { DatabaseObject } from "../../globals.d";
 
-describe("Test the SplitIlluminaSequenceFiles function", () => {
+describe("Test the splitIlluminaSequenceFiles function", () => {
   it("returns both arrays when given an array of both types of files", () => {
     const files: Array<DatabaseObject> = [
       {
@@ -48,7 +48,7 @@ describe("Test the SplitIlluminaSequenceFiles function", () => {
       },
     ];
 
-    const results = SplitIlluminaSequenceFiles(files);
+    const results = splitIlluminaSequenceFiles(files);
     const withIlluminaIds = results.filesWithReadType.map(
       (file) => file.accession
     );
@@ -84,7 +84,7 @@ describe("Test the SplitIlluminaSequenceFiles function", () => {
       },
     ];
 
-    const results = SplitIlluminaSequenceFiles(files);
+    const results = splitIlluminaSequenceFiles(files);
     const withIlluminaIds = results.filesWithReadType.map(
       (file) => file.accession
     );
@@ -122,7 +122,7 @@ describe("Test the SplitIlluminaSequenceFiles function", () => {
       },
     ];
 
-    const results = SplitIlluminaSequenceFiles(files);
+    const results = splitIlluminaSequenceFiles(files);
     const withIlluminaIds = results.filesWithReadType.map(
       (file) => file.accession
     );
@@ -137,7 +137,7 @@ describe("Test the SplitIlluminaSequenceFiles function", () => {
   it("returns an empty array for both filesWithReadType and filesWithoutReadType when given an empty array", () => {
     const files: Array<DatabaseObject> = [];
 
-    const results = SplitIlluminaSequenceFiles(files);
+    const results = splitIlluminaSequenceFiles(files);
     const withIlluminaIds = results.filesWithReadType.map(
       (file) => file.accession
     );

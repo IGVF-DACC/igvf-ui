@@ -33,7 +33,7 @@ import {
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
-import { SplitIlluminaSequenceFiles } from "../../lib/files";
+import { splitIlluminaSequenceFiles } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function AuxiliarySet({
@@ -49,7 +49,7 @@ export default function AuxiliarySet({
   isJson,
 }) {
   const { filesWithReadType, filesWithoutReadType } =
-    SplitIlluminaSequenceFiles(files);
+    splitIlluminaSequenceFiles(files);
 
   return (
     <>
