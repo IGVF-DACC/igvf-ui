@@ -1,6 +1,6 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
+import Link from "next/link";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
@@ -20,6 +20,7 @@ import { FileHeaderDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -30,71 +31,77 @@ import {
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import {
+  checkForFileDownloadPath,
+  convertFileDownloadPathToFilePagePath,
+} from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function ReferenceFile({
-  referenceFile,
-  fileSet,
+export default function AlignmentFile({
+  attribution,
+  alignmentFile,
+  fileSet = null,
   documents,
   derivedFrom,
   derivedFromFileSets,
   fileFormatSpecifications,
-  attribution = null,
+  referenceFiles,
   isJson,
 }) {
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={referenceFile}>
+      <EditableItem item={alignmentFile}>
         <PagePreamble>
           <AlternateAccessions
-            alternateAccessions={referenceFile.alternate_accessions}
+            alternateAccessions={alignmentFile.alternate_accessions}
           />
         </PagePreamble>
-        <ObjectPageHeader item={referenceFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={referenceFile} />
+        <ObjectPageHeader item={alignmentFile} isJsonFormat={isJson}>
+          <FileHeaderDownload file={alignmentFile} />
         </ObjectPageHeader>
-        <JsonDisplay item={referenceFile} isJsonFormat={isJson}>
+        <JsonDisplay item={alignmentFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
               <FileDataItems
-                item={referenceFile}
+                item={alignmentFile}
                 fileSet={fileSet}
               ></FileDataItems>
             </DataArea>
           </DataPanel>
-          {(referenceFile.assembly || referenceFile.source_url) && (
-            <>
-              <DataAreaTitle>Reference Details</DataAreaTitle>
-              <DataPanel>
-                <DataArea>
-                  {referenceFile.assembly && (
-                    <>
-                      <DataItemLabel>Genome Assembly</DataItemLabel>
-                      <DataItemValue>{referenceFile.assembly}</DataItemValue>
-                    </>
-                  )}
-                  {referenceFile.source_url && (
-                    <>
-                      <DataItemLabel>Source URL</DataItemLabel>
-                      <DataItemValue>
-                        <Link
-                          href={referenceFile.source_url}
-                          key={referenceFile.source_url}
-                        >
-                          {referenceFile.source_url}
+          <DataAreaTitle>Alignment Details</DataAreaTitle>
+          <DataPanel>
+            <DataArea>
+              {referenceFiles.length > 0 && (
+                <>
+                  <DataItemLabel>Reference Files</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {referenceFiles.map((file) => (
+                        <Link href={file["@id"]} key={file["@id"]}>
+                          {file.accession}
                         </Link>
-                      </DataItemValue>
-                    </>
-                  )}
-                </DataArea>
-              </DataPanel>
-            </>
-          )}
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              <>
+                <DataItemLabel>Redacted</DataItemLabel>
+                <DataItemValue>
+                  {alignmentFile.redacted ? "Yes" : "No"}
+                </DataItemValue>
+              </>
+              <DataItemLabel>Filtered</DataItemLabel>
+              <DataItemValue>
+                {alignmentFile.filtered ? "Yes" : "No"}
+              </DataItemValue>
+            </DataArea>
+          </DataPanel>
           {derivedFrom.length > 0 && (
             <>
               <DataAreaTitle>
-                Files {referenceFile.accession} Derives From
+                Files {alignmentFile.accession} Derives From
               </DataAreaTitle>
               <DerivedFromTable
                 derivedFrom={derivedFrom}
@@ -121,38 +128,51 @@ export default function ReferenceFile({
   );
 }
 
-ReferenceFile.propTypes = {
-  // ReferenceFile object to display
-  referenceFile: PropTypes.object.isRequired,
+AlignmentFile.propTypes = {
+  // AlignmentFile object to display
+  alignmentFile: PropTypes.object.isRequired,
   // File set that contains this file
   fileSet: PropTypes.object,
   // Documents set associate with this file
-  documents: PropTypes.array,
+  documents: PropTypes.array.isRequired,
   // The file is derived from
-  derivedFrom: PropTypes.array,
+  derivedFrom: PropTypes.array.isRequired,
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
-  // Attribution for this ReferenceFile
-  attribution: PropTypes.object,
+  // Attribution for this file
+  attribution: PropTypes.object.isRequired,
+  // The file is derived from
+  referenceFiles: PropTypes.array.isRequired,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+  // Redirect to the file page if the URL is a file download link.
+  const isPathForFileDownload = checkForFileDownloadPath(resolvedUrl);
+  if (isPathForFileDownload) {
+    return {
+      redirect: {
+        destination: convertFileDownloadPathToFilePagePath(resolvedUrl),
+        permanent: false,
+      },
+    };
+  }
+
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const referenceFile = await request.getObject(
-    `/reference-files/${params.id}/`
+  const alignmentFile = await request.getObject(
+    `/alignment-files/${params.id}/`
   );
-  if (FetchRequest.isResponseSuccess(referenceFile)) {
-    const fileSet = await request.getObject(referenceFile.file_set, null);
-    const documents = referenceFile.documents
-      ? await requestDocuments(referenceFile.documents, request)
+  if (FetchRequest.isResponseSuccess(alignmentFile)) {
+    const fileSet = await request.getObject(alignmentFile.file_set, null);
+    const documents = alignmentFile.documents
+      ? await requestDocuments(alignmentFile.documents, request)
       : [];
-    const derivedFrom = referenceFile.derived_from
-      ? await requestFiles(referenceFile.derived_from, request)
+    const derivedFrom = alignmentFile.derived_from
+      ? await requestFiles(alignmentFile.derived_from, request)
       : [];
     const derivedFromFileSetPaths = derivedFrom
       .map((file) => file.file_set)
@@ -162,35 +182,39 @@ export async function getServerSideProps({ params, req, query }) {
       uniqueDerivedFromFileSetPaths.length > 0
         ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
         : [];
-    const fileFormatSpecifications = referenceFile.file_format_specifications
+    const fileFormatSpecifications = alignmentFile.file_format_specifications
       ? await requestDocuments(
-          referenceFile.file_format_specifications,
+          alignmentFile.file_format_specifications,
           request
         )
       : [];
+    const referenceFiles = alignmentFile.reference_files
+      ? await requestFiles(alignmentFile.reference_files, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
-      referenceFile,
+      alignmentFile,
       "accession",
       req.headers.cookie
     );
     const attribution = await buildAttribution(
-      referenceFile,
+      alignmentFile,
       req.headers.cookie
     );
     return {
       props: {
-        referenceFile,
+        alignmentFile,
         fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,
         fileFormatSpecifications,
-        pageContext: { title: referenceFile.accession },
+        pageContext: { title: alignmentFile.accession },
         breadcrumbs,
         attribution,
+        referenceFiles,
         isJson,
       },
     };
   }
-  return errorObjectToProps(referenceFile);
+  return errorObjectToProps(alignmentFile);
 }

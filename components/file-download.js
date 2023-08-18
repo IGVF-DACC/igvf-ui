@@ -11,9 +11,12 @@ const PENDING = "pending";
 
 /**
  * Display a file-download link and download icon. Files without an `upload_status` of
- * `file not found` show a download link.
+ * `file not found` or `pending` have a disabled download link. The API_URL environment variable
+ * not having a value also disables the download link.
  */
 export function FileDownload({ file, className = "" }) {
+  const isDownloadDisabled =
+    [FILE_NOT_FOUND, PENDING].includes(file.upload_status) || !API_URL;
   return (
     <>
       <ButtonLink
@@ -21,7 +24,7 @@ export function FileDownload({ file, className = "" }) {
         href={`${API_URL}${file.href}`}
         type="secondary"
         size="sm"
-        isDisabled={[FILE_NOT_FOUND, PENDING].includes(file.upload_status)}
+        isDisabled={isDownloadDisabled}
         hasIconOnly
         className={`${className}`}
       >

@@ -1,6 +1,6 @@
 // node_modules
-import PropTypes from "prop-types";
 import Link from "next/link";
+import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
@@ -20,7 +20,6 @@ import { FileHeaderDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -31,82 +30,98 @@ import {
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import {
+  checkForFileDownloadPath,
+  convertFileDownloadPathToFilePagePath,
+} from "../../lib/files";
+import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function SignalFile({
-  attribution,
-  signalFile,
-  fileSet = null,
+export default function SequenceFile({
+  sequenceFile,
+  fileSet,
   documents,
   derivedFrom,
   derivedFromFileSets,
   fileFormatSpecifications,
-  referenceFiles,
+  attribution = null,
   isJson,
+  seqSpec = null,
+  sequencingPlatform = null,
 }) {
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={signalFile}>
+      <EditableItem item={sequenceFile}>
         <PagePreamble>
           <AlternateAccessions
-            alternateAccessions={signalFile.alternate_accessions}
+            alternateAccessions={sequenceFile.alternate_accessions}
           />
         </PagePreamble>
-        <ObjectPageHeader item={signalFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={signalFile} />
+        <ObjectPageHeader item={sequenceFile} isJsonFormat={isJson}>
+          <FileHeaderDownload file={sequenceFile} />
         </ObjectPageHeader>
-        <JsonDisplay item={signalFile} isJsonFormat={isJson}>
+        <JsonDisplay item={sequenceFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
               <FileDataItems
-                item={signalFile}
+                item={sequenceFile}
                 fileSet={fileSet}
               ></FileDataItems>
             </DataArea>
           </DataPanel>
-          <DataAreaTitle>Signal Details</DataAreaTitle>
+          <DataAreaTitle>Sequencing Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              {referenceFiles.length > 0 && (
+              {sequenceFile.flowcell_id && (
                 <>
-                  <DataItemLabel>Reference Files</DataItemLabel>
+                  <DataItemLabel>Flowcell ID</DataItemLabel>
+                  <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
+                </>
+              )}
+              {sequenceFile.illumina_read_type && (
+                <>
+                  <DataItemLabel>Illumina Read Type</DataItemLabel>
                   <DataItemValue>
-                    <SeparatedList>
-                      {referenceFiles.map((file) => (
-                        <Link href={file["@id"]} key={file["@id"]}>
-                          {file.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
+                    {sequenceFile.illumina_read_type}
                   </DataItemValue>
                 </>
               )}
-              <>
-                <DataItemLabel>Strand Specificity</DataItemLabel>
-                <DataItemValue>{signalFile.strand_specificity}</DataItemValue>
-              </>
-              {"filtered" in signalFile && (
+              {truthyOrZero(sequenceFile.read_count) && (
                 <>
-                  <DataItemLabel>Filtered</DataItemLabel>
+                  <DataItemLabel>Read Count</DataItemLabel>
+                  <DataItemValue>{sequenceFile.read_count}</DataItemValue>
+                </>
+              )}
+              {truthyOrZero(sequenceFile.mean_read_length) && (
+                <>
+                  <DataItemLabel>Read Length</DataItemLabel>
+                  <DataItemValue>{sequenceFile.mean_read_length}</DataItemValue>
+                </>
+              )}
+              {sequencingPlatform && (
+                <>
+                  <DataItemLabel>Sequencing Platform</DataItemLabel>
                   <DataItemValue>
-                    {signalFile.filtered ? "Yes" : "No"}
+                    <Link href={sequencingPlatform["@id"]}>
+                      {sequencingPlatform.term_name}
+                    </Link>
                   </DataItemValue>
                 </>
               )}
-              {"normalized" in signalFile && (
+              <DataItemLabel>Sequencing Run</DataItemLabel>
+              <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
+              {sequenceFile.lane && (
                 <>
-                  <DataItemLabel>Normalized</DataItemLabel>
-                  <DataItemValue>
-                    {signalFile.normalized ? "Yes" : "No"}
-                  </DataItemValue>
+                  <DataItemLabel>Lane</DataItemLabel>
+                  <DataItemValue>{sequenceFile.lane}</DataItemValue>
                 </>
               )}
-              {signalFile.start_view_position && (
+              {seqSpec && (
                 <>
-                  <DataItemLabel>Start View Position</DataItemLabel>
+                  <DataItemLabel>Associated seqspec File</DataItemLabel>
                   <DataItemValue>
-                    {signalFile.start_view_position}
+                    <Link href={seqSpec["@id"]}>{seqSpec.accession}</Link>
                   </DataItemValue>
                 </>
               )}
@@ -115,7 +130,7 @@ export default function SignalFile({
           {derivedFrom.length > 0 && (
             <>
               <DataAreaTitle>
-                Files {signalFile.accession} Derives From
+                Files {sequenceFile.accession} Derives From
               </DataAreaTitle>
               <DerivedFromTable
                 derivedFrom={derivedFrom}
@@ -142,38 +157,50 @@ export default function SignalFile({
   );
 }
 
-SignalFile.propTypes = {
-  // SignalFile object to display
-  signalFile: PropTypes.object.isRequired,
+SequenceFile.propTypes = {
+  // SequenceFile object to display
+  sequenceFile: PropTypes.object.isRequired,
   // File set that contains this file
   fileSet: PropTypes.object,
   // Documents set associate with this file
-  documents: PropTypes.array.isRequired,
+  documents: PropTypes.array,
   // The file is derived from
-  derivedFrom: PropTypes.array.isRequired,
+  derivedFrom: PropTypes.array,
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
-  attribution: PropTypes.object.isRequired,
-  // The file is derived from
-  referenceFiles: PropTypes.array.isRequired,
+  attribution: PropTypes.object,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
+  // Linked seqspec configuration file
+  seqSpec: PropTypes.object,
+  // Sequencing platform ontology term object
+  sequencingPlatform: PropTypes.object,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+  // Redirect to the file page if the URL is a file download link.
+  if (checkForFileDownloadPath(resolvedUrl)) {
+    return {
+      redirect: {
+        destination: convertFileDownloadPathToFilePagePath(resolvedUrl),
+        permanent: false,
+      },
+    };
+  }
+
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const signalFile = await request.getObject(`/signal-files/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(signalFile)) {
-    const fileSet = await request.getObject(signalFile.file_set, null);
-    const documents = signalFile.documents
-      ? await requestDocuments(signalFile.documents, request)
+  const sequenceFile = await request.getObject(`/sequence-files/${params.id}/`);
+  if (FetchRequest.isResponseSuccess(sequenceFile)) {
+    const fileSet = await request.getObject(sequenceFile.file_set, null);
+    const documents = sequenceFile.documents
+      ? await requestDocuments(sequenceFile.documents, request)
       : [];
-    const derivedFrom = signalFile.derived_from
-      ? await requestFiles(signalFile.derived_from, request)
+    const derivedFrom = sequenceFile.derived_from
+      ? await requestFiles(sequenceFile.derived_from, request)
       : [];
     const derivedFromFileSetPaths = derivedFrom
       .map((file) => file.file_set)
@@ -183,33 +210,40 @@ export async function getServerSideProps({ params, req, query }) {
       uniqueDerivedFromFileSetPaths.length > 0
         ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
         : [];
-    const fileFormatSpecifications = signalFile.file_format_specifications
-      ? await requestDocuments(signalFile.file_format_specifications, request)
+    const fileFormatSpecifications = sequenceFile.file_format_specifications
+      ? await requestDocuments(sequenceFile.file_format_specifications, request)
       : [];
-    const referenceFiles = signalFile.reference_files
-      ? await requestFiles(signalFile.reference_files, request)
-      : [];
+    const seqSpec = sequenceFile.seqspec
+      ? await request.getObject(sequenceFile.seqspec, null)
+      : null;
+    const sequencingPlatform = sequenceFile.sequencing_platform
+      ? await request.getObject(sequenceFile.sequencing_platform, null)
+      : null;
     const breadcrumbs = await buildBreadcrumbs(
-      signalFile,
+      sequenceFile,
       "accession",
       req.headers.cookie
     );
-    const attribution = await buildAttribution(signalFile, req.headers.cookie);
+    const attribution = await buildAttribution(
+      sequenceFile,
+      req.headers.cookie
+    );
     return {
       props: {
-        signalFile,
+        sequenceFile,
         fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,
         fileFormatSpecifications,
-        pageContext: { title: signalFile.accession },
+        pageContext: { title: sequenceFile.accession },
         breadcrumbs,
         attribution,
-        referenceFiles,
         isJson,
+        seqSpec,
+        sequencingPlatform,
       },
     };
   }
-  return errorObjectToProps(signalFile);
+  return errorObjectToProps(sequenceFile);
 }
