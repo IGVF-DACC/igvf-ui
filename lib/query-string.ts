@@ -70,7 +70,7 @@ export default class QueryString {
   public static equal(
     query1: QueryString,
     query2: QueryString,
-    matchType: QueryStringMatchType = "EXACT"
+    matchType: QueryStringMatchType = "EXACT",
   ): boolean {
     const isSubsetMatching = query1.parsedQuery.reduce(
       (equal, query1Element) => {
@@ -90,7 +90,7 @@ export default class QueryString {
         // Once we can't find an equal element, we can stop searching.
         return false;
       },
-      true
+      true,
     );
 
     return matchType === "EXACT"
@@ -174,7 +174,7 @@ export default class QueryString {
   public addKeyValue(
     key: string,
     value: string | number,
-    polarity: QueryStringPolarity = "POSITIVE"
+    polarity: QueryStringPolarity = "POSITIVE",
   ): QueryString {
     const keyValue = {
       key,
@@ -196,7 +196,7 @@ export default class QueryString {
     this.parsedQuery = this.parsedQuery.filter(
       (element) =>
         element.key !== key ||
-        (value !== undefined ? element.value !== value : false)
+        (value !== undefined ? element.value !== value : false),
     );
     return this;
   }
@@ -214,7 +214,7 @@ export default class QueryString {
   public replaceKeyValue(
     key: string,
     value: string | number,
-    polarity: QueryStringPolarity = "POSITIVE"
+    polarity: QueryStringPolarity = "POSITIVE",
   ): QueryString {
     this.deleteKeyValue(key).addKeyValue(key, value, polarity);
     return this;
@@ -232,7 +232,7 @@ export default class QueryString {
    */
   public getKeyValues(
     key: string,
-    polarity: QueryStringPolarity = "POSITIVE"
+    polarity: QueryStringPolarity = "POSITIVE",
   ): Array<string> {
     return this.parsedQuery
       .filter((queryElement) => {
