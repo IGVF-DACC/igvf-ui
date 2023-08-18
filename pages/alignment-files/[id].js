@@ -57,7 +57,14 @@ export default function AlignmentFile({
           <FileHeaderDownload file={alignmentFile} />
         </ObjectPageHeader>
         <JsonDisplay item={alignmentFile} isJsonFormat={isJson}>
-          <FileDataItems item={alignmentFile} fileSet={fileSet}></FileDataItems>
+          <DataPanel>
+            <DataArea>
+              <FileDataItems
+                item={alignmentFile}
+                fileSet={fileSet}
+              ></FileDataItems>
+            </DataArea>
+          </DataPanel>
           <DataAreaTitle>Alignment Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
@@ -87,10 +94,10 @@ export default function AlignmentFile({
               </DataItemValue>
             </DataArea>
           </DataPanel>
-          {derivedFrom?.length > 0 && (
+          {derivedFrom.length > 0 && (
             <>
               <DataAreaTitle>
-                Files {alignmentFile.accession} derives from
+                Files {alignmentFile.accession} Derives From
               </DataAreaTitle>
               <DerivedFromTable
                 derivedFrom={derivedFrom}
@@ -129,7 +136,7 @@ AlignmentFile.propTypes = {
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
-  fileFormatSpecifications: PropTypes.array,
+  fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // The file is derived from

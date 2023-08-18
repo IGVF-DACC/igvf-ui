@@ -55,8 +55,15 @@ export default function ReferenceFile({
           <FileHeaderDownload file={referenceFile} />
         </ObjectPageHeader>
         <JsonDisplay item={referenceFile} isJsonFormat={isJson}>
-          <FileDataItems item={referenceFile} fileSet={fileSet}></FileDataItems>
-          {("assembly" in referenceFile || "source_url" in referenceFile) && (
+          <DataPanel>
+            <DataArea>
+              <FileDataItems
+                item={referenceFile}
+                fileSet={fileSet}
+              ></FileDataItems>
+            </DataArea>
+          </DataPanel>
+          {(referenceFile.assembly || referenceFile.source_url) && (
             <>
               <DataAreaTitle>Reference Details</DataAreaTitle>
               <DataPanel>
@@ -84,10 +91,10 @@ export default function ReferenceFile({
               </DataPanel>
             </>
           )}
-          {derivedFrom?.length > 0 && (
+          {derivedFrom.length > 0 && (
             <>
               <DataAreaTitle>
-                Files {referenceFile.accession} derives from
+                Files {referenceFile.accession} Derives From
               </DataAreaTitle>
               <DerivedFromTable
                 derivedFrom={derivedFrom}
@@ -126,7 +133,7 @@ ReferenceFile.propTypes = {
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
-  fileFormatSpecifications: PropTypes.array,
+  fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
