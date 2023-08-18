@@ -49,6 +49,7 @@ import FetchRequest from "../../../lib/fetch-request";
  */
 import AnalysisSet from "./analysis-set";
 import Award from "./award";
+import AuxiliarySet from "./auxiliary-set";
 import Biomarker from "./biomarker";
 import Biosample from "./biosample";
 import ConstructLibrary from "./construct-library";
@@ -78,6 +79,7 @@ const renderers = {
   AlignmentFile: File,
   AnalysisSet,
   AssayTerm: OntologyTerm,
+  AuxiliarySet,
   Award,
   Biomarker,
   ConstructLibrary,

@@ -37,10 +37,10 @@ const filesColumns = [
     id: "sequencing_platform",
     title: "Sequencing Platform",
     display: (cell, meta) => {
-      const platform = meta.sequencingPlatforms.find(
+      const matchingPlatform = meta.sequencingPlatforms.find(
         (platform) => platform["@id"] === cell.source.sequencing_platform
       );
-      return platform?.term_name || null;
+      return matchingPlatform?.term_name || null;
     },
   },
   {
