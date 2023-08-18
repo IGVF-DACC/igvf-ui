@@ -560,11 +560,6 @@ export function FileDataItems({ item, fileSet = null, children }) {
               </DataItemValue>
             </>
           )}
-        </DataArea>
-      </DataPanel>
-      <DataAreaTitle>File Content Details</DataAreaTitle>
-      <DataPanel>
-        <DataArea>
           <DataItemLabel>md5sum</DataItemLabel>
           <DataItemValue>{item.md5sum}</DataItemValue>
           {item.content_md5sum && (

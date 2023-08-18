@@ -62,18 +62,20 @@ export default function SequenceFile({
           <DataAreaTitle>Sequencing Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              {sequencingPlatform && (
+              {sequenceFile.flowcell_id && (
                 <>
-                  <DataItemLabel>Sequencing Platform</DataItemLabel>
+                  <DataItemLabel>Flowcell ID</DataItemLabel>
+                  <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
+                </>
+              )}
+              {sequenceFile.illumina_read_type && (
+                <>
+                  <DataItemLabel>Illumina Read Type</DataItemLabel>
                   <DataItemValue>
-                    <Link href={sequencingPlatform["@id"]}>
-                      {sequencingPlatform.term_name}
-                    </Link>
+                    {sequenceFile.illumina_read_type}
                   </DataItemValue>
                 </>
               )}
-              <DataItemLabel>Sequencing Run</DataItemLabel>
-              <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
               {truthyOrZero(sequenceFile.read_count) && (
                 <>
                   <DataItemLabel>Read Count</DataItemLabel>
@@ -86,24 +88,22 @@ export default function SequenceFile({
                   <DataItemValue>{sequenceFile.mean_read_length}</DataItemValue>
                 </>
               )}
-              {sequenceFile.flowcell_id && (
+              {sequencingPlatform && (
                 <>
-                  <DataItemLabel>Flowcell ID</DataItemLabel>
-                  <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
+                  <DataItemLabel>Sequencing Platform</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={sequencingPlatform["@id"]}>
+                      {sequencingPlatform.term_name}
+                    </Link>
+                  </DataItemValue>
                 </>
               )}
+              <DataItemLabel>Sequencing Run</DataItemLabel>
+              <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
               {sequenceFile.lane && (
                 <>
                   <DataItemLabel>Lane</DataItemLabel>
                   <DataItemValue>{sequenceFile.lane}</DataItemValue>
-                </>
-              )}
-              {sequenceFile.illumina_read_type && (
-                <>
-                  <DataItemLabel>Illumina Read Type</DataItemLabel>
-                  <DataItemValue>
-                    {sequenceFile.illumina_read_type}
-                  </DataItemValue>
                 </>
               )}
               {seqSpec && (
