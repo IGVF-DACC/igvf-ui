@@ -15,7 +15,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AliasList from "./alias-list";
-import { DataItemLabel, DataItemValue, DataPanel, DataArea } from "./data-area";
+import { DataItemLabel, DataItemValue } from "./data-area";
 import DbxrefList from "./dbxref-list";
 import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
