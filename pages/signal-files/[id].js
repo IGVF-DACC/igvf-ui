@@ -57,7 +57,14 @@ export default function SignalFile({
           <FileHeaderDownload file={signalFile} />
         </ObjectPageHeader>
         <JsonDisplay item={signalFile} isJsonFormat={isJson}>
-          <FileDataItems item={signalFile} fileSet={fileSet}></FileDataItems>
+          <DataPanel>
+            <DataArea>
+              <FileDataItems
+                item={signalFile}
+                fileSet={fileSet}
+              ></FileDataItems>
+            </DataArea>
+          </DataPanel>
           <DataAreaTitle>Signal Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
@@ -105,10 +112,10 @@ export default function SignalFile({
               )}
             </DataArea>
           </DataPanel>
-          {derivedFrom?.length > 0 && (
+          {derivedFrom.length > 0 && (
             <>
               <DataAreaTitle>
-                Files {signalFile.accession} derives from
+                Files {signalFile.accession} Derives From
               </DataAreaTitle>
               <DerivedFromTable
                 derivedFrom={derivedFrom}
@@ -147,7 +154,7 @@ SignalFile.propTypes = {
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
-  fileFormatSpecifications: PropTypes.array,
+  fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // The file is derived from

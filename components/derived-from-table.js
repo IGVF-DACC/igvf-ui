@@ -5,6 +5,9 @@ import Link from "next/link";
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
 
+/**
+ * Columns for derived from files.
+ */
 const columns = [
   {
     id: "@id",
@@ -22,10 +25,7 @@ const columns = [
       const fileSet = meta.derivedFromFileSets.find(
         (fileSet) => fileSet["@id"] === cell.source.file_set
       );
-      <Link href={fileSet["@id"]}>{fileSet?.accession}</Link>;
-      return fileSet ? (
-        <Link href={fileSet["@id"]}>{fileSet?.accession}</Link>
-      ) : null;
+      return fileSet && <Link href={fileSet["@id"]}>{fileSet.accession}</Link>;
     },
   },
   {
@@ -51,6 +51,9 @@ const columns = [
   },
 ];
 
+/**
+ * Display the given files in a table, useful for pages displaying files derived from other files.
+ */
 export default function DerivedFromTable({ derivedFrom, derivedFromFileSets }) {
   return (
     <DataGridContainer>
@@ -67,6 +70,6 @@ export default function DerivedFromTable({ derivedFrom, derivedFromFileSets }) {
 DerivedFromTable.propTypes = {
   // Files to display in the table
   derivedFrom: PropTypes.array.isRequired,
-  // Filesets of the files
+  // File sets of the files
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

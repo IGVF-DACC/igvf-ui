@@ -58,7 +58,14 @@ export default function SequenceFile({
           <FileHeaderDownload file={sequenceFile} />
         </ObjectPageHeader>
         <JsonDisplay item={sequenceFile} isJsonFormat={isJson}>
-          <FileDataItems item={sequenceFile} fileSet={fileSet}></FileDataItems>
+          <DataPanel>
+            <DataArea>
+              <FileDataItems
+                item={sequenceFile}
+                fileSet={fileSet}
+              ></FileDataItems>
+            </DataArea>
+          </DataPanel>
           <DataAreaTitle>Sequencing Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
@@ -116,10 +123,10 @@ export default function SequenceFile({
               )}
             </DataArea>
           </DataPanel>
-          {derivedFrom?.length > 0 && (
+          {derivedFrom.length > 0 && (
             <>
               <DataAreaTitle>
-                Files {sequenceFile.accession} derives from
+                Files {sequenceFile.accession} Derives From
               </DataAreaTitle>
               <DerivedFromTable
                 derivedFrom={derivedFrom}
@@ -158,7 +165,7 @@ SequenceFile.propTypes = {
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
-  fileFormatSpecifications: PropTypes.array,
+  fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
   attribution: PropTypes.object,
   // Is the format JSON?
