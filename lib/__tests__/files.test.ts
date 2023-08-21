@@ -1,4 +1,8 @@
-import { splitIlluminaSequenceFiles } from "../files";
+import {
+  checkForFileDownloadPath,
+  convertFileDownloadPathToFilePagePath,
+  splitIlluminaSequenceFiles,
+} from "../files";
 import type { DatabaseObject } from "../../globals.d";
 
 describe("Test the splitIlluminaSequenceFiles function", () => {
@@ -147,5 +151,41 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
 
     expect(withIlluminaIds).toEqual([]);
     expect(withoutIlluminaIds).toEqual([]);
+  });
+});
+
+describe("Test the checkForFileDownloadPath function", () => {
+  it("returns true when given a file download path", () => {
+    const path =
+      "/sequence-files/IGVFFI0001FSTQ/@@download/IGVFFI0001FSTQ.fastq.gz";
+    const result = checkForFileDownloadPath(path);
+    expect(result).toEqual(true);
+  });
+
+  it("returns false when given a file object path", () => {
+    const path = "/sequence-files/IGVFFI0001FSTQ/";
+    const result = checkForFileDownloadPath(path);
+    expect(result).toEqual(false);
+  });
+
+  it("returns false when given an empty string", () => {
+    const path = "";
+    const result = checkForFileDownloadPath(path);
+    expect(result).toEqual(false);
+  });
+});
+
+describe("Test the convertFileDownloadPathToFilePagePath function", () => {
+  it("returns a file page path when given a file download path", () => {
+    const path =
+      "/sequence-files/IGVFFI0001FSTQ/@@download/IGVFFI0001FSTQ.fastq.gz";
+    const result = convertFileDownloadPathToFilePagePath(path);
+    expect(result).toEqual("/sequence-files/IGVFFI0001FSTQ/");
+  });
+
+  it("returns an empty string when given a file object path", () => {
+    const path = "/sequence-files/IGVFFI0001FSTQ/";
+    const result = convertFileDownloadPathToFilePagePath(path);
+    expect(result).toEqual("");
   });
 });

@@ -35,3 +35,23 @@ export function splitIlluminaSequenceFiles(
     { filesWithReadType: [], filesWithoutReadType: [] }
   );
 }
+
+/**
+ * Check if a path is a file-download path.
+ * @param {string} path Path to check
+ * @returns {boolean} True if the URL is a file-download link, false otherwise
+ */
+export function checkForFileDownloadPath(path: string): boolean {
+  const matches = path.match(/^\/.+?\/.+?\/@@download\/.+$/);
+  return matches !== null;
+}
+
+/**
+ * Convert a file-download path to a path to the corresponding file-object page.
+ * @param {string} path Path to convert
+ * @returns {string} Path to the file page, or empty string if the path is not a file-download path
+ */
+export function convertFileDownloadPathToFilePagePath(url: string): string {
+  const matches = url.match(/^(\/.+?\/.+?\/)@@download\/.+$/);
+  return matches !== null ? matches[1] : "";
+}
