@@ -1337,6 +1337,7 @@ describe("Test the CuratedSet component", () => {
       "@id": "/curated-sets/IGVFDS0000AAAA/",
       "@type": ["CuratedSet", "FileSet", "Item"],
       accession: "IGVFDS0000AAAA",
+      alternate_accessions: ["IGVFDS0000AAAB"],
       aliases: ["igvf-dacc:GRCh38.p14_assembly"],
       award: "/awards/HG012012/",
       lab: {
