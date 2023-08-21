@@ -13,6 +13,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
@@ -22,7 +23,11 @@ import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFileSets,
+  requestFiles,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -32,6 +37,8 @@ export default function ReferenceFile({
   fileSet,
   documents,
   derivedFrom,
+  derivedFromFileSets,
+  fileFormatSpecifications,
   attribution = null,
   isJson,
 }) {
@@ -53,30 +60,54 @@ export default function ReferenceFile({
               <FileDataItems
                 item={referenceFile}
                 fileSet={fileSet}
-                derivedFrom={derivedFrom}
-              >
-                {referenceFile.assembly && (
-                  <>
-                    <DataItemLabel>Genome Assembly</DataItemLabel>
-                    <DataItemValue>{referenceFile.assembly}</DataItemValue>
-                  </>
-                )}
-                {referenceFile.source && (
-                  <>
-                    <DataItemLabel>Source</DataItemLabel>
-                    <DataItemValue>
-                      <Link
-                        href={referenceFile.source}
-                        key={referenceFile.source}
-                      >
-                        {referenceFile.source}
-                      </Link>
-                    </DataItemValue>
-                  </>
-                )}
-              </FileDataItems>
+              ></FileDataItems>
             </DataArea>
           </DataPanel>
+          {(referenceFile.assembly || referenceFile.source_url) && (
+            <>
+              <DataAreaTitle>Reference Details</DataAreaTitle>
+              <DataPanel>
+                <DataArea>
+                  {referenceFile.assembly && (
+                    <>
+                      <DataItemLabel>Genome Assembly</DataItemLabel>
+                      <DataItemValue>{referenceFile.assembly}</DataItemValue>
+                    </>
+                  )}
+                  {referenceFile.source_url && (
+                    <>
+                      <DataItemLabel>Source URL</DataItemLabel>
+                      <DataItemValue>
+                        <Link
+                          href={referenceFile.source_url}
+                          key={referenceFile.source_url}
+                        >
+                          {referenceFile.source_url}
+                        </Link>
+                      </DataItemValue>
+                    </>
+                  )}
+                </DataArea>
+              </DataPanel>
+            </>
+          )}
+          {derivedFrom.length > 0 && (
+            <>
+              <DataAreaTitle>
+                Files {referenceFile.accession} Derives From
+              </DataAreaTitle>
+              <DerivedFromTable
+                derivedFrom={derivedFrom}
+                derivedFromFileSets={derivedFromFileSets}
+              />
+            </>
+          )}
+          {fileFormatSpecifications.length > 0 && (
+            <>
+              <DataAreaTitle>File Format Specifications</DataAreaTitle>
+              <DocumentTable documents={fileFormatSpecifications} />
+            </>
+          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>
@@ -99,6 +130,10 @@ ReferenceFile.propTypes = {
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
+  // Filesets derived from files belong to
+  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Set of documents for file specifications
+  fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -119,6 +154,20 @@ export async function getServerSideProps({ params, req, query }) {
     const derivedFrom = referenceFile.derived_from
       ? await requestFiles(referenceFile.derived_from, request)
       : [];
+    const derivedFromFileSetPaths = derivedFrom
+      .map((file) => file.file_set)
+      .filter((fileSet) => fileSet);
+    const uniqueDerivedFromFileSetPaths = [...new Set(derivedFromFileSetPaths)];
+    const derivedFromFileSets =
+      uniqueDerivedFromFileSetPaths.length > 0
+        ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
+        : [];
+    const fileFormatSpecifications = referenceFile.file_format_specifications
+      ? await requestDocuments(
+          referenceFile.file_format_specifications,
+          request
+        )
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       referenceFile,
       "accession",
@@ -134,6 +183,8 @@ export async function getServerSideProps({ params, req, query }) {
         fileSet,
         documents,
         derivedFrom,
+        derivedFromFileSets,
+        fileFormatSpecifications,
         pageContext: { title: referenceFile.accession },
         breadcrumbs,
         attribution,

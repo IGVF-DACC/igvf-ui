@@ -13,6 +13,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
@@ -23,7 +24,11 @@ import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFileSets,
+  requestFiles,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -34,6 +39,8 @@ export default function SignalFile({
   fileSet = null,
   documents,
   derivedFrom,
+  derivedFromFileSets,
+  fileFormatSpecifications,
   referenceFiles,
   isJson,
 }) {
@@ -55,55 +62,73 @@ export default function SignalFile({
               <FileDataItems
                 item={signalFile}
                 fileSet={fileSet}
-                derivedFrom={derivedFrom}
-              >
-                {referenceFiles.length > 0 && (
-                  <>
-                    <DataItemLabel>Reference Files</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {referenceFiles.map((file) => (
-                          <Link href={file["@id"]} key={file["@id"]}>
-                            {file.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                <>
-                  <DataItemLabel>Strand Specificity</DataItemLabel>
-                  <DataItemValue>{signalFile.strand_specificity}</DataItemValue>
-                </>
-                {"filtered" in signalFile && (
-                  <>
-                    <DataItemLabel>Filtered</DataItemLabel>
-                    <DataItemValue>
-                      {signalFile.filtered ? "Yes" : "No"}
-                    </DataItemValue>
-                  </>
-                )}
-                {"normalized" in signalFile && (
-                  <>
-                    <DataItemLabel>Normalized</DataItemLabel>
-                    <DataItemValue>
-                      {signalFile.normalized ? "Yes" : "No"}
-                    </DataItemValue>
-                  </>
-                )}
-                {signalFile.start_view_position && (
-                  <>
-                    <DataItemLabel>Start View Position</DataItemLabel>
-                    <DataItemValue>
-                      {signalFile.start_view_position}
-                    </DataItemValue>
-                  </>
-                )}
-                <DataItemLabel>Content Summary</DataItemLabel>
-                <DataItemValue>{signalFile.content_summary}</DataItemValue>
-              </FileDataItems>
+              ></FileDataItems>
             </DataArea>
           </DataPanel>
+          <DataAreaTitle>Signal Details</DataAreaTitle>
+          <DataPanel>
+            <DataArea>
+              {referenceFiles.length > 0 && (
+                <>
+                  <DataItemLabel>Reference Files</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {referenceFiles.map((file) => (
+                        <Link href={file["@id"]} key={file["@id"]}>
+                          {file.accession}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              <>
+                <DataItemLabel>Strand Specificity</DataItemLabel>
+                <DataItemValue>{signalFile.strand_specificity}</DataItemValue>
+              </>
+              {"filtered" in signalFile && (
+                <>
+                  <DataItemLabel>Filtered</DataItemLabel>
+                  <DataItemValue>
+                    {signalFile.filtered ? "Yes" : "No"}
+                  </DataItemValue>
+                </>
+              )}
+              {"normalized" in signalFile && (
+                <>
+                  <DataItemLabel>Normalized</DataItemLabel>
+                  <DataItemValue>
+                    {signalFile.normalized ? "Yes" : "No"}
+                  </DataItemValue>
+                </>
+              )}
+              {signalFile.start_view_position && (
+                <>
+                  <DataItemLabel>Start View Position</DataItemLabel>
+                  <DataItemValue>
+                    {signalFile.start_view_position}
+                  </DataItemValue>
+                </>
+              )}
+            </DataArea>
+          </DataPanel>
+          {derivedFrom.length > 0 && (
+            <>
+              <DataAreaTitle>
+                Files {signalFile.accession} Derives From
+              </DataAreaTitle>
+              <DerivedFromTable
+                derivedFrom={derivedFrom}
+                derivedFromFileSets={derivedFromFileSets}
+              />
+            </>
+          )}
+          {fileFormatSpecifications.length > 0 && (
+            <>
+              <DataAreaTitle>File Format Specifications</DataAreaTitle>
+              <DocumentTable documents={fileFormatSpecifications} />
+            </>
+          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>
@@ -126,6 +151,10 @@ SignalFile.propTypes = {
   documents: PropTypes.array.isRequired,
   // The file is derived from
   derivedFrom: PropTypes.array.isRequired,
+  // Filesets derived from files belong to
+  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Set of documents for file specifications
+  fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // The file is derived from
@@ -146,6 +175,17 @@ export async function getServerSideProps({ params, req, query }) {
     const derivedFrom = signalFile.derived_from
       ? await requestFiles(signalFile.derived_from, request)
       : [];
+    const derivedFromFileSetPaths = derivedFrom
+      .map((file) => file.file_set)
+      .filter((fileSet) => fileSet);
+    const uniqueDerivedFromFileSetPaths = [...new Set(derivedFromFileSetPaths)];
+    const derivedFromFileSets =
+      uniqueDerivedFromFileSetPaths.length > 0
+        ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
+        : [];
+    const fileFormatSpecifications = signalFile.file_format_specifications
+      ? await requestDocuments(signalFile.file_format_specifications, request)
+      : [];
     const referenceFiles = signalFile.reference_files
       ? await requestFiles(signalFile.reference_files, request)
       : [];
@@ -161,6 +201,8 @@ export async function getServerSideProps({ params, req, query }) {
         fileSet,
         documents,
         derivedFrom,
+        derivedFromFileSets,
+        fileFormatSpecifications,
         pageContext: { title: signalFile.accession },
         breadcrumbs,
         attribution,
