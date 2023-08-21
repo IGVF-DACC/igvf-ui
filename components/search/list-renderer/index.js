@@ -82,6 +82,7 @@ const renderers = {
   AuxiliarySet,
   Award,
   Biomarker,
+  ConfigurationFile: File,
   ConstructLibrary,
   CuratedSet,
   Document,
