@@ -1793,6 +1793,11 @@ describe("Test the Treatment component", () => {
       treatment_term_id: "CHEBI:27810",
       treatment_term_name: "resorcinol",
       treatment_type: "chemical",
+      title: "Treatment of 10 μg/mL resorcinol for 30 minutes",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
       uuid: "4fbb0dc2-c72e-11ec-9d64-0242ac120002",
     };
 
@@ -1808,8 +1813,12 @@ describe("Test the Treatment component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title.textContent).toBe(
-      "resorcinol — chemical — 10 μg/mL — 30 minute"
+      "Treatment of 10 μg/mL resorcinol for 30 minutes"
     );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("chemical");
+    expect(meta).toHaveTextContent("antagonist");
   });
 
   it("renders a Treatment item without duration data", () => {
@@ -1818,11 +1827,16 @@ describe("Test the Treatment component", () => {
       "@type": ["Treatment", "Item"],
       amount: 10,
       amount_units: "μg/mL",
-      purpose: "antagonist",
+      purpose: "control",
       status: "released",
       treatment_term_id: "CHEBI:27810",
       treatment_term_name: "resorcinol",
-      treatment_type: "chemical",
+      treatment_type: "protein",
+      title: "Treatment of 10 μg/mL resorcinol",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
       uuid: "4fbb0dc2-c72e-11ec-9d64-0242ac120002",
     };
 
@@ -1837,7 +1851,48 @@ describe("Test the Treatment component", () => {
     expect(uniqueId).toHaveTextContent(/CHEBI:27810$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title.textContent).toBe("resorcinol — chemical — 10 μg/mL");
+    expect(title.textContent).toBe("Treatment of 10 μg/mL resorcinol");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("protein");
+    expect(meta).toHaveTextContent("control");
+  });
+
+  it("renders a depletion Treatment item", () => {
+    const item = {
+      "@id": "/treatments/1c7fafe2-ea6a-4fc1-91cb-e63796f26963/",
+      "@type": ["Treatment", "Item"],
+      purpose: "differentiation",
+      status: "released",
+      treatment_term_id: "CHEBI:8062",
+      treatment_term_name: "Caffeic acid",
+      treatment_type: "chemical",
+      duration: 1,
+      duration_units: "hour",
+      title: "Depletion of Caffeic acid for 1 hour",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      uuid: "1c7fafe2-ea6a-4fc1-91cb-e63796f26963",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Treatment item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Treatment/);
+    expect(uniqueId).toHaveTextContent(/CHEBI:8062$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title.textContent).toBe("Depletion of Caffeic acid for 1 hour");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("chemical");
+    expect(meta).toHaveTextContent("differentiation");
   });
 });
 
