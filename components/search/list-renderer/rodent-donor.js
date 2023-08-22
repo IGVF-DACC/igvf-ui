@@ -53,6 +53,12 @@ export default function RodentDonor({
           {phenotypicFeatures && (
             <div key="phenotypes">{phenotypicFeatures}</div>
           )}
+          {rodentDonor.alternate_accessions?.length > 0 && (
+            <div key="alternate_accessions">
+              Alternate Accessions:{" "}
+              {rodentDonor.alternate_accessions.join(", ")}
+            </div>
+          )}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={rodentDonor} />

@@ -53,6 +53,11 @@ export default function HumanDonor({ item: humanDonor, accessoryData = null }) {
           {phenotypicFeatures && (
             <div key="phenotypic-features">{phenotypicFeatures}</div>
           )}
+          {humanDonor.alternate_accessions?.length > 0 && (
+            <div key="alternate_accessions">
+              Alternate Accessions: {humanDonor.alternate_accessions.join(", ")}
+            </div>
+          )}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={humanDonor} />

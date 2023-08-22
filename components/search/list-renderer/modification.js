@@ -1,6 +1,7 @@
 import {
   SearchListItemContent,
   SearchListItemMain,
+  SearchListItemMeta,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -16,6 +17,9 @@ export default function Modification({ item: modification }) {
           {modification.uuid}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{modification.summary}</SearchListItemTitle>
+        <SearchListItemMeta>
+          <div key="lab">{modification.lab.title}</div>
+        </SearchListItemMeta>
       </SearchListItemMain>
     </SearchListItemContent>
   );

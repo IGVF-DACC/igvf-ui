@@ -27,6 +27,12 @@ export default function MeasurementSet({ item: measurementSet }) {
           {measurementSet.summary && (
             <div key="summary">{measurementSet.summary}</div>
           )}
+          {measurementSet.alternate_accessions?.length > 0 && (
+            <div key="alternate_accessions">
+              Alternate Accessions:{" "}
+              {measurementSet.alternate_accessions.join(", ")}
+            </div>
+          )}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={measurementSet} />

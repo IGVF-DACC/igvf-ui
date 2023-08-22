@@ -66,6 +66,12 @@ export default function ConstructLibrary({ item: constructLibrary }) {
         </SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{constructLibrary.lab.title}</div>
+          {constructLibrary.alternate_accessions?.length > 0 && (
+            <div key="alternate_accessions">
+              Alternate Accessions:{" "}
+              {constructLibrary.alternate_accessions.join(", ")}
+            </div>
+          )}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={constructLibrary} />

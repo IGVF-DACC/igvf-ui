@@ -232,6 +232,7 @@ describe("Test the Biosample component", () => {
       "@id": "/primary-cells/IGVFSM0000EEEE/",
       "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       accession: "IGVFSM0000EEEE",
+      alternate_accessions: ["IGVFSM0000EEEF", "IGVFSM0000EEEG"],
       award: {
         component: "data coordination",
         name: "HG012012",
@@ -279,6 +280,7 @@ describe("Test ConstructLibrary component", () => {
       "@id": "/construct-libraries/IGVFDS3140KDHS/",
       "@type": ["ConstructLibrary", "FileSet", "Item"],
       accession: "IGVFDS3140KDHS",
+      alternate_accessions: ["IGVFDS3140KDHT"],
       aliases: ["igvf:basic_construct_library_1"],
       lab: {
         "@id": "/labs/j-michael-cherry/",
@@ -517,6 +519,7 @@ describe("Test the HumanDonor component", () => {
       "@id": "/human-donors/IGVFDO856PXB/",
       "@type": ["HumanDonor", "Donor", "Item"],
       accession: "IGVFDO856PXB",
+      alternate_accessions: ["IGVFDO856PXC"],
       aliases: ["chongyuan-luo:AA F donor of fibroblasts"],
       award: "/awards/1U01HG012079-01/",
       ethnicities: ["African American"],
@@ -672,6 +675,7 @@ describe("Test the HumanDonor component", () => {
       "@id": "/human-donors/IGVFDO856PXB/",
       "@type": ["HumanDonor", "Donor", "Item"],
       accession: "IGVFDO856PXB",
+      alternate_accessions: ["IGVFDO856PXC"],
       aliases: ["chongyuan-luo:AA F donor of fibroblasts"],
       award: "/awards/1U01HG012079-01/",
       lab: "/labs/chongyuan-luo/",
@@ -806,6 +810,7 @@ describe("Test the RodentDonor component", () => {
       "@id": "/rodent-donors/IGVFDO524ORO/",
       "@type": ["RodentDonor", "Donor", "Item"],
       accession: "IGVFDO524ORO",
+      alternate_accessions: ["IGVFDO524ORP"],
       aliases: [
         "j-michael-cherry:alias_rodent_donor_1",
         "j-michael-cherry:rodent_donor_with_arterial_blood_pressure_trait",
@@ -852,6 +857,7 @@ describe("Test the RodentDonor component", () => {
       "@id": "/rodent-donors/IGVFDO524ORO/",
       "@type": ["RodentDonor", "Donor", "Item"],
       accession: "IGVFDO524ORO",
+      alternate_accessions: ["IGVFDO524ORP"],
       aliases: [
         "j-michael-cherry:alias_rodent_donor_1",
         "j-michael-cherry:rodent_donor_with_arterial_blood_pressure_trait",
@@ -978,6 +984,7 @@ describe("Test the TechnicalSample component", () => {
       "@id": "/technical-samples/IGVFSM515BSZ/",
       "@type": ["TechnicalSample", "Sample", "Item"],
       accession: "IGVFSM515BSZ",
+      alternate_accessions: ["IGVFSM515BSA"],
       award: "/awards/HG012012/",
       date_obtained: "2022-04-09",
       description: "The technical sample was archived due to poor quality.",
@@ -1092,6 +1099,7 @@ describe("Test File component", () => {
       "@id": "/reference-file/IGVFFI0000SQBR/",
       "@type": ["ReferenceFile", "File", "Item"],
       accession: "IGVFFI0000SQBR",
+      alternate_accessions: ["IGVFFI0000SQBS"],
       file_format: "txt",
       content_type: "sequence barcodes",
       lab: {
@@ -1128,6 +1136,7 @@ describe("Test File component", () => {
       "@id": "/reference-file/IGVFFI0000SQBR/",
       "@type": ["ReferenceFile", "File", "Item"],
       accession: "IGVFFI0000SQBR",
+      alternate_accessions: ["IGVFFI0000SQBS"],
       file_format: "txt",
       content_type: "sequence barcodes",
       lab: {
@@ -1167,6 +1176,7 @@ it("renders a File item with accessory data", () => {
     "@id": "/sequence-file/IGVFFI0000SEQU/",
     "@type": ["SequenceFile", "File", "Item"],
     accession: "IGVFFI0000SEQU",
+    alternate_accessions: ["IGVFFI0000SEQV"],
     file_format: "fastq",
     content_type: "reads",
     lab: {
@@ -1327,6 +1337,7 @@ describe("Test the CuratedSet component", () => {
       "@id": "/curated-sets/IGVFDS0000AAAA/",
       "@type": ["CuratedSet", "FileSet", "Item"],
       accession: "IGVFDS0000AAAA",
+      alternate_accessions: ["IGVFDS0000AAAB"],
       aliases: ["igvf-dacc:GRCh38.p14_assembly"],
       award: "/awards/HG012012/",
       lab: {
@@ -1402,6 +1413,7 @@ describe("Test the MeasurementSet component", () => {
       "@id": "/measurement-sets/IGVFDS6408BFHD/",
       "@type": ["MeasurementSet", "FileSet", "Item"],
       accession: "IGVFDS6408BFHD",
+      alternate_accessions: ["IGVFDS6408BFHE"],
       aliases: ["igvf:basic_measurement_set"],
       award: "/awards/HG012012/",
       lab: {
@@ -1440,6 +1452,7 @@ describe("Test the MeasurementSet component", () => {
       "@id": "/measurement-sets/IGVFDS6408BFHD/",
       "@type": ["MeasurementSet", "FileSet", "Item"],
       accession: "IGVFDS6408BFHD",
+      alternate_accessions: ["IGVFDS6408BFHE"],
       aliases: ["igvf:basic_measurement_set"],
       award: "/awards/HG012012/",
       lab: {
@@ -1955,6 +1968,7 @@ describe("Test the Model component", () => {
       "@id": "/models/IGVFDS1234MODL/",
       "@type": ["Model", "FileSet", "Item"],
       accession: "IGVFDS1234MODL",
+      alternate_accessions: ["IGVFDS1234MODM"],
       aliases: ["igvf:xpresso"],
       award: { "@id": "/awards/HG012012/", component: "data coordination" },
       lab: {
@@ -1993,6 +2007,7 @@ describe("Test the Model component", () => {
       "@id": "/models/IGVFDS1234MODL/",
       "@type": ["Model", "FileSet", "Item"],
       accession: "IGVFDS1234MODL",
+      alternate_accessions: ["IGVFDS1234MODM"],
       aliases: ["igvf:xpresso"],
       award: { "@id": "/awards/HG012012/", component: "data coordination" },
       lab: {
