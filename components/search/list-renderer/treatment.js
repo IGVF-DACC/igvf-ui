@@ -4,14 +4,12 @@ import PropTypes from "prop-types";
 import {
   SearchListItemContent,
   SearchListItemMain,
+  SearchListItemMeta,
   SearchListItemQuality,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
-// lib
-import { UC } from "../../../lib/constants";
-import { truthyOrZero } from "../../../lib/general";
 
 export default function Treatment({ item: treatment }) {
   return (
@@ -21,20 +19,12 @@ export default function Treatment({ item: treatment }) {
           <SearchListItemType item={treatment} />
           {treatment.treatment_term_id}
         </SearchListItemUniqueId>
-        {truthyOrZero(treatment.duration) ? (
-          <SearchListItemTitle>
-            {treatment.treatment_term_name} {UC.mdash}{" "}
-            {treatment.treatment_type} {UC.mdash} {treatment.amount}{" "}
-            {treatment.amount_units} {UC.mdash} {treatment.duration}{" "}
-            {treatment.duration_units}
-          </SearchListItemTitle>
-        ) : (
-          <SearchListItemTitle>
-            {treatment.treatment_term_name} {UC.mdash}{" "}
-            {treatment.treatment_type} {UC.mdash} {treatment.amount}{" "}
-            {treatment.amount_units}
-          </SearchListItemTitle>
-        )}
+        <SearchListItemTitle>{treatment.title}</SearchListItemTitle>
+        <SearchListItemMeta>
+          <div key="lab">{treatment.lab.title}</div>
+          <div key="treatment type">{treatment.treatment_type}</div>
+          <div key="purpose">{treatment.purpose}</div>
+        </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={treatment} />
     </SearchListItemContent>
