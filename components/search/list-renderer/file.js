@@ -19,6 +19,8 @@ export default function File({ item: file, accessoryData = null }) {
   const titleElements = [
     file.file_format,
     file.content_summary || file.content_type,
+    file.assembly,
+    file.transcriptome_annotation,
     file.illumina_read_type,
   ].filter(Boolean);
   const summary = file.summary;

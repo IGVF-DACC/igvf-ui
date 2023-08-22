@@ -67,7 +67,9 @@ export default function ReferenceFile({
               ></FileDataItems>
             </DataArea>
           </DataPanel>
-          {(referenceFile.assembly || referenceFile.source_url) && (
+          {(referenceFile.assembly ||
+            referenceFile.source_url ||
+            referenceFile.transcriptome_annotation) && (
             <>
               <DataAreaTitle>Reference Details</DataAreaTitle>
               <DataPanel>
@@ -76,6 +78,14 @@ export default function ReferenceFile({
                     <>
                       <DataItemLabel>Genome Assembly</DataItemLabel>
                       <DataItemValue>{referenceFile.assembly}</DataItemValue>
+                    </>
+                  )}
+                  {referenceFile.transcriptome_annotation && (
+                    <>
+                      <DataItemLabel>Transcriptome Annotation</DataItemLabel>
+                      <DataItemValue>
+                        {referenceFile.transcriptome_annotation}
+                      </DataItemValue>
                     </>
                   )}
                   {referenceFile.source_url && (

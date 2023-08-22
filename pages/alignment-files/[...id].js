@@ -86,16 +86,18 @@ export default function AlignmentFile({
                   </DataItemValue>
                 </>
               )}
-              <>
-                <DataItemLabel>Redacted</DataItemLabel>
-                <DataItemValue>
-                  {alignmentFile.redacted ? "Yes" : "No"}
-                </DataItemValue>
-              </>
-              <DataItemLabel>Filtered</DataItemLabel>
-              <DataItemValue>
-                {alignmentFile.filtered ? "Yes" : "No"}
-              </DataItemValue>
+              {alignmentFile.redacted && (
+                <>
+                  <DataItemLabel>Redacted</DataItemLabel>
+                  <DataItemValue>True</DataItemValue>
+                </>
+              )}
+              {alignmentFile.filtered && (
+                <>
+                  <DataItemLabel>Filtered</DataItemLabel>
+                  <DataItemValue>True</DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (

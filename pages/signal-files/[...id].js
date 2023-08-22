@@ -90,20 +90,16 @@ export default function SignalFile({
                 <DataItemLabel>Strand Specificity</DataItemLabel>
                 <DataItemValue>{signalFile.strand_specificity}</DataItemValue>
               </>
-              {"filtered" in signalFile && (
+              {signalFile.filtered && (
                 <>
                   <DataItemLabel>Filtered</DataItemLabel>
-                  <DataItemValue>
-                    {signalFile.filtered ? "Yes" : "No"}
-                  </DataItemValue>
+                  <DataItemValue>True</DataItemValue>
                 </>
               )}
-              {"normalized" in signalFile && (
+              {signalFile.normalized && (
                 <>
                   <DataItemLabel>Normalized</DataItemLabel>
-                  <DataItemValue>
-                    {signalFile.normalized ? "Yes" : "No"}
-                  </DataItemValue>
+                  <DataItemValue>True</DataItemValue>
                 </>
               )}
               {signalFile.start_view_position && (
