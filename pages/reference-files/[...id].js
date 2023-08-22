@@ -80,6 +80,14 @@ export default function ReferenceFile({
                       <DataItemValue>{referenceFile.assembly}</DataItemValue>
                     </>
                   )}
+                  {referenceFile.transcriptome_annotation && (
+                    <>
+                      <DataItemLabel>Transcriptome Annotation</DataItemLabel>
+                      <DataItemValue>
+                        {referenceFile.transcriptome_annotation}
+                      </DataItemValue>
+                    </>
+                  )}
                   {referenceFile.source_url && (
                     <>
                       <DataItemLabel>Source URL</DataItemLabel>
@@ -90,14 +98,6 @@ export default function ReferenceFile({
                         >
                           {referenceFile.source_url}
                         </Link>
-                      </DataItemValue>
-                    </>
-                  )}
-                  {referenceFile.transcriptome_annotation && (
-                    <>
-                      <DataItemLabel>Transcriptome Annotation</DataItemLabel>
-                      <DataItemValue>
-                        {referenceFile.transcriptome_annotation}
                       </DataItemValue>
                     </>
                   )}
