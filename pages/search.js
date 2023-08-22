@@ -19,7 +19,6 @@ import {
 import SessionContext from "../components/session-context";
 // lib
 import buildBreadcrumbs from "../lib/breadcrumbs";
-import { generateFacetKey } from "../lib/facets";
 import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { getQueryStringFromServerQuery } from "../lib/query-utils";
@@ -45,10 +44,7 @@ export default function Search({ searchResults, accessoryData = null }) {
       {pageTitle && <PagePreamble pageTitle={pageTitle} />}
       {searchResults.total > 0 ? (
         <div className="lg:flex lg:items-start lg:gap-1">
-          <FacetSection
-            key={generateFacetKey(searchResults)}
-            searchResults={searchResults}
-          />
+          <FacetSection searchResults={searchResults} />
           <div className="grow">
             <FacetTags searchResults={searchResults} />
             <SearchResultsHeader searchResults={searchResults} />

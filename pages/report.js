@@ -23,7 +23,6 @@ import SortableGrid from "../components/sortable-grid";
 // lib
 import buildBreadcrumbs from "../lib/breadcrumbs";
 import errorObjectToProps from "../lib/errors";
-import { generateFacetKey } from "../lib/facets";
 import FetchRequest from "../lib/fetch-request";
 import QueryString from "../lib/query-string";
 import {
@@ -197,10 +196,7 @@ export default function Report({ searchResults }) {
         {pageTitle && <PagePreamble pageTitle={pageTitle} />}
         {items.length > 0 ? (
           <div className="lg:flex lg:items-start lg:gap-1">
-            <FacetSection
-              key={generateFacetKey(searchResults)}
-              searchResults={searchResults}
-            />
+            <FacetSection searchResults={searchResults} />
             <div className="min-w-0 grow">
               <FacetTags searchResults={searchResults} />
               <SearchResultsHeader

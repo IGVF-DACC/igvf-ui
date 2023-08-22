@@ -8,17 +8,22 @@ import Icon from "../icon";
 // components/facets
 import facetRegistry from "./facet-registry";
 // lib
+import { getVisibleFacets } from "../../lib/facets";
 import { splitPathAndQueryString } from "../../lib/query-utils";
 
 /**
- * Get the currently selected facet terms that exist in the given facet group.
+ * Get the currently selected facet terms that exist in the given facet group. The "type" facet
+ * gets excluded because because it always has at least one term selected, and we don't want it to
+ * cause the facet group button to appear to contain a selected term.
  * @param {object} searchResults Search results from data provider
  * @param {object} facetGroup Facet group to check filters against
  * @returns {array} Array of facet fields that have selected terms
  */
 function getSelectedFacetTermsInGroup(searchResults, facetGroup) {
   return facetGroup.facet_fields.filter((facetField) =>
-    searchResults.filters.find((filter) => filter.field === facetField)
+    searchResults.filters.find(
+      (filter) => filter.field !== "type" && filter.field === facetField
+    )
   );
 }
 
@@ -26,16 +31,20 @@ function getSelectedFacetTermsInGroup(searchResults, facetGroup) {
  * Get all facets in the search results that are in the given facet group. If no facet group is
  * specified, return all facets except for the "type" facet.
  * @param {object} searchResults Search results from data provider
- * @param {object} facetGroup Group of facets to get existing facets from
+ * @param {object} facetGroup Single facet group from search results facet_groups
  * @returns {array} Facet objects in the group that exist in the search results
  */
 export function getFacetsInGroup(searchResults, facetGroup) {
   if (facetGroup) {
-    return searchResults.facets.filter((facet) =>
-      facetGroup.facet_fields.includes(facet.field)
-    );
+    return facetGroup.facet_fields
+      .map((facetField) =>
+        searchResults.facets.find((facet) => facet.field === facetField)
+      )
+      .filter((facet) => facet);
   }
-  return searchResults.facets.filter((facet) => facet.field !== "type");
+
+  // No groups, so return all visible facets.
+  return getVisibleFacets(searchResults.facets);
 }
 
 /**
@@ -146,6 +155,13 @@ export function FacetGroup({ searchResults, group = null }) {
 FacetGroup.propTypes = {
   // Search results from data provider
   searchResults: PropTypes.object.isRequired,
-  // Facet group to display because the user selected it
-  group: PropTypes.object,
+  // Facet group to display because the user selected it; from search results facet_groups
+  group: PropTypes.exact({
+    // Object type the facet group applies to
+    name: PropTypes.string.isRequired,
+    // Title of the facet group
+    title: PropTypes.string.isRequired,
+    // Facet fields in this group
+    facet_fields: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }),
 };
