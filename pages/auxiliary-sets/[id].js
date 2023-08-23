@@ -66,8 +66,14 @@ export default function AuxiliarySet({
             <DataArea>
               <DataItemLabel>Auxiliary Type</DataItemLabel>
               <DataItemValue>{auxiliarySet.auxiliary_type}</DataItemValue>
-              <DataItemLabel>Aliases</DataItemLabel>
-              <DataItemValue>{auxiliarySet.aliases.join(", ")}</DataItemValue>
+              {auxiliarySet.aliases?.length > 0 && (
+                <>
+                  <DataItemLabel>Aliases</DataItemLabel>
+                  <DataItemValue>
+                    {auxiliarySet.aliases.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
               {donors.length > 0 && (
                 <>
                   <DataItemLabel>Donors</DataItemLabel>
