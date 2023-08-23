@@ -15,13 +15,13 @@ describe("Test the <FacetTerms> component", () => {
         term={term}
         isChecked={false}
         onClick={onClick}
-      />,
+      />
     );
 
     const facetTerm = screen.getByTestId(`facetterm-${term.key}`);
     expect(facetTerm).toBeInTheDocument();
     const label = within(facetTerm).getByLabelText(
-      `${term.key} with ${term.doc_count} result`,
+      `${term.key} with ${term.doc_count} result`
     );
     expect(label).toBeInTheDocument();
     const resultCount = within(facetTerm).getByText(term.doc_count);
@@ -47,13 +47,13 @@ describe("Test the <FacetTerms> component", () => {
         term={term}
         isChecked={true}
         onClick={onClick}
-      />,
+      />
     );
 
     const facetTerm = screen.getByTestId(`facetterm-${term.key}`);
     expect(facetTerm).toBeInTheDocument();
     const label = within(facetTerm).getByLabelText(
-      `${term.key} with ${term.doc_count} results`,
+      `${term.key} with ${term.doc_count} results`
     );
     expect(label).toBeInTheDocument();
     const resultCount = within(facetTerm).getByText(term.doc_count);

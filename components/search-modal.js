@@ -21,7 +21,7 @@ const MAX_RECENT_TERMS = 5;
 function useRecentSearches(recentSearchId) {
   const [recentTermsJson, setRecentTermsJson] = useSessionStorage(
     recentSearchId,
-    JSON.stringify([]),
+    JSON.stringify([])
   );
   const recentTerms = JSON.parse(recentTermsJson);
 
@@ -36,7 +36,7 @@ function useRecentSearches(recentSearchId) {
     // fall off the bottom of the list.
     updatedRecentTerms.unshift(recentTerm);
     const limitedRecentTerms = JSON.stringify(
-      updatedRecentTerms.slice(0, MAX_RECENT_TERMS),
+      updatedRecentTerms.slice(0, MAX_RECENT_TERMS)
     );
 
     // Save the new array of recent terms to sessionStorage.

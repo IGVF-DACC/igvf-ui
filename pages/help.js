@@ -20,7 +20,7 @@ function Versions({ serverVersion = "" }) {
   const versions = [];
   if (UI_VERSION) {
     versions.push(
-      <div key="ui" data-testid="version-ui">{`UI:${UI_VERSION}`}</div>,
+      <div key="ui" data-testid="version-ui">{`UI:${UI_VERSION}`}</div>
     );
   }
   if (serverVersion) {
@@ -28,7 +28,7 @@ function Versions({ serverVersion = "" }) {
       <div
         key="server"
         data-testid="version-server"
-      >{`Server:${serverVersion}`}</div>,
+      >{`Server:${serverVersion}`}</div>
     );
   }
 
@@ -239,7 +239,7 @@ export async function getServerSideProps({ req }) {
     // Get all non-deleted help pages and their subpages.
     let helpPageRoot = null;
     const allHelpPages = pages["@graph"].filter(
-      (page) => page["@id"].startsWith("/help/") && page.status !== "deleted",
+      (page) => page["@id"].startsWith("/help/") && page.status !== "deleted"
     );
 
     // Build the help-page hierarchy.

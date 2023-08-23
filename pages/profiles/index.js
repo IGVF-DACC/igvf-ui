@@ -72,7 +72,7 @@ function SubTree({ tree, objectType, schemas, collectionTitles = null }) {
   const title = collectionTitles?.[objectType] || objectType;
   const schema = schemas[objectType];
   const childObjectTypes = Object.keys(tree).filter((childObjectType) =>
-    isDisplayableType(childObjectType, schemas, tree[childObjectType]),
+    isDisplayableType(childObjectType, schemas, tree[childObjectType])
   );
 
   return (
@@ -135,8 +135,8 @@ export default function Profiles({ schemas, collectionTitles = null }) {
       isDisplayableType(
         objectType,
         schemas,
-        schemas._hierarchy.Item[objectType],
-      ),
+        schemas._hierarchy.Item[objectType]
+      )
   );
   return (
     <>
@@ -177,7 +177,7 @@ export async function getServerSideProps({ req }) {
   if (FetchRequest.isResponseSuccess(schemas)) {
     const collectionTitles = await request.getObject(
       "/collection-titles/",
-      null,
+      null
     );
     const breadcrumbs = await buildBreadcrumbs(schemas, "", req.headers.cookie);
     return {

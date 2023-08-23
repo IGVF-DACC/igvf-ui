@@ -7,14 +7,14 @@ describe("Test the Error component", () => {
       <Error
         statusCode="AUTHENTICATION"
         title="Unable to sign in. You can still explore the site without viewing unreleased data."
-      />,
+      />
     );
 
     expect(screen.getByText("AUTHENTICATION")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Unable to sign in. You can still explore the site without viewing unreleased data.",
-      ),
+        "Unable to sign in. You can still explore the site without viewing unreleased data."
+      )
     ).toBeInTheDocument();
   });
 

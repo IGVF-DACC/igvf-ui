@@ -821,7 +821,7 @@ export default function NavigationSection() {
   // True if user has collapsed the sidebar menu
   const [isNavCollapsed, setIsNavCollapsed] = useSessionStorage(
     "nav-collapsed",
-    false,
+    false
   );
 
   /**

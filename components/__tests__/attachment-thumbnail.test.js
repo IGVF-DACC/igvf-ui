@@ -22,7 +22,7 @@ describe("Test AttachmentThumbnail component for non-previewable attachments", (
         attachment={attachment}
         ownerPath={ownerPath}
         alt="Basic non-previewable image attachment"
-      />,
+      />
     );
     const link = screen.getByRole("link");
     const downloadUrl = `http://localhost${ownerPath}${attachment.href}`;
@@ -38,7 +38,7 @@ describe("Test AttachmentThumbnail component for non-previewable attachments", (
         attachment={attachment}
         ownerPath={ownerPath}
         alt="Basic non-previewable image attachment"
-      />,
+      />
     );
     const link = screen.getByRole("link");
     const downloadUrl = `http://localhost${ownerPath}${attachment.href}`;
@@ -54,7 +54,7 @@ describe("Test AttachmentThumbnail component for non-previewable attachments", (
         ownerPath={ownerPath}
         alt="Basic non-previewable image attachment"
         size={50}
-      />,
+      />
     );
     const link = screen.getByRole("link");
     const downloadUrl = `http://localhost${ownerPath}${attachment.href}`;
@@ -84,7 +84,7 @@ describe("Test AttachmentThumbnail with previewable attachments", () => {
         attachment={attachment}
         ownerPath={ownerPath}
         alt="Basic previewable image attachment"
-      />,
+      />
     );
 
     // Make sure it generates an img tag with the correct image src.
@@ -120,7 +120,7 @@ describe("Test AttachmentThumbnail with previewable attachments", () => {
         ownerPath={ownerPath}
         alt="Basic previewable image attachment"
         size={200}
-      />,
+      />
     );
 
     // Make sure it generates an img tag with the correct image src.
@@ -135,7 +135,7 @@ describe("Test AttachmentThumbnail with previewable attachments", () => {
 
     // Click the close box to close the preview.
     const previewCloseBox = screen.getByLabelText(
-      "Close the full-size preview image",
+      "Close the full-size preview image"
     );
     fireEvent.click(previewCloseBox);
 

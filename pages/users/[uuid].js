@@ -88,7 +88,7 @@ export async function getServerSideProps({ params, req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       user,
       "title",
-      req.headers.cookie,
+      req.headers.cookie
     );
     return {
       props: {

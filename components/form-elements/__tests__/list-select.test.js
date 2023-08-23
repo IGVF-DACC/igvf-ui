@@ -15,7 +15,7 @@ describe("Test ListSelect", () => {
         <ListSelect.Option id="3" label="Option 3">
           Three
         </ListSelect.Option>
-      </ListSelect>,
+      </ListSelect>
     );
 
     // Get all option elements starting with the "Option" label
@@ -47,7 +47,7 @@ describe("Test ListSelect", () => {
         <ListSelect.Option id="3" label="Option 3">
           Three
         </ListSelect.Option>
-      </ListSelect>,
+      </ListSelect>
     );
 
     // Get all option elements starting with the "Option" label
@@ -72,7 +72,7 @@ describe("Test ListSelect", () => {
         <ListSelect.Option id="3" label="Option 3">
           Three
         </ListSelect.Option>
-      </ListSelect>,
+      </ListSelect>
     );
 
     const options = screen.queryAllByLabelText(/^Option \d list item$/);
@@ -92,7 +92,7 @@ describe("Test ListSelect", () => {
         <ListSelect.Option id="3" label="Option 3">
           Three
         </ListSelect.Option>
-      </ListSelect>,
+      </ListSelect>
     );
 
     const options = screen.queryAllByLabelText(/^Test Option/);
@@ -117,7 +117,7 @@ describe("Test ListSelect", () => {
           Three
         </ListSelect.Option>
         Non-React component child
-      </ListSelect>,
+      </ListSelect>
     );
 
     const options = screen.queryAllByLabelText(/^Test Option/);

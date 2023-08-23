@@ -15,7 +15,7 @@ describe("Test the Breadcrumbs React component", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve(profilesTitles),
-      }),
+      })
     );
 
     // Build breadcrumbs for a lab item.
@@ -33,7 +33,7 @@ describe("Test the Breadcrumbs React component", () => {
     render(
       <GlobalContext.Provider value={context}>
         <Breadcrumbs />
-      </GlobalContext.Provider>,
+      </GlobalContext.Provider>
     );
 
     const breadcrumbElement = screen.getByLabelText("breadcrumbs");
@@ -93,7 +93,7 @@ describe("Test the Breadcrumbs React component", () => {
         <SessionContext.Provider value={{ profiles }}>
           <Breadcrumbs />
         </SessionContext.Provider>
-      </GlobalContext.Provider>,
+      </GlobalContext.Provider>
     );
 
     const breadcrumbElement = screen.getByLabelText("breadcrumbs");
@@ -152,7 +152,7 @@ describe("Test the Breadcrumbs React component", () => {
         <SessionContext.Provider value={{ profiles }}>
           <Breadcrumbs />
         </SessionContext.Provider>
-      </GlobalContext.Provider>,
+      </GlobalContext.Provider>
     );
 
     const breadcrumbElement = screen.getByLabelText("breadcrumbs");
@@ -202,7 +202,7 @@ describe("Test the Breadcrumbs React component", () => {
     render(
       <GlobalContext.Provider value={context}>
         <Breadcrumbs />
-      </GlobalContext.Provider>,
+      </GlobalContext.Provider>
     );
 
     const breadcrumbElement = screen.getByLabelText("breadcrumbs");

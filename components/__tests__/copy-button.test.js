@@ -16,7 +16,7 @@ describe("Test <CopyButton> component", () => {
           }
           return "Copy It";
         }}
-      </CopyButton>,
+      </CopyButton>
     );
 
     const copyButton = screen.getByRole("button");
@@ -25,7 +25,7 @@ describe("Test <CopyButton> component", () => {
     fireEvent.click(copyButton);
     await screen.findByText("Copied!");
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      "the copied text",
+      "the copied text"
     );
 
     // Wait for the "Copied!" text to change back to "Copy It" after two seconds.
@@ -36,7 +36,7 @@ describe("Test <CopyButton> component", () => {
     render(
       <CopyButton target="the copied text">
         {(isCopied) => (isCopied ? "Copied" : "Copy It")}
-      </CopyButton>,
+      </CopyButton>
     );
 
     const copyButton = screen.getByRole("button");
@@ -54,14 +54,14 @@ describe("Test <CopyButton> component", () => {
             <ClipboardDocumentCheckIcon data-testid="clipboard" />
           )
         }
-      </CopyButton.Icon>,
+      </CopyButton.Icon>
     );
 
     const copyButton = screen.getByTestId("clipboard");
     fireEvent.click(copyButton);
     await screen.findByTestId("check");
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      "the copied text",
+      "the copied text"
     );
 
     // Wait for the check icon to change back to a clipboard icon after two seconds.

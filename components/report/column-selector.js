@@ -93,10 +93,10 @@ export default function ColumnSelector({
     const columnSpecs = getReportTypeColumnSpecs(reportType, profiles);
     const visibleColumnSpecs = getVisibleReportColumnSpecs(
       searchResults,
-      profiles,
+      profiles
     );
     const visibleColumnIds = visibleColumnSpecs.map(
-      (columnSpec) => columnSpec.id,
+      (columnSpec) => columnSpec.id
     );
     const isAnyColumnHidden = columnSpecs.length > visibleColumnSpecs.length;
 
@@ -104,7 +104,7 @@ export default function ColumnSelector({
     // the query string.
     const manuallyEnteredColumnIds = getManuallyEnteredColumnIds(
       visibleColumnIds,
-      columnSpecs,
+      columnSpecs
     );
 
     return (

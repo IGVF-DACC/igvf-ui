@@ -54,19 +54,19 @@ describe("Test the `<FacetGroupButton>` component", () => {
         group={facetGroup}
         isSelected={false}
         onClick={onClick}
-      />,
+      />
     );
 
     // Check that the button is rendered with the correct text and icon Tailwind CSS classes.
     const groupButton = screen.getByRole("button", { name: /Donor/ });
     expect(groupButton).toBeInTheDocument();
     expect(groupButton).toHaveClass(
-      "border-facet-group-button bg-facet-group-button text-facet-group-button",
+      "border-facet-group-button bg-facet-group-button text-facet-group-button"
     );
     const buttonIcon = screen.getByTestId("icon-filter");
     expect(buttonIcon).toBeInTheDocument();
     expect(buttonIcon).toHaveClass(
-      "[&>g>circle]:fill-none [&>g>circle]:stroke-black [&>g>g]:stroke-black",
+      "[&>g>circle]:fill-none [&>g>circle]:stroke-black [&>g>g]:stroke-black"
     );
 
     // Check that the aria-label is correct.
@@ -100,24 +100,24 @@ describe("Test the `<FacetGroupButton>` component", () => {
         group={facetGroup}
         isSelected={true}
         onClick={onClick}
-      />,
+      />
     );
 
     const groupButton = screen.getByRole("button", { name: /Donor/ });
     expect(groupButton).toBeInTheDocument();
     expect(groupButton).toHaveClass(
-      "border-facet-group-button-selected bg-facet-group-button-selected text-facet-group-button-selected",
+      "border-facet-group-button-selected bg-facet-group-button-selected text-facet-group-button-selected"
     );
     const buttonIcon = screen.getByTestId("icon-filter");
     expect(buttonIcon).toBeInTheDocument();
     expect(buttonIcon).toHaveClass(
-      "[&>g>circle]:fill-none [&>g>circle]:stroke-black [&>g>g]:stroke-black",
+      "[&>g>circle]:fill-none [&>g>circle]:stroke-black [&>g>g]:stroke-black"
     );
 
     // Check that the aria-label is correct.
     expect(groupButton).toHaveAttribute(
       "aria-label",
-      "Donor selected filter group",
+      "Donor selected filter group"
     );
 
     groupButton.click();
@@ -153,18 +153,18 @@ describe("Test the `<FacetGroupButton>` component", () => {
         group={facetGroup}
         isSelected={false}
         onClick={onClick}
-      />,
+      />
     );
 
     const groupButton = screen.getByRole("button", { name: /Donor/ });
     expect(groupButton).toBeInTheDocument();
     expect(groupButton).toHaveClass(
-      "border-facet-group-button bg-facet-group-button text-facet-group-button",
+      "border-facet-group-button bg-facet-group-button text-facet-group-button"
     );
     const buttonIcon = screen.getByTestId("icon-filter");
     expect(buttonIcon).toBeInTheDocument();
     expect(buttonIcon).toHaveClass(
-      "[&>g>circle]:fill-black [&>g>g]:stroke-white",
+      "[&>g>circle]:fill-black [&>g>g]:stroke-white"
     );
 
     // Check that the aria-label is correct.
@@ -203,18 +203,18 @@ describe("Test the `<FacetGroupButton>` component", () => {
         group={facetGroup}
         isSelected={true}
         onClick={onClick}
-      />,
+      />
     );
 
     const groupButton = screen.getByRole("button", { name: /Donor/ });
     expect(groupButton).toBeInTheDocument();
     expect(groupButton).toHaveClass(
-      "border-facet-group-button-selected bg-facet-group-button-selected text-facet-group-button-selected",
+      "border-facet-group-button-selected bg-facet-group-button-selected text-facet-group-button-selected"
     );
     const buttonIcon = screen.getByTestId("icon-filter");
     expect(buttonIcon).toBeInTheDocument();
     expect(buttonIcon).toHaveClass(
-      "[&>g>circle]:fill-black [&>g>g]:stroke-white",
+      "[&>g>circle]:fill-black [&>g>g]:stroke-white"
     );
 
     groupButton.click();
@@ -222,7 +222,7 @@ describe("Test the `<FacetGroupButton>` component", () => {
     // Check that the aria-label is correct.
     expect(groupButton).toHaveAttribute(
       "aria-label",
-      "Donor selected filter group",
+      "Donor selected filter group"
     );
 
     expect(onClick).toHaveBeenCalledTimes(1);
@@ -385,7 +385,7 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facetTermCheckbox).toBeInTheDocument();
     expect(facetTermCheckbox).toHaveAttribute(
       "aria-label",
-      expect.stringMatching(/^female with 6 results$/),
+      expect.stringMatching(/^female with 6 results$/)
     );
     expect(facetTermCheckbox).not.toHaveAttribute("checked");
 
@@ -394,7 +394,7 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facetTermCheckbox).toBeInTheDocument();
     expect(facetTermCheckbox).toHaveAttribute(
       "aria-label",
-      expect.stringMatching(/^male with 1 result$/),
+      expect.stringMatching(/^male with 1 result$/)
     );
     expect(facetTermCheckbox).not.toHaveAttribute("checked");
 
@@ -495,7 +495,7 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facetTermCheckbox).toBeInTheDocument();
     expect(facetTermCheckbox).toHaveAttribute(
       "aria-label",
-      expect.stringMatching(/^female with 6 results$/),
+      expect.stringMatching(/^female with 6 results$/)
     );
     expect(facetTermCheckbox).toHaveAttribute("checked");
 
@@ -504,7 +504,7 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facetTermCheckbox).toBeInTheDocument();
     expect(facetTermCheckbox).toHaveAttribute(
       "aria-label",
-      expect.stringMatching(/^male with 1 result$/),
+      expect.stringMatching(/^male with 1 result$/)
     );
     expect(facetTermCheckbox).not.toHaveAttribute("checked");
 
@@ -512,7 +512,7 @@ describe("Test the `<FacetGroup>` component", () => {
     facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
     facetTermCheckbox.click();
     expect(window.location.search).toBe(
-      "?type=HumanDonor&lab.title=Chongyuan+Luo%2C+UCLA",
+      "?type=HumanDonor&lab.title=Chongyuan+Luo%2C+UCLA"
     );
   });
 
@@ -573,7 +573,7 @@ describe("Test the `<FacetGroup>` component", () => {
 
     // Make sure no facet group buttons exist.
     const facetGroupButtonSection = screen.queryByTestId(
-      "facet-group-button-section",
+      "facet-group-button-section"
     );
     expect(facetGroupButtonSection).not.toBeInTheDocument();
 
@@ -596,7 +596,7 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facetTermCheckbox).toBeInTheDocument();
     expect(facetTermCheckbox).toHaveAttribute(
       "aria-label",
-      expect.stringMatching(/^networks with 4 results$/),
+      expect.stringMatching(/^networks with 4 results$/)
     );
     expect(facetTermCheckbox).toHaveAttribute("checked");
 
@@ -605,7 +605,7 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facetTermCheckbox).toBeInTheDocument();
     expect(facetTermCheckbox).toHaveAttribute(
       "aria-label",
-      expect.stringMatching(/^data coordination with 3 results$/),
+      expect.stringMatching(/^data coordination with 3 results$/)
     );
     expect(facetTermCheckbox).not.toHaveAttribute("checked");
 
@@ -672,7 +672,7 @@ describe("Test the `<FacetGroup>` component", () => {
 
     // Make sure no facet group buttons exist.
     const facetGroupButtonSection = screen.queryByTestId(
-      "facet-group-button-section",
+      "facet-group-button-section"
     );
     expect(facetGroupButtonSection).not.toBeInTheDocument();
 
@@ -692,7 +692,7 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facetTermCheckbox).toBeInTheDocument();
     expect(facetTermCheckbox).toHaveAttribute(
       "aria-label",
-      expect.stringMatching(/^female with 6 results$/),
+      expect.stringMatching(/^female with 6 results$/)
     );
     expect(facetTermCheckbox).not.toHaveAttribute("checked");
 
@@ -701,7 +701,7 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facetTermCheckbox).toBeInTheDocument();
     expect(facetTermCheckbox).toHaveAttribute(
       "aria-label",
-      expect.stringMatching(/^male with 1 result$/),
+      expect.stringMatching(/^male with 1 result$/)
     );
     expect(facetTermCheckbox).not.toHaveAttribute("checked");
 

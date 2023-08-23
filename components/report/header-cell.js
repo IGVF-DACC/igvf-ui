@@ -62,7 +62,7 @@ ReportHeaderCell.propTypes = {
     PropTypes.shape({
       // ID for each header cell
       id: PropTypes.string.isRequired,
-    }),
+    })
   ).isRequired,
   // 0-based index of the current header cell within `cells`
   cellIndex: PropTypes.number.isRequired,

@@ -50,7 +50,7 @@ describe("Test a search-list item", () => {
           </SearchListItemSupplement>
           <SearchListItemQuality item={term} />
         </SearchListItemContent>
-      </SearchListItem>,
+      </SearchListItem>
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
@@ -67,7 +67,7 @@ describe("Test a search-list item", () => {
     expect(supplement).toHaveTextContent("Term Supplement");
 
     const supplementContent = screen.getByTestId(
-      "search-list-item-supplement-content",
+      "search-list-item-supplement-content"
     );
     expect(supplementContent).toHaveTextContent("Term A, Term B, Term C");
   });

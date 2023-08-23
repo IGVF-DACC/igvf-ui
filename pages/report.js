@@ -53,12 +53,12 @@ function updateColumnVisibilityQuery(
   queryString,
   columnId,
   isVisible,
-  defaultColumnSpecs,
+  defaultColumnSpecs
 ) {
   const query = new QueryString(queryString);
   const hasSpecificFields = query.getKeyValues("field").length > 0;
   const defaultColumnIds = defaultColumnSpecs.map(
-    (columnSpec) => columnSpec.id,
+    (columnSpec) => columnSpec.id
   );
 
   // To prepare the query string for adding or removing a "field=" parameter, convert any query
@@ -87,7 +87,7 @@ function updateColumnVisibilityQuery(
   const fieldValues = query.getKeyValues("field");
   const isFieldsMatchDefaultColumns = _.isEqual(
     _.sortBy(fieldValues),
-    _.sortBy(defaultColumnIds),
+    _.sortBy(defaultColumnIds)
   );
   if (isFieldsMatchDefaultColumns) {
     query.deleteKeyValue("field");
@@ -107,7 +107,7 @@ function updateColumnVisibilityQuery(
 function updateAllColumnsVisibilityQuery(
   queryString,
   isAllVisible,
-  allColumnSpecs,
+  allColumnSpecs
 ) {
   const query = new QueryString(queryString);
   if (isAllVisible) {
@@ -167,7 +167,7 @@ export default function Report({ searchResults }) {
       queryString,
       columnId,
       isVisible,
-      defaultColumnSpecs,
+      defaultColumnSpecs
     );
     router.push(`${path}?${updatedQueryString}`);
   }
@@ -181,7 +181,7 @@ export default function Report({ searchResults }) {
     const updatedQueryString = updateAllColumnsVisibilityQuery(
       queryString,
       isAllVisible,
-      allColumnSpecs,
+      allColumnSpecs
     );
     router.push(`${path}?${updatedQueryString}`);
   }
@@ -263,7 +263,7 @@ export async function getServerSideProps({ req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       searchResults,
       "title",
-      req.headers.cookie,
+      req.headers.cookie
     );
     return {
       props: {

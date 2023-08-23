@@ -7,7 +7,7 @@ describe("Test CHEVRON_NAV page component", () => {
     render(
       <PageComponent
         spec={`CHEVRON_NAV${UC.newline}First Topic=#first-topic|404040${UC.newline}Second Topic=https://www.genome.gov/|202020${UC.newline}Third Topic=/pages/help|f0f0f0`}
-      />,
+      />
     );
 
     // Make sure a nav appears.

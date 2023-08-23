@@ -153,7 +153,7 @@ const PageMetaEditor = memo(function PageMetaEditor({
 }) {
   // True if the live page name conflicts with an existing one
   const [isNameConflicting, setNameConflicting] = useState(
-    detectConflictingName(livePageMeta.name, pages),
+    detectConflictingName(livePageMeta.name, pages)
   );
   // True if the live page name is empty
   const [isNameEmpty, setNameEmpty] = useState(!livePageMeta.name);
@@ -675,7 +675,7 @@ function reducerLiveBlocks(state, action) {
       // Update the content or type of the block.
       {
         const updatedBlock = updatedState.find(
-          (block) => block["@id"] === action.blockId,
+          (block) => block["@id"] === action.blockId
         );
         if (updatedBlock) {
           if (action.content !== undefined) {
@@ -692,7 +692,7 @@ function reducerLiveBlocks(state, action) {
     case LIVE_BLOCK_ADD_BELOW:
       {
         const index = updatedState.findIndex(
-          (block) => block["@id"] === action.blockId,
+          (block) => block["@id"] === action.blockId
         );
         if (index !== -1) {
           if (action.type === LIVE_BLOCK_ADD_ABOVE) {
@@ -709,7 +709,7 @@ function reducerLiveBlocks(state, action) {
     case LIVE_BLOCK_DELETE:
       {
         const index = updatedState.findIndex(
-          (block) => block["@id"] === action.blockId,
+          (block) => block["@id"] === action.blockId
         );
         if (index !== -1) {
           updatedState.splice(index, 1);
@@ -745,7 +745,7 @@ function PageEditor({ blocks, pageMeta, awards, labs, pages, onClose }) {
   const [liveBlocks, dispatchLiveBlocks] = useReducer(
     reducerLiveBlocks,
     [],
-    () => sliceBlocks(blocks),
+    () => sliceBlocks(blocks)
   );
   // Page metadata state, modified by the page meta editor.
   const [livePageMeta, dispatchLivePageMeta] = useReducer(reducerLivePageMeta, {
@@ -864,7 +864,7 @@ PageEditor.propTypes = {
       body: PropTypes.string.isRequired,
       "@type": PropTypes.string.isRequired,
       direction: PropTypes.string.isRequired,
-    }),
+    })
   ).isRequired,
   // Page metadata states
   pageMeta: PropTypes.exact({
@@ -918,11 +918,11 @@ export default function Page({
 }) {
   // Blocks of content; gets updated on save
   const [editableBlocks, setEditableBlocks] = useState(() =>
-    sliceBlocks(page.layout.blocks),
+    sliceBlocks(page.layout.blocks)
   );
   // Page metadata; gets updated on save
   const [editablePageMeta, setEditablePageMeta] = useState(() =>
-    copyPageMeta(page),
+    copyPageMeta(page)
   );
   // @id of the current page; gets updated on save
   const [editablePageId, setEditablePageId] = useState(page?.["@id"] || "");
@@ -986,10 +986,10 @@ export default function Page({
             setRedirectToPage(updatedPage["@id"]);
           } else {
             setActiveError(
-              `${updatedPage.description} The page has not been saved.`,
+              `${updatedPage.description} The page has not been saved.`
             );
           }
-        },
+        }
       );
     } else {
       if (isNewPage) {

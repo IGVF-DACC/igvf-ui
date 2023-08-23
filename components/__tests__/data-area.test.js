@@ -22,7 +22,7 @@ describe("Test the DataArea component", () => {
           </DataArea>
         </DataPanel>
         <DataAreaTitle>Treatments</DataAreaTitle>
-      </>,
+      </>
     );
 
     const dataPanel = screen.getByTestId("datapanel");
@@ -53,7 +53,7 @@ describe("Test the DataArea component", () => {
           </DataArea>
         </DataPanel>
         <DataAreaTitle>Treatments</DataAreaTitle>
-      </>,
+      </>
     );
 
     const dataPanel = screen.getByTestId("datapanel");

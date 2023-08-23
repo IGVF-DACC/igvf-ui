@@ -61,7 +61,7 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const assayOntologyTerm = await request.getObject(
-    `/assay-terms/${params.name}/`,
+    `/assay-terms/${params.name}/`
   );
   if (FetchRequest.isResponseSuccess(assayOntologyTerm)) {
     const isA = assayOntologyTerm.is_a
@@ -70,7 +70,7 @@ export async function getServerSideProps({ params, req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       assayOntologyTerm,
       "term_id",
-      req.headers.cookie,
+      req.headers.cookie
     );
     return {
       props: {

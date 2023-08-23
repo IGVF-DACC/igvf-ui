@@ -28,7 +28,7 @@ function DefaultCell({ children }) {
  */
 export const DataGridContainer = forwardRef(function DataGridContainer(
   { className = "", children },
-  ref,
+  ref
 ) {
   return (
     <div
@@ -115,10 +115,10 @@ DataGrid.propTypes = {
         PropTypes.shape({
           content: PropTypes.any,
           columns: PropTypes.number,
-        }),
+        })
       ).isRequired,
       children: PropTypes.array,
-    }),
+    })
   ).isRequired,
   // Component to render all cells in matrix unless specifically overridden
   CellComponent: PropTypes.func,

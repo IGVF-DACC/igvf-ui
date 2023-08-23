@@ -126,7 +126,7 @@ export function Button({
   const sizeClasses = generateButtonSizeClasses(
     size,
     hasIconOnly,
-    hasIconCircleOnly,
+    hasIconCircleOnly
   );
 
   return (
@@ -189,7 +189,7 @@ export function ButtonLink({
   const sizeClasses = generateButtonSizeClasses(
     size,
     hasIconOnly,
-    hasIconCircleOnly,
+    hasIconCircleOnly
   );
 
   const disabledType = `${type}Disabled`;

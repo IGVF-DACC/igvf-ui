@@ -27,7 +27,7 @@ describe("Button component", () => {
     const { container } = render(
       <Button onClick={onClick} type="secondary">
         Secondary
-      </Button>,
+      </Button>
     );
     expect(container.firstChild).toHaveClass("bg-button-secondary");
     expect(container.firstChild).toHaveClass("border-button-secondary");
@@ -38,7 +38,7 @@ describe("Button component", () => {
     const { container } = render(
       <Button onClick={onClick} type="warning">
         Secondary
-      </Button>,
+      </Button>
     );
     expect(container.firstChild).toHaveClass("bg-button-warning");
     expect(container.firstChild).toHaveClass("border-button-warning");
@@ -49,7 +49,7 @@ describe("Button component", () => {
     const { container } = render(
       <Button onClick={onClick} type="selected">
         Secondary
-      </Button>,
+      </Button>
     );
     expect(container.firstChild).toHaveClass("bg-button-selected");
     expect(container.firstChild).toHaveClass("border-button-selected");
@@ -69,7 +69,7 @@ describe("ButtonLink component", () => {
     const { container } = render(
       <ButtonLink href="#" type="secondary">
         Secondary
-      </ButtonLink>,
+      </ButtonLink>
     );
     expect(container.firstChild).toHaveClass("bg-button-secondary");
     expect(container.firstChild).toHaveClass("border-button-secondary");
@@ -80,7 +80,7 @@ describe("ButtonLink component", () => {
     const { container } = render(
       <ButtonLink href="#" type="warning">
         Secondary
-      </ButtonLink>,
+      </ButtonLink>
     );
     expect(container.firstChild).toHaveClass("bg-button-warning");
     expect(container.firstChild).toHaveClass("border-button-warning");
@@ -91,7 +91,7 @@ describe("ButtonLink component", () => {
     const { container } = render(
       <ButtonLink href="#" type="selected">
         Secondary
-      </ButtonLink>,
+      </ButtonLink>
     );
     expect(container.firstChild).toHaveClass("bg-button-selected");
     expect(container.firstChild).toHaveClass("border-button-selected");
@@ -125,7 +125,7 @@ describe("Test the Tailwind CSS classes resulting from using the `hasIconOnly` f
     const { container } = render(
       <Button onClick={jest.fn()} hasIconOnly>
         <Circle />
-      </Button>,
+      </Button>
     );
     expect(container.firstChild).toHaveClass("px-2 rounded");
   });
@@ -134,7 +134,7 @@ describe("Test the Tailwind CSS classes resulting from using the `hasIconOnly` f
     const { container } = render(
       <ButtonLink href="#" hasIconOnly>
         <Circle />
-      </ButtonLink>,
+      </ButtonLink>
     );
     expect(container.firstChild).toHaveClass("px-2 rounded");
   });
@@ -148,19 +148,19 @@ describe("Test AttachedButtons wrapper component", () => {
         <Button onClick={onClick}>Button 1</Button>
         <Button onClick={onClick}>Button 2</Button>
         <Button onClick={onClick}>Button 3</Button>
-      </AttachedButtons>,
+      </AttachedButtons>
     );
 
     const buttons = screen.getAllByRole("button");
     expect(buttons.length).toBe(3);
     expect(buttons[0]).toHaveClass(
-      "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r",
+      "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r"
     );
     expect(buttons[1]).toHaveClass(
-      "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r",
+      "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r"
     );
     expect(buttons[2]).toHaveClass(
-      "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r",
+      "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r"
     );
   });
 
@@ -172,7 +172,7 @@ describe("Test AttachedButtons wrapper component", () => {
         <Button onClick={onClick}>Button 1</Button>
         {isSecondRendered && <Button onClick={onClick}>Button 2</Button>}
         <Button onClick={onClick}>Button 3</Button>
-      </AttachedButtons>,
+      </AttachedButtons>
     );
 
     // Test that the attached button wrapper exists, but only two buttons exist within it.

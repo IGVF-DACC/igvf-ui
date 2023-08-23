@@ -9,7 +9,7 @@ describe("Testing the standard close icon button", () => {
         onClick={onClick}
         label="Test Label"
         className="border-red-500"
-      />,
+      />
     );
 
     const closeButton = screen.getByLabelText("Test Label");

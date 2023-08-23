@@ -147,7 +147,7 @@ export async function getServerSideProps({ params, req, query }) {
     let diseaseTerms = [];
     if (primaryCell.disease_terms?.length > 0) {
       const diseaseTermPaths = primaryCell.disease_terms.map(
-        (diseaseTerm) => diseaseTerm["@id"],
+        (diseaseTerm) => diseaseTerm["@id"]
       );
       diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
     }
@@ -181,7 +181,7 @@ export async function getServerSideProps({ params, req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       primaryCell,
       "accession",
-      req.headers.cookie,
+      req.headers.cookie
     );
     const attribution = await buildAttribution(primaryCell, req.headers.cookie);
     return {

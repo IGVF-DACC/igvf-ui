@@ -50,7 +50,7 @@ export default function ImpersonateUser({ searchResults }) {
   // If the search results have "searchTerm" in its query string, use that to initialize the user
   // filter.
   const searchTermFilter = searchResults.filters.find(
-    (filter) => filter.field === "query",
+    (filter) => filter.field === "query"
   );
   const searchTerm = searchTermFilter?.term || "";
 
@@ -154,7 +154,7 @@ export async function getServerSideProps({ req, res, query }) {
   // instead of `limit=all` because sorting only works with a specific limit.
   const filter = query.filter ? `&query=${query.filter}` : "";
   const searchResults = await request.getObject(
-    `/search?type=User&field=lab&field=title&field=@id&sort=title&limit=10000${filter}`,
+    `/search?type=User&field=lab&field=title&field=@id&sort=title&limit=10000${filter}`
   );
   if (FetchRequest.isResponseSuccess(searchResults)) {
     return {

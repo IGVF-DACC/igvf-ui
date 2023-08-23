@@ -17,7 +17,7 @@ describe("Test ReportHeaderCell component", () => {
     render(
       <ReportHeaderCell cells={cells} cellIndex={1} meta={meta}>
         <div>Accession</div>
-      </ReportHeaderCell>,
+      </ReportHeaderCell>
     );
 
     // Test that it rendered the text and no icon.
@@ -25,7 +25,7 @@ describe("Test ReportHeaderCell component", () => {
     expect(headerButton).toBeInTheDocument();
     expect(within(headerButton).getByText("Accession")).toBeInTheDocument();
     expect(
-      within(headerButton).queryByTestId(/^header-sort-icon/),
+      within(headerButton).queryByTestId(/^header-sort-icon/)
     ).not.toBeInTheDocument();
 
     // Test that it called the header click handler.
@@ -49,7 +49,7 @@ describe("Test ReportHeaderCell component", () => {
     render(
       <ReportHeaderCell cells={cells} cellIndex={1} meta={meta}>
         <div>Accession</div>
-      </ReportHeaderCell>,
+      </ReportHeaderCell>
     );
 
     // Test that it rendered the text and the ascending sorting icon.
@@ -57,7 +57,7 @@ describe("Test ReportHeaderCell component", () => {
     expect(headerButton).toBeInTheDocument();
     expect(within(headerButton).getByText("Accession")).toBeInTheDocument();
     expect(
-      within(headerButton).queryByTestId("header-sort-icon-ascending"),
+      within(headerButton).queryByTestId("header-sort-icon-ascending")
     ).toBeInTheDocument();
   });
 
@@ -76,7 +76,7 @@ describe("Test ReportHeaderCell component", () => {
     render(
       <ReportHeaderCell cells={cells} cellIndex={1} meta={meta}>
         <div>Accession</div>
-      </ReportHeaderCell>,
+      </ReportHeaderCell>
     );
 
     // Test that it rendered the text and the descending sorting icon.
@@ -84,7 +84,7 @@ describe("Test ReportHeaderCell component", () => {
     expect(headerButton).toBeInTheDocument();
     expect(within(headerButton).getByText("Accession")).toBeInTheDocument();
     expect(
-      within(headerButton).queryByTestId("header-sort-icon-descending"),
+      within(headerButton).queryByTestId("header-sort-icon-descending")
     ).toBeInTheDocument();
   });
 });

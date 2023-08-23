@@ -46,20 +46,20 @@ describe("Facet tests", () => {
     cy.get(`[aria-label^="Danwei Huangfu, MSKCC"]`).first().click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
     cy.get(`[aria-label="Clear Lab filter for Danwei Huangfu, MSKCC"]`).should(
-      "exist",
+      "exist"
     );
     cy.get(`[aria-label^="J. Michael Cherry, Stanford"]`).first().click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 4);
     cy.get(
-      `[aria-label="Clear Lab filter for J. Michael Cherry, Stanford"]`,
+      `[aria-label="Clear Lab filter for J. Michael Cherry, Stanford"]`
     ).should("exist");
 
     // Click a facet tag to clear that term.
     cy.get(
-      `[aria-label="Clear Lab filter for J. Michael Cherry, Stanford"]`,
+      `[aria-label="Clear Lab filter for J. Michael Cherry, Stanford"]`
     ).click();
     cy.get(
-      `[aria-label="Clear Lab filter for J. Michael Cherry, Stanford"]`,
+      `[aria-label="Clear Lab filter for J. Michael Cherry, Stanford"]`
     ).should("not.exist");
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
 
@@ -67,13 +67,13 @@ describe("Facet tests", () => {
     cy.get(`[aria-label="Select report view"]`).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
-      "1 item",
+      "1 item"
     );
     cy.get(`[aria-label="Provenance filter group"]`).click();
     cy.get(`[aria-label^="Danwei Huangfu, MSKCC"]`).first().click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
-      "4 items",
+      "4 items"
     );
   });
 });

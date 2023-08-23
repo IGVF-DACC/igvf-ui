@@ -133,7 +133,7 @@ export async function getServerSideProps({ params, req, query }) {
     let diseaseTerms = [];
     if (sample.disease_terms?.length > 0) {
       const diseaseTermPaths = sample.disease_terms.map(
-        (diseaseTerm) => diseaseTerm["@id"],
+        (diseaseTerm) => diseaseTerm["@id"]
       );
       diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
     }
@@ -153,7 +153,7 @@ export async function getServerSideProps({ params, req, query }) {
     let treatments = [];
     if (sample.treatments?.length > 0) {
       const treatmentPaths = sample.treatments.map(
-        (treatment) => treatment["@id"],
+        (treatment) => treatment["@id"]
       );
       treatments = await requestTreatments(treatmentPaths, request);
     }
@@ -176,7 +176,7 @@ export async function getServerSideProps({ params, req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       "accession",
-      req.headers.cookie,
+      req.headers.cookie
     );
     const attribution = await buildAttribution(sample, req.headers.cookie);
     return {

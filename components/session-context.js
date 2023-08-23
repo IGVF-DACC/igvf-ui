@@ -86,7 +86,7 @@ export function Session({ authentication, children }) {
       getSessionProperties(dataProviderUrl).then(
         (sessionPropertiesResponse) => {
           setSessionProperties(sessionPropertiesResponse);
-        },
+        }
       );
     }
   }, [dataProviderUrl, sessionProperties]);

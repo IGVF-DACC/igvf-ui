@@ -45,10 +45,10 @@ describe("Test UnspecifiedProperty component", () => {
     ];
     render(<UnspecifiedProperty property={property} />);
     expect(
-      screen.getByRole("link", { name: "/example/path/" }),
+      screen.getByRole("link", { name: "/example/path/" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "/example/path2/" }),
+      screen.getByRole("link", { name: "/example/path2/" })
     ).toBeInTheDocument();
   });
 
@@ -71,7 +71,7 @@ describe("Test UnspecifiedProperty component", () => {
     ];
     render(<UnspecifiedProperty property={property} />);
     expect(
-      screen.getByText('[{"title":"Example"},{"title":"Example 2"}]'),
+      screen.getByText('[{"title":"Example"},{"title":"Example 2"}]')
     ).toBeInTheDocument();
   });
 });

@@ -276,7 +276,7 @@ export function AddInstancePage({ collection }) {
             }
             onClose={() => {
               const filteredErrors = saveErrors.filter(
-                (e) => e.key !== error.key,
+                (e) => e.key !== error.key
               );
               setSaveErrors(filteredErrors);
             }}

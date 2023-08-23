@@ -7,7 +7,7 @@ describe("Test PAGE_NAVIGATION page component", () => {
     render(
       <PageComponent
         spec={`PAGE_NAV${UC.newline}First Topic=#first-topic${UC.newline}Second Topic=https://www.genome.gov/${UC.newline}Third Topic=/pages/help`}
-      />,
+      />
     );
 
     // Make sure a nav appears.

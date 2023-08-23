@@ -13,14 +13,14 @@ describe("Test the Select component", () => {
       >
         <option value="1">Option 1</option>
         <option value="2">Option 2</option>
-      </Select>,
+      </Select>
     );
 
     // The <select> element should get rendered with the default Tailwind CSS classes.
     const select = screen.getByRole("combobox");
     expect(select).toBeInTheDocument();
     expect(select).toHaveClass(
-      "block w-full appearance-none rounded border border-form-element bg-form-element py-0 pl-1 pr-5 font-medium text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled text-sm form-element-height-md leading-[180%]",
+      "block w-full appearance-none rounded border border-form-element bg-form-element py-0 pl-1 pr-5 font-medium text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled text-sm form-element-height-md leading-[180%]"
     );
 
     // Selecting an option should call the onChange handler.
@@ -46,7 +46,7 @@ describe("Test the Select component", () => {
       >
         <option value="1">Option 1</option>
         <option value="2">Option 2</option>
-      </Select>,
+      </Select>
     );
 
     // The <select> element should get rendered.
@@ -73,7 +73,7 @@ describe("Test the Select component", () => {
       >
         <option value="1">Option 1</option>
         <option value="2">Option 2</option>
-      </Select>,
+      </Select>
     );
 
     // The <select> element should get rendered.
@@ -92,7 +92,7 @@ describe("Test the Select component", () => {
       <Select name="select-element" value="1" onChange={onChange} isDisabled>
         <option value="1">Option 1</option>
         <option value="2">Option 2</option>
-      </Select>,
+      </Select>
     );
 
     // The <select> element should get rendered.

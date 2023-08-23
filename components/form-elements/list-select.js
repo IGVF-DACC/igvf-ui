@@ -128,7 +128,7 @@ ListSelect.propTypes = {
     PropTypes.string,
     PropTypes.number,
     PropTypes.arrayOf(
-      PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      PropTypes.oneOfType([PropTypes.string, PropTypes.number])
     ),
   ]).isRequired,
   // Function to call when the selected element(s) changed; client passes state-selection function

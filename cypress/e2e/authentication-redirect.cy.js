@@ -10,7 +10,7 @@ describe("Test that the post-login redirect goes to the correct URI", () => {
     cy.loginAuth0(
       Cypress.env("AUTH_USERNAME"),
       Cypress.env("AUTH_PASSWORD"),
-      false,
+      false
     );
     cy.contains("Cypress Testing");
     cy.wait(1000);

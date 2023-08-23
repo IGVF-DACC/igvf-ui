@@ -133,7 +133,7 @@ ExternalResources.propTypes = {
       PropTypes.shape({
         resource_url: PropTypes.string,
         resource_identifier: PropTypes.string,
-      }),
+      })
     ),
   }).isRequired,
 };

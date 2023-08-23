@@ -150,7 +150,7 @@ function NarrativeWithLinks({ narrative }) {
         preText ? <span key={segmentIndex}>{preText}</span> : null,
         <Link href={linkPath} key={linkMatches.index}>
           {linkText}
-        </Link>,
+        </Link>
       );
       segmentIndex = linkMatches.index + linkMatches[0].length;
       linkMatches = markdownRegex.exec(narrative);
@@ -159,7 +159,7 @@ function NarrativeWithLinks({ narrative }) {
     // Lastly, render any non-link text after the last link.
     const postText = narrative.substring(segmentIndex, narrative.length);
     return renderedDetail.concat(
-      postText ? <span key={segmentIndex}>{postText}</span> : null,
+      postText ? <span key={segmentIndex}>{postText}</span> : null
     );
   }
   return narrative;
@@ -328,7 +328,7 @@ export function AuditStatus({ item, auditState }) {
   if (itemAuditLevels.length > 0) {
     // Make an array of the human-readable audit levels for screen readers.
     const auditLevelTexts = Object.keys(item.audit).map(
-      (level) => auditMap[level]?.humanReadable || "Unknown",
+      (level) => auditMap[level]?.humanReadable || "Unknown"
     );
 
     return (

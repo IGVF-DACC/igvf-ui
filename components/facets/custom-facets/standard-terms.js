@@ -64,7 +64,7 @@ StandardTerms.propTypes = {
         key: PropTypes.string.isRequired,
         // Number of results for the facet term
         doc_count: PropTypes.number.isRequired,
-      }),
+      })
     ).isRequired,
   }).isRequired,
   // Called to return the updated query string from the facet user selection

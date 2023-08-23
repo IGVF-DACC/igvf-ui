@@ -13,7 +13,7 @@ describe("Test a basic modal", () => {
         <Modal.Footer>
           <button onClick={onClose}>Close</button>
         </Modal.Footer>
-      </Modal>,
+      </Modal>
     );
 
     // Open the modal and make sure it appears.
@@ -36,7 +36,7 @@ describe("Test a basic modal", () => {
             Cancel
           </button>
         </Modal.Footer>
-      </Modal>,
+      </Modal>
     );
 
     // Open the modal and make sure it appears.

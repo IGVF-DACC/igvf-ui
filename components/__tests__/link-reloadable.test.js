@@ -7,7 +7,7 @@ describe("Test Link wrapper that can reload the page", () => {
     render(
       <GlobalContext.Provider value={{ linkReload: { isEnabled: true } }}>
         <Link href="/test">Test</Link>
-      </GlobalContext.Provider>,
+      </GlobalContext.Provider>
     );
 
     expect(screen.getByText("Test")).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe("Test Link wrapper that can reload the page", () => {
     render(
       <GlobalContext.Provider value={{ linkReload: { isEnabled: false } }}>
         <Link href="/test">Test</Link>
-      </GlobalContext.Provider>,
+      </GlobalContext.Provider>
     );
 
     expect(screen.getByText("Test")).toBeInTheDocument();

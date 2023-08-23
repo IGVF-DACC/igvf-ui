@@ -21,7 +21,7 @@ describe("Must sign in to see current document objects", () => {
     // Make sure the document object page has a link to download the attachment.
     cy.url().should(
       "match",
-      /http:\/\/localhost:3000\/documents\/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/,
+      /http:\/\/localhost:3000\/documents\/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/
     );
     cy.get("[aria-label^=Download]");
 

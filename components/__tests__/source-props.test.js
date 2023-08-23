@@ -18,7 +18,7 @@ describe("Test the SourceProp component", () => {
     expect(screen.getByText("Abcam")).toBeInTheDocument();
     expect(screen.getByRole("link")).toHaveAttribute(
       "href",
-      "http://www.abcam.com",
+      "http://www.abcam.com"
     );
     expect(screen.getByRole("link")).toHaveAttribute("target", "_blank");
     expect(screen.getByRole("link")).toHaveAttribute("rel", "noreferrer");
@@ -41,7 +41,7 @@ describe("Test the SourceProp component", () => {
     expect(screen.getByText("J. Michael Cherry, Stanford")).toBeInTheDocument();
     expect(screen.getByRole("link")).toHaveAttribute(
       "href",
-      "/labs/j-michael-cherry",
+      "/labs/j-michael-cherry"
     );
     expect(screen.getByRole("link")).not.toHaveAttribute("target", "_blank");
   });

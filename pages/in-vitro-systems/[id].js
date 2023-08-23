@@ -191,13 +191,13 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const inVitroSystem = await request.getObject(
-    `/in-vitro-systems/${params.id}/`,
+    `/in-vitro-systems/${params.id}/`
   );
   if (FetchRequest.isResponseSuccess(inVitroSystem)) {
     let diseaseTerms = [];
     if (inVitroSystem.disease_terms) {
       const diseaseTermPaths = inVitroSystem.disease_terms.map(
-        (diseaseTerm) => diseaseTerm["@id"],
+        (diseaseTerm) => diseaseTerm["@id"]
       );
       diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
     }
@@ -217,7 +217,7 @@ export async function getServerSideProps({ params, req, query }) {
     let treatments = [];
     if (inVitroSystem.treatments) {
       const treatmentPaths = inVitroSystem.treatments.map(
-        (treatment) => treatment["@id"],
+        (treatment) => treatment["@id"]
       );
       treatments = await requestTreatments(treatmentPaths, request);
     }
@@ -238,11 +238,11 @@ export async function getServerSideProps({ params, req, query }) {
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,
       "accession",
-      req.headers.cookie,
+      req.headers.cookie
     );
     const attribution = await buildAttribution(
       inVitroSystem,
-      req.headers.cookie,
+      req.headers.cookie
     );
     return {
       props: {
