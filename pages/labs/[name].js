@@ -7,6 +7,7 @@ import {
   DataArea,
   DataItemLabel,
   DataItemValue,
+  DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
@@ -42,11 +43,11 @@ export default function Lab({ lab, awards = null, pi = null, isJson }) {
               {lab.url && (
                 <>
                   <DataItemLabel>URL</DataItemLabel>
-                  <DataItemValue>
-                    <a href={lab.url} target="_blank" rel="noreferrer">
+                  <DataItemValueUrl>
+                    <a href={lab.url} target="_blank" rel="noopener noreferrer">
                       {lab.url}
                     </a>
-                  </DataItemValue>
+                  </DataItemValueUrl>
                 </>
               )}
               {awards?.length > 0 && (

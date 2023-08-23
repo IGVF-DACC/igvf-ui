@@ -15,7 +15,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AliasList from "./alias-list";
-import { DataItemLabel, DataItemValue } from "./data-area";
+import { DataItemLabel, DataItemValue, DataItemValueUrl } from "./data-area";
 import DbxrefList from "./dbxref-list";
 import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
@@ -85,9 +85,11 @@ export function DonorDataItems({ item, children }) {
       {item.url && (
         <>
           <DataItemLabel>URL</DataItemLabel>
-          <DataItemValue>
-            <Link href={item.url}>{item.url}</Link>
-          </DataItemValue>
+          <DataItemValueUrl>
+            <a href={item.url} target="_blank" rel="noopener noreferrer">
+              {item.url}
+            </a>
+          </DataItemValueUrl>
         </>
       )}
     </>
@@ -187,16 +189,11 @@ export function SampleDataItems({
       {item.url && (
         <>
           <DataItemLabel>Additional Information</DataItemLabel>
-          <DataItemValue>
-            <a
-              className="break-all"
-              href={item.url}
-              target="_blank"
-              rel="noreferrer"
-            >
+          <DataItemValueUrl>
+            <a href={item.url} target="_blank" rel="noopener noreferrer">
               {item.url}
             </a>
-          </DataItemValue>
+          </DataItemValueUrl>
         </>
       )}
       {item.dbxrefs?.length > 0 && (

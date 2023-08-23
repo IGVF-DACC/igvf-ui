@@ -1,5 +1,4 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -11,6 +10,7 @@ import {
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
+  DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
 import DerivedFromTable from "../../components/derived-from-table";
@@ -91,14 +91,15 @@ export default function ReferenceFile({
                   {referenceFile.source_url && (
                     <>
                       <DataItemLabel>Source URL</DataItemLabel>
-                      <DataItemValue>
-                        <Link
+                      <DataItemValueUrl>
+                        <a
                           href={referenceFile.source_url}
-                          key={referenceFile.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           {referenceFile.source_url}
-                        </Link>
-                      </DataItemValue>
+                        </a>
+                      </DataItemValueUrl>
                     </>
                   )}
                 </DataArea>

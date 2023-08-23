@@ -8,6 +8,7 @@ import {
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
+  DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
@@ -45,11 +46,15 @@ export default function Software({
               <DataItemLabel>Description</DataItemLabel>
               <DataItemValue>{software.description}</DataItemValue>
               <DataItemLabel>Source URL</DataItemLabel>
-              <DataItemValue>
-                <a href={software.source_url} target="_blank" rel="noreferrer">
+              <DataItemValueUrl>
+                <a
+                  href={software.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {software.source_url}
                 </a>
-              </DataItemValue>
+              </DataItemValueUrl>
               {software.aliases?.length > 0 && (
                 <>
                   <DataItemLabel>Aliases</DataItemLabel>
