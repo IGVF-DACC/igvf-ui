@@ -1,15 +1,15 @@
 // node_modules
-import dynamic from "next/dynamic";
+import { useAuth0 } from "@auth0/auth0-react";
 import findDuplicatedPropertyKeys from "find-duplicated-property-keys";
 import { PencilSquareIcon } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useContext, useEffect, useState } from "react";
 import _ from "lodash";
+import dynamic from "next/dynamic";
+import PropTypes from "prop-types";
+import { useContext, useEffect, useState } from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
-import SessionContext from "./session-context";
 import GlobalContext from "./global-context";
+import SessionContext from "./session-context";
 // lib
 import { removeTrailingSlash } from "../lib/general";
 import { itemToSchema } from "../lib/schema";
@@ -24,9 +24,18 @@ export function canEdit(schema) {
   return Boolean(schema.identifyingProperties?.length > 0);
 }
 
+/**
+ * Parses a string as JSON and detects any JSON parse errors or duplicate keys
+ * @param {string} json JSON string to parse for errors
+ * @returns List of parse errors in the JSON string. If the JSON string is
+ * correct, return an empty list
+ */
 function jsonErrors(json) {
   // cannot save if we cannot edit or if the JSON is wrong
   try {
+    // Attempt to parse JSON and if there are errors then return those errors.
+    // If none found then we then detect duplicate keys. If everything is fine
+    // return an empty list
     JSON.parse(json);
     const r = findDuplicatedPropertyKeys(json);
     if (r.length > 0) {
