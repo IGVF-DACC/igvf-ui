@@ -5,34 +5,29 @@ import Link from "next/link";
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
 
-const mutiplexedColumns = [
+/**
+ * Columns for multiplexed_samples
+ */
+const multiplexedColumns = [
   {
     id: "multiplexed_samples",
     title: "Multiplexed Samples",
     display: ({ source }) => {
-        return (
-          <Link href={source["@id"]}>
-            {source["accession"]}
-          </Link>
-        );
+      return <Link href={source["@id"]}>{source.accession}</Link>;
     },
   },
   {
     id: "type",
     title: "Type",
-    display: ({ source }) => (source["@type"][0])
+    display: ({ source }) => source["@type"][0],
   },
   {
     id: "sample_terms",
     title: "Sample Terms",
     display: (source) => {
-        const termName = source.sample_terms.term_name;
-        return (
-            <>
-            {termName}
-            </>
-        );
-      },
+      const termName = source.sample_terms.term_name;
+      return <>{termName}</>;
+    },
   },
   {
     id: "summary",
@@ -52,7 +47,7 @@ export default function MultiplexedTable({ multiplexed_samples }) {
     <DataGridContainer>
       <SortableGrid
         data={multiplexed_samples}
-        columns={mutiplexedColumns}
+        columns={multiplexedColumns}
         keyProp="@id"
       />
     </DataGridContainer>
