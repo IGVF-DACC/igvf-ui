@@ -6,7 +6,7 @@ import React, { useContext, useState, useEffect } from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
 import FlashMessage from "./flash-message";
-import EditJson, { canEdit } from "./edit-func";
+import JsonEditor, { canEdit } from "./edit-func";
 import SessionContext from "./session-context";
 import PagePreamble from "./page-preamble";
 // lib
@@ -102,17 +102,6 @@ export default function EditPage({ item }) {
     return isAuthenticated && editable;
   }
 
-  function jsonErrors(json) {
-    // cannot save if we cannot edit or if the JSON is wrong
-    try {
-      JSON.parse(json);
-      return [];
-    } catch (err) {
-      // Save the error
-      return [err.message];
-    }
-  }
-
   /**
    * The text is the current editor text of the underlying Ace editor component.
    */
@@ -153,14 +142,22 @@ export default function EditPage({ item }) {
 
   function onChange(newValue) {
     setText(newValue);
-    const errors = jsonErrors(newValue);
     const isEditable = editable(item);
-    const status = {
+    const { canSave, errors } = editorStatus;
+    setEditorStatus({
       canEdit: isEditable,
-      canSave: errors.length === 0 && isEditable,
+      canSave: canSave && isEditable,
       errors,
-    };
-    setEditorStatus(status);
+    });
+  }
+
+  function onError(errs) {
+    const { canEdit } = editorStatus;
+    setEditorStatus({
+      canEdit,
+      canSave: errs.length === 0 && canEdit,
+      errors: errs,
+    });
   }
 
   function save() {
@@ -216,11 +213,11 @@ export default function EditPage({ item }) {
   return (
     <div className="space-y-1">
       <PagePreamble />
-      <EditJson
+      <JsonEditor
         text={text}
         onChange={onChange}
         enabled={editorStatus.canEdit}
-        errors={editorStatus.errors}
+        onError={onError}
       />
       <div className="flex flex-row-reverse">
         <SaveCancelControl

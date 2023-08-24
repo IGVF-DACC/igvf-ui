@@ -1,13 +1,15 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
+import findDuplicatedPropertyKeys from "find-duplicated-property-keys";
 import { PencilSquareIcon } from "@heroicons/react/20/solid";
+import _ from "lodash";
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
 // components
 import { Button, ButtonLink } from "./form-elements";
-import SessionContext from "./session-context";
 import GlobalContext from "./global-context";
+import SessionContext from "./session-context";
 // lib
 import { removeTrailingSlash } from "../lib/general";
 import { itemToSchema } from "../lib/schema";
@@ -20,6 +22,30 @@ import { itemToSchema } from "../lib/schema";
  */
 export function canEdit(schema) {
   return Boolean(schema.identifyingProperties?.length > 0);
+}
+
+/**
+ * Parses a string as JSON and detects any JSON parse errors or duplicate keys
+ * @param {string} json JSON string to parse for errors
+ * @returns List of parse errors in the JSON string. If the JSON string is
+ * correct, return an empty list
+ */
+function jsonErrors(json) {
+  // cannot save if we cannot edit or if the JSON is wrong
+  try {
+    // Attempt to parse JSON and if there are errors then return those errors.
+    // If none found then we then detect duplicate keys. If everything is fine
+    // return an empty list
+    JSON.parse(json);
+    const r = findDuplicatedPropertyKeys(json);
+    if (r.length > 0) {
+      return [`duplicate key: '${r[0].key}'`];
+    }
+    return [];
+  } catch (err) {
+    // Save the error
+    return [err.message];
+  }
 }
 
 const Editor = dynamic(
@@ -42,10 +68,17 @@ const Editor = dynamic(
 const CONTRAST_MODE_LIGHT = "solarized_light";
 const CONTRAST_MODE_DARK = "solarized_dark";
 
-function JsonEditor({ text, onChange, enabled, errors = [] }) {
+export default function JsonEditor({
+  text,
+  onChange,
+  enabled,
+  onError = null,
+}) {
   const { darkMode } = useContext(GlobalContext);
 
   const [theme, setTheme] = useState(CONTRAST_MODE_LIGHT);
+
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     if (darkMode.enabled) {
@@ -55,6 +88,23 @@ function JsonEditor({ text, onChange, enabled, errors = [] }) {
     }
   }, [darkMode.enabled]);
 
+  useEffect(() => {
+    const newErrors = jsonErrors(text);
+    // If we have a new error,
+    // or if we previously had an error but now have [] then set Errors
+    if (
+      (newErrors.length > 0 && !_.isEqual(newErrors, errors)) ||
+      (newErrors.length === 0 && errors.length > 0)
+    ) {
+      if (onError !== null) {
+        onError(newErrors);
+      }
+      setErrors(newErrors);
+    }
+  }, [text, errors, onError]);
+
+  // Create the annotations used by the editor from error text that will
+  // show the JSON parse error
   const annotations = errors.map((msg) => ({
     row: 0,
     column: 0,
@@ -103,10 +153,8 @@ JsonEditor.propTypes = {
   // When false, the text field on the editor cannot be changed, and when true
   // editing is allowed
   enabled: PropTypes.bool.isRequired,
-  // If there are any errors in the text, these are passed on to the react-ace `annotations`
-  // prop and are rendered in the editor component. Array elements are the error
-  // messages as strings.
-  errors: PropTypes.array,
+  // If defined, then this is called if the parsed text produces any JSON parse errors
+  onError: PropTypes.func,
 };
 
 function ControlButton({ onClick, isDisabled = false, children }) {
@@ -120,31 +168,6 @@ function ControlButton({ onClick, isDisabled = false, children }) {
 ControlButton.propTypes = {
   onClick: PropTypes.func,
   isDisabled: PropTypes.bool,
-};
-
-export default function EditJson({
-  text,
-  onChange,
-  enabled = true,
-  errors = [],
-}) {
-  return (
-    <div className="relative m-px w-full border-2 border-solid border-slate-300">
-      <JsonEditor
-        text={text}
-        onChange={onChange}
-        enabled={enabled}
-        errors={errors}
-      />
-    </div>
-  );
-}
-
-EditJson.propTypes = {
-  text: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  enabled: PropTypes.bool,
-  errors: PropTypes.array,
 };
 
 export function EditLink({ item }) {
