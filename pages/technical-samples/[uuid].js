@@ -50,8 +50,10 @@ export default function TechnicalSample({
               <SampleDataItems item={sample} sources={sources}>
                 {sample.date && (
                   <>
-                    <DataItemLabel>Technical Sample Date</DataItemLabel>
-                    <DataItemValue>{formatDate(sample.date)}</DataItemValue>
+                    <DataItemLabel>Date Harvested</DataItemLabel>
+                    <DataItemValue>
+                      {formatDate(sample.date_obtained)}
+                    </DataItemValue>
                   </>
                 )}
                 <DataItemLabel>Sample Material</DataItemLabel>

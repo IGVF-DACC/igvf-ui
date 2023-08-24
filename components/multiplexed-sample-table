@@ -1,0 +1,64 @@
+// node_modules
+import PropTypes from "prop-types";
+// components
+import { DataGridContainer } from "./data-grid";
+import SortableGrid from "./sortable-grid";
+
+const mutiplexedColumns = [
+  {
+    id: "multiplexed_samples",
+    title: "Multiplexed Samples",
+    display: ({ source }) => {
+        return (
+          <Link href={source["@id"]}>
+            {source["accession"]}
+          </Link>
+        );
+    },
+  },
+  {
+    id: "type",
+    title: "Type",
+    display: ({ source }) => (source["@type"][0])
+  },
+  {
+    id: "sample_terms",
+    title: "Sample Terms",
+    display: (source) => {
+        const termName = source.sample_terms.term_name;
+        return (
+            <>
+            {termName}
+            </>
+        );
+      },
+  },
+  {
+    id: "summary",
+    title: "Summary",
+  },
+  {
+    id: "disease_terms",
+    title: "Disease Terms",
+  },
+];
+
+/**
+ * Display a sortable table of the given modifications.
+ */
+export default function MultiplexedTable({ multiplexed_samples }) {
+  return (
+    <DataGridContainer>
+      <SortableGrid
+        data={multiplexed_samples}
+        columns={mutiplexedColumns}
+        keyProp="@id"
+      />
+    </DataGridContainer>
+  );
+}
+
+MultiplexedTable.propTypes = {
+  // Modifications to display
+  multiplexed_samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
