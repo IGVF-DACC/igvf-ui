@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import Link from "next/link";
 // components
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
