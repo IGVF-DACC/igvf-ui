@@ -27,10 +27,7 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
     } else {
       query.addKeyValue(field, term.key);
     }
-    const fromVals = query.getKeyValues("from");
-    if (fromVals.length > 0) {
-      query.deleteKeyValue("from", fromVals[0]);
-    }
+    query.deleteKeyValue("from");
     updateQuery(query.format());
   }
 
