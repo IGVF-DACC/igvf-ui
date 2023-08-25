@@ -9,6 +9,7 @@ import {
   DataArea,
   DataItemLabel,
   DataItemValue,
+  DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
 import DocumentAttachmentLink from "../../components/document-link";
@@ -62,20 +63,15 @@ export default function Document({ document, attribution = null, isJson }) {
               {document.urls?.length > 0 && (
                 <>
                   <DataItemLabel>Additional Information</DataItemLabel>
-                  <DataItemValue>
+                  <DataItemValueUrl>
                     {document.urls.map((url) => (
                       <div key={url}>
-                        <a
-                          className="break-all"
-                          href={url}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
+                        <a href={url} target="_blank" rel="noopener noreferrer">
                           {url}
                         </a>
                       </div>
                     ))}
-                  </DataItemValue>
+                  </DataItemValueUrl>
                 </>
               )}
               <DataItemLabel>Download</DataItemLabel>

@@ -4,6 +4,7 @@ import {
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
+  DataItemValueUrl,
   DataItemValueExpandButton,
   DataPanel,
 } from "../data-area";
@@ -47,9 +48,15 @@ describe("Test the DataArea component", () => {
         <DataPanel className="text-xs">
           <DataArea>
             <DataItemLabel className="font-black">Status</DataItemLabel>
-            <DataItemValue>
-              <Status status="in progress" />
-            </DataItemValue>
+            <DataItemValueUrl>
+              <a
+                href="https://igvf.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                https://igvf.org/
+              </a>
+            </DataItemValueUrl>
           </DataArea>
         </DataPanel>
         <DataAreaTitle>Treatments</DataAreaTitle>

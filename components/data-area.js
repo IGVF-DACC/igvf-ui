@@ -102,6 +102,23 @@ DataItemValue.propTypes = {
 };
 
 /**
+ * Display the value of a data item that consists of a URL. This will break the URL at any
+ * character so it doesn't overflow the data panel.
+ */
+export function DataItemValueUrl({ className = "", children }) {
+  return (
+    <DataItemValue className={`break-all ${className}`}>
+      {children}
+    </DataItemValue>
+  );
+}
+
+DataItemValueUrl.propTypes = {
+  // Additional Tailwind CSS classes to apply to the <div> element
+  className: PropTypes.string,
+};
+
+/**
  * Displays a button to expand or collapse a data item value. This button only appears if `isExpandable`
  * holds true. Place this button within a <DataItemLabel> element, just after the label text.
  */

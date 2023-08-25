@@ -7,6 +7,7 @@ import {
   DataArea,
   DataItemLabel,
   DataItemValue,
+  DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
@@ -89,11 +90,15 @@ export default function Award({ award, pis, contactPi, isJson }) {
               {award.url && (
                 <>
                   <DataItemLabel>Additional Information</DataItemLabel>
-                  <DataItemValue>
-                    <a href={award.url} target="_blank" rel="noreferrer">
+                  <DataItemValueUrl>
+                    <a
+                      href={award.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       {award.url}
                     </a>
-                  </DataItemValue>
+                  </DataItemValueUrl>
                 </>
               )}
             </DataArea>
