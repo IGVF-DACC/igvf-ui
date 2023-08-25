@@ -15,6 +15,7 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -67,6 +68,12 @@ export default function TechnicalSample({
               </SampleDataItems>
             </DataArea>
           </DataPanel>
+          {sample.file_sets?.length > 0 && (
+            <>
+              <DataAreaTitle>File Sets</DataAreaTitle>
+              <FileSetTable fileSets={sample.file_sets} />
+            </>
+          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>

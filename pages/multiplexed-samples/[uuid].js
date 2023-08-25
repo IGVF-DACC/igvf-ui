@@ -1,5 +1,4 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -16,6 +15,7 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationsTable from "../../components/modification-table";
 import MultiplexedTable from "../../components/multiplexed-sample-table";
@@ -27,20 +27,20 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestBiomarkers,
-  requestBiosamples,
   requestDocuments,
   requestDonors,
-  requestOntologyTerms,
   requestTreatments,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
+import { formatDate } from "../../lib/dates";
 import FetchRequest from "../../lib/fetch-request";
-import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function MultiplexedSample({
-  sample,
+  multiplexedSample,
+  biomarkers,
   documents,
+  treatments,
   attribution = null,
   sources,
   isJson,
@@ -48,48 +48,56 @@ export default function MultiplexedSample({
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={sample}>
+      <EditableItem item={multiplexedSample}>
         <PagePreamble>
           <AlternateAccessions
-            alternateAccessions={sample.alternate_accessions}
+            alternateAccessions={multiplexedSample.alternate_accessions}
           />
         </PagePreamble>
-        <ObjectPageHeader item={sample} isJsonFormat={isJson} />
-        <JsonDisplay item={sample} isJsonFormat={isJson}>
+        <ObjectPageHeader item={multiplexedSample} isJsonFormat={isJson} />
+        <JsonDisplay item={multiplexedSample} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <SampleDataItems item={sample} sources={sources}>
-                {sample.date && (
+              <SampleDataItems item={multiplexedSample} sources={sources}>
+                {multiplexedSample.date_obtained && (
                   <>
                     <DataItemLabel>Date Harvested</DataItemLabel>
                     <DataItemValue>
-                      {formatDate(sample.date_obtained)}
+                      {formatDate(multiplexedSample.date_obtained)}
                     </DataItemValue>
                   </>
                 )}
-                <DataItemLabel>Sample Material</DataItemLabel>
-                <DataItemValue>{sample.sample_material}</DataItemValue>
-                <DataItemLabel>Sample Terms</DataItemLabel>
-                <DataItemValue>
-                  <Link href={sample.sample_terms[0]["@id"]}>
-                    {sample.sample_terms[0].term_name}
-                  </Link>
-                </DataItemValue>
+                {multiplexedSample.cellular_sub_pool && (
+                  <>
+                    <DataItemLabel>Cellular Sub Pool</DataItemLabel>
+                    <DataItemValue>
+                      {multiplexedSample.cellular_sub_pool}
+                    </DataItemValue>
+                  </>
+                )}
               </SampleDataItems>
             </DataArea>
           </DataPanel>
-          {sample.multiplexed_samples?.length > 0 && (
+          {multiplexedSample.multiplexed_samples?.length > 0 && (
             <>
-              <DataAreaTitle>Multiplexed Sample</DataAreaTitle>
+              <DataAreaTitle>Multiplexed Samples</DataAreaTitle>
               <MultiplexedTable
-                multiplexed_samples={sample.multiplexed_samples}
+                multiplexedSamples={multiplexedSample.multiplexed_samples}
               />
             </>
           )}
-          {sample.modifications?.length > 0 && (
+          {multiplexedSample.file_sets?.length > 0 && (
+            <>
+              <DataAreaTitle>File Sets</DataAreaTitle>
+              <FileSetTable fileSets={multiplexedSample.file_sets} />
+            </>
+          )}
+          {multiplexedSample.modifications?.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
-              <ModificationsTable modifications={sample.modifications} />
+              <ModificationsTable
+                modifications={multiplexedSample.modifications}
+              />
             </>
           )}
           {biomarkers.length > 0 && (
@@ -120,22 +128,14 @@ export default function MultiplexedSample({
 MultiplexedSample.propTypes = {
   // MultiplexedSample-cell sample to display
   multiplexedSample: PropTypes.object.isRequired,
-  // Disease ontology for this sample
-  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Biosample(s) Pooled From
-  pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Part of Biosample
-  partOf: PropTypes.object,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -149,13 +149,6 @@ export async function getServerSideProps({ params, req, query }) {
     `/multiplexed-samples/${params.uuid}/`
   );
   if (FetchRequest.isResponseSuccess(multiplexedSample)) {
-    let diseaseTerms = [];
-    if (multiplexedSample.disease_terms?.length > 0) {
-      const diseaseTermPaths = multiplexedSample.disease_terms.map(
-        (diseaseTerm) => diseaseTerm["@id"]
-      );
-      diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
-    }
     const documents = multiplexedSample.documents
       ? await requestDocuments(multiplexedSample.documents, request)
       : [];
@@ -174,13 +167,6 @@ export async function getServerSideProps({ params, req, query }) {
     const treatments = multiplexedSample.treatments
       ? await requestTreatments(multiplexedSample.treatments, request)
       : [];
-    const pooledFrom =
-      multiplexedSample.pooled_from?.length > 0
-        ? await requestBiosamples(multiplexedSample.pooled_from, request)
-        : [];
-    const partOf = multiplexedSample.part_of
-      ? await request.getObject(multiplexedSample.part_of, null)
-      : null;
     const biomarkers =
       multiplexedSample.biomarkers?.length > 0
         ? await requestBiomarkers(multiplexedSample.biomarkers, request)
@@ -197,17 +183,11 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         multiplexedSample,
-        diseaseTerms,
         documents,
         donors,
         sources,
         treatments,
-        pooledFrom,
-        partOf,
         biomarkers,
-        pageContext: {
-          title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,
-        },
         breadcrumbs,
         attribution,
         isJson,

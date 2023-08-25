@@ -178,6 +178,20 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
+      {item.multiplexed_in?.length > 0 && (
+        <>
+          <DataItemLabel>Multiplexed In</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {item.multiplexed_in?.map((sample) => (
+                <Link href={sample["@id"]} key={sample.accession}>
+                  {sample.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
       {item.date_obtained && (
         <>
           <DataItemLabel>{options.dateObtainedTitle}</DataItemLabel>

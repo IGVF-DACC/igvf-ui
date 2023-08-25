@@ -9,6 +9,7 @@ import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
 import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationsTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -69,6 +70,12 @@ export default function WholeOrganism({
               ></BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {sample.file_sets?.length > 0 && (
+            <>
+              <DataAreaTitle>File Sets</DataAreaTitle>
+              <FileSetTable fileSets={sample.file_sets} />
+            </>
+          )}
           {sample.modifications?.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>

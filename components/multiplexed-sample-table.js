@@ -4,14 +4,15 @@ import Link from "next/link";
 // components
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
+import SeparatedList from "./separated-list";
 
 /**
  * Columns for multiplexed_samples
  */
 const multiplexedColumns = [
   {
-    id: "multiplexed_samples",
-    title: "Multiplexed Samples",
+    id: "accession",
+    title: "Accession",
     display: ({ source }) => {
       return <Link href={source["@id"]}>{source.accession}</Link>;
     },
@@ -24,9 +25,11 @@ const multiplexedColumns = [
   {
     id: "sample_terms",
     title: "Sample Terms",
-    display: (source) => {
-      const termName = source.sample_terms.term_name;
-      return <>{termName}</>;
+    display: ({ source }) => {
+      const termId = source.sample_terms
+        ?.map((sample) => sample.term_name)
+        .join(", ");
+      return <>{termId}</>;
     },
   },
   {
@@ -36,17 +39,44 @@ const multiplexedColumns = [
   {
     id: "disease_terms",
     title: "Disease Terms",
+    display: ({ source }) => {
+      const termId = source.disease_terms
+        ?.map((sample) => sample.term_name)
+        .join(", ");
+      return <>{termId}</>;
+    },
+  },
+  {
+    id: "donors",
+    title: "Donors",
+    display: ({ source }) => {
+      if (source.donors) {
+        return (
+          <SeparatedList>
+            {source.donors?.map((donor) => (
+              <Link href={donor["@id"]} key={donor["@id"]}>
+                {donor.accession}
+              </Link>
+            ))}
+          </SeparatedList>
+        );
+      }
+    },
+  },
+  {
+    id: "status",
+    title: "Status",
   },
 ];
 
 /**
- * Display a sortable table of the given modifications.
+ * Display a sortable table of the given multiplexed_samples.
  */
-export default function MultiplexedTable({ multiplexed_samples }) {
+export default function MultiplexedTable({ multiplexedSamples }) {
   return (
     <DataGridContainer>
       <SortableGrid
-        data={multiplexed_samples}
+        data={multiplexedSamples}
         columns={multiplexedColumns}
         keyProp="@id"
       />
@@ -55,6 +85,6 @@ export default function MultiplexedTable({ multiplexed_samples }) {
 }
 
 MultiplexedTable.propTypes = {
-  // Modifications to display
-  multiplexed_samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // MultiplexedSamples to display
+  multiplexedSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

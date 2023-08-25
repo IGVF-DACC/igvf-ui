@@ -59,6 +59,7 @@ import Gene from "./gene";
 import HumanDonor from "./human-donor";
 import Lab from "./lab";
 import MeasurementSet from "./measurement-set";
+import MultiplexedSample from "./multiplexed-sample";
 import Model from "./model";
 import OntologyTerm from "./ontology-term";
 import Page from "./page";
@@ -93,6 +94,7 @@ const renderers = {
   MeasurementSet,
   Model,
   Modification,
+  MultiplexedSample,
   Page,
   PhenotypeTerm: OntologyTerm,
   PhenotypicFeature,
