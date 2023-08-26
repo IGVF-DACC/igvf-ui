@@ -76,7 +76,7 @@ export default function ConfigurationFile({
                 <DataArea>
                   {seqSpecOf?.length > 0 && (
                     <>
-                      <DataItemLabel>Seqspec Of</DataItemLabel>
+                      <DataItemLabel>seqspec File Of</DataItemLabel>
                       <DataItemValue>
                         <SeparatedList>
                           {seqSpecOf.map((file) => (
