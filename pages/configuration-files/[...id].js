@@ -69,7 +69,7 @@ export default function ConfigurationFile({
               ></FileDataItems>
             </DataArea>
           </DataPanel>
-          {seqSpecOf?.length > 0 && (
+          {seqSpecOf.length > 0 && (
             <>
               <DataAreaTitle>Configuration Details</DataAreaTitle>
               <DataPanel>
