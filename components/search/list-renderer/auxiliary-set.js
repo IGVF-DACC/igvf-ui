@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
+import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -22,6 +23,11 @@ export default function AuxiliarySet({ item: auxiliarySet }) {
         <SearchListItemTitle>{auxiliarySet.auxiliary_type}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{auxiliarySet.lab.title}</div>
+          {auxiliarySet.alternate_accessions?.length > 0 && (
+            <AlternateAccessions
+              alternateAccessions={auxiliarySet.alternate_accessions}
+            />
+          )}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={auxiliarySet} />

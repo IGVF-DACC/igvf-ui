@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
+import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -26,9 +27,9 @@ export default function CuratedSet({ item: curatedSet }) {
           <div key="lab">{curatedSet.lab.title}</div>
           {summary && <div key="summary">{summary}</div>}
           {curatedSet.alternate_accessions?.length > 0 && (
-            <div key="alternate_accessions">
-              Alternate Accessions: {curatedSet.alternate_accessions.join(", ")}
-            </div>
+            <AlternateAccessions
+              alternateAccessions={curatedSet.alternate_accessions}
+            />
           )}
         </SearchListItemMeta>
       </SearchListItemMain>

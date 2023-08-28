@@ -30,7 +30,6 @@ import {
   requestDocuments,
   requestDonors,
   requestTreatments,
-  requestSources,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import { formatDate } from "../../lib/dates";

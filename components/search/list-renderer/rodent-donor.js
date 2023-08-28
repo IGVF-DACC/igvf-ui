@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
+import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -54,10 +55,9 @@ export default function RodentDonor({
             <div key="phenotypes">{phenotypicFeatures}</div>
           )}
           {rodentDonor.alternate_accessions?.length > 0 && (
-            <div key="alternate_accessions">
-              Alternate Accessions:{" "}
-              {rodentDonor.alternate_accessions.join(", ")}
-            </div>
+            <AlternateAccessions
+              alternateAccessions={rodentDonor.alternate_accessions}
+            />
           )}
         </SearchListItemMeta>
       </SearchListItemMain>

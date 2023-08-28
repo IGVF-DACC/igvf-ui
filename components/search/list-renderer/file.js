@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
+import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -41,9 +42,9 @@ export default function File({ item: file, accessoryData = null }) {
             <div key="external resources">{file.dbxrefs.join(", ")}</div>
           )}
           {file.alternate_accessions?.length > 0 && (
-            <div key="alternate_accessions">
-              Alternate Accessions: {file.alternate_accessions.join(", ")}
-            </div>
+            <AlternateAccessions
+              alternateAccessions={file.alternate_accessions}
+            />
           )}
         </SearchListItemMeta>
         {fileSet && (
