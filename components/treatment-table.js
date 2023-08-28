@@ -18,9 +18,8 @@ const treatmentColumns = [
   {
     id: "summary",
     title: "Summary",
-    display: (source) => {
-      const summary = source.summary;
-      return <Link href={source["@id"]}>{summary}</Link>;
+    display: ({ source }) => {
+      return <Link href={source["@id"]}>{source.summary}</Link>;
     },
   },
   {
