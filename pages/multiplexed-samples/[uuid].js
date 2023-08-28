@@ -30,6 +30,7 @@ import {
   requestDocuments,
   requestDonors,
   requestTreatments,
+  requestSources,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import { formatDate } from "../../lib/dates";
@@ -158,9 +159,7 @@ export async function getServerSideProps({ params, req, query }) {
       const sourcePaths = multiplexedSample.sources.map(
         (source) => source["@id"]
       );
-      sources = await request.getMultipleObjects(sourcePaths, null, {
-        filterErrors: true,
-      });
+      sources = await requestSources(sourcePaths, request);
     }
     const treatments = multiplexedSample.treatments
       ? await requestTreatments(multiplexedSample.treatments, request)
