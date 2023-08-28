@@ -1,8 +1,10 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
+import Status from "./status";
 
 const modificationsColumns = [
   {
@@ -10,20 +12,19 @@ const modificationsColumns = [
     title: "Modality",
   },
   {
-    id: "cas",
-    title: "Cas",
+    id: "summary",
+    title: "summary",
+    display: (source) => {
+      const summary = source.summary;
+      return <Link href={source["@id"]}>{summary}</Link>;
+    },
   },
   {
-    id: "Cas Species",
-    title: "Cas Species",
-  },
-  {
-    id: "fused_domain",
-    title: "Fused Domain",
-  },
-  {
-    id: "tagged_protein",
-    title: "Tagged Protein",
+    id: "status",
+    title: "Status",
+    display: ({ source }) => {
+      return <Status status={source.status} />;
+    },
   },
 ];
 

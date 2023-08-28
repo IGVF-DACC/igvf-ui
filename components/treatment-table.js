@@ -4,41 +4,31 @@ import PropTypes from "prop-types";
 // components
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
+import Status from "./status";
 
 const treatmentColumns = [
   {
-    id: "treatment_term_id",
-    title: "Term ID",
-    display: ({ source }) => {
-      return <Link href={source["@id"]}>{source.treatment_term_id}</Link>;
-    },
-  },
-  {
-    id: "treatment_term_name",
-    title: "Term Name",
+    id: "purpose",
+    title: "Purpose",
   },
   {
     id: "treatment_type",
     title: "Type",
   },
   {
-    id: "purpose",
-    title: "Purpose",
+    id: "summary",
+    title: "Summary",
+    display: (source) => {
+      const summary = source.summary;
+      return <Link href={source["@id"]}>{summary}</Link>;
+    },
   },
   {
-    id: "amount",
-    title: "Amount",
-    display: ({ source }) => `${source.amount} ${source.amount_units}`,
-  },
-  {
-    id: "duration",
-    title: "Duration",
-    display: ({ source }) =>
-      source.duration !== undefined
-        ? `${source.duration} ${source.duration_units}${
-            source.duration !== 1 ? "s" : ""
-          }`
-        : "",
+    id: "status",
+    title: "Status",
+    display: ({ source }) => {
+      return <Status status={source.status} />;
+    },
   },
 ];
 
