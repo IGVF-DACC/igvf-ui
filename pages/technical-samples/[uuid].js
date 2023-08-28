@@ -49,7 +49,7 @@ export default function TechnicalSample({
           <DataPanel>
             <DataArea>
               <SampleDataItems item={sample} sources={sources}>
-                {sample.date && (
+                {sample.date_obtained && (
                   <>
                     <DataItemLabel>Date Harvested</DataItemLabel>
                     <DataItemValue>

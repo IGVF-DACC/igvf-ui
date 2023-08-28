@@ -18,7 +18,7 @@ import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationsTable from "../../components/modification-table";
-import MultiplexedTable from "../../components/multiplexed-sample-table";
+import SampleTable from "../../components/sample-table";
 import TreatmentTable from "../../components/treatment-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -81,9 +81,7 @@ export default function MultiplexedSample({
           {multiplexedSample.multiplexed_samples?.length > 0 && (
             <>
               <DataAreaTitle>Multiplexed Samples</DataAreaTitle>
-              <MultiplexedTable
-                multiplexedSamples={multiplexedSample.multiplexed_samples}
-              />
+              <SampleTable samples={multiplexedSample.multiplexed_samples} />
             </>
           )}
           {multiplexedSample.file_sets?.length > 0 && (
@@ -186,6 +184,9 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         sources,
+        pageContext: {
+          title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,
+        },
         treatments,
         biomarkers,
         breadcrumbs,

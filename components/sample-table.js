@@ -7,9 +7,9 @@ import SortableGrid from "./sortable-grid";
 import SeparatedList from "./separated-list";
 
 /**
- * Columns for multiplexed_samples
+ * Columns for samples
  */
-const multiplexedColumns = [
+const sampleColumns = [
   {
     id: "accession",
     title: "Accession",
@@ -72,19 +72,15 @@ const multiplexedColumns = [
 /**
  * Display a sortable table of the given multiplexed_samples.
  */
-export default function MultiplexedTable({ multiplexedSamples }) {
+export default function SampleTable({ samples }) {
   return (
     <DataGridContainer>
-      <SortableGrid
-        data={multiplexedSamples}
-        columns={multiplexedColumns}
-        keyProp="@id"
-      />
+      <SortableGrid data={samples} columns={sampleColumns} keyProp="@id" />
     </DataGridContainer>
   );
 }
 
-MultiplexedTable.propTypes = {
-  // MultiplexedSamples to display
-  multiplexedSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+SampleTable.propTypes = {
+  // Samples to display
+  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

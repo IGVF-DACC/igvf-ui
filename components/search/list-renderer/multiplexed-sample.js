@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
+import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -23,10 +24,9 @@ export default function MultiplexedSample({ item: multiplexedSample }) {
         <SearchListItemMeta>
           <div key="lab">{multiplexedSample.lab.title}</div>
           {multiplexedSample.alternate_accessions?.length > 0 && (
-            <div key="alternate_accessions">
-              Alternate Accessions:{" "}
-              {multiplexedSample.alternate_accessions.join(", ")}
-            </div>
+            <AlternateAccessions
+              alternateAccessions={multiplexedSample.alternate_accessions}
+            />
           )}
         </SearchListItemMeta>
       </SearchListItemMain>
