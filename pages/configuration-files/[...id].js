@@ -1,18 +1,11 @@
 // node_modules
 import PropTypes from "prop-types";
-import Link from "next/link";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
-import {
-  DataArea,
-  DataAreaTitle,
-  DataPanel,
-  DataItemLabel,
-  DataItemValue,
-} from "../../components/data-area";
+import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
 import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
@@ -20,7 +13,7 @@ import { FileHeaderDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import SeparatedList from "../../components/separated-list";
+import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -28,6 +21,7 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
+  requestOntologyTerms,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -42,6 +36,7 @@ export default function ConfigurationFile({
   configurationFile,
   fileSet = null,
   seqSpecOf,
+  sequencingPlatforms,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -71,29 +66,11 @@ export default function ConfigurationFile({
           </DataPanel>
           {seqSpecOf.length > 0 && (
             <>
-              <DataAreaTitle>Configuration Details</DataAreaTitle>
-              <DataPanel>
-                <DataArea>
-                  {seqSpecOf?.length > 0 && (
-                    <>
-                      <DataItemLabel>seqspec File Of</DataItemLabel>
-                      <DataItemValue>
-                        <SeparatedList>
-                          {seqSpecOf.map((file) => (
-                            <Link
-                              href={file["@id"]}
-                              aria-label={`file ${file.accession}`}
-                              key={file.accession}
-                            >
-                              {file.accession}
-                            </Link>
-                          ))}
-                        </SeparatedList>
-                      </DataItemValue>
-                    </>
-                  )}
-                </DataArea>
-              </DataPanel>
+              <DataAreaTitle>seqspec File Of</DataAreaTitle>
+              <SequencingFileTable
+                files={seqSpecOf}
+                sequencingPlatforms={sequencingPlatforms}
+              />
             </>
           )}
           {derivedFrom.length > 0 && (
@@ -133,6 +110,8 @@ ConfigurationFile.propTypes = {
   fileSet: PropTypes.object,
   // The file is a seqspec of
   seqSpecOf: PropTypes.array.isRequired,
+  // Sequencing platform objects associated with the files it is a seqspec of
+  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents set associate with this file
   documents: PropTypes.array.isRequired,
   // The file is derived from
@@ -190,6 +169,14 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
             request
           )
         : [];
+    const sequencingPlatformPaths = seqSpecOf
+      .map((file) => file.sequencing_platform)
+      .filter((sequencingPlatform) => sequencingPlatform);
+    const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
+    const sequencingPlatforms =
+      uniqueSequencingPlatformPaths.length > 0
+        ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       configurationFile,
       "accession",
@@ -204,6 +191,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         configurationFile,
         fileSet,
         seqSpecOf,
+        sequencingPlatforms,
         documents,
         derivedFrom,
         derivedFromFileSets,
