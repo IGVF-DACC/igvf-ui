@@ -158,7 +158,7 @@ export async function getServerSideProps({ params, req, query }) {
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
     const breadcrumbs = await buildBreadcrumbs(
       curatedSet,
-      "accession",
+      curatedSet.accession,
       req.headers.cookie
     );
     const attribution = await buildAttribution(curatedSet, req.headers.cookie);

@@ -170,7 +170,7 @@ export async function getServerSideProps({ params, req, query }) {
       : [];
     const breadcrumbs = await buildBreadcrumbs(
       treatment,
-      "treatment_term_id",
+      treatment.treatment_term_id,
       req.headers.cookie
     );
     let sources = [];

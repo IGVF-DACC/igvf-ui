@@ -52,7 +52,7 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(phenotypeOntologyTerm)) {
     const breadcrumbs = await buildBreadcrumbs(
       phenotypeOntologyTerm,
-      "term_id",
+      phenotypeOntologyTerm.term_id,
       req.headers.cookie
     );
     return {

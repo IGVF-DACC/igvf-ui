@@ -91,7 +91,7 @@ export async function getServerSideProps({ params, req, query }) {
     const title = getPhenotypicFeatureTitle(phenotypicFeature);
     const breadcrumbs = await buildBreadcrumbs(
       phenotypicFeature,
-      "uuid",
+      phenotypicFeature.uuid,
       req.headers.cookie
     );
     return {

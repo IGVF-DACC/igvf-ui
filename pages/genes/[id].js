@@ -118,7 +118,7 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(gene)) {
     const breadcrumbs = await buildBreadcrumbs(
       gene,
-      "title",
+      gene.title,
       req.headers.cookie
     );
     return {

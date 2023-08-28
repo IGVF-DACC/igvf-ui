@@ -104,7 +104,7 @@ export async function getServerSideProps({ params, req, query }) {
     const gene = await request.getObject(biomarker.gene, null);
     const breadcrumbs = await buildBreadcrumbs(
       biomarker,
-      "name",
+      biomarker.name,
       req.headers.cookie
     );
     const attribution = await buildAttribution(biomarker, req.headers.cookie);

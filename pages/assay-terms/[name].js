@@ -69,7 +69,7 @@ export async function getServerSideProps({ params, req, query }) {
       : [];
     const breadcrumbs = await buildBreadcrumbs(
       assayOntologyTerm,
-      "term_id",
+      assayOntologyTerm.term_id,
       req.headers.cookie
     );
     return {
