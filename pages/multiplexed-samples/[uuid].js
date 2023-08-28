@@ -159,7 +159,9 @@ export async function getServerSideProps({ params, req, query }) {
       const sourcePaths = multiplexedSample.sources.map(
         (source) => source["@id"]
       );
-      sources = await requestSources(sourcePaths, request);
+      sources = await request.getMultipleObjects(sourcePaths, null, {
+        filterErrors: true,
+      });
     }
     const treatments = multiplexedSample.treatments
       ? await requestTreatments(multiplexedSample.treatments, request)
