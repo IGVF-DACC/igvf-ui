@@ -113,7 +113,7 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(document)) {
     const breadcrumbs = await buildBreadcrumbs(
       document,
-      document.description,
+      document.attachment.download,
       req.headers.cookie
     );
     const attribution = await buildAttribution(document, req.headers.cookie);
