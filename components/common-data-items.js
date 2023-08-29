@@ -183,7 +183,7 @@ export function SampleDataItems({
           <DataItemLabel>Multiplexed In</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
-              {item.multiplexed_in?.map((sample) => (
+              {item.multiplexed_in.map((sample) => (
                 <Link href={sample["@id"]} key={sample.accession}>
                   {sample.accession}
                 </Link>

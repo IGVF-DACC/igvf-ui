@@ -15,8 +15,8 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import BiomarkerTable from "../../components/biomarker-table";
-import FileSetTable from "../../components/file-set-table";
 import DocumentTable from "../../components/document-table";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationsTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -113,13 +113,13 @@ export default function Tissue({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
-          {tissue.file_sets?.length > 0 && (
+          {tissue.file_sets.length > 0 && (
             <>
               <DataAreaTitle>File Sets</DataAreaTitle>
               <FileSetTable fileSets={tissue.file_sets} />
             </>
           )}
-          {tissue.modifications?.length > 0 && (
+          {tissue.modifications.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable modifications={tissue.modifications} />

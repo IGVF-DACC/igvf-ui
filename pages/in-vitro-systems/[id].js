@@ -122,13 +122,13 @@ export default function InVitroSystem({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
-          {inVitroSystem.file_sets?.length > 0 && (
+          {inVitroSystem.file_sets.length > 0 && (
             <>
               <DataAreaTitle>File Sets</DataAreaTitle>
               <FileSetTable fileSets={inVitroSystem.file_sets} />
             </>
           )}
-          {inVitroSystem.modifications?.length > 0 && (
+          {inVitroSystem.modifications.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable modifications={inVitroSystem.modifications} />

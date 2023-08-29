@@ -78,19 +78,19 @@ export default function MultiplexedSample({
               </SampleDataItems>
             </DataArea>
           </DataPanel>
-          {multiplexedSample.multiplexed_samples?.length > 0 && (
+          {multiplexedSample.multiplexed_samples.length > 0 && (
             <>
               <DataAreaTitle>Multiplexed Samples</DataAreaTitle>
               <SampleTable samples={multiplexedSample.multiplexed_samples} />
             </>
           )}
-          {multiplexedSample.file_sets?.length > 0 && (
+          {multiplexedSample.file_sets.length > 0 && (
             <>
               <DataAreaTitle>File Sets</DataAreaTitle>
               <FileSetTable fileSets={multiplexedSample.file_sets} />
             </>
           )}
-          {multiplexedSample.modifications?.length > 0 && (
+          {multiplexedSample.modifications.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable
@@ -128,7 +128,7 @@ MultiplexedSample.propTypes = {
   multiplexedSample: PropTypes.object.isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Donors associated with the sample
+  // Sources associated with the sample
   sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -153,6 +153,8 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = multiplexedSample.donors
       ? await requestDonors(multiplexedSample.donors, request)
       : [];
+    // For sources, use getMultipleObjects for sources instead of getMultipleObjectBulk.
+    // Sources point at both lab and source objects, however, it currently only LinkTo sources.
     let sources = [];
     if (multiplexedSample.sources?.length > 0) {
       const sourcePaths = multiplexedSample.sources.map(

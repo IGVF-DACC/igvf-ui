@@ -84,13 +84,13 @@ export default function PrimaryCell({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
-          {primaryCell.file_sets?.length > 0 && (
+          {primaryCell.file_sets.length > 0 && (
             <>
               <DataAreaTitle>File Sets</DataAreaTitle>
               <FileSetTable fileSets={primaryCell.file_sets} />
             </>
           )}
-          {primaryCell.modifications?.length > 0 && (
+          {primaryCell.modifications.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable modifications={primaryCell.modifications} />

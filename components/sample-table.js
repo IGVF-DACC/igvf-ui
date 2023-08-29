@@ -53,7 +53,7 @@ const sampleColumns = [
       if (source.donors) {
         return (
           <SeparatedList>
-            {source.donors?.map((donor) => (
+            {source.donors.map((donor) => (
               <Link href={donor["@id"]} key={donor["@id"]}>
                 {donor.accession}
               </Link>

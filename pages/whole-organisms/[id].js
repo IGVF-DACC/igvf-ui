@@ -70,13 +70,13 @@ export default function WholeOrganism({
               ></BiosampleDataItems>
             </DataArea>
           </DataPanel>
-          {sample.file_sets?.length > 0 && (
+          {sample.file_sets.length > 0 && (
             <>
               <DataAreaTitle>File Sets</DataAreaTitle>
               <FileSetTable fileSets={sample.file_sets} />
             </>
           )}
-          {sample.modifications?.length > 0 && (
+          {sample.modifications.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable modifications={sample.modifications} />
