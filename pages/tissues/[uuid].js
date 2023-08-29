@@ -31,7 +31,6 @@ import {
   requestDocuments,
   requestDonors,
   requestOntologyTerms,
-  requestTreatments,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -42,7 +41,6 @@ export default function Tissue({
   donors,
   documents,
   sources,
-  treatments,
   diseaseTerms,
   pooledFrom,
   biomarkers,
@@ -131,10 +129,10 @@ export default function Tissue({
               <BiomarkerTable biomarkers={biomarkers} />
             </>
           )}
-          {treatments?.length > 0 && (
+          {tissue.treatments?.length > 0 && (
             <>
               <DataAreaTitle>Treatments</DataAreaTitle>
-              <TreatmentTable treatments={treatments} />
+              <TreatmentTable treatments={tissue.treatments} />
             </>
           )}
           {documents.length > 0 && (
@@ -159,8 +157,6 @@ Tissue.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
-  // Treatments associated with the sample
-  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
@@ -198,9 +194,6 @@ export async function getServerSideProps({ params, req, query }) {
         filterErrors: true,
       });
     }
-    const treatments = tissue.treatments
-      ? await requestTreatments(tissue.treatments, request)
-      : [];
     const pooledFrom =
       tissue.pooled_from?.length > 0
         ? await requestBiosamples(tissue.pooled_from, request)
@@ -224,7 +217,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         sources,
-        treatments,
         diseaseTerms,
         pooledFrom,
         partOf,

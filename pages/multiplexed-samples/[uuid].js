@@ -29,7 +29,6 @@ import {
   requestBiomarkers,
   requestDocuments,
   requestDonors,
-  requestTreatments,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import { formatDate } from "../../lib/dates";
@@ -40,7 +39,6 @@ export default function MultiplexedSample({
   multiplexedSample,
   biomarkers,
   documents,
-  treatments,
   attribution = null,
   sources,
   isJson,
@@ -104,10 +102,10 @@ export default function MultiplexedSample({
               <BiomarkerTable biomarkers={biomarkers} />
             </>
           )}
-          {treatments.length > 0 && (
+          {multiplexedSample.treatments.length > 0 && (
             <>
               <DataAreaTitle>Treatments</DataAreaTitle>
-              <TreatmentTable treatments={treatments} />
+              <TreatmentTable treatments={multiplexedSample.treatments} />
             </>
           )}
           {documents.length > 0 && (
@@ -130,8 +128,6 @@ MultiplexedSample.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sources associated with the sample
   sources: PropTypes.arrayOf(PropTypes.object),
-  // Treatments associated with the sample
-  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
@@ -164,9 +160,6 @@ export async function getServerSideProps({ params, req, query }) {
         filterErrors: true,
       });
     }
-    const treatments = multiplexedSample.treatments
-      ? await requestTreatments(multiplexedSample.treatments, request)
-      : [];
     const biomarkers =
       multiplexedSample.biomarkers?.length > 0
         ? await requestBiomarkers(multiplexedSample.biomarkers, request)
@@ -189,7 +182,6 @@ export async function getServerSideProps({ params, req, query }) {
         pageContext: {
           title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,
         },
-        treatments,
         biomarkers,
         breadcrumbs,
         attribution,
