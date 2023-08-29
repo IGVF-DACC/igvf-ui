@@ -40,7 +40,7 @@ export default function TreatmentTable({ treatments }) {
       <SortableGrid
         data={treatments}
         columns={treatmentColumns}
-        keyProp="treatment_term_id"
+        keyProp="@id"
       />
     </DataGridContainer>
   );
