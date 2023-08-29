@@ -119,7 +119,7 @@ export default function Tissue({
               <FileSetTable fileSets={tissue.file_sets} />
             </>
           )}
-          {tissue.modifications.length > 0 && (
+          {tissue.modifications?.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable modifications={tissue.modifications} />

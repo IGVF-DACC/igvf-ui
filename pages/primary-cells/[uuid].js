@@ -90,7 +90,7 @@ export default function PrimaryCell({
               <FileSetTable fileSets={primaryCell.file_sets} />
             </>
           )}
-          {primaryCell.modifications.length > 0 && (
+          {primaryCell.modifications?.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable modifications={primaryCell.modifications} />

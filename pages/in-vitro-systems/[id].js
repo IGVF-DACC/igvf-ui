@@ -128,7 +128,7 @@ export default function InVitroSystem({
               <FileSetTable fileSets={inVitroSystem.file_sets} />
             </>
           )}
-          {inVitroSystem.modifications.length > 0 && (
+          {inVitroSystem.modifications?.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable modifications={inVitroSystem.modifications} />

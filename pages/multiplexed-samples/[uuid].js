@@ -90,7 +90,7 @@ export default function MultiplexedSample({
               <FileSetTable fileSets={multiplexedSample.file_sets} />
             </>
           )}
-          {multiplexedSample.modifications.length > 0 && (
+          {multiplexedSample.modifications?.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable

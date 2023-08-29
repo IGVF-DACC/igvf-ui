@@ -76,7 +76,7 @@ export default function WholeOrganism({
               <FileSetTable fileSets={sample.file_sets} />
             </>
           )}
-          {sample.modifications.length > 0 && (
+          {sample.modifications?.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
               <ModificationsTable modifications={sample.modifications} />
