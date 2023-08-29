@@ -78,7 +78,7 @@ export default function MultiplexedSample({
               </SampleDataItems>
             </DataArea>
           </DataPanel>
-          {multiplexedSample.multiplexed_samples.length > 0 && (
+          {multiplexedSample.multiplexed_samples?.length > 0 && (
             <>
               <DataAreaTitle>Multiplexed Samples</DataAreaTitle>
               <SampleTable samples={multiplexedSample.multiplexed_samples} />

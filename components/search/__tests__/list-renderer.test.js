@@ -3,16 +3,20 @@ import profiles from "../../__mocks__/profile";
 import SessionContext from "../../session-context";
 import Award from "../list-renderer/award";
 import AnalysisSet from "../list-renderer/analysis-set";
+import AuxiliarySet from "../list-renderer/auxiliary-set";
+import Biomarker from "../list-renderer/biomarker";
 import Biosample from "../list-renderer/biosample";
 import ConstructLibrary from "../list-renderer/construct-library";
 import CuratedSet from "../list-renderer/curated-set";
 import Document from "../list-renderer/document";
 import File from "../list-renderer/file";
-import MeasurementSet from "../list-renderer/measurement-set";
 import Gene from "../list-renderer/gene";
 import HumanDonor from "../list-renderer/human-donor";
+import HumanGenomicVariant from "../list-renderer/human-genomic-variant";
 import Lab from "../list-renderer/lab";
+import MeasurementSet from "../list-renderer/measurement-set";
 import Model from "../list-renderer/model";
+import MultiplexedSample from "../list-renderer/multiplexed-sample";
 import OntologyTerm from "../list-renderer/ontology-term";
 import Page from "../list-renderer/page";
 import PhenotypicFeature from "../list-renderer/phenotypic-feature";
@@ -20,12 +24,10 @@ import Publication from "../list-renderer/publication";
 import RodentDonor from "../list-renderer/rodent-donor";
 import Software from "../list-renderer/software";
 import SoftwareVersion from "../list-renderer/software-version";
-import TechnicalSample from "../list-renderer/technical-sample";
-import User from "../list-renderer/user";
-import Biomarker from "../list-renderer/biomarker";
 import Source from "../list-renderer/source";
+import TechnicalSample from "../list-renderer/technical-sample";
 import Treatment from "../list-renderer/treatment";
-import HumanGenomicVariant from "../list-renderer/human-genomic-variant";
+import User from "../list-renderer/user";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -2093,6 +2095,112 @@ describe("Test the Model component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("IGVFDS1234MODL");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test AuxiliarySet component", () => {
+  it("renders a auxiliary set item", () => {
+    const item = {
+      "@id": "/auxiliary-sets/IGVFDS0001AUXI/",
+      "@type": ["AuxiliarySet", "FileSet", "Item"],
+      accession: "IGVFDS0001AUXI",
+      aliases: ["igvf:auxiliary_set_1"],
+      award: {
+        "@id": "/awards/1UM1HG012077-01/",
+        component: "mapping",
+      },
+      description: "An auxiliary set with a sample.",
+      file_set_type: "gRNA sequencing",
+      lab: {
+        "@id": "/labs/ali-mortazavi/",
+        title: "Ali Mortazavi, UCI",
+      },
+      samples: [
+        {
+          "@id": "/tissues/IGVFSM0001DDDD/",
+          accession: "IGVFSM0001DDDD",
+          aliases: ["igvf:treated_tissue"],
+          donors: [
+            {
+              "@id": "/rodent-donors/IGVFDO6583PZIO/",
+              accession: "IGVFDO6583PZIO",
+              aliases: ["igvf:alias_rodent_donor_2"],
+              summary: "IGVFDO6583PZIO",
+              taxa: "Mus musculus",
+            },
+          ],
+          sample_terms: ["/sample-terms/UBERON_0002048/"],
+          summary: "lung tissue, Mus musculus (10-20 weeks)",
+          taxa: "Mus musculus",
+        },
+      ],
+      status: "released",
+      summary: "gRNA sequencing",
+      uuid: "f0c5cba2-ed42-4dae-91dc-4bfd55a11c5b",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AuxiliarySet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Auxiliary Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS0001AUXI$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("Ali Mortazavi, UCI");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test MultiplexedSample component", () => {
+  it("renders a multiplexed sample item", () => {
+    const item = {
+      "@id": "/multiplexed-samples/IGVFSM0000MPXD/",
+      "@type": ["MultiplexedSample", "Sample", "Item"],
+      accession: "IGVFSM0000MPXD",
+      award: {
+        "@id": "/awards/HG012012/",
+        component: "data coordination",
+      },
+      donors: ["/human-donors/IGVFDO1022ZKSX/"],
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      sample_terms: [
+        {
+          "@id": "/sample-terms/CL_0011001/",
+          term_name: "motor neuron",
+        },
+      ],
+      status: "released",
+      summary: "IGVFSM0000MPXD",
+      uuid: "c0c56f08-e0b2-44cd-ace6-3f9fcc41366c",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <MultiplexedSample item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Multiplexed Sample/);
+    expect(uniqueId).toHaveTextContent(/IGVFSM0000MPXD$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/IGVFSM0000MPXD/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");

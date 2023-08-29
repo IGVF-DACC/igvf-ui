@@ -178,7 +178,7 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
-      {item.multiplexed_in?.length > 0 && (
+      {item.multiplexed_in.length > 0 && (
         <>
           <DataItemLabel>Multiplexed In</DataItemLabel>
           <DataItemValue>
