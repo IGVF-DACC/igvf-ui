@@ -1241,6 +1241,7 @@ describe("Test the AnalysisSet component", () => {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
       accession: "IGVFDS3099XPLN",
+      alternate_accessions: ["IGVFDS3099XPLO"],
       aliases: ["igvf:basic_analysis_set"],
       award: "/awards/HG012012/",
       lab: {
