@@ -13,7 +13,7 @@ const modificationsColumns = [
   },
   {
     id: "summary",
-    title: "summary",
+    title: "Summary",
     display: ({ source }) => {
       return <Link href={source["@id"]}>{source.summary}</Link>;
     },
