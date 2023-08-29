@@ -64,8 +64,8 @@ export default function AuxiliarySet({
         <JsonDisplay item={auxiliarySet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Auxiliary Type</DataItemLabel>
-              <DataItemValue>{auxiliarySet.auxiliary_type}</DataItemValue>
+              <DataItemLabel>File Set Type</DataItemLabel>
+              <DataItemValue>{auxiliarySet.file_set_type}</DataItemValue>
               {auxiliarySet.aliases?.length > 0 && (
                 <>
                   <DataItemLabel>Aliases</DataItemLabel>

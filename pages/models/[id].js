@@ -54,8 +54,8 @@ export default function Model({
               <DataItemValue>{model.accession}</DataItemValue>
               <DataItemLabel>Model Version</DataItemLabel>
               <DataItemValue>{model.model_version}</DataItemValue>
-              <DataItemLabel>Model Type</DataItemLabel>
-              <DataItemValue>{model.model_type}</DataItemValue>
+              <DataItemLabel>File Set Type</DataItemLabel>
+              <DataItemValue>{model.file_set_type}</DataItemValue>
               {model.aliases?.length > 0 && (
                 <>
                   <DataItemLabel>Aliases</DataItemLabel>
