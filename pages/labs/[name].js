@@ -104,7 +104,7 @@ export async function getServerSideProps({ params, req, query }) {
     const pi = await request.getObject(lab.pi, null);
     const breadcrumbs = await buildBreadcrumbs(
       lab,
-      "title",
+      lab.title,
       req.headers.cookie
     );
     return {

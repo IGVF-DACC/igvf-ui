@@ -26,7 +26,7 @@ describe("Test the Breadcrumbs React component", () => {
       uuid: "cfb789b8-46f3-4d59-a2b3-adc39e7df93a",
       title: "J. Michael Cherry, Stanford",
     };
-    const breadcrumbs = await buildBreadcrumbs(labItemData, "title");
+    const breadcrumbs = await buildBreadcrumbs(labItemData, labItemData.title);
     const context = {
       breadcrumbs,
     };

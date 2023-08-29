@@ -180,7 +180,7 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
     const breadcrumbs = await buildBreadcrumbs(
       primaryCell,
-      "accession",
+      primaryCell.accession,
       req.headers.cookie
     );
     const attribution = await buildAttribution(primaryCell, req.headers.cookie);

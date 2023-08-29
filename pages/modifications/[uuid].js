@@ -99,7 +99,7 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(modification)) {
     const breadcrumbs = await buildBreadcrumbs(
       modification,
-      "summary",
+      modification.summary,
       req.headers.cookie
     );
     const attribution = await buildAttribution(

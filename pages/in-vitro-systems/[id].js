@@ -237,7 +237,7 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,
-      "accession",
+      inVitroSystem.accession,
       req.headers.cookie
     );
     const attribution = await buildAttribution(

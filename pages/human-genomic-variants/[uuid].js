@@ -85,7 +85,7 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(variant)) {
     const breadcrumbs = await buildBreadcrumbs(
       variant,
-      "position",
+      variant.position,
       req.headers.cookie
     );
     return {
