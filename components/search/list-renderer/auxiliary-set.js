@@ -19,7 +19,7 @@ export default function AuxiliarySet({ item: auxiliarySet }) {
           <SearchListItemType item={auxiliarySet} />
           {auxiliarySet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{auxiliarySet.auxiliary_type}</SearchListItemTitle>
+        <SearchListItemTitle>{auxiliarySet.file_set_type}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{auxiliarySet.lab.title}</div>
         </SearchListItemMeta>
