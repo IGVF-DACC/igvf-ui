@@ -31,7 +31,6 @@ import {
   requestDonors,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
-import { formatDate } from "../../lib/dates";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
