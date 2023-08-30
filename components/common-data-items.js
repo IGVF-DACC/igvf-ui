@@ -194,7 +194,7 @@ export function SampleDataItems({
       )}
       {item.date_obtained && (
         <>
-          <DataItemLabel>{options.dateObtainedTitle}</DataItemLabel>
+          <DataItemLabel>Date Harvested</DataItemLabel>
           <DataItemValue>{formatDate(item.date_obtained)}</DataItemValue>
         </>
       )}

@@ -57,14 +57,6 @@ export default function MultiplexedSample({
           <DataPanel>
             <DataArea>
               <SampleDataItems item={multiplexedSample} sources={sources}>
-                {multiplexedSample.date_obtained && (
-                  <>
-                    <DataItemLabel>Date Harvested</DataItemLabel>
-                    <DataItemValue>
-                      {formatDate(multiplexedSample.date_obtained)}
-                    </DataItemValue>
-                  </>
-                )}
                 {multiplexedSample.cellular_sub_pool && (
                   <>
                     <DataItemLabel>Cellular Sub Pool</DataItemLabel>

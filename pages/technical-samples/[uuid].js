@@ -49,14 +49,6 @@ export default function TechnicalSample({
           <DataPanel>
             <DataArea>
               <SampleDataItems item={sample} sources={sources}>
-                {sample.date_obtained && (
-                  <>
-                    <DataItemLabel>Date Harvested</DataItemLabel>
-                    <DataItemValue>
-                      {formatDate(sample.date_obtained)}
-                    </DataItemValue>
-                  </>
-                )}
                 <DataItemLabel>Sample Material</DataItemLabel>
                 <DataItemValue>{sample.sample_material}</DataItemValue>
                 <DataItemLabel>Sample Terms</DataItemLabel>
