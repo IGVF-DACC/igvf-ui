@@ -57,7 +57,7 @@ export function sortedJson(obj: JSON): JSON {
   }
   // We know it's not an array at this point
   if (typeof obj === "object") {
-    const sorted: { [key: string]: JSON } = {} ;
+    const sorted: { [key: string]: JSON } = {};
     const o = obj as { [key: string]: JSON };
     Object.keys(o)
       .sort()
@@ -113,7 +113,10 @@ const MAX_CELL_JSON_LENGTH = 200;
  * @param {number} [maxOutputLength] Maximum number of characters to display
  * @returns {string} Truncated JSON
  */
-export function truncateJson(obj: JSON, maxOutputLength: number = MAX_CELL_JSON_LENGTH): string {
+export function truncateJson(
+  obj: JSON,
+  maxOutputLength: number = MAX_CELL_JSON_LENGTH
+): string {
   const json = JSON.stringify(obj);
   return json.length > maxOutputLength
     ? `${json.substring(0, maxOutputLength)}...`
