@@ -1,7 +1,7 @@
 /**
  * Convert an object path into the object type.
  * @param {string} path The @id of the object to get the type for.
- * @returns Type of the object this path comes from; or the empty string if no type could be found.
+ * @returns {string} Type of the object this path comes from; or the empty string if no type could be found.
  */
 export function pathToType(path: string): string {
   const matched = path.match(/^\/(.+)\/.+\/$/);
