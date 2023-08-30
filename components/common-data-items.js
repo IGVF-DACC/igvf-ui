@@ -113,14 +113,7 @@ DonorDataItems.commonProperties = [
 /**
  * Display data items common to all sample-derived objects.
  */
-export function SampleDataItems({
-  item,
-  sources = null,
-  options = {
-    dateObtainedTitle: "Date Obtained",
-  },
-  children,
-}) {
+export function SampleDataItems({ item, sources = null, children }) {
   return (
     <>
       <DataItemLabel>Summary</DataItemLabel>
@@ -258,11 +251,6 @@ SampleDataItems.propTypes = {
   item: PropTypes.object.isRequired,
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
-  // General options to alter the display of the data items
-  options: PropTypes.shape({
-    // Title of date_obtained property
-    dateObtainedTitle: PropTypes.string,
-  }),
 };
 
 SampleDataItems.commonProperties = [
