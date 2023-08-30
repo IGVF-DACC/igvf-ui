@@ -22,10 +22,11 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
    */
   function onTermClick(field, term) {
     const matchingTerms = query.getKeyValues(field);
-    if (matchingTerms.includes(term.key)) {
-      query.deleteKeyValue(field, term.key);
+    const key = term.key_as_string || term.key;
+    if (matchingTerms.includes(key)) {
+      query.deleteKeyValue(field, key);
     } else {
-      query.addKeyValue(field, term.key);
+      query.addKeyValue(field, key);
     }
     query.deleteKeyValue("from");
     updateQuery(query.format());
@@ -34,7 +35,7 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
   return (
     <ul>
       {facet.terms.map((term) => {
-        const isChecked = fieldTerms.includes(term.key);
+        const isChecked = fieldTerms.includes(term.key_as_string || term.key);
         return (
           <FacetTerm
             key={term.key}
@@ -62,9 +63,12 @@ StandardTerms.propTypes = {
     terms: PropTypes.arrayOf(
       PropTypes.shape({
         // Label for the facet term
-        key: PropTypes.string.isRequired,
+        key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+          .isRequired,
         // Number of results for the facet term
         doc_count: PropTypes.number.isRequired,
+        // Label for the facet term as a string when available
+        key_as_string: PropTypes.string,
       })
     ).isRequired,
   }).isRequired,

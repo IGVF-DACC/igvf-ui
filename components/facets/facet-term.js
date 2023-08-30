@@ -15,7 +15,7 @@ export default function FacetTerm({ field, term, isChecked, onClick }) {
     <li data-testid={`facetterm-${term.key}`}>
       <Checkbox
         checked={isChecked}
-        name={`${term.key} with ${term.doc_count} result${
+        name={`${term.key_as_string || term.key} with ${term.doc_count} result${
           term.doc_count > 1 ? "s" : ""
         }`}
         onChange={() => onClick(field, term)}
@@ -32,8 +32,9 @@ FacetTerm.propTypes = {
   field: PropTypes.string.isRequired,
   // Term to display in the checkbox
   term: PropTypes.shape({
-    key: PropTypes.string.isRequired,
+    key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     doc_count: PropTypes.number.isRequired,
+    key_as_string: PropTypes.string,
   }).isRequired,
   // True if the checkbox is checked
   isChecked: PropTypes.bool.isRequired,

@@ -314,8 +314,8 @@ export default function ConstructLibrary({
                 <DataItemValue>
                   <ChromosomeLocations locations={displayableTargetedLoci} />
                   {isTargetedLociTruncated && (
-                    <div className="flex items-center h-6">
-                      <Icon.EllipsisHorizontal className="h-1 ml-1" />
+                    <div className="flex h-6 items-center">
+                      <Icon.EllipsisHorizontal className="ml-1 h-1" />
                     </div>
                   )}
                 </DataItemValue>
@@ -340,7 +340,7 @@ export default function ConstructLibrary({
                     ))}
                   </SeparatedList>
                   {isTargetedGenesTruncated && (
-                    <Icon.EllipsisHorizontal className="h-1 mt-2" />
+                    <Icon.EllipsisHorizontal className="mt-2 h-1" />
                   )}
                 </DataItemValue>
               </>
