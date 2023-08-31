@@ -4,6 +4,7 @@ import Link from "next/link";
 // components
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
+import Status from "./status";
 
 /**
  * Columns for derived from files.
@@ -47,7 +48,9 @@ const columns = [
   },
   {
     id: "status",
-    title: "Status",
+    display: ({ source }) => {
+      return <Status status={source.status} />;
+    },
   },
 ];
 

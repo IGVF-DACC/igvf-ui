@@ -115,14 +115,7 @@ DonorDataItems.commonProperties = [
 /**
  * Display data items common to all sample-derived objects.
  */
-export function SampleDataItems({
-  item,
-  sources = null,
-  options = {
-    dateObtainedTitle: "Date Obtained",
-  },
-  children,
-}) {
+export function SampleDataItems({ item, sources = null, children }) {
   return (
     <>
       <DataItemLabel>Summary</DataItemLabel>
@@ -180,9 +173,23 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
+      {item.multiplexed_in.length > 0 && (
+        <>
+          <DataItemLabel>Multiplexed In</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {item.multiplexed_in.map((sample) => (
+                <Link href={sample["@id"]} key={sample.accession}>
+                  {sample.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
       {item.date_obtained && (
         <>
-          <DataItemLabel>{options.dateObtainedTitle}</DataItemLabel>
+          <DataItemLabel>Date Harvested</DataItemLabel>
           <DataItemValue>{formatDate(item.date_obtained)}</DataItemValue>
         </>
       )}
@@ -241,11 +248,6 @@ SampleDataItems.propTypes = {
   item: PropTypes.object.isRequired,
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
-  // General options to alter the display of the data items
-  options: PropTypes.shape({
-    // Title of date_obtained property
-    dateObtainedTitle: PropTypes.string,
-  }),
 };
 
 SampleDataItems.commonProperties = [

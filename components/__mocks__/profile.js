@@ -303,6 +303,56 @@ const profiles = {
     "@type": ["JSONSchema"],
   },
 
+  AuxiliarySet: {
+    title: "Auxiliary Set",
+    $id: "/profiles/auxiliary_set.json",
+    required: ["lab", "award", "file_set_type"],
+    properties: {
+      accession: {
+        title: "Accession",
+        type: "string",
+      },
+      alternate_accessions: {
+        title: "Alternate Accessions",
+        type: "array",
+        items: {
+          title: "Alternate Accession",
+          type: "string",
+        },
+      },
+      file_set_type: {
+        title: "File Set Type",
+        type: "string",
+        enum: [
+          "cell hashing",
+          "circularized barcode detection",
+          "gRNA sequencing",
+          "oligo-conjugated lipids",
+          "oligo-conjugated antibodies",
+          "quantification barcode sequencing",
+        ],
+      },
+      lab: {
+        title: "Lab",
+        type: "string",
+        linkTo: "Lab",
+      },
+      status: {
+        title: "Status",
+        type: "string",
+        enum: [
+          "in progress",
+          "released",
+          "deleted",
+          "replaced",
+          "revoked",
+          "archived",
+        ],
+        readonly: true,
+      },
+    },
+  },
+
   Biosample: {
     title: "Biosample",
     $id: "/profiles/biosample.json",
@@ -806,6 +856,47 @@ const profiles = {
           type: "string",
         },
         notSubmittable: true,
+      },
+    },
+  },
+
+  MultiplexedSample: {
+    title: "Multiplexed Sample",
+    $id: "/profiles/multiplexed_sample.json",
+    required: ["award", "lab", "multiplexed_samples"],
+    properties: {
+      accession: {
+        title: "Accession",
+        type: "string",
+      },
+      alternate_accessions: {
+        title: "Alternate Accessions",
+        type: "array",
+        items: {
+          title: "Alternate Accession",
+          type: "string",
+        },
+      },
+      lab: {
+        title: "Lab",
+        type: "string",
+        linkTo: "Lab",
+      },
+      status: {
+        title: "Status",
+        type: "string",
+        enum: [
+          "in progress",
+          "released",
+          "deleted",
+          "replaced",
+          "revoked",
+          "archived",
+        ],
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
       },
     },
   },

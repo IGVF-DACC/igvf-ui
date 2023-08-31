@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 // components
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
+import Status from "./status";
 
 const fileSetColumns = [
   {
@@ -16,7 +17,7 @@ const fileSetColumns = [
   {
     id: "aliases",
     title: "Aliases",
-    display: ({ source }) => source.aliases.join(", "),
+    display: ({ source }) => (source.aliases ? source.aliases.join(", ") : ""),
   },
   {
     id: "lab",
@@ -25,7 +26,9 @@ const fileSetColumns = [
   },
   {
     id: "status",
-    title: "Status",
+    display: ({ source }) => {
+      return <Status status={source.status} />;
+    },
   },
 ];
 

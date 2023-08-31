@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
+import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -23,9 +24,9 @@ export default function Biosample({ item: biosample }) {
         <SearchListItemMeta>
           <div key="lab">{biosample.lab.title}</div>
           {biosample.alternate_accessions?.length > 0 && (
-            <div key="alternate_accessions">
-              Alternate Accessions: {biosample.alternate_accessions.join(", ")}
-            </div>
+            <AlternateAccessions
+              alternateAccessions={biosample.alternate_accessions}
+            />
           )}
         </SearchListItemMeta>
       </SearchListItemMain>

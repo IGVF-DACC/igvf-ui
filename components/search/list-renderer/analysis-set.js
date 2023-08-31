@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
+import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -33,6 +34,11 @@ export default function AnalysisSet({ item: analysisSet }) {
         <SearchListItemMeta>
           <div key="lab">{analysisSet.lab.title}</div>
           {summary && <div key="summary">{summary}</div>}
+          {analysisSet.alternate_accessions?.length > 0 && (
+            <AlternateAccessions
+              alternateAccessions={analysisSet.alternate_accessions}
+            />
+          )}
         </SearchListItemMeta>
         {inputFileSetsAccessions.length > 0 && (
           <SearchListItemSupplement>

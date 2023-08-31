@@ -15,6 +15,7 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -22,7 +23,6 @@ import PagePreamble from "../../components/page-preamble";
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments } from "../../lib/common-requests";
-import { formatDate } from "../../lib/dates";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -48,12 +48,6 @@ export default function TechnicalSample({
           <DataPanel>
             <DataArea>
               <SampleDataItems item={sample} sources={sources}>
-                {sample.date && (
-                  <>
-                    <DataItemLabel>Technical Sample Date</DataItemLabel>
-                    <DataItemValue>{formatDate(sample.date)}</DataItemValue>
-                  </>
-                )}
                 <DataItemLabel>Sample Material</DataItemLabel>
                 <DataItemValue>{sample.sample_material}</DataItemValue>
                 <DataItemLabel>Sample Terms</DataItemLabel>
@@ -65,6 +59,12 @@ export default function TechnicalSample({
               </SampleDataItems>
             </DataArea>
           </DataPanel>
+          {sample.file_sets.length > 0 && (
+            <>
+              <DataAreaTitle>File Sets</DataAreaTitle>
+              <FileSetTable fileSets={sample.file_sets} />
+            </>
+          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>

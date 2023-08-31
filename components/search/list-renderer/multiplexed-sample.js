@@ -12,30 +12,30 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function AuxiliarySet({ item: auxiliarySet }) {
+export default function MultiplexedSample({ item: multiplexedSample }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
         <SearchListItemUniqueId>
-          <SearchListItemType item={auxiliarySet} />
-          {auxiliarySet.accession}
+          <SearchListItemType item={multiplexedSample} />
+          {multiplexedSample.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{auxiliarySet.file_set_type}</SearchListItemTitle>
+        <SearchListItemTitle>{multiplexedSample.summary}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{auxiliarySet.lab.title}</div>
-          {auxiliarySet.alternate_accessions?.length > 0 && (
+          <div key="lab">{multiplexedSample.lab.title}</div>
+          {multiplexedSample.alternate_accessions?.length > 0 && (
             <AlternateAccessions
-              alternateAccessions={auxiliarySet.alternate_accessions}
+              alternateAccessions={multiplexedSample.alternate_accessions}
             />
           )}
         </SearchListItemMeta>
       </SearchListItemMain>
-      <SearchListItemQuality item={auxiliarySet} />
+      <SearchListItemQuality item={multiplexedSample} />
     </SearchListItemContent>
   );
 }
 
-AuxiliarySet.propTypes = {
-  // Single auxiliary set search-result object to display on a search-result list page
+MultiplexedSample.propTypes = {
+  // Single search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
 };

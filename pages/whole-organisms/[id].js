@@ -9,6 +9,7 @@ import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
 import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationsTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -23,7 +24,6 @@ import {
   requestDocuments,
   requestDonors,
   requestOntologyTerms,
-  requestTreatments,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -34,7 +34,6 @@ export default function WholeOrganism({
   donors,
   documents,
   sources,
-  treatments,
   diseaseTerms,
   pooledFrom,
   biomarkers,
@@ -69,6 +68,12 @@ export default function WholeOrganism({
               ></BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {sample.file_sets.length > 0 && (
+            <>
+              <DataAreaTitle>File Sets</DataAreaTitle>
+              <FileSetTable fileSets={sample.file_sets} />
+            </>
+          )}
           {sample.modifications?.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
@@ -81,10 +86,10 @@ export default function WholeOrganism({
               <BiomarkerTable biomarkers={biomarkers} />
             </>
           )}
-          {treatments.length > 0 && (
+          {sample.treatments?.length > 0 && (
             <>
               <DataAreaTitle>Treatments</DataAreaTitle>
-              <TreatmentTable treatments={treatments} />
+              <TreatmentTable treatments={sample.treatments} />
             </>
           )}
           {documents.length > 0 && (
@@ -109,8 +114,6 @@ WholeOrganism.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
-  // Treatments associated with the sample
-  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
@@ -150,13 +153,6 @@ export async function getServerSideProps({ params, req, query }) {
         filterErrors: true,
       });
     }
-    let treatments = [];
-    if (sample.treatments?.length > 0) {
-      const treatmentPaths = sample.treatments.map(
-        (treatment) => treatment["@id"]
-      );
-      treatments = await requestTreatments(treatmentPaths, request);
-    }
     const pooledFrom =
       sample.pooled_from?.length > 0
         ? await requestBiosamples(sample.pooled_from, request)
@@ -185,7 +181,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         sources,
-        treatments,
         diseaseTerms,
         pooledFrom,
         partOf,

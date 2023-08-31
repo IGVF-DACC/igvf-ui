@@ -16,6 +16,7 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationsTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -30,7 +31,6 @@ import {
   requestDocuments,
   requestDonors,
   requestOntologyTerms,
-  requestTreatments,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -43,7 +43,6 @@ export default function InVitroSystem({
   documents,
   donors,
   sources,
-  treatments,
   pooledFrom,
   biomarkers,
   partOf,
@@ -121,6 +120,12 @@ export default function InVitroSystem({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {inVitroSystem.file_sets.length > 0 && (
+            <>
+              <DataAreaTitle>File Sets</DataAreaTitle>
+              <FileSetTable fileSets={inVitroSystem.file_sets} />
+            </>
+          )}
           {inVitroSystem.modifications?.length > 0 && (
             <>
               <DataAreaTitle>Modifications</DataAreaTitle>
@@ -133,10 +138,10 @@ export default function InVitroSystem({
               <BiomarkerTable biomarkers={biomarkers} />
             </>
           )}
-          {treatments.length > 0 && (
+          {inVitroSystem.treatments?.length > 0 && (
             <>
               <DataAreaTitle>Treatments</DataAreaTitle>
-              <TreatmentTable treatments={treatments} />
+              <TreatmentTable treatments={inVitroSystem.treatments} />
             </>
           )}
           {inVitroSystem.cell_fate_change_treatments?.length > 0 && (
@@ -171,8 +176,6 @@ InVitroSystem.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
-  // Treatments associated with the sample
-  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
@@ -214,13 +217,6 @@ export async function getServerSideProps({ params, req, query }) {
         filterErrors: true,
       });
     }
-    let treatments = [];
-    if (inVitroSystem.treatments) {
-      const treatmentPaths = inVitroSystem.treatments.map(
-        (treatment) => treatment["@id"]
-      );
-      treatments = await requestTreatments(treatmentPaths, request);
-    }
     const pooledFrom =
       inVitroSystem.pooled_from?.length > 0
         ? await requestBiosamples(inVitroSystem.pooled_from, request)
@@ -251,7 +247,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         sources,
-        treatments,
         pooledFrom,
         partOf,
         targetedSampleTerm,

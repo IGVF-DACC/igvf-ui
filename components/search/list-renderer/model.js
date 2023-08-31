@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
+import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -24,9 +25,9 @@ export default function Model({ item: model }) {
           <div key="lab">{model.lab.title}</div>
           {model.summary && <div key="summary">{model.summary}</div>}
           {model.alternate_accessions?.length > 0 && (
-            <div key="alternate_accessions">
-              Alternate Accessions: {model.alternate_accessions.join(", ")}
-            </div>
+            <AlternateAccessions
+              alternateAccessions={model.alternate_accessions}
+            />
           )}
         </SearchListItemMeta>
       </SearchListItemMain>

@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
+import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -67,10 +68,9 @@ export default function ConstructLibrary({ item: constructLibrary }) {
         <SearchListItemMeta>
           <div key="lab">{constructLibrary.lab.title}</div>
           {constructLibrary.alternate_accessions?.length > 0 && (
-            <div key="alternate_accessions">
-              Alternate Accessions:{" "}
-              {constructLibrary.alternate_accessions.join(", ")}
-            </div>
+            <AlternateAccessions
+              alternateAccessions={constructLibrary.alternate_accessions}
+            />
           )}
         </SearchListItemMeta>
       </SearchListItemMain>
