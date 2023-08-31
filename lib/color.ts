@@ -1,13 +1,19 @@
+interface Color {
+  r: number;
+  g: number;
+  b: number;
+}
+
 /**
  * Convert a CSS hex color to an object with the equivalent r, g, and b components as integers from
  * 0 to 255.
  * @param {string} color CSS hex color to convert
- * @return {object} rgb
- * @return {object.r} Red component as an integer from 0 to 255
- * @return {object.g} Green component as an integer from 0 to 255
- * @return {object.b} Blue component as an integer from 0 to 255
+ * @return {Color} rgb
+ * @return {Color.r} Red component as an integer from 0 to 255
+ * @return {Color.g} Green component as an integer from 0 to 255
+ * @return {Color.b} Blue component as an integer from 0 to 255
  */
-export function colorToTriple(color) {
+export function colorToTriple(color: string): Color {
   const num = parseInt(color.slice(1), 16);
   const r = num >> 16;
   const g = (num >> 8) & 0x00ff;
@@ -21,9 +27,9 @@ export function colorToTriple(color) {
  * calculates luminance, so blue is considered darker than red, which is considered darker than
  * green.
  * @param {string} color CSS hex color to test
- * @return {bool} True if `color` is a "light" color.
+ * @return {boolean} True if `color` is a "light" color.
  */
-export function isLight(color) {
+export function isLight(color: string): boolean {
   const { r, g, b } = colorToTriple(color);
 
   // YIQ equation from http://24ways.org/2010/calculating-color-contrast

@@ -1,9 +1,9 @@
 /**
  * Convert an object path into the object type.
  * @param {string} path The @id of the object to get the type for.
- * @returns Type of the object this path comes from; or the empty string if no type could be found.
+ * @returns {string} Type of the object this path comes from; or the empty string if no type could be found.
  */
-export function pathToType(path) {
+export function pathToType(path: string): string {
   const matched = path.match(/^\/(.+)\/.+\/$/);
   if (matched && matched.length === 2) {
     return matched[1];
@@ -17,7 +17,7 @@ export function pathToType(path) {
  * @param {string} url The URL to check
  * @returns {boolean} True if the given string is a valid URL
  */
-export function isValidUrl(url) {
+export function isValidUrl(url: string): boolean {
   try {
     new URL(url);
   } catch (e) {
@@ -26,12 +26,22 @@ export function isValidUrl(url) {
   return true;
 }
 
-/*
+/**
  * Strips off the url parameters from the url path
+ * @param {string} url The url to strip query parameters from
+ * @returns {string} The URL string without the query parameters
  */
-export function urlWithoutParams(url) {
+export function urlWithoutParams(url: string): string {
   return url.split("?")[0];
 }
+
+type JSON =
+  | null
+  | boolean
+  | string
+  | number
+  | Array<JSON>
+  | { [key: string]: JSON };
 
 /**
  * Takes an Object to be represented as JSON and sorts
@@ -41,17 +51,18 @@ export function urlWithoutParams(url) {
  * @param {object} obj The JSON object to sort
  * @returns The sorted JSON object
  */
-export function sortedJson(obj) {
+export function sortedJson(obj: JSON): JSON {
   if (Array.isArray(obj)) {
     return obj.map((value) => sortedJson(value)).sort();
   }
-  // We know it's not an array if we're here because the above `if`
+  // We know it's not an array at this point
   if (typeof obj === "object") {
-    const sorted = {};
-    Object.keys(obj)
+    const sorted: { [key: string]: JSON } = {};
+    const o = obj as { [key: string]: JSON };
+    Object.keys(o)
       .sort()
       .forEach((key) => {
-        sorted[key] = obj[key];
+        sorted[key] = o[key];
       });
     return sorted;
   }
@@ -65,7 +76,7 @@ export function sortedJson(obj) {
  * @param {string} text Text to convert.
  * @returns {string} `text` converted to shishkebab case.
  */
-export function toShishkebabCase(text) {
+export function toShishkebabCase(text: string): string {
   return text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -77,18 +88,18 @@ export function toShishkebabCase(text) {
  * @param {string} url Url to remove trailing slash
  * @returns {string} Url without trailing slash
  */
-export function removeTrailingSlash(url) {
+export function removeTrailingSlash(url: string): string {
   return url.endsWith("/") ? url.slice(0, url.length - 1) : url;
 }
 
 /**
  * Tests numeric values that we should display even if zero, but shouldn't get displayed if
  * undefined.
- * @param {number} value Check for truthy or zero
+ * @param {number | null | undefined} value Check for truthy or zero
  * @returns {boolean} True if the value is truthy or zero
  */
-export function truthyOrZero(value) {
-  return value || value === 0;
+export function truthyOrZero(value: number | null | undefined): boolean {
+  return Boolean(value) || value === 0;
 }
 
 /**
@@ -102,7 +113,10 @@ const MAX_CELL_JSON_LENGTH = 200;
  * @param {number} [maxOutputLength] Maximum number of characters to display
  * @returns {string} Truncated JSON
  */
-export function truncateJson(obj, maxOutputLength = MAX_CELL_JSON_LENGTH) {
+export function truncateJson(
+  obj: JSON,
+  maxOutputLength: number = MAX_CELL_JSON_LENGTH
+): string {
   const json = JSON.stringify(obj);
   return json.length > maxOutputLength
     ? `${json.substring(0, maxOutputLength)}...`
