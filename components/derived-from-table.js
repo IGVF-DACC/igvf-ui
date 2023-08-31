@@ -48,9 +48,13 @@ const columns = [
   },
   {
     id: "status",
-    display: ({ source }) => {
-      return <Status status={source.status} />;
-    },
+    title: "Status",
+    display: ({ source }) => <Status status={source.status} />,
+  },
+  {
+    id: "upload_status",
+    title: "Upload Status",
+    display: ({ source }) => <Status status={source.upload_status} />,
   },
 ];
 
