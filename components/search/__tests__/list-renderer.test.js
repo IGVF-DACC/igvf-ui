@@ -1809,7 +1809,7 @@ describe("Test the Treatment component", () => {
       treatment_term_id: "CHEBI:27810",
       treatment_term_name: "resorcinol",
       treatment_type: "chemical",
-      title: "Treatment of 10 μg/mL resorcinol for 30 minutes",
+      summary: "Treatment of 10 μg/mL resorcinol for 30 minutes",
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
@@ -1848,7 +1848,7 @@ describe("Test the Treatment component", () => {
       treatment_term_id: "CHEBI:27810",
       treatment_term_name: "resorcinol",
       treatment_type: "protein",
-      title: "Treatment of 10 μg/mL resorcinol",
+      summary: "Treatment of 10 μg/mL resorcinol",
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
@@ -1885,7 +1885,7 @@ describe("Test the Treatment component", () => {
       treatment_type: "chemical",
       duration: 1,
       duration_units: "hour",
-      title: "Depletion of Caffeic acid for 1 hour",
+      summary: "Depletion of Caffeic acid for 1 hour",
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
