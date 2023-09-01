@@ -28,8 +28,10 @@ Facet.propTypes = {
     title: PropTypes.string.isRequired,
     terms: PropTypes.arrayOf(
       PropTypes.shape({
-        key: PropTypes.string.isRequired,
+        key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+          .isRequired,
         doc_count: PropTypes.number.isRequired,
+        key_as_string: PropTypes.string,
       })
     ).isRequired,
   }).isRequired,

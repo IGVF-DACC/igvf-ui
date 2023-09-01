@@ -186,6 +186,8 @@ In addition, you might have a better experience if you set these in your Visual 
   "emmet.includeLanguages": {
     "javascript": "javascriptreact"
   },
+  "prettier.configPath": "./prettier.config.js",
+  "prettier.useEditorConfig": false,
   "tailwindCSS.classAttributes": ["class", "className"],
   "tailwindCSS.emmetCompletions": true,
   "tailwindCSS.includeLanguages": {

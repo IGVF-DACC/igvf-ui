@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 export default function StandardTermLabel({ term }) {
   return (
     <div className="flex grow items-center justify-between gap-2 text-sm font-normal leading-[1.1]">
-      <div>{term.key}</div>
+      <div>{term.key_as_string || term.key}</div>
       <div>{term.doc_count}</div>
     </div>
   );
@@ -21,5 +21,7 @@ StandardTermLabel.propTypes = {
     key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     // Number of times the term appears in the search results
     doc_count: PropTypes.number.isRequired,
+    // Term name as a string when available
+    key_as_string: PropTypes.string,
   }).isRequired,
 };
