@@ -47,6 +47,8 @@ export default function Treatment({
               <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
               <DataItemLabel>Treatment Type</DataItemLabel>
               <DataItemValue>{treatment.treatment_type}</DataItemValue>
+              <DataItemLabel>Treatment Summary</DataItemLabel>
+              <DataItemValue>{treatment.summary}</DataItemValue>
               {truthyOrZero(treatment.amount) && (
                 <>
                   <DataItemLabel>Amount</DataItemLabel>

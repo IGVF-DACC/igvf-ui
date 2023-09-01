@@ -19,7 +19,7 @@ export default function Treatment({ item: treatment }) {
           <SearchListItemType item={treatment} />
           {treatment.treatment_term_id}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{treatment.title}</SearchListItemTitle>
+        <SearchListItemTitle>{treatment.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{treatment.lab.title}</div>
           <div key="treatment type">{treatment.treatment_type}</div>
