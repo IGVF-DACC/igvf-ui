@@ -13,6 +13,17 @@ import {
 } from "./search-list-item";
 
 export default function MeasurementSet({ item: measurementSet }) {
+  // Collect the summaries of all samples in the measurement set and use the first one as the
+  // representative sample summary.
+  const sampleSummaries =
+    measurementSet.samples?.length > 0
+      ? measurementSet.samples.map((sample) => sample.summary)
+      : [];
+  const representativeSampleSummary =
+    sampleSummaries.length > 0 ? sampleSummaries[0] : null;
+  const hiddenSampleSummaryCount =
+    sampleSummaries.length > 1 ? sampleSummaries.length - 1 : 0;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -20,9 +31,7 @@ export default function MeasurementSet({ item: measurementSet }) {
           <SearchListItemType item={measurementSet} />
           {measurementSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>
-          {measurementSet.assay_term.term_name}
-        </SearchListItemTitle>
+        <SearchListItemTitle>{measurementSet.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{measurementSet.lab.title}</div>
           {measurementSet.summary && (
@@ -32,6 +41,14 @@ export default function MeasurementSet({ item: measurementSet }) {
             <AlternateAccessions
               alternateAccessions={measurementSet.alternate_accessions}
             />
+          )}
+          {representativeSampleSummary && (
+            <div key="representative-sample-summary">
+              {representativeSampleSummary}
+              {hiddenSampleSummaryCount > 0 && (
+                <i> ({hiddenSampleSummaryCount} more)</i>
+              )}
+            </div>
           )}
         </SearchListItemMeta>
       </SearchListItemMain>

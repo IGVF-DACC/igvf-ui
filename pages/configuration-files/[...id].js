@@ -35,7 +35,8 @@ export default function ConfigurationFile({
   attribution,
   configurationFile,
   fileSet = null,
-  seqSpecOf,
+  seqspecOf,
+  seqspecFiles,
   sequencingPlatforms,
   documents,
   derivedFrom,
@@ -64,11 +65,12 @@ export default function ConfigurationFile({
               ></FileDataItems>
             </DataArea>
           </DataPanel>
-          {seqSpecOf.length > 0 && (
+          {seqspecOf.length > 0 && (
             <>
               <DataAreaTitle>seqspec File Of</DataAreaTitle>
               <SequencingFileTable
-                files={seqSpecOf}
+                files={seqspecOf}
+                seqspecFiles={seqspecFiles}
                 sequencingPlatforms={sequencingPlatforms}
               />
             </>
@@ -109,7 +111,9 @@ ConfigurationFile.propTypes = {
   // File set that contains this file
   fileSet: PropTypes.object,
   // The file is a seqspec of
-  seqSpecOf: PropTypes.array.isRequired,
+  seqspecOf: PropTypes.array.isRequired,
+  // Associated seqspec files to `seqspecOf` files
+  seqspecFiles: PropTypes.array.isRequired,
   // Sequencing platform objects associated with the files it is a seqspec of
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents set associate with this file
@@ -145,9 +149,24 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   );
   if (FetchRequest.isResponseSuccess(configurationFile)) {
     const fileSet = await request.getObject(configurationFile.file_set, null);
-    const seqSpecOf = configurationFile.seqspec_of
-      ? await requestFiles(configurationFile.seqspec_of, request)
-      : [];
+
+    // Get any seqspec_of files, as well as their associated seqspec files.
+    let seqspecOf = [];
+    let seqspecFiles = [];
+    if (configurationFile.seqspec_of) {
+      seqspecOf = await requestFiles(configurationFile.seqspec_of, request);
+
+      if (seqspecOf.length > 0) {
+        const seqspecPaths = seqspecOf
+          .map((file) => file.seqspec)
+          .filter((seqspec) => seqspec);
+        const uniqueSeqspecPaths = [...new Set(seqspecPaths)];
+        seqspecFiles =
+          uniqueSeqspecPaths.length > 0
+            ? await requestFiles(uniqueSeqspecPaths, request)
+            : [];
+      }
+    }
     const documents = configurationFile.documents
       ? await requestDocuments(configurationFile.documents, request)
       : [];
@@ -169,7 +188,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
             request
           )
         : [];
-    const sequencingPlatformPaths = seqSpecOf
+    const sequencingPlatformPaths = seqspecOf
       .map((file) => file.sequencing_platform)
       .filter((sequencingPlatform) => sequencingPlatform);
     const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
@@ -177,6 +196,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       uniqueSequencingPlatformPaths.length > 0
         ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
         : [];
+
     const breadcrumbs = await buildBreadcrumbs(
       configurationFile,
       "accession",
@@ -190,7 +210,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       props: {
         configurationFile,
         fileSet,
-        seqSpecOf,
+        seqspecOf,
+        seqspecFiles,
         sequencingPlatforms,
         documents,
         derivedFrom,

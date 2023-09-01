@@ -5,9 +5,12 @@ import {
   DataItemLabel,
   DataItemValue,
   DataItemValueUrl,
-  DataItemValueExpandButton,
+  DataItemValueCollapseControl,
+  DataItemValueControlLabel,
   DataPanel,
+  useDataAreaCollapser,
 } from "../data-area";
+import SeparatedList from "../separated-list";
 import Status from "../status";
 
 describe("Test the DataArea component", () => {
@@ -82,59 +85,140 @@ describe("Test the DataArea component", () => {
   });
 });
 
-describe("Test the DataItemValueExpandButton component", () => {
-  it("renders the collapsed button and calls the onClick handler", () => {
-    const onClick = jest.fn();
-    render(
-      <DataItemValueExpandButton
-        isExpandable={true}
-        isExpanded={false}
-        onClick={onClick}
-      />
-    );
+describe("Test the useDataAreaCollapser hook", () => {
+  it("properly collapses and expands the data area", () => {
+    const data = [
+      "IGVFFS0001AAAA",
+      "IGVFFS0002AAAA",
+      "IGVFFS0003AAAA",
+      "IGVFFS0004AAAA",
+      "IGVFFS0005AAAA",
+      "IGVFFS0006AAAA",
+    ];
 
+    function TestComponent() {
+      const collapser = useDataAreaCollapser(data);
+      return (
+        <>
+          <DataPanel>
+            <DataArea>
+              <DataItemLabel>Status</DataItemLabel>
+              <DataItemValue>
+                <SeparatedList>
+                  {collapser.displayedData.map((item) => (
+                    <div key={item} data-testid={`displayed-item-${item}`}>
+                      {item}
+                    </div>
+                  ))}
+                </SeparatedList>
+                <DataItemValueCollapseControl collapser={collapser}>
+                  <DataItemValueControlLabel collapser={collapser} />
+                </DataItemValueCollapseControl>
+              </DataItemValue>
+            </DataArea>
+          </DataPanel>
+        </>
+      );
+    }
+
+    render(<TestComponent />);
+
+    // Get the SVG within the button and check its data-testid attribute
     const button = screen.getByRole("button");
-    expect(button).toBeInTheDocument();
     expect(button.firstChild).toHaveAttribute(
       "data-testid",
       "data-item-value-expand-icon"
     );
 
+    // Only the first 3 items should be displayed
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0001AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0002AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0003AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0004AAAA")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0005AAAA")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0006AAAA")
+    ).not.toBeInTheDocument();
+
     fireEvent.click(button);
-    expect(onClick).toHaveBeenCalled();
-  });
-
-  it("renders the expanded button and calls the onClick handler", () => {
-    const onClick = jest.fn();
-    render(
-      <DataItemValueExpandButton
-        isExpandable={true}
-        isExpanded={true}
-        onClick={onClick}
-      />
-    );
-
-    const button = screen.getByRole("button");
-    expect(button).toBeInTheDocument();
     expect(button.firstChild).toHaveAttribute(
       "data-testid",
       "data-item-value-collapse-icon"
     );
 
-    fireEvent.click(button);
-    expect(onClick).toHaveBeenCalled();
+    // All items should be displayed
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0001AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0002AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0003AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0004AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0005AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0006AAAA")
+    ).toBeInTheDocument();
   });
 
-  it("renders nothing if the item is not expandable", () => {
-    render(
-      <DataItemValueExpandButton
-        isExpandable={false}
-        isExpanded={true}
-        onClick={jest.fn()}
-      />
-    );
+  it("does not render the collapse button if there are no items to collapse", () => {
+    const data = ["IGVFFS0001AAAA", "IGVFFS0002AAAA", "IGVFFS0003AAAA"];
+
+    function TestComponent() {
+      const collapser = useDataAreaCollapser(data);
+      return (
+        <>
+          <DataPanel>
+            <DataArea>
+              <DataItemLabel>Status</DataItemLabel>
+              <DataItemValue>
+                <SeparatedList>
+                  {collapser.displayedData.map((item) => (
+                    <div key={item} data-testid={`displayed-item-${item}`}>
+                      {item}
+                    </div>
+                  ))}
+                </SeparatedList>
+                <DataItemValueCollapseControl collapser={collapser}>
+                  <DataItemValueControlLabel collapser={collapser} />
+                </DataItemValueCollapseControl>
+              </DataItemValue>
+            </DataArea>
+          </DataPanel>
+        </>
+      );
+    }
+
+    render(<TestComponent />);
 
     const button = screen.queryByRole("button");
     expect(button).not.toBeInTheDocument();
+
+    // All items should be displayed
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0001AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0002AAAA")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("displayed-item-IGVFFS0003AAAA")
+    ).toBeInTheDocument();
   });
 });

@@ -43,6 +43,7 @@ export default function AuxiliarySet({
   libraryConstructionPlatform = null,
   constructLibraries,
   files,
+  seqspecFiles,
   sequencingPlatforms,
   controlForSets,
   attribution = null,
@@ -150,6 +151,7 @@ export default function AuxiliarySet({
               <DataAreaTitle>Sequencing Results (Illumina)</DataAreaTitle>
               <SequencingFileTable
                 files={filesWithReadType}
+                seqspecFiles={seqspecFiles}
                 sequencingPlatforms={sequencingPlatforms}
                 hasReadType
               />
@@ -160,6 +162,7 @@ export default function AuxiliarySet({
               <DataAreaTitle>Sequencing Results</DataAreaTitle>
               <SequencingFileTable
                 files={filesWithoutReadType}
+                seqspecFiles={seqspecFiles}
                 sequencingPlatforms={sequencingPlatforms}
               />
             </>
@@ -197,6 +200,8 @@ AuxiliarySet.propTypes = {
   constructLibraries: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // seqspec files associated with `files`
+  seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform objects associated with `files`
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets controlled by this file set
@@ -251,6 +256,19 @@ export async function getServerSideProps({ params, req, query }) {
         ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
         : [];
 
+    // Use the files to retrieve all the seqspec files they might link to.
+    let seqspecFiles = [];
+    if (files.length > 0) {
+      const seqspecPaths = files
+        .map((file) => file.seqspec)
+        .filter((seqspec) => seqspec);
+      const uniqueSeqspecPaths = [...new Set(seqspecPaths)];
+      seqspecFiles =
+        uniqueSeqspecPaths.length > 0
+          ? await requestFiles(uniqueSeqspecPaths, request)
+          : [];
+    }
+
     let controlForSets = [];
     if (auxiliarySet.control_for.length > 0) {
       const controlForPaths = auxiliarySet.control_for.map(
@@ -276,6 +294,7 @@ export async function getServerSideProps({ params, req, query }) {
         libraryConstructionPlatform,
         constructLibraries,
         files,
+        seqspecFiles,
         sequencingPlatforms,
         controlForSets,
         pageContext: { title: auxiliarySet.accession },

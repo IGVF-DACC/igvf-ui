@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataGridContainer } from "./data-grid";
@@ -32,6 +33,20 @@ const filesColumns = [
   {
     id: "sequencing_run",
     title: "Sequencing Run",
+  },
+  {
+    id: "seqspec",
+    title: "Associated seqspec File",
+    display: ({ source }, meta) => {
+      const matchingSeqspec = meta.seqspecFiles.find(
+        (seqspec) => seqspec["@id"] === source.seqspec
+      );
+      return (
+        matchingSeqspec && (
+          <Link href={matchingSeqspec.href}>{matchingSeqspec.accession}</Link>
+        )
+      );
+    },
   },
   {
     id: "sequencing_platform",
@@ -79,6 +94,7 @@ const filesColumns = [
 export default function SequencingFileTable({
   files,
   sequencingPlatforms,
+  seqspecFiles = [],
   hasReadType = false,
 }) {
   return (
@@ -86,7 +102,7 @@ export default function SequencingFileTable({
       <SortableGrid
         data={files}
         columns={filesColumns}
-        meta={{ sequencingPlatforms, hasReadType }}
+        meta={{ seqspecFiles, sequencingPlatforms, hasReadType }}
         keyProp="@id"
       />
     </DataGridContainer>
@@ -98,6 +114,8 @@ SequencingFileTable.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform objects associated with `files`
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // seqspec files associated with `files`
+  seqspecFiles: PropTypes.arrayOf(PropTypes.object),
   // True if files have illumina_read_type
   hasReadType: PropTypes.bool,
 };
