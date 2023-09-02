@@ -15,6 +15,10 @@ const statusStyles = {
   released: "bg-[#00a651] text-white shadow-[#007d3d]",
   replaced: "bg-[#f26522] text-white shadow-[#cd541b]",
   revoked: "bg-[#ed145b] text-white shadow-[#c4114b]",
+  validated: "bg-[#00a651] text-white shadow-[#007d3d]",
+  invalidated: "bg-[#ed145b] text-white shadow-[#c4114b]",
+  "file not found": "bg-[#ed145b] text-white shadow-[#c4114b]",
+  pending: "bg-[#0072bc] text-white shadow-[#00578f]",
 };
 
 /**

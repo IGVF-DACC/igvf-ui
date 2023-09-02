@@ -47,6 +47,7 @@ export default function File({ item: file, accessoryData = null }) {
             />
           )}
         </SearchListItemMeta>
+        <SearchListItemQuality item={file} />
         {fileSet && (
           <SearchListItemSupplement>
             <SearchListItemSupplementSection>
@@ -60,7 +61,6 @@ export default function File({ item: file, accessoryData = null }) {
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>
-      <SearchListItemQuality item={file} />
     </SearchListItemContent>
   );
 }
