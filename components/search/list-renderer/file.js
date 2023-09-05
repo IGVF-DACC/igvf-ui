@@ -27,26 +27,16 @@ export default function File({ item: file, accessoryData = null }) {
   ].filter(Boolean);
   const summary = file.summary;
   const fileSet = accessoryData?.[file.file_set];
-  const seqSpecOfValue = Array.isArray(accessoryData)
-    ? accessoryData.find((item) => item.seqspec_of === file.seqspec_of)
-    : null;
-
-  const seqSpecOfLinks = seqSpecOfValue
-    ? Array.isArray(seqSpecOfValue.seqspec_file)
-      ? seqSpecOfValue.seqspec_file.map((seqspec_file, index) => [
-          <Link key={seqspec_file["@id"]} href={seqspec_file["@id"]}>
-            {seqspec_file.accession}
+  const seqSpecOf = accessoryData?.[file.seqspec_of];
+  const seqSpecOfLinks = seqSpecOf
+    ? seqSpecOf.seqspec_of
+        .map((seqspec_of_file, index) => [
+          <Link key={seqspec_of_file["@id"]} href={seqspec_of_file["@id"]}>
+            {seqspec_of_file.accession}
           </Link>,
-          index < seqSpecOfValue.seqspec_file.length - 1 && ", ",
+          index < seqSpecOf.seqspec_of.length - 1 && ", ",
         ])
-      : [
-          <Link
-            key={seqSpecOfValue.seqspec_file["@id"]}
-            href={seqSpecOfValue.seqspec_file["@id"]}
-          >
-            {seqSpecOfValue.seqspec_file.accession}
-          </Link>,
-        ]
+        .flat()
     : [];
 
   return (
@@ -81,7 +71,7 @@ export default function File({ item: file, accessoryData = null }) {
               </SearchListItemSupplementContent>
             </SearchListItemSupplementSection>
           )}
-          {seqSpecOfLinks && (
+          {seqSpecOfLinks?.length > 0 && (
             <SearchListItemSupplementSection>
               <SearchListItemSupplementLabel>
                 Seqspec of
