@@ -47,6 +47,7 @@ const filesColumns = [
         )
       );
     },
+    hide: (data, columns, meta) => meta.isSeqspecHidden,
   },
   {
     id: "sequencing_platform",
@@ -96,13 +97,19 @@ export default function SequencingFileTable({
   sequencingPlatforms,
   seqspecFiles = [],
   hasReadType = false,
+  isSeqspecHidden = false,
 }) {
   return (
     <DataGridContainer>
       <SortableGrid
         data={files}
         columns={filesColumns}
-        meta={{ seqspecFiles, sequencingPlatforms, hasReadType }}
+        meta={{
+          seqspecFiles,
+          sequencingPlatforms,
+          hasReadType,
+          isSeqspecHidden,
+        }}
         keyProp="@id"
       />
     </DataGridContainer>
@@ -118,4 +125,6 @@ SequencingFileTable.propTypes = {
   seqspecFiles: PropTypes.arrayOf(PropTypes.object),
   // True if files have illumina_read_type
   hasReadType: PropTypes.bool,
+  // True to hide the seqspec column
+  isSeqspecHidden: PropTypes.bool,
 };

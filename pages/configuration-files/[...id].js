@@ -36,7 +36,6 @@ export default function ConfigurationFile({
   configurationFile,
   fileSet = null,
   seqspecOf,
-  seqspecFiles,
   sequencingPlatforms,
   documents,
   derivedFrom,
@@ -70,8 +69,8 @@ export default function ConfigurationFile({
               <DataAreaTitle>seqspec File Of</DataAreaTitle>
               <SequencingFileTable
                 files={seqspecOf}
-                seqspecFiles={seqspecFiles}
                 sequencingPlatforms={sequencingPlatforms}
+                isSeqspecHidden={true}
               />
             </>
           )}
@@ -112,8 +111,6 @@ ConfigurationFile.propTypes = {
   fileSet: PropTypes.object,
   // The file is a seqspec of
   seqspecOf: PropTypes.array.isRequired,
-  // Associated seqspec files to `seqspecOf` files
-  seqspecFiles: PropTypes.array.isRequired,
   // Sequencing platform objects associated with the files it is a seqspec of
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents set associate with this file
@@ -149,24 +146,9 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   );
   if (FetchRequest.isResponseSuccess(configurationFile)) {
     const fileSet = await request.getObject(configurationFile.file_set, null);
-
-    // Get any seqspec_of files, as well as their associated seqspec files.
-    let seqspecOf = [];
-    let seqspecFiles = [];
-    if (configurationFile.seqspec_of) {
-      seqspecOf = await requestFiles(configurationFile.seqspec_of, request);
-
-      if (seqspecOf.length > 0) {
-        const seqspecPaths = seqspecOf
-          .map((file) => file.seqspec)
-          .filter((seqspec) => seqspec);
-        const uniqueSeqspecPaths = [...new Set(seqspecPaths)];
-        seqspecFiles =
-          uniqueSeqspecPaths.length > 0
-            ? await requestFiles(uniqueSeqspecPaths, request)
-            : [];
-      }
-    }
+    const seqspecOf = configurationFile.seqspec_of
+      ? await requestFiles(configurationFile.seqspec_of, request)
+      : [];
     const documents = configurationFile.documents
       ? await requestDocuments(configurationFile.documents, request)
       : [];
@@ -211,7 +193,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         configurationFile,
         fileSet,
         seqspecOf,
-        seqspecFiles,
         sequencingPlatforms,
         documents,
         derivedFrom,
