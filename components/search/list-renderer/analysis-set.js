@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import Link from "next/link";
 // components/search/list-renderer
 import AlternateAccessions from "../../alternate-accessions";
 import {
@@ -20,7 +21,14 @@ export default function AnalysisSet({ item: analysisSet }) {
   const summary = analysisSet.summary;
   const inputFileSetsAccessions =
     analysisSet.input_file_sets?.length > 0
-      ? analysisSet.input_file_sets.map((fileSet) => fileSet.accession)
+      ? analysisSet.input_file_sets
+          .map((fileSet, index) => [
+            <Link key={fileSet["@id"]} href={fileSet["@id"]}>
+              {fileSet.accession}
+            </Link>,
+            index < analysisSet.input_file_sets.length - 1 && ", ",
+          ])
+          .flat()
       : [];
 
   return (
@@ -47,7 +55,7 @@ export default function AnalysisSet({ item: analysisSet }) {
                 Input File Sets
               </SearchListItemSupplementLabel>
               <SearchListItemSupplementContent>
-                {inputFileSetsAccessions.join(", ")}
+                {inputFileSetsAccessions}
               </SearchListItemSupplementContent>
             </SearchListItemSupplementSection>
           </SearchListItemSupplement>

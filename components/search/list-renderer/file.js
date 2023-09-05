@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import Link from "next/link";
 // components/search/list-renderer
 import AlternateAccessions from "../../alternate-accessions";
 import {
@@ -26,6 +27,27 @@ export default function File({ item: file, accessoryData = null }) {
   ].filter(Boolean);
   const summary = file.summary;
   const fileSet = accessoryData?.[file.file_set];
+  const seqSpecOfValue = Array.isArray(accessoryData)
+    ? accessoryData.find((item) => item.seqspec_of === file.seqspec_of)
+    : null;
+
+  const seqSpecOfLinks = seqSpecOfValue
+    ? Array.isArray(seqSpecOfValue.seqspec_file)
+      ? seqSpecOfValue.seqspec_file.map((seqspec_file, index) => [
+          <Link key={seqspec_file["@id"]} href={seqspec_file["@id"]}>
+            {seqspec_file.accession}
+          </Link>,
+          index < seqSpecOfValue.seqspec_file.length - 1 && ", ",
+        ])
+      : [
+          <Link
+            key={seqSpecOfValue.seqspec_file["@id"]}
+            href={seqSpecOfValue.seqspec_file["@id"]}
+          >
+            {seqSpecOfValue.seqspec_file.accession}
+          </Link>,
+        ]
+    : [];
 
   return (
     <SearchListItemContent>
@@ -48,18 +70,28 @@ export default function File({ item: file, accessoryData = null }) {
           )}
         </SearchListItemMeta>
         <SearchListItemQuality item={file} />
-        {fileSet && (
-          <SearchListItemSupplement>
+        <SearchListItemSupplement>
+          {fileSet && (
             <SearchListItemSupplementSection>
               <SearchListItemSupplementLabel>
                 File Set
               </SearchListItemSupplementLabel>
               <SearchListItemSupplementContent>
-                {fileSet.summary}
+                <Link href={fileSet["@id"]}>{fileSet.summary}</Link>
               </SearchListItemSupplementContent>
             </SearchListItemSupplementSection>
-          </SearchListItemSupplement>
-        )}
+          )}
+          {seqSpecOfLinks && (
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                Seqspec of
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                {seqSpecOfLinks}
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          )}
+        </SearchListItemSupplement>
       </SearchListItemMain>
     </SearchListItemContent>
   );
@@ -77,7 +109,12 @@ File.getAccessoryDataPaths = (items) => {
     {
       type: "File",
       paths: items.map((item) => item.file_set).filter(Boolean),
-      fields: ["summary"],
+      fields: ["@id", "summary"],
+    },
+    {
+      type: "File",
+      paths: items.map((item) => item.seqspec_of).filter(Boolean),
+      fields: ["@id", "accession"],
     },
   ];
 };

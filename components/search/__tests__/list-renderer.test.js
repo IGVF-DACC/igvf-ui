@@ -1232,7 +1232,7 @@ it("renders a File item with accessory data", () => {
     {
       type: "File",
       paths: ["/analysis-sets/IGVFDS1099XPXL/"],
-      fields: ["summary"],
+      fields: ["@id", "summary"],
     },
   ]);
 });
