@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import Link from "next/link";
 // components/search/list-renderer
 import AlternateAccessions from "../../alternate-accessions";
+import SeparatedList from "../../separated-list";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -27,17 +28,6 @@ export default function File({ item: file, accessoryData = null }) {
   ].filter(Boolean);
   const summary = file.summary;
   const fileSet = accessoryData?.[file.file_set];
-  const seqspecOfFileLinks =
-    file.seqspec_of?.length > 0 && accessoryData
-      ? file.seqspec_of
-          .map((key, index) => [
-            <Link key={key} href={key}>
-              {accessoryData[key].accession}
-            </Link>,
-            index < file.seqspec_of.length - 1 && ", ",
-          ])
-          .flat()
-      : [];
 
   return (
     <SearchListItemContent>
@@ -72,13 +62,19 @@ export default function File({ item: file, accessoryData = null }) {
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {seqspecOfFileLinks.length > 0 && (
+            {file.seqspec_of?.length > 0 && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
-                  Seqspec of
+                  Seqspec Of
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  {seqspecOfFileLinks}
+                  <SeparatedList>
+                    {file.seqspec_of.map((seqspecOfFile) => (
+                      <Link href={seqspecOfFile} key={seqspecOfFile}>
+                        {accessoryData[seqspecOfFile].accession}
+                      </Link>
+                    ))}
+                  </SeparatedList>
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}

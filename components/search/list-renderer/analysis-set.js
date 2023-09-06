@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import Link from "next/link";
 // components/search/list-renderer
 import AlternateAccessions from "../../alternate-accessions";
+import SeparatedList from "../../separated-list";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -19,17 +20,6 @@ import {
 
 export default function AnalysisSet({ item: analysisSet }) {
   const summary = analysisSet.summary;
-  const inputFileSetsAccessions =
-    analysisSet.input_file_sets?.length > 0
-      ? analysisSet.input_file_sets
-          .map((fileSet, index) => [
-            <Link key={fileSet["@id"]} href={fileSet["@id"]}>
-              {fileSet.accession}
-            </Link>,
-            index < analysisSet.input_file_sets.length - 1 && ", ",
-          ])
-          .flat()
-      : [];
 
   return (
     <SearchListItemContent>
@@ -48,14 +38,20 @@ export default function AnalysisSet({ item: analysisSet }) {
             />
           )}
         </SearchListItemMeta>
-        {inputFileSetsAccessions.length > 0 && (
+        {analysisSet.input_file_sets?.length > 0 && (
           <SearchListItemSupplement>
             <SearchListItemSupplementSection>
               <SearchListItemSupplementLabel>
                 Input File Sets
               </SearchListItemSupplementLabel>
               <SearchListItemSupplementContent>
-                {inputFileSetsAccessions}
+                <SeparatedList>
+                  {analysisSet.input_file_sets.map((fileSet) => (
+                    <Link href={fileSet["@id"]} key={fileSet["@id"]}>
+                      {fileSet.accession}
+                    </Link>
+                  ))}
+                </SeparatedList>
               </SearchListItemSupplementContent>
             </SearchListItemSupplementSection>
           </SearchListItemSupplement>
