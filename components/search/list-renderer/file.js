@@ -32,7 +32,7 @@ export default function File({ item: file, accessoryData = null }) {
       ? file.seqspec_of
           .map((key, index) => [
             <Link key={key} href={key}>
-              {accessoryData[key]["accession"]}
+              {accessoryData[key].accession}
             </Link>,
             index < file.seqspec_of.length - 1 && ", ",
           ])
