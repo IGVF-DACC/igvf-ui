@@ -1367,21 +1367,18 @@ describe("Test the AnalysisSet component", () => {
           accession: "IGVFDS3099XPLN",
           "@id": "/analysis-sets/IGVFDS3099XPLN/",
         },
+        {
+          aliases: ["igvf:basic_analysis_set_2"],
+          accession: "IGVFDS0390NOLS",
+          "@id": "/analysis-sets/IGVFDS0390NOLS/",
+        },
       ],
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
     };
 
-    const accessoryData = {
-      "/analysis-sets/IGVFDS3099XPLN/": {
-        "@id": "/analysis-sets/IGVFDS3099XPLN/",
-        "@type": ["AnalysisSet", "FileSet", "Item"],
-        accession: "IGVFDS3099XPLN",
-      },
-    };
-
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <AnalysisSet item={item} accessoryData={accessoryData} />
+        <AnalysisSet item={item} />
       </SessionContext.Provider>
     );
 
@@ -1399,7 +1396,7 @@ describe("Test the AnalysisSet component", () => {
     const supplement = screen.queryByTestId(
       "search-list-item-supplement-content"
     );
-    expect(supplement).toHaveTextContent("IGVFDS3099XPLN");
+    expect(supplement).toHaveTextContent("IGVFDS3099XPLN, IGVFDS0390NOLS");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
@@ -1409,8 +1406,8 @@ describe("Test the AnalysisSet component", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
-      accession: "IGVFDS3099XPLN",
-      aliases: ["igvf:basic_analysis_set"],
+      accession: "IGVFDS0390NOLS",
+      aliases: ["igvf:basic_analysis_set_2"],
       award: "/awards/HG012012/",
       lab: {
         "@id": "/labs/j-michael-cherry/",
@@ -1428,7 +1425,7 @@ describe("Test the AnalysisSet component", () => {
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/^Analysis Set/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS3099XPLN$/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS0390NOLS$/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^Analysis$/);
