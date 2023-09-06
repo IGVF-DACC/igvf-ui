@@ -50,7 +50,7 @@ export default function File({ item: file, accessoryData = null }) {
           )}
         </SearchListItemMeta>
         <SearchListItemQuality item={file} />
-        {(fileSet || seqspecOfFileLinks.length > 0) && (
+        {(fileSet || file.seqspec_of?.length > 0) && (
           <SearchListItemSupplement>
             {fileSet && (
               <SearchListItemSupplementSection>
