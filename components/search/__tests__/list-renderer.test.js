@@ -1185,7 +1185,7 @@ it("renders a File item with accessory data", () => {
       title: "J. Michael Cherry, Stanford",
     },
     summary: "IGVFFI0000SEQU",
-    uuid: "1aaaa72d-92da-4c7a -93af-388f56d559ac",
+    uuid: "1aaaa72d-92da-4c7a-93af-388f56d559ac",
     status: "released",
     file_set: "/analysis-sets/IGVFDS1099XPXL/",
     dbxrefs: ["SRA:SRR12345"],
@@ -1233,6 +1233,116 @@ it("renders a File item with accessory data", () => {
       type: "File",
       paths: ["/analysis-sets/IGVFDS1099XPXL/"],
       fields: ["@id", "summary"],
+    },
+  ]);
+});
+
+it("renders a seqspec configuration File item with accessory data", () => {
+  const item = {
+    "@id": "/configuration-file/IGVFFI1234CONF/",
+    "@type": ["ConfigurationFile", "File", "Item"],
+    accession: "IGVFFI1234CONF",
+    alternate_accessions: ["IGVFFI4321FNOC"],
+    file_format: "yaml",
+    content_type: "seqspec",
+    lab: {
+      title: "J. Michael Cherry, Stanford",
+    },
+    summary: "IGVFFI1234CONF",
+    uuid: "ef55ccbc-fb2e-4c12-81b4-fa466c94bd38",
+    status: "released",
+    file_set: "/measurement-sets/IGVFDS6408BFHD/",
+    seqspec_of: [
+      "/sequence-files/IGVFFI0000SEQU/",
+      "/sequence-files/IGVFDS8812ASDF/",
+    ],
+  };
+  const accessoryData = {
+    "/measurement-sets/IGVFDS6408BFHD/": {
+      "@id": "/measurement-sets/IGVFDS6408BFHD/",
+      "@type": ["MeasurementSet", "FileSet", "Item"],
+      summary: "STARR-seq",
+      lab: "/labs/lea-starita/",
+      award: "/awards/HG012012/",
+      uuid: "1c87db3a-86a3-41d5-a4ea-96dd9341667d",
+    },
+    "/sequence-files/IGVFFI0000SEQU/": {
+      "@id": "/sequence-file/IGVFFI0000SEQU/",
+      "@type": ["SequenceFile", "File", "Item"],
+      accession: "IGVFFI0000SEQU",
+      alternate_accessions: ["IGVFFI0000SEQV"],
+      file_format: "fastq",
+      content_type: "reads",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      summary: "IGVFFI0000SEQU",
+      uuid: "fcc11bf7-82ed-4074-a501-acc9c44ceb11",
+      status: "released",
+      file_set: "/analysis-sets/IGVFDS6408BFHD/",
+      dbxrefs: ["SRA:SRR12345"],
+      illumina_read_type: "R1",
+      sequencing_run: 1,
+      seqspec: "/configuration-file/IGVFFI1234CONF/",
+    },
+    "/sequence-files/IGVFDS8812ASDF/": {
+      "@id": "/sequence-file/IGVFDS8812ASDF/",
+      "@type": ["SequenceFile", "File", "Item"],
+      accession: "IGVFDS8812ASDF",
+      alternate_accessions: ["IGVFDS8812ASDQ"],
+      file_format: "fastq",
+      content_type: "reads",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      summary: "IGVFFI0000SEQU",
+      uuid: "7bf24dce-f512-49d7-8688-dbcd927679d7",
+      status: "released",
+      file_set: "/analysis-sets/IGVFDS6408BFHD/",
+      dbxrefs: ["SRA:SRR12346"],
+      illumina_read_type: "R2",
+      sequencing_run: 1,
+      seqspec: "/configuration-file/IGVFFI1234CONF/",
+    },
+  };
+
+  render(
+    <SessionContext.Provider value={{ profiles }}>
+      <File item={item} accessoryData={accessoryData} />
+    </SessionContext.Provider>
+  );
+
+  const uniqueId = screen.getByTestId("search-list-item-unique-id");
+  expect(uniqueId).toHaveTextContent(/^ConfigurationFile/);
+  expect(uniqueId).toHaveTextContent(/IGVFFI1234CONF$/);
+
+  const title = screen.getByTestId("search-list-item-title");
+  expect(title).toHaveTextContent(/^yaml - seqspec$/);
+
+  const meta = screen.getByTestId("search-list-item-meta");
+  expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+  const status = screen.getByTestId("search-list-item-quality");
+  expect(status).toHaveTextContent("released");
+
+  const supplement = screen.queryByTestId("search-list-item-supplement");
+  expect(supplement).toHaveTextContent("STARR-seq");
+  expect(supplement).toHaveTextContent("IGVFFI0000SEQU, IGVFDS8812ASDF");
+
+  const paths = File.getAccessoryDataPaths([item]);
+  expect(paths).toEqual([
+    {
+      type: "File",
+      paths: ["/measurement-sets/IGVFDS6408BFHD/"],
+      fields: ["@id", "summary"],
+    },
+    {
+      type: "File",
+      paths: [
+        "/sequence-files/IGVFFI0000SEQU/",
+        "/sequence-files/IGVFDS8812ASDF/",
+      ],
+      fields: ["accession"],
     },
   ]);
 });

@@ -27,17 +27,17 @@ export default function File({ item: file, accessoryData = null }) {
   ].filter(Boolean);
   const summary = file.summary;
   const fileSet = accessoryData?.[file.file_set];
-  const seqSpecOf = accessoryData?.[file.seqspec_of];
-  const seqSpecOfLinks = seqSpecOf
-    ? seqSpecOf.seqspec_of
-        .map((seqspec_of_file, index) => [
-          <Link key={seqspec_of_file["@id"]} href={seqspec_of_file["@id"]}>
-            {seqspec_of_file.accession}
-          </Link>,
-          index < seqSpecOf.seqspec_of.length - 1 && ", ",
-        ])
-        .flat()
-    : [];
+  const seqspecOfFileLinks =
+    file.seqspec_of?.length > 0 && accessoryData
+      ? file.seqspec_of
+          .map((key, index) => [
+            <Link key={key} href={key}>
+              {accessoryData[key]["accession"]}
+            </Link>,
+            index < file.seqspec_of.length - 1 && ", ",
+          ])
+          .flat()
+      : [];
 
   return (
     <SearchListItemContent>
@@ -60,28 +60,30 @@ export default function File({ item: file, accessoryData = null }) {
           )}
         </SearchListItemMeta>
         <SearchListItemQuality item={file} />
-        <SearchListItemSupplement>
-          {fileSet && (
-            <SearchListItemSupplementSection>
-              <SearchListItemSupplementLabel>
-                File Set
-              </SearchListItemSupplementLabel>
-              <SearchListItemSupplementContent>
-                <Link href={fileSet["@id"]}>{fileSet.summary}</Link>
-              </SearchListItemSupplementContent>
-            </SearchListItemSupplementSection>
-          )}
-          {seqSpecOfLinks?.length > 0 && (
-            <SearchListItemSupplementSection>
-              <SearchListItemSupplementLabel>
-                Seqspec of
-              </SearchListItemSupplementLabel>
-              <SearchListItemSupplementContent>
-                {seqSpecOfLinks}
-              </SearchListItemSupplementContent>
-            </SearchListItemSupplementSection>
-          )}
-        </SearchListItemSupplement>
+        {(fileSet || seqspecOfFileLinks.length > 0) && (
+          <SearchListItemSupplement>
+            {fileSet && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  File Set
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  <Link href={fileSet["@id"]}>{fileSet.summary}</Link>
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+            {seqspecOfFileLinks.length > 0 && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Seqspec of
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {seqspecOfFileLinks}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
     </SearchListItemContent>
   );
@@ -95,16 +97,22 @@ File.propTypes = {
 };
 
 File.getAccessoryDataPaths = (items) => {
-  return [
+  const seqspecOfPaths = items.reduce((pathAcc, item) => {
+    return item.seqspec_of ? pathAcc.concat(item.seqspec_of) : pathAcc;
+  }, []);
+  const data = [
     {
       type: "File",
       paths: items.map((item) => item.file_set).filter(Boolean),
       fields: ["@id", "summary"],
     },
-    {
-      type: "File",
-      paths: items.map((item) => item.seqspec_of).filter(Boolean),
-      fields: ["@id", "accession"],
-    },
   ];
+  if (seqspecOfPaths.length > 0) {
+    data.push({
+      type: "File",
+      paths: seqspecOfPaths,
+      fields: ["accession"],
+    });
+  }
+  return data;
 };
