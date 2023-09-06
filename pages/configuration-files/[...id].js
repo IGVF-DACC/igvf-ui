@@ -35,7 +35,7 @@ export default function ConfigurationFile({
   attribution,
   configurationFile,
   fileSet = null,
-  seqSpecOf,
+  seqspecOf,
   sequencingPlatforms,
   documents,
   derivedFrom,
@@ -64,12 +64,13 @@ export default function ConfigurationFile({
               ></FileDataItems>
             </DataArea>
           </DataPanel>
-          {seqSpecOf.length > 0 && (
+          {seqspecOf.length > 0 && (
             <>
               <DataAreaTitle>seqspec File Of</DataAreaTitle>
               <SequencingFileTable
-                files={seqSpecOf}
+                files={seqspecOf}
                 sequencingPlatforms={sequencingPlatforms}
+                isSeqspecHidden={true}
               />
             </>
           )}
@@ -109,7 +110,7 @@ ConfigurationFile.propTypes = {
   // File set that contains this file
   fileSet: PropTypes.object,
   // The file is a seqspec of
-  seqSpecOf: PropTypes.array.isRequired,
+  seqspecOf: PropTypes.array.isRequired,
   // Sequencing platform objects associated with the files it is a seqspec of
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents set associate with this file
@@ -145,7 +146,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   );
   if (FetchRequest.isResponseSuccess(configurationFile)) {
     const fileSet = await request.getObject(configurationFile.file_set, null);
-    const seqSpecOf = configurationFile.seqspec_of
+    const seqspecOf = configurationFile.seqspec_of
       ? await requestFiles(configurationFile.seqspec_of, request)
       : [];
     const documents = configurationFile.documents
@@ -169,7 +170,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
             request
           )
         : [];
-    const sequencingPlatformPaths = seqSpecOf
+    const sequencingPlatformPaths = seqspecOf
       .map((file) => file.sequencing_platform)
       .filter((sequencingPlatform) => sequencingPlatform);
     const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
@@ -177,6 +178,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       uniqueSequencingPlatformPaths.length > 0
         ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
         : [];
+
     const breadcrumbs = await buildBreadcrumbs(
       configurationFile,
       "accession",
@@ -190,7 +192,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       props: {
         configurationFile,
         fileSet,
-        seqSpecOf,
+        seqspecOf,
         sequencingPlatforms,
         documents,
         derivedFrom,

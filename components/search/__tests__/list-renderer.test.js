@@ -1411,7 +1411,7 @@ describe("Test the CuratedSet component", () => {
 });
 
 describe("Test the MeasurementSet component", () => {
-  it("renders a MeasurementSet item", () => {
+  it("renders a MeasurementSet item with one sample", () => {
     const item = {
       "@id": "/measurement-sets/IGVFDS6408BFHD/",
       "@type": ["MeasurementSet", "FileSet", "Item"],
@@ -1422,8 +1422,27 @@ describe("Test the MeasurementSet component", () => {
       lab: {
         title: "J. Michael Cherry, Stanford",
       },
+      samples: [
+        {
+          "@id": "/primary-cells/IGVFSM0000EEEE/",
+          accession: "IGVFSM0000EEEE",
+          aliases: ["igvf:alias10"],
+          donors: [
+            {
+              "@id": "/human-donors/IGVFDO6569ZRDK/",
+              accession: "IGVFDO6569ZRDK",
+              aliases: ["igvf:alias_human_donor2"],
+              summary: "IGVFDO6569ZRDK",
+              taxa: "Homo sapiens",
+            },
+          ],
+          sample_terms: ["/sample-terms/CL_0011001/"],
+          summary: "motor neuron primary cell, Homo sapiens (40-45 years)",
+          taxa: "Homo sapiens",
+        },
+      ],
       status: "released",
-      summary: "IGVFDS6408BFHD",
+      summary: "imaging assay (yN2H)",
       uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
       assay_term: {
         term_name: "STARR-seq",
@@ -1441,7 +1460,7 @@ describe("Test the MeasurementSet component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDS6408BFHD$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^STARR-seq$/);
+    expect(title).toHaveTextContent(/^imaging assay \(yN2H\)$/);
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
@@ -1450,7 +1469,7 @@ describe("Test the MeasurementSet component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders a MeasurementSet item without summary", () => {
+  it("renders a MeasurementSet item with more than one sample", () => {
     const item = {
       "@id": "/measurement-sets/IGVFDS6408BFHD/",
       "@type": ["MeasurementSet", "FileSet", "Item"],
@@ -1461,7 +1480,47 @@ describe("Test the MeasurementSet component", () => {
       lab: {
         title: "J. Michael Cherry, Stanford",
       },
+      samples: [
+        {
+          "@id": "/tissues/IGVFSM0001DDDD/",
+          accession: "IGVFSM0001DDDD",
+          aliases: ["igvf:treated_tissue"],
+          donors: [
+            {
+              "@id": "/rodent-donors/IGVFDO1668BXAE/",
+              accession: "IGVFDO1668BXAE",
+              aliases: [
+                "igvf:alias_rodent_donor_1",
+                "igvf:rodent_donor_with_arterial_blood_pressure_trait",
+              ],
+              summary: "IGVFDO1668BXAE",
+              taxa: "Mus musculus",
+            },
+          ],
+          sample_terms: ["/sample-terms/UBERON_0002048/"],
+          summary: "lung tissue, Mus musculus (10-20 weeks)",
+          taxa: "Mus musculus",
+        },
+        {
+          "@id": "/tissues/IGVFSM0003DDDD/",
+          accession: "IGVFSM0003DDDD",
+          aliases: ["igvf:tissue_part_of_tissue"],
+          donors: [
+            {
+              "@id": "/rodent-donors/IGVFDO5425ETYH/",
+              accession: "IGVFDO5425ETYH",
+              aliases: ["igvf:alias_rodent_donor_2"],
+              summary: "IGVFDO5425ETYH",
+              taxa: "Mus musculus",
+            },
+          ],
+          sample_terms: ["/sample-terms/UBERON_0002048/"],
+          summary: "lung tissue, Mus musculus (10-20 months)",
+          taxa: "Mus musculus",
+        },
+      ],
       status: "released",
+      summary: "imaging assay (yN2H)",
       uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
       assay_term: {
         term_name: "STARR-seq",
@@ -1479,9 +1538,48 @@ describe("Test the MeasurementSet component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDS6408BFHD$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^STARR-seq$/);
+    expect(title).toHaveTextContent(/^imaging assay \(yN2H\)$/);
 
-    const meta = screen.queryByTestId("search-list-item-meta");
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a MeasurementSet item without samples", () => {
+    const item = {
+      "@id": "/measurement-sets/IGVFDS6408BFHD/",
+      "@type": ["MeasurementSet", "FileSet", "Item"],
+      accession: "IGVFDS6408BFHD",
+      alternate_accessions: ["IGVFDS6408BFHE"],
+      aliases: ["igvf:basic_measurement_set"],
+      award: "/awards/HG012012/",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      summary: "imaging assay (yN2H)",
+      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
+      assay_term: {
+        term_name: "STARR-seq",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <MeasurementSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Measurement Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS6408BFHD$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^imaging assay \(yN2H\)$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-quality");

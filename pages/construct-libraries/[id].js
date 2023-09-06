@@ -1,7 +1,7 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { Fragment } from "react";
 // components
 import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -13,14 +13,15 @@ import {
   DataItemLabel,
   DataAreaTitle,
   DataItemValue,
-  DataItemValueExpandButton,
+  DataItemValueCollapseControl,
+  DataItemValueControlLabel,
   DataPanel,
+  useDataAreaCollapser,
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
-import Icon from "../../components/icon";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -195,15 +196,11 @@ LibraryDetails.propTypes = {
   clonedGenes: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-// Maximum number of targeted genes and targeted loci to display before we make the lists
-// expandable.
-const MAX_TRUNCATED_TARGETED_GENES = 3;
-const MAX_TRUNCATED_TARGETED_LOCI = 3;
-
 export default function ConstructLibrary({
   constructLibrary,
   documents,
   files,
+  seqspecFiles,
   integratedContentFiles,
   clonedGenes,
   targetedGenes,
@@ -212,26 +209,10 @@ export default function ConstructLibrary({
   attribution = null,
   isJson,
 }) {
-  // Handles the targeted genes expandable states.
-  const [isTargetedGenesExpanded, setIsTargetedGenesExpanded] = useState(false);
-  const isTargetedGenesExpandable =
-    targetedGenes.length > MAX_TRUNCATED_TARGETED_GENES;
-  const isTargetedGenesTruncated =
-    isTargetedGenesExpandable && !isTargetedGenesExpanded;
-  const displayableTargetedGeneList = isTargetedGenesTruncated
-    ? targetedGenes.slice(0, MAX_TRUNCATED_TARGETED_GENES)
-    : targetedGenes;
-
-  // Handles the targeted loci expandable states.
-  const [isTargetedLociExpanded, setIsTargetedLociExpanded] = useState(false);
-  const targetedLoci = constructLibrary.targeted_loci || [];
-  const isTargetedLociExpandable =
-    targetedLoci.length > MAX_TRUNCATED_TARGETED_LOCI;
-  const isTargetedLociTruncated =
-    isTargetedLociExpandable && !isTargetedLociExpanded;
-  const displayableTargetedLoci = isTargetedLociTruncated
-    ? targetedLoci.slice(0, MAX_TRUNCATED_TARGETED_LOCI)
-    : targetedLoci;
+  const targetedGenesCollapser = useDataAreaCollapser(targetedGenes);
+  const targetedLociCollapser = useDataAreaCollapser(
+    constructLibrary.targeted_loci || []
+  );
 
   return (
     <>
@@ -301,47 +282,48 @@ export default function ConstructLibrary({
                 </DataItemValue>
               </>
             )}
-            {displayableTargetedLoci.length > 0 && (
+            {targetedLociCollapser.displayedData.length > 0 && (
               <>
-                <DataItemLabel className="flex items-baseline">
-                  Targeted Loci
-                  <DataItemValueExpandButton
-                    isExpandable={isTargetedLociExpandable}
-                    isExpanded={isTargetedLociExpanded}
-                    onClick={setIsTargetedLociExpanded}
-                  />
-                </DataItemLabel>
+                <DataItemLabel>Targeted Loci</DataItemLabel>
                 <DataItemValue>
-                  <ChromosomeLocations locations={displayableTargetedLoci} />
-                  {isTargetedLociTruncated && (
-                    <div className="flex h-6 items-center">
-                      <Icon.EllipsisHorizontal className="ml-1 h-1" />
-                    </div>
-                  )}
+                  <ChromosomeLocations
+                    locations={targetedLociCollapser.displayedData}
+                  />
+                  <DataItemValueCollapseControl
+                    collapser={targetedLociCollapser}
+                  >
+                    <DataItemValueControlLabel
+                      collapser={targetedLociCollapser}
+                    />
+                  </DataItemValueCollapseControl>
                 </DataItemValue>
               </>
             )}
-            {displayableTargetedGeneList.length > 0 && (
+            {targetedGenesCollapser.displayedData.length > 0 && (
               <>
-                <DataItemLabel className="flex items-baseline">
-                  Targeted Genes
-                  <DataItemValueExpandButton
-                    isExpandable={isTargetedGenesExpandable}
-                    isExpanded={isTargetedGenesExpanded}
-                    onClick={setIsTargetedGenesExpanded}
-                  />
-                </DataItemLabel>
+                <DataItemLabel>Targeted Genes</DataItemLabel>
                 <DataItemValue>
                   <SeparatedList>
-                    {displayableTargetedGeneList.map((gene) => (
-                      <Link href={gene["@id"]} key={gene["@id"]}>
-                        {gene.geneid}
-                      </Link>
+                    {targetedGenesCollapser.displayedData.map((gene, index) => (
+                      <Fragment key={gene["@id"]}>
+                        <Link href={gene["@id"]}>{gene.geneid}</Link>
+                        {index ===
+                          targetedGenesCollapser.displayedData.length - 1 && (
+                          <DataItemValueCollapseControl
+                            key="more-control"
+                            collapser={targetedGenesCollapser}
+                            className="ml-1 inline-block"
+                          >
+                            <DataItemValueControlLabel
+                              key="more-control"
+                              collapser={targetedGenesCollapser}
+                              className="ml-1 inline-block"
+                            />
+                          </DataItemValueCollapseControl>
+                        )}
+                      </Fragment>
                     ))}
                   </SeparatedList>
-                  {isTargetedGenesTruncated && (
-                    <Icon.EllipsisHorizontal className="mt-2 h-1" />
-                  )}
                 </DataItemValue>
               </>
             )}
@@ -351,6 +333,7 @@ export default function ConstructLibrary({
               <DataAreaTitle>Sequencing Results</DataAreaTitle>
               <SequencingFileTable
                 files={files}
+                seqspecFiles={seqspecFiles}
                 sequencingPlatforms={sequencingPlatforms}
               />
             </>
@@ -379,6 +362,8 @@ ConstructLibrary.propTypes = {
   constructLibrary: PropTypes.object.isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // seqspec files associated with `files`
+  seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Integrated content file objects
   integratedContentFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this construct library
@@ -421,6 +406,19 @@ export async function getServerSideProps({ params, req, query }) {
         ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
         : [];
 
+    // Use the files to retrieve all the seqspec files they might link to.
+    let seqspecFiles = [];
+    if (files.length > 0) {
+      const seqspecPaths = files
+        .map((file) => file.seqspec)
+        .filter((seqspec) => seqspec);
+      const uniqueSeqspecPaths = [...new Set(seqspecPaths)];
+      seqspecFiles =
+        uniqueSeqspecPaths.length > 0
+          ? await requestFiles(uniqueSeqspecPaths, request)
+          : [];
+    }
+
     const integratedContentFiles = constructLibrary.integrated_content_files
       ? await requestFiles(constructLibrary.integrated_content_files, request)
       : [];
@@ -459,6 +457,7 @@ export async function getServerSideProps({ params, req, query }) {
         constructLibrary,
         documents,
         files,
+        seqspecFiles,
         integratedContentFiles,
         clonedGenes,
         targetedGenes,
