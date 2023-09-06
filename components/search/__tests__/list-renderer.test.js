@@ -1348,7 +1348,7 @@ it("renders a seqspec configuration File item with accessory data", () => {
 });
 
 describe("Test the AnalysisSet component", () => {
-  it("renders an AnalysisSet item with accessory data", () => {
+  it("renders an AnalysisSet item", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
