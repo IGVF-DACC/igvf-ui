@@ -63,23 +63,16 @@ export default function MatrixFile({
         <JsonDisplay item={matrixFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={matrixFile}
-                fileSet={fileSet}
-              ></FileDataItems>
+              <FileDataItems items={matrixFile} fileSet={fileSet} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle>Matrix Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              <>
-                <DataItemLabel>First Dimension</DataItemLabel>
-                <DataItemValue>{matrixFile.dimension1}</DataItemValue>
-              </>
-              <>
-                <DataItemLabel>Second Dimension</DataItemLabel>
-                <DataItemValue>{matrixFile.dimension2}</DataItemValue>
-              </>
+              <DataItemLabel>First Dimension</DataItemLabel>
+              <DataItemValue>{matrixFile.dimension1}</DataItemValue>
+              <DataItemLabel>Second Dimension</DataItemLabel>
+              <DataItemValue>{matrixFile.dimension2}</DataItemValue>
               {referenceFiles.length > 0 && (
                 <>
                   <DataItemLabel>Reference Files</DataItemLabel>
