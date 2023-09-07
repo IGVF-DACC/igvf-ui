@@ -100,7 +100,7 @@ function Site({ Component, pageProps, authentication }) {
       <Script
         async
         src="https://www.googletagmanager.com/gtag/js?id=G-E2PEXFFGYR"
-      ></Script>
+      />
       <Script id="google-analytics-4-script">
         {`
           window.dataLayer = window.dataLayer || [];

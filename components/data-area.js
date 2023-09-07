@@ -56,13 +56,21 @@ export function DataArea({ children }) {
 /**
  * Displays the title above a data panel or table.
  */
-export function DataAreaTitle({ children }) {
+export function DataAreaTitle({ className = "", children }) {
   return (
-    <h2 className="mb-1 mt-4 text-2xl font-light" data-testid="dataareatitle">
+    <h2
+      className={`mb-1 mt-4 text-2xl font-light ${className}`}
+      data-testid="dataareatitle"
+    >
       {children}
     </h2>
   );
 }
+
+DataAreaTitle.propTypes = {
+  // Additional Tailwind CSS classes to apply to the <h2> element
+  className: PropTypes.string,
+};
 
 /**
  * Display the label of a data item label/value pair.
@@ -166,7 +174,7 @@ const DEFAULT_COLLAPSE_LIMIT = 3;
  *   hiddenDataCount: Number of items hidden when `isDataTruncated` is true
  */
 export function useDataAreaCollapser(
-  data,
+  data = [],
   collapseLimit = DEFAULT_COLLAPSE_LIMIT,
   defaultIsCollapsed = true
 ) {

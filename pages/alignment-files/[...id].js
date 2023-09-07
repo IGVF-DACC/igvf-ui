@@ -63,10 +63,7 @@ export default function AlignmentFile({
         <JsonDisplay item={alignmentFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={alignmentFile}
-                fileSet={fileSet}
-              ></FileDataItems>
+              <FileDataItems item={alignmentFile} fileSet={fileSet} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle>Alignment Details</DataAreaTitle>

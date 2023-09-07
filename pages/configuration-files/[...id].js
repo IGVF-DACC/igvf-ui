@@ -58,10 +58,7 @@ export default function ConfigurationFile({
         <JsonDisplay item={configurationFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={configurationFile}
-                fileSet={fileSet}
-              ></FileDataItems>
+              <FileDataItems item={configurationFile} fileSet={fileSet} />
             </DataArea>
           </DataPanel>
           {seqspecOf.length > 0 && (

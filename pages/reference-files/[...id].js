@@ -61,10 +61,7 @@ export default function ReferenceFile({
         <JsonDisplay item={referenceFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={referenceFile}
-                fileSet={fileSet}
-              ></FileDataItems>
+              <FileDataItems item={referenceFile} fileSet={fileSet} />
             </DataArea>
           </DataPanel>
           {(referenceFile.assembly ||
