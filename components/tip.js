@@ -15,7 +15,7 @@ export default function Tooltip({ content, children }) {
 
   return (
     <Popover className="relative">
-      <Popover.Button ref={setReferenceElement}>{children}</Popover.Button>
+      <Popover.Button as="div" ref={setReferenceElement}>{children}</Popover.Button>
       <Popover.Overlay className="fixed inset-0 bg-black opacity-30" />
       <Popover.Panel
         ref={setPopperElement}

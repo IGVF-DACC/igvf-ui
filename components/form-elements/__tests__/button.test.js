@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { AttachedButtons, Button, ButtonLink, TooltipButton } from "../button";
+import { AttachedButtons, Button, ButtonLink } from "../button";
 
 jest.mock("next/router", () => ({
   useRouter() {
@@ -103,57 +103,6 @@ describe("ButtonLink component", () => {
       <ButtonLink href="#" type="secondary" isDisabled>
         Secondary
       </ButtonLink>
-    );
-    expect(container.firstChild).toHaveClass("bg-button-secondary-disabled");
-    expect(container.firstChild).toHaveClass(
-      "border-button-secondary-disabled"
-    );
-    expect(container.firstChild).toHaveClass("text-button-secondary-disabled");
-  });
-});
-
-describe("TooltipButton component", () => {
-  it("renders a primary button with the correct classes", () => {
-    const { container } = render(
-      <TooltipButton href="#">Primary</TooltipButton>
-    );
-    expect(container.firstChild).toHaveClass("bg-button-primary");
-    expect(container.firstChild).toHaveClass("border-button-primary");
-    expect(container.firstChild).toHaveClass("text-button-primary");
-  });
-
-  it("renders a secondary button with the correct classes", () => {
-    const { container } = render(
-      <TooltipButton type="secondary">Secondary</TooltipButton>
-    );
-    expect(container.firstChild).toHaveClass("bg-button-secondary");
-    expect(container.firstChild).toHaveClass("border-button-secondary");
-    expect(container.firstChild).toHaveClass("text-button-secondary");
-  });
-
-  it("renders a warning button with the correct classes", () => {
-    const { container } = render(
-      <TooltipButton type="warning">Secondary</TooltipButton>
-    );
-    expect(container.firstChild).toHaveClass("bg-button-warning");
-    expect(container.firstChild).toHaveClass("border-button-warning");
-    expect(container.firstChild).toHaveClass("text-button-warning");
-  });
-
-  it("renders a selected button with the correct classes", () => {
-    const { container } = render(
-      <TooltipButton type="selected">Secondary</TooltipButton>
-    );
-    expect(container.firstChild).toHaveClass("bg-button-selected");
-    expect(container.firstChild).toHaveClass("border-button-selected");
-    expect(container.firstChild).toHaveClass("text-button-selected");
-  });
-
-  it("renders a secondary button with the correct classes when disabled", () => {
-    const { container } = render(
-      <TooltipButton type="secondary" isDisabled>
-        Secondary
-      </TooltipButton>
     );
     expect(container.firstChild).toHaveClass("bg-button-secondary-disabled");
     expect(container.firstChild).toHaveClass(

@@ -12,7 +12,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   AttachedButtons,
   ButtonLink,
-  TooltipButton,
+  Button,
 } from "../../components/form-elements";
 import PagePreamble from "../../components/page-preamble";
 import SchemaIcon from "../../components/schema-icon";
@@ -64,7 +64,6 @@ function SearchAndReportType({ type, title }) {
       </ButtonLink>
     </AttachedButtons>
   );
-  // <ChevronDownIcon className="ui-open:rotate-180 ui-open:transform" />
 }
 
 SearchAndReportType.propTypes = {
@@ -102,14 +101,15 @@ function SubTree({ tree, objectType, schemas, collectionTitles = null }) {
               {title}
             </Link>
             <Tooltip content={schema.description}>
-              <TooltipButton
+              <Button
+                onClick={() => {}}
                 label={`View the summary of the ${title} schema`}
                 type="secondary"
                 size="sm"
                 hasIconCircleOnly
               >
                 <QuestionMarkCircleIcon />
-              </TooltipButton>
+              </Button>
             </Tooltip>
             <SearchAndReportType type={objectType} title={title} />
             <AddLink schema={schema} label={`Add ${schema.title}`} />
