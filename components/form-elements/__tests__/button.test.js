@@ -114,7 +114,9 @@ describe("ButtonLink component", () => {
 
 describe("TooltipButton component", () => {
   it("renders a primary button with the correct classes", () => {
-    const { container } = render(<TooltipButton href="#">Primary</TooltipButton>);
+    const { container } = render(
+      <TooltipButton href="#">Primary</TooltipButton>
+    );
     expect(container.firstChild).toHaveClass("bg-button-primary");
     expect(container.firstChild).toHaveClass("border-button-primary");
     expect(container.firstChild).toHaveClass("text-button-primary");
@@ -122,9 +124,7 @@ describe("TooltipButton component", () => {
 
   it("renders a secondary button with the correct classes", () => {
     const { container } = render(
-      <TooltipButton type="secondary">
-        Secondary
-      </TooltipButton>
+      <TooltipButton type="secondary">Secondary</TooltipButton>
     );
     expect(container.firstChild).toHaveClass("bg-button-secondary");
     expect(container.firstChild).toHaveClass("border-button-secondary");
@@ -133,9 +133,7 @@ describe("TooltipButton component", () => {
 
   it("renders a warning button with the correct classes", () => {
     const { container } = render(
-      <TooltipButton type="warning">
-        Secondary
-      </TooltipButton>
+      <TooltipButton type="warning">Secondary</TooltipButton>
     );
     expect(container.firstChild).toHaveClass("bg-button-warning");
     expect(container.firstChild).toHaveClass("border-button-warning");
@@ -144,9 +142,7 @@ describe("TooltipButton component", () => {
 
   it("renders a selected button with the correct classes", () => {
     const { container } = render(
-      <TooltipButton type="selected">
-        Secondary
-      </TooltipButton>
+      <TooltipButton type="selected">Secondary</TooltipButton>
     );
     expect(container.firstChild).toHaveClass("bg-button-selected");
     expect(container.firstChild).toHaveClass("border-button-selected");
