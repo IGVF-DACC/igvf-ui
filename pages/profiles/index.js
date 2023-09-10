@@ -1,22 +1,14 @@
 // node_modules
-import {
-  Bars4Icon,
-  TableCellsIcon,
-  QuestionMarkCircleIcon,
-} from "@heroicons/react/20/solid";
+import { Bars4Icon, TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { AddLink } from "../../components/add";
 import Breadcrumbs from "../../components/breadcrumbs";
-import {
-  AttachedButtons,
-  ButtonLink,
-  Button,
-} from "../../components/form-elements";
+import { AttachedButtons, ButtonLink } from "../../components/form-elements";
 import PagePreamble from "../../components/page-preamble";
 import SchemaIcon from "../../components/schema-icon";
-import Tooltip from "../../components/tip";
+import Tooltip from "../../components/tooltip";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -100,17 +92,7 @@ function SubTree({ tree, objectType, schemas, collectionTitles = null }) {
             >
               {title}
             </Link>
-            <Tooltip content={schema.description}>
-              <Button
-                onClick={() => {}}
-                label={`View the summary of the ${title} schema`}
-                type="secondary"
-                size="sm"
-                hasIconCircleOnly
-              >
-                <QuestionMarkCircleIcon />
-              </Button>
-            </Tooltip>
+            <Tooltip content={schema.description} />
             <SearchAndReportType type={objectType} title={title} />
             <AddLink schema={schema} label={`Add ${schema.title}`} />
           </>
