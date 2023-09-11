@@ -30,9 +30,7 @@ export default function Tooltip({ content, children }) {
         {...attributes.popper}
         className="bg-panel z-10 absolute left-1/2 mt-3 w-screen max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden border border-button-secondary prose dark:prose-invert"
       >
-        <div className="text-left pl-3 pt-2 pb-2 pr-3 text-sm leading-4">
-          {content}
-        </div>
+        <div className="text-left ml-2">{content}</div>
       </Popover.Panel>
     </Popover>
   );
