@@ -8,9 +8,9 @@ export function ChromosomeLocation({ location, className = null }) {
   return (
     <div data-testid="chromosome-location" className={className}>
       <span className="whitespace-nowrap">{`${location.chromosome}:${location.start}-${location.end}`}</span>
-      <div className="ml-2 bg-gray-300 px-1.5 text-xs font-semibold dark:bg-gray-700">
+      <span className="ml-2 bg-gray-300 px-1.5 text-xs font-semibold dark:bg-gray-700">
         {location.assembly}
-      </div>
+      </span>
     </div>
   );
 }

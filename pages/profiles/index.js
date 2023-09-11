@@ -16,6 +16,28 @@ import FetchRequest from "../../lib/fetch-request";
 import { toShishkebabCase } from "../../lib/general";
 
 /**
+ * List of `@type`s to delete from the schema list. This needs updating when deprecated schemas
+ * get removed from igvfd.
+ */
+const deprecatedSchemas = ["ConstructLibrary", "Model", "Prediction"];
+
+/**
+ * Copy the given schema object and delete deprecated schemas from it.
+ * @param {object} profiles Schema object to copy and delete deprecated schemas from
+ * @returns {object} New schema object with deprecated schemas deleted
+ */
+function deleteDeprecatedSchemas(profiles) {
+  // Copy profiles properties except for those in `deprecatedSchemas`.
+  const newProfiles = { ...profiles };
+  for (const schema of deprecatedSchemas) {
+    if (newProfiles[schema]) {
+      delete newProfiles[schema];
+    }
+  }
+  return newProfiles;
+}
+
+/**
  * Returns true if the given object type is displayable in the UI. This also indicates that you
  * can add and edit objects of this type.
  * @param {string} objectType Object @type to check
@@ -181,10 +203,11 @@ export async function getServerSideProps({ req }) {
       "/collection-titles/",
       null
     );
+    const schemasWithoutDeprecated = deleteDeprecatedSchemas(schemas);
     const breadcrumbs = await buildBreadcrumbs(schemas, "", req.headers.cookie);
     return {
       props: {
-        schemas,
+        schemas: schemasWithoutDeprecated,
         collectionTitles,
         pageContext: { title: "Schemas" },
         breadcrumbs,

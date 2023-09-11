@@ -387,39 +387,10 @@ const profiles = {
     },
   },
 
-  ConstructLibrary: {
-    title: "Construct Library",
-    $id: "/profiles/construct_library.json",
+  ConstructLibrarySet: {
+    title: "Construct Library Set",
+    $id: "/profiles/construct_library_set.json",
     required: ["document_type", "description", "attachment", "lab", "award"],
-    oneOf: [
-      {
-        required: [
-          "expression_vector_library_details",
-          "award",
-          "lab",
-          "selection_criteria",
-          "scope",
-        ],
-      },
-      {
-        required: [
-          "guide_library_details",
-          "award",
-          "lab",
-          "selection_criteria",
-          "scope",
-        ],
-      },
-      {
-        required: [
-          "reporter_library_details",
-          "award",
-          "lab",
-          "selection_criteria",
-          "scope",
-        ],
-      },
-    ],
     identifyingProperties: [
       "uuid",
       "aliases",

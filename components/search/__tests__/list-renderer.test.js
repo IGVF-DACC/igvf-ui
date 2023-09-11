@@ -6,7 +6,7 @@ import AnalysisSet from "../list-renderer/analysis-set";
 import AuxiliarySet from "../list-renderer/auxiliary-set";
 import Biomarker from "../list-renderer/biomarker";
 import Biosample from "../list-renderer/biosample";
-import ConstructLibrary from "../list-renderer/construct-library";
+import ConstructLibrarySet from "../list-renderer/construct-library-set";
 import CuratedSet from "../list-renderer/curated-set";
 import Document from "../list-renderer/document";
 import File from "../list-renderer/file";
@@ -276,11 +276,11 @@ describe("Test the Biosample component", () => {
   });
 });
 
-describe("Test ConstructLibrary component", () => {
-  it("renders a ConstructLibrary component with reporter library details", () => {
+describe("Test ConstructLibrarySet component", () => {
+  it("renders a ConstructLibrarySet component with reporter library details", () => {
     const item = {
-      "@id": "/construct-libraries/IGVFDS3140KDHS/",
-      "@type": ["ConstructLibrary", "FileSet", "Item"],
+      "@id": "/construct-library-sets/IGVFDS3140KDHS/",
+      "@type": ["ConstructLibrarySet", "FileSet", "Item"],
       accession: "IGVFDS3140KDHS",
       alternate_accessions: ["IGVFDS3140KDHT"],
       aliases: ["igvf:basic_construct_library_1"],
@@ -288,22 +288,37 @@ describe("Test ConstructLibrary component", () => {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
       },
+      loci: [
+        {
+          assembly: "GRCh38",
+          chromosome: "chr1",
+          end: 10,
+          start: 1,
+        },
+        {
+          assembly: "GRCh38",
+          chromosome: "chr1",
+          end: 23352,
+          start: 3232,
+        },
+      ],
       reporter_library_details: {
         average_insert_size: 270,
       },
       scope: "genes",
       selection_criteria: ["accessible genome regions"],
       status: "released",
+      summary: "Reporter library of accessible genome regions",
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <ConstructLibrary item={item} />
+        <ConstructLibrarySet item={item} />
       </SessionContext.Provider>
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Construct Library IGVFDS3140KDHS/);
+    expect(uniqueId).toHaveTextContent(/^Construct Library Set IGVFDS3140KDHS/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
@@ -317,10 +332,10 @@ describe("Test ConstructLibrary component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders a ConstructLibrary component with guide library details", () => {
+  it("renders a ConstructLibrarySet component with guide library details", () => {
     const item = {
       "@id": "/construct-libraries/IGVFDS0000CSLB/",
-      "@type": ["ConstructLibrary", "FileSet", "Item"],
+      "@type": ["ConstructLibrarySet", "FileSet", "Item"],
       accession: "IGVFDS0000CSLB",
       aliases: ["igvf:basic_construct_library_2"],
       guide_library_details: {
@@ -330,23 +345,91 @@ describe("Test ConstructLibrary component", () => {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
       },
+      loci: [
+        {
+          assembly: "GRCh38",
+          chromosome: "chr1",
+          end: 10,
+          start: 1,
+        },
+      ],
       scope: "genome-wide",
       selection_criteria: ["TF binding sites", "disease-associated variants"],
       status: "released",
+      summary: "Guide library of TF binding sites",
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <ConstructLibrary item={item} />
+        <ConstructLibrarySet item={item} />
       </SessionContext.Provider>
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Construct Library IGVFDS0000CSLB/);
+    expect(uniqueId).toHaveTextContent(/^Construct Library Set IGVFDS0000CSLB/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^Guide library of TF binding sites$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a ConstructLibrarySet component with expression vector library details", () => {
+    const item = {
+      "@id": "/construct-libraries/IGVFDS7866HNNG/",
+      "@type": ["ConstructLibrarySet", "FileSet", "Item"],
+      accession: "IGVFDS7866HNNG",
+      aliases: ["igvf:basic_construct_library_0"],
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      scope: "loci",
+      loci: [
+        {
+          assembly: "GRCh38",
+          chromosome: "chr1",
+          end: 10,
+          start: 1,
+        },
+        {
+          assembly: "GRCh38",
+          chromosome: "chr1",
+          end: 23352,
+          start: 3232,
+        },
+        {
+          assembly: "GRCh38",
+          chromosome: "chr1",
+          end: 3252,
+          start: 23,
+        },
+      ],
+      selection_criteria: [
+        "transcription start sites",
+        "accessible genome regions",
+        "candidate cis-regulatory elements",
+      ],
+      status: "released",
+      summary: "Expression Vector library of transcription start sites",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <ConstructLibrarySet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Construct Library Set IGVFDS7866HNNG/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      /^Guide library of TF binding sites and 1 other selection criterion$/
+      /^Expression Vector library of transcription start sites$/
     );
 
     const meta = screen.getByTestId("search-list-item-meta");
@@ -356,37 +439,40 @@ describe("Test ConstructLibrary component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders a ConstructLibrary component with expression vector library details", () => {
+  it("renders a ConstructLibrarySet component with no loci", () => {
     const item = {
-      "@id": "/construct-libraries/IGVFDS7866HNNG/",
-      "@type": ["ConstructLibrary", "FileSet", "Item"],
-      accession: "IGVFDS7866HNNG",
-      aliases: ["igvf:basic_construct_library_0"],
+      "@id": "/construct-library-sets/IGVFDS8297XTDJ/",
+      "@type": ["ConstructLibrarySet", "FileSet", "Item"],
+      accession: "IGVFDS8297XTDJ",
+      aliases: ["igvf:basic_construct_library_set_1"],
+      file_set_type: "expression vector library",
+      genes: [
+        {
+          symbol: "CD1D",
+        },
+      ],
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
       },
-      scope: "loci",
-      selection_criteria: [
-        "transcription start sites",
-        "accessible genome regions",
-        "candidate cis-regulatory elements",
-      ],
+      scope: "genes",
+      selection_criteria: ["accessible genome regions"],
       status: "released",
+      summary: "Expression vector library of CD1D (accessible genome regions)",
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <ConstructLibrary item={item} />
+        <ConstructLibrarySet item={item} />
       </SessionContext.Provider>
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Construct Library IGVFDS7866HNNG/);
+    expect(uniqueId).toHaveTextContent(/^Construct Library Set IGVFDS8297XTDJ/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      /^Expression Vector library of transcription start sites and 2 other selection criteria$/
+      /^Expression vector library of CD1D \(accessible genome regions\)$/
     );
 
     const meta = screen.getByTestId("search-list-item-meta");

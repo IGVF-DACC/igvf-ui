@@ -65,7 +65,7 @@ export default function WholeOrganism({
                 options={{
                   dateObtainedTitle: "Date Obtained",
                 }}
-              ></BiosampleDataItems>
+              />
             </DataArea>
           </DataPanel>
           {sample.file_sets.length > 0 && (

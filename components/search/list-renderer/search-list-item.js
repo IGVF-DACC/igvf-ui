@@ -93,7 +93,7 @@ export function SearchListItemMeta({ children }) {
             <Icon.Circle className="fill-gray-300 dark:fill-gray-500" />
           </div>
         }
-        className="flex flex-wrap text-sm text-gray-600 dark:text-gray-400"
+        className="text-sm text-gray-600 dark:text-gray-400 [&>div]:inline-block"
       >
         {children}
       </SeparatedList>

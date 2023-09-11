@@ -221,4 +221,36 @@ describe("Test the useDataAreaCollapser hook", () => {
       screen.queryByTestId("displayed-item-IGVFFS0003AAAA")
     ).toBeInTheDocument();
   });
+
+  it("renders nothing if you provide no data", () => {
+    function TestComponent() {
+      const collapser = useDataAreaCollapser();
+      return (
+        <>
+          <DataPanel>
+            <DataArea>
+              <DataItemLabel>Status</DataItemLabel>
+              <DataItemValue>
+                <SeparatedList>
+                  {collapser.displayedData.map((item) => (
+                    <div key={item} data-testid={`displayed-item-${item}`}>
+                      {item}
+                    </div>
+                  ))}
+                </SeparatedList>
+                <DataItemValueCollapseControl collapser={collapser}>
+                  <DataItemValueControlLabel collapser={collapser} />
+                </DataItemValueCollapseControl>
+              </DataItemValue>
+            </DataArea>
+          </DataPanel>
+        </>
+      );
+    }
+
+    render(<TestComponent />);
+
+    const button = screen.queryByRole("button");
+    expect(button).not.toBeInTheDocument();
+  });
 });

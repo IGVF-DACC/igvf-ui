@@ -64,10 +64,7 @@ export default function SequenceFile({
         <JsonDisplay item={sequenceFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={sequenceFile}
-                fileSet={fileSet}
-              ></FileDataItems>
+              <FileDataItems item={sequenceFile} fileSet={fileSet} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle>Sequencing Details</DataAreaTitle>

@@ -63,10 +63,7 @@ export default function SignalFile({
         <JsonDisplay item={signalFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={signalFile}
-                fileSet={fileSet}
-              ></FileDataItems>
+              <FileDataItems item={signalFile} fileSet={fileSet} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle>Signal Details</DataAreaTitle>

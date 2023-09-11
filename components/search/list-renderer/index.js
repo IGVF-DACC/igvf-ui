@@ -52,7 +52,7 @@ import Award from "./award";
 import AuxiliarySet from "./auxiliary-set";
 import Biomarker from "./biomarker";
 import Biosample from "./biosample";
-import ConstructLibrary from "./construct-library";
+import ConstructLibrarySet from "./construct-library-set";
 import CuratedSet from "./curated-set";
 import Document from "./document";
 import Gene from "./gene";
@@ -84,7 +84,7 @@ const renderers = {
   Award,
   Biomarker,
   ConfigurationFile: File,
-  ConstructLibrary,
+  ConstructLibrarySet,
   CuratedSet,
   Document,
   Gene,
