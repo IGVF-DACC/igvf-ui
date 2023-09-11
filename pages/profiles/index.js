@@ -8,6 +8,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import { AttachedButtons, ButtonLink } from "../../components/form-elements";
 import PagePreamble from "../../components/page-preamble";
 import SchemaIcon from "../../components/schema-icon";
+import Tooltip from "../../components/tooltip";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
@@ -91,6 +92,7 @@ function SubTree({ tree, objectType, schemas, collectionTitles = null }) {
             >
               {title}
             </Link>
+            <Tooltip content={schema.description} />
             <SearchAndReportType type={objectType} title={title} />
             <AddLink schema={schema} label={`Add ${schema.title}`} />
           </>
