@@ -16,7 +16,7 @@ const SEARCH_TYPE_REPORT = "Report";
 /**
  * Display the buttons to view the collection as a table or list.
  */
-export default function ViewSwitch({ searchResults }) {
+export default function ViewSwitch({ searchResults, className = null }) {
   // Determine whether the list or report view is selected
   const isListSelected = searchResults["@type"][0] === SEARCH_TYPE_LIST;
   const isReportSelected = searchResults["@type"][0] === SEARCH_TYPE_REPORT;
@@ -29,7 +29,7 @@ export default function ViewSwitch({ searchResults }) {
     const { path, queryString } = splitPathAndQueryString(searchResults["@id"]);
     const query = new QueryString(queryString);
     const types = query.getKeyValues("type", QueryString.ANY);
-    const reportPath = path.replace(/\/search(\/){0,1}/, "/report$1");
+    const reportPath = path.replace(/\/search(\/){0,1}/, "/multireport$1");
 
     // Report view query string always copies the list view query string unless it has multiple or
     // no "type=" query string parameters, in which case no Report view button appears.
@@ -43,14 +43,15 @@ export default function ViewSwitch({ searchResults }) {
     const query = new QueryString(queryString);
     query.deleteKeyValue("field");
     query.deleteKeyValue("sort");
-    const listPath = path.replace(/\/report(\/){0,1}/, "/search$1");
+    query.deleteKeyValue("config");
+    const listPath = path.replace(/\/multireport(\/){0,1}/, "/search$1");
 
     listViewLink = `${listPath}?${query.format()}`;
     reportViewLink = searchResults["@id"];
   }
 
   return (
-    <AttachedButtons testid="search-results-view-switch">
+    <AttachedButtons className={className} testid="search-results-view-switch">
       <ButtonLink
         href={listViewLink}
         type={isListSelected ? "selected" : "secondary"}
@@ -74,4 +75,6 @@ export default function ViewSwitch({ searchResults }) {
 ViewSwitch.propTypes = {
   // The current list or report search results from igvfd
   searchResults: PropTypes.object.isRequired,
+  // Tailwind CSS classes for the button
+  className: PropTypes.string,
 };

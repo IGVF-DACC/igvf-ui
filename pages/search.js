@@ -12,6 +12,7 @@ import {
   getSearchListItemRenderer,
   SearchListItem,
 } from "../components/search";
+import { SearchPager, useSearchLimits } from "../components/search-results";
 import {
   SearchResultsCount,
   SearchResultsHeader,
@@ -34,6 +35,7 @@ import {
  */
 export default function Search({ searchResults, accessoryData = null }) {
   const { profiles } = useContext(SessionContext);
+  const { totalPages } = useSearchLimits(searchResults);
   const pageTitle = profiles
     ? composeSearchResultsPageTitle(searchResults, profiles)
     : "";
@@ -49,6 +51,7 @@ export default function Search({ searchResults, accessoryData = null }) {
             <FacetTags searchResults={searchResults} />
             <SearchResultsHeader searchResults={searchResults} />
             <SearchResultsCount count={searchResults.total} />
+            {totalPages > 1 && <SearchPager searchResults={searchResults} />}
             <ul data-testid="search-list">
               {searchResults["@graph"].map((item) => {
                 // For each item, get the appropriate search-list item renderer for it, or the

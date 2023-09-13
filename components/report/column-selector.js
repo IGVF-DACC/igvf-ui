@@ -8,13 +8,6 @@ import Modal from "../modal";
 import SessionContext from "../session-context";
 // components/report
 import HiddenColumnsIndicator from "./hidden-columns-indicator";
-// lib
-import {
-  getManuallyEnteredColumnIds,
-  getReportTypeColumnSpecs,
-  getReportType,
-  getVisibleReportColumnSpecs,
-} from "../../lib/report";
 
 /**
  * Displays the buttons to hide or show all columns at once.
@@ -78,7 +71,8 @@ Note.propTypes = {
  * display and which to hide. This also displays that modal.
  */
 export default function ColumnSelector({
-  searchResults,
+  allColumnSpecs,
+  visibleColumnSpecs,
   onChange,
   onChangeAll,
 }) {
@@ -86,30 +80,20 @@ export default function ColumnSelector({
   const [isOpen, setIsOpen] = useState(false);
   const { profiles } = useContext(SessionContext);
 
-  const reportType = getReportType(searchResults);
-  if (profiles && reportType) {
+  if (profiles) {
     // Determine whether any column is hidden given the current report URL. Use this to determine
     // whether to display the "hidden columns" indicator.
-    const columnSpecs = getReportTypeColumnSpecs(reportType, profiles);
-    const visibleColumnSpecs = getVisibleReportColumnSpecs(
-      searchResults,
-      profiles
-    );
     const visibleColumnIds = visibleColumnSpecs.map(
       (columnSpec) => columnSpec.id
     );
-    const isAnyColumnHidden = columnSpecs.length > visibleColumnSpecs.length;
+    const isAnyColumnHidden = allColumnSpecs.length > visibleColumnSpecs.length;
 
-    // Get visible columns not in the type's schema, indicating ones the user manually added to
-    // the query string.
-    const manuallyEnteredColumnIds = getManuallyEnteredColumnIds(
-      visibleColumnIds,
-      columnSpecs
-    );
+    // Disable column selector if the config didn't match any type.
+    const isDisabled = allColumnSpecs.length === 0;
 
     return (
       <>
-        <Button onClick={() => setIsOpen(true)} className="w-full sm:w-auto">
+        <Button onClick={() => setIsOpen(true)} isDisabled={isDisabled}>
           Columns
           <HiddenColumnsIndicator isAnyColumnHidden={isAnyColumnHidden} />
         </Button>
@@ -129,7 +113,7 @@ export default function ColumnSelector({
               </Note>
             </div>
             <CheckboxArea>
-              {columnSpecs.map((columnSpec) => {
+              {allColumnSpecs.map((columnSpec) => {
                 if (columnSpec.id !== "@id") {
                   const isVisible = visibleColumnIds.includes(columnSpec.id);
                   return (
@@ -138,7 +122,7 @@ export default function ColumnSelector({
                       name={columnSpec.id}
                       checked={isVisible}
                       onChange={() => onChange(columnSpec.id, isVisible)}
-                      className="block md:basis-1/2 lg:basis-1/3"
+                      className="my-0.5 block items-center leading-tight md:basis-1/2 lg:basis-1/3"
                     >
                       {columnSpec.title || columnSpec.id}
                     </Checkbox>
@@ -149,28 +133,6 @@ export default function ColumnSelector({
                 return null;
               })}
             </CheckboxArea>
-            {manuallyEnteredColumnIds.length > 0 && (
-              <div className="mt-3 border-t pt-2">
-                <Note className="mb-2">
-                  Manually entered columns disappear as soon as you uncheck them
-                </Note>
-                <CheckboxArea>
-                  {manuallyEnteredColumnIds.map((columnId) => {
-                    return (
-                      <Checkbox
-                        key={columnId}
-                        name={columnId}
-                        checked={true}
-                        onChange={() => onChange(columnId, true)}
-                        className="block md:basis-1/2 lg:basis-1/3"
-                      >
-                        {columnId}
-                      </Checkbox>
-                    );
-                  })}
-                </CheckboxArea>
-              </div>
-            )}
           </Modal.Body>
 
           <Modal.Footer>
@@ -188,8 +150,10 @@ export default function ColumnSelector({
 }
 
 ColumnSelector.propTypes = {
-  // Search results for the current report page. Includes a single "type=" guaranteed
-  searchResults: PropTypes.object.isRequired,
+  // All column specs for the current report page
+  allColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Visible column specs for the current report page
+  visibleColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Called when the user changes individual columns to show or hide
   onChange: PropTypes.func.isRequired,
   // Called when the user wants to show or hide all columns at once

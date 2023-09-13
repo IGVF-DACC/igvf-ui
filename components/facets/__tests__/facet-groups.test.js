@@ -38,7 +38,7 @@ describe("Test the `<FacetGroupButton>` component", () => {
         {
           field: "type",
           term: "HumanDonor",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };

@@ -5,5 +5,12 @@
 // components/search-results
 import SearchResultsCount from "./count";
 import SearchResultsHeader from "./header";
+import useSearchLimits from "./search-limits";
+import SearchPager from "./search-pager";
 
-export { SearchResultsCount, SearchResultsHeader };
+export {
+  SearchPager,
+  SearchResultsCount,
+  SearchResultsHeader,
+  useSearchLimits,
+};

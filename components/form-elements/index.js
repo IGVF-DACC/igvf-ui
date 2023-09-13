@@ -9,11 +9,11 @@ export {
   AttachedButtons,
   Button,
   ButtonLink,
-  TooltipButton,
   FormLabel,
   ListSelect,
   RadioButton,
   Select,
   TextField,
+  TooltipButton,
 };
 /* istanbul ignore file */

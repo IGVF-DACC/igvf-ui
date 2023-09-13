@@ -398,6 +398,10 @@ const profiles = {
       "alternate_accessions",
     ],
     properties: {
+      "@id": {
+        title: "ID",
+        type: "string",
+      },
       accession: {
         title: "Accession",
         type: "string",
@@ -419,6 +423,32 @@ const profiles = {
       lab: {
         title: "Lab",
         type: "string",
+      },
+      loci: {
+        title: "Loci",
+        type: "array",
+        items: {
+          title: "Locus",
+          type: "object",
+          properties: {
+            assembly: {
+              title: "Mapping assembly",
+              type: "string",
+            },
+            chromosome: {
+              title: "Chromosome",
+              type: "string",
+            },
+            start: {
+              title: "Start",
+              type: "integer",
+            },
+            end: {
+              title: "End",
+              type: "integer",
+            },
+          },
+        },
       },
       reporter_library_details: {
         title: "Reporter Library Details",
@@ -649,6 +679,13 @@ const profiles = {
         type: "string",
         format: "uri",
       },
+      ethnicities: {
+        title: "Ethnicity",
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
       external_resources: {
         title: "External Resources",
         description: "A list of external resources associated with the donor.",
@@ -680,38 +717,9 @@ const profiles = {
           },
         },
       },
-      health_status_history: {
-        title: "Health Status History",
-        description: "Relevent health status changes in the donor",
-        type: "array",
-        minItems: 1,
-        items: {
-          title: "Health Status",
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            health_description: {
-              title: "Description of Donor Health",
-              description: "Description of the health status change.",
-              type: "string",
-              pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
-              formInput: "textarea",
-            },
-            date_start: {
-              title: "Date Health Change Started",
-              description: "The date the donor health change started.",
-              type: "string",
-              format: "date",
-            },
-            date_end: {
-              title: "Date Health Change Ended",
-              description:
-                "The date the donor health change ended.  This value is not set if the health status is continuing, or if there is a following health status.",
-              type: "string",
-              format: "date",
-            },
-          },
-        },
+      sex: {
+        title: "Sex",
+        type: "string",
       },
       "@id": {
         title: "ID",
@@ -747,6 +755,10 @@ const profiles = {
       "aliases",
     ],
     properties: {
+      "@id": {
+        title: "ID",
+        type: "string",
+      },
       accession: {
         title: "Accession",
         type: "string",
@@ -758,6 +770,20 @@ const profiles = {
           title: "Treatment",
           type: "string",
           linkTo: "Treatment",
+        },
+      },
+      lab: {
+        title: "Lab",
+        type: "string",
+        linkTo: "Lab",
+      },
+      sample_terms: {
+        title: "Sample Terms",
+        type: "array",
+        items: {
+          title: "Sample Term",
+          type: "string",
+          linkTo: "SampleTerm",
         },
       },
     },

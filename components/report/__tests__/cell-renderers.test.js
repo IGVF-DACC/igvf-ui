@@ -4,17 +4,21 @@ import profiles from "../../__mocks__/profile";
 import { DataGridContainer } from "../../data-grid";
 import SessionContext from "../../session-context";
 import SortableGrid from "../../sortable-grid";
-import { getSortColumn } from "../../../lib/report";
+import {
+  columnsToColumnSpecs,
+  getSelectedTypes,
+  getSortColumn,
+} from "../../../lib/report";
 import generateColumns from "../generate-columns";
 import ReportHeaderCell from "../header-cell";
 
 describe("Test cell renderers in search results", () => {
   describe("@id, simple array, path, path array cell rendering tests", () => {
     const COLUMN_AT_ID = 0;
-    const COLUMN_NUMBER_ARRAY = 2;
-    const COLUMN_OBJECT_ARRAY = 3;
-    const COLUMN_OFFICE_MANAGER = 4;
-    const COLUMN_PI = 5;
+    const COLUMN_NUMBER_ARRAY = 3;
+    const COLUMN_OBJECT_ARRAY = 4;
+    const COLUMN_OFFICE_MANAGER = 5;
+    const COLUMN_PI = 6;
     const COLUMN_PROPOSED_BY = 8;
     const COLUMN_SIMPLE_ARRAY = 9;
     const COLUMN_STUDIED_BY = 11;
@@ -22,6 +26,7 @@ describe("Test cell renderers in search results", () => {
     const COLUMN_TYPE = 14;
     const COLUMN_URL = 15;
     const COLUMN_VERIFIED_BY = 17;
+    const COLUMN_VIRTUAL = 18;
 
     it("renders the @id, simple array, path array columns", () => {
       const searchResults = {
@@ -64,17 +69,21 @@ describe("Test cell renderers in search results", () => {
               "Predictive Modeling of the Functional and Phenotypic Impacts of Genetic Variants",
             submitted_by: "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/",
             uuid: "fd6a3054-a67b-4246-beb2-d01a49880e79",
+            virtual: true,
           },
         ],
-        "@id": "/report?type=Award",
+        "@id": "/multireport?type=Award",
         "@type": ["Report"],
-        clear_filters: "/report?type=Award",
-        columns: {
+        clear_filters: "/multireport?type=Award",
+        result_columns: {
           "@id": {
             title: "ID",
           },
-          "@type": {
-            title: "Type",
+          component: {
+            title: "Component",
+          },
+          name: {
+            title: "Name",
           },
           number_array: {
             title: "Number Array",
@@ -82,47 +91,47 @@ describe("Test cell renderers in search results", () => {
           object_array: {
             title: "Object Array",
           },
-          simple_array: {
-            title: "Simple Array",
-          },
-          uuid: {
-            title: "UUID",
-          },
-          submitted_by: {
-            title: "Submitted By",
-          },
-          proposed_by: {
-            title: "Proposed By",
-          },
-          verified_by: {
-            title: "Verified By",
-          },
-          title: {
-            title: "Title",
-          },
-          studied_by: {
-            title: "Studied By",
+          om: {
+            title: "Office Manager",
           },
           pis: {
             title: "P.I.",
           },
-          om: {
-            title: "Office Manager",
-          },
-          name: {
-            title: "Name",
-          },
           project: {
             title: "Project",
+          },
+          proposed_by: {
+            title: "Proposed By",
+          },
+          simple_array: {
+            title: "Simple Array",
+          },
+          status: {
+            title: "Status",
+          },
+          studied_by: {
+            title: "Studied By",
+          },
+          submitted_by: {
+            title: "Submitted By",
+          },
+          title: {
+            title: "Title",
+          },
+          "@type": {
+            title: "Type",
           },
           url: {
             title: "URL",
           },
-          component: {
-            title: "Component",
+          uuid: {
+            title: "UUID",
           },
-          status: {
-            title: "Status",
+          verified_by: {
+            title: "Verified By",
+          },
+          virtual: {
+            title: "Virtual",
           },
         },
         facet_groups: [],
@@ -130,7 +139,7 @@ describe("Test cell renderers in search results", () => {
           {
             field: "type",
             term: "Award",
-            remove: "/report",
+            remove: "/multireport",
           },
         ],
         non_sortable: ["pipeline_error_detail", "description", "notes"],
@@ -141,7 +150,15 @@ describe("Test cell renderers in search results", () => {
 
       const onHeaderCellClick = jest.fn();
       const sortedColumnId = getSortColumn(searchResults);
-      const columns = generateColumns(searchResults, profiles);
+      const selectedTypes = getSelectedTypes(searchResults);
+      const visibleColumnSpecs = columnsToColumnSpecs(
+        searchResults.result_columns
+      );
+      const columns = generateColumns(
+        selectedTypes,
+        visibleColumnSpecs,
+        profiles.Award.properties
+      );
       render(
         <SessionContext.Provider value={{ profiles }}>
           <DataGridContainer>
@@ -236,6 +253,9 @@ describe("Test cell renderers in search results", () => {
       expect(studiedByLinks[1]).toHaveTextContent(
         "/users/a8390b04-ec45-41bf-b168-7f07d4d15262/"
       );
+
+      // Check boolean properties render as "true" or "false".
+      expect(cells[COLUMN_VIRTUAL]).toHaveTextContent("true");
     });
   });
 });
@@ -246,7 +266,7 @@ describe("Boolean cell-rendering tests", () => {
     const COLUMN_COUNT = 3;
 
     const searchResults = {
-      "@id": "/report?type=WholeOrganism",
+      "@id": "/multireport?type=WholeOrganism",
       "@type": ["Report"],
       "@graph": [
         {
@@ -267,7 +287,7 @@ describe("Boolean cell-rendering tests", () => {
           accession: "IGVFSM001KAS",
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -282,14 +302,22 @@ describe("Boolean cell-rendering tests", () => {
         {
           field: "type",
           term: "WholeOrganism",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.WholeOrganism.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -334,7 +362,7 @@ describe("`attachment` cell rendering tests", () => {
 
   it("renders the attachment columns", () => {
     const searchResults = {
-      "@id": "/report?type=Document",
+      "@id": "/multireport?type=Document",
       "@type": ["Report"],
       "@graph": [
         {
@@ -348,7 +376,7 @@ describe("`attachment` cell rendering tests", () => {
           },
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -360,14 +388,22 @@ describe("`attachment` cell rendering tests", () => {
         {
           field: "type",
           term: "Document",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Document.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -395,7 +431,7 @@ describe("`attachment` cell rendering tests", () => {
 
   it("doesn't render missing `attachment` columns", () => {
     const searchResults = {
-      "@id": "/report?type=Document",
+      "@id": "/multireport?type=Document",
       "@type": ["Report"],
       "@graph": [
         {
@@ -403,7 +439,7 @@ describe("`attachment` cell rendering tests", () => {
           "@type": ["Document", "Item"],
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -415,14 +451,22 @@ describe("`attachment` cell rendering tests", () => {
         {
           field: "type",
           term: "Document",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Document.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -452,7 +496,7 @@ describe("`external_resources` cell-rendering tests", () => {
 
   it("renders `external_resources` with a link", () => {
     const searchResults = {
-      "@id": "/report?type=HumanDonor",
+      "@id": "/multireport?type=HumanDonor",
       "@type": ["Report"],
       "@graph": [
         {
@@ -468,7 +512,7 @@ describe("`external_resources` cell-rendering tests", () => {
           ],
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -480,14 +524,22 @@ describe("`external_resources` cell-rendering tests", () => {
         {
           field: "type",
           term: "HumanDonor",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -517,7 +569,7 @@ describe("`external_resources` cell-rendering tests", () => {
 
   it("renders `external_resources` without a link", () => {
     const searchResults = {
-      "@id": "/report?type=HumanDonor",
+      "@id": "/multireport?type=HumanDonor",
       "@type": ["Report"],
       "@graph": [
         {
@@ -532,7 +584,7 @@ describe("`external_resources` cell-rendering tests", () => {
           ],
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -544,14 +596,22 @@ describe("`external_resources` cell-rendering tests", () => {
         {
           field: "type",
           term: "HumanDonor",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -581,7 +641,7 @@ describe("`external_resources` cell-rendering tests", () => {
 
   it("renders nothing when `external_resources` has an empty array", () => {
     const searchResults = {
-      "@id": "/report?type=HumanDonor",
+      "@id": "/multireport?type=HumanDonor",
       "@type": ["Report"],
       "@graph": [
         {
@@ -590,7 +650,7 @@ describe("`external_resources` cell-rendering tests", () => {
           external_resources: [],
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -602,14 +662,22 @@ describe("`external_resources` cell-rendering tests", () => {
         {
           field: "type",
           term: "HumanDonor",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -636,7 +704,7 @@ describe("`external_resources` cell-rendering tests", () => {
 
   it("renders nothing when `external_resources` doesn't exist", () => {
     const searchResults = {
-      "@id": "/report?type=HumanDonor",
+      "@id": "/multireport?type=HumanDonor",
       "@type": ["Report"],
       "@graph": [
         {
@@ -645,7 +713,7 @@ describe("`external_resources` cell-rendering tests", () => {
           external_resources: [],
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -657,14 +725,22 @@ describe("`external_resources` cell-rendering tests", () => {
         {
           field: "type",
           term: "HumanDonor",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -696,7 +772,7 @@ describe("Gene `locations` cell-rendering tests", () => {
 
   it("shows `locations` as chromosome coordinate strings", () => {
     const searchResults = {
-      "@id": "/report?type=Gene",
+      "@id": "/multireport?type=Gene",
       "@type": ["Report"],
       "@graph": [
         {
@@ -719,7 +795,7 @@ describe("Gene `locations` cell-rendering tests", () => {
           start: 50282343,
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -734,14 +810,22 @@ describe("Gene `locations` cell-rendering tests", () => {
         {
           field: "type",
           term: "Gene",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Gene.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -777,7 +861,7 @@ describe("Gene `locations` cell-rendering tests", () => {
 
   it("shows nothing when `location` has an empty array", () => {
     const searchResults = {
-      "@id": "/report?type=Gene",
+      "@id": "/multireport?type=Gene",
       "@type": ["Report"],
       "@graph": [
         {
@@ -787,7 +871,7 @@ describe("Gene `locations` cell-rendering tests", () => {
           start: 50282343,
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -802,14 +886,22 @@ describe("Gene `locations` cell-rendering tests", () => {
         {
           field: "type",
           term: "Gene",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Gene.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -842,7 +934,7 @@ describe("Page cell-rendering tests", () => {
 
   it("renders a link for the page's parent and JSON for layout", () => {
     const searchResults = {
-      "@id": "/report?type=Page",
+      "@id": "/multireport?type=Page",
       "@type": ["Report"],
       "@graph": [
         {
@@ -861,7 +953,7 @@ describe("Page cell-rendering tests", () => {
           },
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -876,14 +968,22 @@ describe("Page cell-rendering tests", () => {
         {
           field: "type",
           term: "Page",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Page.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -918,7 +1018,7 @@ describe("Page cell-rendering tests", () => {
 
   it("renders nothing for `parent` when page's parent doesn't exist", () => {
     const searchResults = {
-      "@id": "/report?type=Page",
+      "@id": "/multireport?type=Page",
       "@type": ["Report"],
       "@graph": [
         {
@@ -926,7 +1026,7 @@ describe("Page cell-rendering tests", () => {
           "@type": ["Page", "Item"],
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
         },
@@ -941,14 +1041,22 @@ describe("Page cell-rendering tests", () => {
         {
           field: "type",
           term: "Page",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Page.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -978,33 +1086,100 @@ describe("Unknown-field cell-rendering tests", () => {
     const COLUMN_UNKNOWN = 1;
 
     const searchResults = {
-      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@id": "/multireport?type=HumanDonor&field=%40id&field=sex",
       "@type": ["Report"],
       "@graph": [
         {
           "@id": "/human-donors/IGVFDO499FAP/",
           "@type": ["HumanDonor", "Item"],
-          unknown_field: "Unknown value",
+          sex: "female",
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
+        },
+        sex: {
+          title: "Sex",
         },
       },
       filters: [
         {
           field: "type",
           term: "HumanDonor",
-          remove: "/report",
+          remove: "/multireport",
         },
       ],
     };
 
+    const properties = {
+      "@id": {
+        title: "ID",
+        type: "string",
+      },
+      "@type": {
+        items: {
+          type: "string",
+        },
+        title: "Type",
+        type: "array",
+      },
+      accession: {
+        title: "Accession",
+        type: "string",
+      },
+      ethnicities: {
+        items: {
+          enum: [
+            "African American",
+            "African Caribbean",
+            "Arab",
+            "Asian",
+            "Black",
+            "Black African",
+            "Chinese",
+            "Colombian",
+            "Dai Chinese",
+            "Esan",
+            "Eskimo",
+            "European",
+            "Gambian",
+            "Han Chinese",
+            "Hispanic",
+            "Indian",
+            "Japanese",
+            "Kinh Vietnamese",
+            "Luhya",
+            "Maasai",
+            "Mende",
+            "Native Hawaiian",
+            "Pacific Islander",
+            "Puerto Rican",
+            "Yoruba",
+          ],
+          type: "string",
+        },
+        title: "Ethnicity",
+        type: "array",
+      },
+      sex: {
+        enum: ["male", "female", "unspecified"],
+        title: "Sex",
+        type: "string",
+      },
+    };
+
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -1025,49 +1200,59 @@ describe("Unknown-field cell-rendering tests", () => {
     const cells = screen.getAllByRole("cell");
 
     // Test that the unknown field has the correct contents.
-    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent("Unknown value");
+    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent("female");
   });
 
   it("renders an unknown field containing an array of objects with @ids", () => {
     const COLUMN_UNKNOWN = 1;
 
     const searchResults = {
-      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@id": "/multireport?type=InVitroSystem&field=%40id&field=sample_terms",
       "@type": ["Report"],
       "@graph": [
         {
-          "@id": "/human-donors/IGVFDO1080XFGV/",
-          "@type": ["HumanDonor", "Item"],
-          unknown_field: [
+          "@id": "/in-vitro-systems/IGVFSM0000AAAZ/",
+          "@type": ["InVitroSystem", "Item"],
+          sample_terms: [
             {
-              "@id": "/human-donors/IGVFDO8315PGTI/",
-              "@type": ["HumanDonor", "Item"],
+              "@id": "/sample-terms/CL_0011001/",
+              term_name: "motor neuron",
             },
             {
-              "@id": "/human-donors/IGVFDO9208RPQQ/",
-              "@type": ["HumanDonor", "Item"],
+              "@id": "/sample-terms/EFO_0007093/",
+              term_name: "HUES8",
             },
           ],
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
+        },
+        sample_terms: {
+          title: "Sample Terms",
         },
       },
       filters: [
         {
           field: "type",
-          term: "HumanDonor",
-          remove: "/report",
+          term: "InVitroSystem",
+          remove: "/multireport/?field=%40id&field=sample_terms",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.InVitroSystem.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -1087,43 +1272,54 @@ describe("Unknown-field cell-rendering tests", () => {
     );
     const cells = screen.getAllByRole("cell");
 
-    // Test that the unknown field has the correct contents.
-    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      "/human-donors/IGVFDO8315PGTI/, /human-donors/IGVFDO9208RPQQ/"
-    );
+    // Test that the unknown field has two links.
+    const unknownLinks = within(cells[COLUMN_UNKNOWN]).getAllByRole("link");
+    expect(unknownLinks).toHaveLength(2);
+    expect(unknownLinks[0]).toHaveTextContent("/sample-terms/CL_0011001/");
+    expect(unknownLinks[1]).toHaveTextContent("/sample-terms/EFO_0007093/");
   });
 
   it("renders an unknown field containing an array simple objects", () => {
     const COLUMN_UNKNOWN = 1;
 
     const searchResults = {
-      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@id": "/multireport?type=HumanDonor&field=%40id&field=ethnicities",
       "@type": ["Report"],
       "@graph": [
         {
           "@id": "/human-donors/IGVFDO1080XFGV/",
           "@type": ["HumanDonor", "Item"],
-          unknown_field: ["IGVFDO8315PGTI", "IGVFDO9208RPQQ"],
+          ethnicities: ["Eskimo", "Arab"],
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
+        },
+        ethnicities: {
+          title: "Ethnicities",
         },
       },
       filters: [
         {
           field: "type",
           term: "HumanDonor",
-          remove: "/report",
+          remove: "/multireport/?field=%40id&field=ethnicities",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -1144,45 +1340,53 @@ describe("Unknown-field cell-rendering tests", () => {
     const cells = screen.getAllByRole("cell");
 
     // Test that the unknown field has the correct contents.
-    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      "IGVFDO8315PGTI, IGVFDO9208RPQQ"
-    );
+    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent("Arab, Eskimo");
   });
 
   it("renders an unknown field containing an object with an @id", () => {
     const COLUMN_UNKNOWN = 1;
 
     const searchResults = {
-      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@id": "/multireport/?type=InVitroSystem&field=%40id&field=lab",
       "@type": ["Report"],
       "@graph": [
         {
           "@id": "/human-donors/IGVFDO1080XFGV/",
           "@type": ["HumanDonor", "Item"],
-          unknown_field: {
-            "@id": "/human-donors/IGVFDO8315PGTI/",
-            "@type": ["HumanDonor", "Item"],
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
           },
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
+        },
+        lab: {
+          title: "Lab",
         },
       },
       filters: [
         {
           field: "type",
-          term: "HumanDonor",
-          remove: "/report",
+          term: "InVitroSystem",
+          remove: "/multireport/?field=%40id&field=lab",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -1202,46 +1406,62 @@ describe("Unknown-field cell-rendering tests", () => {
     );
     const cells = screen.getAllByRole("cell");
 
-    // Test that the unknown field has the correct contents.
-    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      "/human-donors/IGVFDO8315PGTI/"
-    );
+    // Test that the unknown field is a link with the correct path.
+    const unknownLink = within(cells[COLUMN_UNKNOWN]).getByRole("link");
+    expect(unknownLink).toHaveAttribute("href", "/labs/j-michael-cherry");
+    expect(unknownLink).toHaveTextContent("/labs/j-michael-cherry");
   });
 
   it("renders an unknown field containing an object with no @id", () => {
     const COLUMN_UNKNOWN = 1;
 
     const searchResults = {
-      "@id": "/report?type=HumanDonor&field=%40id&field=unknown_field",
+      "@id": "/multireport/?type=Page&field=%40id&field=layout",
       "@type": ["Report"],
       "@graph": [
         {
-          "@id": "/human-donors/IGVFDO1080XFGV/",
-          "@type": ["HumanDonor", "Item"],
-          unknown_field: {
-            prop0: "value0",
-            prop1: "value1",
+          "@id": "/help/donors/",
+          "@type": ["Page", "Item"],
+          layout: {
+            blocks: [
+              {
+                "@id": "#block1",
+                "@type": "markdown",
+                body: "# Donor Help",
+                direction: "ltr",
+              },
+            ],
           },
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
+        },
+        layout: {
+          title: "Page Layout",
         },
       },
       filters: [
         {
           field: "type",
-          term: "HumanDonor",
-          remove: "/report",
+          term: "Page",
+          remove: "/multireport/?field=%40id&field=layout",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -1263,7 +1483,7 @@ describe("Unknown-field cell-rendering tests", () => {
 
     // Test that the unknown field has the correct contents.
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      `{"prop0":"value0","prop1":"value1"}`
+      `{"blocks":[{"@id":"#block1","@type":"markdown","body":"# Donor Help","direction":"ltr"}]}`
     );
   });
 
@@ -1271,43 +1491,50 @@ describe("Unknown-field cell-rendering tests", () => {
     const COLUMN_UNKNOWN = 1;
 
     const searchResults = {
-      "@id":
-        "/report?type=InVitroSystem&field=%40id&field=introduced_factors.purpose",
+      "@id": "/multireport/?type=ConstructLibrarySet&field=%40id&field=loci",
       "@type": ["Report"],
       "@graph": [
         {
-          "@id": "/in-vitro-system/IGVFSM0000AAAZ/",
-          "@type": ["InVitroSystem", "Biosample", "Sample", "Item"],
-          introduced_factors: [
+          "@id": "/construct-library-sets/IGVFDS0941AYWH/",
+          "@type": ["ConstructLibrarySet", "FileSet", "Item"],
+          loci: [
             {
-              purpose: "selection",
-              "@id": "/treatments/10c05ac0-52a2-11e6-bdf4-0800200c9a66/",
-            },
-            {
-              purpose: "differentiation",
-              "@id": "/treatments/bd2cb34e-c72c-11ec-9d64-0242ac120002/",
+              assembly: "GRCh38",
+              chromosome: "chr1",
+              end: 10,
+              start: 1,
             },
           ],
         },
       ],
-      columns: {
+      result_columns: {
         "@id": {
           title: "ID",
+        },
+        loci: {
+          title: "Loci",
         },
       },
       filters: [
         {
           field: "type",
-          term: "InVitroSystem",
-          remove: "/report",
+          term: "ConstructLibrarySet",
+          remove: "/multireport/?field=%40id&field=loci",
         },
       ],
     };
 
     const onHeaderCellClick = jest.fn();
     const sortedColumnId = getSortColumn(searchResults);
-
-    const columns = generateColumns(searchResults, profiles);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.InVitroSystem.properties
+    );
     render(
       <SessionContext.Provider value={{ profiles }}>
         <DataGridContainer>
@@ -1329,7 +1556,7 @@ describe("Unknown-field cell-rendering tests", () => {
 
     // Test that the unknown field has the correct contents.
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      "selection, differentiation"
+      `[{"assembly":"GRCh38","chromosome":"chr1","end":10,"start":1}]`
     );
   });
 });

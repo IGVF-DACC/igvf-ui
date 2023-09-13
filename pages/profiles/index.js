@@ -63,7 +63,7 @@ function SearchAndReportType({ type, title }) {
         <Bars4Icon />
       </ButtonLink>
       <ButtonLink
-        href={`/report?type=${type}`}
+        href={`/multireport?type=${type}`}
         label={`Report view of all ${title} objects`}
         type="secondary"
         size="sm"
@@ -114,7 +114,10 @@ function SubTree({ tree, objectType, schemas, collectionTitles = null }) {
             <AddLink schema={schema} label={`Add ${schema.title}`} />
           </>
         ) : (
-          <div className="font-bold">{title}</div>
+          <>
+            {title}
+            <SearchAndReportType type={objectType} title={title} />
+          </>
         )}
       </div>
       {childObjectTypes.length > 0 && (

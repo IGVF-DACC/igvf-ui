@@ -14,6 +14,7 @@ import {
   ReportHeaderCell,
   ScrollIndicators,
 } from "../components/report/";
+import { SearchPager, useSearchLimits } from "../components/search-results";
 import {
   SearchResultsCount,
   SearchResultsHeader,
@@ -30,10 +31,12 @@ import {
   getQueryStringFromServerQuery,
 } from "../lib/query-utils";
 import {
+  columnsToColumnSpecs,
+  getMergedSchemaProperties,
   getReportTypeColumnSpecs,
-  getReportType,
+  getSchemasForReportTypes,
+  getSelectedTypes,
   getSortColumn,
-  schemaColumnsToColumnSpecs,
 } from "../lib/report";
 import {
   composeSearchResultsPageTitle,
@@ -98,7 +101,7 @@ function updateColumnVisibilityQuery(
 /**
  * Update the given query string to show or hide all columns. When hiding all columns, the `@id`
  * column remains visible.
- * @param {string} queryString Report query string to update
+ * @param {string} queryString MultiReport query string to update
  * @param {boolean} isAllVisible True to make all possible columns visible, false to hide all
  * @param {array} allColumnSpecs All possible columns for the current report type
  * @returns
@@ -124,21 +127,29 @@ function updateAllColumnsVisibilityQuery(
   return query.format();
 }
 
-export default function Report({ searchResults }) {
+export default function MultiReport({ searchResults }) {
   const router = useRouter();
   const { profiles } = useContext(SessionContext);
+  const { totalPages } = useSearchLimits(searchResults);
 
   // Ref of the scrollable table DOM <div> so we can detect scroll position
   const gridRef = useRef(null);
 
   const { path, queryString } = splitPathAndQueryString(searchResults["@id"]);
   const sortedColumnId = getSortColumn(searchResults);
-  const defaultColumnSpecs = schemaColumnsToColumnSpecs(searchResults.columns);
-  const reportType = getReportType(searchResults);
-  const allColumnSpecs = profiles
-    ? getReportTypeColumnSpecs(reportType, profiles)
-    : [];
   const nonSortableColumnIds = searchResults.non_sortable || [];
+  const selectedTypes = getSelectedTypes(searchResults);
+
+  // Get all schemas for the selected report types and merge their properties into a single schema-
+  // like object.
+  const schemas = getSchemasForReportTypes(selectedTypes, profiles);
+  const schemaProperties = getMergedSchemaProperties(schemas);
+
+  // Get the search result default column specs as well as all possible column specs for the
+  // selected report types.
+  const defaultColumnSpecs = columnsToColumnSpecs(searchResults.columns);
+  const visibleColumnSpecs = columnsToColumnSpecs(searchResults.result_columns);
+  const allColumnSpecs = getReportTypeColumnSpecs(selectedTypes, profiles);
 
   /**
    * Navigate to the same page but with the "sort=" query parameter set to the column that was
@@ -185,10 +196,14 @@ export default function Report({ searchResults }) {
     router.push(`${path}?${updatedQueryString}`);
   }
 
-  if (profiles) {
+  if (schemaProperties) {
     const pageTitle = composeSearchResultsPageTitle(searchResults, profiles);
     const items = searchResults["@graph"];
-    const columns = generateColumns(searchResults, profiles);
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      schemaProperties
+    );
 
     return (
       <>
@@ -201,12 +216,15 @@ export default function Report({ searchResults }) {
               <FacetTags searchResults={searchResults} />
               <SearchResultsHeader
                 searchResults={searchResults}
-                columnSelectorConfig={{
+                reportViewExtras={{
+                  allColumnSpecs,
+                  visibleColumnSpecs,
                   onColumnVisibilityChange,
                   onAllColumnsVisibilityChange,
                 }}
               />
               <SearchResultsCount count={searchResults.total} />
+              {totalPages > 1 && <SearchPager searchResults={searchResults} />}
               <ScrollIndicators gridRef={gridRef}>
                 <DataGridContainer ref={gridRef}>
                   <SortableGrid
@@ -233,7 +251,7 @@ export default function Report({ searchResults }) {
   return null;
 }
 
-Report.propTypes = {
+MultiReport.propTypes = {
   // @graph from search results from igvfd
   searchResults: PropTypes.object.isRequired,
 };
@@ -245,7 +263,7 @@ export async function getServerSideProps({ req, query }) {
   if (limitlessRedirect) {
     return {
       redirect: {
-        destination: `/report/?${limitlessRedirect}`,
+        destination: `/multireport/?${limitlessRedirect}`,
         permanent: true,
       },
     };
@@ -253,7 +271,7 @@ export async function getServerSideProps({ req, query }) {
 
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const queryParams = getQueryStringFromServerQuery(query);
-  const searchResults = await request.getObject(`/report/?${queryParams}`);
+  const searchResults = await request.getObject(`/multireport/?${queryParams}`);
 
   if (FetchRequest.isResponseSuccess(searchResults)) {
     const breadcrumbs = await buildBreadcrumbs(

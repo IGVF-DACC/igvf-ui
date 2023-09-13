@@ -16,6 +16,7 @@
   "rules": {
     "camelcase": ["error", { "properties": "never" }],
     "comma-dangle": ["error", "always-multiline"],
+    "curly": "error",
     "dot-notation": ["error"],
     "eqeqeq": ["error"],
     "func-style": ["error", "declaration"],

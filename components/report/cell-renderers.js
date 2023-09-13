@@ -162,6 +162,25 @@ GeneLocations.propTypes = {
 };
 
 /**
+ * Use a generic renderer for the case in which no schema exists to determine the types of the
+ * properties in the report.
+ */
+function Generic({ id, source }) {
+  const value = source[id];
+  if (typeof value === "string" || typeof value === "number") {
+    return <>{value}</>;
+  }
+  return <>{JSON.stringify(value)}</>;
+}
+
+Generic.propTypes = {
+  // Property name of column being rendered
+  id: PropTypes.string.isRequired,
+  // Object displayed in the current row
+  source: PropTypes.object.isRequired,
+};
+
+/**
  * Report cell renderer for a Page parent link. We can't use the `Path` component because the Page
  * `parent`'s `type` property has the only array type among all schemas, so rather than messing up
  * the type detection function below for this weird case, just treat this as a special renderer for
@@ -281,14 +300,7 @@ function UnknownObject({ id, source }) {
   const components = id.split(".");
   let property = source;
   for (let i = 0; i < components.length; i += 1) {
-    if (Array.isArray(property)) {
-      // Extract the specified property component from each element of the array.
-      const embeddedProperties = property.map((item) => item[components[i]]);
-      property = embeddedProperties.filter((item) => item).join(", ");
-    } else {
-      // Extract the specified property component from the embedded property.
-      property = property[components[i]];
-    }
+    property = property[components[i]];
     if (!property) {
       // A component of the dotted-notation property doesn't exist in the source object, so end
       // the loop early, and display nothing in the cell.
@@ -385,7 +397,7 @@ export const typeRenderers = {
   boolean: Boolean, // Boolean value
   path: Path, // Single path
   "path-array": PathArray, // Array of paths
-  simple: null, // String, number, boolean, or null get default renderer
+  simple: Generic, // String, number, boolean, or null get default renderer
   "simple-array": SimpleArray, // Array of strings or numbers
   unknown: UnknownObject, // Complex array or object with no dedicated renderer
   url: Url, // External URL string
@@ -400,7 +412,7 @@ export const typeRenderers = {
  * @returns {string} The type of the property; see `typeRenderers`
  */
 export function detectPropertyTypes(property, profile) {
-  const propertyDefinition = profile.properties[property];
+  const propertyDefinition = profile[property];
   let propertyType = "unknown";
   if (propertyDefinition) {
     if (propertyDefinition.type === "array" && propertyDefinition.items) {
