@@ -38,9 +38,9 @@ import {
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function MatrixFile({
-  attribution,
   matrixFile,
-  fileSet = null,
+  attribution,
+  fileSet,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -69,10 +69,6 @@ export default function MatrixFile({
           <DataAreaTitle>Matrix Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>First Dimension</DataItemLabel>
-              <DataItemValue>{matrixFile.dimension1}</DataItemValue>
-              <DataItemLabel>Second Dimension</DataItemLabel>
-              <DataItemValue>{matrixFile.dimension2}</DataItemValue>
               {referenceFiles.length > 0 && (
                 <>
                   <DataItemLabel>Reference Files</DataItemLabel>
@@ -87,6 +83,10 @@ export default function MatrixFile({
                   </DataItemValue>
                 </>
               )}
+              <DataItemLabel>First Dimension</DataItemLabel>
+              <DataItemValue>{matrixFile.dimension1}</DataItemValue>
+              <DataItemLabel>Second Dimension</DataItemLabel>
+              <DataItemValue>{matrixFile.dimension2}</DataItemValue>
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (
@@ -179,7 +179,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       : [];
     const breadcrumbs = await buildBreadcrumbs(
       matrixFile,
-      "accession",
+      matrixFile.accession,
       req.headers.cookie
     );
     const attribution = await buildAttribution(matrixFile, req.headers.cookie);
