@@ -63,7 +63,7 @@ export default function MatrixFile({
         <JsonDisplay item={matrixFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems items={matrixFile} fileSet={fileSet} />
+              <FileDataItems item={matrixFile} fileSet={fileSet} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle>Matrix Details</DataAreaTitle>
