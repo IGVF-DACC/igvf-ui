@@ -142,7 +142,7 @@ AlignmentFile.propTypes = {
   fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
-  // The file is derived from
+  // Reference files used to generate this file
   referenceFiles: PropTypes.array.isRequired,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,

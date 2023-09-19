@@ -92,6 +92,7 @@ const renderers = {
   HumanGenomicVariant,
   InVitroSystem: Biosample,
   Lab,
+  MatrixFile: File,
   MeasurementSet,
   Model,
   Modification,

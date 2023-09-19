@@ -37,10 +37,10 @@ import {
 } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function SignalFile({
+export default function MatrixFile({
+  matrixFile,
   attribution,
-  signalFile,
-  fileSet = null,
+  fileSet,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -51,22 +51,22 @@ export default function SignalFile({
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={signalFile}>
+      <EditableItem item={matrixFile}>
         <PagePreamble>
           <AlternateAccessions
-            alternateAccessions={signalFile.alternate_accessions}
+            alternateAccessions={matrixFile.alternate_accessions}
           />
         </PagePreamble>
-        <ObjectPageHeader item={signalFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={signalFile} />
+        <ObjectPageHeader item={matrixFile} isJsonFormat={isJson}>
+          <FileHeaderDownload file={matrixFile} />
         </ObjectPageHeader>
-        <JsonDisplay item={signalFile} isJsonFormat={isJson}>
+        <JsonDisplay item={matrixFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={signalFile} fileSet={fileSet} />
+              <FileDataItems item={matrixFile} fileSet={fileSet} />
             </DataArea>
           </DataPanel>
-          <DataAreaTitle>Signal Details</DataAreaTitle>
+          <DataAreaTitle>Matrix Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
               {referenceFiles.length > 0 && (
@@ -83,36 +83,16 @@ export default function SignalFile({
                   </DataItemValue>
                 </>
               )}
-              <>
-                <DataItemLabel>Strand Specificity</DataItemLabel>
-                <DataItemValue>{signalFile.strand_specificity}</DataItemValue>
-              </>
-              {signalFile.filtered && (
-                <>
-                  <DataItemLabel>Filtered</DataItemLabel>
-                  <DataItemValue>True</DataItemValue>
-                </>
-              )}
-              {signalFile.normalized && (
-                <>
-                  <DataItemLabel>Normalized</DataItemLabel>
-                  <DataItemValue>True</DataItemValue>
-                </>
-              )}
-              {signalFile.start_view_position && (
-                <>
-                  <DataItemLabel>Start View Position</DataItemLabel>
-                  <DataItemValue>
-                    {signalFile.start_view_position}
-                  </DataItemValue>
-                </>
-              )}
+              <DataItemLabel>First Dimension</DataItemLabel>
+              <DataItemValue>{matrixFile.dimension1}</DataItemValue>
+              <DataItemLabel>Second Dimension</DataItemLabel>
+              <DataItemValue>{matrixFile.dimension2}</DataItemValue>
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (
             <>
               <DataAreaTitle>
-                Files {signalFile.accession} Derives From
+                Files {matrixFile.accession} Derives From
               </DataAreaTitle>
               <DerivedFromTable
                 derivedFrom={derivedFrom}
@@ -139,9 +119,9 @@ export default function SignalFile({
   );
 }
 
-SignalFile.propTypes = {
-  // SignalFile object to display
-  signalFile: PropTypes.object.isRequired,
+MatrixFile.propTypes = {
+  // MatrixFile object to display
+  matrixFile: PropTypes.object.isRequired,
   // File set that contains this file
   fileSet: PropTypes.object,
   // Documents set associate with this file
@@ -174,14 +154,14 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const signalFile = await request.getObject(`/signal-files/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(signalFile)) {
-    const fileSet = await request.getObject(signalFile.file_set, null);
-    const documents = signalFile.documents
-      ? await requestDocuments(signalFile.documents, request)
+  const matrixFile = await request.getObject(`/matrix-files/${params.id}/`);
+  if (FetchRequest.isResponseSuccess(matrixFile)) {
+    const fileSet = await request.getObject(matrixFile.file_set, null);
+    const documents = matrixFile.documents
+      ? await requestDocuments(matrixFile.documents, request)
       : [];
-    const derivedFrom = signalFile.derived_from
-      ? await requestFiles(signalFile.derived_from, request)
+    const derivedFrom = matrixFile.derived_from
+      ? await requestFiles(matrixFile.derived_from, request)
       : [];
     const derivedFromFileSetPaths = derivedFrom
       .map((file) => file.file_set)
@@ -191,27 +171,27 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       uniqueDerivedFromFileSetPaths.length > 0
         ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
         : [];
-    const fileFormatSpecifications = signalFile.file_format_specifications
-      ? await requestDocuments(signalFile.file_format_specifications, request)
+    const fileFormatSpecifications = matrixFile.file_format_specifications
+      ? await requestDocuments(matrixFile.file_format_specifications, request)
       : [];
-    const referenceFiles = signalFile.reference_files
-      ? await requestFiles(signalFile.reference_files, request)
+    const referenceFiles = matrixFile.reference_files
+      ? await requestFiles(matrixFile.reference_files, request)
       : [];
     const breadcrumbs = await buildBreadcrumbs(
-      signalFile,
-      signalFile.accession,
+      matrixFile,
+      matrixFile.accession,
       req.headers.cookie
     );
-    const attribution = await buildAttribution(signalFile, req.headers.cookie);
+    const attribution = await buildAttribution(matrixFile, req.headers.cookie);
     return {
       props: {
-        signalFile,
+        matrixFile,
         fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,
         fileFormatSpecifications,
-        pageContext: { title: signalFile.accession },
+        pageContext: { title: matrixFile.accession },
         breadcrumbs,
         attribution,
         referenceFiles,
@@ -219,5 +199,5 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       },
     };
   }
-  return errorObjectToProps(signalFile);
+  return errorObjectToProps(matrixFile);
 }

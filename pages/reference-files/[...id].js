@@ -68,7 +68,7 @@ export default function ReferenceFile({
             referenceFile.source_url ||
             referenceFile.transcriptome_annotation) && (
             <>
-              <DataAreaTitle>Reference Details</DataAreaTitle>
+              <DataAreaTitle>Reference Source Details</DataAreaTitle>
               <DataPanel>
                 <DataArea>
                   {referenceFile.assembly && (
