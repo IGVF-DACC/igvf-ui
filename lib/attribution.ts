@@ -55,12 +55,16 @@ export default async function buildAttribution(
 
   const contactPi =
     award && award.contact_pi
-      ? nullOnError<DataProviderObject, ErrorObject>(await request.getObject(award.contact_pi as string, null))
+      ? nullOnError<DataProviderObject, ErrorObject>(
+          await request.getObject(award.contact_pi as string, null)
+        )
       : null;
 
   const pis =
     award && award.pis
-      ? nullOnError<object[], ErrorObject>(await requestUsers(award.pis as string[], request))
+      ? nullOnError<object[], ErrorObject>(
+          await requestUsers(award.pis as string[], request)
+        )
       : null;
 
   const collections =

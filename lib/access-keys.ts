@@ -24,7 +24,10 @@ export async function createAccessKey(session: FetchRequestInitializer) {
  * @param {object} session - Current signed-in user's session
  * @returns {object} Access-key response
  */
-export async function resetAccessKey(accessKeyId: string, session: FetchRequestInitializer) {
+export async function resetAccessKey(
+  accessKeyId: string,
+  session: FetchRequestInitializer
+) {
   const request = new FetchRequest({ session });
   return request.postObject(`/access-keys/${accessKeyId}/reset-secret`, {});
 }
@@ -36,7 +39,10 @@ export async function resetAccessKey(accessKeyId: string, session: FetchRequestI
  * @param {object} session - Current signed-in user's session
  * @returns {object} Access-key response
  */
-export async function deleteAccessKey(accessKeyId: string, session: FetchRequestInitializer) {
+export async function deleteAccessKey(
+  accessKeyId: string,
+  session: FetchRequestInitializer
+) {
   const request = new FetchRequest({ session });
   return request.patchObject(`/access-keys/${accessKeyId}/?render=false`, {
     status: "deleted",
