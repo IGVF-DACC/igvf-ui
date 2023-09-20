@@ -35,7 +35,7 @@ export function urlWithoutParams(url: string): string {
   return url.split("?")[0];
 }
 
-type JSON =
+export type JSON =
   | null
   | boolean
   | string
