@@ -2,9 +2,9 @@
 import { API_URL } from "./constants";
 
 export interface Attachment {
-  type: string,
-  download: string,
-  href: string,
+  type: string;
+  download: string;
+  href: string;
 }
 
 /**
@@ -13,6 +13,9 @@ export interface Attachment {
  * @param {string} ownerPath Path of the object that owns the attachment
  * @returns {string} The full server URL of the attachment
  */
-export function attachmentToServerHref(attachment: Attachment, ownerPath: string): string {
+export function attachmentToServerHref(
+  attachment: Attachment,
+  ownerPath: string
+): string {
   return `${API_URL}${ownerPath}${attachment.href}`;
 }
