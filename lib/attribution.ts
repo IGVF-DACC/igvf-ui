@@ -5,9 +5,9 @@ import { DataProviderObject } from "../globals";
 import { ErrorObject } from "./fetch-request.d";
 
 export interface Attributable {
-  lab: string | { "@id": string };
-  award: string | { "@id": string };
-  collections: [] | null;
+  lab?: string | { "@id": string };
+  award?: string | { "@id": string };
+  collections?: [] | null;
 }
 
 export interface Attribution {
@@ -41,16 +41,21 @@ export default async function buildAttribution(
 ): Promise<Attribution> {
   const request = new FetchRequest({ cookie });
 
+  console.log(obj);
   const lab = nullOnError<DataProviderObject, ErrorObject>(
-    typeof obj.lab === "string"
-      ? await request.getObject(obj.lab, null)
-      : await request.getObject(obj.lab["@id"], null)
+    obj.lab
+      ? typeof obj.lab === "string"
+        ? await request.getObject(obj.lab, null)
+        : await request.getObject(obj.lab["@id"], null)
+      : null
   );
 
   const award = nullOnError<DataProviderObject, ErrorObject>(
-    typeof obj.award === "string"
-      ? await request.getObject(obj.award, null)
-      : await request.getObject(obj.award["@id"], null)
+    obj.award
+      ? typeof obj.award === "string"
+        ? await request.getObject(obj.award, null)
+        : await request.getObject(obj.award["@id"], null)
+      : null
   );
 
   const contactPi =
