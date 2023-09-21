@@ -5,7 +5,7 @@
 
 // lib
 import FetchRequest from "./fetch-request";
-import FetchRequestInitializer from "./fetch-request";
+import { FetchRequestInitializer } from "./fetch-request.d";
 
 /**
  * Creates an access key for the currently logged-in user. It returns the response object including
