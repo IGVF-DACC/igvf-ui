@@ -35,6 +35,7 @@ export interface FetchRequestInitializer {
  * Format of standard error responses.
  */
 export interface ErrorObject {
+  isError: true;
   "@type": Array<string>;
   code: number;
   description: string;

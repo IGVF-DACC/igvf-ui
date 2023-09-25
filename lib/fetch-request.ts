@@ -123,6 +123,7 @@ Object.freeze(HTTP_STATUS_CODE);
  * Standard returned response for a network error.
  */
 const NETWORK_ERROR_RESPONSE: ErrorObject = {
+  isError: true,
   "@type": ["NetworkError", "Error"],
   status: "error",
   code: HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,

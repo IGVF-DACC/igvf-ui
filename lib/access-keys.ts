@@ -4,14 +4,15 @@
  */
 
 // lib
-import FetchRequest from "../lib/fetch-request";
+import FetchRequest from "./fetch-request";
+import { FetchRequestInitializer } from "./fetch-request.d";
 
 /**
  * Creates an access key for the currently logged-in user. It returns the response object including
  * the new access key object in the object's `@graph` property.
  * @returns {object} Access-key response
  */
-export async function createAccessKey(session) {
+export async function createAccessKey(session: FetchRequestInitializer) {
   const request = new FetchRequest({ session });
   return request.postObject("/access-keys", {});
 }
@@ -23,7 +24,10 @@ export async function createAccessKey(session) {
  * @param {object} session - Current signed-in user's session
  * @returns {object} Access-key response
  */
-export async function resetAccessKey(accessKeyId, session) {
+export async function resetAccessKey(
+  accessKeyId: string,
+  session: FetchRequestInitializer
+) {
   const request = new FetchRequest({ session });
   return request.postObject(`/access-keys/${accessKeyId}/reset-secret`, {});
 }
@@ -35,7 +39,10 @@ export async function resetAccessKey(accessKeyId, session) {
  * @param {object} session - Current signed-in user's session
  * @returns {object} Access-key response
  */
-export async function deleteAccessKey(accessKeyId, session) {
+export async function deleteAccessKey(
+  accessKeyId: string,
+  session: FetchRequestInitializer
+) {
   const request = new FetchRequest({ session });
   return request.patchObject(`/access-keys/${accessKeyId}/?render=false`, {
     status: "deleted",

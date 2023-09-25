@@ -35,13 +35,39 @@ export function urlWithoutParams(url: string): string {
   return url.split("?")[0];
 }
 
-type JSON =
+export type JSON =
   | null
   | boolean
   | string
   | number
   | Array<JSON>
   | { [key: string]: JSON };
+
+/**
+ * An interface describing an Error object. If an
+ * object has the property `isError: true` then it
+ * can be detectable as an error type for consumers
+ * concerned with discerning errors from non-errors.
+ */
+export interface IsError {
+  isError: true;
+}
+
+/**
+ * Takes a value which could be an error, and if so, returns
+ * a default of null. If not an error, the value is merely returned.
+ * This is used to sort of flatten the Error possibility into just
+ * T or null.
+ * @param {T | E extends IsError | null} x The value to be defaulted
+ * @returns null if x is null or extends IsError, returns the parameter
+ * x otherwise
+ */
+export function nullOnError<T, E extends IsError>(x: T | E | null): T | null {
+  if (x && typeof x === "object" && "isError" in x) {
+    return null;
+  }
+  return x;
+}
 
 /**
  * Takes an Object to be represented as JSON and sorts
