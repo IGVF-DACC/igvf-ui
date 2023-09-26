@@ -370,31 +370,34 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facets.length).toBe(2);
 
     // Check that the facets have the predicted order and correct titles.
-    let facetTitle = within(facets[0]).getByRole("heading", { name: /Sex/ });
+    let facetTitle = within(facets[0]).getByRole("heading", { name: /Lab/ });
     expect(facetTitle).toBeInTheDocument();
-    facetTitle = within(facets[1]).getByRole("heading", { name: /Lab/ });
+    facetTitle = within(facets[1]).getByRole("heading", { name: /Sex/ });
     expect(facetTitle).toBeInTheDocument();
 
     // Make sure each facet has the correct number of terms.
-    const facetList = within(facets[0]).getByRole("list");
-    const facetTerms = within(facetList).getAllByRole("listitem");
+    let facetList = within(facets[0]).getByRole("list");
+    let facetTerms = within(facetList).getAllByRole("listitem");
+    expect(facetTerms.length).toBe(2);
+    facetList = within(facets[1]).getByRole("list");
+    facetTerms = within(facetList).getAllByRole("listitem");
     expect(facetTerms.length).toBe(2);
 
-    // Check that the first term has the correct label and is not checked.
-    let facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
-    expect(facetTermCheckbox).toBeInTheDocument();
-    expect(facetTermCheckbox).toHaveAttribute(
-      "aria-label",
-      expect.stringMatching(/^female with 6 results$/)
-    );
-    expect(facetTermCheckbox).not.toHaveAttribute("checked");
-
     // Check that the second term has the correct label and is not checked.
-    facetTermCheckbox = within(facetTerms[1]).getByRole("checkbox");
+    let facetTermCheckbox = within(facetTerms[1]).getByRole("checkbox");
     expect(facetTermCheckbox).toBeInTheDocument();
     expect(facetTermCheckbox).toHaveAttribute(
       "aria-label",
       expect.stringMatching(/^male with 1 result$/)
+    );
+    expect(facetTermCheckbox).not.toHaveAttribute("checked");
+
+    // Check that the first term has the correct label and is not checked.
+    facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
+    expect(facetTermCheckbox).toBeInTheDocument();
+    expect(facetTermCheckbox).toHaveAttribute(
+      "aria-label",
+      expect.stringMatching(/^female with 6 results$/)
     );
     expect(facetTermCheckbox).not.toHaveAttribute("checked");
 
@@ -480,13 +483,13 @@ describe("Test the `<FacetGroup>` component", () => {
     expect(facets.length).toBe(2);
 
     // Check that the facets have the predicted order and correct titles.
-    let facetTitle = within(facets[0]).getByRole("heading", { name: /Sex/ });
+    let facetTitle = within(facets[0]).getByRole("heading", { name: /Lab/ });
     expect(facetTitle).toBeInTheDocument();
-    facetTitle = within(facets[1]).getByRole("heading", { name: /Lab/ });
+    facetTitle = within(facets[1]).getByRole("heading", { name: /Sex/ });
     expect(facetTitle).toBeInTheDocument();
 
     // Make sure each facet has the correct number of terms.
-    const facetList = within(facets[0]).getByRole("list");
+    const facetList = within(facets[1]).getByRole("list");
     const facetTerms = within(facetList).getAllByRole("listitem");
     expect(facetTerms.length).toBe(2);
 

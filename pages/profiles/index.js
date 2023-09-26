@@ -11,15 +11,10 @@ import SchemaIcon from "../../components/schema-icon";
 import Tooltip from "../../components/tooltip";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { deprecatedSchemas } from "../../lib/constants";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { toShishkebabCase } from "../../lib/general";
-
-/**
- * List of `@type`s to delete from the schema list. This needs updating when deprecated schemas
- * get removed from igvfd.
- */
-const deprecatedSchemas = ["ConstructLibrary", "Model", "Prediction"];
 
 /**
  * Copy the given schema object and delete deprecated schemas from it.

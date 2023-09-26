@@ -1213,7 +1213,7 @@ describe("Test File component", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-    expect(meta).toHaveTextContent("IGVFFI0000SQBR");
+    expect(meta).toHaveTextContent("IGVFFI0000SQBS");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
@@ -1304,7 +1304,7 @@ it("renders a File item with accessory data", () => {
 
   const meta = screen.getByTestId("search-list-item-meta");
   expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-  expect(meta).toHaveTextContent("IGVFFI0000SEQU");
+  expect(meta).toHaveTextContent("IGVFFI0000SEQV");
   expect(meta).toHaveTextContent("SRA:SRR12345");
 
   const status = screen.getByTestId("search-list-item-quality");

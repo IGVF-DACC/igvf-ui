@@ -1,6 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // components/facets
 import { FacetGroup, FacetGroupButton, getFacetsInGroup } from "./facet-groups";
 // components
@@ -13,24 +13,30 @@ import { getVisibleFacets } from "../../lib/facets";
  * facet-group button, display the modal containing the facets for that group.
  */
 export default function FacetSection({ searchResults }) {
-  // Get the facet groups, or build a fake one containing all the facets if the search results
-  // have no facet groups.
-  const facetGroups =
-    searchResults.facet_groups.length > 0 ? searchResults.facet_groups : [];
-
   // Filter out facet groups that have no facets.
-  const facetGroupsWithFacets = facetGroups.filter((facetGroup) => {
-    const facetsInGroup = getFacetsInGroup(searchResults, facetGroup);
-    return facetsInGroup.length > 0;
-  });
+  const facetGroupsWithFacets = searchResults.facet_groups.filter(
+    (facetGroup) => {
+      const facetsInGroup = getFacetsInGroup(searchResults, facetGroup);
+      return facetsInGroup.length > 0;
+    }
+  );
 
   // Facet group selected by the user clicking on its button, bringing up the facets for that group.
   const [selectedGroup, setSelectedGroup] = useState(facetGroupsWithFacets[0]);
 
-  // Determine if we shouldn't show the facet groups at all. This is the case when there are no
-  // facet groups, and the search results have no displayable facets.
+  // Reset selected facet group if the facet groups change, so we can handle having the selected
+  // group disappear if the user selects a term that removes all the facets in the selected group.
+  const facetGroupTitles = facetGroupsWithFacets
+    .map((group) => group.title)
+    .join();
+  useEffect(() => {
+    setSelectedGroup(facetGroupsWithFacets[0]);
+  }, [facetGroupTitles]);
+
+  // Determine if we should show facets at all. This is the case when no facet groups exist, and
+  // the search results have no displayable facets.
   const visibleFacets = getVisibleFacets(searchResults.facets);
-  if (visibleFacets.length > 0) {
+  if (visibleFacets.length > 0 || facetGroupsWithFacets.length > 0) {
     return (
       <DataPanel className="mb-4 lg:mb-0 lg:w-72 lg:shrink-0 lg:grow-0 lg:overflow-y-auto">
         {facetGroupsWithFacets.length > 0 && (
