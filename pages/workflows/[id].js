@@ -24,11 +24,7 @@ import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function Workflow({
-  workflow,
-  attribution = null,
-  isJson,
-}) {
+export default function Workflow({ workflow, attribution = null, isJson }) {
   return (
     <>
       <Breadcrumbs />
@@ -64,7 +60,9 @@ export default function Workflow({
                 <>
                   <DataItemLabel>Standards Page</DataItemLabel>
                   <DataItemValue>
-                    <Link href={workflow.standards_page}>{workflow.standards_page}</Link>
+                    <Link href={workflow.standards_page}>
+                      {workflow.standards_page}
+                    </Link>
                   </DataItemValue>
                 </>
               )}
@@ -74,7 +72,8 @@ export default function Workflow({
                   <DataItemValue>
                     <SeparatedList>
                       {workflow.workflow_repositories.map((repository) => (
-                        <a key={repository}
+                        <a
+                          key={repository}
                           href={repository}
                           target="_blank"
                           rel="noopener noreferrer"
