@@ -2497,3 +2497,38 @@ describe("Test MultiplexedSample component", () => {
     expect(status).toHaveTextContent("released");
   });
 });
+
+describe("Test Workflow component", () => {
+  it("renders a workflow item", () => {
+    const item = {
+      "@id": "/workflows/IGVFWF3254CAGQ/",
+      "@type": ["Workflow", "Item"],
+      accession: "IGVFWF3254CAGQ",
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      name: "Workflow Name"
+      summary: "4df06a86-2df8-4c2c-965a-febc0a6cd489",
+      uuid: "4df06a86-2df8-4c2c-965a-febc0a6cd489",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <MultiplexedSample item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Workflow/);
+    expect(uniqueId).toHaveTextContent(/IGVFWF3254CAGQ$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("Workflow Name");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("/labs/j-michael-cherry/");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
