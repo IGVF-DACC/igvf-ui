@@ -36,8 +36,12 @@ export default function Workflow({ workflow, attribution = null, isJson }) {
             <DataArea>
               <DataItemLabel>Name</DataItemLabel>
               <DataItemValue>{workflow.name}</DataItemValue>
-              <DataItemLabel>Description</DataItemLabel>
-              <DataItemValue>{workflow.description}</DataItemValue>
+              {workflow.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{workflow.description}</DataItemValue>
+                </>
+              )}
               <DataItemLabel>Source URL</DataItemLabel>
               <DataItemValueUrl>
                 <a
@@ -96,7 +100,7 @@ export default function Workflow({ workflow, attribution = null, isJson }) {
 }
 
 Workflow.propTypes = {
-  // Software object to display
+  // Workflow object to display
   workflow: PropTypes.object.isRequired,
   // Attribution for this workflow
   attribution: PropTypes.object,
