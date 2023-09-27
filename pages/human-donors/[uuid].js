@@ -13,6 +13,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import RelatedDonorsTable from "../../components/related-donors-table";
 import { EditableItem } from "../../components/edit";
 import ExternalResources from "../../components/external-resources";
 import JsonDisplay from "../../components/json-display";
@@ -65,6 +66,12 @@ export default function HumanDonor({
             <>
               <DataAreaTitle>Phenotypic Features</DataAreaTitle>
               <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
+            </>
+          )}
+          {donor.related_donors.length > 0 && (
+            <>
+              <DataAreaTitle>Related Donors</DataAreaTitle>
+              <RelatedDonorsTable relatedDonors={donor.related_donors} />
             </>
           )}
           <ExternalResources resources={donor.external_resources} />
