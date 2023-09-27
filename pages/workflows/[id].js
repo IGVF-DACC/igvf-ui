@@ -61,12 +61,12 @@ export default function Workflow({ workflow, attribution = null, isJson }) {
                   <DataItemLabel>Standards Page</DataItemLabel>
                   <DataItemValue>
                     <Link href={workflow.standards_page}>
-                      {workflow.standards_page}
+                      {workflow.standards_page.title}
                     </Link>
                   </DataItemValue>
                 </>
               )}
-              {workflow.workflow_repositories.length > 0 && (
+              {workflow.workflow_repositories?.length > 0 && (
                 <>
                   <DataItemLabel>Workflow Repositories</DataItemLabel>
                   <DataItemValue>

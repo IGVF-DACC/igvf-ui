@@ -2506,7 +2506,10 @@ describe("Test Workflow component", () => {
       "@type": ["Workflow", "Item"],
       accession: "IGVFWF3254CAGQ",
       award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
       status: "released",
       name: "Workflow Name",
       summary: "IGVFWF0000WORK",
@@ -2527,7 +2530,7 @@ describe("Test Workflow component", () => {
     expect(title).toHaveTextContent("Workflow Name");
 
     const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("/labs/j-michael-cherry/");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
