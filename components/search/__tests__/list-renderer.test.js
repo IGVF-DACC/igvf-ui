@@ -28,6 +28,7 @@ import Source from "../list-renderer/source";
 import TechnicalSample from "../list-renderer/technical-sample";
 import Treatment from "../list-renderer/treatment";
 import User from "../list-renderer/user";
+import Workflow from "../list-renderer/workflow";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -2508,13 +2509,13 @@ describe("Test Workflow component", () => {
       lab: "/labs/j-michael-cherry/",
       status: "released",
       name: "Workflow Name",
-      summary: "4df06a86-2df8-4c2c-965a-febc0a6cd489",
-      uuid: "4df06a86-2df8-4c2c-965a-febc0a6cd489",
+      summary: "IGVFWF0000WORK",
+      uuid: "b750168a-0804-4f7e-acaf-c19fc8abc6d2",
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <MultiplexedSample item={item} />
+        <Workflow item={item} />
       </SessionContext.Provider>
     );
 
