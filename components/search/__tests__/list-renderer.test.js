@@ -2507,7 +2507,7 @@ describe("Test Workflow component", () => {
       award: "/awards/HG012012/",
       lab: "/labs/j-michael-cherry/",
       status: "released",
-      name: "Workflow Name"
+      name: "Workflow Name",
       summary: "4df06a86-2df8-4c2c-965a-febc0a6cd489",
       uuid: "4df06a86-2df8-4c2c-965a-febc0a6cd489",
     };
