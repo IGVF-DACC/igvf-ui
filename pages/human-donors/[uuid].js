@@ -68,7 +68,7 @@ export default function HumanDonor({
               <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
             </>
           )}
-          {donor.related_donors.length > 0 && (
+          {donor.related_donors?.length > 0 && (
             <>
               <DataAreaTitle>Related Donors</DataAreaTitle>
               <RelatedDonorsTable relatedDonors={donor.related_donors} />

@@ -10,7 +10,7 @@ const relatedDonorsColumns = [
     id: "related_donor_id",
     title: "Donor",
     display: ({ source }) => {
-      return <Link href={source.donor}>{source.donor.substring(14, 28)}</Link>;
+      return <Link href={source.donor["@id"]}>{source.donor.accession}</Link>;
     },
   },
   {
