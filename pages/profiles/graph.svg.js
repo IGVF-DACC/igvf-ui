@@ -23,20 +23,32 @@ import PagePreamble from "../../components/page-preamble";
  * @returns An array [width, height] in pixels
  */
 function useLeftoverSize(containerRef, { initialWidth, initialHeight }) {
-  const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
+  const [size, setSize] = useState({
+    width: initialWidth,
+    height: initialHeight,
+  });
 
   useEffect(() => {
     // Once rendered, we can set a value
     const box = containerRef.current.getBoundingClientRect();
-    setSize({ width: containerRef.current.clientWidth, height: window.innerHeight - box.top });
+    setSize({
+      width: containerRef.current.clientWidth,
+      height: window.innerHeight - box.top,
+    });
 
     window.addEventListener("resize", () => {
-      setSize({ width: containerRef.current.clientWidth, height: window.innerHeight - box.top });
+      setSize({
+        width: containerRef.current.clientWidth,
+        height: window.innerHeight - box.top,
+      });
     });
 
     return () => {
       window.removeEventListener("resize", () => {
-        setSize({ width: containerRef.current.clientWidth, height: window.innerHeight - box.top });
+        setSize({
+          width: containerRef.current.clientWidth,
+          height: window.innerHeight - box.top,
+        });
       });
     };
   }, []);
@@ -51,7 +63,10 @@ export default function GraphSvg({ graph }) {
   const [tool, setTool] = useState(TOOL_NONE);
   const [value, setValue] = useState(INITIAL_VALUE);
 
-  const [width, height] = useLeftoverSize(container, { initialWidth: 300, initialHeight: 300 });
+  const [width, height] = useLeftoverSize(container, {
+    initialWidth: 300,
+    initialHeight: 300,
+  });
 
   useEffect(() => {
     setTool(TOOL_PAN);
