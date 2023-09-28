@@ -14,6 +14,8 @@
     "@auth0/auth0-react": "^2.0.2",
     "@headlessui/react": "1.7.11",
     "@heroicons/react": "^2.0.10",
+    "@react-hook/size": "^2.1.2",
+    "@react-hook/window-size": "^3.1.1",
     "@tailwindcss/container-queries": "^0.1.1",
     "@types/node": "^20.4.2",
     "@types/react": "^18.2.15",
@@ -35,6 +37,8 @@
     "react": "^18.2.0",
     "react-ace": "^10.1.0",
     "react-dom": "^18.2.0",
+    "react-svg-pan-zoom": "^3.12.1",
+    "react-svg-pan-zoom-loader": "^1.6.1",
     "typescript": "^5.1.6"
   },
   "devDependencies": {
