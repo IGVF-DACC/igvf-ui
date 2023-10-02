@@ -6,11 +6,14 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
+  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
+import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -18,13 +21,23 @@ import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import {
+  requestAnalysisSteps,
+  requestDocuments,
+} from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function Workflow({ workflow, attribution = null, isJson }) {
+export default function Workflow({
+  workflow,
+  analysissteps,
+  documents,
+  attribution = null,
+  isJson,
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -89,9 +102,48 @@ export default function Workflow({ workflow, attribution = null, isJson }) {
                   </DataItemValue>
                 </>
               )}
+              {workflow.publication_identifiers?.length > 0 && (
+                <>
+                  <DataItemLabel>Publication Identifiers</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList dbxrefs={workflow.publication_identifiers} />
+                  </DataItemValue>
+                </>
+              )}
+              {analysissteps.length > 0 && (
+                <>
+                  <DataItemLabel>Analysis Steps</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {analysissteps.map((astep) => (
+                        <Link href={astep["@id"]} key={astep["@id"]}>
+                          {astep.name}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              {workflow.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{workflow.submitter_comment}</DataItemValue>
+                </>
+              )}
+              {workflow.revoke_detail && (
+                <>
+                  <DataItemLabel>Revoke Detail</DataItemLabel>
+                  <DataItemValue>{workflow.revoke_detail}</DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
-
+          {documents?.length > 0 && (
+            <>
+              <DataAreaTitle>Documents</DataAreaTitle>
+              <DocumentTable documents={documents} />
+            </>
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
@@ -104,6 +156,10 @@ Workflow.propTypes = {
   workflow: PropTypes.object.isRequired,
   // Attribution for this workflow
   attribution: PropTypes.object,
+  // Analysis Steps to display
+  analysissteps: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Documents associated with this workflow
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
@@ -115,6 +171,12 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(workflow)) {
     const award = await request.getObject(workflow.award["@id"], null);
     const lab = await request.getObject(workflow.lab["@id"], null);
+    const documents = workflow.documents
+      ? await requestDocuments(workflow.documents, request)
+      : [];
+    const analysissteps = workflow.analysis_steps
+      ? await requestAnalysisSteps(workflow.analysis_steps, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       workflow,
       workflow.name,
@@ -126,6 +188,8 @@ export async function getServerSideProps({ params, req, query }) {
         workflow,
         award,
         lab,
+        analysissteps,
+        documents,
         pageContext: { title: workflow.name },
         breadcrumbs,
         attribution,
