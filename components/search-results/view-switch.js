@@ -28,14 +28,12 @@ export default function ViewSwitch({ searchResults, className = null }) {
     // display a report-view link if exactly one "type=" exists in the query string.
     const { path, queryString } = splitPathAndQueryString(searchResults["@id"]);
     const query = new QueryString(queryString);
-    const types = query.getKeyValues("type", QueryString.ANY);
     const reportPath = path.replace(/\/search(\/){0,1}/, "/multireport$1");
 
     // Report view query string always copies the list view query string unless it has multiple or
     // no "type=" query string parameters, in which case no Report view button appears.
     listViewLink = searchResults["@id"];
-    reportViewLink =
-      types.length === 1 ? `${reportPath}?${query.format()}` : "";
+    reportViewLink = `${reportPath}?${query.format()}`;
   } else {
     // Compose links for the list and report views if the current view is the report view. Remove
     // any "field=" query string parameters from the list-view link.
