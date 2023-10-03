@@ -1,5 +1,6 @@
 // node_modules
 import { useRouter } from "next/router";
+import PropTypes from "prop-types";
 // components
 import { Select } from "../form-elements";
 // components/search
@@ -31,7 +32,10 @@ const itemsPerPageOptions = [25, 100, 300];
  * the dropdown, their manually set value disappears from the dropdown, leaving only the options in
  * `itemsPerPageOptions`.
  */
-export default function ItemsPerPageSelector(searchResults) {
+export default function ItemsPerPageSelector({
+  searchResults,
+  className = null,
+}) {
   const router = useRouter();
   const { itemsPerPage } = useSearchLimits(searchResults);
 
@@ -61,17 +65,26 @@ export default function ItemsPerPageSelector(searchResults) {
     : [itemsPerPage, ...itemsPerPageOptions];
 
   return (
-    <Select
-      name="items-per-page"
-      className="flex grow gap-1 [&>div]:w-full"
-      value={itemsPerPage}
-      onChange={onChangeItemsPerPage}
-    >
-      {options.map((option) => (
-        <option key={option} value={option}>
-          {`${option} Items`}
-        </option>
-      ))}
-    </Select>
+    <div className={className}>
+      <Select
+        name="items-per-page"
+        className="flex grow gap-1 [&>div]:w-full"
+        value={itemsPerPage}
+        onChange={onChangeItemsPerPage}
+      >
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {`${option} Items`}
+          </option>
+        ))}
+      </Select>
+    </div>
   );
 }
+
+ItemsPerPageSelector.propTypes = {
+  // The search results object the items-per-page selector is for
+  searchResults: PropTypes.object.isRequired,
+  // CSS class names to apply to the root element of the component
+  className: PropTypes.string,
+};

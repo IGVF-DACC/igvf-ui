@@ -39,12 +39,11 @@ export default function SearchPager({ searchResults }) {
   return (
     <>
       {totalPages > 1 && (
-        <div className="search-pager">
+        <div className="flex justify-center border-l border-r border-panel bg-gray-100 py-0.5 dark:bg-gray-900">
           <Pager
             currentPage={pageIndex}
             totalPages={totalPages}
             onClick={onPagerClick}
-            className="mb-2 flex justify-center sm:mb-0 sm:justify-end"
           />
         </div>
       )}

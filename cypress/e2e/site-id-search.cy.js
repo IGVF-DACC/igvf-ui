@@ -35,7 +35,10 @@ describe("Test site search", () => {
 
         // Click the list button and make sure it takes us to the list page.
         cy.get(`[aria-label^="View search report for"]`).click();
-        cy.url().should("match", /\/report\/\?type=[a-zA-Z0-9]+&query=cherry$/);
+        cy.url().should(
+          "match",
+          /\/multireport\/\?type=[a-zA-Z0-9]+&query=cherry$/
+        );
       });
   });
 

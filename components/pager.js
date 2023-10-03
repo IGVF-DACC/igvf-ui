@@ -15,45 +15,45 @@ import { Button } from "./form-elements";
  * component allow the user to move to the previous and next page to the current page. We have four
  * cases to consider based on the total page count:
  *
- * Nine or fewer: Straight sequence of pages with no ellipses ([x] indicates current page):
- * <  1   2   3   4   5  [6]  7   8   9  >
+ * Seven or fewer: Straight sequence of pages with no ellipses ([x] indicates current page):
+ * <  1   2   3   4   5  [6]  7  >
  *
- * More than nine with the current page towards the left end ('.' indicates ellipsis):
- * <  1   2  [3]  4   5   6   7   .   20  >
+ * More than seven with the current page towards the left end ('.' indicates ellipsis):
+ * <  1   2  [3]  4   5   .   20  >
  *
- * More than nine with the current page towards the right end:
- * <  1   .   14   15  [16]  17   18   19   20  >
+ * More than seven with the current page towards the right end:
+ * <  1   .   15  [16]  17   19   20  >
  *
- * More than nine with the current page not near either end:
- * <  1   .   11   12  [13]  14   15   .   20  >
+ * More than seven with the current page not near either end:
+ * <  1   .   12  [13]  14   .   20  >
  *
- * For cases with more than nine pages, Pager attempts to keep a cluster of visible page numbers
- * surrounding the current page so that the user can see and select the two preceding and two
- * succeeding page numbers, except when the current page gets to the extreme ends of the page
- * range and fewer than two page numbers exist on one side of the cluster. When the current page
- * approaches the ends of the page range, more than two visible pages appear in the cluster on the
- * side facing the near end of the page range. This allowance keeps the width of the entire Pager
- * component consistent regardless of the current page number, so that the previous/next buttons
- * don't shift around horizontally.
+ * For cases with more than seven pages, Pager attempts to keep a cluster of visible page numbers
+ * surrounding the current page so that the user can see and select the preceding and * succeeding
+ * page numbers, except when the current page gets to the extreme ends of the page range and fewer
+ * than one page number exists on one side of the cluster. When the current page approaches the
+ * ends of the page range, more than one visible page appears in the cluster on the side facing the
+ * near end of the page range. This allowance keeps the width of the entire Pager component
+ * consistent regardless of the current page number, so that the previous/next buttons don't shift
+ * around horizontally.
  */
 export default function Pager({ currentPage, totalPages, onClick, className }) {
   // Create the array of 1-based page numbers, with page 0 to represent an ellipsis before the
   // current page and page -1 to represent an ellipsis after the current page. No real difference
   // between these two ellipsis values, but Pager uses distinct values so we don't have duplicate
-  // React keys. No point memoizing `pageNumbers` as it needs recalculating when any prop changes.
+  // React keys.
   let pageNumbers;
-  if (totalPages <= 9) {
-    // A total page count of nine or fewer has no ellipses -- just a straight array of
+  if (totalPages <= 7) {
+    // A total page count of seven or fewer has no ellipses -- just a straight array of
     // sequential numbers.
     pageNumbers = _.range(1, totalPages + 1); // _.range ends at max - 1
   } else {
-    // With more than nine pages, build a cluster of pages around the current page, first by
+    // With more than seven pages, build a cluster of pages around the current page, first by
     // determining the minimum and maximum page numbers for the cluster. Allow for filling in
     // extra numbers in the cluster for cases where the current page number approaches the ends
-    // of the page range, and cutting off the page numbers when the current page is within two
-    // pages of either end of the page range.
-    const clusterMin = Math.min(Math.max(1, currentPage - 2), totalPages - 6);
-    const clusterMax = Math.max(Math.min(currentPage + 2, totalPages), 7);
+    // of the page range, and cutting off the page numbers when the current page is within a
+    // page of either end of the page range.
+    const clusterMin = Math.min(Math.max(1, currentPage - 1), totalPages - 4);
+    const clusterMax = Math.max(Math.min(currentPage + 1, totalPages), 5);
     const clusterPageNumbers = _.range(clusterMin, clusterMax + 1); // _.range ends at max - 1
 
     // Determine whether we need an ellipsis before the cluster, or continuous page numbers. If
@@ -101,7 +101,7 @@ export default function Pager({ currentPage, totalPages, onClick, className }) {
 
   return (
     <nav aria-label="Pagination" className={className}>
-      <ul className="flex shrink">
+      <ul className="flex shrink sm:gap-2">
         <li>
           <Button
             type="primary"
@@ -138,7 +138,7 @@ export default function Pager({ currentPage, totalPages, onClick, className }) {
             >
               <button
                 type="button"
-                className={`block w-full text-sm${
+                className={`block w-full px-1 text-sm ${
                   isCurrentPage
                     ? " rounded-md bg-gray-300 dark:bg-gray-600"
                     : ""

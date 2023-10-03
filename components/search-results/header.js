@@ -1,12 +1,10 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import DownloadTSV from "./download-tsv";
 import ItemsPerPageSelector from "./items-per-page-selector";
 import { ColumnSelector } from "../report";
-import useSearchLimits from "./search-limits";
-import SearchPager from "./search-pager";
 import ViewSwitch from "./view-switch";
-import DownloadTSV from "./download-tsv";
 
 /**
  * Displays controls for the search-result list and report views, including the controls to switch
@@ -14,44 +12,48 @@ import DownloadTSV from "./download-tsv";
  */
 export default function SearchResultsHeader({
   searchResults,
-  columnSelectorConfig = null,
+  reportViewExtras = null,
 }) {
-  const { totalPages } = useSearchLimits(searchResults);
-
   return (
-    <>
-      <div className="sm:mb-1 sm:flex sm:items-center sm:justify-between">
-        <div className="mb-1 flex gap-1 sm:mb-0">
-          <ViewSwitch searchResults={searchResults} />
-          {columnSelectorConfig && (
-            <>
+    <div className="relative z-10 w-full @container">
+      <div className="@md:flex @md:items-center @md:justify-between">
+        <div className="flex gap-1">
+          <div className="mb-1 flex gap-1">
+            <ViewSwitch searchResults={searchResults} />
+          </div>
+          {reportViewExtras && (
+            <div className="mb-1 flex gap-1">
               <ColumnSelector
-                searchResults={searchResults}
-                onChange={columnSelectorConfig.onColumnVisibilityChange}
-                onChangeAll={columnSelectorConfig.onAllColumnsVisibilityChange}
+                allColumnSpecs={reportViewExtras.allColumnSpecs}
+                visibleColumnSpecs={reportViewExtras.visibleColumnSpecs}
+                onChange={reportViewExtras.onColumnVisibilityChange}
+                onChangeAll={reportViewExtras.onAllColumnsVisibilityChange}
               />
               <DownloadTSV />
-            </>
+            </div>
           )}
         </div>
 
-        <div className="mb-1 flex items-center gap-1 sm:mb-0">
-          <ItemsPerPageSelector />
+        <div className="mb-1">
+          <ItemsPerPageSelector searchResults={searchResults} />
         </div>
       </div>
-      <div className="mb-1">
-        {totalPages > 1 && <SearchPager searchResults={searchResults} />}
-      </div>
-    </>
+    </div>
   );
 }
 
 SearchResultsHeader.propTypes = {
   // Search results for list or report
   searchResults: PropTypes.object.isRequired,
-  // True to display the report column selector
-  columnSelectorConfig: PropTypes.shape({
+  // Callback functions for when the search header is for the report view; null for the list view
+  reportViewExtras: PropTypes.exact({
+    // All column specs for the current report page
+    allColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
+    // Visible column specs for the current report page
+    visibleColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
+    // Callback when the user changes the visibility of a column
     onColumnVisibilityChange: PropTypes.func.isRequired,
+    // Callback when the user changes the visibility of all columns
     onAllColumnsVisibilityChange: PropTypes.func.isRequired,
   }),
 };

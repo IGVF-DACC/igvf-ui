@@ -85,7 +85,7 @@ function TypeSectionHeader({
           <Bars4Icon className="h-4 w-4" />
         </ButtonLink>
         <ButtonLink
-          href={`/report?${query.format()}`}
+          href={`/multireport?${query.format()}`}
           type="primary"
           label={`View search report for ${typeTitle} with ${term}`}
           hasIconOnly

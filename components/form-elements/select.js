@@ -8,9 +8,9 @@ import FormLabel from "./form-label";
  * Tailwind CSS classes for each of the select sizes.
  */
 const selectSizeClasses = {
-  sm: "text-xs form-element-height-sm",
-  md: "text-sm form-element-height-md leading-[180%]",
-  lg: "text-base form-element-height-lg leading-[220%]",
+  sm: "text-xs h-6",
+  md: "text-sm h-8 leading-[180%]",
+  lg: "text-base h-10 leading-[220%]",
 };
 
 const labelSizeClasses = {

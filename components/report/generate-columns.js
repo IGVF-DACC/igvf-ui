@@ -5,24 +5,24 @@ import {
   propertyRenderers,
   typeRenderers,
 } from "./cell-renderers";
-// lib
-import { getReportType, getVisibleReportColumnSpecs } from "../../lib/report";
 
 /**
- * Given a report type and column property, return a custom column renderer to display the contents
+ * Given report types and column property, return a custom column renderer to display the contents
  * of the cells in the column.
- * @param {string} type @type of the items in the report
+ * @param {Array<string>} types types of the items in the report
  * @param {string} property Schema property name of the column to display
  * @param {object} profile Schema profile for the report's type
  * @returns {function} React component to render the column; null if no custom renderer
  */
-function getColumnRenderer(type, property, profile) {
+function getColumnRenderer(types, property, schemaProperties) {
   // For columns with a renderer matching both the column's property and a specific report type.
-  if (
-    reportPropertyRenderers[type] &&
-    reportPropertyRenderers[type][property]
-  ) {
-    return reportPropertyRenderers[type][property];
+  const matchingType = types.find((type) => {
+    return (
+      reportPropertyRenderers[type] && reportPropertyRenderers[type][property]
+    );
+  });
+  if (matchingType) {
+    return reportPropertyRenderers[matchingType][property];
   }
 
   // For columns with a renderer matching a column's property regardless of report type. This lets
@@ -33,8 +33,11 @@ function getColumnRenderer(type, property, profile) {
 
   // No custom renderer based on property name, so detect the property type and use a generic
   // renderer appropriate for that type.
-  const detectedType = detectPropertyTypes(property, profile);
-  return typeRenderers[detectedType] || null;
+  let detectedType;
+  if (schemaProperties) {
+    detectedType = detectPropertyTypes(property, schemaProperties);
+  }
+  return typeRenderers[detectedType];
 }
 
 /**
@@ -43,25 +46,25 @@ function getColumnRenderer(type, property, profile) {
  * from the object's schema's `columns` property if the query string contains no "field="
  * parameters. The returned columnSpecs differ from normal columnSpecs in that they have a `display`
  * property that contains a React component to render the column's cells.
- * @param {object} searchResults Search results for a report
- * @param {object} profiles Schemas for all types; don't pass null
+ * @param {Array<string>} selectedTypes Types of the items in the report
+ * @param {Array<object>} visibleColumnSpecs ColumnSpecs for the columns to display in the report
+ * @param {object} schemaProperties Merged schema profile for the report's types
  * @returns {object} Sortable grid columns
  */
-export default function generateColumns(searchResults, profiles) {
-  const reportType = getReportType(searchResults);
-  const columns = getVisibleReportColumnSpecs(searchResults, profiles);
-
+export default function generateColumns(
+  selectedTypes,
+  visibleColumnSpecs,
+  schemaProperties
+) {
   // Add a custom cell renderer to each columnSpec in which one exists.
-  columns.forEach((column) => {
+  visibleColumnSpecs.forEach((column) => {
     const DisplayComponent = getColumnRenderer(
-      reportType,
+      selectedTypes,
       column.id,
-      profiles[reportType]
+      schemaProperties
     );
-    if (DisplayComponent) {
-      column.display = DisplayComponent;
-    }
+    column.display = DisplayComponent;
   });
 
-  return columns;
+  return visibleColumnSpecs;
 }

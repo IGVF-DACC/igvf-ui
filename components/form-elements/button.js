@@ -62,9 +62,9 @@ const iconSizes = {
  * Tailwind CSS classes for each of the button sizes.
  */
 const buttonSizeClasses = {
-  sm: `px-2 rounded text-xs form-element-height-sm ${iconSizes.sm}`,
-  md: `px-4 rounded text-sm form-element-height-md ${iconSizes.md}`,
-  lg: `px-6 rounded text-base form-element-height-lg ${iconSizes.lg}`,
+  sm: `px-2 rounded text-xs h-6 ${iconSizes.sm}`,
+  md: `px-4 rounded text-sm h-8 ${iconSizes.md}`,
+  lg: `px-6 rounded text-base h-10 ${iconSizes.lg}`,
 };
 
 /**

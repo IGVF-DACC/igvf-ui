@@ -2,6 +2,12 @@
 import { NextJsServerQuery } from "../globals";
 
 /**
+ * Keys that should not be included in the query string. These keys can appear spuriously from
+ * internal routing and should not get included in our igvfd queries.
+ */
+const excludedKeys = ["path"];
+
+/**
  * Build a query string from the NextJS `serverQuery` object passed in server-side requests.
  * Repeated key=value pairs in `serverQuery` get deduplicated in the generated query string.
  *
@@ -17,7 +23,10 @@ import { NextJsServerQuery } from "../globals";
 export function getQueryStringFromServerQuery(
   serverQuery: NextJsServerQuery
 ): string {
-  return Object.keys(serverQuery)
+  const queryKeys = Object.keys(serverQuery).filter(
+    (key) => !excludedKeys.includes(key)
+  );
+  return queryKeys
     .map((queryKey) => {
       const value = serverQuery[queryKey];
       if (Array.isArray(value)) {
