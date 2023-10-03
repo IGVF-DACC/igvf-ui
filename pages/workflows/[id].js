@@ -34,7 +34,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Workflow({
   workflow,
-  analysissteps,
+  analysisSteps,
   documents,
   attribution = null,
   isJson,
@@ -115,12 +115,12 @@ export default function Workflow({
                   </DataItemValue>
                 </>
               )}
-              {analysissteps.length > 0 && (
+              {analysisSteps.length > 0 && (
                 <>
                   <DataItemLabel>Analysis Steps</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {analysissteps.map((astep) => (
+                      {analysisSteps.map((astep) => (
                         <Link href={astep["@id"]} key={astep["@id"]}>
                           {astep.name}
                         </Link>
@@ -162,7 +162,7 @@ Workflow.propTypes = {
   // Attribution for this workflow
   attribution: PropTypes.object,
   // Analysis Steps to display
-  analysissteps: PropTypes.arrayOf(PropTypes.object).isRequired,
+  analysisSteps: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this workflow
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Is the format JSON?
@@ -179,7 +179,7 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = workflow.documents
       ? await requestDocuments(workflow.documents, request)
       : [];
-    const analysissteps = workflow.analysis_steps
+    const analysisSteps = workflow.analysis_steps
       ? await requestAnalysisSteps(workflow.analysis_steps, request)
       : [];
     const breadcrumbs = await buildBreadcrumbs(
@@ -193,7 +193,7 @@ export async function getServerSideProps({ params, req, query }) {
         workflow,
         award,
         lab,
-        analysissteps,
+        analysisSteps,
         documents,
         pageContext: { title: workflow.name },
         breadcrumbs,

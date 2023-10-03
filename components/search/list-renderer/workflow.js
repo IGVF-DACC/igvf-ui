@@ -23,7 +23,7 @@ export default function Workflow({ item: workflow }) {
         <SearchListItemTitle>{workflow.name}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{workflow.lab.title}</div>
-          {workflow.alternate_accessions?.length > 0 && (
+          {workflow.alternate_accessions.length > 0 && (
             <AlternateAccessions
               alternateAccessions={workflow.alternate_accessions}
             />
