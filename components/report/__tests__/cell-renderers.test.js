@@ -1559,4 +1559,141 @@ describe("Unknown-field cell-rendering tests", () => {
       `[{"assembly":"GRCh38","chromosome":"chr1","end":10,"start":1}]`
     );
   });
+
+  it("renders an unknown embedded field contained within an array of objects", () => {
+    const COLUMN_UNKNOWN = 1;
+
+    const searchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/in-vitro-systems/IGVFSM0000AAAZ/",
+          "@type": ["InVitroSystem", "Biosample", "Sample", "Item"],
+          sample_terms: [
+            {
+              term_name: "motor neuron",
+            },
+          ],
+        },
+      ],
+      "@id":
+        "/multireport/?type=InVitroSystem&sample_terms.term_name=motor+neuron&field=%40id&field=sample_terms.term_name",
+      "@type": ["Report"],
+      clear_filters: "/multireport/?type=InVitroSystem",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+        accession: {
+          title: "Accession",
+        },
+        award: {
+          title: "Award",
+        },
+        classification: {
+          title: "Classification",
+        },
+        lab: {
+          title: "Lab",
+        },
+        sample_terms: {
+          title: "Sample Terms",
+        },
+        status: {
+          title: "Status",
+        },
+      },
+      facets: [
+        {
+          appended: false,
+          field: "sample_terms.term_name",
+          open_on_load: false,
+          terms: [
+            {
+              doc_count: 3,
+              key: "motor neuron",
+            },
+            {
+              doc_count: 1,
+              key: "HUES8",
+            },
+          ],
+          title: "Sample Terms",
+          total: 4,
+          type: "terms",
+        },
+      ],
+      filters: [
+        {
+          field: "sample_terms.term_name",
+          remove:
+            "/multireport/?type=InVitroSystem&field=%40id&field=sample_terms.term_name",
+          term: "motor neuron",
+        },
+        {
+          field: "type",
+          remove:
+            "/multireport/?sample_terms.term_name=motor+neuron&field=%40id&field=sample_terms.term_name",
+          term: "InVitroSystem",
+        },
+      ],
+      notification: "Success",
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        "sample_terms.term_name": {
+          title: "sample_terms.term_name",
+        },
+      },
+      sort: {
+        date_created: {
+          order: "desc",
+          unmapped_type: "keyword",
+        },
+        label: {
+          order: "desc",
+          unmapped_type: "keyword",
+        },
+        uuid: {
+          order: "desc",
+          unmapped_type: "keyword",
+        },
+      },
+      title: "Report",
+      total: 3,
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.InVitroSystem.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    expect(cells[COLUMN_UNKNOWN]).toHaveTextContent("motor neuron");
+  });
 });

@@ -300,7 +300,14 @@ function UnknownObject({ id, source }) {
   const components = id.split(".");
   let property = source;
   for (let i = 0; i < components.length; i += 1) {
-    property = property[components[i]];
+    if (Array.isArray(property)) {
+      // Extract the specified property component from each element of the array.
+      const embeddedProperties = property.map((item) => item[components[i]]);
+      property = embeddedProperties.filter((item) => item).join(", ");
+    } else {
+      // Extract the specified property component from the embedded property.
+      property = property[components[i]];
+    }
     if (!property) {
       // A component of the dotted-notation property doesn't exist in the source object, so end
       // the loop early, and display nothing in the cell.
