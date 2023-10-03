@@ -14,11 +14,14 @@ describe("Test the <FacetTerms> component", () => {
         field="assay_slims"
         term={term}
         isChecked={false}
+        isNegative={false}
         onClick={onClick}
       />
     );
 
-    const facetTerm = screen.getByTestId(`facetterm-${term.key}`);
+    const facetTerm = screen.getByTestId(
+      "facetterm-assay_slims-massively-parallel-reporter-assay"
+    );
     expect(facetTerm).toBeInTheDocument();
     const label = within(facetTerm).getByLabelText(
       `${term.key} with ${term.doc_count} result`
@@ -32,6 +35,7 @@ describe("Test the <FacetTerms> component", () => {
 
     fireEvent.click(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onClick).toHaveBeenCalledWith("assay_slims", term, false);
   });
 
   it("renders a checked facet term with a result count greater than 1", () => {
@@ -46,11 +50,14 @@ describe("Test the <FacetTerms> component", () => {
         field="assay_slims"
         term={term}
         isChecked={true}
+        isNegative={false}
         onClick={onClick}
       />
     );
 
-    const facetTerm = screen.getByTestId(`facetterm-${term.key}`);
+    const facetTerm = screen.getByTestId(
+      "facetterm-assay_slims-massively-parallel-reporter-assay"
+    );
     expect(facetTerm).toBeInTheDocument();
     const label = within(facetTerm).getByLabelText(
       `${term.key} with ${term.doc_count} results`
@@ -64,5 +71,80 @@ describe("Test the <FacetTerms> component", () => {
 
     fireEvent.click(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders an unchecked facet term and reacts to a long click", async () => {
+    const term = {
+      doc_count: 1,
+      key: "Massively parallel reporter assay",
+    };
+    const onClick = jest.fn();
+
+    render(
+      <FacetTerm
+        field="assay_slims"
+        term={term}
+        isChecked={false}
+        isNegative={false}
+        onClick={onClick}
+      />
+    );
+
+    const facetTerm = screen.getByTestId(
+      "facetterm-assay_slims-massively-parallel-reporter-assay"
+    );
+    expect(facetTerm).toBeInTheDocument();
+    const label = within(facetTerm).getByLabelText(
+      `${term.key} with ${term.doc_count} result`
+    );
+    expect(label).toBeInTheDocument();
+    const resultCount = within(facetTerm).getByText(term.doc_count);
+    expect(resultCount).toBeInTheDocument();
+    const checkbox = within(facetTerm).getByRole("checkbox");
+    expect(checkbox).toBeInTheDocument();
+    expect(checkbox).not.toBeChecked();
+
+    // Send a mousedown event to the checkbox, wait 500ms, then send a mouseup.
+    // This should trigger a long click event.
+    fireEvent.mouseDown(checkbox);
+    await new Promise((r) => setTimeout(r, 500));
+    fireEvent.mouseUp(checkbox);
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onClick).toHaveBeenCalledWith("assay_slims", term, true);
+  });
+
+  it("renders a negative facet term", () => {
+    const term = {
+      doc_count: 1,
+      key: "Massively parallel reporter assay",
+    };
+    const onClick = jest.fn();
+
+    render(
+      <FacetTerm
+        field="assay_slims"
+        term={term}
+        isChecked={true}
+        isNegative={true}
+        onClick={onClick}
+      />
+    );
+
+    const facetTerm = screen.getByTestId(
+      "facetterm-assay_slims-massively-parallel-reporter-assay"
+    );
+    expect(facetTerm).toBeInTheDocument();
+    const label = within(facetTerm).getByLabelText(
+      `${term.key} with ${term.doc_count} result`
+    );
+    expect(label).toBeInTheDocument();
+    const resultCount = within(facetTerm).queryByText(term.doc_count);
+    expect(resultCount).toBeNull();
+    const checkbox = within(facetTerm).getByRole("checkbox");
+    expect(checkbox).toBeInTheDocument();
+    expect(checkbox).toBeChecked();
+
+    const checkboxLabel = screen.getByTestId("checkbox-label");
+    expect(checkboxLabel).toHaveClass("line-through");
   });
 });

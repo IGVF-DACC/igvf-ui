@@ -105,7 +105,10 @@ function CustomTitle({ facet }) {
 ## Implementing a Custom Terms Facet Component
 
 Custom Terms facet components receive three properties:
+
+```
 export default function StandardTerms({ searchResults, facet, updateQuery }) {
+```
 
 - **`searchResults`** — This contains the entire search-results object from the data provider.
 - **`facet`** — This contains a single facet object with a `field` value matching this component’s key in the facet registry. This is similar to the custom Title component property.
@@ -126,5 +129,33 @@ function StandardTerms({ searchResults, facet, updateQuery }) {
       * object. */
     </div>
   );
+}
+```
+
+## Implementing a Custom Tag Label Component
+
+Currently selected terms appear as links above the search results, allowing the user to remove each term from the search query string without going to the facets. You can customize the appearance of the label portion of these links through this mechanism. Custom components receive these properties:
+
+```
+export default function StandardTagLabel({ filter }) {
+
+```
+
+- **`filter`** — This holds a single object from the `filters` array of the search results relevant to the displayed tag. Each object has the following contents, in this case for the “Homo sapiens” term of the taxa facet:
+
+```
+{
+  "field": "taxa",
+  "remove": "/search/?type=Gene",
+  "term": "Homo sapiens"
+},
+```
+
+The following example shows how you can implement a custom tag label:
+
+```
+export default function StandardTagLabel({ filter }) {
+  const term = getFilterTerm(filter);
+  return <>{term}</>;
 }
 ```

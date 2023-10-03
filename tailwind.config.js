@@ -62,6 +62,9 @@ module.exports = {
           "var(--color-facet-group-button-selected-background)",
         "facet-title": "var(--color-facet-title-background)",
 
+        "facet-tag": "var(--color-facet-tag-background)",
+        "facet-tag-neg": "var(--color-facet-tag-neg-background)",
+
         "site-search-header": "var(--color-site-search-header-background)",
       },
       borderColor: {
@@ -83,6 +86,9 @@ module.exports = {
           "var(--color-button-selected-border-disabled)",
 
         "button-audit": "var(--color-button-audit-border)",
+
+        "facet-tag": "var(--color-facet-tag-border)",
+        "facet-tag-neg": "var(--color-facet-tag-neg-border)",
 
         "facet-group-button": "var(--color-facet-group-button-border)",
         "facet-group-button-selected":
@@ -108,6 +114,8 @@ module.exports = {
         "button-facet-group-selected":
           "var(--color-button-facet-group-selected-text)",
         "facet-title": "var(--color-facet-title-text)",
+
+        "facet-tag": "var(--color-facet-tag-text)",
       },
       boxShadow: {
         // Status badges

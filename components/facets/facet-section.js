@@ -1,12 +1,48 @@
 // node_modules
+import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 // components/facets
 import { FacetGroup, FacetGroupButton, getFacetsInGroup } from "./facet-groups";
 // components
 import { DataPanel } from "../../components/data-area";
+import HelpTip from "../../components/help-tip";
 // lib
 import { getVisibleFacets } from "../../lib/facets";
+
+/**
+ * Display a button that clears all the currently selected facets.
+ */
+function ClearAll({ searchResults }) {
+  const router = useRouter();
+
+  // Get all the currently selected facet fields except for the "type" facet.
+  const selectedFields = searchResults.filters
+    .map((filter) => filter.field)
+    .filter((field) => field !== "type");
+  const uniqueSelectedFields = [...new Set(selectedFields)];
+
+  function onClearAll() {
+    router.push(searchResults.clear_filters);
+  }
+
+  const isDisabled = uniqueSelectedFields.length === 0;
+  return (
+    <button
+      className="h-5 w-full grow rounded border border-button-secondary bg-button-secondary fill-button-secondary text-xs text-button-secondary disabled:border-button-secondary-disabled disabled:text-button-secondary-disabled"
+      aria-label="Clear all filters"
+      onClick={onClearAll}
+      disabled={isDisabled}
+    >
+      Clear All
+    </button>
+  );
+}
+
+ClearAll.propTypes = {
+  // Search results from the data provider
+  searchResults: PropTypes.object.isRequired,
+};
 
 /**
  * Display the facet area that contains the buttons for the facet groups. If the user clicks a
@@ -57,6 +93,11 @@ export default function FacetSection({ searchResults }) {
             })}
           </div>
         )}
+        <ClearAll searchResults={searchResults} />
+        <HelpTip>
+          Click and hold a term momentarily to select items <i>without</i> that
+          term.
+        </HelpTip>
         <FacetGroup searchResults={searchResults} group={selectedGroup} />
       </DataPanel>
     );

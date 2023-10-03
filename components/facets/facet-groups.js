@@ -139,10 +139,15 @@ export function FacetGroup({ searchResults, group = null }) {
         // Find the facet object in the search results that matches the facet field in the facet
         // group.
         return (
-          <Facet key={facet.field} facet={facet}>
+          <Facet
+            key={facet.field}
+            facet={facet}
+            searchResults={searchResults}
+            updateQuery={updateQuery}
+          >
             <Terms
-              searchResults={searchResults}
               facet={facet}
+              searchResults={searchResults}
               updateQuery={updateQuery}
             />
           </Facet>

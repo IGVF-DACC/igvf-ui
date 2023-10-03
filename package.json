@@ -15,6 +15,7 @@
     "@headlessui/react": "1.7.11",
     "@heroicons/react": "^2.0.10",
     "@tailwindcss/container-queries": "^0.1.1",
+    "@testing-library/user-event": "^14.5.1",
     "@types/node": "^20.4.2",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",

@@ -119,9 +119,10 @@ export default function ColumnSelector({
                   return (
                     <Checkbox
                       key={columnSpec.id}
+                      id={columnSpec.id}
                       name={columnSpec.id}
                       checked={isVisible}
-                      onChange={() => onChange(columnSpec.id, isVisible)}
+                      onClick={() => onChange(columnSpec.id, isVisible)}
                       className="my-0.5 block items-center leading-tight md:basis-1/2 lg:basis-1/3"
                     >
                       {columnSpec.title || columnSpec.id}
