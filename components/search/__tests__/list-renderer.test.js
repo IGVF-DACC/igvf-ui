@@ -28,6 +28,7 @@ import Source from "../list-renderer/source";
 import TechnicalSample from "../list-renderer/technical-sample";
 import Treatment from "../list-renderer/treatment";
 import User from "../list-renderer/user";
+import Workflow from "../list-renderer/workflow";
 
 /**
  * For objects in the profiles mock, the displayed item type is the human-readable title of the
@@ -2489,6 +2490,44 @@ describe("Test MultiplexedSample component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/IGVFSM0000MPXD/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Workflow component", () => {
+  it("renders a workflow item", () => {
+    const item = {
+      "@id": "/workflows/IGVFWF3254CAGQ/",
+      "@type": ["Workflow", "Item"],
+      accession: "IGVFWF3254CAGQ",
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      name: "Workflow Name",
+      summary: "IGVFWF0000WORK",
+      uuid: "b750168a-0804-4f7e-acaf-c19fc8abc6d2",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <Workflow item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Workflow/);
+    expect(uniqueId).toHaveTextContent(/IGVFWF3254CAGQ$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("Workflow Name");
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");

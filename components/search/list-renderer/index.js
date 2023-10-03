@@ -75,6 +75,7 @@ import File from "./file";
 import Source from "./source";
 import HumanGenomicVariant from "./human-genomic-variant";
 import Modification from "./modification";
+import Workflow from "./workflow";
 
 const renderers = {
   AlignmentFile: File,
@@ -116,6 +117,7 @@ const renderers = {
   Treatment,
   User,
   WholeOrganism: Biosample,
+  Workflow,
 };
 
 /**
