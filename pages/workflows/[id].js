@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -42,7 +43,11 @@ export default function Workflow({
     <>
       <Breadcrumbs />
       <EditableItem item={workflow}>
-        <PagePreamble />
+        <PagePreamble>
+          <AlternateAccessions
+            alternateAccessions={matrixFile.alternate_accessions}
+          />
+        </PagePreamble>
         <ObjectPageHeader item={workflow} isJsonFormat={isJson} />
         <JsonDisplay item={workflow} isJsonFormat={isJson}>
           <DataPanel>
