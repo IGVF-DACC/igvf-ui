@@ -45,7 +45,7 @@ export default function Workflow({
       <EditableItem item={workflow}>
         <PagePreamble>
           <AlternateAccessions
-            alternateAccessions={matrixFile.alternate_accessions}
+            alternateAccessions={workflow.alternate_accessions}
           />
         </PagePreamble>
         <ObjectPageHeader item={workflow} isJsonFormat={isJson} />
