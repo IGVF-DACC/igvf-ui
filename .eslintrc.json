@@ -50,6 +50,13 @@
     "testing-library/await-async-queries": "error",
     "testing-library/no-debugging-utils": "warn",
     "testing-library/no-dom-import": "off",
-    "@typescript-eslint/no-unused-vars": "error"
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { 
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ]
   }
 }
