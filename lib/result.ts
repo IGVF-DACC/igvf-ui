@@ -1,4 +1,3 @@
-
 /**
  * Utility function for producing an `Ok` variant of a `Result`
  * @param t The value to wrap in the `Ok`
@@ -57,7 +56,7 @@ class Ok<T, E> implements Result<T, E> {
   }
 
   map_err<F>(_f: (x: E) => F): Result<T, F> {
-      return this as unknown as Result<T, F>;
+    return this as unknown as Result<T, F>;
   }
 
   and_then<U>(f: (x: T) => Result<U, E>): Result<U, E> {
@@ -65,16 +64,18 @@ class Ok<T, E> implements Result<T, E> {
     return uR;
   }
 
-  async and_then_async<U>(f: (x: T) => Promise<Result<U, E>>): Promise<Result<U, E>> {
+  async and_then_async<U>(
+    f: (x: T) => Promise<Result<U, E>>
+  ): Promise<Result<U, E>> {
     return await f(this.wrapped);
   }
 
   optional(): T | null {
-      return this.unwrap();
+    return this.unwrap();
   }
 
   union(): T | E {
-      return this.wrapped;
+    return this.wrapped;
   }
 
   unwrap(): T {
@@ -119,20 +120,22 @@ class Err<T, E> implements Result<T, E> {
   }
 
   map_err<F>(f: (x: E) => F): Result<T, F> {
-      const e = f(this.wrapped);
-      return new Err(e);
+    const e = f(this.wrapped);
+    return new Err(e);
   }
 
   and_then<U>(_f: (x: T) => Result<U, E>): Result<U, E> {
     return this as unknown as Result<U, E>;
   }
 
-  async and_then_async<U>(_f: (x: T) => Promise<Result<U, E>>): Promise<Result<U, E>> {
+  async and_then_async<U>(
+    _f: (x: T) => Promise<Result<U, E>>
+  ): Promise<Result<U, E>> {
     return this as unknown as Result<U, E>;
   }
 
   optional(): T | null {
-      return null;
+    return null;
   }
 
   union(): T | E {
@@ -218,7 +221,6 @@ class Err<T, E> implements Result<T, E> {
  * using `optional` finally giving us the desired `DataProviderObject | null`
  */
 export interface Result<T, E> {
-
   /**
    * Converts the `Result<T, E>` type into the union type
    * of `Ok<T, E> | Err<T, E>`.
@@ -283,7 +285,7 @@ export interface Result<T, E> {
    * Like `and_then` except `f` is an async function and `and_then_async` is
    * also `async`.
    */
-  and_then_async<U>(f: (x: T) => Promise<Result<U, E>>): Promise<Result<U, E>>
+  and_then_async<U>(f: (x: T) => Promise<Result<U, E>>): Promise<Result<U, E>>;
 
   /**
    * Erases the `Result` type signature and returns the underlying `T`

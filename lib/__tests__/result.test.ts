@@ -55,7 +55,6 @@ describe("Ok Result", () => {
       return s.length >= 3 ? ok(s[2].charCodeAt(0)) : err(null);
     });
     expect(x2).toStrictEqual(err(null));
-
   });
 
   it("Ok optional", () => {
