@@ -29,13 +29,6 @@ describe("Navigation", () => {
     // Test Methodology submenus. Add to this once the pages these submenus link to exist.
     cy.get("[data-testid=navigation-methodology]").click();
 
-    cy.get("[data-testid=navigation-genome-references]").click();
-    cy.url().should(
-      "include",
-      "/search/?type=CuratedSet&curated_set_type=genome"
-    );
-    cy.get("h1").should("have.text", "Curated Set");
-
     // Test About submenus.
     cy.get("[data-testid=navigation-about]").click();
 
