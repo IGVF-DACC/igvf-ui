@@ -302,9 +302,10 @@ export async function getServerSideProps({ req, query }) {
   // Accept a single "term=" query-string parameter.
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const term = query.term;
-  const topHitsResults = (await request.getObject(`/top-hits-raw?query=${term}`)).union();
+  const topHitsResults = (
+    await request.getObject(`/top-hits-raw?query=${term}`)
+  ).union();
   if (FetchRequest.isResponseSuccess(topHitsResults)) {
-
     const itemListsByType = getTopHitsItemListsByType(topHitsResults);
     const accessoryData = await getAccessoryData(
       itemListsByType,

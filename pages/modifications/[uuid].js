@@ -132,9 +132,9 @@ Modification.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const modification = (await request.getObject(
-    `/modifications/${params.uuid}/`
-  )).union();
+  const modification = (
+    await request.getObject(`/modifications/${params.uuid}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(modification)) {
     const breadcrumbs = await buildBreadcrumbs(
       modification,
@@ -145,12 +145,16 @@ export async function getServerSideProps({ params, req, query }) {
       modification,
       req.headers.cookie
     );
-    const gene = (await request.getObject(modification.tagged_protein)).optional();
+    const gene = (
+      await request.getObject(modification.tagged_protein)
+    ).optional();
     let sources = [];
     if (modification.sources?.length > 0) {
-      sources = Ok.all(await request.getMultipleObjects(modification.sources, {
-        filterErrors: true,
-      }));
+      sources = Ok.all(
+        await request.getMultipleObjects(modification.sources, {
+          filterErrors: true,
+        })
+      );
     }
     const documents = modification.documents
       ? await requestDocuments(modification.documents, request)

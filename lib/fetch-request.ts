@@ -410,9 +410,7 @@ export default class FetchRequest {
     logRequest("getMultipleObjects", `[${paths.join(", ")}]`);
     const results =
       paths.length > 0
-        ? await Promise.all(
-            paths.map((path) => this.getObject(path))
-          )
+        ? await Promise.all(paths.map((path) => this.getObject(path)))
         : await Promise.resolve([]);
 
     return options.filterErrors
@@ -434,7 +432,7 @@ export default class FetchRequest {
    */
   async getMultipleObjectsBulk(
     paths: Array<string>,
-    fields: Array<string>,
+    fields: Array<string>
   ): Promise<Result<Array<DataProviderObject>, ErrorObject>> {
     logRequest("getMultipleObjectsBulk", `[${paths.join(", ")}]`);
 
@@ -457,9 +455,9 @@ export default class FetchRequest {
         const pathQuery = group.map((path) => `@id=${path}`).join("&");
         const query = `${fieldQuery ? `${fieldQuery}&` : ""}${pathQuery}`;
         const response = await this.getObject(
-          `/search/?${query}&limit=${group.length}`,
+          `/search/?${query}&limit=${group.length}`
         );
-        return response.map((g) => (g["@graph"] as Array<DataProviderObject>));
+        return response.map((g) => g["@graph"] as Array<DataProviderObject>);
       })
     );
 
@@ -481,7 +479,7 @@ export default class FetchRequest {
    * @returns {Promise<Result<DataProviderObject, ErrorObject>>} Collection data including all its members in @graph
    */
   public async getCollection(
-    collection: string,
+    collection: string
   ): Promise<Result<DataProviderObject, ErrorObject>> {
     return this.getObject(`/${collection}/?limit=all`);
   }

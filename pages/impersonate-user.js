@@ -138,7 +138,9 @@ export async function getServerSideProps({ req, res, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
 
   // Get session-properties to see if the user is an admin.
-  const sessionProperties = (await request.getObject("/session-properties")).union();
+  const sessionProperties = (
+    await request.getObject("/session-properties")
+  ).union();
   if (!FetchRequest.isResponseSuccess(sessionProperties)) {
     return errorObjectToProps(sessionProperties);
   }
@@ -153,9 +155,11 @@ export async function getServerSideProps({ req, res, query }) {
   // Request a specific number of users beyond all reason to ensure we get all of them. Do this
   // instead of `limit=all` because sorting only works with a specific limit.
   const filter = query.filter ? `&query=${query.filter}` : "";
-  const searchResults = (await request.getObject(
-    `/search?type=User&field=lab&field=title&field=@id&sort=title&limit=10000${filter}`
-  )).union();
+  const searchResults = (
+    await request.getObject(
+      `/search?type=User&field=lab&field=title&field=@id&sort=title&limit=10000${filter}`
+    )
+  ).union();
   if (FetchRequest.isResponseSuccess(searchResults)) {
     return {
       props: {

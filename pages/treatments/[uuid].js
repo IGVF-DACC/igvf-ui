@@ -166,7 +166,9 @@ Treatment.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const treatment = (await request.getObject(`/treatments/${params.uuid}/`)).union();
+  const treatment = (
+    await request.getObject(`/treatments/${params.uuid}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(treatment)) {
     const documents = treatment.documents
       ? await requestDocuments(treatment.documents, request)
@@ -179,9 +181,11 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (treatment.sources?.length > 0) {
       const sourcePaths = treatment.sources.map((source) => source["@id"]);
-      sources = Ok.all(await request.getMultipleObjects(sourcePaths, {
-        filterErrors: true,
-      }));
+      sources = Ok.all(
+        await request.getMultipleObjects(sourcePaths, {
+          filterErrors: true,
+        })
+      );
     }
     const attribution = await buildAttribution(treatment, req.headers.cookie);
     return {

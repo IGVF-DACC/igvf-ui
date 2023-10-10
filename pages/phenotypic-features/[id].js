@@ -80,9 +80,9 @@ PhenotypicFeature.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const phenotypicFeature = (await request.getObject(
-    `/phenotypic-features/${params.id}/`
-  )).union();
+  const phenotypicFeature = (
+    await request.getObject(`/phenotypic-features/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(phenotypicFeature)) {
     const attribution = await buildAttribution(
       phenotypicFeature,

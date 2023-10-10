@@ -132,7 +132,9 @@ WholeOrganism.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sample = (await request.getObject(`/whole-organisms/${params.id}/`)).union();
+  const sample = (
+    await request.getObject(`/whole-organisms/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(sample)) {
     let diseaseTerms = [];
     if (sample.disease_terms?.length > 0) {
@@ -150,9 +152,11 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (sample.sources?.length > 0) {
       const sourcePaths = sample.sources.map((source) => source["@id"]);
-      sources = Ok.all(await request.getMultipleObjects(sourcePaths, {
-        filterErrors: true,
-      }));
+      sources = Ok.all(
+        await request.getMultipleObjects(sourcePaths, {
+          filterErrors: true,
+        })
+      );
     }
     const pooledFrom =
       sample.pooled_from?.length > 0

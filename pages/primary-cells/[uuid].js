@@ -146,7 +146,9 @@ PrimaryCell.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const primaryCell = (await request.getObject(`/primary-cells/${params.uuid}/`)).union();
+  const primaryCell = (
+    await request.getObject(`/primary-cells/${params.uuid}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(primaryCell)) {
     let diseaseTerms = [];
     if (primaryCell.disease_terms?.length > 0) {
@@ -164,9 +166,11 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (primaryCell.sources?.length > 0) {
       const sourcePaths = primaryCell.sources.map((source) => source["@id"]);
-      sources = Ok.all(await request.getMultipleObjects(sourcePaths, {
-        filterErrors: true,
-      }));
+      sources = Ok.all(
+        await request.getMultipleObjects(sourcePaths, {
+          filterErrors: true,
+        })
+      );
     }
     const pooledFrom =
       primaryCell.pooled_from?.length > 0

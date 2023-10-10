@@ -68,12 +68,9 @@ describe("Test GET requests to the data provider", () => {
     expect(labItem.isOk()).toBeTruthy();
     expect(_.isEqual(labItem.unwrap(), mockData)).toBeTruthy();
 
-    labItem = await request.getObject(
-      "/labs/j-michael-cherry?type=Lab",
-      {
-        isDbRequest: true,
-      }
-    );
+    labItem = await request.getObject("/labs/j-michael-cherry?type=Lab", {
+      isDbRequest: true,
+    });
     expect(labItem.isOk()).toBeTruthy();
     expect(_.isEqual(labItem.unwrap(), mockData)).toBeTruthy();
 
@@ -102,22 +99,23 @@ describe("Test GET requests to the data provider", () => {
         title: "Jesse Engreitz, Stanford University",
       },
     ];
-    window.fetch = jest.fn().mockImplementation((url) =>{
-      const matchingData =
-            mockData.find((data) => url === data["@id"]) || null;
+    window.fetch = jest.fn().mockImplementation((url) => {
+      const matchingData = mockData.find((data) => url === data["@id"]) || null;
       return Promise.resolve({
         ok: matchingData !== null,
         json: () => {
           return Promise.resolve(matchingData);
         },
-      });}
-    );
+      });
+    });
 
     // Retrieve multiple lab items without filtering error results.
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
-    let labItems = await request.getMultipleObjects(
-      ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-    );
+    let labItems = await request.getMultipleObjects([
+      "/labs/j-michael-cherry/",
+      "/labs/jesse-engreitz/",
+      "/labs/unknown/",
+    ]);
     expect(labItems).toBeTruthy();
     expect(labItems).toHaveLength(3);
 
@@ -162,9 +160,9 @@ describe("Test GET requests to the data provider", () => {
     });
 
     const request = new FetchRequest();
-    const labItem = (await request.getObject(
-      "/labs/j-michael-cherry/"
-    )).union() as DataProviderObject;
+    const labItem = (
+      await request.getObject("/labs/j-michael-cherry/")
+    ).union() as DataProviderObject;
     expect(labItem).toBeTruthy();
     expect(labItem["@type"]).toContain("NetworkError");
     expect(labItem.status).toEqual("error");
@@ -182,14 +180,14 @@ describe("Test GET requests to the data provider", () => {
             text: () => "The resource could not be found.",
             statusText: "URL",
           }),
-          // {
-          //   "@type": ["HTTPNotFound", "Error"],
-          //   status: "error",
-          //   code: 404,
-          //   title: "Not Found",
-          //   description: "The resource could not be found.",
-          //   detail: "URL",
-          // }
+        // {
+        //   "@type": ["HTTPNotFound", "Error"],
+        //   status: "error",
+        //   code: 404,
+        //   title: "Not Found",
+        //   description: "The resource could not be found.",
+        //   detail: "URL",
+        // }
       })
     );
 
@@ -207,7 +205,9 @@ describe("Test GET requests to the data provider", () => {
     const request = new FetchRequest();
     const labItem = await request.getObject("/labs/j-michael-cherry/");
     expect(labItem.isErr()).toBeTruthy();
-    expect(labItem.unwrap_err().code).toBe(HTTP_STATUS_CODE.SERVICE_UNAVAILABLE);
+    expect(labItem.unwrap_err().code).toBe(
+      HTTP_STATUS_CODE.SERVICE_UNAVAILABLE
+    );
     expect(labItem.optional()).toBe(null);
   });
 });
@@ -562,7 +562,7 @@ describe("Test getMultipleObjectsBulk()", () => {
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      ["name"],
+      ["name"]
     );
     expect(labItems.isOk()).toBeTruthy();
     expect(labItems.unwrap()).toHaveLength(2);
@@ -596,7 +596,7 @@ describe("Test getMultipleObjectsBulk()", () => {
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      [],
+      []
     );
     expect(labItems.isOk()).toBeTruthy();
     expect(labItems.unwrap()).toHaveLength(2);
@@ -644,10 +644,7 @@ describe("Test getMultipleObjectsBulk()", () => {
     });
 
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
-    const labItems = await request.getMultipleObjectsBulk(
-      paths,
-      ["name"],
-    );
+    const labItems = await request.getMultipleObjectsBulk(paths, ["name"]);
     expect(labItems.isOk()).toBeTruthy();
     expect(labItems.unwrap()).toHaveLength(100);
   });
@@ -668,10 +665,12 @@ describe("Test getMultipleObjectsBulk()", () => {
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      ["name"],
+      ["name"]
     );
     expect(labItems.isErr()).toBeTruthy();
-    expect(labItems.unwrap_err().code).toBe(HTTP_STATUS_CODE.SERVICE_UNAVAILABLE);
+    expect(labItems.unwrap_err().code).toBe(
+      HTTP_STATUS_CODE.SERVICE_UNAVAILABLE
+    );
     expect(labItems.unwrap_err()["@type"]).toContain("NetworkError");
   });
 });

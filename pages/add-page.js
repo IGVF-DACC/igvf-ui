@@ -41,9 +41,15 @@ AddPage.propTypes = {
 
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const awards = (await request.getCollection("awards")).map((a) => a["@graph"]).optional();
-  const labs = (await request.getCollection("labs")).map((l) => l["@graph"]).optional();
-  const pages = (await request.getCollection("pages")).map((p) => p["@graph"]).optional();
+  const awards = (await request.getCollection("awards"))
+    .map((a) => a["@graph"])
+    .optional();
+  const labs = (await request.getCollection("labs"))
+    .map((l) => l["@graph"])
+    .optional();
+  const pages = (await request.getCollection("pages"))
+    .map((p) => p["@graph"])
+    .optional();
   return {
     props: {
       awards,

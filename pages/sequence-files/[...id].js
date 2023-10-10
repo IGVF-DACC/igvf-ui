@@ -196,7 +196,9 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sequenceFile = (await request.getObject(`/sequence-files/${params.id}/`)).union();
+  const sequenceFile = (
+    await request.getObject(`/sequence-files/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(sequenceFile)) {
     const fileSet = (await request.getObject(sequenceFile.file_set)).optional();
     const documents = sequenceFile.documents

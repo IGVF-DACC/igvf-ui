@@ -20,7 +20,9 @@ describe("Ok Result", () => {
   });
 
   it("Ok map_async", async () => {
-    expect(await ok("map").map_async(async (s) => s.length )).toStrictEqual(ok(3));
+    expect(await ok("map").map_async(async (s) => s.length)).toStrictEqual(
+      ok(3)
+    );
   });
 
   it("Ok map_err", () => {
@@ -109,7 +111,9 @@ describe("Err Result", () => {
   });
 
   it("Err map_async", async () => {
-    expect(await err<string, string>("error").map_async(async (s) => s.length )).toStrictEqual(err("error"));
+    expect(
+      await err<string, string>("error").map_async(async (s) => s.length)
+    ).toStrictEqual(err("error"));
   });
 
   it("Err map_err", () => {

@@ -163,7 +163,9 @@ CuratedSet.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const curatedSet = (await request.getObject(`/curated-sets/${params.id}/`)).union();
+  const curatedSet = (
+    await request.getObject(`/curated-sets/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(curatedSet)) {
     const documents = curatedSet.documents
       ? await requestDocuments(curatedSet.documents, request)

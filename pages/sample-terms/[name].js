@@ -90,9 +90,9 @@ SampleOntologyTerm.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sampleOntologyTerm = (await request.getObject(
-    `/sample-terms//${params.name}/`
-  )).union();
+  const sampleOntologyTerm = (
+    await request.getObject(`/sample-terms//${params.name}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(sampleOntologyTerm)) {
     const breadcrumbs = await buildBreadcrumbs(
       sampleOntologyTerm,

@@ -94,7 +94,9 @@ TechnicalSample.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sample = (await request.getObject(`/technical-samples/${params.uuid}/`)).union();
+  const sample = (
+    await request.getObject(`/technical-samples/${params.uuid}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(sample)) {
     const documents = sample.documents
       ? await requestDocuments(sample.documents, request)

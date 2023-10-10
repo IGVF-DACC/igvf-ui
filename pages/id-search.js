@@ -36,7 +36,9 @@ export async function getServerSideProps({ req, query }) {
     // the form {data provider url}/{identifier} and `frame=object` to reduce the amount of data it
     // returns. If an object with that identifier exists, the data provider redirects to that
     // object. Use that object's path to redirect the browser to that object's page.
-    const serverObject = (await request.getObject(`/${query.id}/?frame=object`)).union();
+    const serverObject = (
+      await request.getObject(`/${query.id}/?frame=object`)
+    ).union();
     if (FetchRequest.isResponseSuccess(serverObject)) {
       return {
         redirect: {

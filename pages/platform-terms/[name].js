@@ -43,9 +43,9 @@ PlatformOntologyTerm.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const platformOntologyTerm = (await request.getObject(
-    `/platform-terms/${params.name}/`
-  )).union();
+  const platformOntologyTerm = (
+    await request.getObject(`/platform-terms/${params.name}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(platformOntologyTerm)) {
     const breadcrumbs = await buildBreadcrumbs(
       platformOntologyTerm,
