@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import Collections from "./collections";
 import {
   DataArea,
   DataAreaTitle,
@@ -21,6 +22,7 @@ export default function Attribution({ attribution = null }) {
       <>
         <DataAreaTitle>Attribution</DataAreaTitle>
         <DataPanel>
+          <Collections collections={attribution.collections} />
           <DataArea>
             {attribution.award && (
               <>
@@ -63,14 +65,6 @@ export default function Attribution({ attribution = null }) {
                   <Link href={attribution.lab["@id"]}>
                     {attribution.lab.title}
                   </Link>
-                </DataItemValue>
-              </>
-            )}
-            {attribution.collections?.length > 0 && (
-              <>
-                <DataItemLabel>Collections</DataItemLabel>
-                <DataItemValue>
-                  {attribution.collections.join(", ")}
                 </DataItemValue>
               </>
             )}
