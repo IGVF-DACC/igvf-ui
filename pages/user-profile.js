@@ -14,8 +14,8 @@ import PagePreamble from "../components/page-preamble";
 import SessionContext from "../components/session-context";
 import Spinner from "../components/spinner";
 // lib
-import FetchRequest from "../lib/fetch-request";
 import errorObjectToProps from "../lib/errors";
+import FetchRequest from "../lib/fetch-request";
 
 export default function UserProfile({ sessionUser = null }) {
   // Keeps a current copy of the access keys for handling adds/deletes w/o relying on indexing.

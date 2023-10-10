@@ -24,10 +24,10 @@ import {
 import SessionContext from "../components/session-context";
 // lib
 import { UC } from "../lib/constants";
+import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { toShishkebabCase } from "../lib/general";
 import QueryString from "../lib/query-string";
-import errorObjectToProps from "../lib/errors";
 
 function getTypeTitle(searchResult, collectionTitles) {
   return collectionTitles?.[searchResult.key] || searchResult.key;
