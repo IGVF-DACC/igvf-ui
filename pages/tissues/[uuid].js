@@ -35,6 +35,7 @@ import {
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { Ok } from "../../lib/result";
 
 export default function Tissue({
   tissue,
@@ -174,7 +175,7 @@ Tissue.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const tissue = await request.getObject(`/tissues/${params.uuid}/`);
+  const tissue = (await request.getObject(`/tissues/${params.uuid}/`)).union();
   if (FetchRequest.isResponseSuccess(tissue)) {
     let diseaseTerms = [];
     if (tissue.disease_terms?.length > 0) {
@@ -190,16 +191,16 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (tissue.sources?.length > 0) {
       const sourcePaths = tissue.sources.map((source) => source["@id"]);
-      sources = await request.getMultipleObjects(sourcePaths, null, {
+      sources = await Ok.all(request.getMultipleObjects(sourcePaths, {
         filterErrors: true,
-      });
+      }));
     }
     const pooledFrom =
       tissue.pooled_from?.length > 0
         ? await requestBiosamples(tissue.pooled_from, request)
         : [];
     const partOf = tissue.part_of
-      ? await request.getObject(tissue.part_of, null)
+      ? (await request.getObject(tissue.part_of)).optional()
       : null;
     const biomarkers =
       tissue.biomarkers?.length > 0

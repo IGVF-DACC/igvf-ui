@@ -301,9 +301,9 @@ ConstructLibrarySet.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const constructLibrarySet = await request.getObject(
+  const constructLibrarySet = (await request.getObject(
     `/construct-library-sets/${params.id}/`
-  );
+  )).union();
   if (FetchRequest.isResponseSuccess(constructLibrarySet)) {
     const documents = constructLibrarySet.documents
       ? await requestDocuments(constructLibrarySet.documents, request)

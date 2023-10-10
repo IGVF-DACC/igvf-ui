@@ -35,6 +35,10 @@ export function urlWithoutParams(url: string): string {
   return url.split("?")[0];
 }
 
+export function itemId(item: string | { "@id": string }): string {
+  return typeof item === "string" ? item : item["@id"];
+}
+
 export type JSON =
   | null
   | boolean

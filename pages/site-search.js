@@ -27,6 +27,7 @@ import { UC } from "../lib/constants";
 import FetchRequest from "../lib/fetch-request";
 import { toShishkebabCase } from "../lib/general";
 import QueryString from "../lib/query-string";
+import errorObjectToProps from "../lib/errors";
 
 function getTypeTitle(searchResult, collectionTitles) {
   return collectionTitles?.[searchResult.key] || searchResult.key;
@@ -301,18 +302,22 @@ export async function getServerSideProps({ req, query }) {
   // Accept a single "term=" query-string parameter.
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const term = query.term;
-  const topHitsResults = await request.getObject(`/top-hits-raw?query=${term}`);
-  const itemListsByType = getTopHitsItemListsByType(topHitsResults);
-  const accessoryData = await getAccessoryData(
-    itemListsByType,
-    req.headers.cookie
-  );
-  return {
-    props: {
-      results: topHitsResults.aggregations.types.types.buckets,
-      accessoryData,
-      term,
-      pageContext: { title: `Items with ${UC.ldquo}${term}${UC.rdquo}` },
-    },
-  };
+  const topHitsResults = (await request.getObject(`/top-hits-raw?query=${term}`)).union();
+  if (FetchRequest.isResponseSuccess(topHitsResults)) {
+
+    const itemListsByType = getTopHitsItemListsByType(topHitsResults);
+    const accessoryData = await getAccessoryData(
+      itemListsByType,
+      req.headers.cookie
+    );
+    return {
+      props: {
+        results: topHitsResults.aggregations.types.types.buckets,
+        accessoryData,
+        term,
+        pageContext: { title: `Items with ${UC.ldquo}${term}${UC.rdquo}` },
+      },
+    };
+  }
+  return errorObjectToProps(topHitsResults);
 }

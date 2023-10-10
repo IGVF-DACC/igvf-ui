@@ -114,7 +114,7 @@ Gene.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const gene = await request.getObject(`/genes/${params.id}/`);
+  const gene = (await request.getObject(`/genes/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(gene)) {
     const breadcrumbs = await buildBreadcrumbs(
       gene,

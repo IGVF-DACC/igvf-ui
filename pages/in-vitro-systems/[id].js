@@ -36,6 +36,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
+import { Ok } from "../../lib/result";
 
 export default function InVitroSystem({
   inVitroSystem,
@@ -193,9 +194,9 @@ InVitroSystem.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const inVitroSystem = await request.getObject(
+  const inVitroSystem = (await request.getObject(
     `/in-vitro-systems/${params.id}/`
-  );
+  )).union();
   if (FetchRequest.isResponseSuccess(inVitroSystem)) {
     let diseaseTerms = [];
     if (inVitroSystem.disease_terms) {
@@ -213,19 +214,19 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (inVitroSystem.sources?.length > 0) {
       const sourcePaths = inVitroSystem.sources.map((source) => source["@id"]);
-      sources = await request.getMultipleObjects(sourcePaths, null, {
+      sources = Ok.all(await request.getMultipleObjects(sourcePaths, {
         filterErrors: true,
-      });
+      }));
     }
     const pooledFrom =
       inVitroSystem.pooled_from?.length > 0
         ? await requestBiosamples(inVitroSystem.pooled_from, request)
         : [];
     const partOf = inVitroSystem.part_of
-      ? await request.getObject(inVitroSystem.part_of, null)
+      ? (await request.getObject(inVitroSystem.part_of)).optional()
       : null;
     const targetedSampleTerm = inVitroSystem.targeted_sample_term
-      ? await request.getObject(inVitroSystem.targeted_sample_term, null)
+      ? (await request.getObject(inVitroSystem.targeted_sample_term)).optional()
       : null;
     const biomarkers =
       inVitroSystem.biomarkers?.length > 0

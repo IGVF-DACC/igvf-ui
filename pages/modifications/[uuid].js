@@ -24,6 +24,7 @@ import { requestDocuments } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { Ok } from "../../lib/result";
 
 export default function Modification({
   modification,
@@ -131,9 +132,9 @@ Modification.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const modification = await request.getObject(
+  const modification = (await request.getObject(
     `/modifications/${params.uuid}/`
-  );
+  )).union();
   if (FetchRequest.isResponseSuccess(modification)) {
     const breadcrumbs = await buildBreadcrumbs(
       modification,
@@ -144,12 +145,12 @@ export async function getServerSideProps({ params, req, query }) {
       modification,
       req.headers.cookie
     );
-    const gene = await request.getObject(modification.tagged_protein, null);
+    const gene = (await request.getObject(modification.tagged_protein)).optional();
     let sources = [];
     if (modification.sources?.length > 0) {
-      sources = await request.getMultipleObjects(modification.sources, null, {
+      sources = Ok.all(await request.getMultipleObjects(modification.sources, {
         filterErrors: true,
-      });
+      }));
     }
     const documents = modification.documents
       ? await requestDocuments(modification.documents, request)

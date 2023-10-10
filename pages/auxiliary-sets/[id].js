@@ -217,7 +217,7 @@ AuxiliarySet.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const auxiliarySet = await request.getObject(`/auxiliary-sets/${params.id}/`);
+  const auxiliarySet = (await request.getObject(`/auxiliary-sets/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(auxiliarySet)) {
     const documents = auxiliarySet.documents
       ? await requestDocuments(auxiliarySet.documents, request)
@@ -231,10 +231,9 @@ export async function getServerSideProps({ params, req, query }) {
 
     const libraryConstructionPlatform =
       auxiliarySet.library_construction_platform
-        ? await request.getObject(
+        ? (await request.getObject(
             auxiliarySet.library_construction_platform,
-            null
-          )
+          )).optional()
         : null;
 
     const constructLibraries = auxiliarySet.construct_libraries

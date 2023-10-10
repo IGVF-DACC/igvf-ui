@@ -230,10 +230,10 @@ HelpPage.propTypes = {
 
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const pages = await request.getCollection("pages");
+  const pages = (await request.getCollection("pages")).union();
   if (FetchRequest.isResponseSuccess(pages)) {
     // Get the server version number.
-    const root = await request.getObject("/", null);
+    const root = (await request.getObject("/", null)).optional();
     const serverVersion = root?.app_version || "";
 
     // Get all non-deleted help pages and their subpages.

@@ -134,7 +134,7 @@ export default function EditPage({ item }) {
   useEffect(() => {
     const getRequest = new FetchRequest({ session });
     getRequest.getObject(`${path}?frame=edit`).then((value) => {
-      setText(JSON.stringify(sortedJson(value), null, 4));
+      setText(JSON.stringify(sortedJson(value.union()), null, 4));
     });
   }, [path, session]);
 

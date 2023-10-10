@@ -82,9 +82,9 @@ User.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const user = await request.getObject(`/users/${params.uuid}/`);
+  const user = (await request.getObject(`/users/${params.uuid}/`)).union();
   if (FetchRequest.isResponseSuccess(user)) {
-    const lab = await request.getObject(user.lab, null);
+    const lab = (await request.getObject(user.lab)).optional();
     const breadcrumbs = await buildBreadcrumbs(
       user,
       user.title,

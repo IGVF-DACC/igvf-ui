@@ -94,7 +94,7 @@ TechnicalSample.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sample = await request.getObject(`/technical-samples/${params.uuid}/`);
+  const sample = (await request.getObject(`/technical-samples/${params.uuid}/`)).union();
   if (FetchRequest.isResponseSuccess(sample)) {
     const documents = sample.documents
       ? await requestDocuments(sample.documents, request)
@@ -102,7 +102,7 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (sample.sources?.length > 0) {
       const sourcePaths = sample.sources.map((source) => source["@id"]);
-      sources = await request.getMultipleObjects(sourcePaths, null, {
+      sources = await request.getMultipleObjects(sourcePaths, {
         filterErrors: true,
       });
     }

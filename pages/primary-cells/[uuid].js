@@ -35,6 +35,7 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
+import { Ok } from "../../lib/result";
 
 export default function PrimaryCell({
   primaryCell,
@@ -145,7 +146,7 @@ PrimaryCell.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const primaryCell = await request.getObject(`/primary-cells/${params.uuid}/`);
+  const primaryCell = (await request.getObject(`/primary-cells/${params.uuid}/`)).union();
   if (FetchRequest.isResponseSuccess(primaryCell)) {
     let diseaseTerms = [];
     if (primaryCell.disease_terms?.length > 0) {
@@ -163,16 +164,16 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (primaryCell.sources?.length > 0) {
       const sourcePaths = primaryCell.sources.map((source) => source["@id"]);
-      sources = await request.getMultipleObjects(sourcePaths, null, {
+      sources = Ok.all(await request.getMultipleObjects(sourcePaths, {
         filterErrors: true,
-      });
+      }));
     }
     const pooledFrom =
       primaryCell.pooled_from?.length > 0
         ? await requestBiosamples(primaryCell.pooled_from, request)
         : [];
     const partOf = primaryCell.part_of
-      ? await request.getObject(primaryCell.part_of, null)
+      ? (await request.getObject(primaryCell.part_of)).optional()
       : null;
     const biomarkers =
       primaryCell.biomarkers?.length > 0

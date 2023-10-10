@@ -102,7 +102,7 @@ export async function getServerSideProps({ req, query }) {
 
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const queryParams = getQueryStringFromServerQuery(query);
-  const searchResults = await request.getObject(`/search/?${queryParams}`);
+  const searchResults = (await request.getObject(`/search/?${queryParams}`)).union();
 
   if (FetchRequest.isResponseSuccess(searchResults)) {
     const itemListsByType = getItemListsByType(searchResults);

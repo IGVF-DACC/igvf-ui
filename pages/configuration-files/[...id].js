@@ -138,11 +138,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const configurationFile = await request.getObject(
+  const configurationFile = (await request.getObject(
     `/configuration-files/${params.id}/`
-  );
+  )).union();
   if (FetchRequest.isResponseSuccess(configurationFile)) {
-    const fileSet = await request.getObject(configurationFile.file_set, null);
+    const fileSet = (await request.getObject(configurationFile.file_set)).optional();
     const seqspecOf = configurationFile.seqspec_of
       ? await requestFiles(configurationFile.seqspec_of, request)
       : [];

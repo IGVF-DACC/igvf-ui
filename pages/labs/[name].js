@@ -94,14 +94,14 @@ Lab.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const lab = await request.getObject(`/labs/${params.name}/`);
+  const lab = (await request.getObject(`/labs/${params.name}/`)).union();
   if (FetchRequest.isResponseSuccess(lab)) {
     let awards = [];
     if (lab.awards?.length > 0) {
       const awardPaths = lab.awards.map((award) => award["@id"]);
       awards = await requestAwards(awardPaths, request);
     }
-    const pi = await request.getObject(lab.pi, null);
+    const pi = (await request.getObject(lab.pi)).optional();
     const breadcrumbs = await buildBreadcrumbs(
       lab,
       lab.title,

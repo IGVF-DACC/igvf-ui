@@ -35,11 +35,24 @@ export function fromOption<T>(x: T | null | undefined): Result<T, null> {
  * succesful result of an operation that could fail. `Ok` wraps
  * the given underlying value.
  */
-class Ok<T, E> implements Result<T, E> {
+export class Ok<T, E> implements Result<T, E> {
   wrapped: T;
 
   constructor(data: T) {
     this.wrapped = data;
+  }
+
+  /**
+   * Filters a given array of `Result`s to include only
+   * the `Ok` values and then unwraps them all leaving
+   * an `Array` of the underlying `T`
+   * @param vs Array of `Result` to be filtered of `Err`s
+   * @returns an Array of T
+   */
+  static all<T, E>(vs: Array<Result<T, E>>): Array<T> {
+    // After we've filtered out all the `Err` values we
+    // can safely unwrap the remaining items in the list
+    return vs.filter((r) => r.isOk()).map((r) => r.unwrap());
   }
 
   isErr(): boolean {
@@ -53,6 +66,10 @@ class Ok<T, E> implements Result<T, E> {
   map<U>(f: (x: T) => U): Result<U, E> {
     const u = f(this.wrapped);
     return new Ok(u);
+  }
+
+  async map_async<U>(f: (x: T) => Promise<U>): Promise<Result<U, E>> {
+    return ok(await f(this.wrapped));
   }
 
   map_err<F>(_f: (x: E) => F): Result<T, F> {
@@ -100,11 +117,24 @@ class Ok<T, E> implements Result<T, E> {
  * failed result of an operation that could fail. `Err` wraps
  * the given underlying value.
  */
-class Err<T, E> implements Result<T, E> {
+export class Err<T, E> implements Result<T, E> {
   wrapped: E;
 
   constructor(err: E) {
     this.wrapped = err;
+  }
+
+  /**
+   * Filters a given array of `Result`s to include only
+   * the `Err` values and then unwraps them all leaving
+   * an `Array` of the underlying `E`
+   * @param vs Array of `Result` to be filtered of `Ok`s
+   * @returns an Array of E
+   */
+  static all<T, E>(vs: Array<Result<T, E>>): Array<E> {
+    // After we've filtered out all the `Ok` values we
+    // can safely unwrap_err the remaining items in the list
+    return vs.filter((r) => r.isErr()).map((r) => r.unwrap_err());
   }
 
   isErr(): boolean {
@@ -116,6 +146,10 @@ class Err<T, E> implements Result<T, E> {
   }
 
   map<U>(_f: (x: T) => U): Result<U, E> {
+    return this as unknown as Result<U, E>;
+  }
+
+  async map_async<U>(_f: (x: T) => Promise<U>): Promise<Result<U, E>> {
     return this as unknown as Result<U, E>;
   }
 
@@ -254,6 +288,15 @@ export interface Result<T, E> {
    * not calling `f`.
    */
   map<U>(f: (x: T) => U): Result<U, E>;
+
+  /**
+   * Like `map` except `f` is an async function.
+   * @param f an async function that on `Ok` will be called on the underlying T
+   * @returns a `Promise` of `Ok` of `U` if this `Result` is `Ok`, otherwise
+   * passes along the `Err`.
+   */
+  map_async<U>(f: (x: T) => Promise<U>): Promise<Result<U, E>>;
+
   /**
    * Like `map` except the provided `f` acts on the `Err` variant, bringing
    * the error from `E` to `F`. If the `Result` is an `Ok` then it's forwarded without
@@ -295,10 +338,8 @@ export interface Result<T, E> {
   optional(): T | null;
 
   /**
-   * Erases the `Result` type signature and returns the underlying `T`
-   * if this result is `Ok` and returns the underlying `E`
-   * if this result is an `Err. Essentially converts the type
-   * to a union type of `T` with `E` losing the Result types.
+   * Erases the `Result` type and returns the underlying `T` if `Ok`
+   * or `E` if `Err`, whichever is present.
    */
   union(): T | E;
 

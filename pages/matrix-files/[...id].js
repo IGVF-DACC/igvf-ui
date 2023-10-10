@@ -154,9 +154,9 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const matrixFile = await request.getObject(`/matrix-files/${params.id}/`);
+  const matrixFile = (await request.getObject(`/matrix-files/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(matrixFile)) {
-    const fileSet = await request.getObject(matrixFile.file_set, null);
+    const fileSet = (await request.getObject(matrixFile.file_set)).optional();
     const documents = matrixFile.documents
       ? await requestDocuments(matrixFile.documents, request)
       : [];

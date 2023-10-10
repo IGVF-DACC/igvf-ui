@@ -33,6 +33,7 @@ import {
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { Ok } from "../../lib/result";
 
 export default function MultiplexedSample({
   multiplexedSample,
@@ -130,9 +131,9 @@ MultiplexedSample.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const multiplexedSample = await request.getObject(
+  const multiplexedSample = (await request.getObject(
     `/multiplexed-samples/${params.uuid}/`
-  );
+  )).union();
   if (FetchRequest.isResponseSuccess(multiplexedSample)) {
     const documents = multiplexedSample.documents
       ? await requestDocuments(multiplexedSample.documents, request)
@@ -147,9 +148,9 @@ export async function getServerSideProps({ params, req, query }) {
       const sourcePaths = multiplexedSample.sources.map(
         (source) => source["@id"]
       );
-      sources = await request.getMultipleObjects(sourcePaths, null, {
+      sources = Ok.all(await request.getMultipleObjects(sourcePaths, {
         filterErrors: true,
-      });
+      }));
     }
     const biomarkers =
       multiplexedSample.biomarkers?.length > 0

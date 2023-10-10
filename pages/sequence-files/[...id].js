@@ -196,9 +196,9 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const sequenceFile = await request.getObject(`/sequence-files/${params.id}/`);
+  const sequenceFile = (await request.getObject(`/sequence-files/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(sequenceFile)) {
-    const fileSet = await request.getObject(sequenceFile.file_set, null);
+    const fileSet = (await request.getObject(sequenceFile.file_set)).optional();
     const documents = sequenceFile.documents
       ? await requestDocuments(sequenceFile.documents, request)
       : [];
@@ -217,10 +217,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestDocuments(sequenceFile.file_format_specifications, request)
       : [];
     const seqSpec = sequenceFile.seqspec
-      ? await request.getObject(sequenceFile.seqspec, null)
+      ? (await request.getObject(sequenceFile.seqspec)).optional()
       : null;
     const sequencingPlatform = sequenceFile.sequencing_platform
-      ? await request.getObject(sequenceFile.sequencing_platform, null)
+      ? (await request.getObject(sequenceFile.sequencing_platform)).optional()
       : null;
     const breadcrumbs = await buildBreadcrumbs(
       sequenceFile,

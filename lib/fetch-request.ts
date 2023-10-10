@@ -41,6 +41,7 @@ import type {
   FetchMethod,
   FetchRequestInitializer,
 } from "./fetch-request.d";
+import { ok, err, Result, Ok } from "./result";
 
 const FETCH_METHOD = {
   GET: "GET",
@@ -332,11 +333,10 @@ export default class FetchRequest {
    * @returns {Promise<DataProviderObject|ErrorObject|T>} Requested object, error object, or
    *  `defaultErrorValue` if given and the request fails
    */
-  public async getObject<T>(
+  public async getObject(
     path: string,
-    defaultErrorValue?: T,
     options = { isDbRequest: false }
-  ): Promise<DataProviderObject | ErrorObject | T> {
+  ): Promise<Result<DataProviderObject, ErrorObject>> {
     const headerOptions = this.buildOptions("GET", {
       accept: PAYLOAD_FORMAT.JSON,
     });
@@ -346,16 +346,23 @@ export default class FetchRequest {
         this.pathUrl(path, options.isDbRequest),
         headerOptions
       );
-      if (!response.ok && defaultErrorValue !== undefined) {
-        return defaultErrorValue;
+      if (!response.ok) {
+        console.log("SVRREQ ", response);
+        return err({
+          "@type": ["Error", "BackendError"],
+          code: response.status,
+          isError: true,
+          description: await response.text(),
+          detail: response.statusText,
+          status: "error",
+          title: "Backend Error",
+        });
       }
       const results = (await response.json()) as DataProviderObject;
-      return results;
+      return ok(results);
     } catch (error) {
       console.log(error);
-      return defaultErrorValue === undefined
-        ? NETWORK_ERROR_RESPONSE
-        : defaultErrorValue;
+      return err(NETWORK_ERROR_RESPONSE);
     }
   }
 
@@ -389,29 +396,27 @@ export default class FetchRequest {
 
   /**
    * Request a number of objects with the given paths, returning each path's resource in an array
-   * in the same order as their paths in the given array. If you provide `defaultErrorValue`, any
-   * paths that result in a request error places this default value in that array entry,
-   * otherwise those entries are filled with the error object.
+   * in the same order as their paths in the given array. Any paths that result in an error
+   * get placed that array entry.
    * @param {array} paths Array of paths to requested resources
-   * @param {T} defaultErrorValue Value to return if the request fails; error object if not given
    * @param {object} options? Options for these requests
    * @param {boolean} options.filterErrors True to filter errored requests from the returned array
    * @returns {Promise<Array<DataProviderObject|ErrorObject|T>>} Array of requested objects
    */
-  public async getMultipleObjects<T>(
+  public async getMultipleObjects(
     paths: Array<string>,
-    defaultErrorValue: T,
     options = { filterErrors: false }
-  ): Promise<Array<DataProviderObject | ErrorObject | T>> {
+  ): Promise<Array<Result<DataProviderObject, ErrorObject>>> {
     logRequest("getMultipleObjects", `[${paths.join(", ")}]`);
     const results =
       paths.length > 0
         ? await Promise.all(
-            paths.map((path) => this.getObject(path, defaultErrorValue))
+            paths.map((path) => this.getObject(path))
           )
         : await Promise.resolve([]);
+
     return options.filterErrors
-      ? results.filter((result) => result !== defaultErrorValue)
+      ? results.filter((result) => result.isOk())
       : results;
   }
 
@@ -425,72 +430,60 @@ export default class FetchRequest {
    * objects, or a single error value.
    * @param {Array<string>} paths Path of each object to request
    * @param {Array<string>} fields Properties of each object to retrieve
-   * @param {<T>} defaultErrorValue? Value to return if the request fails; error object if not given
-   * @returns {Promise<Array<DataProviderObject> | T>} Array of requested objects
+   * @returns {Promise<Result<Array<DataProviderObject>, ErrorObject>>} Array of requested objects
    */
-  async getMultipleObjectsBulk<T>(
+  async getMultipleObjectsBulk(
     paths: Array<string>,
     fields: Array<string>,
-    defaultErrorValue?: T
-  ): Promise<Array<DataProviderObject> | ErrorObject | T> {
+  ): Promise<Result<Array<DataProviderObject>, ErrorObject>> {
     logRequest("getMultipleObjectsBulk", `[${paths.join(", ")}]`);
 
-    if (paths.length > 0) {
-      // Generate the query string for the needed fields of each object.
-      const fieldQuery = fields.map((field) => `field=${field}`).join("&");
-
-      // Break the paths into groups of MAX_PATH_GROUP_SIZE, each group mapping to a data-provider
-      // request. This reduces the lengths of the query strings to fit within the data provider's
-      // limits.
-      const pathGroups = this.pathsIntoPathGroups(paths, fieldQuery.length);
-
-      // For each group of paths, request the objects as search results. Send these requests in
-      // parallel.
-      const results = await Promise.all(
-        pathGroups.map(async (group) => {
-          const pathQuery = group.map((path) => `@id=${path}`).join("&");
-          const query = `${fieldQuery ? `${fieldQuery}&` : ""}${pathQuery}`;
-          const response = await this.getObject(
-            `/search/?${query}&limit=${group.length}`,
-            null
-          );
-          if ((response as DataProviderObject)?.["@graph"]) {
-            // Add the results to the array of results.
-            return (response as DataProviderObject)["@graph"];
-          }
-
-          // The request failed. Add a null to the array of results so that we know to return an
-          // error as the method result.
-          return null;
-        })
-      );
-
-      // Flatten the results array of arrays into a single array of strings and nulls.
-      const flattenedResults =
-        results.flat() as Array<DataProviderObject | null>;
-      if (flattenedResults.includes(null)) {
-        // At least one request failed. Return an error.
-        return defaultErrorValue === undefined
-          ? NETWORK_ERROR_RESPONSE
-          : defaultErrorValue;
-      }
-      return flattenedResults as Array<DataProviderObject>;
+    if (paths.length === 0) {
+      return ok([]);
     }
-    return [];
+
+    // Generate the query string for the needed fields of each object.
+    const fieldQuery = fields.map((field) => `field=${field}`).join("&");
+
+    // Break the paths into groups of MAX_PATH_GROUP_SIZE, each group mapping to a data-provider
+    // request. This reduces the lengths of the query strings to fit within the data provider's
+    // limits.
+    const pathGroups = this.pathsIntoPathGroups(paths, fieldQuery.length);
+
+    // For each group of paths, request the objects as search results. Send these requests in
+    // parallel.
+    const results = await Promise.all(
+      pathGroups.map(async (group) => {
+        const pathQuery = group.map((path) => `@id=${path}`).join("&");
+        const query = `${fieldQuery ? `${fieldQuery}&` : ""}${pathQuery}`;
+        const response = await this.getObject(
+          `/search/?${query}&limit=${group.length}`,
+        );
+        return response.map((g) => (g["@graph"] as Array<DataProviderObject>));
+      })
+    );
+
+    const firstError = results.find((r) => r.isErr());
+    if (firstError !== undefined) {
+      // If we found an error, then bail, and we know it's not undefined
+      return firstError;
+    }
+
+    // We know that all the Results in the results list are Ok
+    // so we can safely turn them all into Array<DataProviderObject>
+    // Return the the flattened list wrapped in an Ok
+    return ok(Ok.all(results).flat());
   }
 
   /**
    * Request the collection (e.g. "users") with the given path.
    * @param {string} collection Name of the collection to request
-   * @param {T} defaultErrorValue? Value to return if the request fails; error object if not
-   *   given
-   * @returns {Promise<DataProviderObject | T>} Collection data including all its members in @graph
+   * @returns {Promise<Result<DataProviderObject, ErrorObject>>} Collection data including all its members in @graph
    */
-  public async getCollection<T>(
+  public async getCollection(
     collection: string,
-    defaultErrorValue?: T
-  ): Promise<DataProviderObject | ErrorObject | T> {
-    return this.getObject(`/${collection}/?limit=all`, defaultErrorValue);
+  ): Promise<Result<DataProviderObject, ErrorObject>> {
+    return this.getObject(`/${collection}/?limit=all`);
   }
 
   /**

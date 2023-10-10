@@ -28,9 +28,9 @@ export default function SampleCount({
     if (sampleType) {
       const request = new FetchRequest({ session });
       request.getCollection(sampleType).then((samples) => {
-        if (FetchRequest.isResponseSuccess(samples)) {
-          setSamples(samples["@graph"]);
-        }
+        samples.map((s) => {
+          setSamples(s["@graph"]);
+        });
       });
     }
   }, [sampleType, session]);

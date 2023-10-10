@@ -114,7 +114,7 @@ Publication.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const publication = await request.getObject(`/publications/${params.id}/`);
+  const publication = (await request.getObject(`/publications/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(publication)) {
     const breadcrumbs = await buildBreadcrumbs(
       publication,
