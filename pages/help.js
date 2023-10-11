@@ -233,7 +233,7 @@ export async function getServerSideProps({ req }) {
   const pages = (await request.getCollection("pages")).union();
   if (FetchRequest.isResponseSuccess(pages)) {
     // Get the server version number.
-    const root = (await request.getObject("/", null)).optional();
+    const root = (await request.getObject("/")).optional();
     const serverVersion = root?.app_version || "";
 
     // Get all non-deleted help pages and their subpages.
