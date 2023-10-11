@@ -174,24 +174,14 @@ describe("Test GET requests to the data provider", () => {
     window.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         ok: false,
-        json: () =>
-          Promise.resolve({
-            status: 404,
-            text: () => "The resource could not be found.",
-            statusText: "URL",
-          }),
-        // {
-        //   "@type": ["HTTPNotFound", "Error"],
-        //   status: "error",
-        //   code: 404,
-        //   title: "Not Found",
-        //   description: "The resource could not be found.",
-        //   detail: "URL",
-        // }
+        status: 404,
+        statusText: "URL",
+        text: () => Promise.resolve("The resource could not be found."),
       })
     );
 
     const request = new FetchRequest();
+    console.log("We want 404");
     const labItem = await request.getObject("/labs/j-michael-cherry/");
     expect(labItem.isErr()).toBeTruthy();
     expect(labItem.unwrap_err().code).toEqual(404);

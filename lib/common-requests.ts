@@ -7,7 +7,10 @@ import FetchRequest from "./fetch-request";
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The analysis step objects requested
  */
-export async function requestAnalysisSteps(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
+export async function requestAnalysisSteps(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
   return (await request.getMultipleObjectsBulk(paths, ["name"])).unwrap_or([]);
 }
 
@@ -17,8 +20,13 @@ export async function requestAnalysisSteps(paths: Array<string>, request: FetchR
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The award objects requested
  */
-export async function requestAwards(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["name", "url"])).unwrap_or([]);
+export async function requestAwards(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, ["name", "url"])
+  ).unwrap_or([]);
 }
 
 /**
@@ -27,8 +35,19 @@ export async function requestAwards(paths: Array<string>, request: FetchRequest)
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The biomarker objects requested
  */
-export async function requestBiomarkers(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["aliases", "classification", "name", "qualification", "synonyms"])).unwrap_or([]);
+export async function requestBiomarkers(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "aliases",
+      "classification",
+      "name",
+      "qualification",
+      "synonyms",
+    ])
+  ).unwrap_or([]);
 }
 
 /**
@@ -37,8 +56,13 @@ export async function requestBiomarkers(paths: Array<string>, request: FetchRequ
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The biosample objects requested
  */
-export async function requestBiosamples(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["accession"])).unwrap_or([]);
+export async function requestBiosamples(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (await request.getMultipleObjectsBulk(paths, ["accession"])).unwrap_or(
+    []
+  );
 }
 
 /**
@@ -47,10 +71,12 @@ export async function requestBiosamples(paths: Array<string>, request: FetchRequ
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The file objects requested
  */
-export async function requestFiles(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(
-    paths,
-    [
+export async function requestFiles(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
       "accession",
       "content_type",
       "file_format",
@@ -66,8 +92,8 @@ export async function requestFiles(paths: Array<string>, request: FetchRequest):
       "sequencing_run",
       "status",
       "upload_status",
-    ],
-  )).unwrap_or([]);
+    ])
+  ).unwrap_or([]);
 }
 
 /**
@@ -76,11 +102,18 @@ export async function requestFiles(paths: Array<string>, request: FetchRequest):
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The file-set objects requested
  */
-export async function requestFileSets(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(
-    paths,
-    ["accession", "aliases", "lab.title", "status"],
-  )).unwrap_or([]);
+export async function requestFileSets(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "accession",
+      "aliases",
+      "lab.title",
+      "status",
+    ])
+  ).unwrap_or([]);
 }
 
 /**
@@ -89,11 +122,18 @@ export async function requestFileSets(paths: Array<string>, request: FetchReques
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The document objects requested
  */
-export async function requestDocuments(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(
-    paths,
-    ["attachment", "description", "document_type", "uuid"],
-  )).unwrap_or([]);
+export async function requestDocuments(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "attachment",
+      "description",
+      "document_type",
+      "uuid",
+    ])
+  ).unwrap_or([]);
 }
 
 /**
@@ -102,8 +142,13 @@ export async function requestDocuments(paths: Array<string>, request: FetchReque
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The donor objects requested
  */
-export async function requestDonors(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["accession", "uuid"])).unwrap_or([]);
+export async function requestDonors(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, ["accession", "uuid"])
+  ).unwrap_or([]);
 }
 
 /**
@@ -112,8 +157,13 @@ export async function requestDonors(paths: Array<string>, request: FetchRequest)
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The gene objects requested
  */
-export async function requestGenes(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["geneid"])).unwrap_or([]);
+export async function requestGenes(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (await request.getMultipleObjectsBulk(paths, ["geneid"])).unwrap_or(
+    []
+  );
 }
 
 /**
@@ -122,8 +172,13 @@ export async function requestGenes(paths: Array<string>, request: FetchRequest):
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The ontology term objects requested
  */
-export async function requestOntologyTerms(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["term_id", "term_name"])).unwrap_or([]);
+export async function requestOntologyTerms(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, ["term_id", "term_name"])
+  ).unwrap_or([]);
 }
 
 /**
@@ -133,11 +188,18 @@ export async function requestOntologyTerms(paths: Array<string>, request: FetchR
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The phenotypic features objects requested
  */
-export async function requestPhenotypicFeatures(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(
-    paths,
-    ["feature", "observation_date", "quantity", "quantity_units"],
-  )).unwrap_or([]);
+export async function requestPhenotypicFeatures(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "feature",
+      "observation_date",
+      "quantity",
+      "quantity_units",
+    ])
+  ).unwrap_or([]);
 }
 
 /**
@@ -147,8 +209,13 @@ export async function requestPhenotypicFeatures(paths: Array<string>, request: F
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The software version objects requested
  */
-export async function requestSoftwareVersions(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["version", "downloaded_url"])).unwrap_or([]);
+export async function requestSoftwareVersions(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, ["version", "downloaded_url"])
+  ).unwrap_or([]);
 }
 
 /**
@@ -157,7 +224,10 @@ export async function requestSoftwareVersions(paths: Array<string>, request: Fet
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The user objects requested
  */
-export async function requestUsers(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
+export async function requestUsers(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
   return (await request.getMultipleObjectsBulk(paths, ["title"])).unwrap_or([]);
 }
 
@@ -167,6 +237,11 @@ export async function requestUsers(paths: Array<string>, request: FetchRequest):
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The award objects requested
  */
-export async function requestSources(paths: Array<string>, request: FetchRequest): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["name", "url", "lab.title"])).unwrap_or([]);
+export async function requestSources(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, ["name", "url", "lab.title"])
+  ).unwrap_or([]);
 }

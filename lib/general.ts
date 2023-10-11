@@ -35,6 +35,13 @@ export function urlWithoutParams(url: string): string {
   return url.split("?")[0];
 }
 
+/**
+ * Get the item `@id` from either just the ID string itself or
+ * from an object with `@id` as a key.
+ * @param {string} item The item, either string or object with `@id`
+ * @returns The `@id` value if item is an object or just the passed
+ * in string if a string
+ */
 export function itemId(item: string | { "@id": string }): string {
   return typeof item === "string" ? item : item["@id"];
 }
