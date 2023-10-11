@@ -64,6 +64,7 @@ import Model from "./model";
 import OntologyTerm from "./ontology-term";
 import Page from "./page";
 import PhenotypicFeature from "./phenotypic-feature";
+import PredictionSet from "./prediction-set";
 import Publication from "./publication";
 import RodentDonor from "./rodent-donor";
 import Software from "./software";
@@ -102,6 +103,7 @@ const renderers = {
   PhenotypeTerm: OntologyTerm,
   PhenotypicFeature,
   PlatformTerm: OntologyTerm,
+  PredictionSet,
   PrimaryCell: Biosample,
   Publication,
   ReferenceFile: File,

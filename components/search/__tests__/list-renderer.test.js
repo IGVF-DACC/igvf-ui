@@ -20,6 +20,7 @@ import MultiplexedSample from "../list-renderer/multiplexed-sample";
 import OntologyTerm from "../list-renderer/ontology-term";
 import Page from "../list-renderer/page";
 import PhenotypicFeature from "../list-renderer/phenotypic-feature";
+import PredictionSet from "../list-renderer/prediction-set";
 import Publication from "../list-renderer/publication";
 import RodentDonor from "../list-renderer/rodent-donor";
 import Software from "../list-renderer/software";
@@ -2528,6 +2529,63 @@ describe("Test Workflow component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent("Workflow Name");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Prediction Set component", () => {
+  it("renders a prediction set item", () => {
+    const item = {
+      "@id": "/prediction-sets/IGVFDS8323PSET/",
+      "@type": ["PredictionSet", "FileSet", "Item"],
+      accession: "IGVFDS8323PSET",
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      file_set_type: "functional effect",
+      summary: "IGVFDS8323PSET",
+      samples: [
+        {
+          "@id": "/tissues/IGVFSM0001DDDD/",
+          accession: "IGVFSM0001DDDD",
+          aliases: ["igvf:treated_tissue"],
+          donors: [
+            {
+              "@id": "/rodent-donors/IGVFDO6583PZIO/",
+              accession: "IGVFDO6583PZIO",
+              aliases: ["igvf:alias_rodent_donor_2"],
+              summary: "IGVFDO6583PZIO",
+              taxa: "Mus musculus",
+            },
+          ],
+          sample_terms: ["/sample-terms/UBERON_0002048/"],
+          summary: "lung tissue, Mus musculus (10-20 weeks)",
+          taxa: "Mus musculus",
+        },
+      ],
+      uuid: "a053168a-82aa-4f7e-10e3-c19fa3cd13f6",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PredictionSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Prediction Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSET/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("functional effect prediction");
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
