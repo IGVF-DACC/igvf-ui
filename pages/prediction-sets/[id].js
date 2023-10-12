@@ -14,7 +14,7 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import FileSetTable from "../../components/file-set-table";
+import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -26,12 +26,9 @@ import {
   requestDocuments,
   requestDonors,
   requestFiles,
-  requestFileSets,
-  requestOntologyTerms,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function PredictionSet({
@@ -42,7 +39,6 @@ export default function PredictionSet({
   attribution = null,
   isJson,
 }) {
-
   const hasDonors = predictionSet.donors?.length > 0;
   const hasSamples = predictionSet.samples?.length > 0;
 
@@ -97,12 +93,12 @@ export default function PredictionSet({
                   </DataItemValue>
                 </>
               )}
-              {(!hasDonors && !hasSamples) && 
+              {!hasDonors && !hasSamples && (
                 <>
                   <DataItemLabel>Biological Context</DataItemLabel>
                   <DataItemValue>cell-type agnostic prediction</DataItemValue>
                 </>
-              }
+              )}
               {predictionSet.description && (
                 <>
                   <DataItemLabel>Description</DataItemLabel>
@@ -150,7 +146,9 @@ PredictionSet.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const predictionSet = await request.getObject(`/prediction-sets/${params.id}/`);
+  const predictionSet = await request.getObject(
+    `/prediction-sets/${params.id}/`
+  );
   if (FetchRequest.isResponseSuccess(predictionSet)) {
     const documents = predictionSet.documents
       ? await requestDocuments(predictionSet.documents, request)

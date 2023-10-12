@@ -2,7 +2,6 @@
 import PropTypes from "prop-types";
 // components/search/list-renderer
 import AlternateAccessions from "../../alternate-accessions";
-import SeparatedList from "../../separated-list";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -21,7 +20,9 @@ export default function PredictionSet({ item: predictionSet }) {
           <SearchListItemType item={predictionSet} />
           {predictionSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{predictionSet.file_set_type} prediction</SearchListItemTitle>
+        <SearchListItemTitle>
+          {predictionSet.file_set_type} prediction
+        </SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{predictionSet.lab.title}</div>
           {predictionSet.alternate_accessions?.length > 0 && (
