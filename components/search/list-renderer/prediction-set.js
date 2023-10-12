@@ -1,7 +1,8 @@
 // node_modules
 import PropTypes from "prop-types";
-// components/search/list-renderer
+// components
 import AlternateAccessions from "../../alternate-accessions";
+// components/search/list-renderer
 import {
   SearchListItemContent,
   SearchListItemMain,
