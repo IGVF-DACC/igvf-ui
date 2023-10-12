@@ -4576,6 +4576,225 @@ const profiles = {
     changelog: "/profiles/changelogs/phenotypic_feature.md",
     "@type": ["JSONSchema"],
   },
+
+  PredictionSet: {
+    title: "Prediction Set",
+    description:
+      "A file set of computational predictions. Prediction sets contain results of analyses to predict functions or traits of genomic features.",
+    $id: "/profiles/prediction_set.json",
+
+    identifyingProperties: [
+      "uuid",
+      "accession",
+      "alternate_accessions",
+      "aliases",
+    ],
+
+    properties: {
+      publication_identifiers: {
+        title: "Publication Identifiers",
+        description:
+          "The publication identifiers that provide more information about the object.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Publication Identifier",
+          description:
+            "A publication identifier that provides more information about the object.",
+          type: "string",
+          pattern:
+            "^(PMID:[0-9]+|doi:10\\.[0-9]{4}[\\d\\s\\S:\\.\\/]+|PMCID:PMC[0-9]+|[0-9]{4}\\.[0-9]{4})$",
+        },
+      },
+      lab: {
+        title: "Lab",
+        description: "Lab associated with the submission.",
+        comment: "Required. See lab.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Lab",
+        linkSubmitsFor: true,
+      },
+      award: {
+        title: "Award",
+        description: "Grant associated with the submission.",
+        comment: "Required. See award.json for list of available identifiers.",
+        type: "string",
+        linkTo: "Award",
+      },
+      accession: {
+        title: "Accession",
+        description:
+          "A unique identifier to be used to reference the object prefixed with IGVF.",
+        comment: "Do not submit. The accession is assigned by the server.",
+        type: "string",
+        format: "accession",
+        serverDefault: "accession",
+        permission: "import_items",
+        accessionType: "DS",
+        readonly: true,
+      },
+      alternate_accessions: {
+        title: "Alternate Accessions",
+        description:
+          "Accessions previously assigned to objects that have been merged with this object.",
+        comment:
+          "Do not submit. Only admins are allowed to set or update this value.",
+        type: "array",
+        minItems: 1,
+        permission: "import_items",
+        items: {
+          title: "Alternate Accession",
+          description:
+            "An accession previously assigned to an object that has been merged with this object.",
+          comment:
+            "Only accessions of objects that have status equal replaced will work here.",
+          type: "string",
+          format: "accession",
+        },
+        readonly: true,
+      },
+      status: {
+        title: "Status",
+        type: "string",
+        permission: "import_items",
+        default: "in progress",
+        description: "The status of the metadata object.",
+        comment:
+          "Do not submit.  This is set by admins along the process of metadata submission.",
+        enum: [
+          "in progress",
+          "released",
+          "deleted",
+          "replaced",
+          "revoked",
+          "archived",
+        ],
+        readonly: true,
+      },
+      uuid: {
+        title: "UUID",
+        description: "The unique identifier associated with every object.",
+        comment: "Do not submit. The uuid is set by the server.",
+        type: "string",
+        format: "uuid",
+        serverDefault: "uuid4",
+        permission: "import_items",
+        requestMethod: "POST",
+        readonly: true,
+      },
+      aliases: {
+        title: "Aliases",
+        description: "Lab specific identifiers to reference an object.",
+        comment:
+          "The purpose of this field is to provide a link into the lab LIMS and to facilitate shared objects.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          uniqueKey: "alias",
+          title: "Lab Alias",
+          description: "A lab specific identifier to reference an object.",
+          comment:
+            "Current convention is colon separated lab name and lab identifier. (e.g. john-doe:42).",
+          type: "string",
+          pattern:
+            "^(?:j-michael-cherry|ali-mortazavi|barbara-wold|lior-pachter|grant-macgregor|kim-green|mark-craven|qiongshi-lu|audrey-gasch|robert-steiner|jesse-engreitz|thomas-quertermous|anshul-kundaje|michael-bassik|will-greenleaf|marlene-rabinovitch|lars-steinmetz|jay-shendure|nadav-ahituv|martin-kircher|danwei-huangfu|michael-beer|anna-katerina-hadjantonakis|christina-leslie|alexander-rudensky|laura-donlin|hannah-carter|bing-ren|kyle-gaulton|maike-sander|charles-gersbach|gregory-crawford|tim-reddy|ansuman-satpathy|andrew-allen|gary-hon|nikhil-munshi|w-lee-kraus|lea-starita|doug-fowler|luca-pinello|guillaume-lettre|benhur-lee|daniel-bauer|richard-sherwood|benjamin-kleinstiver|marc-vidal|david-hill|frederick-roth|mikko-taipale|anne-carpenter|hyejung-won|karen-mohlke|michael-love|jason-buenrostro|bradley-bernstein|hilary-finucane|chongyuan-luo|noah-zaitlen|kathrin-plath|roy-wollman|jason-ernst|zhiping-weng|manuel-garber|xihong-lin|alan-boyle|ryan-mills|jie-liu|maureen-sartor|joshua-welch|stephen-montgomery|alexis-battle|livnat-jerby|jonathan-pritchard|predrag-radivojac|sean-mooney|harinder-singh|nidhi-sahni|jishnu-das|hao-wu|sreeram-kannan|hongjun-song|alkes-price|soumya-raychaudhuri|shamil-sunyaev|len-pennacchio|axel-visel|jill-moore|ting-wang|feng-yue|igvf|igvf-dacc):[a-zA-Z\\d_$.+!*,()'-]+(?:\\s[a-zA-Z\\d_$.+!*,()'-]+)*$",
+        },
+      },
+      submitter_comment: {
+        title: "Submitter Comment",
+        description:
+          "Additional information specified by the submitter to be displayed as a comment on the portal.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+        formInput: "textarea",
+      },
+      description: {
+        title: "Description",
+        description: "A plain text description of the object.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$|^$",
+        formInput: "textarea",
+      },
+      dbxrefs: {
+        "@type": "@id",
+        "rdfs:subPropertyOf": "rdfs:seeAlso",
+        title: "External Resources",
+        description:
+          "Identifiers from external resources that may have 1-to-1 or 1-to-many relationships with IGVF file sets.",
+        comment:
+          "This property is overwritten by the subclasses to define specific enum values.",
+        type: "array",
+        uniqueItems: true,
+        minItems: 1,
+        items: {
+          title: "External identifier",
+          description:
+            "Identifier from an external resource that may have 1-to-1 or 1-to-many relationships with IGVF file sets.",
+          type: "string",
+          pattern: "^GEO:GSE\\d+$",
+        },
+      },
+      samples: {
+        title: "Samples",
+        description: "The sample(s) associated with this file set.",
+        type: "array",
+        uniqueItems: true,
+        minItems: 1,
+        items: {
+          title: "Sample",
+          description: "A sample associated with this file set.",
+          comment: "See sample.json for available identifiers.",
+          type: "string",
+          linkTo: "Sample",
+        },
+      },
+      donors: {
+        title: "Donors",
+        description: "The donor(s) associated with this file set.",
+        type: "array",
+        uniqueItems: true,
+        minItems: 1,
+        items: {
+          title: "Donor",
+          description: "A donor associated with this file set.",
+          comment: "See donor.json for available identifiers.",
+          type: "string",
+          linkTo: "Donor",
+        },
+      },
+      file_set_type: {
+        title: "File Set Type",
+        description: "The category that best describes this prediction set.",
+        type: "string",
+        enum: [
+          "pathogenicity",
+          "functional effect",
+          "protein stability",
+          "activity level",
+        ],
+      },
+      "@id": {
+        title: "ID",
+        type: "string",
+        notSubmittable: true,
+      },
+      "@type": {
+        title: "Type",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        notSubmittable: true,
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
+        notSubmittable: true,
+      },
+    },
+  },
 };
 
 export default profiles;
