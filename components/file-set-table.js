@@ -26,6 +26,7 @@ const fileSetColumns = [
   },
   {
     id: "status",
+    title: "Status",
     display: ({ source }) => {
       return <Status status={source.status} />;
     },

@@ -11,6 +11,7 @@ import { PropTypes } from "prop-types";
 const collectionMap = {
   ClinGen: "clingen.svg",
   ENCODE: "encode.svg",
+  GREGoR: "gregor.svg",
   "IGVF_catalog_beta_v0.1": "igvf-catalog.svg",
   MaveDB: "mave-db.svg",
 };
@@ -36,7 +37,7 @@ const COLLECTION_HEIGHT = 70;
  * Display the collection logos for an array of collection strings. If the collection string doesn't exist
  * in the collection map, it displays as text.
  */
-export default function Collections({ collections = null }) {
+export default function Collections({ collections = null, itemType }) {
   if (collections?.length > 0) {
     // Make sure we show only unique collections, and sort them alphabetically.
     const uniqueCollections = [...new Set(collections)];
@@ -51,7 +52,7 @@ export default function Collections({ collections = null }) {
           return (
             <Link
               key={collection}
-              href={`/site-search/?term=${collection}`}
+              href={`/search/?type=${itemType}&collections=${collection}&status=released`}
               className="block overflow-hidden border border-data-border bg-white no-underline dark:bg-gray-200"
             >
               {imageFile ? (
@@ -79,4 +80,6 @@ export default function Collections({ collections = null }) {
 Collections.propTypes = {
   // Array of collection strings
   collections: PropTypes.arrayOf(PropTypes.string),
+  // Item type, used for the search link
+  itemType: PropTypes.string.isRequired,
 };
