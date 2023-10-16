@@ -52,7 +52,7 @@ export default function Collections({ collections = null, itemType }) {
           return (
             <Link
               key={collection}
-              href={`/search/?type=${itemType}&collections=${collection}&status=released`}
+              href={`/search/?type=${itemType}&collections=${collection}`}
               className="block overflow-hidden border border-data-border bg-white no-underline dark:bg-gray-200"
             >
               {imageFile ? (

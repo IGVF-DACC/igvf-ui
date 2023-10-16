@@ -17,20 +17,20 @@ describe("Test the Collections component", () => {
     expect(image).toHaveAttribute("alt", "ENCODE collection");
     expect(collections[0]).toHaveAttribute(
       "href",
-      "/search?type=InVitroSystem&collections=ENCODE&status=released"
+      "/search?type=InVitroSystem&collections=ENCODE"
     );
 
     image = within(collections[1]).getByRole("img");
     expect(image).toHaveAttribute("alt", "MaveDB collection");
     expect(collections[1]).toHaveAttribute(
       "href",
-      "/search?type=InVitroSystem&collections=MaveDB&status=released"
+      "/search?type=InVitroSystem&collections=MaveDB"
     );
 
     expect(collections[2]).toHaveTextContent("Undefined");
     expect(collections[2]).toHaveAttribute(
       "href",
-      "/search?type=InVitroSystem&collections=Undefined&status=released"
+      "/search?type=InVitroSystem&collections=Undefined"
     );
   });
 
