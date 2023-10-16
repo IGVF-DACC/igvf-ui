@@ -70,32 +70,6 @@ export default function SequenceFile({
           <DataAreaTitle>Sequencing Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              {sequenceFile.flowcell_id && (
-                <>
-                  <DataItemLabel>Flowcell ID</DataItemLabel>
-                  <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
-                </>
-              )}
-              {sequenceFile.illumina_read_type && (
-                <>
-                  <DataItemLabel>Illumina Read Type</DataItemLabel>
-                  <DataItemValue>
-                    {sequenceFile.illumina_read_type}
-                  </DataItemValue>
-                </>
-              )}
-              {truthyOrZero(sequenceFile.read_count) && (
-                <>
-                  <DataItemLabel>Read Count</DataItemLabel>
-                  <DataItemValue>{sequenceFile.read_count}</DataItemValue>
-                </>
-              )}
-              {truthyOrZero(sequenceFile.mean_read_length) && (
-                <>
-                  <DataItemLabel>Read Length</DataItemLabel>
-                  <DataItemValue>{sequenceFile.mean_read_length}</DataItemValue>
-                </>
-              )}
               {sequencingPlatform && (
                 <>
                   <DataItemLabel>Sequencing Platform</DataItemLabel>
@@ -108,10 +82,42 @@ export default function SequenceFile({
               )}
               <DataItemLabel>Sequencing Run</DataItemLabel>
               <DataItemValue>{sequenceFile.sequencing_run}</DataItemValue>
+              {sequenceFile.flowcell_id && (
+                <>
+                  <DataItemLabel>Flowcell ID</DataItemLabel>
+                  <DataItemValue>{sequenceFile.flowcell_id}</DataItemValue>
+                </>
+              )}
               {sequenceFile.lane && (
                 <>
                   <DataItemLabel>Lane</DataItemLabel>
                   <DataItemValue>{sequenceFile.lane}</DataItemValue>
+                </>
+              )}
+              {sequenceFile.illumina_read_type && (
+                <>
+                  <DataItemLabel>Illumina Read Type</DataItemLabel>
+                  <DataItemValue>
+                    {sequenceFile.illumina_read_type}
+                  </DataItemValue>
+                </>
+              )}
+              {sequenceFile.index && (
+                <>
+                  <DataItemLabel>Index</DataItemLabel>
+                  <DataItemValue>{sequenceFile.index}</DataItemValue>
+                </>
+              )}
+              {truthyOrZero(sequenceFile.mean_read_length) && (
+                <>
+                  <DataItemLabel>Read Length</DataItemLabel>
+                  <DataItemValue>{sequenceFile.mean_read_length}</DataItemValue>
+                </>
+              )}
+              {truthyOrZero(sequenceFile.read_count) && (
+                <>
+                  <DataItemLabel>Read Count</DataItemLabel>
+                  <DataItemValue>{sequenceFile.read_count}</DataItemValue>
                 </>
               )}
               {seqSpec && (
