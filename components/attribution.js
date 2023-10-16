@@ -22,7 +22,10 @@ export default function Attribution({ attribution = null }) {
       <>
         <DataAreaTitle>Attribution</DataAreaTitle>
         <DataPanel>
-          <Collections collections={attribution.collections} />
+          <Collections
+            collections={attribution.collections}
+            itemType={attribution.type}
+          />
           <DataArea>
             {attribution.award && (
               <>

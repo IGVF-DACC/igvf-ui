@@ -17,6 +17,7 @@ import { nullOnError } from "./general";
  * exist, in which case the returned Attribution would be null.
  */
 export interface Attributable {
+  "@type": string[];
   lab?: string | { "@id": string };
   award?: string | { "@id": string };
   collections?: [] | null;
@@ -29,11 +30,12 @@ export interface Attributable {
  * to be rendered.
  */
 export interface Attribution {
+  type: string;
   lab: DataProviderObject | null;
   award: DataProviderObject | null;
   contactPi: DataProviderObject | null;
   pis: object[] | null;
-  collections: [] | null;
+  collections: string[] | null;
 }
 
 /**
@@ -82,6 +84,7 @@ export default async function buildAttribution(
     obj.collections && obj.collections.length > 0 ? obj.collections : null;
 
   return {
+    type: obj["@type"][0],
     lab,
     award,
     contactPi,
