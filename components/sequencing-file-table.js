@@ -68,6 +68,10 @@ const filesColumns = [
     title: "Lane",
   },
   {
+    id: "index",
+    title: "Index",
+  },
+  {
     id: "file_size",
     title: "File Size",
   },
