@@ -39,8 +39,6 @@ export default function PredictionSet({
   attribution = null,
   isJson,
 }) {
-  const hasDonors = predictionSet.donors?.length > 0;
-  const hasSamples = predictionSet.samples?.length > 0;
 
   return (
     <>
@@ -91,12 +89,6 @@ export default function PredictionSet({
                       ))}
                     </SeparatedList>
                   </DataItemValue>
-                </>
-              )}
-              {!hasDonors && !hasSamples && (
-                <>
-                  <DataItemLabel>Biological Context</DataItemLabel>
-                  <DataItemValue>cell-type agnostic prediction</DataItemValue>
                 </>
               )}
               {predictionSet.description && (
