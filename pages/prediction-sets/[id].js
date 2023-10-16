@@ -1,16 +1,21 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { Fragment } from "react";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import ChromosomeLocations from "../../components/chromosome-locations";
 import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
+  DataItemValueCollapseControl,
+  DataItemValueControlLabel,
   DataPanel,
+  useDataAreaCollapser,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
@@ -39,6 +44,8 @@ export default function PredictionSet({
   attribution = null,
   isJson,
 }) {
+  const genesCollapser = useDataAreaCollapser(predictionSet.targeted_genes);
+  const lociCollapser = useDataAreaCollapser(predictionSet.targeted_loci);
 
   return (
     <>
@@ -99,6 +106,47 @@ export default function PredictionSet({
               )}
               <DataItemLabel>Summary</DataItemLabel>
               <DataItemValue>{predictionSet.summary}</DataItemValue>
+              {genesCollapser.displayedData.length > 0 && (
+                <>
+                  <DataItemLabel>Targeted Genes</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {genesCollapser.displayedData.map((gene, index) => (
+                        <Fragment key={gene}>
+                          <Link href={gene}>{gene}</Link>
+                          {index ===
+                            genesCollapser.displayedData.length - 1 && (
+                            <DataItemValueCollapseControl
+                              key="more-control"
+                              collapser={genesCollapser}
+                              className="ml-1 inline-block"
+                            >
+                              <DataItemValueControlLabel
+                                key="more-control"
+                                collapser={genesCollapser}
+                                className="ml-1 inline-block"
+                              />
+                            </DataItemValueCollapseControl>
+                          )}
+                        </Fragment>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              {lociCollapser.displayedData.length > 0 && (
+                <>
+                  <DataItemLabel>Targeted Loci</DataItemLabel>
+                  <DataItemValue>
+                    <ChromosomeLocations
+                      locations={lociCollapser.displayedData}
+                    />
+                    <DataItemValueCollapseControl collapser={lociCollapser}>
+                      <DataItemValueControlLabel collapser={lociCollapser} />
+                    </DataItemValueCollapseControl>
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
