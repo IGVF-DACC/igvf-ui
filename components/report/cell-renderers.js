@@ -11,10 +11,12 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import ChromosomeLocations from "../chromosome-locations";
+import { FileDownload } from "../file-download";
 import SeparatedList from "../separated-list";
 import UnspecifiedProperty from "../unspecified-property";
 // lib
 import { attachmentToServerHref } from "../../lib/attachment";
+import { API_URL } from "../../lib/constants";
 
 /**
  * Display the @id of an object as a link to the object's page. This works much like the `Path`
@@ -176,6 +178,26 @@ function Generic({ id, source }) {
 Generic.propTypes = {
   // Property name of column being rendered
   id: PropTypes.string.isRequired,
+  // Object displayed in the current row
+  source: PropTypes.object.isRequired,
+};
+
+/**
+ * Display a file-download button along with the full download path to the file.
+ */
+function Href({ source }) {
+  // Wrap in a div because the cell has a flex class we don't want to inherit.
+  return (
+    <div>
+      <div className="flex">
+        <FileDownload file={source} className="shrink" />
+      </div>
+      <div>{`${API_URL}${source.href}`}</div>
+    </div>
+  );
+}
+
+Href.propTypes = {
   // Object displayed in the current row
   source: PropTypes.object.isRequired,
 };
@@ -398,6 +420,7 @@ export const propertyRenderers = {
   "@id": AtId,
   attachment: Attachment,
   external_resources: ExternalResources,
+  href: Href,
 };
 
 export const typeRenderers = {

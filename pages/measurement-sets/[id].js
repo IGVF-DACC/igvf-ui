@@ -258,25 +258,25 @@ export default function MeasurementSet({
             </>
           )}
           {filesWithReadType.length > 0 && (
-            <>
-              <DataAreaTitle>Sequencing Results (Illumina)</DataAreaTitle>
-              <SequencingFileTable
-                files={filesWithReadType}
-                seqspecFiles={seqspecFiles}
-                sequencingPlatforms={sequencingPlatforms}
-                hasReadType
-              />
-            </>
+            <SequencingFileTable
+              files={filesWithReadType}
+              title="Sequencing Results (Illumina)"
+              isIlluminaReadType={true}
+              itemPath={measurementSet["@id"]}
+              seqspecFiles={seqspecFiles}
+              sequencingPlatforms={sequencingPlatforms}
+              hasReadType
+            />
           )}
           {filesWithoutReadType.length > 0 && (
-            <>
-              <DataAreaTitle>Sequencing Results</DataAreaTitle>
-              <SequencingFileTable
-                files={filesWithoutReadType}
-                seqspecFiles={seqspecFiles}
-                sequencingPlatforms={sequencingPlatforms}
-              />
-            </>
+            <SequencingFileTable
+              files={filesWithoutReadType}
+              title="Sequencing Results"
+              isIlluminaReadType={false}
+              itemPath={measurementSet["@id"]}
+              seqspecFiles={seqspecFiles}
+              sequencingPlatforms={sequencingPlatforms}
+            />
           )}
           {documents.length > 0 && (
             <>
