@@ -85,6 +85,7 @@ export async function requestFiles(
       "flowcell_id",
       "href",
       "illumina_read_type",
+      "index",
       "lab.title",
       "lane",
       "seqspec",
