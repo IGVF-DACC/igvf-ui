@@ -54,8 +54,10 @@ export default function CuratedSet({
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Curated Set Type</DataItemLabel>
-              <DataItemValue>{curatedSet.curated_set_type}</DataItemValue>
+              <DataItemLabel>Summary</DataItemLabel>
+              <DataItemValue>{curatedSet.summary}</DataItemValue>
+              <DataItemLabel>File Set Type</DataItemLabel>
+              <DataItemValue>{curatedSet.file_set_type}</DataItemValue>
               {curatedSet.taxa && (
                 <>
                   <DataItemLabel>Taxa</DataItemLabel>
@@ -103,6 +105,20 @@ export default function CuratedSet({
                         </Link>
                       ))}
                     </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              {curatedSet.assemblies?.length > 0 && (
+                <>
+                  <DataItemLabel>Assemblies</DataItemLabel>
+                  <DataItemValue>{curatedSet.assemblies}</DataItemValue>
+                </>
+              )}
+              {curatedSet.transcriptome_annotations?.length > 0 && (
+                <>
+                  <DataItemLabel>Transcriptome Annotations</DataItemLabel>
+                  <DataItemValue>
+                    {curatedSet.transcriptome_annotations}
                   </DataItemValue>
                 </>
               )}
