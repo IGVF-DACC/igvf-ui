@@ -60,7 +60,7 @@ import HumanDonor from "./human-donor";
 import Lab from "./lab";
 import MeasurementSet from "./measurement-set";
 import MultiplexedSample from "./multiplexed-sample";
-import Model from "./model";
+import ModelSet from "./model-set";
 import OntologyTerm from "./ontology-term";
 import Page from "./page";
 import PhenotypicFeature from "./phenotypic-feature";
@@ -96,7 +96,7 @@ const renderers = {
   Lab,
   MatrixFile: File,
   MeasurementSet,
-  Model,
+  ModelSet,
   Modification,
   MultiplexedSample,
   Page,
