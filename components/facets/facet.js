@@ -6,7 +6,7 @@ import facetRegistry from "./facet-registry";
 /**
  * Displays a single facet with its title and terms.
  */
-export default function Facet({ facet, children }) {
+export default function Facet({ facet, searchResults, updateQuery, children }) {
   const Title = facetRegistry.title.lookup(facet.field);
 
   return (
@@ -15,7 +15,11 @@ export default function Facet({ facet, children }) {
       className="my-4 first:mt-0 last:mb-0"
       data-testid={`facet-${facet.field}`}
     >
-      <Title facet={facet} />
+      <Title
+        facet={facet}
+        searchResults={searchResults}
+        updateQuery={updateQuery}
+      />
       {children}
     </div>
   );
@@ -35,4 +39,8 @@ Facet.propTypes = {
       })
     ).isRequired,
   }).isRequired,
+  // Search results from data provider
+  searchResults: PropTypes.object.isRequired,
+  // Function to call when the user clicks on a facet term
+  updateQuery: PropTypes.func.isRequired,
 };

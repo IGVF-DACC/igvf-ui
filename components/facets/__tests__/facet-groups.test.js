@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import {
   getFacetsInGroup,
   FacetGroup,
@@ -295,7 +295,7 @@ describe("Test the `getFacetsInGroup()` function", () => {
 });
 
 describe("Test the `<FacetGroup>` component", () => {
-  it("renders a single facet group with no selected terms", () => {
+  it("renders a single facet group with no selected terms", async () => {
     const searchResults = {
       "@id": "/search?type=HumanDonor",
       facets: [
@@ -356,6 +356,13 @@ describe("Test the `<FacetGroup>` component", () => {
           ],
         },
       ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "HumanDonor",
+        },
+      ],
     };
     const facetGroup = {
       name: "HumanDonor",
@@ -403,8 +410,17 @@ describe("Test the `<FacetGroup>` component", () => {
 
     // Make sure clicking a facet term updates the URL.
     facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
-    facetTermCheckbox.click();
+
+    fireEvent.click(facetTermCheckbox);
     expect(window.location.search).toBe("?type=HumanDonor&sex=female");
+
+    facetTermCheckbox = within(facetTerms[1]).getByRole("checkbox");
+    fireEvent.mouseDown(facetTermCheckbox);
+    await new Promise((r) => setTimeout(r, 500));
+    fireEvent.mouseUp(facetTermCheckbox);
+    expect(window.location.search).toBe(
+      "?type=HumanDonor&sex=female&sex!=male"
+    );
   });
 
   it("renders a single facet group with selected terms", () => {
@@ -469,6 +485,23 @@ describe("Test the `<FacetGroup>` component", () => {
           ],
         },
       ],
+      filters: [
+        {
+          field: "sex",
+          remove: "/search?type=HumanDonor&lab.title=Chongyuan+Luo%2C+UCLA",
+          term: "female",
+        },
+        {
+          field: "lab.title",
+          remove: "/search?type=HumanDonor&sex=female",
+          term: "Chongyuan Luo, UCLA",
+        },
+        {
+          field: "type",
+          remove: "/search?sex=female&lab.title=Chongyuan+Luo%2C+UCLA",
+          term: "HumanDonor",
+        },
+      ],
     };
     const facetGroup = {
       name: "HumanDonor",
@@ -513,7 +546,7 @@ describe("Test the `<FacetGroup>` component", () => {
 
     // Make sure clicking a facet term updates the URL.
     facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
-    facetTermCheckbox.click();
+    fireEvent.click(facetTermCheckbox);
     expect(window.location.search).toBe(
       "?type=HumanDonor&lab.title=Chongyuan+Luo%2C+UCLA"
     );
@@ -566,6 +599,18 @@ describe("Test the `<FacetGroup>` component", () => {
           ],
         },
       ],
+      filters: [
+        {
+          field: "award.component",
+          remove: "/search?type=HumanDonor",
+          term: "networks",
+        },
+        {
+          field: "type",
+          remove: "/search?award.component=networks",
+          term: "HumanDonor",
+        },
+      ],
     };
 
     render(<FacetGroup searchResults={searchResults} />);
@@ -614,7 +659,7 @@ describe("Test the `<FacetGroup>` component", () => {
 
     // Make sure clicking a facet term updates the URL.
     facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
-    facetTermCheckbox.click();
+    fireEvent.click(facetTermCheckbox);
     expect(window.location.search).toBe("?type=HumanDonor");
   });
 
@@ -665,6 +710,13 @@ describe("Test the `<FacetGroup>` component", () => {
           ],
         },
       ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "HumanDonor",
+        },
+      ],
     };
 
     render(<FacetGroup searchResults={searchResults} />);
@@ -710,7 +762,7 @@ describe("Test the `<FacetGroup>` component", () => {
 
     // Make sure clicking a facet term updates the URL.
     facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
-    facetTermCheckbox.click();
+    fireEvent.click(facetTermCheckbox);
     expect(window.location.search).toBe("?type=HumanDonor&sex=female");
   });
 });

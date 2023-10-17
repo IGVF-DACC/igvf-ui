@@ -2,6 +2,8 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
+// components/facets
+import facetRegistry from "./facet-registry";
 // lib
 import { getVisibleFacets } from "../../lib/facets";
 
@@ -16,19 +18,33 @@ import { getVisibleFacets } from "../../lib/facets";
  * from the search-results object.
  */
 function FacetTag({ filter, facets }) {
-  const facetForFilter = facets.find((facet) => facet.field === filter.field);
+  // Get the title for the tag from the given filter's `field` property. If the field ends with a
+  // `!`, remove it before looking up the human-readable title. If we can't find a title for the
+  // field, use the field name as the title.
+  const isNegative = filter.field.at(-1) === "!";
+  const filterField = isNegative ? filter.field.slice(0, -1) : filter.field;
+  const facetForFilter = facets.find((facet) => facet.field === filterField);
   const title = facetForFilter ? facetForFilter.title : filter.field;
+
+  // Look for any custom tag label renderer components.
+  const TagLabel = facetRegistry.tagLabel.lookup(filterField);
+
+  const tagClassName = isNegative
+    ? "bg-facet-tag-neg border-facet-tag-neg"
+    : "bg-facet-tag border-facet-tag";
 
   return (
     <Link
       href={filter.remove}
-      className="flex items-center rounded border border-emerald-400 bg-emerald-200 py-0.5 pl-1 pr-0 text-gray-700 no-underline dark:border-emerald-600 dark:bg-emerald-900 dark:text-gray-200"
+      className={`flex items-center rounded border py-0.5 pl-1 pr-0 text-facet-tag no-underline ${tagClassName}`}
       aria-label={`Clear ${title} filter for ${filter.term}`}
       key={filter.field}
     >
       <div>
         <div className="text-xs leading-4">{title}</div>
-        <div className="text-sm font-semibold leading-4">{filter.term}</div>
+        <div className="text-sm font-semibold leading-4">
+          <TagLabel filter={filter} />
+        </div>
       </div>
       <XMarkIcon className="ml-2 block h-4 w-4" />
     </Link>

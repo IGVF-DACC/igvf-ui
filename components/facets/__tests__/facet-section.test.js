@@ -28,7 +28,7 @@ jest.mock("next/router", () => {
 describe("Test <FacetSection> component", () => {
   it("renders the correct facets without facet groups", () => {
     const searchResults = {
-      "@id": "/search?type=Gene",
+      "@id": "/search?type=Gene&taxa!=Homo+sapiens",
       facet_groups: [],
       facets: [
         {
@@ -91,6 +91,11 @@ describe("Test <FacetSection> component", () => {
       ],
       filters: [
         {
+          field: "taxa!",
+          remove: "/search/?type=Gene",
+          term: "Homo sapiens",
+        },
+        {
           field: "type",
           term: "Gene",
           remove: "/search",
@@ -118,7 +123,6 @@ describe("Test <FacetSection> component", () => {
     let terms = within(facetSections[0]).getAllByTestId(/^facetterm-/);
     expect(terms).toHaveLength(2);
     expect(terms[0]).toHaveTextContent(/^Homo sapiens/);
-    expect(terms[0]).toHaveTextContent(/5$/);
     expect(terms[1]).toHaveTextContent(/^Mus musculus/);
     expect(terms[1]).toHaveTextContent(/2$/);
 
@@ -392,6 +396,174 @@ describe("Test <FacetSection> component", () => {
     expect(facetGroupButtons[1]).toHaveAttribute(
       "aria-label",
       "Quality selected filter group"
+    );
+  });
+
+  it("clears all filters when clicking the Clear All button", () => {
+    const searchResults = {
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO9494FQMY/",
+          "@type": ["HumanDonor", "Donor", "Item"],
+          accession: "IGVFDO9494FQMY",
+          aliases: ["igvf:alias_human_donor_child"],
+          award: {
+            "@id": "/awards/HG012012/",
+            component: "data coordination",
+          },
+          collections: ["ENCODE"],
+          ethnicities: ["Eskimo", "Arab"],
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
+          },
+          sex: "female",
+          status: "released",
+          taxa: "Homo sapiens",
+          uuid: "38d6630f-5b87-47a1-ae7d-174eab5758d2",
+          virtual: false,
+        },
+      ],
+      "@id": "/search/?type=HumanDonor&sex=female",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=HumanDonor",
+      facet_groups: [],
+      facets: [
+        {
+          appended: false,
+          field: "sex",
+          open_on_load: false,
+          terms: [
+            {
+              doc_count: 3,
+              key: "female",
+            },
+            {
+              doc_count: 1,
+              key: "male",
+            },
+          ],
+          title: "Sex",
+          total: 4,
+          type: "terms",
+        },
+      ],
+      filters: [
+        {
+          field: "sex",
+          remove: "/search/?type=HumanDonor",
+          term: "female",
+        },
+        {
+          field: "type",
+          remove: "/search/?sex=female",
+          term: "HumanDonor",
+        },
+      ],
+    };
+
+    render(<FacetSection searchResults={searchResults} />);
+
+    // Click the Clear All button and check that the router push function was called with the
+    // correct URL.
+    const clearAllButton = screen.getByLabelText(/Clear all filters/);
+    fireEvent.click(clearAllButton);
+    expect(window.location.href).toBe(
+      "https://www.example.com/search/?type=HumanDonor"
+    );
+  });
+
+  it("reacts to the user clicking the All and None buttons", () => {
+    const searchResults = {
+      "@graph": [
+        {
+          "@id": "/in-vitro-systems/IGVFSM0008HUES/",
+          "@type": ["InVitroSystem", "Biosample", "Sample", "Item"],
+          accession: "IGVFSM0008HUES",
+          sample_terms: [
+            {
+              "@id": "/sample-terms/EFO_0007093/",
+              term_name: "HUES8",
+            },
+          ],
+          status: "released",
+        },
+      ],
+      "@id": "/search/?type=InVitroSystem",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=InVitroSystem",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+        accession: {
+          title: "Accession",
+        },
+        sample_terms: {
+          title: "Sample Terms",
+        },
+      },
+      facet_groups: [],
+      facets: [
+        {
+          appended: false,
+          field: "sample_terms.term_name",
+          open_on_load: false,
+          terms: [
+            {
+              doc_count: 3,
+              key: "motor neuron",
+            },
+            {
+              doc_count: 1,
+              key: "HUES8",
+            },
+          ],
+          title: "Sample Terms",
+          total: 4,
+          type: "terms",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search/",
+          term: "InVitroSystem",
+        },
+      ],
+      notification: "Success",
+      sort: {
+        date_created: {
+          order: "desc",
+          unmapped_type: "keyword",
+        },
+        label: {
+          order: "desc",
+          unmapped_type: "keyword",
+        },
+        uuid: {
+          order: "desc",
+          unmapped_type: "keyword",
+        },
+      },
+      title: "Search",
+      total: 4,
+    };
+
+    render(<FacetSection searchResults={searchResults} />);
+
+    // Click the All button and check that the router gets called with both terms selected.
+    const allButton = screen.getByLabelText(/Select all Sample Terms/);
+    fireEvent.click(allButton);
+    expect(window.location.href).toBe(
+      "https://www.example.com/search/?type=InVitroSystem&sample_terms.term_name=motor+neuron&sample_terms.term_name=HUES8"
+    );
+
+    // Click the None button and check that the router gets called with no terms selected.
+    const noneButton = screen.getByLabelText(/Select no Sample Terms/);
+    fireEvent.click(noneButton);
+    expect(window.location.href).toBe(
+      "https://www.example.com/search/?type=InVitroSystem"
     );
   });
 });

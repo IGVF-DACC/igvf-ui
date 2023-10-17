@@ -5,31 +5,105 @@ import FacetTerm from "../facet-term";
 describe("Test the <Facet> component", () => {
   it("renders a single facet and its child terms", () => {
     const onTermClick = jest.fn();
+    const updateQuery = jest.fn();
 
-    const facet = {
-      field: "treatments.treatment_term_name",
-      title: "Treatments",
-      terms: [
+    const searchResults = {
+      "@context": "/terms/",
+      "@graph": [
         {
-          key: "new compound",
-          doc_count: 1,
-        },
-        {
-          key: "resorcinol",
-          doc_count: 1,
+          "@id": "/treatments/d7562e66-c218-46e8-b0e2-ea6d89978b32/",
+          "@type": ["Treatment", "Item"],
+          award: {
+            component: "data coordination",
+          },
+          depletion: true,
+          lab: {
+            title: "J. Michael Cherry, Stanford",
+          },
+          purpose: "differentiation",
+          status: "released",
+          summary: "Depletion of new protein",
+          treatment_term_id: "NTR:0001189",
+          treatment_term_name: "new protein",
+          treatment_type: "protein",
+          uuid: "d7562e66-c218-46e8-b0e2-ea6d89978b32",
         },
       ],
+      "@id": "/search/?type=Treatment&treatment_type=chemical",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=Treatment",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+        "award.component": {
+          title: "Award",
+        },
+        "lab.title": {
+          title: "Lab",
+        },
+        status: {
+          title: "Status",
+        },
+        treatment_term_id: {
+          title: "Treatment Term ID",
+        },
+        treatment_term_name: {
+          title: "Treatment Term Name",
+        },
+        treatment_type: {
+          title: "Treatment Type",
+        },
+      },
+      facets: [
+        {
+          field: "treatment_type",
+          terms: [
+            {
+              doc_count: 3,
+              key: "chemical",
+            },
+            {
+              doc_count: 3,
+              key: "protein",
+            },
+          ],
+          title: "Treatment Type",
+          total: 6,
+        },
+      ],
+      filters: [
+        {
+          field: "treatment_type",
+          remove: "/search/?type=Treatment",
+          term: "chemical",
+        },
+        {
+          field: "type",
+          remove: "/search/?treatment_type=chemical",
+          term: "Treatment",
+        },
+      ],
+      total: 6,
     };
 
+    const facet = searchResults.facets[0];
+
     render(
-      <Facet key={facet.field} facet={facet}>
+      <Facet
+        key={facet.field}
+        facet={facet}
+        searchResults={searchResults}
+        updateQuery={updateQuery}
+      >
         {facet.terms.map((term) => {
           return (
             <FacetTerm
               key={term.key}
               field={facet.field}
               term={term}
-              isChecked={term.key === "resorcinol" ? true : false}
+              isChecked={term.key === "chemical" ? true : false}
+              isNegative={false}
               onClick={onTermClick}
             />
           );
@@ -52,8 +126,8 @@ describe("Test the <Facet> component", () => {
 
     // Make sure the second term is checked.
     let checkbox = within(terms[0]).getByRole("checkbox");
-    expect(checkbox).not.toHaveAttribute("checked");
-    checkbox = within(terms[1]).getByRole("checkbox");
     expect(checkbox).toHaveAttribute("checked");
+    checkbox = within(terms[1]).getByRole("checkbox");
+    expect(checkbox).not.toHaveAttribute("checked");
   });
 });

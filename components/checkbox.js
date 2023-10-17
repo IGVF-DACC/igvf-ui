@@ -1,24 +1,33 @@
 // node_modules
 import PropTypes from "prop-types";
+// components
+import useLongClick from "./long-click";
 
 /**
- * Display a standard checkbox. Wrap this component around the label of the checkbox.
+ * Display a standard checkbox. Wrap this component around the label of the checkbox. You can
+ * optionally handle long clicks in the checkbox by supplying the `onLongChange` callback.
  */
 export default function Checkbox({
+  id,
   checked,
   name,
-  onChange,
+  onClick,
+  onLongClick = null,
   className = "",
   children,
 }) {
+  // If no long click handler is supplied, use the normal click handler to handle long clicks.
+  const longClickHandler = onLongClick || onClick;
+  useLongClick(id, onClick, longClickHandler);
+
   return (
-    <label data-testid="checkbox-label" className={`flex ${className}`}>
+    <label id={id} data-testid="checkbox-label" className={`flex ${className}`}>
       <input
         className="mr-1"
         type="checkbox"
         aria-label={name}
         checked={checked}
-        onChange={onChange}
+        onChange={() => {}}
       />
       {children}
     </label>
@@ -26,12 +35,16 @@ export default function Checkbox({
 }
 
 Checkbox.propTypes = {
+  // Unique ID for the checkbox
+  id: PropTypes.string.isRequired,
   // True if the checkbox is checked
   checked: PropTypes.bool.isRequired,
   // HTML name attribute of the checkbox
   name: PropTypes.string.isRequired,
   // Called when the checkbox is checked or unchecked
-  onChange: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
+  // Called when the checkbox is long-pressed
+  onLongClick: PropTypes.func,
   // Additional Tailwind CSS class names to apply to the checkbox
   className: PropTypes.string,
 };

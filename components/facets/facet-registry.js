@@ -1,8 +1,10 @@
 // components/facets/custom-facets
 import AuditTitle from "./custom-facets/audit-title";
+import StandardTagLabel from "./custom-facets/standard-tag-label";
 import StandardTermLabel from "./custom-facets/standard-term-label";
 import StandardTerms from "./custom-facets/standard-terms";
 import StandardTitle from "./custom-facets/standard-title";
+import TaxaTagLabel from "./custom-facets/taxa-tag-label";
 import TaxaTermLabel from "./custom-facets/taxa-term-label";
 import TypeTerm from "./custom-facets/type-terms";
 
@@ -13,6 +15,13 @@ import TypeTerm from "./custom-facets/type-terms";
  * by key, but with `standard` at the end.
  */
 const facetRegistry = {
+  // Custom tag labels.
+  tagLabel: {
+    "donors.taxa": TaxaTagLabel,
+    taxa: TaxaTagLabel,
+    standard: StandardTagLabel,
+  },
+
   // Custom term labels and document counts for a standard facet term.
   termLabel: {
     "donors.taxa": TaxaTermLabel,
@@ -34,6 +43,10 @@ const facetRegistry = {
     "audit.WARNING.category": AuditTitle,
     standard: StandardTitle,
   },
+};
+
+facetRegistry.tagLabel.lookup = function (field) {
+  return facetRegistry.tagLabel[field] || facetRegistry.tagLabel.standard;
 };
 
 facetRegistry.termLabel.lookup = function (field) {

@@ -91,6 +91,12 @@
   --color-facet-title-background: #b2d0de;
   --color-facet-title-text: #000000;
 
+  --color-facet-tag-background: #a7f3d0;
+  --color-facet-tag-border: #34d399;
+  --color-facet-tag-neg-background: #fecdd3;
+  --color-facet-tag-neg-border: #fb7185;
+  --color-facet-tag-text: #374151;
+
   --color-site-search-header-background: #c9ebe2;
 
   --color-form-element-background: #ffffff;
@@ -183,6 +189,12 @@
 
   --color-facet-title-background: #536167;
   --color-facet-title-text: #ffffff;
+
+  --color-facet-tag-background: #064e3b;
+  --color-facet-tag-border: #047857;
+  --color-facet-tag-neg-background: #881337;
+  --color-facet-tag-neg-border: #be123c;
+  --color-facet-tag-text: #e5e7eb;
 
   --color-site-search-header-background: #394240;
 
