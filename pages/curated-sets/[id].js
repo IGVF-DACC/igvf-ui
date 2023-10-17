@@ -111,14 +111,16 @@ export default function CuratedSet({
               {curatedSet.assemblies?.length > 0 && (
                 <>
                   <DataItemLabel>Assemblies</DataItemLabel>
-                  <DataItemValue>{curatedSet.assemblies}</DataItemValue>
+                  <DataItemValue>
+                    {curatedSet.assemblies.join(", ")}
+                  </DataItemValue>
                 </>
               )}
               {curatedSet.transcriptome_annotations?.length > 0 && (
                 <>
                   <DataItemLabel>Transcriptome Annotations</DataItemLabel>
                   <DataItemValue>
-                    {curatedSet.transcriptome_annotations}
+                    {curatedSet.transcriptome_annotations.join(", ")}
                   </DataItemValue>
                 </>
               )}
