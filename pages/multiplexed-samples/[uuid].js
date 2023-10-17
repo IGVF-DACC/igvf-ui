@@ -33,7 +33,6 @@ import {
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
-import { Link } from 'next/link';
 
 export default function MultiplexedSample({
   multiplexedSample,
@@ -65,20 +64,20 @@ export default function MultiplexedSample({
                     </DataItemValue>
                   </>
                 )}
-                {/* Property will exist since it's a calculated property */}
-                {multiplexedSample.construct_library_sets.length > 0 && (
-                  <>
-                    <DataItemLabel>Construct Library Sets</DataItemLabel>
-                    <DataItemValue>{multiplexedSample.construct_library_sets.map((lib) => <Link key={lib.accesstion} href={`${lib["@id"]}`}>{lib.accession}</Link>).join(", ")}</DataItemValue>
-                  </>
-                )}
               </SampleDataItems>
             </DataArea>
           </DataPanel>
           {multiplexedSample.multiplexed_samples.length > 0 && (
             <>
               <DataAreaTitle>Multiplexed Samples</DataAreaTitle>
-              <SampleTable samples={multiplexedSample.multiplexed_samples} />
+              <SampleTable
+                samples={multiplexedSample.multiplexed_samples}
+                constructLibrarySetAccessions={
+                  multiplexedSample.construct_library_sets
+                    ? multiplexedSample.construct_library_sets
+                    : null
+                }
+              />
             </>
           )}
           {multiplexedSample.file_sets.length > 0 && (
