@@ -54,24 +54,23 @@ const sampleColumns = [
         return (
           <SeparatedList>
             {source.construct_library_sets.map((id) => {
-                  if (constructLibrarySetAccessions) {
-                    const accession = constructLibrarySetAccessions.find(
-                      (lib) => lib["@id"] === id
-                    )?.accession;
+              if (constructLibrarySetAccessions) {
+                const accession = constructLibrarySetAccessions.find(
+                  (lib) => lib["@id"] === id
+                )?.accession;
 
-                    return accession ? (
-                      <Link href={id} key={id}>
-                        {accession}
-                      </Link>
-                    ) : null;
-                  }
-                  return (
-                    <Link href={id} key={id}>
-                      {id}
-                    </Link>
-                  );
-                })
+                return accession ? (
+                  <Link href={id} key={id}>
+                    {accession}
+                  </Link>
+                ) : null;
               }
+              return (
+                <Link href={id} key={id}>
+                  {id}
+                </Link>
+              );
+            })}
           </SeparatedList>
         );
       }
