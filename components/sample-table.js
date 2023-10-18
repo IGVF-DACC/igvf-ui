@@ -50,29 +50,32 @@ const sampleColumns = [
     id: "construct_library_sets",
     title: "Construct Library Set",
     display: ({ source }, { constructLibrarySetAccessions }) => {
-      return (
-        <SeparatedList>
-          {source.construct_library_sets
-            ? source.construct_library_sets.map((id) => {
-                if (constructLibrarySetAccessions) {
-                  const accession = constructLibrarySetAccessions.find(
-                    (lib) => lib["@id"] === id
-                  )?.accession;
+      if (source.construct_library_sets.length > 0) {
+        return (
+          <SeparatedList>
+            {source.construct_library_sets.map((id) => {
+                  if (constructLibrarySetAccessions) {
+                    const accession = constructLibrarySetAccessions.find(
+                      (lib) => lib["@id"] === id
+                    )?.accession;
+
+                    return accession ? (
+                      <Link href={id} key={id}>
+                        {accession}
+                      </Link>
+                    ) : null;
+                  }
                   return (
                     <Link href={id} key={id}>
-                      {accession}
+                      {id}
                     </Link>
                   );
-                }
-                return (
-                  <Link href={id} key={id}>
-                    {id}
-                  </Link>
-                );
-              })
-            : []}
-        </SeparatedList>
-      );
+                })
+              }
+          </SeparatedList>
+        );
+      }
+      return null;
     },
   },
   {
