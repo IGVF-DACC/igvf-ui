@@ -13,7 +13,7 @@ import {
   standardAnimationTransition,
   standardAnimationVariants,
 } from "../components/animation";
-import { ButtonLink } from "../components/form-elements";
+import { Button, ButtonLink } from "../components/form-elements";
 import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 import {
@@ -37,30 +37,27 @@ function getTypeTitle(searchResult, collectionTitles) {
  */
 function TypeSectionHeader({
   searchResult,
-  term,
   isSectionOpen,
   onSectionOpenClick,
 }) {
   const { collectionTitles } = useContext(SessionContext);
-
-  // Build a query for the list and report views for the top-hits search type.
-  const query = new QueryString();
-  query.addKeyValue("type", searchResult.key);
-  query.addKeyValue("query", term);
 
   // Get the section title for the top-hits type.
   const typeTitle = getTypeTitle(searchResult, collectionTitles);
 
   return (
     <div
-      className={`flex justify-between border-data-border bg-site-search-header p-1${
+      className={`flex justify-between border-data-border bg-site-search-header py-1 px-2${
         isSectionOpen ? " border-b" : ""
       }`}
     >
-      <div className="sm:flex sm:items-center sm:gap-2">
-        <button
+      <div className="flex items-center gap-2">
+        <Button
           onClick={() => onSectionOpenClick(searchResult.key)}
-          aria-label={`${
+          type="secondary"
+          size="sm"
+          hasIconOnly
+          label={`${
             isSectionOpen ? "Collapse" : "Expand"
           } top matches for ${typeTitle}`}
         >
@@ -69,11 +66,52 @@ function TypeSectionHeader({
           ) : (
             <PlusIcon className="h-4 w-4" />
           )}
-        </button>
-        <div className="text-lg font-semibold">{typeTitle}</div>
-        <div className="text-sm text-gray-600 dark:text-gray-300">
-          {searchResult.doc_count} item{searchResult.doc_count === 1 ? "" : "s"}
+        </Button>
+        <div className="@md:flex @md:items-baseline @md:gap-2">
+          <div className="text-lg font-semibold leading-5">{typeTitle}</div>
+          <div className="text-base leading-4 text-gray-600 @md:text-xs dark:text-gray-300">
+            {searchResult.doc_count} item
+            {searchResult.doc_count === 1 ? "" : "s"}
+          </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+TypeSectionHeader.propTypes = {
+  // Search results for a single type
+  searchResult: PropTypes.shape({
+    // Search result type
+    key: PropTypes.string.isRequired,
+    // Total number of matches for the type
+    doc_count: PropTypes.number.isRequired,
+  }),
+  // True if the trigger should show the section is open
+  isSectionOpen: PropTypes.bool.isRequired,
+  // Call to toggle the open state of the section
+  onSectionOpenClick: PropTypes.func.isRequired,
+};
+
+/**
+ * Display the footer for a single type's top hits. This includes links to the list and report views
+ * for all results matching the user's query.
+ */
+function TypeSectionFooter({ searchResult, term }) {
+  const { collectionTitles } = useContext(SessionContext);
+  const typeTitle = getTypeTitle(searchResult, collectionTitles);
+
+  // Build a query for the list and report views for the top-hits search type.
+  const query = new QueryString();
+  query.addKeyValue("type", searchResult.key);
+  query.addKeyValue("query", term);
+
+  return (
+    <div className="flex items-center justify-end gap-2 pb-1 pl-1 pr-1 pt-0.5">
+      <div className="text-xs text-gray-500">
+        View all {searchResult.doc_count} {typeTitle} with {UC.ldquo}
+        {term}
+        {UC.rdquo}
       </div>
       <div className="flex gap-1">
         <ButtonLink
@@ -97,7 +135,7 @@ function TypeSectionHeader({
   );
 }
 
-TypeSectionHeader.propTypes = {
+TypeSectionFooter.propTypes = {
   // Search results for a single type
   searchResult: PropTypes.shape({
     // Search result type
@@ -107,10 +145,6 @@ TypeSectionHeader.propTypes = {
   }),
   // Term leading to these top-hit results
   term: PropTypes.string.isRequired,
-  // True if the trigger should show the section is open
-  isSectionOpen: PropTypes.bool.isRequired,
-  // Call to toggle the open state of the section
-  onSectionOpenClick: PropTypes.func.isRequired,
 };
 
 /**
@@ -119,7 +153,7 @@ TypeSectionHeader.propTypes = {
 function TypeSection({ type, children }) {
   return (
     <li
-      className="my-4 border border-data-border bg-panel first:mt-0 last:mb-0"
+      className="my-4 border border-data-border bg-panel @container first:mt-0 last:mb-0"
       data-testid={`site-search-type-section-${toShishkebabCase(type)}`}
     >
       {children}
@@ -182,7 +216,6 @@ export default function SiteSearch({ results, term, accessoryData = null }) {
               <TypeSection type={result.key} key={result.key}>
                 <TypeSectionHeader
                   searchResult={result}
-                  term={term}
                   isSectionOpen={isSectionOpen}
                   onSectionOpenClick={onSectionOpenClick}
                 />
@@ -217,6 +250,7 @@ export default function SiteSearch({ results, term, accessoryData = null }) {
                           );
                         }}
                       </TypeTopHits>
+                      <TypeSectionFooter searchResult={result} term={term} />
                     </motion.div>
                   )}
                 </AnimatePresence>
