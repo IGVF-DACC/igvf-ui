@@ -168,9 +168,11 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = curatedSet.documents
       ? await requestDocuments(curatedSet.documents, request)
       : [];
-    const donors = curatedSet.donors
-      ? await requestDonors(curatedSet.donors, request)
-      : [];
+    let donors = [];
+    if (curatedSet.donors) {
+      const donorPaths = curatedSet.donors.map((donor) => donor["@id"]);
+      donors = await requestDonors(donorPaths, request);
+    }
     const filePaths = curatedSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
