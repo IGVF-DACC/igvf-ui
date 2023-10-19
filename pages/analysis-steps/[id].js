@@ -20,9 +20,7 @@ import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import {
-  requestDocuments,
-} from "../../lib/common-requests";
+import { requestDocuments } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
@@ -49,19 +47,25 @@ export default function AnalysisStep({
               {analysisStep.analysis_step_types?.length > 0 && (
                 <>
                   <DataItemLabel>Analysis Step Types</DataItemLabel>
-                  <DataItemValue>{analysisStep.analysis_step_types.join(", ")}</DataItemValue>
+                  <DataItemValue>
+                    {analysisStep.analysis_step_types.join(", ")}
+                  </DataItemValue>
                 </>
               )}
               {analysisStep.input_content_types?.length > 0 && (
                 <>
                   <DataItemLabel>Input Content Types</DataItemLabel>
-                  <DataItemValue>{analysisStep.input_content_types.join(", ")}</DataItemValue>
+                  <DataItemValue>
+                    {analysisStep.input_content_types.join(", ")}
+                  </DataItemValue>
                 </>
               )}
               {analysisStep.output_content_types?.length > 0 && (
                 <>
                   <DataItemLabel>Output Content Types</DataItemLabel>
-                  <DataItemValue>{analysisStep.output_content_types.join(", ")}</DataItemValue>
+                  <DataItemValue>
+                    {analysisStep.output_content_types.join(", ")}
+                  </DataItemValue>
                 </>
               )}
               {analysisStep.workflow && (
@@ -123,7 +127,10 @@ export async function getServerSideProps({ params, req, query }) {
       analysisStep.title,
       req.headers.cookie
     );
-    const attribution = await buildAttribution(analysisStep, req.headers.cookie);
+    const attribution = await buildAttribution(
+      analysisStep,
+      req.headers.cookie
+    );
     return {
       props: {
         analysisStep,
