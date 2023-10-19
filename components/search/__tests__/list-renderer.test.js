@@ -15,7 +15,7 @@ import HumanDonor from "../list-renderer/human-donor";
 import HumanGenomicVariant from "../list-renderer/human-genomic-variant";
 import Lab from "../list-renderer/lab";
 import MeasurementSet from "../list-renderer/measurement-set";
-import Model from "../list-renderer/model";
+import ModelSet from "../list-renderer/model-set";
 import MultiplexedSample from "../list-renderer/multiplexed-sample";
 import OntologyTerm from "../list-renderer/ontology-term";
 import Page from "../list-renderer/page";
@@ -2313,11 +2313,11 @@ describe("Test PhenotypicFeature component", () => {
   });
 });
 
-describe("Test the Model component", () => {
-  it("renders a model item without a summary", () => {
+describe("Test the ModelSet component", () => {
+  it("renders a model-set item without a summary", () => {
     const item = {
       "@id": "/models/IGVFDS1234MODL/",
-      "@type": ["Model", "FileSet", "Item"],
+      "@type": ["ModelSet", "FileSet", "Item"],
       accession: "IGVFDS1234MODL",
       alternate_accessions: ["IGVFDS1234MODM"],
       aliases: ["igvf:xpresso"],
@@ -2334,12 +2334,12 @@ describe("Test the Model component", () => {
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <Model item={item} />
+        <ModelSet item={item} />
       </SessionContext.Provider>
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/Model/);
+    expect(uniqueId).toHaveTextContent(/ModelSet/);
     expect(uniqueId).toHaveTextContent(/IGVFDS1234MODL$/);
 
     const title = screen.getByTestId("search-list-item-title");
@@ -2353,10 +2353,10 @@ describe("Test the Model component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders a model item with a summary", () => {
+  it("renders a model-set item with a summary", () => {
     const item = {
       "@id": "/models/IGVFDS1234MODL/",
-      "@type": ["Model", "FileSet", "Item"],
+      "@type": ["ModelSet", "FileSet", "Item"],
       accession: "IGVFDS1234MODL",
       alternate_accessions: ["IGVFDS1234MODM"],
       aliases: ["igvf:xpresso"],
@@ -2374,12 +2374,12 @@ describe("Test the Model component", () => {
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <Model item={item} />
+        <ModelSet item={item} />
       </SessionContext.Provider>
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/Model/);
+    expect(uniqueId).toHaveTextContent(/ModelSet/);
     expect(uniqueId).toHaveTextContent(/IGVFDS1234MODL$/);
 
     const title = screen.getByTestId("search-list-item-title");

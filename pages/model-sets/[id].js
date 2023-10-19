@@ -29,8 +29,8 @@ import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function Model({
-  model,
+export default function ModelSet({
+  modelSet,
   softwareVersion = null,
   documents,
   files,
@@ -40,44 +40,44 @@ export default function Model({
   return (
     <>
       <Breadcrumbs />
-      <EditableItem item={model}>
+      <EditableItem item={modelSet}>
         <PagePreamble>
           <AlternateAccessions
-            alternateAccessions={model.alternate_accessions}
+            alternateAccessions={modelSet.alternate_accessions}
           />
         </PagePreamble>
-        <ObjectPageHeader item={model} isJsonFormat={isJson} />
-        <JsonDisplay item={model} isJsonFormat={isJson}>
+        <ObjectPageHeader item={modelSet} isJsonFormat={isJson} />
+        <JsonDisplay item={modelSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
               <DataItemLabel>Accession</DataItemLabel>
-              <DataItemValue>{model.accession}</DataItemValue>
+              <DataItemValue>{modelSet.accession}</DataItemValue>
               <DataItemLabel>Model Version</DataItemLabel>
-              <DataItemValue>{model.model_version}</DataItemValue>
+              <DataItemValue>{modelSet.model_version}</DataItemValue>
               <DataItemLabel>File Set Type</DataItemLabel>
-              <DataItemValue>{model.file_set_type}</DataItemValue>
-              {model.aliases?.length > 0 && (
+              <DataItemValue>{modelSet.file_set_type}</DataItemValue>
+              {modelSet.aliases?.length > 0 && (
                 <>
                   <DataItemLabel>Aliases</DataItemLabel>
                   <DataItemValue>
-                    <AliasList aliases={model.aliases} />
+                    <AliasList aliases={modelSet.aliases} />
                   </DataItemValue>
                 </>
               )}
-              {model.prediction_objects.length > 0 && (
+              {modelSet.prediction_objects.length > 0 && (
                 <>
                   <DataItemLabel>Prediction Objects</DataItemLabel>
                   <DataItemValue>
-                    {model.prediction_objects.join(", ")}
+                    {modelSet.prediction_objects.join(", ")}
                   </DataItemValue>
                 </>
               )}
-              {model.input_file_sets?.length > 0 && (
+              {modelSet.input_file_sets?.length > 0 && (
                 <>
                   <DataItemLabel>Input File Sets</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {model.input_file_sets.map((fileSet) => (
+                      {modelSet.input_file_sets.map((fileSet) => (
                         <Link href={fileSet["@id"]} key={fileSet["@id"]}>
                           {fileSet.accession}
                         </Link>
@@ -86,16 +86,16 @@ export default function Model({
                   </DataItemValue>
                 </>
               )}
-              {model.model_zoo_location && (
+              {modelSet.model_zoo_location && (
                 <>
                   <DataItemLabel>Model Zoo Location</DataItemLabel>
                   <DataItemValue>
                     <a
-                      href={model.model_zoo_location}
+                      href={modelSet.model_zoo_location}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {model.model_zoo_location}
+                      {modelSet.model_zoo_location}
                     </a>
                   </DataItemValue>
                 </>
@@ -110,11 +110,11 @@ export default function Model({
                   </DataItemValue>
                 </>
               )}
-              {model.publication_identifiers?.length > 0 && (
+              {modelSet.publication_identifiers?.length > 0 && (
                 <>
                   <DataItemLabel>Publication Identifiers</DataItemLabel>
                   <DataItemValue>
-                    <DbxrefList dbxrefs={model.publication_identifiers} />
+                    <DbxrefList dbxrefs={modelSet.publication_identifiers} />
                   </DataItemValue>
                 </>
               )}
@@ -139,9 +139,9 @@ export default function Model({
   );
 }
 
-Model.propTypes = {
-  // Model to display
-  model: PropTypes.object.isRequired,
+ModelSet.propTypes = {
+  // Model Set to display
+  modelSet: PropTypes.object.isRequired,
   // Software version associated with this model
   softwareVersion: PropTypes.object,
   // Files to display
@@ -157,37 +157,37 @@ Model.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const model = await request.getObject(`/models/${params.id}/`);
-  if (FetchRequest.isResponseSuccess(model)) {
-    const softwareVersion = model.software_version
-      ? await request.getObject(model.software_version, null)
+  const modelSet = await request.getObject(`/model-sets/${params.id}/`);
+  if (FetchRequest.isResponseSuccess(modelSet)) {
+    const softwareVersion = modelSet.software_version
+      ? await request.getObject(modelSet.software_version, null)
       : null;
-    const documents = model.documents
-      ? await requestDocuments(model.documents, request)
+    const documents = modelSet.documents
+      ? await requestDocuments(modelSet.documents, request)
       : [];
-    const filePaths = model.files.map((file) => file["@id"]);
+    const filePaths = modelSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
 
     const breadcrumbs = await buildBreadcrumbs(
-      model,
-      model.accession,
+      modelSet,
+      modelSet.accession,
       req.headers.cookie
     );
-    const attribution = await buildAttribution(model, req.headers.cookie);
+    const attribution = await buildAttribution(modelSet, req.headers.cookie);
 
     return {
       props: {
-        model,
+        modelSet,
         softwareVersion,
         documents,
         files,
-        pageContext: { title: model.model_name },
+        pageContext: { title: modelSet.model_name },
         breadcrumbs,
         attribution,
         isJson,
       },
     };
   }
-  return errorObjectToProps(model);
+  return errorObjectToProps(modelSet);
 }

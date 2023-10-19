@@ -12,31 +12,31 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 
-export default function Model({ item: model }) {
+export default function ModelSet({ item: modelSet }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
         <SearchListItemUniqueId>
-          <SearchListItemType item={model} />
-          {model.accession}
+          <SearchListItemType item={modelSet} />
+          {modelSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{model.model_name}</SearchListItemTitle>
+        <SearchListItemTitle>{modelSet.model_name}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{model.lab.title}</div>
-          {model.summary && <div key="summary">{model.summary}</div>}
-          {model.alternate_accessions?.length > 0 && (
+          <div key="lab">{modelSet.lab.title}</div>
+          {modelSet.summary && <div key="summary">{modelSet.summary}</div>}
+          {modelSet.alternate_accessions?.length > 0 && (
             <AlternateAccessions
-              alternateAccessions={model.alternate_accessions}
+              alternateAccessions={modelSet.alternate_accessions}
             />
           )}
         </SearchListItemMeta>
       </SearchListItemMain>
-      <SearchListItemQuality item={model} />
+      <SearchListItemQuality item={modelSet} />
     </SearchListItemContent>
   );
 }
 
-Model.propTypes = {
-  // Single model search-result object to display on a search-result list page
+ModelSet.propTypes = {
+  // Single ModelSet search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
 };
