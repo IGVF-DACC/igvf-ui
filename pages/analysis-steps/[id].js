@@ -11,13 +11,11 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments } from "../../lib/common-requests";
