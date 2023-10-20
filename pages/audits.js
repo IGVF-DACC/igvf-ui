@@ -4,11 +4,12 @@ import _ from "lodash";
 // component
 import { DataItemValue } from "../components/data-area";
 import Markdown from "../components/Markdown";
+import AuditDynamicTable from "../components/audit-table";
 // lib
 import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 
-export default function AuditDoc({ uniqueDetails }) {
+export default function AuditDoc({ uniqueDetails, arrayVersion }) {
   return (
     <>
       <h1 className="tight my-4 text-center text-xl font-bold text-black dark:text-gray-300 sm:text-2xl md:my-10 md:text-3xl lg:text-4xl">
@@ -20,12 +21,17 @@ export default function AuditDoc({ uniqueDetails }) {
         }
       />
       <DataItemValue>{uniqueDetails.join(", ")}</DataItemValue>
+      <DataItemValue>
+        {JSON.stringify(arrayVersion, undefined, 2)}
+      </DataItemValue>
+      <AuditDynamicTable> arrayVersion={arrayVersion}</AuditDynamicTable>
     </>
   );
 }
 
 AuditDoc.propTypes = {
   uniqueDetails: PropTypes.object,
+  arrayVersion: PropTypes.arrayOf(PropTypes.object),
 };
 
 export async function getServerSideProps({ req }) {
@@ -33,6 +39,14 @@ export async function getServerSideProps({ req }) {
   const auditDoc = await request.getObject("/static/doc/auditdoc.json");
   if (FetchRequest.isResponseSuccess(auditDoc)) {
     const objectTypes = Object.keys(auditDoc);
+    const arrayVersion = Object.keys(auditDoc).map((key) => {
+      return {
+        key: key.split(".")[2],
+        ...auditDoc[key],
+      };
+    });
+    _.groupBy(arrayVersion, "key");
+    _.groupBy(arrayVersion, (item) => item.key);
     const details = Object.keys(auditDoc).map((auditCode) => {
       const auditObject = auditCode.split(".")[2];
       return auditObject;
@@ -49,17 +63,9 @@ export async function getServerSideProps({ req }) {
         auditDoc,
         objectTypes,
         uniqueDetails,
+        arrayVersion,
       },
     };
   }
   return errorObjectToProps(auditDoc);
-}
-
-function makeArray({ auditDoc }) {
-  Object.keys(auditDoc).map((key) => {
-    return {
-      key: key.split(".")[2],
-      ...auditDoc[key],
-    };
-  });
 }
