@@ -54,8 +54,10 @@ export default function CuratedSet({
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Curated Set Type</DataItemLabel>
-              <DataItemValue>{curatedSet.curated_set_type}</DataItemValue>
+              <DataItemLabel>Summary</DataItemLabel>
+              <DataItemValue>{curatedSet.summary}</DataItemValue>
+              <DataItemLabel>File Set Type</DataItemLabel>
+              <DataItemValue>{curatedSet.file_set_type}</DataItemValue>
               {curatedSet.taxa && (
                 <>
                   <DataItemLabel>Taxa</DataItemLabel>
@@ -106,6 +108,22 @@ export default function CuratedSet({
                   </DataItemValue>
                 </>
               )}
+              {curatedSet.assemblies?.length > 0 && (
+                <>
+                  <DataItemLabel>Assemblies</DataItemLabel>
+                  <DataItemValue>
+                    {curatedSet.assemblies.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
+              {curatedSet.transcriptome_annotations?.length > 0 && (
+                <>
+                  <DataItemLabel>Transcriptome Annotations</DataItemLabel>
+                  <DataItemValue>
+                    {curatedSet.transcriptome_annotations.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
@@ -150,9 +168,11 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = curatedSet.documents
       ? await requestDocuments(curatedSet.documents, request)
       : [];
-    const donors = curatedSet.donors
-      ? await requestDonors(curatedSet.donors, request)
-      : [];
+    let donors = [];
+    if (curatedSet.donors) {
+      const donorPaths = curatedSet.donors.map((donor) => donor["@id"]);
+      donors = await requestDonors(donorPaths, request);
+    }
     const filePaths = curatedSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
