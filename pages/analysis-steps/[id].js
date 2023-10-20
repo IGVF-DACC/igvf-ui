@@ -50,6 +50,16 @@ export default function AnalysisStep({
                   </DataItemValue>
                 </>
               )}
+              {analysisStep.workflow && (
+                <>
+                  <DataItemLabel>Workflow</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={analysisStep.workflow["@id"]}>
+                      {analysisStep.workflow.accession}
+                    </Link>
+                  </DataItemValue>
+                </>
+              )}
               {analysisStep.input_content_types?.length > 0 && (
                 <>
                   <DataItemLabel>Input Content Types</DataItemLabel>
@@ -63,16 +73,6 @@ export default function AnalysisStep({
                   <DataItemLabel>Output Content Types</DataItemLabel>
                   <DataItemValue>
                     {analysisStep.output_content_types.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
-              {analysisStep.workflow && (
-                <>
-                  <DataItemLabel>Workflow</DataItemLabel>
-                  <DataItemValue>
-                    <Link href={analysisStep.workflow["@id"]}>
-                      {analysisStep.workflow.accession}
-                    </Link>
                   </DataItemValue>
                 </>
               )}
