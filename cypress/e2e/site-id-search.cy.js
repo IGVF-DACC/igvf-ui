@@ -26,14 +26,36 @@ describe("Test site search", () => {
 
         // Collapse the first top-items section and make sure it hides the items.
         cy.get(`[aria-label^="Collapse top matches for"]`).click();
-        cy.get(`[data-testid^="search-list-item-"]`).should("have.length", 0);
+        cy.get(`[data-testid^="search-list-item-"]`).should("not.exist");
+      });
+  });
+
+  it("goes to the correct pages when clicking the list and report buttons", () => {
+    cy.visit("/");
+
+    // Search the site for "cherry"
+    cy.get(`[data-testid^="site-search-trigger"]`).click();
+    cy.get(`[data-testid="search-input"]`).type("cherry{enter}");
+
+    cy.get(`[data-testid^="site-search-type-section-"]`)
+      .first()
+      .within(() => {
+        // Expand the first top-items section.
+        cy.get(`[aria-label^="Expand top matches for"]`).click();
 
         // Click the list button and make sure it takes us to the list page.
         cy.get(`[aria-label^="View search list for"]`).click();
         cy.url().should("match", /\/search\/\?type=[a-zA-Z0-9]+&query=cherry$/);
         cy.go("back");
+      });
 
-        // Click the list button and make sure it takes us to the list page.
+    cy.get(`[data-testid^="site-search-type-section-"]`)
+      .first()
+      .within(() => {
+        // Expand the first top-items section.
+        cy.get(`[aria-label^="Expand top matches for"]`).click();
+
+        // Click the report button and make sure it takes us to the report page.
         cy.get(`[aria-label^="View search report for"]`).click();
         cy.url().should(
           "match",
