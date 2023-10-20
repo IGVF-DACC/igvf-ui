@@ -8,18 +8,19 @@ const auditColumns = [
   {
     id: "audit_level",
     title: "Audit Level",
-    display: ({ audit }) =>
-      audit.audit_levels ? audit.audit_levels.join(", ") : "",
+    display: ({ source }) =>
+      source.audit_levels ? source.audit_levels.join(", ") : "",
   },
   {
     id: "audit_category",
     title: "Audit Category",
-    display: ({ audit }) => `${audit.audit_category}`,
+    display: ({ source }) => `${source.audit_category}`,
   },
   {
     id: "audit_detail",
     title: "Audit Detail",
-    display: ({ audit }) => `${audit.audit_detail}`,
+    display: ({ source }) => `${source.audit_detail}`,
+    isSortable: false,
   },
 ];
 
@@ -29,7 +30,7 @@ const auditColumns = [
 export default function AuditDynamicTable({ arrayVersion }) {
   return (
     <DataGridContainer>
-      <SortableGrid data={arrayVersion} columns={auditColumns} keyProp="@id" />
+      <SortableGrid data={arrayVersion} columns={auditColumns} />
     </DataGridContainer>
   );
 }

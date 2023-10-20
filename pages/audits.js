@@ -1,15 +1,18 @@
 // node_modules
 import PropTypes from "prop-types";
 import _ from "lodash";
+import { useContext } from "react";
 // component
 import { DataItemValue } from "../components/data-area";
-import Markdown from "../components/Markdown";
+import Markdown from "../components/markdown";
 import AuditDynamicTable from "../components/audit-table";
+import SessionContext from "../components/session-context";
 // lib
 import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 
-export default function AuditDoc({ uniqueDetails, arrayVersion }) {
+export default function AuditDoc({ uniqueDetails, arrayVersion, arrayObject }) {
+  const { collectionTitles } = useContext(SessionContext);
   return (
     <>
       <h1 className="tight my-4 text-center text-xl font-bold text-black dark:text-gray-300 sm:text-2xl md:my-10 md:text-3xl lg:text-4xl">
@@ -24,7 +27,17 @@ export default function AuditDoc({ uniqueDetails, arrayVersion }) {
       <DataItemValue>
         {JSON.stringify(arrayVersion, undefined, 2)}
       </DataItemValue>
-      <AuditDynamicTable> arrayVersion={arrayVersion}</AuditDynamicTable>
+      {Object.keys(arrayObject).map((itemType) => {
+        const typeAudits = arrayObject[itemType];
+        return (
+          <>
+            <h2 className="mb-4 px-2 py-2 text-lg font-semibold text-brand">
+              {collectionTitles?.[itemType] || itemType}
+            </h2>
+            <AuditDynamicTable arrayVersion={typeAudits} key={itemType} />
+          </>
+        );
+      })}
     </>
   );
 }
@@ -32,6 +45,7 @@ export default function AuditDoc({ uniqueDetails, arrayVersion }) {
 AuditDoc.propTypes = {
   uniqueDetails: PropTypes.object,
   arrayVersion: PropTypes.arrayOf(PropTypes.object),
+  arrayObject: PropTypes.object.isRequired,
 };
 
 export async function getServerSideProps({ req }) {
@@ -45,8 +59,8 @@ export async function getServerSideProps({ req }) {
         ...auditDoc[key],
       };
     });
-    _.groupBy(arrayVersion, "key");
-    _.groupBy(arrayVersion, (item) => item.key);
+    const arrayObject = _.groupBy(arrayVersion, "key");
+    // _.groupBy(arrayVersion, (item) => item.key);
     const details = Object.keys(auditDoc).map((auditCode) => {
       const auditObject = auditCode.split(".")[2];
       return auditObject;
@@ -64,6 +78,7 @@ export async function getServerSideProps({ req }) {
         objectTypes,
         uniqueDetails,
         arrayVersion,
+        arrayObject,
       },
     };
   }
