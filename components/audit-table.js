@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import { auditMap } from "./audit";
 import { DataGridContainer } from "./data-grid";
 import SortableGrid from "./sortable-grid";
 
@@ -8,8 +9,30 @@ const auditColumns = [
   {
     id: "audit_level",
     title: "Audit Level",
-    display: ({ source }) =>
-      source.audit_levels ? source.audit_levels.join(", ") : "",
+    /* display: ({ source }) => {
+        // const auditType = source.audit_levels[0];
+        source.audit_levels.map((level) => {
+            const mapping = auditMap[level];
+            return (
+                <>
+                <div className="flex items-center justify-center gap-1">
+                <div>{mapping.humanReadable}</div>
+                <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
+              </div>
+                </>
+            );
+        });
+    },*/
+    display: ({ source }) => {
+      const auditType = source.audit_levels[0];
+      const mapping = auditMap[auditType];
+      return (
+        <div className="flex items-center justify-center gap-1">
+          <div>{mapping.humanReadable}</div>
+          <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
+        </div>
+      );
+    },
   },
   {
     id: "audit_category",

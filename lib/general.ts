@@ -159,3 +159,17 @@ export function truncateJson(
     ? `${json.substring(0, maxOutputLength)}...`
     : json;
 }
+
+/**
+ * Convert arbitrary text to a human readable string. Anything not a letter or number gets replaced
+ * with a dash. Multiple dashes get replaced with a single dash. Leading and trailing dashes get
+ * removed.
+ * @param {string} text Text to convert.
+ * @returns {string} `text` converted to shishkebab case.
+ */
+export function toReadableCase(text: string): string {
+  return text
+    .split("_")
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+}
