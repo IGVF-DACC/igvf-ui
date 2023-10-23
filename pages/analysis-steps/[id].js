@@ -42,7 +42,7 @@ export default function AnalysisStep({
             <DataArea>
               <DataItemLabel>Title</DataItemLabel>
               <DataItemValue>{analysisStep.title}</DataItemValue>
-              {analysisStep.analysis_step_types?.length > 0 && (
+              {analysisStep.analysis_step_types.length > 0 && (
                 <>
                   <DataItemLabel>Analysis Step Types</DataItemLabel>
                   <DataItemValue>
@@ -50,17 +50,13 @@ export default function AnalysisStep({
                   </DataItemValue>
                 </>
               )}
-              {analysisStep.workflow && (
-                <>
-                  <DataItemLabel>Workflow</DataItemLabel>
-                  <DataItemValue>
-                    <Link href={analysisStep.workflow["@id"]}>
-                      {analysisStep.workflow.accession}
-                    </Link>
-                  </DataItemValue>
-                </>
-              )}
-              {analysisStep.input_content_types?.length > 0 && (
+              <DataItemLabel>Workflow</DataItemLabel>
+              <DataItemValue>
+                <Link href={analysisStep.workflow["@id"]}>
+                  {analysisStep.workflow.accession}
+                </Link>
+              </DataItemValue>
+              {analysisStep.input_content_types.length > 0 && (
                 <>
                   <DataItemLabel>Input Content Types</DataItemLabel>
                   <DataItemValue>
@@ -68,7 +64,7 @@ export default function AnalysisStep({
                   </DataItemValue>
                 </>
               )}
-              {analysisStep.output_content_types?.length > 0 && (
+              {analysisStep.output_content_types.length > 0 && (
                 <>
                   <DataItemLabel>Output Content Types</DataItemLabel>
                   <DataItemValue>
