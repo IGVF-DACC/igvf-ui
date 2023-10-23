@@ -4802,6 +4802,355 @@ const profiles = {
       },
     },
   },
+  
+  AnalysisStep: {
+    title: "Analysis Step",
+    description: "A step in a computational analysis workflow. For example, a sequence alignment step that represents the phase of the computational analysis in which sequenced reads are being aligned to the reference genome.",
+    $id: "/profiles/analysis_step.json",
+    identifyingProperties: [
+        "uuid",
+        "aliases",
+        "name"
+    ],
+    properties: {
+        status: {
+            title: "Status",
+            type: "string",
+            default: "in progress",
+            permission: "import_items",
+            enum: [
+                "deleted",
+                "in progress",
+                "released"
+            ]
+        },
+        lab: {
+            title: "Lab",
+            description: "Lab associated with the submission.",
+            comment: "Required. See lab.json for list of available identifiers.",
+            type: "string",
+            linkTo: "Lab",
+            linkSubmitsFor: true
+        },
+        award: {
+            title: "Award",
+            description: "Grant associated with the submission.",
+            comment: "Required. See award.json for list of available identifiers.",
+            type: "string",
+            linkTo: "Award"
+        },
+        aliases: {
+            title: "Aliases",
+            description: "Lab specific identifiers to reference an object.",
+            comment: "The purpose of this field is to provide a link into the lab LIMS and to facilitate shared objects.",
+            type: "array",
+            minItems: 1,
+            uniqueItems: true,
+            items: {
+                uniqueKey: "alias",
+                title: "Lab Alias",
+                description: "A lab specific identifier to reference an object.",
+                comment: "Current convention is colon separated lab name and lab identifier. (e.g. john-doe:42).",
+                type: "string",
+                pattern": "^(?:j-michael-cherry|ali-mortazavi|barbara-wold|lior-pachter|grant-macgregor|kim-green|mark-craven|qiongshi-lu|audrey-gasch|robert-steiner|jesse-engreitz|thomas-quertermous|anshul-kundaje|michael-bassik|will-greenleaf|marlene-rabinovitch|lars-steinmetz|jay-shendure|nadav-ahituv|martin-kircher|danwei-huangfu|michael-beer|anna-katerina-hadjantonakis|christina-leslie|alexander-rudensky|laura-donlin|hannah-carter|bing-ren|kyle-gaulton|maike-sander|charles-gersbach|gregory-crawford|tim-reddy|ansuman-satpathy|andrew-allen|gary-hon|nikhil-munshi|w-lee-kraus|lea-starita|doug-fowler|luca-pinello|guillaume-lettre|benhur-lee|daniel-bauer|richard-sherwood|benjamin-kleinstiver|marc-vidal|david-hill|frederick-roth|mikko-taipale|anne-carpenter|hyejung-won|karen-mohlke|michael-love|jason-buenrostro|bradley-bernstein|hilary-finucane|chongyuan-luo|noah-zaitlen|kathrin-plath|roy-wollman|jason-ernst|zhiping-weng|manuel-garber|xihong-lin|alan-boyle|ryan-mills|jie-liu|maureen-sartor|joshua-welch|stephen-montgomery|alexis-battle|livnat-jerby|jonathan-pritchard|predrag-radivojac|sean-mooney|harinder-singh|nidhi-sahni|jishnu-das|hao-wu|sreeram-kannan|hongjun-song|alkes-price|soumya-raychaudhuri|shamil-sunyaev|len-pennacchio|axel-visel|jill-moore|ting-wang|feng-yue|igvf|igvf-dacc):[a-zA-Z\\d_$.+!*,()'-]+(?:\\s[a-zA-Z\\d_$.+!*,()'-]+)*$"
+            }
+        },
+        submitter_comment: {
+            title: "Submitter Comment",
+            description: "Additional information specified by the submitter to be displayed as a comment on the portal.",
+            type: "string",
+            pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+            formInput: "textarea"
+        },
+        description: {
+            title: "Description",
+            description: "A plain text description of the object.",
+            type: "string",
+            pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$|^$",
+            formInput: "textarea",
+        },
+        analysis_step_types: {
+            title: "Analysis Step Types",
+            description: "The classification of the software.",
+            type: "array",
+            uniqueItems: true,
+            items: {
+                title: "Type",
+                type: "string",
+                enum: [
+                    "alignment",
+                    "file format conversion",
+                    "signal generation"
+                ]
+            },
+        },
+        step_label: {
+            title: "Step Label",
+            description: "Unique lowercased label of the analysis step that includes the relevant assays, the software used, and the purpose of the step, e.g. rampage-grit-peak-calling-step",
+            comment: "Unique for each analysis_step in a given workflow.",
+            type: "string",
+            pattern: "^[a-z0-9-]+-step$",
+        },
+        title: {
+            title: "Title",
+            description: "The preferred viewable name of the analysis step, likely the same as the step label.",
+            type: "string",
+            pattern: "^[a-zA-Z\\d_().,-]+(?:\\s[a-zA-Z\\d_().,-]+)*[step|Step]$",
+        },
+        workflow: {
+            title: "Workflow",
+            description: "The computational workflow in which this analysis step belongs.",
+            type: "string",
+            linkTo: "Workflow",
+        },
+        parents: {
+            title: "Parents",
+            description: "The precursor steps.",
+            uniqueItems: true,
+            type: "array",
+            items: {
+                title: "Parent",
+                description: "A precursor step.",
+                comment: "See analysis_step.json for available identifiers.",
+                type: "string",
+                linkTo: "AnalysisStep"
+            },
+        },
+        input_content_types: {
+            title: "Input Content Types",
+            description: "The content types used as input for the analysis step.",
+            type: "array",
+            uniqueItems: true,
+            items: {
+                title: "Input Content Type",
+                description: "A content type used as input for the analysis step.",
+                type: "string",
+                anyOf: [
+                    {
+                        comment: "Content Type describes the content of the file.",
+                        enum: [
+                            "alignments",
+                            "transcriptome alignments"
+                        ]
+                    },
+                    {
+                        comment: "Content Type describes the content of the file.",
+                        enum: [
+                            "seqspec"
+                        ],
+                    },
+                    {
+                        comment: "Content Type describes the content of the file.",
+                        enum: [
+                            "contact matrix",
+                            "sparse gene count matrix",
+                            "sparse peak count matrix",
+                            "sparse transcript count matrix",
+                            "transcriptome annotations"
+                        ]
+                    },
+                    {
+                        comment: "Content Type describes the content of the file. Genome reference are composite nucleic acid sequences assembled from the sequence of several different individual organisms representing the species. Guide RNA sequences are sequences of RNA molecules used in assays involving CRISPR editing. Sequence barcodes are lists of barcodes found in the sequencing library. Spike-ins are nucleic acid fragments of known sequence and quantity used for calibration in high-throughput sequencing. Transcriptome references are transcriptomic sequences of an idealized representative individual in a species. Vector sequences are sequences tested in MPRAs.",
+                        enum: [
+                            "biological_context",
+                            "complexes",
+                            "complexes_complexes",
+                            "complexes_proteins",
+                            "complexes_terms",
+                            "diseases_genes",
+                            "drugs",
+                            "elements_genes",
+                            "exclusion list",
+                            "genes",
+                            "genes_genes",
+                            "genes_pathways",
+                            "genes_terms",
+                            "genes_transcripts",
+                            "genome reference",
+                            "go_terms_proteins",
+                            "guide RNA sequences",
+                            "inclusion list",
+                            "motifs",
+                            "motifs_proteins",
+                            "ontology_terms",
+                            "ontology_terms_ontology_terms",
+                            "pathways",
+                            "pathways_pathways",
+                            "proteins",
+                            "regulatory_regions",
+                            "sequence barcodes",
+                            "spike-ins",
+                            "studies",
+                            "studies_variants",
+                            "studies_variants_phenotypes",
+                            "transcriptome reference",
+                            "transcripts",
+                            "transcripts_proteins",
+                            "variants",
+                            "variants_drugs",
+                            "variants_drugs_genes",
+                            "variants_genes",
+                            "variants_proteins",
+                            "variants_proteins_terms",
+                            "variants_regulatory_regions",
+                            "variants_variants",
+                            "vector sequences"
+                        ]
+                    },
+                    {
+                        comment: "Content Type describes the content of the file. Reads are individual sequences of bases corresponding to DNA or RNA fragments in a FASTQ text file format. Subreads are sequences of bases produced using PacBio platforms.",
+                        enum: [
+                            "reads",
+                            "subreads"
+                        ]
+                    },
+                    {
+                        comment: "Content Type describes the content of the file.",
+                        enum: [
+                            "signal",
+                            "signal of all reads",
+                            "signal of unique reads",
+                            "signal p-value",
+                            "raw signal",
+                            "read-depth signal",
+                            "control signal",
+                            "fold over change control"
+                        ]
+                    }
+                ]
+            }
+        },
+        output_content_types: {
+            title: "Output Content Types",
+            description: "The content types produced as output by the analysis step.",
+            type: "array",
+            uniqueItems: true,
+            items: {
+                title: "Output Content Type",
+                description: "A content type produced as output by the analysis step.",
+                type: "string",
+                anyOf: [
+                    {
+                        comment: "Content Type describes the content of the file.",
+                        enum: [
+                            "alignments",
+                            "transcriptome alignments"
+                        ],
+                    },
+                    {
+                        comment: "Content Type describes the content of the file.",
+                        enum: [
+                            "seqspec"
+                        ]
+                    },
+                    {
+                        comment: "Content Type describes the content of the file.",
+                        enum: [
+                            "contact matrix",
+                            "sparse gene count matrix",
+                            "sparse peak count matrix",
+                            "sparse transcript count matrix",
+                            "transcriptome annotations"
+                        ],
+                    },
+                    {
+                        comment: "Content Type describes the content of the file. Genome reference are composite nucleic acid sequences assembled from the sequence of several different individual organisms representing the species. Guide RNA sequences are sequences of RNA molecules used in assays involving CRISPR editing. Sequence barcodes are lists of barcodes found in the sequencing library. Spike-ins are nucleic acid fragments of known sequence and quantity used for calibration in high-throughput sequencing. Transcriptome references are transcriptomic sequences of an idealized representative individual in a species. Vector sequences are sequences tested in MPRAs.",
+                        enum: [
+                            "biological_context",
+                            "complexes",
+                            "complexes_complexes",
+                            "complexes_proteins",
+                            "complexes_terms",
+                            "diseases_genes",
+                            "drugs",
+                            "elements_genes",
+                            "exclusion list",
+                            "genes",
+                            "genes_genes",
+                            "genes_pathways",
+                            "genes_terms",
+                            "genes_transcripts",
+                            "genome reference",
+                            "go_terms_proteins",
+                            "guide RNA sequences",
+                            "inclusion list",
+                            "motifs",
+                            "motifs_proteins",
+                            "ontology_terms",
+                            "ontology_terms_ontology_terms",
+                            "pathways",
+                            "pathways_pathways",
+                            "proteins",
+                            "regulatory_regions",
+                            "sequence barcodes",
+                            "spike-ins",
+                            "studies",
+                            "studies_variants",
+                            "studies_variants_phenotypes",
+                            "transcriptome reference",
+                            "transcripts",
+                            "transcripts_proteins",
+                            "variants",
+                            "variants_drugs",
+                            "variants_drugs_genes",
+                            "variants_genes",
+                            "variants_proteins",
+                            "variants_proteins_terms",
+                            "variants_regulatory_regions",
+                            "variants_variants",
+                            "vector sequences"
+                        ],
+                    },
+                    {
+                        comment: "Content Type describes the content of the file. Reads are individual sequences of bases corresponding to DNA or RNA fragments in a FASTQ text file format. Subreads are sequences of bases produced using PacBio platforms.",
+                        enum: [
+                            "reads",
+                            "subreads"
+                        ],
+                    },
+                    {
+                        comment: "Content Type describes the content of the file.",
+                        enum: [
+                            "signal",
+                            "signal of all reads",
+                            "signal of unique reads",
+                            "signal p-value",
+                            "raw signal",
+                            "read-depth signal",
+                            "control signal",
+                            "fold over change control"
+                        ],
+                    }
+                ]
+            },
+        },
+        "@id": {
+            title: "ID",
+            type: "string",
+            notSubmittable: true
+        },
+        "@type": {
+            title: "Type",
+            type: "array",
+            items: {
+                "type": "string"
+            },
+            notSubmittable: true
+        },
+        summary: {
+            title: "Summary",
+            type: "string",
+            notSubmittable: true
+        },
+        name: {
+            title: "Name",
+            type: "string",
+            description: "Full name of the analysis step.",
+            comment: "Do not submit. Value is automatically assigned by the server.",
+            uniqueKey: "name",
+            notSubmittable: true
+        }
+    },
 };
 
 export default profiles;

@@ -42,6 +42,18 @@ export default function AnalysisStep({
             <DataArea>
               <DataItemLabel>Title</DataItemLabel>
               <DataItemValue>{analysisStep.title}</DataItemValue>
+              {analysisStep.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{analysisStep.description}</DataItemValue>
+                </>
+              )}
+              {analysisStep.step_label && (
+                <>
+                  <DataItemLabel>Step Label</DataItemLabel>
+                  <DataItemValue>{analysisStep.step_label}</DataItemValue>
+                </>
+              )}
               {analysisStep.analysis_step_types.length > 0 && (
                 <>
                   <DataItemLabel>Analysis Step Types</DataItemLabel>
@@ -72,6 +84,20 @@ export default function AnalysisStep({
                   </DataItemValue>
                 </>
               )}
+              {analysisStep.parents?.length > 0 && (
+                <>
+                  <DataItemLabel>Parents</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {parents.map((parent) => (
+                        <Link href={parent["@id"]} key={parent["@id"]}>
+                          {parent}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
               {analysisStep.aliases?.length > 0 && (
                 <>
                   <DataItemLabel>Aliases</DataItemLabel>
@@ -80,14 +106,14 @@ export default function AnalysisStep({
                   </DataItemValue>
                 </>
               )}
+              {analysisStep.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{analysisStep.submitter_comment}</DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
-          {documents?.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
