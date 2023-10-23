@@ -50,7 +50,7 @@ const sampleColumns = [
     id: "construct_library_sets",
     title: "Construct Library Set",
     display: ({ source }, { constructLibrarySetAccessions }) => {
-      if (source.construct_library_sets.length > 0) {
+      if (source.construct_library_sets && source.construct_library_sets.length > 0) {
         return (
           <SeparatedList>
             {source.construct_library_sets.map((id) => {
