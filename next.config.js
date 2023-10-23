@@ -23,4 +23,13 @@ module.exports = {
       process.env.PUBLIC_BACKEND_URL || process.env.BACKEND_URL || "",
     UI_VERSION,
   },
+  async redirects() {
+    return [
+      {
+        source: "/profiles/graph.dot",
+        destination: "/profiles/graph.svg",
+        permanent: true,
+      },
+    ];
+  },
 };
