@@ -2601,7 +2601,7 @@ describe("Test Analysis Step component", () => {
   it("renders an analysis step item", () => {
     const item = {
       "@id": "/analysis-steps/IGVFWF3254CAGQ-example-signal-generation-analysis-step/",
-      "@type": ["AnalysisStep", Item"],
+      "@type": ["AnalysisStep", "Item"],
       award: "/awards/HG012012/",
       lab: "/labs/j-michael-cherry/",
       status: "released",

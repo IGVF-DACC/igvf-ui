@@ -109,7 +109,9 @@ export default function AnalysisStep({
               {analysisStep.submitter_comment && (
                 <>
                   <DataItemLabel>Submitter Comment</DataItemLabel>
-                  <DataItemValue>{analysisStep.submitter_comment}</DataItemValue>
+                  <DataItemValue>
+                    {analysisStep.submitter_comment}
+                  </DataItemValue>
                 </>
               )}
             </DataArea>
