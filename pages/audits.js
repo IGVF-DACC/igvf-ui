@@ -24,6 +24,8 @@ export default function AuditDoc({ arrayObject }) {
       <DataItemValue>{JSON.stringify(arrayObject, undefined, 2)}</DataItemValue>
       {Object.keys(arrayObject).map((itemType) => {
         const typeAudits = arrayObject[itemType];
+        // filter out internal actions audits. If it returns 0, null if 1+ then print the loop
+        console.log(typeAudits);
         return (
           <>
             <h2 className="mb-1 px-2 pt-8 text-lg font-semibold text-brand">
@@ -45,9 +47,10 @@ export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const auditDoc = await request.getObject("/static/doc/auditdoc.json");
   if (FetchRequest.isResponseSuccess(auditDoc)) {
-    const objectTypes = Object.keys(auditDoc).filter(
-      (audit) => audit.audit_levels !== "INTERNAL_ACTION"
-    );
+    const objectTypes = Object.keys(auditDoc).filter((auditKey) => {
+      const audit = auditDoc[auditKey];
+      return audit.audit_levels !== "INTERNAL_ACTION";
+    });
     const arrayVersion = Object.keys(auditDoc).map((key) => {
       return {
         key: key.split(".")[2],
@@ -60,7 +63,6 @@ export async function getServerSideProps({ req }) {
       return auditObject;
     });
     const uniqueDetails = [...new Set(details)];
-    console.log(uniqueDetails);
     return {
       props: {
         auditDoc,

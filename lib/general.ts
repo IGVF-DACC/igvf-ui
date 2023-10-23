@@ -161,9 +161,7 @@ export function truncateJson(
 }
 
 /**
- * Convert arbitrary text to a human readable string. Anything not a letter or number gets replaced
- * with a dash. Multiple dashes get replaced with a single dash. Leading and trailing dashes get
- * removed.
+ * Convert arbitrary text to a human readable string. All underscores gets replaced with a space and the first letter of each word gets capitalized.
  * @param {string} text Text to convert.
  * @returns {string} `text` converted to shishkebab case.
  */

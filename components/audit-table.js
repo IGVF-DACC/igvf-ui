@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { Fragment } from "react";
 // components
 import { auditMap } from "./audit";
 import { DataGridContainer } from "./data-grid";
@@ -9,27 +10,21 @@ const auditColumns = [
   {
     id: "audit_level",
     title: "Audit Level",
-    /* display: ({ source }) => {
-        // const auditType = source.audit_levels[0];
-        source.audit_levels.map((level) => {
+    display: ({ source }) => {
+      // filter out the internal action string.
+      return (
+        <div>
+          {source.audit_levels.map((level) => {
             const mapping = auditMap[level];
             return (
-                <>
-                <div className="flex items-center justify-center gap-1">
-                <div>{mapping.humanReadable}</div>
-                <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
-              </div>
-                </>
+              <Fragment key={level}>
+                <div className="flex items-center justify-start gap-1">
+                  <div>{mapping.humanReadable}</div>
+                  <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
+                </div>
+              </Fragment>
             );
-        });
-    },*/
-    display: ({ source }) => {
-      const auditType = source.audit_levels[0];
-      const mapping = auditMap[auditType];
-      return (
-        <div className="flex items-center justify-center gap-1">
-          <div>{mapping.humanReadable}</div>
-          <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
+          })}
         </div>
       );
     },
