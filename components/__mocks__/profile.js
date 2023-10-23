@@ -5151,6 +5151,6 @@ const profiles = {
             notSubmittable: true
         }
     },
-};
+},
 
 export default profiles;
