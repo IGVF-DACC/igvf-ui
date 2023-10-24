@@ -17,14 +17,20 @@ import { err, fromOption, ok } from "./result";
  * @param {string} dataProviderUrl URL of the data provider instance
  * @returns {object} Session object including the CSRF token
  */
-export async function getSession(dataProviderUrl: string): Promise<DataProviderObject | null> {
+export async function getSession(
+  dataProviderUrl: string
+): Promise<DataProviderObject | null> {
   const request = new FetchRequest();
-  const session = fromOption(await request.getObjectByUrl(`${dataProviderUrl}/session`, null)).and_then((s) => {
-    if (s.isError) {
-      return err(null);
-    }
-    return ok(s as DataProviderObject);
-  }).optional() as DataProviderObject | null;
+  const session = fromOption(
+    await request.getObjectByUrl(`${dataProviderUrl}/session`, null)
+  )
+    .and_then((s) => {
+      if (s.isError) {
+        return err(null);
+      }
+      return ok(s as DataProviderObject);
+    })
+    .optional() as DataProviderObject | null;
   return session;
 }
 
@@ -34,14 +40,20 @@ export async function getSession(dataProviderUrl: string): Promise<DataProviderO
  * @param {string} dataProviderUrl URL of the data provider instance
  * @returns {object} session-properties object
  */
-export async function getSessionProperties(dataProviderUrl: string): Promise<DataProviderObject | null> {
+export async function getSessionProperties(
+  dataProviderUrl: string
+): Promise<DataProviderObject | null> {
   const request = new FetchRequest();
-  const sessionProps = fromOption(await request.getObjectByUrl(`${dataProviderUrl}/session-properties`, null)).and_then((s) => {
-    if (s.isError) {
-      return err(null);
-    }
-    return ok(s as DataProviderObject);
-  }).optional() as DataProviderObject | null;
+  const sessionProps = fromOption(
+    await request.getObjectByUrl(`${dataProviderUrl}/session-properties`, null)
+  )
+    .and_then((s) => {
+      if (s.isError) {
+        return err(null);
+      }
+      return ok(s as DataProviderObject);
+    })
+    .optional() as DataProviderObject | null;
   return sessionProps;
 }
 
@@ -54,7 +66,7 @@ export async function getSessionProperties(dataProviderUrl: string): Promise<Dat
 export async function getDataProviderUrl(): Promise<string | null> {
   const request = new FetchRequest({ backend: true });
   const response = (await request.getObject("/api/data-provider")).optional();
-  return response?.dataProviderUrl as string || null;
+  return (response?.dataProviderUrl as string) || null;
 }
 
 /**
@@ -65,7 +77,7 @@ export async function getDataProviderUrl(): Promise<string | null> {
  */
 export async function loginDataProvider(
   loggedOutSession: { _csrft_: string },
-  getAccessTokenSilently: () => Promise<any>,
+  getAccessTokenSilently: () => Promise<any>
 ) {
   const accessToken = await getAccessTokenSilently();
   const request = new FetchRequest({ session: loggedOutSession });
@@ -76,7 +88,9 @@ export async function loginDataProvider(
  * Log the current user out of the data provider after logging out of Auth0.
  * @returns {object} Empty object, because async functions have to return something
  */
-export async function logoutDataProvider(): Promise<DataProviderObject | ErrorObject> {
+export async function logoutDataProvider(): Promise<
+  DataProviderObject | ErrorObject
+> {
   const request = new FetchRequest();
   return (await request.getObject("/logout?redirect=false")).union();
 }
@@ -109,7 +123,10 @@ export function loginAuthProvider(loginWithRedirect: (info: any) => any) {
  * @param {function} logout Auth0-react function to logout of the authentication provider
  * @param {string} altPath Optional path to redirect to after logging out; "/" by default
  */
-export function logoutAuthProvider(logout: (info: any) => any, altPath: string = "") {
+export function logoutAuthProvider(
+  logout: (info: any) => any,
+  altPath: string = ""
+) {
   logout({
     clientId: AUTH0_CLIENT_ID,
     logoutParams: {
