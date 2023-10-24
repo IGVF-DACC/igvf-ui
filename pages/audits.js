@@ -38,7 +38,7 @@ export default function AuditDoc({ auditDoc }) {
         );
         if (filteredAudits.length > 0) {
           return (
-            <Fragment key={keyedAudits}>
+            <Fragment key={itemType}>
               <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
                 {snakeCaseToHuman(itemType)}
               </h2>
