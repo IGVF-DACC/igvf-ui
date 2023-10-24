@@ -3,6 +3,7 @@ import _ from "lodash";
 import PropTypes from "prop-types";
 // component
 import AuditDynamicTable from "../components/audit-dynamic-table";
+import Breadcrumbs from "../components/breadcrumbs";
 import Markdown from "../components/markdown";
 // lib
 import errorObjectToProps from "../lib/errors";
@@ -12,6 +13,7 @@ import { formatPropertyName } from "../lib/general";
 export default function AuditDoc({ auditArrayObject }) {
   return (
     <>
+      <Breadcrumbs />
       <h1 className="tight my-4 text-center text-xl font-bold text-black dark:text-gray-300 sm:text-2xl md:my-10 md:text-3xl lg:text-4xl">
         Audits
       </h1>
