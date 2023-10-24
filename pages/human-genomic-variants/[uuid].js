@@ -79,9 +79,9 @@ HumanGenomicVariant.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const variant = await request.getObject(
-    `/human-genomic-variants/${params.uuid}/`
-  );
+  const variant = (
+    await request.getObject(`/human-genomic-variants/${params.uuid}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(variant)) {
     const breadcrumbs = await buildBreadcrumbs(
       variant,

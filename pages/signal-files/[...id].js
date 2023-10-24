@@ -174,9 +174,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const signalFile = await request.getObject(`/signal-files/${params.id}/`);
+  const signalFile = (
+    await request.getObject(`/signal-files/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(signalFile)) {
-    const fileSet = await request.getObject(signalFile.file_set, null);
+    const fileSet = (await request.getObject(signalFile.file_set)).optional();
     const documents = signalFile.documents
       ? await requestDocuments(signalFile.documents, request)
       : [];

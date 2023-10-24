@@ -2,8 +2,8 @@
 import FetchRequest from "./fetch-request";
 import { requestUsers } from "./common-requests";
 import { DataProviderObject } from "../globals";
-import { ErrorObject } from "./fetch-request.d";
-import { nullOnError } from "./general";
+import { itemId } from "./general";
+import { err, fromOption, ok } from "./result";
 
 /**
  * An interface that for an object which can have attribution
@@ -20,7 +20,7 @@ export interface Attributable {
   "@type": string[];
   lab?: string | { "@id": string };
   award?: string | { "@id": string };
-  collections?: [] | null;
+  collections?: [string] | null;
 }
 
 /**
@@ -50,38 +50,39 @@ export default async function buildAttribution(
 ): Promise<Attribution> {
   const request = new FetchRequest({ cookie });
 
-  const lab = nullOnError<DataProviderObject, ErrorObject>(
-    obj.lab
-      ? typeof obj.lab === "string"
-        ? await request.getObject(obj.lab, null)
-        : await request.getObject(obj.lab["@id"], null)
-      : null
-  );
+  const lab = (
+    await fromOption(obj.lab).and_then_async(async (x) => {
+      const id = itemId(x);
+      return (await request.getObject(id)).map_err((_x) => null);
+    })
+  ).optional();
 
-  const award = nullOnError<DataProviderObject, ErrorObject>(
-    obj.award
-      ? typeof obj.award === "string"
-        ? await request.getObject(obj.award, null)
-        : await request.getObject(obj.award["@id"], null)
-      : null
-  );
+  const award = (
+    await fromOption(obj.award).and_then_async(async (x) => {
+      const id = itemId(x);
+      return (await request.getObject(id)).map_err((_x) => null);
+    })
+  ).optional();
 
-  const contactPi =
-    award && award.contact_pi
-      ? nullOnError<DataProviderObject, ErrorObject>(
-          await request.getObject(award.contact_pi as string, null)
-        )
-      : null;
+  const contactPi = (
+    await fromOption(award)
+      .and_then((a) => fromOption(a.contact_pi as string))
+      .and_then_async(async (p) => {
+        return (await request.getObject(p)).map_err((_e) => null);
+      })
+  ).optional();
 
-  const pis =
-    award && award.pis
-      ? nullOnError<object[], ErrorObject>(
-          await requestUsers(award.pis as string[], request)
-        )
-      : null;
+  const pis = (
+    await fromOption(award)
+      .and_then((a) => fromOption(a.pis as Array<string>))
+      .map_async(async (ps) => {
+        return await requestUsers(ps, request);
+      })
+  ).optional();
 
-  const collections =
-    obj.collections && obj.collections.length > 0 ? obj.collections : null;
+  const collections = fromOption(obj.collections)
+    .and_then<[string]>((c) => (c.length > 0 ? ok(c) : err(null)))
+    .optional();
 
   return {
     type: obj["@type"][0],

@@ -101,10 +101,10 @@ Software.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const software = await request.getObject(`/software/${params.id}/`);
+  const software = (await request.getObject(`/software/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(software)) {
-    const award = await request.getObject(software.award["@id"], null);
-    const lab = await request.getObject(software.lab["@id"], null);
+    const award = (await request.getObject(software.award["@id"])).optional();
+    const lab = (await request.getObject(software.lab["@id"])).optional();
     const versions =
       software.versions.length > 0
         ? await requestSoftwareVersions(software.versions, request)

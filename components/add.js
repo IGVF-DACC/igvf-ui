@@ -179,7 +179,7 @@ export function AddInstancePage({ collection }) {
     // Grab the schema from profilePath so we can make an empty object template
     new FetchRequest({ session }).getObject(profilePath).then((schema) => {
       // We have the schema, so produce a dummy json from the schema
-      const biggerSchema = convertOptionalIntoRequiredSchema(schema);
+      const biggerSchema = convertOptionalIntoRequiredSchema(schema.union());
       const basic = empty(biggerSchema);
       setText(JSON.stringify(basic, null, 4));
     });

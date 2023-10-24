@@ -1,5 +1,5 @@
 import _ from "lodash";
-import FetchRequest from "../fetch-request";
+import FetchRequest, { HTTP_STATUS_CODE } from "../fetch-request";
 import { DataProviderObject } from "../../globals";
 import type { ErrorObject } from "../fetch-request.d";
 
@@ -65,26 +65,22 @@ describe("Test GET requests to the data provider", () => {
 
     const request = new FetchRequest();
     let labItem = await request.getObject("/labs/j-michael-cherry/");
-    expect(labItem).toBeTruthy();
-    expect(_.isEqual(labItem, mockData)).toBeTruthy();
+    expect(labItem.isOk()).toBeTruthy();
+    expect(_.isEqual(labItem.unwrap(), mockData)).toBeTruthy();
 
-    labItem = await request.getObject(
-      "/labs/j-michael-cherry?type=Lab",
-      undefined,
-      {
-        isDbRequest: true,
-      }
-    );
-    expect(labItem).toBeTruthy();
-    expect(_.isEqual(labItem, mockData)).toBeTruthy();
-
-    labItem = await request.getObject("/labs/j-michael-cherry", undefined, {
+    labItem = await request.getObject("/labs/j-michael-cherry?type=Lab", {
       isDbRequest: true,
     });
-    expect(labItem).toBeTruthy();
-    expect(_.isEqual(labItem, mockData)).toBeTruthy();
+    expect(labItem.isOk()).toBeTruthy();
+    expect(_.isEqual(labItem.unwrap(), mockData)).toBeTruthy();
+
+    labItem = await request.getObject("/labs/j-michael-cherry", {
+      isDbRequest: true,
+    });
+    expect(labItem.isOk()).toBeTruthy();
+    expect(_.isEqual(labItem.unwrap(), mockData)).toBeTruthy();
     expect(
-      FetchRequest.isResponseSuccess(labItem as DataProviderObject)
+      FetchRequest.isResponseSuccess(labItem.unwrap() as DataProviderObject)
     ).toBeTruthy();
   });
 
@@ -103,37 +99,36 @@ describe("Test GET requests to the data provider", () => {
         title: "Jesse Engreitz, Stanford University",
       },
     ];
-    window.fetch = jest.fn().mockImplementation((url) =>
-      Promise.resolve({
-        ok: true,
+    window.fetch = jest.fn().mockImplementation((url) => {
+      const matchingData = mockData.find((data) => url === data["@id"]) || null;
+      return Promise.resolve({
+        ok: matchingData !== null,
         json: () => {
-          const matchingData =
-            mockData.find((data) => url === data["@id"]) || null;
           return Promise.resolve(matchingData);
         },
-      })
-    );
+      });
+    });
 
     // Retrieve multiple lab items without filtering error results.
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
-    let labItems = await request.getMultipleObjects(
-      ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      null
-    );
+    let labItems = await request.getMultipleObjects([
+      "/labs/j-michael-cherry/",
+      "/labs/jesse-engreitz/",
+      "/labs/unknown/",
+    ]);
     expect(labItems).toBeTruthy();
     expect(labItems).toHaveLength(3);
 
     // Retrieve multiple lab items while filtering error results.
     labItems = await request.getMultipleObjects(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      null,
       { filterErrors: true }
     );
     expect(labItems).toBeTruthy();
     expect(labItems).toHaveLength(2);
 
     // Make sure passing an empty array returns an empty array.
-    const noLabItems = await request.getMultipleObjects([], null);
+    const noLabItems = await request.getMultipleObjects([]);
     expect(noLabItems).toBeTruthy();
     expect(noLabItems).toHaveLength(0);
   });
@@ -156,7 +151,7 @@ describe("Test GET requests to the data provider", () => {
     const request = new FetchRequest();
     const labCollection = await request.getCollection("labs");
     expect(labCollection).toBeTruthy();
-    expect(_.isEqual(labCollection, mockData)).toBeTruthy();
+    expect(_.isEqual(labCollection.unwrap(), mockData)).toBeTruthy();
   });
 
   it("receives a network error object when fetch throws an error", async () => {
@@ -165,9 +160,9 @@ describe("Test GET requests to the data provider", () => {
     });
 
     const request = new FetchRequest();
-    const labItem = (await request.getObject(
-      "/labs/j-michael-cherry/"
-    )) as DataProviderObject;
+    const labItem = (
+      await request.getObject("/labs/j-michael-cherry/")
+    ).union() as DataProviderObject;
     expect(labItem).toBeTruthy();
     expect(labItem["@type"]).toContain("NetworkError");
     expect(labItem.status).toEqual("error");
@@ -179,28 +174,17 @@ describe("Test GET requests to the data provider", () => {
     window.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         ok: false,
-        json: () =>
-          Promise.resolve({
-            "@type": ["HTTPNotFound", "Error"],
-            status: "error",
-            code: 404,
-            title: "Not Found",
-            description: "The resource could not be found.",
-            detail: "URL",
-          }),
+        status: 404,
+        statusText: "URL",
+        text: () => Promise.resolve("The resource could not be found."),
       })
     );
 
-    type defaultError = {
-      notOK: string;
-    };
-
     const request = new FetchRequest();
-    const labItem = await request.getObject("/labs/j-michael-cherry/", {
-      notOK: "nope",
-    });
-    expect(labItem).toBeTruthy();
-    expect((labItem as defaultError).notOK).toEqual("nope");
+    console.log("We want 404");
+    const labItem = await request.getObject("/labs/j-michael-cherry/");
+    expect(labItem.isErr()).toBeTruthy();
+    expect(labItem.unwrap_err().code).toEqual(404);
   });
 
   it("returns a default error value on a network error", async () => {
@@ -208,16 +192,13 @@ describe("Test GET requests to the data provider", () => {
       throw "Mock request error";
     });
 
-    type defaultError = {
-      notOK: string;
-    };
-
     const request = new FetchRequest();
-    const labItem = await request.getObject("/labs/j-michael-cherry/", {
-      notOK: "nope",
-    });
-    expect(labItem).toBeTruthy();
-    expect((labItem as defaultError).notOK).toEqual("nope");
+    const labItem = await request.getObject("/labs/j-michael-cherry/");
+    expect(labItem.isErr()).toBeTruthy();
+    expect(labItem.unwrap_err().code).toBe(
+      HTTP_STATUS_CODE.SERVICE_UNAVAILABLE
+    );
+    expect(labItem.optional()).toBe(null);
   });
 });
 
@@ -537,7 +518,7 @@ describe("PATCH fetch requests", () => {
       const awardProfiles = await request.getObject(
         "/api/mapprofile?profile=award"
       );
-      expect(awardProfiles).toEqual(mockData);
+      expect(awardProfiles.unwrap()).toEqual(mockData);
     });
   });
 });
@@ -571,11 +552,10 @@ describe("Test getMultipleObjectsBulk()", () => {
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      ["name"],
-      null
+      ["name"]
     );
-    expect(labItems).toBeTruthy();
-    expect(labItems).toHaveLength(2);
+    expect(labItems.isOk()).toBeTruthy();
+    expect(labItems.unwrap()).toHaveLength(2);
   });
 
   it("retrieves a small number of items from the server correctly with no fields requested", async () => {
@@ -606,11 +586,10 @@ describe("Test getMultipleObjectsBulk()", () => {
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      [],
-      null
+      []
     );
-    expect(labItems).toBeTruthy();
-    expect(labItems).toHaveLength(2);
+    expect(labItems.isOk()).toBeTruthy();
+    expect(labItems.unwrap()).toHaveLength(2);
   });
 
   it("retrieves a large number of items from the server correctly", async () => {
@@ -655,46 +634,22 @@ describe("Test getMultipleObjectsBulk()", () => {
     });
 
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
-    const labItems = await request.getMultipleObjectsBulk(
-      paths,
-      ["name"],
-      null
-    );
-    expect(labItems).toBeTruthy();
-    expect(labItems).toHaveLength(100);
+    const labItems = await request.getMultipleObjectsBulk(paths, ["name"]);
+    expect(labItems.isOk()).toBeTruthy();
+    expect(labItems.unwrap()).toHaveLength(100);
   });
 
   it("retrieves no items from an empty array", async () => {
     // Make sure passing an empty array returns an empty array.
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
-    const noLabItems = await request.getMultipleObjectsBulk([], ["name"], null);
-    expect(noLabItems).toBeTruthy();
-    expect(noLabItems).toHaveLength(0);
+    const noLabItems = await request.getMultipleObjectsBulk([], ["name"]);
+    expect(noLabItems.isOk()).toBeTruthy();
+    expect(noLabItems.unwrap()).toHaveLength(0);
   });
 
   it("detects a network error and returns the specified error value", async () => {
     window.fetch = jest.fn().mockImplementation(() => {
-      return Promise.resolve({
-        ok: false,
-        json: () => Promise.resolve(null),
-      });
-    });
-
-    const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
-    const labItems = await request.getMultipleObjectsBulk(
-      ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
-      ["name"],
-      null
-    );
-    expect(labItems).toBeFalsy();
-  });
-
-  it("detects a network error and returns the default error value", async () => {
-    window.fetch = jest.fn().mockImplementation(() => {
-      return Promise.resolve({
-        ok: false,
-        json: () => Promise.resolve(null),
-      });
+      throw "Mock request error";
     });
 
     const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
@@ -702,12 +657,11 @@ describe("Test getMultipleObjectsBulk()", () => {
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
       ["name"]
     );
-    expect(labItems).toBeTruthy();
-    const errorResult = labItems as ErrorObject;
-    expect(errorResult["@type"]).toContain("NetworkError");
-    expect(errorResult.status).toEqual("error");
-    expect(errorResult.code).toEqual(503);
-    expect(FetchRequest.isResponseSuccess(errorResult)).toBeFalsy();
+    expect(labItems.isErr()).toBeTruthy();
+    expect(labItems.unwrap_err().code).toBe(
+      HTTP_STATUS_CODE.SERVICE_UNAVAILABLE
+    );
+    expect(labItems.unwrap_err()["@type"]).toContain("NetworkError");
   });
 });
 

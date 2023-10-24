@@ -109,7 +109,9 @@ Document.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const document = await request.getObject(`/documents/${params.id}/`);
+  const document = (
+    await request.getObject(`/documents/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(document)) {
     const breadcrumbs = await buildBreadcrumbs(
       document,

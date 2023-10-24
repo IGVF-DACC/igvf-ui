@@ -45,7 +45,9 @@ Schema.propTypes = {
 
 export async function getServerSideProps({ params, req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const schema = await request.getObject(`/profiles/${params.profile}`);
+  const schema = (
+    await request.getObject(`/profiles/${params.profile}`)
+  ).union();
   if (FetchRequest.isResponseSuccess(schema)) {
     const changelog = await request.getText(schema.changelog, "");
     const breadcrumbs = await buildBreadcrumbs(

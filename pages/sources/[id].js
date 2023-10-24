@@ -72,7 +72,7 @@ Source.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const source = await request.getObject(`/sources/${params.id}/`);
+  const source = (await request.getObject(`/sources/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(source)) {
     const breadcrumbs = await buildBreadcrumbs(
       source,

@@ -147,7 +147,9 @@ AnalysisSet.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const analysisSet = await request.getObject(`/analysis-sets/${params.id}/`);
+  const analysisSet = (
+    await request.getObject(`/analysis-sets/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(analysisSet)) {
     const documents = analysisSet.documents
       ? await requestDocuments(analysisSet.documents, request)

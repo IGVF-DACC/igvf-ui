@@ -165,11 +165,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const referenceFile = await request.getObject(
-    `/reference-files/${params.id}/`
-  );
+  const referenceFile = (
+    await request.getObject(`/reference-files/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(referenceFile)) {
-    const fileSet = await request.getObject(referenceFile.file_set, null);
+    const fileSet = (
+      await request.getObject(referenceFile.file_set)
+    ).optional();
     const documents = referenceFile.documents
       ? await requestDocuments(referenceFile.documents, request)
       : [];

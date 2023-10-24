@@ -172,10 +172,10 @@ Workflow.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const workflow = await request.getObject(`/workflow/${params.id}/`);
+  const workflow = (await request.getObject(`/workflow/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(workflow)) {
-    const award = await request.getObject(workflow.award["@id"], null);
-    const lab = await request.getObject(workflow.lab["@id"], null);
+    const award = (await request.getObject(workflow.award["@id"])).optional();
+    const lab = (await request.getObject(workflow.lab["@id"])).optional();
     const documents = workflow.documents
       ? await requestDocuments(workflow.documents, request)
       : [];

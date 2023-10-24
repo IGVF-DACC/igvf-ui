@@ -271,7 +271,9 @@ export async function getServerSideProps({ req, query }) {
 
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const queryParams = getQueryStringFromServerQuery(query);
-  const searchResults = await request.getObject(`/multireport/?${queryParams}`);
+  const searchResults = (
+    await request.getObject(`/multireport/?${queryParams}`)
+  ).union();
 
   if (FetchRequest.isResponseSuccess(searchResults)) {
     const breadcrumbs = await buildBreadcrumbs(

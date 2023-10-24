@@ -1,4 +1,4 @@
-import { err, fromOption, ok } from "../result";
+import { Err, Ok, err, fromOption, ok } from "../result";
 
 describe("Ok Result", () => {
   it("Ok isErr", () => {
@@ -17,6 +17,12 @@ describe("Ok Result", () => {
         })
         .unwrap()
     ).toBe(3);
+  });
+
+  it("Ok map_async", async () => {
+    expect(await ok("map").map_async(async (s) => s.length)).toStrictEqual(
+      ok(3)
+    );
   });
 
   it("Ok map_err", () => {
@@ -78,6 +84,10 @@ describe("Ok Result", () => {
   it("Ok contained", () => {
     expect(ok("foo").contained()).toStrictEqual(ok("foo"));
   });
+
+  it("Ok all should filter out Err and unwrap a list of results", () => {
+    expect(Ok.all([ok(12), ok(14), err("hi")])).toStrictEqual([12, 14]);
+  });
 });
 
 describe("Err Result", () => {
@@ -98,6 +108,12 @@ describe("Err Result", () => {
         })
         .unwrap_err()
     ).toBe(null);
+  });
+
+  it("Err map_async", async () => {
+    expect(
+      await err<string, string>("error").map_async(async (s) => s.length)
+    ).toStrictEqual(err("error"));
   });
 
   it("Err map_err", () => {
@@ -153,12 +169,17 @@ describe("Err Result", () => {
   it("Err contained", () => {
     expect(err("foo").contained()).toStrictEqual(err("foo"));
   });
+
+  it("Err all should filter out Ok and unwrap a list of results", () => {
+    expect(Err.all([ok(12), ok(14), err("hi")])).toStrictEqual(["hi"]);
+  });
 });
 
 describe("Test the utility functions", () => {
   it("test fromOption value", () => {
     expect(fromOption("foo")).toStrictEqual(ok("foo"));
   });
+
   it("test fromOption null or undefined", () => {
     expect(fromOption(null)).toStrictEqual(err(null));
     expect(fromOption(undefined)).toStrictEqual(err(null));

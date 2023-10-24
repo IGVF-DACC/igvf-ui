@@ -195,12 +195,11 @@ Profiles.propTypes = {
 
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const schemas = await request.getObject("/profiles");
+  const schemas = (await request.getObject("/profiles")).union();
   if (FetchRequest.isResponseSuccess(schemas)) {
-    const collectionTitles = await request.getObject(
-      "/collection-titles/",
-      null
-    );
+    const collectionTitles = (
+      await request.getObject("/collection-titles/")
+    ).optional();
     const schemasWithoutDeprecated = deleteDeprecatedSchemas(schemas);
     const breadcrumbs = await buildBreadcrumbs(schemas, "", req.headers.cookie);
     return {

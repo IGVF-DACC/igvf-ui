@@ -60,9 +60,9 @@ AssayOntologyTerm.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const assayOntologyTerm = await request.getObject(
-    `/assay-terms/${params.name}/`
-  );
+  const assayOntologyTerm = (
+    await request.getObject(`/assay-terms/${params.name}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(assayOntologyTerm)) {
     const isA = assayOntologyTerm.is_a
       ? await requestOntologyTerms(assayOntologyTerm.is_a, request)

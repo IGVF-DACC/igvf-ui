@@ -98,7 +98,7 @@ FallbackObject.propTypes = {
 export async function getServerSideProps({ req, resolvedUrl, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const generic = await request.getObject(resolvedUrl);
+  const generic = (await request.getObject(resolvedUrl)).union();
   if (FetchRequest.isResponseSuccess(generic)) {
     let awards = null;
     let labs = null;
@@ -106,9 +106,15 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
     let breadcrumbs = null;
     if (generic["@type"].includes("Page")) {
       // For objects with type 'Page', also get extra data needed for editing the page.
-      awards = await request.getCollection("awards");
-      labs = await request.getCollection("labs");
-      pages = await request.getCollection("pages");
+      awards = (await request.getCollection("awards"))
+        .map((c) => c["@graph"])
+        .optional();
+      labs = (await request.getCollection("labs"))
+        .map((c) => c["@graph"])
+        .optional();
+      pages = (await request.getCollection("pages"))
+        .map((c) => c["@graph"])
+        .optional();
       breadcrumbs = await buildBreadcrumbs(
         generic,
         "title",
@@ -119,9 +125,9 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
     return {
       props: {
         generic,
-        awards: awards ? awards["@graph"] : null,
-        labs: labs ? labs["@graph"] : null,
-        pages: pages ? pages["@graph"] : null,
+        awards,
+        labs,
+        pages,
         attribution,
         pageContext: { title: extractTitle(generic) },
         breadcrumbs,

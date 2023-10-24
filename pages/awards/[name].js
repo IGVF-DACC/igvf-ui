@@ -123,7 +123,7 @@ Award.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const award = await request.getObject(`/awards/${params.name}/`);
+  const award = (await request.getObject(`/awards/${params.name}/`)).union();
   if (FetchRequest.isResponseSuccess(award)) {
     const pis =
       award.pis?.length > 0 ? await requestUsers(award.pis, request) : [];

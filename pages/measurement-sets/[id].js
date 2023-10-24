@@ -317,14 +317,13 @@ MeasurementSet.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const measurementSet = await request.getObject(
-    `/measurement-sets/${params.id}/`
-  );
+  const measurementSet = (
+    await request.getObject(`/measurement-sets/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(measurementSet)) {
-    const assayTerm = await request.getObject(
-      measurementSet.assay_term["@id"],
-      null
-    );
+    const assayTerm = (
+      await request.getObject(measurementSet.assay_term["@id"])
+    ).optional();
     const documents = measurementSet.documents
       ? await requestDocuments(measurementSet.documents, request)
       : [];
@@ -340,10 +339,9 @@ export async function getServerSideProps({ params, req, query }) {
     }
     let libraryConstructionPlatform = null;
     if (measurementSet.library_construction_platform) {
-      libraryConstructionPlatform = await request.getObject(
-        measurementSet.library_construction_platform,
-        null
-      );
+      libraryConstructionPlatform = (
+        await request.getObject(measurementSet.library_construction_platform)
+      ).optional();
     }
 
     // Use the files to retrieve all the seqspec files they might link to.

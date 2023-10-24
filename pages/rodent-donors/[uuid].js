@@ -120,7 +120,9 @@ RodentDonor.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const donor = await request.getObject(`/rodent-donors/${params.uuid}/`);
+  const donor = (
+    await request.getObject(`/rodent-donors/${params.uuid}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(donor)) {
     const documents = donor.documents
       ? await requestDocuments(donor.documents, request)

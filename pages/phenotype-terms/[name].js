@@ -46,9 +46,9 @@ PhenotypeOntologyTerm.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const phenotypeOntologyTerm = await request.getObject(
-    `/phenotype-terms/${params.name}/`
-  );
+  const phenotypeOntologyTerm = (
+    await request.getObject(`/phenotype-terms/${params.name}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(phenotypeOntologyTerm)) {
     const breadcrumbs = await buildBreadcrumbs(
       phenotypeOntologyTerm,

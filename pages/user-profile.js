@@ -14,6 +14,7 @@ import PagePreamble from "../components/page-preamble";
 import SessionContext from "../components/session-context";
 import Spinner from "../components/spinner";
 // lib
+import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 
 export default function UserProfile({ sessionUser = null }) {
@@ -33,11 +34,9 @@ export default function UserProfile({ sessionUser = null }) {
     if (sessionUser) {
       const request = new FetchRequest({ session });
       request
-        .getObject(sessionUser["@id"], undefined, { isDbRequest: true })
+        .getObject(sessionUser["@id"], { isDbRequest: true })
         .then((user) => {
-          if (FetchRequest.isResponseSuccess(user)) {
-            setAccessKeys(user.access_keys);
-          }
+          user.map((u) => setAccessKeys(u.access_keys));
         });
     }
   }
@@ -96,13 +95,16 @@ export async function getServerSideProps({ req }) {
   // @type.
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sessionProperties = await request.getObject("/session-properties");
-  const sessionUser = sessionProperties.user
-    ? await request.getObject(sessionProperties.user["@id"])
-    : null;
-  return {
-    props: {
-      sessionUser,
-      pageContext: { title: "User Profile" },
-    },
-  };
+  if (sessionProperties.isOk()) {
+    const sessionUserId = sessionProperties.unwrap().user["@id"];
+    const sessionUser = (await request.getObject(sessionUserId)).union();
+    return {
+      props: {
+        sessionUser,
+        pageContext: { title: "User Profile" },
+      },
+    };
+  }
+  // We did not take the `if` branch, so `sessionProperties` is an Err
+  return errorObjectToProps(sessionProperties.unwrap_err());
 }

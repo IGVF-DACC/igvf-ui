@@ -99,9 +99,11 @@ Biomarker.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const biomarker = await request.getObject(`/biomarkers/${params.id}/`);
+  const biomarker = (
+    await request.getObject(`/biomarkers/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(biomarker)) {
-    const gene = await request.getObject(biomarker.gene, null);
+    const gene = (await request.getObject(biomarker.gene)).optional();
     const breadcrumbs = await buildBreadcrumbs(
       biomarker,
       biomarker.name,
