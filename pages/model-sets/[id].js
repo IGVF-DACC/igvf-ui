@@ -158,9 +158,9 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const modelSet = (await request.getObject(`/models/${params.id}/`)).union();
-  if (FetchRequest.isResponseSuccess(model)) {
-    const softwareVersion = model.software_version
-      ? (await request.getObject(model.software_version)).optional()
+  if (FetchRequest.isResponseSuccess(modelSet)) {
+    const softwareVersion = modelSet.software_version
+      ? (await request.getObject(modelSet.software_version)).optional()
       : null;
     const documents = modelSet.documents
       ? await requestDocuments(modelSet.documents, request)
