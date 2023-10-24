@@ -70,7 +70,14 @@ export default function MultiplexedSample({
           {multiplexedSample.multiplexed_samples.length > 0 && (
             <>
               <DataAreaTitle>Multiplexed Samples</DataAreaTitle>
-              <SampleTable samples={multiplexedSample.multiplexed_samples} />
+              <SampleTable
+                samples={multiplexedSample.multiplexed_samples}
+                constructLibrarySetAccessions={
+                  multiplexedSample.construct_library_sets
+                    ? multiplexedSample.construct_library_sets
+                    : null
+                }
+              />
             </>
           )}
           {multiplexedSample.file_sets.length > 0 && (

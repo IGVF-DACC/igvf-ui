@@ -47,6 +47,40 @@ const sampleColumns = [
     },
   },
   {
+    id: "construct_library_sets",
+    title: "Construct Library Set",
+    display: ({ source }, { constructLibrarySetAccessions }) => {
+      if (
+        source.construct_library_sets &&
+        source.construct_library_sets.length > 0
+      ) {
+        return (
+          <SeparatedList>
+            {source.construct_library_sets.map((id) => {
+              if (constructLibrarySetAccessions) {
+                const accession = constructLibrarySetAccessions.find(
+                  (lib) => lib["@id"] === id
+                )?.accession;
+
+                return accession ? (
+                  <Link href={id} key={id}>
+                    {accession}
+                  </Link>
+                ) : null;
+              }
+              return (
+                <Link href={id} key={id}>
+                  {id}
+                </Link>
+              );
+            })}
+          </SeparatedList>
+        );
+      }
+      return null;
+    },
+  },
+  {
     id: "donors",
     title: "Donors",
     display: ({ source }) => {
@@ -72,10 +106,18 @@ const sampleColumns = [
 /**
  * Display a sortable table of the given multiplexed_samples.
  */
-export default function SampleTable({ samples }) {
+export default function SampleTable({
+  samples,
+  constructLibrarySetAccessions = null,
+}) {
   return (
     <DataGridContainer>
-      <SortableGrid data={samples} columns={sampleColumns} keyProp="@id" />
+      <SortableGrid
+        data={samples}
+        meta={{ constructLibrarySetAccessions }}
+        columns={sampleColumns}
+        keyProp="@id"
+      />
     </DataGridContainer>
   );
 }
@@ -83,4 +125,5 @@ export default function SampleTable({ samples }) {
 SampleTable.propTypes = {
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  constructLibrarySetAccessions: PropTypes.arrayOf(PropTypes.object),
 };
