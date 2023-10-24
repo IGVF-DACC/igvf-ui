@@ -3,6 +3,7 @@ import profiles from "../../__mocks__/profile";
 import SessionContext from "../../session-context";
 import Award from "../list-renderer/award";
 import AnalysisSet from "../list-renderer/analysis-set";
+import AnalysisStep from "../list-renderer/analysis-step";
 import AuxiliarySet from "../list-renderer/auxiliary-set";
 import Biomarker from "../list-renderer/biomarker";
 import Biosample from "../list-renderer/biosample";
@@ -2623,7 +2624,7 @@ describe("Test Analysis Step component", () => {
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <PredictionSet item={item} />
+        <AnalysisStep item={item} />
       </SessionContext.Provider>
     );
 
