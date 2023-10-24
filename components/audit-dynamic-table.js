@@ -44,12 +44,6 @@ const auditColumns = [
   },
 ];
 
-/*display: (cell, meta) => {
-  const fileSet = meta.derivedFromFileSets.find(
-    (fileSet) => fileSet["@id"] === cell.source.file_set
-  );
-  return fileSet && <Link href={fileSet["@id"]}>{fileSet.accession}</Link>;
-},*/
 /**
  * Display a sortable table of the given audits.
  */
