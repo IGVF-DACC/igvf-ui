@@ -150,10 +150,7 @@ export default function PredictionSet({
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
-            <>
-              <DataAreaTitle>Files</DataAreaTitle>
-              <FileTable files={files} />
-            </>
+            <FileTable files={files} itemPath={predictionSet["@id"]} />
           )}
           {documents.length > 0 && (
             <>

@@ -121,10 +121,7 @@ export default function ModelSet({
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
-            <>
-              <DataAreaTitle>Files</DataAreaTitle>
-              <FileTable files={files} />
-            </>
+            <FileTable files={files} itemPath={modelSet["@id"]} />
           )}
           {documents.length > 0 && (
             <>

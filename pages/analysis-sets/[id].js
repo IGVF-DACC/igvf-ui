@@ -115,10 +115,7 @@ export default function AnalysisSet({
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
-            <>
-              <DataAreaTitle>Files</DataAreaTitle>
-              <FileTable files={files} />
-            </>
+            <FileTable files={files} itemPath={analysisSet["@id"]} />
           )}
           {documents.length > 0 && (
             <>

@@ -251,20 +251,19 @@ export default function ConstructLibrarySet({
           </DataPanel>
           <LibraryDetails library={constructLibrarySet} />
           {files.length > 0 && (
-            <>
-              <DataAreaTitle>Sequencing Results</DataAreaTitle>
-              <SequencingFileTable
-                files={files}
-                seqspecFiles={seqspecFiles}
-                sequencingPlatforms={sequencingPlatforms}
-              />
-            </>
+            <SequencingFileTable
+              files={files}
+              title="Sequencing Results"
+              itemPath={constructLibrarySet["@id"]}
+              seqspecFiles={seqspecFiles}
+              sequencingPlatforms={sequencingPlatforms}
+            />
           )}
           {integratedContentFiles.length > 0 && (
-            <>
-              <DataAreaTitle>Integrated Content Files</DataAreaTitle>
-              <FileTable files={integratedContentFiles} />
-            </>
+            <FileTable
+              files={integratedContentFiles}
+              title="Integrated Content Files"
+            />
           )}
           {documents.length > 0 && (
             <>

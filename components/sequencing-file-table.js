@@ -1,9 +1,12 @@
 // node_modules
+import { TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import { DataAreaTitle } from "./data-area";
 import { DataGridContainer } from "./data-grid";
 import { FileAccessionAndDownload } from "./file-download";
+import { ButtonLink } from "./form-elements";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 
@@ -98,31 +101,74 @@ const filesColumns = [
  */
 export default function SequencingFileTable({
   files,
+  title = "Files",
+  itemPath = "",
+  itemPathProp = "file_set",
+  isIlluminaReadType = undefined,
   sequencingPlatforms,
   seqspecFiles = [],
   hasReadType = false,
   isSeqspecHidden = false,
 }) {
+  // True or false isIlluminaReadType adds a positive or negative `illumina_read_type` selector to
+  // the report link. Undefined generates no `illumina_read_type` selector in the file query string.
+  let illuminaSelector = "";
+  if (isIlluminaReadType === true) {
+    illuminaSelector = "&illumina_read_type=*";
+  } else if (isIlluminaReadType === false) {
+    illuminaSelector = "&illumina_read_type!=*";
+  }
+
+  const reportLink = itemPath
+    ? `/multireport/?type=File&${itemPathProp}=${encodeURIComponent(
+        itemPath
+      )}${illuminaSelector}`
+    : "";
+
   return (
-    <DataGridContainer>
-      <SortableGrid
-        data={files}
-        columns={filesColumns}
-        meta={{
-          seqspecFiles,
-          sequencingPlatforms,
-          hasReadType,
-          isSeqspecHidden,
-        }}
-        keyProp="@id"
-      />
-    </DataGridContainer>
+    <>
+      <DataAreaTitle>
+        <div className="flex items-end justify-between">
+          {title}
+          {reportLink && (
+            <ButtonLink
+              href={reportLink}
+              size="sm"
+              label="Report of files that have this item as their file set"
+            >
+              <TableCellsIcon className="h-4 w-4" />
+            </ButtonLink>
+          )}
+        </div>
+      </DataAreaTitle>
+      <DataGridContainer>
+        <SortableGrid
+          data={files}
+          columns={filesColumns}
+          meta={{
+            seqspecFiles,
+            sequencingPlatforms,
+            hasReadType,
+            isSeqspecHidden,
+          }}
+          keyProp="@id"
+        />
+      </DataGridContainer>
+    </>
   );
 }
 
 SequencingFileTable.propTypes = {
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Title for the table
+  title: PropTypes.string,
+  // Current page's path
+  itemPath: PropTypes.string,
+  // Property of the files that links back to the current page
+  itemPathProp: PropTypes.string,
+  // True to show only files with illumina_read_type, false to show only files without
+  isIlluminaReadType: PropTypes.bool,
   // Sequencing platform objects associated with `files`
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`

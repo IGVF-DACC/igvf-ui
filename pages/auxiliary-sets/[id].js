@@ -147,25 +147,25 @@ export default function AuxiliarySet({
             </DataArea>
           </DataPanel>
           {filesWithReadType.length > 0 && (
-            <>
-              <DataAreaTitle>Sequencing Results (Illumina)</DataAreaTitle>
-              <SequencingFileTable
-                files={filesWithReadType}
-                seqspecFiles={seqspecFiles}
-                sequencingPlatforms={sequencingPlatforms}
-                hasReadType
-              />
-            </>
+            <SequencingFileTable
+              files={filesWithReadType}
+              title="Sequencing Results (Illumina)"
+              isIlluminaReadType={true}
+              itemPath={auxiliarySet["@id"]}
+              seqspecFiles={seqspecFiles}
+              sequencingPlatforms={sequencingPlatforms}
+              hasReadType
+            />
           )}
           {filesWithoutReadType.length > 0 && (
-            <>
-              <DataAreaTitle>Sequencing Results</DataAreaTitle>
-              <SequencingFileTable
-                files={filesWithoutReadType}
-                seqspecFiles={seqspecFiles}
-                sequencingPlatforms={sequencingPlatforms}
-              />
-            </>
+            <SequencingFileTable
+              files={filesWithoutReadType}
+              title="Sequencing Results"
+              isIlluminaReadType={false}
+              itemPath={auxiliarySet["@id"]}
+              seqspecFiles={seqspecFiles}
+              sequencingPlatforms={sequencingPlatforms}
+            />
           )}
           {controlForSets.length > 0 && (
             <>

@@ -62,14 +62,14 @@ export default function ConfigurationFile({
             </DataArea>
           </DataPanel>
           {seqspecOf.length > 0 && (
-            <>
-              <DataAreaTitle>seqspec File Of</DataAreaTitle>
-              <SequencingFileTable
-                files={seqspecOf}
-                sequencingPlatforms={sequencingPlatforms}
-                isSeqspecHidden={true}
-              />
-            </>
+            <SequencingFileTable
+              files={seqspecOf}
+              title="seqspec File Of"
+              sequencingPlatforms={sequencingPlatforms}
+              itemPath={configurationFile["@id"]}
+              itemPathProp="seqspec"
+              isSeqspecHidden={true}
+            />
           )}
           {derivedFrom.length > 0 && (
             <>

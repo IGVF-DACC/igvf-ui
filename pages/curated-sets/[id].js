@@ -127,10 +127,7 @@ export default function CuratedSet({
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
-            <>
-              <DataAreaTitle>Files</DataAreaTitle>
-              <FileTable files={files} />
-            </>
+            <FileTable files={files} itemPath={curatedSet["@id"]} />
           )}
           {documents.length > 0 && (
             <>
