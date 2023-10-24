@@ -1,6 +1,7 @@
 // node_modules
 import _ from "lodash";
 import PropTypes from "prop-types";
+import { Fragment } from "react";
 // component
 import AuditTable from "../components/audit-table";
 import PagePreamble from "../components/page-preamble";
@@ -37,12 +38,12 @@ export default function AuditDoc({ auditDoc }) {
         );
         if (filteredAudits.length > 0) {
           return (
-            <>
-              <h2 className="mb-1 mt-8 text-lg font-semibold text-brand">
+            <Fragment key={keyedAudits}>
+              <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
                 {snakeCaseToHuman(itemType)}
               </h2>
               <AuditTable data={filteredAudits} key={itemType} />
-            </>
+            </Fragment>
           );
         }
         return null;
