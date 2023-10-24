@@ -2629,9 +2629,7 @@ describe("Test Analysis Step component", () => {
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/Analysis Step/);
-    expect(uniqueId).toHaveTextContent(
-      /IGVFWF3254CAGQ-example-signal-generation-analysis-step/
-    );
+    expect(uniqueId).toHaveTextContent(/face8e04-9037-0e10-10e3-49999ee02dba/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent("Test UI Analysis Step");

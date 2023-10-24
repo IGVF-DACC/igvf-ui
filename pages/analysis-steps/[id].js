@@ -87,7 +87,7 @@ export default function AnalysisStep({
                   <DataItemValue>
                     <SeparatedList>
                       {analysisStep.parents.map((parent) => (
-                        <Link href={parent["@id"]} key={parent["@id"]}>
+                        <Link href={parent} key={parent}>
                           {parent}
                         </Link>
                       ))}

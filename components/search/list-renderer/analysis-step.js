@@ -17,7 +17,7 @@ export default function AnalysisStep({ item: analysisStep }) {
       <SearchListItemMain>
         <SearchListItemUniqueId>
           <SearchListItemType item={analysisStep} />
-          {analysisStep.name}
+          {analysisStep.uuid}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{analysisStep.title}</SearchListItemTitle>
         <SearchListItemMeta>
