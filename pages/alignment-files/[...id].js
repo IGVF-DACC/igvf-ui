@@ -162,8 +162,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const alignmentFile = await request
-    .getObject(`/alignment-files/${params.id}/`)
+  const alignmentFile = (await request
+    .getObject(`/alignment-files/${params.id}/`))
     .union();
   if (FetchRequest.isResponseSuccess(alignmentFile)) {
     const fileSet = (
