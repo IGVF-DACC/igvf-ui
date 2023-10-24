@@ -125,8 +125,6 @@ AnalysisStep.propTypes = {
   analysisStep: PropTypes.object.isRequired,
   // Attribution for this analysis step
   attribution: PropTypes.object,
-  // Documents associated with this analysis step
-  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
