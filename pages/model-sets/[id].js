@@ -157,7 +157,7 @@ ModelSet.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const model = (await request.getObject(`/models/${params.id}/`)).union();
+  const modelSet = (await request.getObject(`/models/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(model)) {
     const softwareVersion = model.software_version
       ? (await request.getObject(model.software_version)).optional()
