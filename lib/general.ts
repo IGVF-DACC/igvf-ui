@@ -161,11 +161,13 @@ export function truncateJson(
 }
 
 /**
- * Convert arbitrary text to a human readable string. All underscores gets replaced with a space and the first letter of each word gets capitalized.
+ * Convert arbitrary text to a human readable string.
+ * All underscores gets replaced with a space
+ * and the first letter of each word gets capitalized.
  * @param {string} text Text to convert.
- * @returns {string} `text` converted to shishkebab case.
+ * @returns {string} `text` converted to human-readable case.
  */
-export function formatPropertyName(text: string): string {
+export function snakeCaseToHuman(text: string): string {
   return text
     .toLowerCase()
     .split("_")

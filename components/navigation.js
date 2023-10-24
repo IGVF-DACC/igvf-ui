@@ -666,7 +666,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             navigationClick={navigationClick}
             isChildItem
           >
-            Audits
+            Audit Documentation
           </NavigationHrefItem>
         </NavigationGroupItem>
 

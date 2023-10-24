@@ -21,8 +21,8 @@ const auditColumns = [
             return (
               <Fragment key={level}>
                 <div className="flex items-center justify-start gap-1">
-                  <div>{mapping.humanReadable}</div>
                   <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
+                  <div>{mapping.humanReadable}</div>
                 </div>
               </Fragment>
             );
@@ -30,16 +30,18 @@ const auditColumns = [
         </div>
       );
     },
+    isSortable: false,
   },
   {
     id: "audit_category",
     title: "Audit Category",
-    display: ({ source }) => `${source.audit_category}`,
+    display: ({ source }) => source.audit_category,
+    isSortable: false,
   },
   {
     id: "audit_detail",
     title: "Audit Detail",
-    display: ({ source }) => `${source.audit_detail}`,
+    display: ({ source }) => source.audit_detail,
     isSortable: false,
   },
 ];
@@ -47,7 +49,7 @@ const auditColumns = [
 /**
  * Display a sortable table of the given audits.
  */
-export default function AuditDynamicTable({ data }) {
+export default function AuditTable({ data }) {
   return (
     <DataGridContainer>
       <SortableGrid data={data} columns={auditColumns} />
@@ -55,7 +57,7 @@ export default function AuditDynamicTable({ data }) {
   );
 }
 
-AuditDynamicTable.propTypes = {
+AuditTable.propTypes = {
   // Audits to display
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
