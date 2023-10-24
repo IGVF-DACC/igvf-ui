@@ -4777,13 +4777,10 @@ const profiles = {
       },
       scope: {
         title: "Prediction Scope",
-        description: "The scope or scale that this prediction set is designed to target. If the scope is across gene(s) or loci, these will need to be specified in the targeted_genes or targeted_loci property.",
+        description:
+          "The scope or scale that this prediction set is designed to target. If the scope is across gene(s) or loci, these will need to be specified in the targeted_genes or targeted_loci property.",
         type: "string",
-        enum: [
-            "genes",
-            "loci",
-            "genome-wide"
-        ],
+        enum: ["genes", "loci", "genome-wide"],
       },
       "@id": {
         title: "ID",
