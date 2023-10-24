@@ -165,8 +165,9 @@ export function truncateJson(
  * @param {string} text Text to convert.
  * @returns {string} `text` converted to shishkebab case.
  */
-export function toReadableCase(text: string): string {
+export function formatPropertyName(text: string): string {
   return text
+    .toLowerCase()
     .split("_")
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(" ");

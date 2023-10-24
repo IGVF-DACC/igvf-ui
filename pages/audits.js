@@ -3,12 +3,11 @@ import _ from "lodash";
 import PropTypes from "prop-types";
 // component
 import AuditDynamicTable from "../components/audit-table";
-import { DataItemValue } from "../components/data-area";
 import Markdown from "../components/markdown";
 // lib
 import errorObjectToProps from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
-import { toReadableCase } from "../lib/general";
+import { formatPropertyName } from "../lib/general";
 
 export default function AuditDoc({ arrayObject }) {
   return (
@@ -21,19 +20,23 @@ export default function AuditDoc({ arrayObject }) {
           "The IGVF Data and Administration Coordinating Center has established an audit system, utilizing flags, to detect discrepancies in the data. While dependencies ensure metadata accuracy within an individual object, audits primarily focus on validating metadata between linked objects. For example, a specific audit has been implemented to verify the linkage of Biosamples with donors sharing the same taxa. Within each audit category, there could be one or more icons, each assigned a distinct color corresponding to the severity level of the audit category."
         }
       />
-      <DataItemValue>{JSON.stringify(arrayObject, undefined, 2)}</DataItemValue>
       {Object.keys(arrayObject).map((itemType) => {
         const typeAudits = arrayObject[itemType];
-        // filter out internal actions audits. If it returns 0, null if 1+ then print the loop
-        console.log(typeAudits);
-        return (
-          <>
-            <h2 className="mb-1 px-2 pt-8 text-lg font-semibold text-brand">
-              {toReadableCase(itemType)}
-            </h2>
-            <AuditDynamicTable arrayVersion={typeAudits} key={itemType} />
-          </>
+        const filteredAudits = typeAudits.filter(
+          (audit) => audit.audit_levels[0] !== "INTERNAL_ACTION"
         );
+        console.log(filteredAudits);
+        if (filteredAudits.length > 0) {
+          return (
+            <>
+              <h2 className="mb-1 px-2 pt-8 text-lg font-semibold text-brand">
+                {formatPropertyName(itemType)}
+              </h2>
+              <AuditDynamicTable data={filteredAudits} key={itemType} />
+            </>
+          );
+        }
+        return null;
       })}
     </>
   );
@@ -47,10 +50,6 @@ export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const auditDoc = await request.getObject("/static/doc/auditdoc.json");
   if (FetchRequest.isResponseSuccess(auditDoc)) {
-    const objectTypes = Object.keys(auditDoc).filter((auditKey) => {
-      const audit = auditDoc[auditKey];
-      return audit.audit_levels !== "INTERNAL_ACTION";
-    });
     const arrayVersion = Object.keys(auditDoc).map((key) => {
       return {
         key: key.split(".")[2],
@@ -58,16 +57,9 @@ export async function getServerSideProps({ req }) {
       };
     });
     const arrayObject = _.groupBy(arrayVersion, "key");
-    const details = Object.keys(auditDoc).map((auditCode) => {
-      const auditObject = auditCode.split(".")[2];
-      return auditObject;
-    });
-    const uniqueDetails = [...new Set(details)];
     return {
       props: {
         auditDoc,
-        objectTypes,
-        uniqueDetails,
         arrayVersion,
         arrayObject,
       },

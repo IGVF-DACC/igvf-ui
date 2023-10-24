@@ -11,7 +11,6 @@ const auditColumns = [
     id: "audit_level",
     title: "Audit Level",
     display: ({ source }) => {
-      // filter out the internal action string.
       return (
         <div>
           {source.audit_levels.map((level) => {
@@ -45,15 +44,15 @@ const auditColumns = [
 /**
  * Display a sortable table of the given audits.
  */
-export default function AuditDynamicTable({ arrayVersion }) {
+export default function AuditDynamicTable({ data }) {
   return (
     <DataGridContainer>
-      <SortableGrid data={arrayVersion} columns={auditColumns} />
+      <SortableGrid data={data} columns={auditColumns} />
     </DataGridContainer>
   );
 }
 
 AuditDynamicTable.propTypes = {
   // Audits to display
-  arrayVersion: PropTypes.arrayOf(PropTypes.object).isRequired,
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
