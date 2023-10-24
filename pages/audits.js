@@ -58,7 +58,9 @@ AuditDoc.propTypes = {
 
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const auditDoc = await request.getObject("/static/doc/auditdoc.json");
+  const auditDoc = (
+    await request.getObject("/static/doc/auditdoc.json")
+  ).union();
   if (FetchRequest.isResponseSuccess(auditDoc)) {
     return {
       props: {
