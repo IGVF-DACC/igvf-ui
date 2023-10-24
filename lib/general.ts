@@ -170,6 +170,7 @@ export function truncateJson(
 export function snakeCaseToHuman(text: string): string {
   return text
     .toLowerCase()
+    .replace(/^_|_$/g, "")
     .split("_")
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(" ");
