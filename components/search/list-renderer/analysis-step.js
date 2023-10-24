@@ -24,7 +24,7 @@ export default function AnalysisStep({ item: analysisStep }) {
           <div key="lab">{analysisStep.lab}</div>
         </SearchListItemMeta>
       </SearchListItemMain>
-      <SearchListItemQuality item={treatment} />
+      <SearchListItemQuality item={analysisStep} />
     </SearchListItemContent>
   );
 }

@@ -6,16 +6,15 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
-  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments } from "../../lib/common-requests";
@@ -89,7 +88,7 @@ export default function AnalysisStep({
                   <DataItemLabel>Parents</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {parents.map((parent) => (
+                      {analysisStep.parents.map((parent) => (
                         <Link href={parent["@id"]} key={parent["@id"]}>
                           {parent}
                         </Link>
@@ -141,9 +140,6 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(analysisStep)) {
     const award = await request.getObject(analysisStep.award["@id"], null);
     const lab = await request.getObject(analysisStep.lab["@id"], null);
-    const documents = analysisStep.documents
-      ? await requestDocuments(analysisStep.documents, request)
-      : [];
     const breadcrumbs = await buildBreadcrumbs(
       analysisStep,
       analysisStep.title,
@@ -158,7 +154,6 @@ export async function getServerSideProps({ params, req, query }) {
         analysisStep,
         award,
         lab,
-        documents,
         pageContext: { title: analysisStep.title },
         breadcrumbs,
         attribution,
