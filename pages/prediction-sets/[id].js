@@ -183,9 +183,9 @@ PredictionSet.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const predictionSet = await request.getObject(
-    `/prediction-sets/${params.id}/`
-  );
+  const predictionSet = (
+    await request.getObject(`/prediction-sets/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(predictionSet)) {
     const documents = predictionSet.documents
       ? await requestDocuments(predictionSet.documents, request)

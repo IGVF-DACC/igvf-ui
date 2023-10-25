@@ -26,6 +26,7 @@ import { requestDocuments } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { Ok } from "../../lib/result";
 
 export default function TechnicalSample({
   sample,
@@ -104,9 +105,11 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (sample.sources?.length > 0) {
       const sourcePaths = sample.sources.map((source) => source["@id"]);
-      sources = await request.getMultipleObjects(sourcePaths, {
-        filterErrors: true,
-      });
+      sources = Ok.all(
+        await request.getMultipleObjects(sourcePaths, {
+          filterErrors: true,
+        })
+      );
     }
     const breadcrumbs = await buildBreadcrumbs(
       sample,

@@ -30,6 +30,7 @@ import buildAttribution from "../../lib/attribution";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import ProductInfo from "../../components/product-info";
 import { isJsonFormat } from "../../lib/query-utils";
+import { Ok } from "../../lib/result";
 
 export default function RodentDonor({
   donor,
@@ -133,9 +134,11 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (donor.sources?.length > 0) {
       const sourcePaths = donor.sources.map((source) => source["@id"]);
-      sources = await request.getMultipleObjects(sourcePaths, null, {
-        filterErrors: true,
-      });
+      sources = Ok.all(
+        await request.getMultipleObjects(sourcePaths, {
+          filterErrors: true,
+        })
+      );
     }
     const breadcrumbs = await buildBreadcrumbs(
       donor,
