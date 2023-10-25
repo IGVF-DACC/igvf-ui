@@ -191,8 +191,8 @@ export async function getServerSideProps({ params, req, query }) {
     let sources = [];
     if (tissue.sources?.length > 0) {
       const sourcePaths = tissue.sources.map((source) => source["@id"]);
-      sources = await Ok.all(
-        request.getMultipleObjects(sourcePaths, {
+      sources = Ok.all(
+        await request.getMultipleObjects(sourcePaths, {
           filterErrors: true,
         })
       );
