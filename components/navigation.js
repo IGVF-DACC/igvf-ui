@@ -660,6 +660,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Schemas
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="audits"
+            href="/audits"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Audit Documentation
+          </NavigationHrefItem>
         </NavigationGroupItem>
 
         <NavigationGroupItem
