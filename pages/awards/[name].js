@@ -128,7 +128,7 @@ export async function getServerSideProps({ params, req, query }) {
     const pis =
       award.pis?.length > 0 ? await requestUsers(award.pis, request) : [];
     const contactPi = award.contact_pi
-      ? await request.getObject(award.contact_pi, null)
+      ? (await request.getObject(award.contact_pi)).optional()
       : null;
     const breadcrumbs = await buildBreadcrumbs(
       award,
