@@ -5,6 +5,12 @@
  *    authenticate each request.
  * Most of the code in this file handles the server authentication step.
  */
+// node_modules
+import {
+  RedirectLoginOptions,
+  GetTokenSilentlyOptions,
+  LogoutOptions,
+} from "@auth0/auth0-react";
 // lib
 import { DataProviderObject } from "../globals";
 import { AUTH0_CLIENT_ID, AUTH_ERROR_URI } from "./constants";
@@ -77,7 +83,7 @@ export async function getDataProviderUrl(): Promise<string | null> {
  */
 export async function loginDataProvider(
   loggedOutSession: { _csrft_: string },
-  getAccessTokenSilently: () => Promise<any>
+  getAccessTokenSilently: (o?: GetTokenSilentlyOptions) => Promise<string>
 ) {
   const accessToken = await getAccessTokenSilently();
   const request = new FetchRequest({ session: loggedOutSession });
@@ -99,7 +105,9 @@ export async function logoutDataProvider(): Promise<
  * Log the user into the authentication provider.
  * @param {function} loginWithRedirect Auth0-react function to login
  */
-export function loginAuthProvider(loginWithRedirect: (info: any) => any) {
+export function loginAuthProvider(
+  loginWithRedirect: (o?: RedirectLoginOptions) => Promise<void>
+) {
   // Get a URL to return to after logging in. If we're already on the error page, just return to
   // the home page so that the user doesn't see an authentication error page after successfully
   // logging in.
@@ -124,7 +132,7 @@ export function loginAuthProvider(loginWithRedirect: (info: any) => any) {
  * @param {string} altPath Optional path to redirect to after logging out; "/" by default
  */
 export function logoutAuthProvider(
-  logout: (info: any) => any,
+  logout: (options?: LogoutOptions) => Promise<void>,
   altPath: string = ""
 ) {
   logout({
