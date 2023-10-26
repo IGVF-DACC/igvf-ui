@@ -346,7 +346,10 @@ export default class FetchRequest {
         headerOptions
       );
       if (!response.ok) {
-        const error = { ...(await response.json()), isError: true } as ErrorObject;
+        const error = {
+          ...(await response.json()),
+          isError: true,
+        } as ErrorObject;
         return err(error);
       }
       const results = (await response.json()) as DataProviderObject;
@@ -364,7 +367,7 @@ export default class FetchRequest {
    * @returns {Promise<DataProviderObject|ErrorObject>} Requested object or error object
    */
   public async getObjectByUrl(
-    url: string,
+    url: string
   ): Promise<Result<DataProviderObject, ErrorObject>> {
     const headerOptions = this.buildOptions("GET", {
       accept: PAYLOAD_FORMAT.JSON,
@@ -373,7 +376,10 @@ export default class FetchRequest {
       logRequest("getObjectByUrl", url);
       const response = await fetch(url, headerOptions);
       if (!response.ok) {
-        const error = { ...(await response.json()), isError: true } as ErrorObject;
+        const error = {
+          ...(await response.json()),
+          isError: true,
+        } as ErrorObject;
         return err(error);
       }
       const results = (await response.json()) as DataProviderObject;

@@ -172,18 +172,18 @@ describe("Test GET requests to the data provider", () => {
 
   it("returns default error value when GET request unsuccessful", async () => {
     window.fetch = jest.fn().mockImplementation(() =>
-    Promise.resolve({
-      ok: false,
-      json: () =>
-        Promise.resolve({
-          "@type": ["HTTPNotFound", "Error"],
-          status: "error",
-          code: 404,
-          title: "Not Found",
-          description: "The resource could not be found.",
-          detail: "URL",
-        }),
-    })
+      Promise.resolve({
+        ok: false,
+        json: () =>
+          Promise.resolve({
+            "@type": ["HTTPNotFound", "Error"],
+            status: "error",
+            code: 404,
+            title: "Not Found",
+            description: "The resource could not be found.",
+            detail: "URL",
+          }),
+      })
     );
 
     const request = new FetchRequest();
@@ -223,9 +223,9 @@ describe("Test URL-specific fetch requests", () => {
     );
 
     const request = new FetchRequest();
-    const session = (await request.getObjectByUrl(
+    const session = await request.getObjectByUrl(
       "http://localhost:8000/session"
-    ));
+    );
     expect(session.isOk()).toBe(true);
     expect(_.isEqual(session.unwrap(), mockData)).toBeTruthy();
   });
@@ -236,16 +236,14 @@ describe("Test URL-specific fetch requests", () => {
     });
 
     const request = new FetchRequest();
-    const labItem = (await request.getObjectByUrl(
+    const labItem = await request.getObjectByUrl(
       "http://localhost:8000/labs/j-michael-cherry/"
-    ));
+    );
     expect(labItem.isErr()).toBe(true);
     expect(labItem.unwrap_err()["@type"]).toContain("NetworkError");
     expect(labItem.unwrap_err().status).toEqual("error");
     expect(labItem.unwrap_err().code).toEqual(503);
-    expect(
-      FetchRequest.isResponseSuccess(labItem.union())
-    ).toBeFalsy();
+    expect(FetchRequest.isResponseSuccess(labItem.union())).toBeFalsy();
   });
 
   it("returns a specific error value", async () => {
@@ -266,7 +264,7 @@ describe("Test URL-specific fetch requests", () => {
 
     const request = new FetchRequest();
     const session = await request.getObjectByUrl(
-      "http://localhost:8000/session",
+      "http://localhost:8000/session"
     );
     expect(session.isErr()).toBe(true);
     expect(session.unwrap_err().code).toBe(404);
@@ -289,9 +287,9 @@ describe("Test URL-specific fetch requests", () => {
     );
 
     const request = new FetchRequest();
-    const session = (await request.getObjectByUrl(
+    const session = await request.getObjectByUrl(
       "http://localhost:8000/session"
-    ));
+    );
     expect(session.isErr()).toBeTruthy();
     expect(session.unwrap_err().status).toEqual("error");
     expect(session.unwrap_err().code).toEqual(404);
