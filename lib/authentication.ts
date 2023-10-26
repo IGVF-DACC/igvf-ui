@@ -16,7 +16,6 @@ import { DataProviderObject } from "../globals";
 import { AUTH0_CLIENT_ID, AUTH_ERROR_URI } from "./constants";
 import FetchRequest from "./fetch-request";
 import { ErrorObject } from "./fetch-request.d";
-import { err, fromOption, ok } from "./result";
 
 /**
  * Request the session object from the server, which contains the browser CSRF token.
@@ -27,16 +26,10 @@ export async function getSession(
   dataProviderUrl: string
 ): Promise<DataProviderObject | null> {
   const request = new FetchRequest();
-  const session = fromOption(
-    await request.getObjectByUrl(`${dataProviderUrl}/session`, null)
-  )
-    .and_then((s) => {
-      if (s.isError) {
-        return err(null);
-      }
-      return ok(s as DataProviderObject);
-    })
-    .optional() as DataProviderObject | null;
+  const session = (
+    await request.getObjectByUrl(`${dataProviderUrl}/session`)
+  ).optional();
+
   return session;
 }
 
@@ -50,16 +43,10 @@ export async function getSessionProperties(
   dataProviderUrl: string
 ): Promise<DataProviderObject | null> {
   const request = new FetchRequest();
-  const sessionProps = fromOption(
-    await request.getObjectByUrl(`${dataProviderUrl}/session-properties`, null)
-  )
-    .and_then((s) => {
-      if (s.isError) {
-        return err(null);
-      }
-      return ok(s as DataProviderObject);
-    })
-    .optional() as DataProviderObject | null;
+  const sessionProps = (
+    await request.getObjectByUrl(`${dataProviderUrl}/session-properties`)
+  ).optional();
+
   return sessionProps;
 }
 

@@ -327,10 +327,9 @@ export default class FetchRequest {
   /**
    * Request the object with the given path.
    * @param {string} path Path to requested resource
-   * @param {T} defaultErrorValue Value to return if the request fails; error object if not given
    * @param {object} options? indicating request options
    * @param {boolean} options.isDbRequest True to get data from database instead of search engine
-   * @returns {Promise<DataProviderObject|ErrorObject|T>} Requested object, error object, or
+   * @returns {Promise<DataProviderObject|ErrorObject>} Requested object, error object, or
    *  `defaultErrorValue` if given and the request fails
    */
   public async getObject(
@@ -347,16 +346,8 @@ export default class FetchRequest {
         headerOptions
       );
       if (!response.ok) {
-        console.log("SVRREQ ", response);
-        return err({
-          "@type": ["Error", "BackendError"],
-          code: response.status,
-          isError: true,
-          description: await response.text(),
-          detail: response.statusText,
-          status: "error",
-          title: "Backend Error",
-        });
+        const error = { ...(await response.json()), isError: true } as ErrorObject;
+        return err(error);
       }
       const results = (await response.json()) as DataProviderObject;
       return ok(results);
@@ -370,27 +361,26 @@ export default class FetchRequest {
    * Request the object with the given URL, including protocol and domain.
    * @param {string} url Full URL to requested resource
    * @param {T} defaultErrorValue? Value to return if the request fails; error object if not given
-   * @returns {Promise<DataProviderObject|ErrorObject|T>} Requested object or error object
+   * @returns {Promise<DataProviderObject|ErrorObject>} Requested object or error object
    */
-  public async getObjectByUrl<T>(
+  public async getObjectByUrl(
     url: string,
-    defaultErrorValue?: T
-  ): Promise<DataProviderObject | ErrorObject | T> {
+  ): Promise<Result<DataProviderObject, ErrorObject>> {
     const headerOptions = this.buildOptions("GET", {
       accept: PAYLOAD_FORMAT.JSON,
     });
     try {
       logRequest("getObjectByUrl", url);
       const response = await fetch(url, headerOptions);
-      if (!response.ok && defaultErrorValue !== undefined) {
-        return defaultErrorValue;
+      if (!response.ok) {
+        const error = { ...(await response.json()), isError: true } as ErrorObject;
+        return err(error);
       }
-      return response.json();
+      const results = (await response.json()) as DataProviderObject;
+      return ok(results);
     } catch (error) {
       console.log(error);
-      return defaultErrorValue === undefined
-        ? NETWORK_ERROR_RESPONSE
-        : defaultErrorValue;
+      return err(NETWORK_ERROR_RESPONSE);
     }
   }
 
