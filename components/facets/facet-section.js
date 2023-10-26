@@ -94,7 +94,7 @@ export default function FacetSection({ searchResults }) {
           </div>
         )}
         <ClearAll searchResults={searchResults} />
-        <HelpTip>
+        <HelpTip className="mt-4">
           Click and hold a term momentarily to select items <i>without</i> that
           term.
         </HelpTip>

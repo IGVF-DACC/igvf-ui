@@ -132,7 +132,7 @@ export function FacetGroup({ searchResults, group = null }) {
   }
 
   return (
-    <>
+    <div>
       {facetsInGroup.map((facet) => {
         const Terms = facetRegistry.terms.lookup(facet.field);
 
@@ -153,7 +153,7 @@ export function FacetGroup({ searchResults, group = null }) {
           </Facet>
         );
       })}
-    </>
+    </div>
   );
 }
 

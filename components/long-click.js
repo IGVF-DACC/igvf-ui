@@ -42,11 +42,13 @@ export default function useLongClick(
 
   /**
    * Called when the user presses the mouse button or touches the touchscreen. Start the long-click
-   * timer to determine whether the user long-pressed the checkbox.
+   * timer to determine whether the user long-pressed the checkbox. If the timer expires before
+   * mouse up, notify the client component.
    */
   function onMouseDown() {
     timer.current = setTimeout(() => {
       timer.current = null;
+      onLongClick();
     }, delay);
   }
 
@@ -59,10 +61,6 @@ export default function useLongClick(
     if (timer.current) {
       clearTimeout(timer.current);
       onClick();
-    } else {
-      // The mouse-up event happened after the click timer expired, so the user long-pressed the
-      // checkbox. Call the onLongClick callback if it exists.
-      onLongClick();
     }
     timer.current = TIMER_UNSET;
   }
