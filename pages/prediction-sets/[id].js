@@ -106,8 +106,12 @@ export default function PredictionSet({
               )}
               <DataItemLabel>Summary</DataItemLabel>
               <DataItemValue>{predictionSet.summary}</DataItemValue>
-              <DataItemLabel>Scope</DataItemLabel>
-              <DataItemValue>{predictionSet.scope}</DataItemValue>
+              {predictionSet.scope && (
+                <>
+                  <DataItemLabel>Scope</DataItemLabel>
+                  <DataItemValue>{predictionSet.scope}</DataItemValue>
+                </>
+              )}
               {genesCollapser.displayedData.length > 0 && (
                 <>
                   <DataItemLabel>Targeted Genes</DataItemLabel>
