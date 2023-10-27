@@ -129,7 +129,7 @@ function updateAllColumnsVisibilityQuery(
 
 export default function MultiReport({ searchResults }) {
   const router = useRouter();
-  const { profiles } = useContext(SessionContext);
+  const { collectionTitles, profiles } = useContext(SessionContext);
   const { totalPages } = useSearchLimits(searchResults);
 
   // Ref of the scrollable table DOM <div> so we can detect scroll position
@@ -197,7 +197,10 @@ export default function MultiReport({ searchResults }) {
   }
 
   if (schemaProperties) {
-    const pageTitle = composeSearchResultsPageTitle(searchResults, profiles);
+    const pageTitle = composeSearchResultsPageTitle(
+      searchResults,
+      collectionTitles
+    );
     const items = searchResults["@graph"];
     const columns = generateColumns(
       selectedTypes,

@@ -34,11 +34,12 @@ import {
  * search-result display pages, such as /report.
  */
 export default function Search({ searchResults, accessoryData = null }) {
-  const { profiles } = useContext(SessionContext);
+  const { collectionTitles } = useContext(SessionContext);
   const { totalPages } = useSearchLimits(searchResults);
-  const pageTitle = profiles
-    ? composeSearchResultsPageTitle(searchResults, profiles)
-    : "";
+  const pageTitle = composeSearchResultsPageTitle(
+    searchResults,
+    collectionTitles
+  );
 
   return (
     <>

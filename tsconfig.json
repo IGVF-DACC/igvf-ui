@@ -13,9 +13,10 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es6"
+    "target": "es6",
+    "types": ["jest", "node", "cypress"],
+    "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"],
-  "types": ["jest", "node"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "cypress/e2e/**/*.cy.js"],
+  "exclude": ["node_modules"]
 }
