@@ -20,7 +20,7 @@ describe("Test UnspecifiedProperty component", () => {
 
   it("renders arrays of strings and numbers", () => {
     render(<UnspecifiedProperty property={["hello", 5]} />);
-    expect(screen.getByText("hello, 5")).toBeInTheDocument();
+    expect(screen.getByText("5, hello")).toBeInTheDocument();
   });
 
   it("renders an embedded object with an @id", () => {

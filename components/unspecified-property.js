@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 // components
 import SeparatedList from "./separated-list";
 // lib
+import { stringsToStringsWithCounts } from "../lib/arrays";
 import { truncateJson } from "../lib/general";
 
 /**
@@ -40,10 +41,16 @@ export default function UnspecifiedProperty({ property }) {
     if (property.length > 0) {
       if (typeof property[0] === "object") {
         if (property[0]["@id"]) {
-          // Array of objects with @ids; join their @ids with commas.
+          // Array of objects with @ids. Filter out objects with duplicate @ids.
+          const itemIds = property.map((item) => item["@id"]);
+          const uniqueItemIds = [...new Set(itemIds)];
+          const uniqueProperties = uniqueItemIds.map((itemId) =>
+            property.find((item) => item["@id"] === itemId)
+          );
+
           return (
             <SeparatedList>
-              {property.map((item) => (
+              {uniqueProperties.map((item) => (
                 <Link key={item["@id"]} href={item["@id"]}>
                   {item["@id"]}
                 </Link>
@@ -57,7 +64,8 @@ export default function UnspecifiedProperty({ property }) {
       }
 
       // Array of simple types; join them with commas.
-      return <div>{property.join(", ")}</div>;
+      const uniqueStrings = stringsToStringsWithCounts(property);
+      return <div>{uniqueStrings.join(", ")}</div>;
     }
   }
 

@@ -53,6 +53,137 @@ export interface DatabaseObject {
 }
 
 /**
+ * Search result object; similar to `DatabaseObject` but without some properties.
+ */
+export type SearchResultsObject =
+  | SearchResultsObjectProps
+  | SearchResultsObjectGenerics;
+
+interface SearchResultsObjectProps {
+  "@id": string;
+  "@type": string[];
+}
+
+interface SearchResultsObjectGenerics {
+  [key: string]: unknown;
+}
+
+/**
+ * The `properties` object of a schema.
+ */
+export type SchemaProperties = SchemaPropertiesProps | SchemaPropertiesGenerics;
+
+export interface SchemaPropertiesProps {
+  title: string;
+  type: string;
+}
+
+export interface SchemaPropertiesGenerics {
+  [key: string]: unknown;
+}
+
+/**
+ * Describes schema objects.
+ */
+export interface Schema {
+  $id: string;
+  $schema: string;
+  "@type": string[];
+  additionalProperties: boolean;
+  changelog?: string;
+  dependentSchemas?: {
+    [key: string]: {
+      [key: string]: unknown;
+    };
+  };
+  description?: string;
+  exact_searchable_fields?: string[];
+  fuzzy_searchable_fields?: string[];
+  identifyingProperties?: string[];
+  mixinProperties: object[];
+  properties: SchemaProperties;
+  required: string[];
+  title: string;
+  type: string;
+}
+
+/**
+ * Describes the /profiles endpoint object, which is an object with `@type`s as its keys and
+ * the corresponding schemas for each type as the values.
+ */
+export type Profiles = ProfilesProps | ProfilesGeneric;
+
+export interface ProfilesProps {
+  "@type": string[];
+  _hierarchy: {
+    Item: {
+      [key: string]: object;
+    };
+  };
+  _subtypes: {
+    [key: string]: string[];
+  };
+}
+
+export interface ProfilesGeneric {
+  [key: string]: Schema;
+}
+
+/**
+ * Describes the search-results object returned by the data provider.
+ */
+export interface SearchResults {
+  "@context": string;
+  "@graph": SearchResultsObject[];
+  "@id": string;
+  "@type": string[];
+  clear_filters: string;
+  columns: SearchResultsColumns;
+  facet_groups?: SearchResultsFacetGroup[];
+  facets: SearchResultsFacet[];
+  filters: SearchResultsFilter[];
+  non_sortable?: string[];
+  notification: string;
+  sort: SearchResultsSort;
+  title: string;
+  total: number;
+}
+
+export interface SearchResultsColumns {
+  [key: string]: {
+    title: string;
+  };
+}
+
+export interface SearchResultsFacetGroup {
+  facet_fields: string[];
+  name: string;
+  title: string;
+}
+
+export interface SearchResultsFacet {
+  field: string;
+  terms: {
+    doc_count: number;
+    key: string;
+  }[];
+  [key: string]: unknown;
+}
+
+export interface SearchResultsFilter {
+  field: string;
+  remove: string;
+  term: string;
+}
+
+export interface SearchResultsSort {
+  [key: string]: {
+    order: "asc" | "desc";
+    unmapped_type: string;
+  };
+}
+
+/**
  * Session object from the data provider. `auth.userid` exists if the user has logged in.
  */
 export interface SessionObject {

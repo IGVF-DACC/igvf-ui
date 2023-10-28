@@ -29,7 +29,7 @@ export default function SearchResultsHeader({
                 onChange={reportViewExtras.onColumnVisibilityChange}
                 onChangeAll={reportViewExtras.onAllColumnsVisibilityChange}
               />
-              <DownloadTSV />
+              <DownloadTSV searchUri={searchResults["@id"]} />
             </div>
           )}
         </div>
