@@ -31,6 +31,7 @@ export default function PredictionSet({ item: predictionSet }) {
               alternateAccessions={predictionSet.alternate_accessions}
             />
           )}
+          {predictionSet.scope && <div key="scope">{predictionSet.scope}</div>}
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={predictionSet} />

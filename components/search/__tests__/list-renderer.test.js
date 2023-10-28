@@ -2552,6 +2552,7 @@ describe("Test Prediction Set component", () => {
       status: "released",
       file_set_type: "functional effect",
       summary: "IGVFDS8323PSET",
+      scope: "genes",
       samples: [
         {
           "@id": "/tissues/IGVFSM0001DDDD/",
@@ -2589,6 +2590,7 @@ describe("Test Prediction Set component", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("genes");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
