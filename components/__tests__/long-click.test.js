@@ -42,23 +42,4 @@ describe("Test the useLongClick custom React hook", () => {
     expect(onClick).toHaveBeenCalledTimes(0);
     expect(onLongClick).toHaveBeenCalledTimes(1);
   });
-
-  it("detects and ignores regular click events", () => {
-    const onClick = jest.fn();
-    const onLongClick = jest.fn();
-
-    function TestComponent() {
-      useLongClick("test", onClick, onLongClick);
-
-      return <button id="test">Test</button>;
-    }
-
-    render(<TestComponent />);
-
-    const button = screen.getByRole("button");
-    fireEvent.click(button);
-
-    expect(onClick).toHaveBeenCalledTimes(1);
-    expect(onLongClick).toHaveBeenCalledTimes(0);
-  });
 });

@@ -411,7 +411,8 @@ describe("Test the `<FacetGroup>` component", () => {
     // Make sure clicking a facet term updates the URL.
     facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
 
-    fireEvent.click(facetTermCheckbox);
+    fireEvent.mouseDown(facetTermCheckbox);
+    fireEvent.mouseUp(facetTermCheckbox);
     expect(window.location.search).toBe("?type=HumanDonor&sex=female");
 
     facetTermCheckbox = within(facetTerms[1]).getByRole("checkbox");
@@ -546,7 +547,8 @@ describe("Test the `<FacetGroup>` component", () => {
 
     // Make sure clicking a facet term updates the URL.
     facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
-    fireEvent.click(facetTermCheckbox);
+    fireEvent.mouseDown(facetTermCheckbox);
+    fireEvent.mouseUp(facetTermCheckbox);
     expect(window.location.search).toBe(
       "?type=HumanDonor&lab.title=Chongyuan+Luo%2C+UCLA"
     );
@@ -659,7 +661,8 @@ describe("Test the `<FacetGroup>` component", () => {
 
     // Make sure clicking a facet term updates the URL.
     facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
-    fireEvent.click(facetTermCheckbox);
+    fireEvent.mouseDown(facetTermCheckbox);
+    fireEvent.mouseUp(facetTermCheckbox);
     expect(window.location.search).toBe("?type=HumanDonor");
   });
 
@@ -762,7 +765,8 @@ describe("Test the `<FacetGroup>` component", () => {
 
     // Make sure clicking a facet term updates the URL.
     facetTermCheckbox = within(facetTerms[0]).getByRole("checkbox");
-    fireEvent.click(facetTermCheckbox);
+    fireEvent.mouseDown(facetTermCheckbox);
+    fireEvent.mouseUp(facetTermCheckbox);
     expect(window.location.search).toBe("?type=HumanDonor&sex=female");
   });
 });

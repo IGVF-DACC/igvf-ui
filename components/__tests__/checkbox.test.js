@@ -22,7 +22,8 @@ describe("Test the <Checkbox> component", () => {
     expect(checkbox).toHaveAttribute("aria-label", "checkbox-test");
     expect(checkbox).not.toBeChecked();
 
-    fireEvent.click(checkbox);
+    fireEvent.mouseDown(checkbox);
+    fireEvent.mouseUp(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 

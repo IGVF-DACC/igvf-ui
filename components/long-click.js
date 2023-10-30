@@ -7,11 +7,6 @@ import { useEffect, useRef } from "react";
 const DEFAULT_DELAY = 250;
 
 /**
- * Value to use to indicate an unset long-click timer.
- */
-const TIMER_UNSET = "UNSET";
-
-/**
  * Hook to detect short and long clicks in an element. Pass it the ID of the element to attach the
  * event listeners to. Pass it the regular- and long-click callbacks. It calls the regular-click
  * callback when the user short-clicks the element, and the long-click callback when the user
@@ -38,15 +33,17 @@ export default function useLongClick(
 ) {
   // The "UNSET" timer value indicates that the timer isn't active. That's as opposed to the null
   // value, which indicates that the timer has expired
-  const timer = useRef(TIMER_UNSET);
+  const timer = useRef(null);
 
   /**
    * Called when the user presses the mouse button or touches the touchscreen. Start the long-click
-   * timer to determine whether the user long-pressed the checkbox.
+   * timer to determine whether the user long-pressed the checkbox. If the timer expires before
+   * mouse up, notify the client component.
    */
   function onMouseDown() {
     timer.current = setTimeout(() => {
       timer.current = null;
+      onLongClick();
     }, delay);
   }
 
@@ -59,26 +56,8 @@ export default function useLongClick(
     if (timer.current) {
       clearTimeout(timer.current);
       onClick();
-    } else {
-      // The mouse-up event happened after the click timer expired, so the user long-pressed the
-      // checkbox. Call the onLongClick callback if it exists.
-      onLongClick();
     }
-    timer.current = TIMER_UNSET;
-  }
-
-  /**
-   * Handle click events, usually by ignoring them because we already handle mouseup events above.
-   * But the user can trigger click events with the keyboard, and we have to handle those because
-   * no mouse events happen. For that case, we call our mouseup handler. We can tell the user used
-   * the keyboard to trigger the click because the `detail` property of the event is 0.
-   * @param {object} event Synthetic click event for the checkbox
-   */
-  function cancelClick(event) {
-    event.preventDefault();
-    if (event.detail === 0) {
-      onMouseUp();
-    }
+    timer.current = null;
   }
 
   useEffect(() => {
@@ -89,14 +68,12 @@ export default function useLongClick(
     el.addEventListener("mouseup", onMouseUp);
     el.addEventListener("touchstart", onMouseDown);
     el.addEventListener("touchend", onMouseUp);
-    el.addEventListener("click", cancelClick);
 
     return () => {
       el.removeEventListener("mousedown", onMouseDown);
       el.removeEventListener("mouseup", onMouseUp);
       el.removeEventListener("touchstart", onMouseDown);
       el.removeEventListener("touchend", onMouseUp);
-      el.removeEventListener("click", cancelClick);
     };
   });
 
