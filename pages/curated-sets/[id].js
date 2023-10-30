@@ -54,69 +54,68 @@ export default function CuratedSet({
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{curatedSet.summary}</DataItemValue>
-              <DataItemLabel>File Set Type</DataItemLabel>
-              <DataItemValue>{curatedSet.file_set_type}</DataItemValue>
-              {curatedSet.taxa && (
-                <>
-                  <DataItemLabel>Taxa</DataItemLabel>
-                  <DataItemValue>{curatedSet.taxa}</DataItemValue>
-                </>
-              )}
-              {curatedSet.publication_identifiers?.length > 0 && (
-                <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList dbxrefs={curatedSet.publication_identifiers} />
-                  </DataItemValue>
-                </>
-              )}
-              {donors.length > 0 && (
-                <>
-                  <DataItemLabel>Donors</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {donors.map((donor) => (
-                        <Link href={donor["@id"]} key={donor.uuid}>
-                          {donor.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {curatedSet.samples?.length > 0 && (
-                <>
-                  <DataItemLabel>Samples</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {curatedSet.samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample["@id"]}>
-                          {sample.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {curatedSet.assemblies?.length > 0 && (
-                <>
-                  <DataItemLabel>Assemblies</DataItemLabel>
-                  <DataItemValue>
-                    {curatedSet.assemblies.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
-              {curatedSet.transcriptome_annotations?.length > 0 && (
-                <>
-                  <DataItemLabel>Transcriptome Annotations</DataItemLabel>
-                  <DataItemValue>
-                    {curatedSet.transcriptome_annotations.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
-              <FileSetDataItems item={curatedSet} />
+              <FileSetDataItems item={curatedSet}>
+                {curatedSet.taxa && (
+                  <>
+                    <DataItemLabel>Taxa</DataItemLabel>
+                    <DataItemValue>{curatedSet.taxa}</DataItemValue>
+                  </>
+                )}
+                {curatedSet.publication_identifiers?.length > 0 && (
+                  <>
+                    <DataItemLabel>Publication Identifiers</DataItemLabel>
+                    <DataItemValue>
+                      <DbxrefList
+                        dbxrefs={curatedSet.publication_identifiers}
+                      />
+                    </DataItemValue>
+                  </>
+                )}
+                {donors.length > 0 && (
+                  <>
+                    <DataItemLabel>Donors</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {donors.map((donor) => (
+                          <Link href={donor["@id"]} key={donor.uuid}>
+                            {donor.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {curatedSet.samples?.length > 0 && (
+                  <>
+                    <DataItemLabel>Samples</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {curatedSet.samples.map((sample) => (
+                          <Link href={sample["@id"]} key={sample["@id"]}>
+                            {sample.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {curatedSet.assemblies?.length > 0 && (
+                  <>
+                    <DataItemLabel>Assemblies</DataItemLabel>
+                    <DataItemValue>
+                      {curatedSet.assemblies.join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
+                {curatedSet.transcriptome_annotations?.length > 0 && (
+                  <>
+                    <DataItemLabel>Transcriptome Annotations</DataItemLabel>
+                    <DataItemValue>
+                      {curatedSet.transcriptome_annotations.join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
+              </FileSetDataItems>
             </DataArea>
           </DataPanel>
           {files.length > 0 && (

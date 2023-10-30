@@ -197,49 +197,42 @@ export default function ConstructLibrarySet({
         <JsonDisplay item={constructLibrarySet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{constructLibrarySet.summary}</DataItemValue>
-              {constructLibrarySet.description && (
-                <>
-                  <DataItemLabel>Description</DataItemLabel>
-                  <DataItemValue>
-                    {constructLibrarySet.description}
-                  </DataItemValue>
-                </>
-              )}
-              {constructLibrarySet.product_id && (
-                <>
-                  <DataItemLabel>Product ID</DataItemLabel>
-                  <DataItemValue>
-                    {constructLibrarySet.product_id}
-                  </DataItemValue>
-                </>
-              )}
-              {constructLibrarySet.publication_identifiers && (
-                <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList
-                      dbxrefs={constructLibrarySet.publication_identifiers}
-                    />
-                  </DataItemValue>
-                </>
-              )}
-              {constructLibrarySet.applied_to_samples.length > 0 && (
-                <>
-                  <DataItemLabel>Applied to Samples</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {constructLibrarySet.applied_to_samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample["@id"]}>
-                          {sample.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              <FileSetDataItems item={constructLibrarySet} />
+              <FileSetDataItems item={constructLibrarySet}>
+                {constructLibrarySet.product_id && (
+                  <>
+                    <DataItemLabel>Product ID</DataItemLabel>
+                    <DataItemValue>
+                      {constructLibrarySet.product_id}
+                    </DataItemValue>
+                  </>
+                )}
+                {constructLibrarySet.publication_identifiers && (
+                  <>
+                    <DataItemLabel>Publication Identifiers</DataItemLabel>
+                    <DataItemValue>
+                      <DbxrefList
+                        dbxrefs={constructLibrarySet.publication_identifiers}
+                      />
+                    </DataItemValue>
+                  </>
+                )}
+                {constructLibrarySet.applied_to_samples.length > 0 && (
+                  <>
+                    <DataItemLabel>Applied to Samples</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {constructLibrarySet.applied_to_samples.map(
+                          (sample) => (
+                            <Link href={sample["@id"]} key={sample["@id"]}>
+                              {sample.accession}
+                            </Link>
+                          )
+                        )}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+              </FileSetDataItems>
             </DataArea>
           </DataPanel>
           <LibraryDetails library={constructLibrarySet} />

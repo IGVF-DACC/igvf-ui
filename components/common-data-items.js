@@ -608,13 +608,25 @@ FileDataItems.commonProperties = [
 export function FileSetDataItems({ item, children }) {
   return (
     <>
-      {children}
+      {item.file_set_type && (
+        <>
+          <DataItemLabel>File Set Type</DataItemLabel>
+          <DataItemValue>{item.file_set_type}</DataItemValue>
+        </>
+      )}
+      {item.summary && (
+        <>
+          <DataItemLabel>Summary</DataItemLabel>
+          <DataItemValue>{item.summary}</DataItemValue>
+        </>
+      )}
       {item.description && (
         <>
           <DataItemLabel>Description</DataItemLabel>
           <DataItemValue>{item.description}</DataItemValue>
         </>
       )}
+      {children}
       {item.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
@@ -663,6 +675,8 @@ FileSetDataItems.propTypes = {
 };
 
 FileSetDataItems.commonProperties = [
+  "file_set_type",
+  "summary",
   "description",
   "aliases",
   "url",

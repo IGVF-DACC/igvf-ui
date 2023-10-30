@@ -66,72 +66,69 @@ export default function AuxiliarySet({
         <JsonDisplay item={auxiliarySet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>File Set Type</DataItemLabel>
-              <DataItemValue>{auxiliarySet.file_set_type}</DataItemValue>
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{auxiliarySet.summary}</DataItemValue>
-              {donors.length > 0 && (
-                <>
-                  <DataItemLabel>Donors</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {donors.map((donor) => (
-                        <Link href={donor["@id"]} key={donor.uuid}>
-                          {donor.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {auxiliarySet.samples?.length > 0 && (
-                <>
-                  <DataItemLabel>Samples</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {auxiliarySet.samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample["@id"]}>
-                          {sample.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {libraryConstructionPlatform && (
-                <>
-                  <DataItemLabel>Library Construction Platform</DataItemLabel>
-                  <DataItemValue>
-                    <Link href={libraryConstructionPlatform["@id"]}>
-                      {libraryConstructionPlatform.term_name}
-                    </Link>
-                  </DataItemValue>
-                </>
-              )}
-              {constructLibraries.length > 0 && (
-                <>
-                  <DataItemLabel>Construct Libraries</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {constructLibraries.map((constructLibrary) => (
-                        <Link
-                          href={constructLibrary["@id"]}
-                          key={constructLibrary["@id"]}
-                        >
-                          {constructLibrary.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {truthyOrZero(auxiliarySet.moi) && (
-                <>
-                  <DataItemLabel>MOI</DataItemLabel>
-                  <DataItemValue>{auxiliarySet.moi}</DataItemValue>
-                </>
-              )}
-              <FileSetDataItems item={auxiliarySet} />
+              <FileSetDataItems item={auxiliarySet}>
+                {donors.length > 0 && (
+                  <>
+                    <DataItemLabel>Donors</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {donors.map((donor) => (
+                          <Link href={donor["@id"]} key={donor.uuid}>
+                            {donor.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {auxiliarySet.samples?.length > 0 && (
+                  <>
+                    <DataItemLabel>Samples</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {auxiliarySet.samples.map((sample) => (
+                          <Link href={sample["@id"]} key={sample["@id"]}>
+                            {sample.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {libraryConstructionPlatform && (
+                  <>
+                    <DataItemLabel>Library Construction Platform</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={libraryConstructionPlatform["@id"]}>
+                        {libraryConstructionPlatform.term_name}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
+                {constructLibraries.length > 0 && (
+                  <>
+                    <DataItemLabel>Construct Libraries</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {constructLibraries.map((constructLibrary) => (
+                          <Link
+                            href={constructLibrary["@id"]}
+                            key={constructLibrary["@id"]}
+                          >
+                            {constructLibrary.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {truthyOrZero(auxiliarySet.moi) && (
+                  <>
+                    <DataItemLabel>MOI</DataItemLabel>
+                    <DataItemValue>{auxiliarySet.moi}</DataItemValue>
+                  </>
+                )}
+              </FileSetDataItems>
             </DataArea>
           </DataPanel>
           {filesWithReadType.length > 0 && (
