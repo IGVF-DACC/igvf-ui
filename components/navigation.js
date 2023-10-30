@@ -629,7 +629,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="genome-references"
-            href="/search?type=CuratedSet&curated_set_type=genome"
+            href="/search?type=CuratedSet&file_set_type=genome"
             navigationClick={navigationClick}
             isChildItem
           >
