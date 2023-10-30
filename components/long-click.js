@@ -7,11 +7,6 @@ import { useEffect, useRef } from "react";
 const DEFAULT_DELAY = 250;
 
 /**
- * Value to use to indicate an unset long-click timer.
- */
-const TIMER_UNSET = "UNSET";
-
-/**
  * Hook to detect short and long clicks in an element. Pass it the ID of the element to attach the
  * event listeners to. Pass it the regular- and long-click callbacks. It calls the regular-click
  * callback when the user short-clicks the element, and the long-click callback when the user
@@ -38,7 +33,7 @@ export default function useLongClick(
 ) {
   // The "UNSET" timer value indicates that the timer isn't active. That's as opposed to the null
   // value, which indicates that the timer has expired
-  const timer = useRef(TIMER_UNSET);
+  const timer = useRef(null);
 
   /**
    * Called when the user presses the mouse button or touches the touchscreen. Start the long-click
@@ -62,7 +57,7 @@ export default function useLongClick(
       clearTimeout(timer.current);
       onClick();
     }
-    timer.current = TIMER_UNSET;
+    timer.current = null;
   }
 
   /**
