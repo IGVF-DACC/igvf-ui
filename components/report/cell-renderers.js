@@ -15,6 +15,7 @@ import { FileDownload } from "../file-download";
 import SeparatedList from "../separated-list";
 import UnspecifiedProperty from "../unspecified-property";
 // lib
+import { stringsToStringsWithCounts } from "../../lib/arrays";
 import { attachmentToServerHref } from "../../lib/attachment";
 import { API_URL } from "../../lib/constants";
 
@@ -324,8 +325,14 @@ function UnknownObject({ id, source }) {
   for (let i = 0; i < components.length; i += 1) {
     if (Array.isArray(property)) {
       // Extract the specified property component from each element of the array.
-      const embeddedProperties = property.map((item) => item[components[i]]);
-      property = embeddedProperties.filter((item) => item).join(", ");
+      const embeddedProperties = property
+        .map((item) => item[components[i]])
+        .filter((item) => item);
+
+      // In case of repeated values, Display only unique values with their counts.
+      const propertiesWithCounts =
+        stringsToStringsWithCounts(embeddedProperties);
+      property = propertiesWithCounts.join(", ");
     } else {
       // Extract the specified property component from the embedded property.
       property = property[components[i]];
