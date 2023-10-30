@@ -33,7 +33,8 @@ describe("Test the <FacetTerms> component", () => {
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
 
-    fireEvent.click(checkbox);
+    fireEvent.mouseDown(checkbox);
+    fireEvent.mouseUp(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
     expect(onClick).toHaveBeenCalledWith("assay_slims", term, false);
   });
@@ -69,7 +70,8 @@ describe("Test the <FacetTerms> component", () => {
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).toBeChecked();
 
-    fireEvent.click(checkbox);
+    fireEvent.mouseDown(checkbox);
+    fireEvent.mouseUp(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 

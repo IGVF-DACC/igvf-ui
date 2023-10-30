@@ -60,20 +60,6 @@ export default function useLongClick(
     timer.current = null;
   }
 
-  /**
-   * Handle click events, usually by ignoring them because we already handle mouseup events above.
-   * But the user can trigger click events with the keyboard, and we have to handle those because
-   * no mouse events happen. For that case, we call our mouseup handler. We can tell the user used
-   * the keyboard to trigger the click because the `detail` property of the event is 0.
-   * @param {object} event Synthetic click event for the checkbox
-   */
-  function cancelClick(event) {
-    event.preventDefault();
-    if (event.detail === 0) {
-      onMouseUp();
-    }
-  }
-
   useEffect(() => {
     // Install the event listeners for the checkbox. We don't need the "mouseup" event because
     // "click" fires after "mouseup," getting handled by the checkbox `onClick` handler.
@@ -82,14 +68,12 @@ export default function useLongClick(
     el.addEventListener("mouseup", onMouseUp);
     el.addEventListener("touchstart", onMouseDown);
     el.addEventListener("touchend", onMouseUp);
-    el.addEventListener("click", cancelClick);
 
     return () => {
       el.removeEventListener("mousedown", onMouseDown);
       el.removeEventListener("mouseup", onMouseUp);
       el.removeEventListener("touchstart", onMouseDown);
       el.removeEventListener("touchend", onMouseUp);
-      el.removeEventListener("click", cancelClick);
     };
   });
 
