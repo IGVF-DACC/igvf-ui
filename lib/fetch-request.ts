@@ -361,7 +361,7 @@ export default class FetchRequest {
       const results = (await response.json()) as DataProviderObject;
       return ok(results);
     } catch (error) {
-      console.log(error);
+      console.log("NETWORK ERROR: ", error);
       return err(NETWORK_ERROR_RESPONSE);
     }
   }

@@ -1,4 +1,4 @@
-import { AttachedButtons, Button, ButtonLink, TooltipButton } from "./button";
+import { AttachedButtons, Button, ButtonLink } from "./button";
 import FormLabel from "./form-label";
 import ListSelect from "./list-select";
 import RadioButton from "./radio-button";
@@ -14,6 +14,5 @@ export {
   RadioButton,
   Select,
   TextField,
-  TooltipButton,
 };
 /* istanbul ignore file */
