@@ -6,6 +6,7 @@ import { Fragment } from "react";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileSetDataItems } from "../../components/common-data-items";
 import ChromosomeLocations from "../../components/chromosome-locations";
 import {
   DataArea,
@@ -62,14 +63,6 @@ export default function PredictionSet({
             <DataArea>
               <DataItemLabel>File Set Type</DataItemLabel>
               <DataItemValue>{predictionSet.file_set_type}</DataItemValue>
-              {predictionSet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    {predictionSet.aliases.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
               {donors?.length > 0 && (
                 <>
                   <DataItemLabel>Donors</DataItemLabel>
@@ -96,12 +89,6 @@ export default function PredictionSet({
                       ))}
                     </SeparatedList>
                   </DataItemValue>
-                </>
-              )}
-              {predictionSet.description && (
-                <>
-                  <DataItemLabel>Description</DataItemLabel>
-                  <DataItemValue>{predictionSet.description}</DataItemValue>
                 </>
               )}
               <DataItemLabel>Summary</DataItemLabel>
@@ -153,6 +140,7 @@ export default function PredictionSet({
                   </DataItemValue>
                 </>
               )}
+              <FileSetDataItems item={predictionSet} />
             </DataArea>
           </DataPanel>
           {files.length > 0 && (

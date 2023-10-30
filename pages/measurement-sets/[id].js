@@ -4,9 +4,9 @@ import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
-import AliasList from "../../components/alias-list";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
@@ -88,14 +88,6 @@ export default function MeasurementSet({
                   </DataItemValue>
                 </>
               )}
-              {measurementSet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    <AliasList aliases={measurementSet.aliases} />
-                  </DataItemValue>
-                </>
-              )}
               {measurementSet.publication_identifiers?.length > 0 && (
                 <>
                   <DataItemLabel>Publication Identifiers</DataItemLabel>
@@ -170,12 +162,6 @@ export default function MeasurementSet({
                   </DataItemValue>
                 </>
               )}
-              {measurementSet.description && (
-                <>
-                  <DataItemLabel>Description</DataItemLabel>
-                  <DataItemValue>{measurementSet.description}</DataItemValue>
-                </>
-              )}
               {measurementSet.related_multiome_datasets?.length > 0 && (
                 <>
                   <DataItemLabel>Related Multiome Datasets</DataItemLabel>
@@ -220,6 +206,7 @@ export default function MeasurementSet({
                   </DataItemValue>
                 </>
               )}
+              <FileSetDataItems item={measurementSet} />
             </DataArea>
           </DataPanel>
           {(libraryConstructionPlatform || measurementSet.protocol) && (

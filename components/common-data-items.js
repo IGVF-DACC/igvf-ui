@@ -603,6 +603,75 @@ FileDataItems.commonProperties = [
 ];
 
 /**
+ * Display data items common to all FileSet objects.
+ */
+export function FileSetDataItems({ item, children }) {
+  return (
+    <>
+      {children}
+      {item.description && (
+        <>
+          <DataItemLabel>Description</DataItemLabel>
+          <DataItemValue>{item.description}</DataItemValue>
+        </>
+      )}
+      {item.aliases?.length > 0 && (
+        <>
+          <DataItemLabel>Aliases</DataItemLabel>
+          <DataItemValue>
+            <AliasList aliases={item.aliases} />
+          </DataItemValue>
+        </>
+      )}
+      {item.url && (
+        <>
+          <DataItemLabel>URL</DataItemLabel>
+          <DataItemValueUrl>
+            <a href={item.url} target="_blank" rel="noopener noreferrer">
+              {item.url}
+            </a>
+          </DataItemValueUrl>
+        </>
+      )}
+      {item.submitter_comment && (
+        <>
+          <DataItemLabel>Submitter Comment</DataItemLabel>
+          <DataItemValue>{item.submitter_comment}</DataItemValue>
+        </>
+      )}
+      {item.revoke_detail && (
+        <>
+          <DataItemLabel>Revoke Detail</DataItemLabel>
+          <DataItemValue>{item.revoke_detail}</DataItemValue>
+        </>
+      )}
+      {item.dbxrefs?.length > 0 && (
+        <>
+          <DataItemLabel>External Resources</DataItemLabel>
+          <DataItemValue>
+            <DbxrefList dbxrefs={item.dbxrefs} />
+          </DataItemValue>
+        </>
+      )}
+    </>
+  );
+}
+
+FileSetDataItems.propTypes = {
+  // file object common for all file types
+  item: PropTypes.object.isRequired,
+};
+
+FileSetDataItems.commonProperties = [
+  "description",
+  "aliases",
+  "url",
+  "submitter_comment",
+  "revoke_detail",
+  "dbxrefs",
+];
+
+/**
  * `UnknownTypePanel` uses the following data and functions to use common data item renderers based
  * on the parent type of unknown objects.
  */
@@ -618,6 +687,7 @@ const commonDataRenderers = {
   Donor: DonorDataItems,
   File: FileDataItems,
   OntologyTerm: OntologyTermDataItems,
+  FileSet: FileSetDataItems,
 };
 
 /**

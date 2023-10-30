@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
@@ -67,14 +68,8 @@ export default function AuxiliarySet({
             <DataArea>
               <DataItemLabel>File Set Type</DataItemLabel>
               <DataItemValue>{auxiliarySet.file_set_type}</DataItemValue>
-              {auxiliarySet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    {auxiliarySet.aliases.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
+              <DataItemLabel>Summary</DataItemLabel>
+              <DataItemValue>{auxiliarySet.summary}</DataItemValue>
               {donors.length > 0 && (
                 <>
                   <DataItemLabel>Donors</DataItemLabel>
@@ -101,12 +96,6 @@ export default function AuxiliarySet({
                       ))}
                     </SeparatedList>
                   </DataItemValue>
-                </>
-              )}
-              {auxiliarySet.description && (
-                <>
-                  <DataItemLabel>Description</DataItemLabel>
-                  <DataItemValue>{auxiliarySet.description}</DataItemValue>
                 </>
               )}
               {libraryConstructionPlatform && (
@@ -142,8 +131,7 @@ export default function AuxiliarySet({
                   <DataItemValue>{auxiliarySet.moi}</DataItemValue>
                 </>
               )}
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{auxiliarySet.summary}</DataItemValue>
+              <FileSetDataItems item={auxiliarySet} />
             </DataArea>
           </DataPanel>
           {filesWithReadType.length > 0 && (

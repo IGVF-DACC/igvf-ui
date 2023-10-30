@@ -2,10 +2,10 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
-import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
@@ -56,14 +56,6 @@ export default function ModelSet({
               <DataItemValue>{modelSet.model_version}</DataItemValue>
               <DataItemLabel>File Set Type</DataItemLabel>
               <DataItemValue>{modelSet.file_set_type}</DataItemValue>
-              {modelSet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    <AliasList aliases={modelSet.aliases} />
-                  </DataItemValue>
-                </>
-              )}
               {modelSet.prediction_objects.length > 0 && (
                 <>
                   <DataItemLabel>Prediction Objects</DataItemLabel>
@@ -118,6 +110,7 @@ export default function ModelSet({
                   </DataItemValue>
                 </>
               )}
+              <FileSetDataItems item={modelSet} />
             </DataArea>
           </DataPanel>
           {files.length > 0 && (

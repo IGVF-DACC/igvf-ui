@@ -3,11 +3,11 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
-import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import ChromosomeLocations from "../../components/chromosome-locations";
+import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataItemLabel,
@@ -215,14 +215,6 @@ export default function ConstructLibrarySet({
                   </DataItemValue>
                 </>
               )}
-              {constructLibrarySet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    <AliasList aliases={constructLibrarySet.aliases} />
-                  </DataItemValue>
-                </>
-              )}
               {constructLibrarySet.publication_identifiers && (
                 <>
                   <DataItemLabel>Publication Identifiers</DataItemLabel>
@@ -247,6 +239,7 @@ export default function ConstructLibrarySet({
                   </DataItemValue>
                 </>
               )}
+              <FileSetDataItems item={constructLibrarySet} />
             </DataArea>
           </DataPanel>
           <LibraryDetails library={constructLibrarySet} />

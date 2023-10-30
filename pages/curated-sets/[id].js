@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
@@ -21,7 +22,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
-import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
@@ -62,14 +62,6 @@ export default function CuratedSet({
                 <>
                   <DataItemLabel>Taxa</DataItemLabel>
                   <DataItemValue>{curatedSet.taxa}</DataItemValue>
-                </>
-              )}
-              {curatedSet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    <AliasList aliases={curatedSet.aliases} />
-                  </DataItemValue>
                 </>
               )}
               {curatedSet.publication_identifiers?.length > 0 && (
@@ -124,6 +116,7 @@ export default function CuratedSet({
                   </DataItemValue>
                 </>
               )}
+              <FileSetDataItems item={curatedSet} />
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
@@ -135,7 +128,6 @@ export default function CuratedSet({
               <DocumentTable documents={documents} />
             </>
           )}
-
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
