@@ -2605,11 +2605,19 @@ describe("Test Analysis Step component", () => {
         "/analysis-steps/IGVFWF3254CAGQ-example-signal-generation-analysis-step/",
       "@type": ["AnalysisStep", "Item"],
       award: "/awards/HG012012/",
-      lab: "/labs/j-michael-cherry/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
       status: "released",
       name: "IGVFWF3254CAGQ-example-signal-generation-analysis-step",
       title: "Test UI Analysis Step",
-      parents: ["/analysis-steps/IGVFWF3254CAGQ-example-analysis-step/"],
+      parents: [
+        {
+          title: "Example Analysis Step",
+          "@id": /analysis-steps/IGVFWF3254CAGQ-example-analysis-step/"
+        }
+      ],
       analysis_step_types: ["signal generation", "alignment"],
       input_content_types: ["alignments"],
       output_content_types: ["signal of unique reads"],
