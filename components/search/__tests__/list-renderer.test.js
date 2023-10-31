@@ -2615,8 +2615,8 @@ describe("Test Analysis Step component", () => {
       parents: [
         {
           title: "Example Analysis Step",
-          "@id": /analysis-steps/IGVFWF3254CAGQ-example-analysis-step/"
-        }
+          "@id": "/analysis-steps/IGVFWF3254CAGQ-example-analysis-step/",
+        },
       ],
       analysis_step_types: ["signal generation", "alignment"],
       input_content_types: ["alignments"],
