@@ -15,12 +15,14 @@ describe("Exercise access keys", () => {
     cy.contains("Access Key ID").should("exist");
     cy.contains("Access Key Secret").should("exist");
     cy.contains("button", "Close").click();
+    cy.delayForIndexing();
 
     // Should contain a single access key on the display.
     cy.get(`[aria-label^="Reset access key"]`).should("have.length", 1);
 
     // Reset access key
     cy.get(`[aria-label^="Reset access key"]`).click();
+    cy.delayForIndexing();
     cy.contains("Access Key ID").should("exist");
     cy.contains("Access Key Secret").should("exist");
     cy.contains("button", "Close").click();
@@ -33,12 +35,14 @@ describe("Exercise access keys", () => {
     cy.contains("Access Key ID").should("exist");
     cy.contains("Access Key Secret").should("exist");
     cy.contains("button", "Close").click();
+    cy.delayForIndexing();
 
     // Should contain two access keys on the display.
     cy.get(`[aria-label^="Reset access key"]`).should("have.length", 2);
 
     // Delete the first access key.
     cy.get(`[aria-label^="Delete access key"]`).first().click();
+    cy.delayForIndexing();
     cy.contains("button", /^Delete$/).click();
 
     // Should contain one access key on the display.
@@ -46,6 +50,7 @@ describe("Exercise access keys", () => {
 
     // Delete the remaining access key.
     cy.get(`[aria-label^="Delete access key"]`).first().click();
+    cy.delayForIndexing();
     cy.contains("button", /^Delete$/).click();
 
     // Should contain no access keys on the display.
