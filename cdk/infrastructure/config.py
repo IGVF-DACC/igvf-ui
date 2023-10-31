@@ -57,7 +57,6 @@ config: Dict[str, Any] = {
                 ('time-to-live-hours', '60'),
                 ('turn-off-on-friday-night', 'yes'),
             ],
-            'backend_url': 'https://igvfd-dev.demo.igvf.org'
         },
         'dev': {
             'frontend': {
