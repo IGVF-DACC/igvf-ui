@@ -2636,7 +2636,7 @@ describe("Test Analysis Step component", () => {
     expect(title).toHaveTextContent("Test UI Analysis Step");
 
     const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("/labs/j-michael-cherry/");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
