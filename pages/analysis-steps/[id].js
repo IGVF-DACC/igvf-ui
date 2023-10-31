@@ -51,36 +51,24 @@ export default function AnalysisStep({
                   <DataItemValue>{analysisStep.step_label}</DataItemValue>
                 </>
               )}
-              {analysisStep.analysis_step_types.length > 0 && (
-                <>
-                  <DataItemLabel>Analysis Step Types</DataItemLabel>
-                  <DataItemValue>
-                    {analysisStep.analysis_step_types.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
+              <DataItemLabel>Analysis Step Types</DataItemLabel>
+              <DataItemValue>
+                {analysisStep.analysis_step_types.join(", ")}
+              </DataItemValue>
               <DataItemLabel>Workflow</DataItemLabel>
               <DataItemValue>
                 <Link href={analysisStep.workflow["@id"]}>
                   {analysisStep.workflow.accession}
                 </Link>
               </DataItemValue>
-              {analysisStep.input_content_types.length > 0 && (
-                <>
-                  <DataItemLabel>Input Content Types</DataItemLabel>
-                  <DataItemValue>
-                    {analysisStep.input_content_types.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
-              {analysisStep.output_content_types.length > 0 && (
-                <>
-                  <DataItemLabel>Output Content Types</DataItemLabel>
-                  <DataItemValue>
-                    {analysisStep.output_content_types.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
+              <DataItemLabel>Input Content Types</DataItemLabel>
+              <DataItemValue>
+                {analysisStep.input_content_types.join(", ")}
+              </DataItemValue>
+              <DataItemLabel>Output Content Types</DataItemLabel>
+              <DataItemValue>
+                {analysisStep.output_content_types.join(", ")}
+              </DataItemValue>
               {analysisStep.parents?.length > 0 && (
                 <>
                   <DataItemLabel>Parents</DataItemLabel>
@@ -88,7 +76,7 @@ export default function AnalysisStep({
                     <SeparatedList>
                       {analysisStep.parents.map((parent) => (
                         <Link href={parent} key={parent}>
-                          {parent}
+                          {parent.title}
                         </Link>
                       ))}
                     </SeparatedList>
