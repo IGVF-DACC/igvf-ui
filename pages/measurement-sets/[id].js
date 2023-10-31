@@ -4,9 +4,9 @@ import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
-import AliasList from "../../components/alias-list";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
@@ -78,148 +78,136 @@ export default function MeasurementSet({
         <JsonDisplay item={measurementSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Assay Summary</DataItemLabel>
-              <DataItemValue>{measurementSet.summary}</DataItemValue>
-              {assayTerm && (
-                <>
-                  <DataItemLabel>Assay Term</DataItemLabel>
-                  <DataItemValue>
-                    <Link href={assayTerm["@id"]}>{assayTerm.term_name}</Link>
-                  </DataItemValue>
-                </>
-              )}
-              {measurementSet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    <AliasList aliases={measurementSet.aliases} />
-                  </DataItemValue>
-                </>
-              )}
-              {measurementSet.publication_identifiers?.length > 0 && (
-                <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList
-                      dbxrefs={measurementSet.publication_identifiers}
-                    />
-                  </DataItemValue>
-                </>
-              )}
-              {donors.length > 0 && (
-                <>
-                  <DataItemLabel>Donors</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {donors.map((donor) => (
-                        <Link href={donor["@id"]} key={donor.uuid}>
-                          {donor.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {samplesCollapser.displayedData.length > 0 && (
-                <>
-                  <DataItemLabel>Samples</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {samplesCollapser.displayedData.map((sample, index) => (
-                        <Fragment key={sample["@id"]}>
-                          <Link href={sample["@id"]}>{sample.accession}</Link>
-                          {index ===
-                            samplesCollapser.displayedData.length - 1 && (
-                            <DataItemValueCollapseControl
-                              key="more-control"
-                              collapser={samplesCollapser}
-                              className="ml-1 inline-block"
-                            >
-                              <DataItemValueControlLabel
-                                collapser={samplesCollapser}
-                              />
-                            </DataItemValueCollapseControl>
-                          )}
-                        </Fragment>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {sampleSummariesCollapser.displayedData.length > 0 && (
-                <>
-                  <DataItemLabel>Sample Summaries</DataItemLabel>
-                  <DataItemValue>
-                    <>
-                      {sampleSummariesCollapser.displayedData.map((summary) => (
-                        <div
-                          key={summary}
-                          className="my-2 first:mt-0 last:mb-0"
-                        >
-                          {summary}
-                        </div>
-                      ))}
-                      <DataItemValueCollapseControl
-                        collapser={sampleSummariesCollapser}
-                      >
-                        <DataItemValueControlLabel
-                          collapser={sampleSummariesCollapser}
-                        />
-                      </DataItemValueCollapseControl>
-                    </>
-                  </DataItemValue>
-                </>
-              )}
-              {measurementSet.description && (
-                <>
-                  <DataItemLabel>Description</DataItemLabel>
-                  <DataItemValue>{measurementSet.description}</DataItemValue>
-                </>
-              )}
-              {measurementSet.related_multiome_datasets?.length > 0 && (
-                <>
-                  <DataItemLabel>Related Multiome Datasets</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {measurementSet.related_multiome_datasets.map(
-                        (dataset) => (
-                          <Link href={dataset["@id"]} key={dataset["@id"]}>
-                            {dataset.accession}
+              <FileSetDataItems item={measurementSet}>
+                {assayTerm && (
+                  <>
+                    <DataItemLabel>Assay Term</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={assayTerm["@id"]}>{assayTerm.term_name}</Link>
+                    </DataItemValue>
+                  </>
+                )}
+                {measurementSet.publication_identifiers?.length > 0 && (
+                  <>
+                    <DataItemLabel>Publication Identifiers</DataItemLabel>
+                    <DataItemValue>
+                      <DbxrefList
+                        dbxrefs={measurementSet.publication_identifiers}
+                      />
+                    </DataItemValue>
+                  </>
+                )}
+                {donors.length > 0 && (
+                  <>
+                    <DataItemLabel>Donors</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {donors.map((donor) => (
+                          <Link href={donor["@id"]} key={donor.uuid}>
+                            {donor.accession}
                           </Link>
-                        )
-                      )}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {measurementSet.auxiliary_sets?.length > 0 && (
-                <>
-                  <DataItemLabel>Auxiliary Sets</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {measurementSet.auxiliary_sets.map((set) => (
-                        <Link href={set["@id"]} key={set["@id"]}>
-                          {set.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {measurementSet.control_file_sets?.length > 0 && (
-                <>
-                  <DataItemLabel>Control File Sets</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {measurementSet.control_file_sets.map((set) => (
-                        <Link href={set["@id"]} key={set["@id"]}>
-                          {set.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {samplesCollapser.displayedData.length > 0 && (
+                  <>
+                    <DataItemLabel>Samples</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {samplesCollapser.displayedData.map((sample, index) => (
+                          <Fragment key={sample["@id"]}>
+                            <Link href={sample["@id"]}>{sample.accession}</Link>
+                            {index ===
+                              samplesCollapser.displayedData.length - 1 && (
+                              <DataItemValueCollapseControl
+                                key="more-control"
+                                collapser={samplesCollapser}
+                                className="ml-1 inline-block"
+                              >
+                                <DataItemValueControlLabel
+                                  collapser={samplesCollapser}
+                                />
+                              </DataItemValueCollapseControl>
+                            )}
+                          </Fragment>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {sampleSummariesCollapser.displayedData.length > 0 && (
+                  <>
+                    <DataItemLabel>Sample Summaries</DataItemLabel>
+                    <DataItemValue>
+                      <>
+                        {sampleSummariesCollapser.displayedData.map(
+                          (summary) => (
+                            <div
+                              key={summary}
+                              className="my-2 first:mt-0 last:mb-0"
+                            >
+                              {summary}
+                            </div>
+                          )
+                        )}
+                        <DataItemValueCollapseControl
+                          collapser={sampleSummariesCollapser}
+                        >
+                          <DataItemValueControlLabel
+                            collapser={sampleSummariesCollapser}
+                          />
+                        </DataItemValueCollapseControl>
+                      </>
+                    </DataItemValue>
+                  </>
+                )}
+                {measurementSet.related_multiome_datasets?.length > 0 && (
+                  <>
+                    <DataItemLabel>Related Multiome Datasets</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {measurementSet.related_multiome_datasets.map(
+                          (dataset) => (
+                            <Link href={dataset["@id"]} key={dataset["@id"]}>
+                              {dataset.accession}
+                            </Link>
+                          )
+                        )}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {measurementSet.auxiliary_sets?.length > 0 && (
+                  <>
+                    <DataItemLabel>Auxiliary Sets</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {measurementSet.auxiliary_sets.map((set) => (
+                          <Link href={set["@id"]} key={set["@id"]}>
+                            {set.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {measurementSet.control_file_sets?.length > 0 && (
+                  <>
+                    <DataItemLabel>Control File Sets</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {measurementSet.control_file_sets.map((set) => (
+                          <Link href={set["@id"]} key={set["@id"]}>
+                            {set.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+              </FileSetDataItems>
             </DataArea>
           </DataPanel>
           {(libraryConstructionPlatform || measurementSet.protocol) && (

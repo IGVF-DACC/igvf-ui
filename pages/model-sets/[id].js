@@ -2,10 +2,10 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
-import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
@@ -50,74 +50,66 @@ export default function ModelSet({
         <JsonDisplay item={modelSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Accession</DataItemLabel>
-              <DataItemValue>{modelSet.accession}</DataItemValue>
-              <DataItemLabel>Model Version</DataItemLabel>
-              <DataItemValue>{modelSet.model_version}</DataItemValue>
-              <DataItemLabel>File Set Type</DataItemLabel>
-              <DataItemValue>{modelSet.file_set_type}</DataItemValue>
-              {modelSet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    <AliasList aliases={modelSet.aliases} />
-                  </DataItemValue>
-                </>
-              )}
-              {modelSet.prediction_objects.length > 0 && (
-                <>
-                  <DataItemLabel>Prediction Objects</DataItemLabel>
-                  <DataItemValue>
-                    {modelSet.prediction_objects.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
-              {modelSet.input_file_sets?.length > 0 && (
-                <>
-                  <DataItemLabel>Input File Sets</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {modelSet.input_file_sets.map((fileSet) => (
-                        <Link href={fileSet["@id"]} key={fileSet["@id"]}>
-                          {fileSet.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {modelSet.model_zoo_location && (
-                <>
-                  <DataItemLabel>Model Zoo Location</DataItemLabel>
-                  <DataItemValue>
-                    <a
-                      href={modelSet.model_zoo_location}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {modelSet.model_zoo_location}
-                    </a>
-                  </DataItemValue>
-                </>
-              )}
-              {softwareVersion && (
-                <>
-                  <DataItemLabel>Software Version</DataItemLabel>
-                  <DataItemValue>
-                    <Link href={softwareVersion["@id"]}>
-                      {softwareVersion.name}
-                    </Link>
-                  </DataItemValue>
-                </>
-              )}
-              {modelSet.publication_identifiers?.length > 0 && (
-                <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList dbxrefs={modelSet.publication_identifiers} />
-                  </DataItemValue>
-                </>
-              )}
+              <FileSetDataItems item={modelSet}>
+                <DataItemLabel>Accession</DataItemLabel>
+                <DataItemValue>{modelSet.accession}</DataItemValue>
+                <DataItemLabel>Model Version</DataItemLabel>
+                <DataItemValue>{modelSet.model_version}</DataItemValue>
+                {modelSet.prediction_objects.length > 0 && (
+                  <>
+                    <DataItemLabel>Prediction Objects</DataItemLabel>
+                    <DataItemValue>
+                      {modelSet.prediction_objects.join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
+                {modelSet.input_file_sets?.length > 0 && (
+                  <>
+                    <DataItemLabel>Input File Sets</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {modelSet.input_file_sets.map((fileSet) => (
+                          <Link href={fileSet["@id"]} key={fileSet["@id"]}>
+                            {fileSet.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {modelSet.model_zoo_location && (
+                  <>
+                    <DataItemLabel>Model Zoo Location</DataItemLabel>
+                    <DataItemValue>
+                      <a
+                        href={modelSet.model_zoo_location}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {modelSet.model_zoo_location}
+                      </a>
+                    </DataItemValue>
+                  </>
+                )}
+                {softwareVersion && (
+                  <>
+                    <DataItemLabel>Software Version</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={softwareVersion["@id"]}>
+                        {softwareVersion.name}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
+                {modelSet.publication_identifiers?.length > 0 && (
+                  <>
+                    <DataItemLabel>Publication Identifiers</DataItemLabel>
+                    <DataItemValue>
+                      <DbxrefList dbxrefs={modelSet.publication_identifiers} />
+                    </DataItemValue>
+                  </>
+                )}
+              </FileSetDataItems>
             </DataArea>
           </DataPanel>
           {files.length > 0 && (

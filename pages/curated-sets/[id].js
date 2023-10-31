@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
@@ -21,7 +22,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
-import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
@@ -54,76 +54,68 @@ export default function CuratedSet({
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{curatedSet.summary}</DataItemValue>
-              <DataItemLabel>File Set Type</DataItemLabel>
-              <DataItemValue>{curatedSet.file_set_type}</DataItemValue>
-              {curatedSet.taxa && (
-                <>
-                  <DataItemLabel>Taxa</DataItemLabel>
-                  <DataItemValue>{curatedSet.taxa}</DataItemValue>
-                </>
-              )}
-              {curatedSet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    <AliasList aliases={curatedSet.aliases} />
-                  </DataItemValue>
-                </>
-              )}
-              {curatedSet.publication_identifiers?.length > 0 && (
-                <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList dbxrefs={curatedSet.publication_identifiers} />
-                  </DataItemValue>
-                </>
-              )}
-              {donors.length > 0 && (
-                <>
-                  <DataItemLabel>Donors</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {donors.map((donor) => (
-                        <Link href={donor["@id"]} key={donor.uuid}>
-                          {donor.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {curatedSet.samples?.length > 0 && (
-                <>
-                  <DataItemLabel>Samples</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {curatedSet.samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample["@id"]}>
-                          {sample.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {curatedSet.assemblies?.length > 0 && (
-                <>
-                  <DataItemLabel>Assemblies</DataItemLabel>
-                  <DataItemValue>
-                    {curatedSet.assemblies.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
-              {curatedSet.transcriptome_annotations?.length > 0 && (
-                <>
-                  <DataItemLabel>Transcriptome Annotations</DataItemLabel>
-                  <DataItemValue>
-                    {curatedSet.transcriptome_annotations.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
+              <FileSetDataItems item={curatedSet}>
+                {curatedSet.taxa && (
+                  <>
+                    <DataItemLabel>Taxa</DataItemLabel>
+                    <DataItemValue>{curatedSet.taxa}</DataItemValue>
+                  </>
+                )}
+                {curatedSet.publication_identifiers?.length > 0 && (
+                  <>
+                    <DataItemLabel>Publication Identifiers</DataItemLabel>
+                    <DataItemValue>
+                      <DbxrefList
+                        dbxrefs={curatedSet.publication_identifiers}
+                      />
+                    </DataItemValue>
+                  </>
+                )}
+                {donors.length > 0 && (
+                  <>
+                    <DataItemLabel>Donors</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {donors.map((donor) => (
+                          <Link href={donor["@id"]} key={donor.uuid}>
+                            {donor.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {curatedSet.samples?.length > 0 && (
+                  <>
+                    <DataItemLabel>Samples</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {curatedSet.samples.map((sample) => (
+                          <Link href={sample["@id"]} key={sample["@id"]}>
+                            {sample.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {curatedSet.assemblies?.length > 0 && (
+                  <>
+                    <DataItemLabel>Assemblies</DataItemLabel>
+                    <DataItemValue>
+                      {curatedSet.assemblies.join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
+                {curatedSet.transcriptome_annotations?.length > 0 && (
+                  <>
+                    <DataItemLabel>Transcriptome Annotations</DataItemLabel>
+                    <DataItemValue>
+                      {curatedSet.transcriptome_annotations.join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
+              </FileSetDataItems>
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
@@ -135,7 +127,6 @@ export default function CuratedSet({
               <DocumentTable documents={documents} />
             </>
           )}
-
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

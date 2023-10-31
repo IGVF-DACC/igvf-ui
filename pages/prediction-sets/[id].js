@@ -6,6 +6,7 @@ import { Fragment } from "react";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { FileSetDataItems } from "../../components/common-data-items";
 import ChromosomeLocations from "../../components/chromosome-locations";
 import {
   DataArea,
@@ -60,99 +61,83 @@ export default function PredictionSet({
         <JsonDisplay item={predictionSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>File Set Type</DataItemLabel>
-              <DataItemValue>{predictionSet.file_set_type}</DataItemValue>
-              {predictionSet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    {predictionSet.aliases.join(", ")}
-                  </DataItemValue>
-                </>
-              )}
-              {donors?.length > 0 && (
-                <>
-                  <DataItemLabel>Donors</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {donors.map((donor) => (
-                        <Link href={donor["@id"]} key={donor.uuid}>
-                          {donor.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {predictionSet.samples?.length > 0 && (
-                <>
-                  <DataItemLabel>Samples</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {predictionSet.samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample["@id"]}>
-                          {sample.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {predictionSet.description && (
-                <>
-                  <DataItemLabel>Description</DataItemLabel>
-                  <DataItemValue>{predictionSet.description}</DataItemValue>
-                </>
-              )}
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{predictionSet.summary}</DataItemValue>
-              {predictionSet.scope && (
-                <>
-                  <DataItemLabel>Scope</DataItemLabel>
-                  <DataItemValue>{predictionSet.scope}</DataItemValue>
-                </>
-              )}
-              {genesCollapser.displayedData.length > 0 && (
-                <>
-                  <DataItemLabel>Targeted Genes</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {genesCollapser.displayedData.map((gene, index) => (
-                        <Fragment key={gene}>
-                          <Link href={gene}>{gene}</Link>
-                          {index ===
-                            genesCollapser.displayedData.length - 1 && (
-                            <DataItemValueCollapseControl
-                              key="more-control"
-                              collapser={genesCollapser}
-                              className="ml-1 inline-block"
-                            >
-                              <DataItemValueControlLabel
+              <FileSetDataItems item={predictionSet}>
+                {donors?.length > 0 && (
+                  <>
+                    <DataItemLabel>Donors</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {donors.map((donor) => (
+                          <Link href={donor["@id"]} key={donor.uuid}>
+                            {donor.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {predictionSet.samples?.length > 0 && (
+                  <>
+                    <DataItemLabel>Samples</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {predictionSet.samples.map((sample) => (
+                          <Link href={sample["@id"]} key={sample["@id"]}>
+                            {sample.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {predictionSet.scope && (
+                  <>
+                    <DataItemLabel>Scope</DataItemLabel>
+                    <DataItemValue>{predictionSet.scope}</DataItemValue>
+                  </>
+                )}
+                {genesCollapser.displayedData.length > 0 && (
+                  <>
+                    <DataItemLabel>Targeted Genes</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {genesCollapser.displayedData.map((gene, index) => (
+                          <Fragment key={gene}>
+                            <Link href={gene}>{gene}</Link>
+                            {index ===
+                              genesCollapser.displayedData.length - 1 && (
+                              <DataItemValueCollapseControl
                                 key="more-control"
                                 collapser={genesCollapser}
                                 className="ml-1 inline-block"
-                              />
-                            </DataItemValueCollapseControl>
-                          )}
-                        </Fragment>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {lociCollapser.displayedData.length > 0 && (
-                <>
-                  <DataItemLabel>Targeted Loci</DataItemLabel>
-                  <DataItemValue>
-                    <ChromosomeLocations
-                      locations={lociCollapser.displayedData}
-                    />
-                    <DataItemValueCollapseControl collapser={lociCollapser}>
-                      <DataItemValueControlLabel collapser={lociCollapser} />
-                    </DataItemValueCollapseControl>
-                  </DataItemValue>
-                </>
-              )}
+                              >
+                                <DataItemValueControlLabel
+                                  key="more-control"
+                                  collapser={genesCollapser}
+                                  className="ml-1 inline-block"
+                                />
+                              </DataItemValueCollapseControl>
+                            )}
+                          </Fragment>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {lociCollapser.displayedData.length > 0 && (
+                  <>
+                    <DataItemLabel>Targeted Loci</DataItemLabel>
+                    <DataItemValue>
+                      <ChromosomeLocations
+                        locations={lociCollapser.displayedData}
+                      />
+                      <DataItemValueCollapseControl collapser={lociCollapser}>
+                        <DataItemValueControlLabel collapser={lociCollapser} />
+                      </DataItemValueCollapseControl>
+                    </DataItemValue>
+                  </>
+                )}
+              </FileSetDataItems>
             </DataArea>
           </DataPanel>
           {files.length > 0 && (

@@ -3,11 +3,11 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
-import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import ChromosomeLocations from "../../components/chromosome-locations";
+import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataItemLabel,
@@ -197,56 +197,42 @@ export default function ConstructLibrarySet({
         <JsonDisplay item={constructLibrarySet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{constructLibrarySet.summary}</DataItemValue>
-              {constructLibrarySet.description && (
-                <>
-                  <DataItemLabel>Description</DataItemLabel>
-                  <DataItemValue>
-                    {constructLibrarySet.description}
-                  </DataItemValue>
-                </>
-              )}
-              {constructLibrarySet.product_id && (
-                <>
-                  <DataItemLabel>Product ID</DataItemLabel>
-                  <DataItemValue>
-                    {constructLibrarySet.product_id}
-                  </DataItemValue>
-                </>
-              )}
-              {constructLibrarySet.aliases?.length > 0 && (
-                <>
-                  <DataItemLabel>Aliases</DataItemLabel>
-                  <DataItemValue>
-                    <AliasList aliases={constructLibrarySet.aliases} />
-                  </DataItemValue>
-                </>
-              )}
-              {constructLibrarySet.publication_identifiers && (
-                <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList
-                      dbxrefs={constructLibrarySet.publication_identifiers}
-                    />
-                  </DataItemValue>
-                </>
-              )}
-              {constructLibrarySet.applied_to_samples.length > 0 && (
-                <>
-                  <DataItemLabel>Applied to Samples</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {constructLibrarySet.applied_to_samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample["@id"]}>
-                          {sample.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
+              <FileSetDataItems item={constructLibrarySet}>
+                {constructLibrarySet.product_id && (
+                  <>
+                    <DataItemLabel>Product ID</DataItemLabel>
+                    <DataItemValue>
+                      {constructLibrarySet.product_id}
+                    </DataItemValue>
+                  </>
+                )}
+                {constructLibrarySet.publication_identifiers && (
+                  <>
+                    <DataItemLabel>Publication Identifiers</DataItemLabel>
+                    <DataItemValue>
+                      <DbxrefList
+                        dbxrefs={constructLibrarySet.publication_identifiers}
+                      />
+                    </DataItemValue>
+                  </>
+                )}
+                {constructLibrarySet.applied_to_samples.length > 0 && (
+                  <>
+                    <DataItemLabel>Applied to Samples</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {constructLibrarySet.applied_to_samples.map(
+                          (sample) => (
+                            <Link href={sample["@id"]} key={sample["@id"]}>
+                              {sample.accession}
+                            </Link>
+                          )
+                        )}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+              </FileSetDataItems>
             </DataArea>
           </DataPanel>
           <LibraryDetails library={constructLibrarySet} />
