@@ -63,7 +63,7 @@ Cypress.Commands.add("logoutAuth0", () => {
  * process the request. This command lets you insert these delays when needed.
  * @param {string} delay Optional time to delay in ms
  */
-Cypress.Commands.add("delayForIndexing", (delay = 3000) => {
+Cypress.Commands.add("delayForIndexing", (delay = 5000) => {
   cy.wait(delay);
 });
 
@@ -72,7 +72,7 @@ Cypress.Commands.add("delayForIndexing", (delay = 3000) => {
  * page. This command lets you insert a delay after a reload to allow the page to load.
  * @param {string} delay Optional time to delay in ms
  */
-Cypress.Commands.add("reloadWithDelay", (delay = 1000) => {
+Cypress.Commands.add("reloadWithDelay", (delay = 2000) => {
   cy.reload();
   cy.wait(delay);
 });
