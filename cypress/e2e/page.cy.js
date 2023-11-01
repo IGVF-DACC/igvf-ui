@@ -102,6 +102,7 @@ describe("Content-Change Tests", () => {
     cy.get(`[aria-label="Save edits to page"]`).should("not.exist");
 
     // Make sure the new top-level help page appears as a category on the help page.
+    cy.delayForIndexing();
     cy.get(`[data-testid="navigation-about"]`).click();
     cy.get(`[data-testid="navigation-help"]`).click();
     cy.get("h2").should("contain", "Test Help Category");
