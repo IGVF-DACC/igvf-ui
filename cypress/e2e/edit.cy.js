@@ -51,7 +51,8 @@ describe("Test Edit button", () => {
 
     cy.get('[id="JSON Editor"]').should("exist");
     cy.contains("first_name").should("exist");
-    cy.get("textarea").focus().type("Garbo");
+    cy.get("textarea").focus();
+    cy.get("textarea").type("Garbo");
 
     // Find the error, Save should be disabled
     cy.get(".ace_error").should("exist");
@@ -81,28 +82,29 @@ describe("Test Edit button", () => {
     cy.get('[id="JSON Editor"]').should("exist");
 
     const now = new Date().getTime();
-    cy.get("textarea")
-      .focus()
-      .clear()
-      .type("{\n")
-      .type('"creation_timestamp": "2023-03-01T00:31:51.129742+00:00",\n')
-      .type('"email": "christina@email_domain.com",\n')
-      .type(`"first_name": "${now}",\n`)
-      .type('"groups": [\n')
-      .type('"verified"\n')
-      .type("{backspace}{rightArrow},\n")
-      .type('"job_title": "Principal Investigator",\n')
-      .type('"lab": "/labs/christina-leslie/",\n')
-      .type('"last_name": "Leslie",\n')
-      .type('"schema_version": "2",\n')
-      .type('"status": "current",\n')
-      .type('"submits_for": [\n')
-      .type('"/labs/christina-leslie/"\n')
-      .type("{backspace}{rightArrow},\n")
-      .type('"viewing_groups": [\n')
-      .type('"IGVF"\n')
-      .type("{backspace}{rightArrow}\n")
-      .type("{backspace}{backspace}");
+    cy.get("textarea").focus();
+    cy.get("textarea").clear();
+    cy.get("textarea").type("{\n");
+    cy.get("textarea").type(
+      '"creation_timestamp": "2023-03-01T00:31:51.129742+00:00",\n'
+    );
+    cy.get("textarea").type('"email": "christina@email_domain.com",\n');
+    cy.get("textarea").type(`"first_name": "${now}",\n`);
+    cy.get("textarea").type('"groups": [\n');
+    cy.get("textarea").type('"verified"\n');
+    cy.get("textarea").type("{backspace}{rightArrow},\n");
+    cy.get("textarea").type('"job_title": "Principal Investigator",\n');
+    cy.get("textarea").type('"lab": "/labs/christina-leslie/",\n');
+    cy.get("textarea").type('"last_name": "Leslie",\n');
+    cy.get("textarea").type('"schema_version": "2",\n');
+    cy.get("textarea").type('"status": "current",\n');
+    cy.get("textarea").type('"submits_for": [\n');
+    cy.get("textarea").type('"/labs/christina-leslie/"\n');
+    cy.get("textarea").type("{backspace}{rightArrow},\n");
+    cy.get("textarea").type('"viewing_groups": [\n');
+    cy.get("textarea").type('"IGVF"\n');
+    cy.get("textarea").type("{backspace}{rightArrow}\n");
+    cy.get("textarea").type("{backspace}{backspace}");
     cy.contains(`${now}`).should("exist");
 
     cy.get("button").contains("Save").click();
@@ -135,28 +137,30 @@ describe("Test Edit button", () => {
     cy.get('[id="JSON Editor"]').should("exist");
 
     const badEmail = "NotAnEmail";
-    cy.get("textarea")
-      .focus()
-      .clear()
-      .type("{\n")
-      .type('"creation_timestamp": "2023-03-01T00:31:51.129742+00:00",\n')
-      .type(`"email": "${badEmail}",\n`)
-      .type('"first_name": "Christina",\n')
-      .type('"groups": [\n')
-      .type('"verified"\n')
-      .type("{backspace}{rightArrow},\n")
-      .type('"job_title": "Principal Investigator",\n')
-      .type('"lab": "/labs/christina-leslie/",\n')
-      .type('"last_name": "Leslie",\n')
-      .type('"schema_version": "2",\n')
-      .type('"status": "current",\n')
-      .type('"submits_for": [\n')
-      .type('"/labs/christina-leslie/"\n')
-      .type("{backspace}{rightArrow},\n")
-      .type('"viewing_groups": [\n')
-      .type('"IGVF"\n')
-      .type("{backspace}{rightArrow}\n")
-      .type("{backspace}{backspace}");
+    cy.get("textarea");
+    cy.get("textarea").focus();
+    cy.get("textarea").clear();
+    cy.get("textarea").type("{\n");
+    cy.get("textarea").type(
+      '"creation_timestamp": "2023-03-01T00:31:51.129742+00:00",\n'
+    );
+    cy.get("textarea").type(`"email": "${badEmail}",\n`);
+    cy.get("textarea").type('"first_name": "Christina",\n');
+    cy.get("textarea").type('"groups": [\n');
+    cy.get("textarea").type('"verified"\n');
+    cy.get("textarea").type("{backspace}{rightArrow},\n");
+    cy.get("textarea").type('"job_title": "Principal Investigator",\n');
+    cy.get("textarea").type('"lab": "/labs/christina-leslie/",\n');
+    cy.get("textarea").type('"last_name": "Leslie",\n');
+    cy.get("textarea").type('"schema_version": "2",\n');
+    cy.get("textarea").type('"status": "current",\n');
+    cy.get("textarea").type('"submits_for": [\n');
+    cy.get("textarea").type('"/labs/christina-leslie/"\n');
+    cy.get("textarea").type("{backspace}{rightArrow},\n");
+    cy.get("textarea").type('"viewing_groups": [\n');
+    cy.get("textarea").type('"IGVF"\n');
+    cy.get("textarea").type("{backspace}{rightArrow}\n");
+    cy.get("textarea").type("{backspace}{backspace}");
     cy.get("button").contains("Save").click();
     cy.contains(`'${badEmail}' is not a 'email'`);
     // Test Cancel Button
