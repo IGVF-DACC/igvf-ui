@@ -127,6 +127,12 @@ export function SampleDataItems({ item, sources = null, children }) {
           <DataItemValue>True</DataItemValue>
         </>
       )}
+      {item.taxa && (
+        <>
+          <DataItemLabel>Taxa</DataItemLabel>
+          <DataItemValue>{item.taxa}</DataItemValue>
+        </>
+      )}
       {item.description && (
         <>
           <DataItemLabel>Description</DataItemLabel>
@@ -264,6 +270,7 @@ SampleDataItems.commonProperties = [
   "starting_amount_units",
   "submitter_comment",
   "summary",
+  "taxa",
   "url",
   "virtual",
 ];
@@ -284,12 +291,6 @@ export function BiosampleDataItems({
 }) {
   return (
     <SampleDataItems item={item} sources={sources}>
-      {item.taxa && (
-        <>
-          <DataItemLabel>Taxa</DataItemLabel>
-          <DataItemValue>{item.taxa}</DataItemValue>
-        </>
-      )}
       {sampleTerms?.length > 0 && (
         <>
           <DataItemLabel>Sample Terms</DataItemLabel>
@@ -436,7 +437,6 @@ BiosampleDataItems.commonProperties = [
   "embryonic",
   "nih_institutional_certification",
   "sex",
-  "taxa",
 ];
 
 /**

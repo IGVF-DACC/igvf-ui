@@ -57,12 +57,6 @@ export default function TechnicalSample({
                     {sample.sample_terms[0].term_name}
                   </Link>
                 </DataItemValue>
-                {sample.taxa && (
-                  <>
-                    <DataItemLabel>Taxa</DataItemLabel>
-                    <DataItemValue>{sample.taxa}</DataItemValue>
-                  </>
-                )}
               </SampleDataItems>
             </DataArea>
           </DataPanel>
