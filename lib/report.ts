@@ -6,8 +6,6 @@ import { splitPathAndQueryString } from "./query-utils";
 // types
 import type {
   Profiles,
-  ProfilesGeneric,
-  ProfilesProps,
   Schema,
   SchemaProperties,
   SearchResults,
@@ -40,7 +38,7 @@ export function getSchemasForReportTypes(
 ): Schema[] {
   if (profiles) {
     return reportTypes.reduce((schemaAcc: Schema[], reportType) => {
-      const schema = (profiles as ProfilesGeneric)[reportType];
+      const schema = profiles[reportType];
       if (schema) {
         // Matching schema found for the report type. Add it to the schema accumulator.
         return [...schemaAcc, schema];
@@ -48,14 +46,11 @@ export function getSchemasForReportTypes(
 
       // No matching schema for the report type. See if the report type is an abstract type with
       // subtypes.
-      const subTypes = (profiles as ProfilesProps)._subtypes[reportType];
+      const subTypes = profiles._subtypes[reportType];
       if (subTypes) {
         // The report type is an abstract type with subtypes. Add all the subtypes' schemas to the
         // schema accumulator.
-        return [
-          ...schemaAcc,
-          ...subTypes.map((subType) => (profiles as ProfilesGeneric)[subType]),
-        ];
+        return [...schemaAcc, ...subTypes.map((subType) => profiles[subType])];
       }
 
       // No matching schema for the report type, and the report type isn't an abstract type with
