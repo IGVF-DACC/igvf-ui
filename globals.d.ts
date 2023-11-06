@@ -55,9 +55,8 @@ export interface DatabaseObject {
 /**
  * Search result object; similar to `DatabaseObject` but without some properties.
  */
-export type SearchResultsObject =
-  | SearchResultsObjectProps
-  | SearchResultsObjectGenerics;
+export type SearchResultsObject = SearchResultsObjectProps &
+  SearchResultsObjectGenerics;
 
 interface SearchResultsObjectProps {
   "@id": string;
@@ -71,15 +70,13 @@ interface SearchResultsObjectGenerics {
 /**
  * The `properties` object of a schema.
  */
-export type SchemaProperties = SchemaPropertiesProps | SchemaPropertiesGenerics;
-
-export interface SchemaPropertiesProps {
+export interface SchemaProperty {
   title: string;
   type: string;
 }
 
-export interface SchemaPropertiesGenerics {
-  [key: string]: unknown;
+export interface SchemaProperties {
+  [key: string]: SchemaProperty;
 }
 
 /**
@@ -111,7 +108,7 @@ export interface Schema {
  * Describes the /profiles endpoint object, which is an object with `@type`s as its keys and
  * the corresponding schemas for each type as the values.
  */
-export type Profiles = ProfilesProps | ProfilesGeneric;
+export type Profiles = ProfilesProps & ProfilesGeneric;
 
 export interface ProfilesProps {
   "@type": string[];

@@ -82,7 +82,7 @@ export default function Workflow({
                 <>
                   <DataItemLabel>Standards Page</DataItemLabel>
                   <DataItemValue>
-                    <Link href={workflow.standards_page}>
+                    <Link href={workflow.standards_page["@id"]}>
                       {workflow.standards_page.title}
                     </Link>
                   </DataItemValue>

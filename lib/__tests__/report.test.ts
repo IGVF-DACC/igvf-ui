@@ -436,9 +436,6 @@ describe("Test `getMergedSchemaProperties()`", () => {
           type: "string",
         },
         "@type": {
-          items: {
-            type: "string",
-          },
           title: "Type",
           type: "array",
         },
@@ -468,9 +465,6 @@ describe("Test `getMergedSchemaProperties()`", () => {
           type: "string",
         },
         "@type": {
-          items: {
-            type: "string",
-          },
           title: "Type",
           type: "array",
         },

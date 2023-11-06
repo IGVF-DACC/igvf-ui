@@ -10,8 +10,6 @@ import type {
   ProfilesProps,
   Schema,
   SchemaProperties,
-  SchemaPropertiesGenerics,
-  SchemaPropertiesProps,
   SearchResults,
   SearchResultsColumns,
 } from "../globals.d";
@@ -109,7 +107,7 @@ export function getSelectedTypes(searchResults: SearchResults): string[] {
  * Merge the properties of all the given schemas into one object, forming one object that's the
  * union of all the given schema properties. Only the contents of the `properties` property of each
  * schema appears in the results. Other properties of schemas (e.g. `mixinProperties`) don't appear
- * in the results. If `schemas` is null, null gets returned.
+ * in the results.
  * @param {Schema[]} schemas Array of relevant schemas
  * @returns {SchemaProperties} All properties of the given `schemas` merged into a single object
  */
@@ -145,11 +143,7 @@ export function getReportTypeColumnSpecs(
     columnSpecs = Object.keys(schemaProperties).map((propertyName) => {
       const columnSpec: ColumnSpec = {
         id: propertyName,
-        title: (
-          (schemaProperties as SchemaPropertiesGenerics)[
-            propertyName
-          ] as SchemaPropertiesProps
-        ).title,
+        title: schemaProperties[propertyName].title,
       };
       return columnSpec;
     });
