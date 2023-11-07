@@ -164,12 +164,7 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
     const biomarkers =
       sample.biomarkers?.length > 0
-        ? await requestBiomarkers(
-            // Biomarkers are embedded in whole organism, so we map
-            // to get as a list of IDs for the request
-            sample.biomarkers.map((m) => m["@id"]),
-            request
-          )
+        ? await requestBiomarkers(sample.biomarkers, request)
         : [];
     const partOf = sample.part_of
       ? (await request.getObject(sample.part_of)).optional()
