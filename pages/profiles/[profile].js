@@ -1,22 +1,27 @@
 // node_modules
 import PropTypes from "prop-types";
 import { marked } from "marked";
+import { useContext } from "react";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import { DataPanel, DataAreaTitle } from "../../components/data-area";
 import PagePreamble from "../../components/page-preamble";
+import SessionContext from "../../components/session-context";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import errorObjectToProps from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { AddLink } from "../../components/add";
 
-export default function Schema({ schema, changelog }) {
+export default function Schema({ schema, changelog, schemaPath }) {
+  const { collectionTitles } = useContext(SessionContext);
   const html = marked(changelog);
+  const pageTitle = collectionTitles?.[schemaPath] || schema.title;
+
   return (
     <>
       <Breadcrumbs />
-      <PagePreamble />
+      <PagePreamble pageTitle={pageTitle} />
       <div className="mb-2 flex justify-end">
         <AddLink schema={schema} label="Add" />
       </div>
@@ -39,8 +44,12 @@ export default function Schema({ schema, changelog }) {
 }
 
 Schema.propTypes = {
+  // Schema object for the path
   schema: PropTypes.object.isRequired,
+  // Changelog markdown for the schema
   changelog: PropTypes.string.isRequired,
+  // Last part of the schema profile path
+  schemaPath: PropTypes.string.isRequired,
 };
 
 export async function getServerSideProps({ params, req }) {
@@ -60,6 +69,7 @@ export async function getServerSideProps({ params, req }) {
         schema,
         changelog,
         pageContext: { title: schema.title },
+        schemaPath: params.profile,
         breadcrumbs,
       },
     };
