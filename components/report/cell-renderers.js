@@ -15,9 +15,9 @@ import { FileDownload } from "../file-download";
 import SeparatedList from "../separated-list";
 import UnspecifiedProperty from "../unspecified-property";
 // lib
-import { stringsToStringsWithCounts } from "../../lib/arrays";
 import { attachmentToServerHref } from "../../lib/attachment";
 import { API_URL } from "../../lib/constants";
+import { getUnknownProperty } from "../../lib/report";
 
 /**
  * Display the @id of an object as a link to the object's page. This works much like the `Path`
@@ -318,31 +318,7 @@ SimpleArray.propTypes = {
  * properties.
  */
 function UnknownObject({ id, source }) {
-  // Break the dotted-notation property into its components and walk the source object to find the
-  // embedded property. Nice to use a `reduce()` loop but we can't break out of those early.
-  const components = id.split(".");
-  let property = source;
-  for (let i = 0; i < components.length; i += 1) {
-    if (Array.isArray(property)) {
-      // Extract the specified property component from each element of the array.
-      const embeddedProperties = property
-        .map((item) => item[components[i]])
-        .filter((item) => item);
-
-      // In case of repeated values, Display only unique values with their counts.
-      const propertiesWithCounts =
-        stringsToStringsWithCounts(embeddedProperties);
-      property = propertiesWithCounts.join(", ");
-    } else {
-      // Extract the specified property component from the embedded property.
-      property = property[components[i]];
-    }
-    if (!property) {
-      // A component of the dotted-notation property doesn't exist in the source object, so end
-      // the loop early, and display nothing in the cell.
-      break;
-    }
-  }
+  const property = getUnknownProperty(id, source);
 
   if (property) {
     return (
