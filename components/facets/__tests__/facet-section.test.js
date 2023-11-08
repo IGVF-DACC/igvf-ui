@@ -566,4 +566,211 @@ describe("Test <FacetSection> component", () => {
       "https://www.example.com/search/?type=InVitroSystem"
     );
   });
+
+  it("renders a facet with lots of terms", () => {
+    const searchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/labs/hyejung-won/",
+          "@type": ["Lab", "Item"],
+          awards: [
+            {
+              "@id": "/awards/1UM1HG012003-01/",
+              component: "functional characterization",
+            },
+          ],
+          institute_label: "UNC",
+          name: "hyejung-won",
+          pi: "/users/7e51864b-2e2b-40cf-9abc-5cc2dc98f35d/",
+          status: "current",
+          title: "Hyejung Won, UNC",
+          uuid: "fe27c988-4664-4245-a1ca-bab9e1c62a00",
+        },
+      ],
+      "@id": "/search/?type=Lab",
+      "@type": ["Search"],
+      all: "/search/?type=Lab&limit=all",
+      clear_filters: "/search/?type=Lab",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      facet_groups: [],
+      facets: [
+        {
+          appended: false,
+          field: "institute_label",
+          open_on_load: false,
+          terms: [
+            {
+              doc_count: 12,
+              key: "Stanford",
+            },
+            {
+              doc_count: 5,
+              key: "UMich",
+            },
+            {
+              doc_count: 4,
+              key: "Broad",
+            },
+            {
+              doc_count: 4,
+              key: "Duke",
+            },
+            {
+              doc_count: 4,
+              key: "MSKCC",
+            },
+            {
+              doc_count: 4,
+              key: "UCLA",
+            },
+            {
+              doc_count: 4,
+              key: "UCSD",
+            },
+            {
+              doc_count: 4,
+              key: "UW",
+            },
+            {
+              doc_count: 3,
+              key: "UCI",
+            },
+            {
+              doc_count: 3,
+              key: "UNC",
+            },
+            {
+              doc_count: 3,
+              key: "UT",
+            },
+            {
+              doc_count: 3,
+              key: "UW Madison",
+            },
+            {
+              doc_count: 2,
+              key: "Caltech",
+            },
+            {
+              doc_count: 2,
+              key: "DFCI",
+            },
+            {
+              doc_count: 2,
+              key: "JHU",
+            },
+            {
+              doc_count: 2,
+              key: "MGH",
+            },
+            {
+              doc_count: 2,
+              key: "UCSF",
+            },
+            {
+              doc_count: 2,
+              key: "UMass",
+            },
+            {
+              doc_count: 2,
+              key: "UToronto",
+            },
+            {
+              doc_count: 2,
+              key: "University of Pittsburgh",
+            },
+            {
+              doc_count: 1,
+              key: "BIH",
+            },
+            {
+              doc_count: 1,
+              key: "Brigham and Women's Hospital",
+            },
+            {
+              doc_count: 1,
+              key: "HSCI",
+            },
+            {
+              doc_count: 1,
+              key: "HSPH",
+            },
+            {
+              doc_count: 1,
+              key: "HSS",
+            },
+            {
+              doc_count: 1,
+              key: "MD Anderson",
+            },
+            {
+              doc_count: 1,
+              key: "MHI",
+            },
+            {
+              doc_count: 1,
+              key: "Mount Sinai",
+            },
+            {
+              doc_count: 1,
+              key: "Northeastern",
+            },
+            {
+              doc_count: 1,
+              key: "PreventionGenetics",
+            },
+          ],
+          title: "Institute",
+          total: 79,
+          type: "terms",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search/",
+          term: "Lab",
+        },
+      ],
+      notification: "Success",
+      title: "Search",
+      total: 79,
+    };
+
+    render(<FacetSection searchResults={searchResults} />);
+
+    // Make sure the correct number of collapsed terms appears.
+    let terms = screen.getAllByTestId(/^facetterm-/);
+    expect(terms).toHaveLength(10);
+
+    // Make sure the facet term filter exists.
+    const facetTermFilter = screen.getByTestId(/^facet-term-filter-/);
+    expect(facetTermFilter).toBeInTheDocument();
+
+    // Make sure the collapse control exists.
+    const collapseControl = screen.getByTestId(/^facet-term-collapse-/);
+    expect(collapseControl).toBeInTheDocument();
+
+    // Click the collapse control and make sure all the terms appear.
+    fireEvent.click(collapseControl);
+    terms = screen.getAllByTestId(/^facetterm-/);
+    expect(terms).toHaveLength(30);
+
+    // Type something into the term filter input and make sure the correct number of terms are
+    // displayed.
+    const termFilterInput = within(facetTermFilter).getByRole("textbox");
+    fireEvent.change(termFilterInput, { target: { value: "uc" } });
+    terms = screen.getAllByTestId(/^facetterm-/);
+    expect(terms).toHaveLength(4);
+
+    // Clear the term filter and make sure all the terms appear again.
+    fireEvent.click(within(facetTermFilter).getByTestId(/^facet-term-clear-/));
+    terms = screen.getAllByTestId(/^facetterm-/);
+    expect(terms).toHaveLength(30);
+  });
 });

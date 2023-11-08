@@ -102,7 +102,6 @@ const Icon = {
       />
     </svg>
   ),
-
   Donor: ({ className = null, testid = "icon-donor" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

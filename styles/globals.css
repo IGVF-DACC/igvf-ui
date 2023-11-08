@@ -97,6 +97,16 @@
   --color-facet-tag-neg-border: #fb7185;
   --color-facet-tag-text: #374151;
 
+  --color-facet-filter-icon-stroke: #85abd6;
+  --color-facet-filter-icon-fill: transparent;
+  --color-facet-filter-icon-set-stroke: #ffffff;
+  --color-facet-filter-icon-set-fill: #85abd6;
+  --color-facet-clear-filter-icon-fill: #85abd6;
+  --color-facet-filter-input-border: #85abd6;
+  --color-facet-filter-input-border-focus: #000000;
+  --color-facet-filter-input-text: #85abd6;
+  --color-facet-filter-input-text-focus: #000000;
+
   --color-site-search-header-background: #c9ebe2;
 
   --color-form-element-background: #ffffff;
@@ -195,6 +205,11 @@
   --color-facet-tag-neg-background: #881337;
   --color-facet-tag-neg-border: #be123c;
   --color-facet-tag-text: #e5e7eb;
+
+  --color-facet-filter-icon-set-stroke: #000000;
+  --color-facet-filter-input-border: #39495b;
+  --color-facet-filter-input-text: #85abd6;
+  --color-facet-filter-input-text-focus: #ffffff;
 
   --color-site-search-header-background: #394240;
 

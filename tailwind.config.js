@@ -93,6 +93,9 @@ module.exports = {
         "facet-group-button": "var(--color-facet-group-button-border)",
         "facet-group-button-selected":
           "var(--color-facet-group-button-selected-border)",
+
+        "facet-filter": "var(--color-facet-filter-input-border)",
+        "facet-filter-focus": "var(--color-facet-filter-input-border-focus)",
       },
       fontSize: {
         xxs: "0.7rem",
@@ -116,6 +119,9 @@ module.exports = {
         "facet-title": "var(--color-facet-title-text)",
 
         "facet-tag": "var(--color-facet-tag-text)",
+
+        "facet-filter": "var(--color-facet-filter-input-text)",
+        "facet-filter-focus": "var(--color-facet-filter-input-text-focus)",
       },
       boxShadow: {
         // Status badges
@@ -144,6 +150,10 @@ module.exports = {
         "document-txt": "var(--color-document-txt)",
         "document-tiff": "var(--color-document-tiff)",
         "document-tsv": "var(--color-document-tsv)",
+
+        "facet-clear-filter-icon": "var(--color-facet-clear-filter-icon-fill)",
+        "facet-filter-icon-set": "var(--color-facet-filter-icon-set-fill)",
+        "facet-filter-icon": "var(--color-facet-filter-icon-fill)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
@@ -151,6 +161,8 @@ module.exports = {
       },
       stroke: {
         "nav-collapse": "var(--color-nav-collapse)",
+        "facet-filter-icon": "var(--color-facet-filter-icon-stroke)",
+        "facet-filter-icon-set": "var(--color-facet-filter-icon-set-stroke)",
       },
       typography: {
         DEFAULT: {
