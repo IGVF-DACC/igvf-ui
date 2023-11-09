@@ -121,7 +121,7 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const analysisStep = (
-    await request.getObject(`/analysis-steps/${params.id}/`);
+    await request.getObject(`/analysis-steps/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(analysisStep)) {
     const breadcrumbs = await buildBreadcrumbs(
