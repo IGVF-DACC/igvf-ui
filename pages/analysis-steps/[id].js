@@ -120,10 +120,10 @@ AnalysisStep.propTypes = {
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const analysisStep = await request.getObject(`/analysis-steps/${params.id}/`);
+  const analysisStep = (
+    await request.getObject(`/analysis-steps/${params.id}/`);
+  ).union();
   if (FetchRequest.isResponseSuccess(analysisStep)) {
-    const award = await request.getObject(analysisStep.award["@id"], null);
-    const lab = await request.getObject(analysisStep.lab["@id"], null);
     const breadcrumbs = await buildBreadcrumbs(
       analysisStep,
       analysisStep.title,
