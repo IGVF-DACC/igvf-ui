@@ -136,8 +136,6 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         analysisStep,
-        award,
-        lab,
         pageContext: { title: analysisStep.title },
         breadcrumbs,
         attribution,
