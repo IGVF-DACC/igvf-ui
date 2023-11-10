@@ -3,6 +3,7 @@ import profiles from "../../__mocks__/profile";
 import SessionContext from "../../session-context";
 import Award from "../list-renderer/award";
 import AnalysisSet from "../list-renderer/analysis-set";
+import AnalysisStep from "../list-renderer/analysis-step";
 import AuxiliarySet from "../list-renderer/auxiliary-set";
 import Biomarker from "../list-renderer/biomarker";
 import Biosample from "../list-renderer/biosample";
@@ -2591,6 +2592,59 @@ describe("Test Prediction Set component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("genes");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Analysis Step component", () => {
+  it("renders an analysis step item", () => {
+    const item = {
+      "@id":
+        "/analysis-steps/IGVFWF3254CAGQ-example-signal-generation-analysis-step/",
+      "@type": ["AnalysisStep", "Item"],
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      name: "IGVFWF3254CAGQ-example-signal-generation-analysis-step",
+      title: "Test UI Analysis Step",
+      parents: [
+        {
+          title: "Example Analysis Step",
+          "@id": "/analysis-steps/IGVFWF3254CAGQ-example-analysis-step/",
+        },
+      ],
+      analysis_step_types: ["signal generation", "alignment"],
+      input_content_types: ["alignments"],
+      output_content_types: ["signal of unique reads"],
+      step_label: "example-signal-generation-analysis-step",
+      summary: "face8e04-9037-0e10-10e3-49999ee02dba",
+      workflow: {
+        accession: "IGVFWF3254CAGQ",
+        "@id": "/workflows/IGVFWF3254CAGQ/",
+      },
+      uuid: "face8e04-9037-0e10-10e3-49999ee02dba",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisStep item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Analysis Step/);
+    expect(uniqueId).toHaveTextContent(/face8e04-9037-0e10-10e3-49999ee02dba/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("Test UI Analysis Step");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");

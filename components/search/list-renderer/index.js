@@ -48,6 +48,7 @@ import FetchRequest from "../../../lib/fetch-request";
  * filtered out and passed to renderers for those types.
  */
 import AnalysisSet from "./analysis-set";
+import AnalysisStep from "./analysis-step";
 import Award from "./award";
 import AuxiliarySet from "./auxiliary-set";
 import Biomarker from "./biomarker";
@@ -81,6 +82,7 @@ import Workflow from "./workflow";
 const renderers = {
   AlignmentFile: File,
   AnalysisSet,
+  AnalysisStep,
   AssayTerm: OntologyTerm,
   AuxiliarySet,
   Award,
