@@ -308,7 +308,7 @@ export async function getServerSideProps({ params, req, query }) {
       ).optional();
     }
     let controlFileSets = [];
-    if (measurementSet.control_file_sets.length > 0) {
+    if (measurementSet.control_file_sets?.length > 0) {
       const controlPaths = measurementSet.control_file_sets.map(
         (control) => control["@id"]
       );
