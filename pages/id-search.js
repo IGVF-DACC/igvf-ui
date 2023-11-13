@@ -14,7 +14,7 @@ import FetchRequest from "../lib/fetch-request";
  */
 export default function IdSearch({ id }) {
   const errorText = id
-    ? `item with the identifier ${UC.ldquo}${id}${UC.rdquo}`
+    ? `items with the identifier ${UC.ldquo}${id}${UC.rdquo}`
     : "item";
   return (
     <>

@@ -277,3 +277,23 @@ AttachedButtons.propTypes = {
   // Additional Tailwind CSS classes to apply to the wrapper element
   className: PropTypes.string,
 };
+
+/**
+ * Renders a button that appears like a link. Best used for buttons that appear inline with text.
+ */
+export function ButtonAsLink({ onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline font-medium underline"
+    >
+      {children}
+    </button>
+  );
+}
+
+ButtonAsLink.propTypes = {
+  // Called when the button is clicked
+  onClick: PropTypes.func.isRequired,
+};

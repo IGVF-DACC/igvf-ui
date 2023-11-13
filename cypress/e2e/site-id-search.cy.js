@@ -109,7 +109,7 @@ describe("Test ID search", () => {
     cy.visit("/");
     cy.get(`[data-testid="id-search-trigger"]`).click();
     cy.get(`[data-testid="search-input"]`).type("abcdefg{enter}");
-    cy.contains("No item with the identifier “abcdefg” to display");
+    cy.contains("No items with the identifier “abcdefg” to display");
   });
 
   it("remembers past search terms and lets the user select them", () => {
