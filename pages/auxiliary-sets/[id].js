@@ -44,6 +44,7 @@ export default function AuxiliarySet({
   libraryConstructionPlatform = null,
   constructLibraries,
   files,
+  relatedDatasets,
   seqspecFiles,
   sequencingPlatforms,
   controlForSets,
@@ -152,6 +153,12 @@ export default function AuxiliarySet({
               sequencingPlatforms={sequencingPlatforms}
             />
           )}
+          {relatedDatasets.length > 0 && (
+            <>
+              <DataAreaTitle>Related Datasets</DataAreaTitle>
+              <FileSetTable fileSets={relatedDatasets} />
+            </>
+          )}
           {controlForSets.length > 0 && (
             <>
               <DataAreaTitle>
@@ -185,6 +192,8 @@ AuxiliarySet.propTypes = {
   constructLibraries: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Related Datasets to display
+  relatedDatasets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform objects associated with `files`
@@ -231,6 +240,13 @@ export async function getServerSideProps({ params, req, query }) {
     if (auxiliarySet.files.length > 0) {
       const filePaths = auxiliarySet.files.map((file) => file["@id"]) || [];
       files = await requestFiles(filePaths, request);
+    }
+
+    let relatedDatasets = [];
+    if (auxiliarySet.measurement_sets?.length > 0) {
+      const datasetPaths =
+        auxiliarySet.measurement_sets.map((dataset) => dataset["@id"]) || [];
+      relatedDatasets = await requestFileSets(datasetPaths, request);
     }
 
     const sequencingPlatformPaths = files
@@ -280,6 +296,7 @@ export async function getServerSideProps({ params, req, query }) {
         libraryConstructionPlatform,
         constructLibraries,
         files,
+        relatedDatasets,
         seqspecFiles,
         sequencingPlatforms,
         controlForSets,
