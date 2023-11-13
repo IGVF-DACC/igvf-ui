@@ -45,6 +45,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function MeasurementSet({
   measurementSet,
   assayTerm = null,
+  controlFileSets,
   documents,
   donors,
   files,
@@ -166,20 +167,6 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {measurementSet.control_file_sets?.length > 0 && (
-                  <>
-                    <DataItemLabel>Control File Sets</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {measurementSet.control_file_sets.map((set) => (
-                          <Link href={set["@id"]} key={set["@id"]}>
-                            {set.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
@@ -239,9 +226,15 @@ export default function MeasurementSet({
               sequencingPlatforms={sequencingPlatforms}
             />
           )}
+          {controlFileSets?.length > 0 && (
+            <>
+              <DataAreaTitle>Control File Sets</DataAreaTitle>
+              <FileSetTable fileSets={controlFileSets} />
+            </>
+          )}
           {relatedFileSet?.length > 0 && (
             <>
-              <DataAreaTitle>Related FileSets</DataAreaTitle>
+              <DataAreaTitle>Related File Sets</DataAreaTitle>
               <FileSetTable fileSets={relatedFileSet} />
             </>
           )}
@@ -263,6 +256,8 @@ MeasurementSet.propTypes = {
   measurementSet: PropTypes.object.isRequired,
   // Assay term of the measurement set
   assayTerm: PropTypes.object,
+  // Control File Sets of the measurement set
+  controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
@@ -311,6 +306,13 @@ export async function getServerSideProps({ params, req, query }) {
       libraryConstructionPlatform = (
         await request.getObject(measurementSet.library_construction_platform)
       ).optional();
+    }
+    let controlFileSets = [];
+    if (measurementSet.control_file_sets.length > 0) {
+      const controlPaths = measurementSet.control_file_sets.map(
+        (control) => control["@id"]
+      );
+      controlFileSets = await requestFileSets(controlPaths, request);
     }
     // Retrieve all avaliable related_multiome_datasets all auxiliary_sets
     const relatedMultiomeSet =
@@ -364,6 +366,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         measurementSet,
         assayTerm,
+        controlFileSets,
         documents,
         donors,
         files,
