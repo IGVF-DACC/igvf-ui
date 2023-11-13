@@ -155,7 +155,7 @@ export default function AuxiliarySet({
           )}
           {relatedDatasets.length > 0 && (
             <>
-              <DataAreaTitle>Related Datasets</DataAreaTitle>
+              <DataAreaTitle>Related Measurement Sets</DataAreaTitle>
               <FileSetTable fileSets={relatedDatasets} />
             </>
           )}
