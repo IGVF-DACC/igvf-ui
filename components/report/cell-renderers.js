@@ -369,15 +369,15 @@ Url.propTypes = {
  */
 function AttachmentHref({ source }) {
   // Wrap in a div because the cell has a flex class we don't want to inherit.
-  return source.attachment?.href ? (
-    <div>
-      <div className="flex">
-        <FileDownload file={source} className="shrink" />
+  return (
+    source.attachment?.href && (
+      <div>
+        <div className="flex">
+          <FileDownload file={source} className="shrink" />
+        </div>
+        <div>{`${API_URL}${source["@id"]}${source.attachment.href}`}</div>
       </div>
-      <div>{`${API_URL}${source["@id"]}${source.attachment.href}`}</div>
-    </div>
-  ) : (
-    false
+    )
   );
 }
 
