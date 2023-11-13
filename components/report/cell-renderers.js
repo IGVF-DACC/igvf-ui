@@ -387,7 +387,7 @@ AttachmentHref.propTypes = {
 };
 
 /**
- * Display a attachment-download button along with the full download path to the document or image.
+ * Display a list of full download path to the FileSet.
  */
 function FilesHref({ source }) {
   const hrefs = source.files
