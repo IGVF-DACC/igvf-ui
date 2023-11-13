@@ -400,7 +400,7 @@ function FilesHref({ source }) {
         .filter((e) => e !== undefined)
     : [];
 
-  return <SeparatedList>{hrefs}</SeparatedList>;
+  return <div>{hrefs.join(", ")}</div>;
 }
 
 FilesHref.propTypes = {
