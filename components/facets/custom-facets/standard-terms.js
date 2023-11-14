@@ -1,10 +1,29 @@
 // node_modules
+import { XCircleIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 // components/facets
 import FacetTerm from "../facet-term";
+// components
+import Icon from "../../icon";
 // lib
 import QueryString from "../../../lib/query-string";
 import { splitPathAndQueryString } from "../../../lib/query-utils";
+
+/**
+ * Minimum number of facet terms to display the term filter.
+ */
+const MIN_FILTER_COUNT = 20;
+
+/**
+ * Minimum number of facet terms to display the expand/collapse button.
+ */
+const MIN_COLLAPSABLE_TERMS_COUNT = 15;
+
+/**
+ * Number of facet terms to display when the facet is collapsed.
+ */
+const COLLAPSED_TERMS_COUNT = 10;
 
 /**
  * Button to select all or none of the facet terms.
@@ -60,10 +79,96 @@ TermsSelectors.propTypes = {
   onNoneClick: PropTypes.func.isRequired,
 };
 
+/**
+ * Lets the user type a term to filter the facet terms. Just used for the standard terms facet.
+ */
+function TermFilter({ id, currentFilter, setCurrentFilter }) {
+  const filterIconStyles = currentFilter
+    ? "stroke-facet-filter-icon-set fill-facet-filter-icon-set"
+    : "stroke-facet-filter-icon fill-facet-filter-icon";
+  return (
+    <div
+      className="my-1.5 flex items-center gap-1"
+      data-testid={`facet-term-filter-${id}`}
+    >
+      <Icon.Filter className={`h-5 w-5 ${filterIconStyles}`} />
+      <input
+        className="w-full border-b border-facet-filter bg-transparent px-1 py-0.5 text-sm text-facet-filter placeholder:text-xs placeholder:text-gray-300 focus:border-facet-filter-focus focus:text-facet-filter-focus dark:placeholder:text-gray-600"
+        type="text"
+        placeholder="Term filter"
+        value={currentFilter}
+        onChange={(event) => setCurrentFilter(event.target.value)}
+      />
+      <button
+        type="button"
+        onClick={() => setCurrentFilter("")}
+        data-testid={`facet-term-clear-${id}`}
+      >
+        <XCircleIcon className="h-5 w-5 fill-facet-clear-filter-icon" />
+        <div className="sr-only">Clear term filter</div>
+      </button>
+    </div>
+  );
+}
+
+TermFilter.propTypes = {
+  // Unique ID for the facet filter
+  id: PropTypes.string.isRequired,
+  // Current filter term
+  currentFilter: PropTypes.string.isRequired,
+  // Function to call when the user types into the filter input
+  setCurrentFilter: PropTypes.func.isRequired,
+};
+
+/**
+ * Button to expand or collapse the facets with a large number of terms, generally *after*
+ * filtering.
+ */
+function CollapseControl({ id, totalTermCount, isExpanded, setIsExpanded }) {
+  return (
+    <button
+      className="mx-2 text-xs font-bold uppercase text-gray-500"
+      data-testid={`facet-term-collapse-${id}`}
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      {isExpanded ? "See fewer terms" : `See all ${totalTermCount} terms`}
+    </button>
+  );
+}
+
+CollapseControl.propTypes = {
+  // Unique ID for the facet collapse control
+  id: PropTypes.string.isRequired,
+  // Total number of terms for the facet
+  totalTermCount: PropTypes.number.isRequired,
+  // True if the facet is currently expanded
+  isExpanded: PropTypes.bool.isRequired,
+  // Function to call when the user clicks the expand/collapse button
+  setIsExpanded: PropTypes.func.isRequired,
+};
+
 export default function StandardTerms({ searchResults, facet, updateQuery }) {
+  // User-typed term to filter the facet terms
+  const [filterTerm, setFilterTerm] = useState("");
+  // True if the facet has enough terms to expand/collapse, and it's currently expanded
+  const [isExpanded, setIsExpanded] = useState(false);
+
   // Generate a query based on the current URL to update once the user clicks a facet term.
   const { queryString } = splitPathAndQueryString(searchResults["@id"]);
   const query = new QueryString(queryString);
+
+  // Filter the facet terms based on the user-typed term.
+  const filteredTerms = facet.terms.filter((term) => {
+    const termKey = term.key_as_string || term.key;
+    return termKey.toLowerCase().includes(filterTerm.toLowerCase());
+  });
+
+  // Further limit the terms if the facet has enough terms to be expandable and is currently
+  // collapsed.
+  const displayedTerms =
+    filteredTerms.length > MIN_COLLAPSABLE_TERMS_COUNT && !isExpanded
+      ? filteredTerms.slice(0, COLLAPSED_TERMS_COUNT)
+      : filteredTerms;
 
   // Get the terms that are currently selected for this facet.
   const selectionFilters = searchResults.filters.map((filter) => {
@@ -116,6 +221,11 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
     updateQuery(query.format());
   }
 
+  // Clear the term filter when the facet terms change.
+  useEffect(() => {
+    setFilterTerm("");
+  }, [facet.terms.length]);
+
   return (
     <div>
       <TermsSelectors
@@ -123,27 +233,51 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
         onAllClick={onAllClick}
         onNoneClick={onNoneClick}
       />
-      <ul>
-        {facet.terms.map((term) => {
-          const termKey = term.key_as_string || term.key;
-          const checkedFilter = selectionFilters.find(
-            (filter) => filter.field === facet.field && filter.term === termKey
-          );
-          const isChecked = Boolean(checkedFilter);
-          const isNegative = isChecked && checkedFilter.isNegative;
+      {facet.terms.length > MIN_FILTER_COUNT && (
+        <TermFilter
+          id={facet.field}
+          currentFilter={filterTerm}
+          setCurrentFilter={setFilterTerm}
+        />
+      )}
+      {displayedTerms.length > 0 ? (
+        <>
+          <ul>
+            {displayedTerms.map((term) => {
+              const termKey = term.key_as_string || term.key;
+              const checkedFilter = selectionFilters.find(
+                (filter) =>
+                  filter.field === facet.field && filter.term === termKey
+              );
+              const isChecked = Boolean(checkedFilter);
+              const isNegative = isChecked && checkedFilter.isNegative;
 
-          return (
-            <FacetTerm
-              key={term.key}
-              field={facet.field}
-              term={term}
-              isChecked={isChecked}
-              isNegative={isNegative}
-              onClick={onTermClick}
+              return (
+                <FacetTerm
+                  key={term.key}
+                  field={facet.field}
+                  term={term}
+                  isChecked={isChecked}
+                  isNegative={isNegative}
+                  onClick={onTermClick}
+                />
+              );
+            })}
+          </ul>
+          {filteredTerms.length > MIN_COLLAPSABLE_TERMS_COUNT && (
+            <CollapseControl
+              id={facet.field}
+              totalTermCount={filteredTerms.length}
+              isExpanded={isExpanded}
+              setIsExpanded={setIsExpanded}
             />
-          );
-        })}
-      </ul>
+          )}
+        </>
+      ) : (
+        <p className="text-center text-sm italic text-gray-500">
+          Filter matches no terms.
+        </p>
+      )}
     </div>
   );
 }
