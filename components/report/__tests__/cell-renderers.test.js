@@ -1697,3 +1697,271 @@ describe("Unknown-field cell-rendering tests", () => {
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent("motor neuron");
   });
 });
+
+describe("`attachment.href` cell rendering tests", () => {
+  const COLUMN_ATTACHMENT_HREF = 1;
+
+  it("renders the attachment.href columns", () => {
+    const searchResults = {
+      "@id": "/multireport?type=Document",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/documents/05614b59-a421-47db-b4f7-5c7c8954c7e9",
+          "@type": ["Document", "Item"],
+          attachment: {
+            download: "Antibody_Characterization_IGVF.pdf",
+            href: "@@download/attachment/Antibody_Characterization_IGVF.pdf",
+            md5sum: "58558ed279ab141939c223838137d5a6",
+            type: "application/pdf",
+          },
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        "attachment.href": {
+          title: "attachment.href",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "Document",
+          remove: "/multireport",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Document.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    const attachmentHref = cells[COLUMN_ATTACHMENT_HREF];
+    expect(attachmentHref).toHaveTextContent(
+      "@@download/attachment/Antibody_Characterization_IGVF.pdf"
+    );
+  });
+
+  it("doesn't render missing `attachment.href` columns", () => {
+    const searchResults = {
+      "@id": "/multireport?type=Document",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/documents/05614b59-a421-47db-b4f7-5c7c8954c7e9",
+          "@type": ["Document", "Item"],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        "attachment.href": {
+          title: "attachment.href",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "Document",
+          remove: "/multireport",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Document.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+    const attachmentHref = cells[COLUMN_ATTACHMENT_HREF];
+    expect(attachmentHref).toHaveTextContent("");
+  });
+});
+
+describe("`files.href` cell rendering tests", () => {
+  const COLUMN_FILES_HREF = 1;
+
+  it("renders the files.href columns", () => {
+    const searchResults = {
+      "@id": "/multireport?type=FileSet",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/auxiliary-sets/IGVFDS0001AUXI/",
+          "@type": ["AuxiliarySet", "FileSet", "Item"],
+          files: [
+            {
+              href: "/reference-files/IGVFFI0001SQBR/@@download/IGVFFI0001SQBR.txt.gz",
+            },
+            {
+              href: "/reference-files/IGVFFI00016QBR/@@download/IGVFFI00016QBR.txt.gz",
+            },
+          ],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        "files.href": {
+          title: "files.href",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "FileSet",
+          remove: "/multireport",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Document.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    const filesHref = cells[COLUMN_FILES_HREF];
+    expect(filesHref).toHaveTextContent(
+      "/reference-files/IGVFFI0001SQBR/@@download/IGVFFI0001SQBR.txt.gz"
+    );
+  });
+
+  it("doesn't render missing `files.href` columns", () => {
+    const searchResults = {
+      "@id": "/multireport?type=FileSet",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/auxiliary-sets/IGVFDS0001AUXI/",
+          "@type": ["AuxiliarySet", "FileSet", "Item"],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        "files.href": {
+          title: "files.href",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "FileSet",
+          remove: "/multireport",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Document.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+    const filesHref = cells[COLUMN_FILES_HREF];
+    expect(filesHref).toHaveTextContent("");
+  });
+});

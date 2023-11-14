@@ -365,6 +365,50 @@ Url.propTypes = {
 };
 
 /**
+ * Display a attachment-download button along with the full download path to the document or image.
+ */
+function AttachmentHref({ source }) {
+  // Wrap in a div because the cell has a flex class we don't want to inherit.
+  return (
+    source.attachment?.href && (
+      <div>
+        <div className="flex">
+          <FileDownload file={source} className="shrink" />
+        </div>
+        <div>{`${API_URL}${source["@id"]}${source.attachment.href}`}</div>
+      </div>
+    )
+  );
+}
+
+AttachmentHref.propTypes = {
+  // Object displayed in the current row
+  source: PropTypes.object.isRequired,
+};
+
+/**
+ * Display a list of full download path to the FileSet.
+ */
+function FilesHref({ source }) {
+  const hrefs = source.files
+    ? source.files
+        .map((file) => {
+          if (file.href) {
+            return `${API_URL}${file.href}`;
+          }
+        })
+        .filter((e) => e !== undefined)
+    : [];
+
+  return <div>{hrefs.join(", ")}</div>;
+}
+
+FilesHref.propTypes = {
+  // Object displayed in the current row
+  source: PropTypes.object.isRequired,
+};
+
+/**
  * The following objects define which cell-renderer components to use for each object property
  * displayed in the table. Each new cell renderer you add should go into one of these objects:
  *
@@ -404,6 +448,8 @@ export const propertyRenderers = {
   attachment: Attachment,
   external_resources: ExternalResources,
   href: Href,
+  "attachment.href": AttachmentHref,
+  "files.href": FilesHref,
 };
 
 export const typeRenderers = {
