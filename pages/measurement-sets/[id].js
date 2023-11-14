@@ -49,7 +49,7 @@ export default function MeasurementSet({
   documents,
   donors,
   files,
-  relatedFileSet,
+  relatedFileSets,
   seqspecFiles,
   sequencingPlatforms,
   libraryConstructionPlatform = null,
@@ -226,16 +226,16 @@ export default function MeasurementSet({
               sequencingPlatforms={sequencingPlatforms}
             />
           )}
-          {controlFileSets?.length > 0 && (
+          {controlFileSets.length > 0 && (
             <>
               <DataAreaTitle>Control File Sets</DataAreaTitle>
               <FileSetTable fileSets={controlFileSets} />
             </>
           )}
-          {relatedFileSet?.length > 0 && (
+          {relatedFileSets.length > 0 && (
             <>
               <DataAreaTitle>Related File Sets</DataAreaTitle>
-              <FileSetTable fileSets={relatedFileSet} />
+              <FileSetTable fileSets={relatedFileSets} />
             </>
           )}
           {documents.length > 0 && (
@@ -263,7 +263,7 @@ MeasurementSet.propTypes = {
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Related multiome datasets and auxiliary sets to display
-  relatedFileSet: PropTypes.arrayOf(PropTypes.object).isRequired,
+  relatedFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform objects associated with `files`
@@ -314,7 +314,7 @@ export async function getServerSideProps({ params, req, query }) {
       );
       controlFileSets = await requestFileSets(controlPaths, request);
     }
-    // Retrieve all avaliable related_multiome_datasets all auxiliary_sets
+    // Retrieve all available related_multiome_datasets and auxiliary_sets
     const relatedMultiomeSet =
       measurementSet.related_multiome_datasets?.length > 0
         ? measurementSet.related_multiome_datasets.map(
@@ -325,10 +325,10 @@ export async function getServerSideProps({ params, req, query }) {
       measurementSet.auxiliary_sets?.length > 0
         ? measurementSet.auxiliary_sets.map((dataset) => dataset["@id"])
         : [];
-    const relatedDataSetPaths = relatedMultiomeSet.concat(relatedAuxiliarySet);
-    const relatedFileSet =
-      relatedDataSetPaths?.length > 0
-        ? await requestFileSets(relatedDataSetPaths, request)
+    const relatedFileSetPaths = relatedMultiomeSet.concat(relatedAuxiliarySet);
+    const relatedFileSets =
+      relatedFileSetPaths?.length > 0
+        ? await requestFileSets(relatedFileSetPaths, request)
         : [];
     // Use the files to retrieve all the seqspec files they might link to.
     let seqspecFiles = [];
@@ -371,7 +371,7 @@ export async function getServerSideProps({ params, req, query }) {
         donors,
         files,
         libraryConstructionPlatform,
-        relatedFileSet,
+        relatedFileSets,
         seqspecFiles,
         sequencingPlatforms,
         pageContext: { title: measurementSet.accession },
