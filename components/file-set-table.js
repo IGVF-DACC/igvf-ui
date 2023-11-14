@@ -15,9 +15,13 @@ const fileSetColumns = [
     ),
   },
   {
+    id: "summary",
+    title: "Summary",
+  },
+  {
     id: "aliases",
     title: "Aliases",
-    display: ({ source }) => (source.aliases ? source.aliases.join(", ") : ""),
+    display: ({ source }) => source.aliases?.join(", "),
   },
   {
     id: "lab",

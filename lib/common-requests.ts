@@ -112,6 +112,7 @@ export async function requestFileSets(
       "accession",
       "aliases",
       "lab.title",
+      "summary",
       "status",
     ])
   ).unwrap_or([]);

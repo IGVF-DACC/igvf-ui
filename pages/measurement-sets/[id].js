@@ -21,6 +21,7 @@ import {
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -33,6 +34,7 @@ import {
   requestDocuments,
   requestDonors,
   requestFiles,
+  requestFileSets,
   requestOntologyTerms,
 } from "../../lib/common-requests";
 import errorObjectToProps from "../../lib/errors";
@@ -43,9 +45,11 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function MeasurementSet({
   measurementSet,
   assayTerm = null,
+  controlFileSets,
   documents,
   donors,
   files,
+  relatedFileSets,
   seqspecFiles,
   sequencingPlatforms,
   libraryConstructionPlatform = null,
@@ -163,50 +167,6 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {measurementSet.related_multiome_datasets?.length > 0 && (
-                  <>
-                    <DataItemLabel>Related Multiome Datasets</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {measurementSet.related_multiome_datasets.map(
-                          (dataset) => (
-                            <Link href={dataset["@id"]} key={dataset["@id"]}>
-                              {dataset.accession}
-                            </Link>
-                          )
-                        )}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                {measurementSet.auxiliary_sets?.length > 0 && (
-                  <>
-                    <DataItemLabel>Auxiliary Sets</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {measurementSet.auxiliary_sets.map((set) => (
-                          <Link href={set["@id"]} key={set["@id"]}>
-                            {set.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                {measurementSet.control_file_sets?.length > 0 && (
-                  <>
-                    <DataItemLabel>Control File Sets</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {measurementSet.control_file_sets.map((set) => (
-                          <Link href={set["@id"]} key={set["@id"]}>
-                            {set.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
@@ -266,6 +226,18 @@ export default function MeasurementSet({
               sequencingPlatforms={sequencingPlatforms}
             />
           )}
+          {controlFileSets.length > 0 && (
+            <>
+              <DataAreaTitle>Control File Sets</DataAreaTitle>
+              <FileSetTable fileSets={controlFileSets} />
+            </>
+          )}
+          {relatedFileSets.length > 0 && (
+            <>
+              <DataAreaTitle>Related File Sets</DataAreaTitle>
+              <FileSetTable fileSets={relatedFileSets} />
+            </>
+          )}
           {documents.length > 0 && (
             <>
               <DataAreaTitle>Documents</DataAreaTitle>
@@ -284,10 +256,14 @@ MeasurementSet.propTypes = {
   measurementSet: PropTypes.object.isRequired,
   // Assay term of the measurement set
   assayTerm: PropTypes.object,
+  // Control File Sets of the measurement set
+  controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Related multiome datasets and auxiliary sets to display
+  relatedFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform objects associated with `files`
@@ -331,7 +307,29 @@ export async function getServerSideProps({ params, req, query }) {
         await request.getObject(measurementSet.library_construction_platform)
       ).optional();
     }
-
+    let controlFileSets = [];
+    if (measurementSet.control_file_sets?.length > 0) {
+      const controlPaths = measurementSet.control_file_sets.map(
+        (control) => control["@id"]
+      );
+      controlFileSets = await requestFileSets(controlPaths, request);
+    }
+    // Retrieve all available related_multiome_datasets and auxiliary_sets
+    const relatedMultiomeSet =
+      measurementSet.related_multiome_datasets?.length > 0
+        ? measurementSet.related_multiome_datasets.map(
+            (dataset) => dataset["@id"]
+          )
+        : [];
+    const relatedAuxiliarySet =
+      measurementSet.auxiliary_sets?.length > 0
+        ? measurementSet.auxiliary_sets.map((dataset) => dataset["@id"])
+        : [];
+    const relatedFileSetPaths = relatedMultiomeSet.concat(relatedAuxiliarySet);
+    const relatedFileSets =
+      relatedFileSetPaths?.length > 0
+        ? await requestFileSets(relatedFileSetPaths, request)
+        : [];
     // Use the files to retrieve all the seqspec files they might link to.
     let seqspecFiles = [];
     if (files.length > 0) {
@@ -368,12 +366,14 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         measurementSet,
         assayTerm,
+        controlFileSets,
         documents,
         donors,
         files,
+        libraryConstructionPlatform,
+        relatedFileSets,
         seqspecFiles,
         sequencingPlatforms,
-        libraryConstructionPlatform,
         pageContext: { title: measurementSet.accession },
         breadcrumbs,
         attribution,
