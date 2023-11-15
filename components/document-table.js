@@ -1,11 +1,14 @@
 // node_modules
 import PropTypes from "prop-types";
+import { useRef } from "react";
 // components
 import AttachmentThumbnail from "./attachment-thumbnail";
 import { DataGridContainer } from "./data-grid";
 import DocumentAttachmentLink from "./document-link";
 import ItemLink from "./item-link";
+import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
+import TableCount from "./table-count";
 
 /**
  * Columns displayed in the document table.
@@ -63,10 +66,17 @@ const columns = [
  * arrays.
  */
 export default function DocumentTable({ documents }) {
+  const gridRef = useRef(null);
+
   return (
-    <DataGridContainer>
-      <SortableGrid data={documents} columns={columns} />
-    </DataGridContainer>
+    <>
+      <TableCount count={documents.length} />
+      <ScrollIndicators gridRef={gridRef}>
+        <DataGridContainer ref={gridRef}>
+          <SortableGrid data={documents} columns={columns} />
+        </DataGridContainer>
+      </ScrollIndicators>
+    </>
   );
 }
 

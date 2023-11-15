@@ -1,10 +1,13 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { useRef } from "react";
 // components
 import { DataGridContainer } from "./data-grid";
+import ScrollIndicators from "../components/scroll-indicators";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
+import TableCount from "./table-count";
 
 const fileSetColumns = [
   {
@@ -41,10 +44,21 @@ const fileSetColumns = [
  * Display a sortable table of the given file sets.
  */
 export default function FileSetTable({ fileSets }) {
+  const gridRef = useRef(null);
+
   return (
-    <DataGridContainer>
-      <SortableGrid data={fileSets} columns={fileSetColumns} keyProp="@id" />
-    </DataGridContainer>
+    <>
+      <TableCount count={fileSets.length} />
+      <ScrollIndicators gridRef={gridRef}>
+        <DataGridContainer ref={gridRef}>
+          <SortableGrid
+            data={fileSets}
+            columns={fileSetColumns}
+            keyProp="@id"
+          />
+        </DataGridContainer>
+      </ScrollIndicators>
+    </>
   );
 }
 

@@ -9,18 +9,13 @@ import { DataGridContainer } from "../components/data-grid";
 import { FacetSection, FacetTags } from "../components/facets";
 import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
-import {
-  generateColumns,
-  ReportHeaderCell,
-  ScrollIndicators,
-} from "../components/report/";
+import { generateColumns, ReportHeaderCell } from "../components/report/";
+import ScrollIndicators from "../components/scroll-indicators";
 import { SearchPager, useSearchLimits } from "../components/search-results";
-import {
-  SearchResultsCount,
-  SearchResultsHeader,
-} from "../components/search-results";
+import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
 import SortableGrid from "../components/sortable-grid";
+import TableCount from "../components/table-count";
 // lib
 import buildBreadcrumbs from "../lib/breadcrumbs";
 import { errorObjectToProps } from "../lib/errors";
@@ -226,7 +221,7 @@ export default function MultiReport({ searchResults }) {
                   onAllColumnsVisibilityChange,
                 }}
               />
-              <SearchResultsCount count={searchResults.total} />
+              <TableCount count={searchResults.total} />
               {totalPages > 1 && <SearchPager searchResults={searchResults} />}
               <ScrollIndicators gridRef={gridRef}>
                 <DataGridContainer ref={gridRef}>

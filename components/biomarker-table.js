@@ -1,9 +1,12 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { useRef } from "react";
 // components
 import { DataGridContainer } from "./data-grid";
+import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
+import TableCount from "./table-count";
 
 const biomarkersColumns = [
   {
@@ -38,14 +41,21 @@ const biomarkersColumns = [
  * Display a sortable table of the given treatments.
  */
 export default function BiomarkerTable({ biomarkers }) {
+  const gridRef = useRef(null);
+
   return (
-    <DataGridContainer>
-      <SortableGrid
-        data={biomarkers}
-        columns={biomarkersColumns}
-        keyProp="@id"
-      />
-    </DataGridContainer>
+    <>
+      <TableCount count={biomarkers.length} />
+      <ScrollIndicators gridRef={gridRef}>
+        <DataGridContainer ref={gridRef}>
+          <SortableGrid
+            data={biomarkers}
+            columns={biomarkersColumns}
+            keyProp="@id"
+          />
+        </DataGridContainer>
+      </ScrollIndicators>
+    </>
   );
 }
 

@@ -13,11 +13,9 @@ import {
   SearchListItem,
 } from "../components/search";
 import { SearchPager, useSearchLimits } from "../components/search-results";
-import {
-  SearchResultsCount,
-  SearchResultsHeader,
-} from "../components/search-results";
+import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
+import TableCount from "../components/table-count";
 // lib
 import buildBreadcrumbs from "../lib/breadcrumbs";
 import { errorObjectToProps } from "../lib/errors";
@@ -51,7 +49,7 @@ export default function Search({ searchResults, accessoryData = null }) {
           <div className="grow">
             <FacetTags searchResults={searchResults} />
             <SearchResultsHeader searchResults={searchResults} />
-            <SearchResultsCount count={searchResults.total} />
+            <TableCount count={searchResults.total} />
             {totalPages > 1 && <SearchPager searchResults={searchResults} />}
             <ul data-testid="search-list">
               {searchResults["@graph"].map((item) => {

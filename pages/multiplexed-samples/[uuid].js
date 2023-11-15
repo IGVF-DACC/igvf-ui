@@ -75,8 +75,6 @@ export default function MultiplexedSample({
                 samples={multiplexedSample.multiplexed_samples}
                 constructLibrarySetAccessions={
                   multiplexedSample.construct_library_sets
-                    ? multiplexedSample.construct_library_sets
-                    : null
                 }
               />
             </>
