@@ -34,7 +34,6 @@ import buildAttribution from "../../lib/attribution";
 export default function HumanDonor({
   donor,
   documents,
-  phenotypicFeatures,
   attribution = null,
   isJson,
 }) {
@@ -62,10 +61,12 @@ export default function HumanDonor({
               )}
             </DataArea>
           </DataPanel>
-          {phenotypicFeatures.length > 0 && (
+          {donor.phenotypic_features && (
             <>
               <DataAreaTitle>Phenotypic Features</DataAreaTitle>
-              <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
+              <PhenotypicFeatureTable
+                phenotypicFeatures={donor.phenotypic_features}
+              />
             </>
           )}
           {donor.related_donors?.length > 0 && (
@@ -93,8 +94,6 @@ HumanDonor.propTypes = {
   donor: PropTypes.object.isRequired,
   // Documents associated with human donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Phenotypic Features of this donor
-  phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
   // HumanDonor attribution
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -111,9 +110,6 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = donor.documents
       ? await requestDocuments(donor.documents, request)
       : [];
-    const phenotypicFeatures = donor.phenotypic_features
-      ? await requestPhenotypicFeatures(donor.phenotypic_features, request)
-      : [];
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       donor.accession,
@@ -125,7 +121,6 @@ export async function getServerSideProps({ params, req, query }) {
         donor,
         documents,
         pageContext: { title: donor.accession },
-        phenotypicFeatures,
         breadcrumbs,
         attribution,
         isJson,
