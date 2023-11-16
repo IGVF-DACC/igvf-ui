@@ -30,6 +30,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestDonors,
+  requestFileSets,
   requestOntologyTerms,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -40,6 +41,7 @@ import { Ok } from "../../lib/result";
 export default function Tissue({
   tissue,
   biomarkers,
+  constructLibrarySets,
   donors,
   documents,
   diseaseTerms,
@@ -67,6 +69,7 @@ export default function Tissue({
             <DataArea>
               <BiosampleDataItems
                 item={tissue}
+                constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 donors={donors}
                 partOf={partOf}
@@ -164,6 +167,8 @@ Tissue.propTypes = {
   tissue: PropTypes.object.isRequired,
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Construct library sets associated with the sample
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
@@ -236,6 +241,9 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
+    const constructLibrarySets = tissue.construct_library_sets
+      ? await requestFileSets(tissue.construct_library_sets, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       tissue,
       tissue.accession,
@@ -246,6 +254,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         tissue,
         biomarkers,
+        constructLibrarySets,
         diseaseTerms,
         documents,
         donors,

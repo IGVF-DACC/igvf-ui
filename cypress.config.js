@@ -8,6 +8,7 @@ module.exports = defineConfig({
   watchForFileChanges: true,
   video: true,
   e2e: {
+    experimentalRunAllSpecs: true,
     baseUrl: "http://localhost:3000",
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
   },

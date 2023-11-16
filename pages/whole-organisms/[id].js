@@ -23,6 +23,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestDonors,
+  requestFileSets,
   requestOntologyTerms,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -33,6 +34,7 @@ import { Ok } from "../../lib/result";
 export default function WholeOrganism({
   sample,
   biomarkers,
+  constructLibrarySets,
   diseaseTerms,
   documents,
   donors,
@@ -60,6 +62,7 @@ export default function WholeOrganism({
             <DataArea>
               <BiosampleDataItems
                 item={sample}
+                constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 donors={donors}
                 partOf={partOf}
@@ -121,6 +124,8 @@ WholeOrganism.propTypes = {
   sample: PropTypes.object.isRequired,
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Construct library sets associated with the sample
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
@@ -197,6 +202,9 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
+    const constructLibrarySets = sample.construct_library_sets
+      ? await requestFileSets(sample.construct_library_sets, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       sample.accession,
@@ -207,6 +215,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         sample,
         biomarkers,
+        constructLibrarySets,
         diseaseTerms,
         documents,
         donors,

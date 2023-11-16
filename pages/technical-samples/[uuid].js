@@ -22,7 +22,11 @@ import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { requestDocuments, requestBiosamples } from "../../lib/common-requests";
+import {
+  requestBiosamples,
+  requestDocuments,
+  requestFileSets,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -30,6 +34,7 @@ import { Ok } from "../../lib/result";
 
 export default function TechnicalSample({
   sample,
+  constructLibrarySets,
   documents,
   attribution = null,
   sortedFractions,
@@ -51,6 +56,7 @@ export default function TechnicalSample({
             <DataArea>
               <SampleDataItems
                 item={sample}
+                constructLibrarySets={constructLibrarySets}
                 sortedFractions={sortedFractions}
                 sources={sources}
               >
@@ -91,6 +97,8 @@ export default function TechnicalSample({
 TechnicalSample.propTypes = {
   // Technical sample to display
   sample: PropTypes.object.isRequired,
+  // Construct library sets associated with this technical sample
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
   // Documents associated with this technical sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sorted fractions sample
@@ -126,6 +134,9 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
+    const constructLibrarySets = sample.construct_library_sets
+      ? await requestFileSets(sample.construct_library_sets, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       sample.accession,
@@ -135,6 +146,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         sample,
+        constructLibrarySets,
         documents,
         sortedFractions,
         sources,

@@ -29,6 +29,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestDonors,
+  requestFileSets,
   requestOntologyTerms,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -40,6 +41,7 @@ import { Ok } from "../../lib/result";
 export default function PrimaryCell({
   primaryCell,
   biomarkers,
+  constructLibrarySets,
   diseaseTerms,
   documents,
   donors,
@@ -67,6 +69,7 @@ export default function PrimaryCell({
             <DataArea>
               <BiosampleDataItems
                 item={primaryCell}
+                constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 donors={donors}
                 parts={parts}
@@ -135,6 +138,8 @@ PrimaryCell.propTypes = {
   primaryCell: PropTypes.object.isRequired,
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Construct library sets associated with the sample
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
@@ -211,6 +216,9 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
+    const constructLibrarySets = primaryCell.construct_library_sets
+      ? await requestFileSets(primaryCell.construct_library_sets, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       primaryCell,
       primaryCell.accession,
@@ -221,6 +229,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         primaryCell,
         biomarkers,
+        constructLibrarySets,
         diseaseTerms,
         documents,
         donors,

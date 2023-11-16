@@ -61,6 +61,16 @@ export default function MeasurementSet({
   const { filesWithReadType, filesWithoutReadType, imageFileType } =
     splitIlluminaSequenceFiles(files);
 
+  // Collect all the embedded construct library sets from all the samples in the FileSet.
+  const constructLibrarySets = measurementSet.samples.reduce((acc, sample) => {
+    if (sample.construct_library_sets) {
+      return acc.concat(sample.construct_library_sets);
+    }
+    return acc;
+  }, []);
+  const constructLibrarySetCollapser =
+    useDataAreaCollapser(constructLibrarySets);
+
   // Collect all sample summaries and display them as a collapsible list.
   const sampleSummaries =
     measurementSet.samples?.length > 0
@@ -165,6 +175,87 @@ export default function MeasurementSet({
                           />
                         </DataItemValueCollapseControl>
                       </>
+                    </DataItemValue>
+                  </>
+                )}
+                {constructLibrarySetCollapser.displayedData.length > 0 && (
+                  <>
+                    <DataItemLabel>Construct Library Sets</DataItemLabel>
+                    <DataItemValue>
+                      {constructLibrarySetCollapser.displayedData.map(
+                        (con, i) => {
+                          return (
+                            <div
+                              key={con["@id"]}
+                              className="my-1 first:mt-0 last:mb-0"
+                            >
+                              <div>
+                                <Link href={con["@id"]}>{con.summary}</Link>
+                                <span className="text-gray-400 dark:text-gray-600">
+                                  {" "}
+                                  {con.accession}
+                                </span>
+                              </div>
+                              {i ===
+                                constructLibrarySetCollapser.displayedData
+                                  .length -
+                                  1 && (
+                                <DataItemValueCollapseControl
+                                  collapser={constructLibrarySetCollapser}
+                                >
+                                  <DataItemValueControlLabel
+                                    collapser={constructLibrarySetCollapser}
+                                  />
+                                </DataItemValueCollapseControl>
+                              )}
+                            </div>
+                          );
+                        }
+                      )}
+                    </DataItemValue>
+                  </>
+                )}
+                {measurementSet.related_multiome_datasets?.length > 0 && (
+                  <>
+                    <DataItemLabel>Related Multiome Datasets</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {measurementSet.related_multiome_datasets.map(
+                          (dataset) => (
+                            <Link href={dataset["@id"]} key={dataset["@id"]}>
+                              {dataset.accession}
+                            </Link>
+                          )
+                        )}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {measurementSet.auxiliary_sets?.length > 0 && (
+                  <>
+                    <DataItemLabel>Auxiliary Sets</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {measurementSet.auxiliary_sets.map((set) => (
+                          <Link href={set["@id"]} key={set["@id"]}>
+                            {set.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {measurementSet.control_file_sets?.length > 0 && (
+                  <>
+                    <DataItemLabel>Control File Sets</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {measurementSet.control_file_sets.map((set) => (
+                          <Link href={set["@id"]} key={set["@id"]}>
+                            {set.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
                     </DataItemValue>
                   </>
                 )}
@@ -346,6 +437,7 @@ export async function getServerSideProps({ params, req, query }) {
       relatedFileSetPaths?.length > 0
         ? await requestFileSets(relatedFileSetPaths, request)
         : [];
+
     // Use the files to retrieve all the seqspec files they might link to.
     let seqspecFiles = [];
     if (files.length > 0) {
