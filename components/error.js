@@ -1,11 +1,13 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
+import Link from "next/link";
 import PropTypes from "prop-types";
 import { HTTP_STATUS_CODE } from "../lib/fetch-request";
 // components
 import { ButtonAsLink } from "./form-elements";
 // lib
 import { loginAuthProvider } from "../lib/authentication";
+import { LINK_INLINE_STYLE } from "../lib/constants";
 
 /**
  * Display the contents of a standard error page.
@@ -30,14 +32,22 @@ export default function Error({ statusCode = "ERROR", title = "" }) {
           <div className="mt-4 border-t border-gray-300 pt-2 text-sm font-normal dark:border-gray-500">
             {title && <h2 data-testid="error-title">{title}</h2>}
             {isLoginHelpVisible && (
-              <p className="mt-4" data-testid="error-login">
+              <p className="mt-4 text-left md:w-96" data-testid="error-login">
                 Please{" "}
                 <ButtonAsLink
                   onClick={() => loginAuthProvider(loginWithRedirect)}
                 >
                   sign in
                 </ButtonAsLink>{" "}
-                if you believe you should have access to this page
+                if you believe you should have access to this page. See the
+                instructions for{" "}
+                <Link
+                  href="/help/general-help/accessing-unreleased-data/"
+                  className={LINK_INLINE_STYLE}
+                >
+                  accessing unreleased data
+                </Link>{" "}
+                for more information.
               </p>
             )}
           </div>

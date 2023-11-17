@@ -22,6 +22,8 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 import React from "react";
+// lib
+import { LINK_INLINE_STYLE } from "../../lib/constants";
 
 /**
  * Tailwind CSS classes common to all buttons; both <Button> and <ButtonLink> types.
@@ -286,7 +288,7 @@ export function ButtonAsLink({ onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className="inline font-medium underline"
+      className={`inline ${LINK_INLINE_STYLE}`}
     >
       {children}
     </button>
