@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 // lib
-import { UC } from "../lib/constants";
 import FetchRequest from "../lib/fetch-request";
 
 /**
