@@ -874,7 +874,7 @@ export default function NavigationSection() {
 
   return (
     <section
-      className={`bg-brand md:sticky md:top-0 md:h-screen md:shrink-0 md:grow-0 md:overflow-y-auto md:border-r-2 md:border-r-gray-200 md:bg-transparent dark:md:border-r-gray-800 ${
+      className={`bg-brand md:sticky md:top-0 md:h-screen md:shrink-0 md:grow-0 md:overflow-y-auto md:bg-transparent ${
         isNavCollapsed ? "md:w-12" : "md:w-72"
       }`}
     >
