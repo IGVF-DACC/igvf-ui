@@ -49,9 +49,9 @@ describe("Make sure the login help appears in the correct situations", () => {
     cy.visit("/");
     cy.get(`[data-testid="id-search-trigger"]`).click();
     cy.get(`[data-testid="search-input"]`).type("abcdefg{enter}");
-    cy.contains("No items with the identifier “abcdefg” to display");
+    cy.contains("No items with the identifier abcdefg to display");
     cy.contains(
-      "Please sign in if you believe you should see items with the identifier “abcdefg”"
+      "Please sign in if you believe you should see items with the identifier abcdefg"
     );
   });
 
@@ -62,7 +62,7 @@ describe("Make sure the login help appears in the correct situations", () => {
 
     cy.get(`[data-testid="id-search-trigger"]`).click();
     cy.get(`[data-testid="search-input"]`).type("abcdefg{enter}");
-    cy.contains("No items with the identifier “abcdefg” to display");
+    cy.contains("No items with the identifier abcdefg to display");
     cy.contains("Please sign in").should("not.exist");
   });
 });
