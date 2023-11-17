@@ -22,6 +22,8 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 import React from "react";
+// lib
+import { LINK_INLINE_STYLE } from "../../lib/constants";
 
 /**
  * Tailwind CSS classes common to all buttons; both <Button> and <ButtonLink> types.
@@ -276,4 +278,24 @@ AttachedButtons.propTypes = {
   testid: PropTypes.string,
   // Additional Tailwind CSS classes to apply to the wrapper element
   className: PropTypes.string,
+};
+
+/**
+ * Renders a button that appears like a link. Best used for buttons that appear inline with text.
+ */
+export function ButtonAsLink({ onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline ${LINK_INLINE_STYLE}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+ButtonAsLink.propTypes = {
+  // Called when the button is clicked
+  onClick: PropTypes.func.isRequired,
 };

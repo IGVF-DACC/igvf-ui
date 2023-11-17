@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 // lib
-import { UC } from "../lib/constants";
 import FetchRequest from "../lib/fetch-request";
 
 /**
@@ -13,9 +12,13 @@ import FetchRequest from "../lib/fetch-request";
  * object with that ID, then this page renders with an error message.
  */
 export default function IdSearch({ id }) {
-  const errorText = id
-    ? `item with the identifier ${UC.ldquo}${id}${UC.rdquo}`
-    : "item";
+  const errorText = id ? (
+    <span>
+      items with the identifier <strong>{id}</strong>
+    </span>
+  ) : (
+    "item"
+  );
   return (
     <>
       <PagePreamble />
