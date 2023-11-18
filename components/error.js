@@ -8,6 +8,7 @@ import { ButtonAsLink } from "./form-elements";
 // lib
 import { loginAuthProvider } from "../lib/authentication";
 import { LINK_INLINE_STYLE } from "../lib/constants";
+import { logError } from "../lib/errors";
 
 /**
  * Display the contents of a standard error page.
@@ -19,6 +20,7 @@ export default function Error({ statusCode = "ERROR", title = "" }) {
   const isLoginHelpVisible =
     !isAuthenticated && statusCode === HTTP_STATUS_CODE.FORBIDDEN;
 
+  logError(statusCode, title);
   return (
     <div className="flex h-screen flex-col items-center justify-center">
       <div className="text-center">

@@ -2,6 +2,8 @@
 import PropTypes from "prop-types";
 // components
 import Error from "../components/error";
+// lib
+import { logError } from "../lib/errors";
 
 /**
  * Defines the standard error page for the application.
@@ -20,5 +22,6 @@ ErrorPage.propTypes = {
 
 Error.getInitialProps = ({ res, err }) => {
   const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
+  logError(statusCode, "SVRERR");
   return { statusCode };
 };

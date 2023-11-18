@@ -31,7 +31,7 @@ import {
   requestFileSets,
   requestOntologyTerms,
 } from "../../lib/common-requests";
-import errorObjectToProps from "../../lib/errors";
+import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
 import { splitIlluminaSequenceFiles } from "../../lib/files";

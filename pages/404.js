@@ -11,7 +11,8 @@ export default function Error404() {
   const { linkReload } = useContext(GlobalContext);
 
   useEffect(() => {
-    // Any links available directly from the 404 page should reload the browser.
+    // Any links available directly from the 404 page should reload the browser to force NextJS to
+    // load environment variables, missing from 404 pages.
     linkReload.setIsEnabled(true);
   }, [linkReload]);
 

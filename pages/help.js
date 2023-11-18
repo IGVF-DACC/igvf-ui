@@ -8,7 +8,7 @@ import Icon from "../components/icon";
 import NoContent from "../components/no-content";
 // lib
 import { UI_VERSION } from "../lib/constants";
-import errorObjectToProps from "../lib/errors";
+import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { toShishkebabCase } from "../lib/general";
 import { getPageTitleAndOrdering } from "../lib/page";

@@ -6,7 +6,7 @@ import { Fragment } from "react";
 import AuditTable from "../components/audit-table";
 import PagePreamble from "../components/page-preamble";
 // lib
-import errorObjectToProps from "../lib/errors";
+import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { snakeCaseToHuman } from "../lib/general";
 

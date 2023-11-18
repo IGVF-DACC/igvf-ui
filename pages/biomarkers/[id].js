@@ -19,7 +19,7 @@ import PagePreamble from "../../components/page-preamble";
 import buildAttribution from "../../lib/attribution";
 import { getBiomarkerTitle } from "../../lib/biomarker";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import errorObjectToProps from "../../lib/errors";
+import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
