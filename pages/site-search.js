@@ -24,7 +24,7 @@ import {
 import SessionContext from "../components/session-context";
 // lib
 import { UC } from "../lib/constants";
-import errorObjectToProps from "../lib/errors";
+import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { toShishkebabCase } from "../lib/general";
 import QueryString from "../lib/query-string";

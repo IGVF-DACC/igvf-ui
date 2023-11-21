@@ -36,7 +36,7 @@ import {
   requestOntologyTerms,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
-import errorObjectToProps from "../../lib/errors";
+import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 

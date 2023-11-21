@@ -14,7 +14,7 @@ import PagePreamble from "../components/page-preamble";
 import SessionContext from "../components/session-context";
 import Spinner from "../components/spinner";
 // lib
-import errorObjectToProps from "../lib/errors";
+import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 
 export default function UserProfile({ sessionUser = null }) {

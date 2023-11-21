@@ -24,7 +24,7 @@ import {
   requestDocuments,
   requestPhenotypicFeatures,
 } from "../../lib/common-requests";
-import errorObjectToProps from "../../lib/errors";
+import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";

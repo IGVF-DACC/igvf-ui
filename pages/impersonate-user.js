@@ -10,7 +10,7 @@ import PagePreamble from "../components/page-preamble";
 import SessionContext from "../components/session-context";
 import { TextField } from "../components/form-elements";
 // lib
-import errorObjectToProps from "../lib/errors";
+import { errorObjectToProps } from "../lib/errors";
 import FetchRequest, { HTTP_STATUS_CODE } from "../lib/fetch-request";
 import { encodeUriElement } from "../lib/query-encoding";
 

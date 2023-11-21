@@ -20,7 +20,7 @@ import {
 import SessionContext from "../components/session-context";
 // lib
 import buildBreadcrumbs from "../lib/breadcrumbs";
-import errorObjectToProps from "../lib/errors";
+import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { getQueryStringFromServerQuery } from "../lib/query-utils";
 import {

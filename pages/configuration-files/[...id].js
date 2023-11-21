@@ -23,7 +23,7 @@ import {
   requestFiles,
   requestOntologyTerms,
 } from "../../lib/common-requests";
-import errorObjectToProps from "../../lib/errors";
+import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,

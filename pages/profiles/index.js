@@ -12,7 +12,7 @@ import Tooltip from "../../components/tooltip";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { deprecatedSchemas } from "../../lib/constants";
-import errorObjectToProps from "../../lib/errors";
+import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { toShishkebabCase } from "../../lib/general";
 
