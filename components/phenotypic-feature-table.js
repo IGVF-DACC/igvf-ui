@@ -1,9 +1,12 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { useRef } from "react";
 // components
 import { DataGridContainer } from "./data-grid";
+import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
+import TableCount from "./table-count";
 
 const phenotypicFeaturesColumns = [
   {
@@ -47,14 +50,21 @@ const phenotypicFeaturesColumns = [
  * Display a sortable table of the given treatments.
  */
 export default function PhenotypicFeatureTable({ phenotypicFeatures }) {
+  const gridRef = useRef(null);
+
   return (
-    <DataGridContainer>
-      <SortableGrid
-        data={phenotypicFeatures}
-        columns={phenotypicFeaturesColumns}
-        keyProp="@id"
-      />
-    </DataGridContainer>
+    <>
+      <TableCount count={phenotypicFeatures.length} />
+      <ScrollIndicators gridRef={gridRef}>
+        <DataGridContainer ref={gridRef}>
+          <SortableGrid
+            data={phenotypicFeatures}
+            columns={phenotypicFeaturesColumns}
+            keyProp="@id"
+          />
+        </DataGridContainer>
+      </ScrollIndicators>
+    </>
   );
 }
 

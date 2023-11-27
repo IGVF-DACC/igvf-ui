@@ -2,9 +2,9 @@
 import PropTypes from "prop-types";
 import Link from "next/link";
 // components
-import { DataGridContainer } from "./data-grid";
-import SortableGrid from "./sortable-grid";
+import PagedDataGrid from "./paged-data-grid";
 import SeparatedList from "./separated-list";
+import SortableGrid from "./sortable-grid";
 
 /**
  * Columns for samples
@@ -35,6 +35,7 @@ const sampleColumns = [
   {
     id: "summary",
     title: "Summary",
+    isSortable: false,
   },
   {
     id: "disease_terms",
@@ -96,6 +97,7 @@ const sampleColumns = [
         );
       }
     },
+    isSortable: false,
   },
   {
     id: "status",
@@ -111,19 +113,24 @@ export default function SampleTable({
   constructLibrarySetAccessions = null,
 }) {
   return (
-    <DataGridContainer>
-      <SortableGrid
-        data={samples}
-        meta={{ constructLibrarySetAccessions }}
-        columns={sampleColumns}
-        keyProp="@id"
-      />
-    </DataGridContainer>
+    <PagedDataGrid data={samples}>
+      {(pageSamples) => {
+        return (
+          <SortableGrid
+            data={pageSamples}
+            columns={sampleColumns}
+            meta={{ constructLibrarySetAccessions }}
+            keyProp="@id"
+          />
+        );
+      }}
+    </PagedDataGrid>
   );
 }
 
 SampleTable.propTypes = {
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // The construct libraries of the parent object
   constructLibrarySetAccessions: PropTypes.arrayOf(PropTypes.object),
 };

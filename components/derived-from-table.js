@@ -1,10 +1,13 @@
 // node_modules
 import PropTypes from "prop-types";
 import Link from "next/link";
+import { useRef } from "react";
 // components
 import { DataGridContainer } from "./data-grid";
+import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
+import TableCount from "./table-count";
 
 /**
  * Columns for derived from files.
@@ -62,15 +65,22 @@ const columns = [
  * Display the given files in a table, useful for pages displaying files derived from other files.
  */
 export default function DerivedFromTable({ derivedFrom, derivedFromFileSets }) {
+  const gridRef = useRef(null);
+
   return (
-    <DataGridContainer>
-      <SortableGrid
-        data={derivedFrom}
-        columns={columns}
-        meta={{ derivedFromFileSets }}
-        keyProp="@id"
-      />
-    </DataGridContainer>
+    <>
+      <TableCount count={derivedFrom.length} />
+      <ScrollIndicators gridRef={gridRef}>
+        <DataGridContainer ref={gridRef}>
+          <SortableGrid
+            data={derivedFrom}
+            columns={columns}
+            meta={{ derivedFromFileSets }}
+            keyProp="@id"
+          />
+        </DataGridContainer>
+      </ScrollIndicators>
+    </>
   );
 }
 

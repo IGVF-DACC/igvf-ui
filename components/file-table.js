@@ -1,13 +1,16 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
+import { useRef } from "react";
 // components
 import { DataAreaTitle } from "./data-area";
 import { DataGridContainer } from "./data-grid";
 import { FileAccessionAndDownload } from "./file-download";
 import { ButtonLink } from "./form-elements";
+import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
+import TableCount from "./table-count";
 
 const filesColumns = [
   {
@@ -50,6 +53,8 @@ const filesColumns = [
  * Display a sortable table of the given files.
  */
 export default function FileTable({ files, title = "Files", itemPath = "" }) {
+  const gridRef = useRef(null);
+
   const reportLink = itemPath
     ? `/multireport/?type=File&file_set=${encodeURIComponent(itemPath)}`
     : "";
@@ -70,9 +75,12 @@ export default function FileTable({ files, title = "Files", itemPath = "" }) {
           )}
         </div>
       </DataAreaTitle>
-      <DataGridContainer>
-        <SortableGrid data={files} columns={filesColumns} keyProp="@id" />
-      </DataGridContainer>
+      <TableCount count={files.length} />
+      <ScrollIndicators gridRef={gridRef}>
+        <DataGridContainer ref={gridRef}>
+          <SortableGrid data={files} columns={filesColumns} keyProp="@id" />
+        </DataGridContainer>
+      </ScrollIndicators>
     </>
   );
 }

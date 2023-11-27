@@ -1,10 +1,12 @@
 // node_modules
 import PropTypes from "prop-types";
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 // components
 import { auditMap } from "./audit";
 import { DataGridContainer } from "./data-grid";
+import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
+import TableCount from "./table-count";
 
 const auditColumns = [
   {
@@ -50,10 +52,17 @@ const auditColumns = [
  * Display a sortable table of the given audits.
  */
 export default function AuditTable({ data }) {
+  const gridRef = useRef(null);
+
   return (
-    <DataGridContainer>
-      <SortableGrid data={data} columns={auditColumns} />
-    </DataGridContainer>
+    <>
+      <TableCount count={data.length} />
+      <ScrollIndicators gridRef={gridRef}>
+        <DataGridContainer ref={gridRef}>
+          <SortableGrid data={data} columns={auditColumns} />
+        </DataGridContainer>
+      </ScrollIndicators>
+    </>
   );
 }
 

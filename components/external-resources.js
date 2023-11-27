@@ -1,9 +1,12 @@
 // node_modules
 import PropTypes from "prop-types";
+import { useRef } from "react";
 // components
 import { DataAreaTitle } from "./data-area";
 import { DataGridContainer } from "./data-grid";
+import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
+import TableCount from "./table-count";
 
 const columns = [
   {
@@ -32,13 +35,18 @@ const columns = [
  * Display a table of external resources.
  */
 export default function ExternalResources({ resources = [] }) {
+  const gridRef = useRef(null);
+
   if (resources.length > 0) {
     return (
       <>
         <DataAreaTitle>Resources</DataAreaTitle>
-        <DataGridContainer>
-          <SortableGrid data={resources} columns={columns} />
-        </DataGridContainer>
+        <TableCount count={resources.length} />
+        <ScrollIndicators gridRef={gridRef}>
+          <DataGridContainer ref={gridRef}>
+            <SortableGrid data={resources} columns={columns} />
+          </DataGridContainer>
+        </ScrollIndicators>
       </>
     );
   }
