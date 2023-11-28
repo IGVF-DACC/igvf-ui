@@ -6,49 +6,49 @@ const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 /**
  * igvf-ui NextJS server URL
  */
-export const SERVER_URL = publicRuntimeConfig.SERVER_URL;
+export const SERVER_URL = publicRuntimeConfig.SERVER_URL as string;
 
 /**
  * igvfd server URL
  */
-export const API_URL = publicRuntimeConfig.PUBLIC_BACKEND_URL;
+export const API_URL = publicRuntimeConfig.PUBLIC_BACKEND_URL as string;
 
 /**
  * Docker internal network URL
  */
-export const BACKEND_URL = serverRuntimeConfig.BACKEND_URL;
+export const BACKEND_URL = serverRuntimeConfig.BACKEND_URL as string;
 
 /**
  * igvf-ui version number
  */
-export const UI_VERSION = publicRuntimeConfig.UI_VERSION;
+export const UI_VERSION = publicRuntimeConfig.UI_VERSION as string;
 
 /**
  * Auth0
  */
-export const AUTH0_CLIENT_ID = "xaO8MMn04qlT3TUnhczmKWZgBzqRySDm";
-export const AUTH0_ISSUER_BASE_DOMAIN = "igvf-dacc.us.auth0.com";
-export const AUTH0_AUDIENCE = "https://igvf-dacc.us.auth0.com/api/v2/";
+export const AUTH0_CLIENT_ID: string = "xaO8MMn04qlT3TUnhczmKWZgBzqRySDm";
+export const AUTH0_ISSUER_BASE_DOMAIN: string = "igvf-dacc.us.auth0.com";
+export const AUTH0_AUDIENCE: string = "https://igvf-dacc.us.auth0.com/api/v2/";
 
 /**
  * Site title
  */
-export const SITE_TITLE = "IGVF";
+export const SITE_TITLE: string = "IGVF";
 
 /**
  * Brand color
  */
-export const BRAND_COLOR = "#337788";
+export const BRAND_COLOR: string = "#337788";
 
 /**
  * Path for authorization error page
  */
-export const AUTH_ERROR_URI = "/auth-error";
+export const AUTH_ERROR_URI: string = "/auth-error";
 
 /**
  * List of `@type`s to ignore. This needs updating when deprecated schemas get removed from igvfd.
  */
-export const deprecatedSchemas = [];
+export const deprecatedSchemas: Array<string> = [];
 
 /**
  * UNICODE entity codes, needed in JSX string templates. Each property named after the equivalent
@@ -82,9 +82,9 @@ export const KC = {
 /**
  * Maximum number of characters in the URL, minus an arbitrary amount for the domain name.
  */
-export const MAX_URL_LENGTH = 4000;
+export const MAX_URL_LENGTH: number = 4000;
 
 /**
  * Default inline text styles for links.
  */
-export const LINK_INLINE_STYLE = "font-medium underline";
+export const LINK_INLINE_STYLE: string = "font-medium underline";
