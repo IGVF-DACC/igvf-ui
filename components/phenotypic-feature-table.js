@@ -18,6 +18,14 @@ const phenotypicFeaturesColumns = [
     },
   },
   {
+    id: "feature",
+    title: "Feature ID",
+    display: (source) => {
+      const termId = source.source.feature.term_id;
+      return <Link href={source.source.feature["@id"]}>{termId}</Link>;
+    },
+  },
+  {
     id: "quantity",
     title: "Quantity",
     display: ({ source }) => {
