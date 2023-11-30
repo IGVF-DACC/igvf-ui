@@ -3,10 +3,9 @@ import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { useRef } from "react";
 // components
-import { DataAreaTitle } from "./data-area";
+import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { DataGridContainer } from "./data-grid";
 import { FileAccessionAndDownload } from "./file-download";
-import { ButtonLink } from "./form-elements";
 import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
@@ -62,18 +61,13 @@ export default function FileTable({ files, title = "Files", itemPath = "" }) {
   return (
     <>
       <DataAreaTitle>
-        <div className="flex items-end justify-between">
-          {title}
-          {reportLink && (
-            <ButtonLink
-              href={reportLink}
-              size="sm"
-              label="Report of files that have this item as their file set"
-            >
-              <TableCellsIcon className="h-4 w-4" />
-            </ButtonLink>
-          )}
-        </div>
+        {title}
+        <DataAreaTitleLink
+          href={reportLink}
+          label="Report of files that have this item as their file set"
+        >
+          <TableCellsIcon className="h-4 w-4" />
+        </DataAreaTitleLink>
       </DataAreaTitle>
       <TableCount count={files.length} />
       <ScrollIndicators gridRef={gridRef}>

@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import {
   DataArea,
   DataAreaTitle,
+  DataAreaTitleLink,
   DataItemLabel,
   DataItemValue,
   DataItemValueUrl,
@@ -62,7 +63,12 @@ describe("Test the DataArea component", () => {
             </DataItemValueUrl>
           </DataArea>
         </DataPanel>
-        <DataAreaTitle>Treatments</DataAreaTitle>
+        <DataAreaTitle>
+          Treatments
+          <DataAreaTitleLink href="/profiles" label="Link to profiles page">
+            Profiles
+          </DataAreaTitleLink>
+        </DataAreaTitle>
       </>
     );
 

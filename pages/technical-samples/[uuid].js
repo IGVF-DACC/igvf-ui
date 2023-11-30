@@ -61,10 +61,14 @@ export default function TechnicalSample({
             </DataArea>
           </DataPanel>
           {sample.file_sets.length > 0 && (
-            <>
-              <DataAreaTitle>File Sets</DataAreaTitle>
-              <FileSetTable fileSets={sample.file_sets} />
-            </>
+            <FileSetTable
+              fileSets={sample.file_sets}
+              reportLinkSpecs={{
+                fileSetType: "FileSet",
+                identifierProp: "samples.accession",
+                itemIdentifier: sample.accession,
+              }}
+            />
           )}
           {documents.length > 0 && (
             <>

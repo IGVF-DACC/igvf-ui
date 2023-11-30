@@ -15,7 +15,7 @@ import { BarsArrowDownIcon, BarsArrowUpIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
-import { Button } from "./form-elements";
+import { Button, ButtonLink } from "./form-elements";
 
 /**
  * Displays a panel -- typically to display data items for an object, but you can use this for
@@ -59,7 +59,7 @@ export function DataArea({ children }) {
 export function DataAreaTitle({ className = "", children }) {
   return (
     <h2
-      className={`mb-1 mt-4 text-2xl font-light ${className}`}
+      className={`mb-1 mt-4 flex items-end justify-between text-2xl font-light ${className}`}
       data-testid="dataareatitle"
     >
       {children}
@@ -70,6 +70,27 @@ export function DataAreaTitle({ className = "", children }) {
 DataAreaTitle.propTypes = {
   // Additional Tailwind CSS classes to apply to the <h2> element
   className: PropTypes.string,
+};
+
+/**
+ * Displays a link to the right of a data area title. This is typically used to link to a report
+ * page for the data area.
+ */
+export function DataAreaTitleLink({ href, label, children }) {
+  return (
+    <ButtonLink href={href} size="sm" label={label}>
+      {children}
+    </ButtonLink>
+  );
+}
+
+DataAreaTitleLink.propTypes = {
+  // Local URL to link to; don't use an external link
+  href: PropTypes.string.isRequired,
+  // Label for the link
+  label: PropTypes.string.isRequired,
+  // Text to display in the link
+  children: PropTypes.node.isRequired,
 };
 
 /**
