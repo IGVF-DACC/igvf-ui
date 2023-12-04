@@ -115,7 +115,12 @@ DonorDataItems.commonProperties = [
 /**
  * Display data items common to all sample-derived objects.
  */
-export function SampleDataItems({ item, sources = null, children }) {
+export function SampleDataItems({
+  item,
+  sources = null,
+  children,
+  sortedFractions,
+}) {
   return (
     <>
       <DataItemLabel>Summary</DataItemLabel>
@@ -166,7 +171,7 @@ export function SampleDataItems({ item, sources = null, children }) {
       )}
       {item.sorted_from && (
         <>
-          <DataItemLabel>Sorted Fraction</DataItemLabel>
+          <DataItemLabel>Sorted From</DataItemLabel>
           <DataItemValue>
             <Link href={item.sorted_from["@id"]}>
               {item.sorted_from.accession}
@@ -175,12 +180,12 @@ export function SampleDataItems({ item, sources = null, children }) {
           </DataItemValue>
         </>
       )}
-      {item.sorted_fractions && (
+      {sortedFractions?.length > 0 && (
         <>
           <DataItemLabel>Sorted Fraction Samples</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
-              {item.sorted_fractions.map((sample) => (
+              {sortedFractions.map((sample) => (
                 <Link href={sample["@id"]} key={sample.accession}>
                   {sample.accession}
                 </Link>
@@ -264,6 +269,8 @@ SampleDataItems.propTypes = {
   item: PropTypes.object.isRequired,
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) sorted fraction
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
 };
 
 SampleDataItems.commonProperties = [
@@ -274,7 +281,6 @@ SampleDataItems.commonProperties = [
   "lot_id",
   "publication_identifiers",
   "revoke_detail",
-  "sorted_fractions",
   "sorted_from",
   "sorted_from_detail",
   "starting_amount",
@@ -296,12 +302,17 @@ export function BiosampleDataItems({
   sampleTerms = null,
   diseaseTerms = null,
   pooledFrom = null,
+  sortedFractions = null,
   partOf = null,
   classification = null,
   children,
 }) {
   return (
-    <SampleDataItems item={item} sources={sources}>
+    <SampleDataItems
+      item={item}
+      sources={sources}
+      sortedFractions={sortedFractions}
+    >
       {sampleTerms?.length > 0 && (
         <>
           <DataItemLabel>Sample Terms</DataItemLabel>
@@ -435,6 +446,8 @@ BiosampleDataItems.propTypes = {
   diseaseTerms: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Sorted Fraction
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
   partOf: PropTypes.object,
   // Classification if this biosample has one

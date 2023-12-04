@@ -43,6 +43,7 @@ export default function InVitroSystem({
   diseaseTerms,
   documents,
   donors,
+  sortedFractions,
   sources,
   pooledFrom,
   biomarkers,
@@ -72,6 +73,7 @@ export default function InVitroSystem({
                 diseaseTerms={diseaseTerms}
                 pooledFrom={pooledFrom}
                 partOf={partOf}
+                sortedFractions={sortedFractions}
                 classification={inVitroSystem.classification}
                 options={{
                   dateObtainedTitle: "Date Collected",
@@ -183,6 +185,8 @@ InVitroSystem.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Sorted Fractions
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Part of Biosample
@@ -228,6 +232,10 @@ export async function getServerSideProps({ params, req, query }) {
       inVitroSystem.pooled_from?.length > 0
         ? await requestBiosamples(inVitroSystem.pooled_from, request)
         : [];
+    const sortedFractions =
+      inVitroSystem.sorted_fractions?.length > 0
+        ? await requestBiosamples(inVitroSystem.sorted_fractions, request)
+        : [];
     const partOf = inVitroSystem.part_of
       ? (await request.getObject(inVitroSystem.part_of)).optional()
       : null;
@@ -253,6 +261,7 @@ export async function getServerSideProps({ params, req, query }) {
         diseaseTerms,
         documents,
         donors,
+        sortedFractions,
         sources,
         pooledFrom,
         partOf,
