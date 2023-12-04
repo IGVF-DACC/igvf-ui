@@ -164,18 +164,24 @@ export function SampleDataItems({ item, sources = null, children }) {
           </DataItemValue>
         </>
       )}
-      {item.sorted_fraction && (
+      {item.sorted_fractions && (
+        <>
+          <DataItemLabel>Sorted Fraction Samples</DataItemLabel>
+          <DataItemValue>
+            <Link href={item.sorted_fractions["@id"]}>
+              {item.sorted_fractions.accession}
+            </Link>
+          </DataItemValue>
+        </>
+      )}
+      {item.sorted_from && (
         <>
           <DataItemLabel>Sorted Fraction</DataItemLabel>
           <DataItemValue>
-            <Link href={item.sorted_fraction["@id"]}>
-              {item.sorted_fraction.accession}
+            <Link href={item.sorted_from["@id"]}>
+              {item.sorted_from.accession}
             </Link>
-            {item.sorted_fraction_detail ? (
-              <> {item.sorted_fraction_detail}</>
-            ) : (
-              ""
-            )}
+            {item.sorted_from_detail ? <> {item.sorted_from_detail}</> : ""}
           </DataItemValue>
         </>
       )}
@@ -264,8 +270,9 @@ SampleDataItems.commonProperties = [
   "lot_id",
   "publication_identifiers",
   "revoke_detail",
-  "sorted_fraction",
-  "sorted_fraction_detail",
+  "sorted_fractions",
+  "sorted_from",
+  "sorted_from_detail",
   "starting_amount",
   "starting_amount_units",
   "submitter_comment",
@@ -364,11 +371,33 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
+      {item.pooled_in?.length > 0 && (
+        <>
+          <DataItemLabel>Biosample(s) Pooled In</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {item.pooled_in.map((biosample) => (
+                <Link href={biosample["@id"]} key={biosample["@id"]}>
+                  {biosample.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
       {partOf && (
         <>
           <DataItemLabel>Part of Biosample</DataItemLabel>
           <DataItemValue>
             <Link href={partOf["@id"]}>{partOf.accession}</Link>
+          </DataItemValue>
+        </>
+      )}
+      {item.parts && (
+        <>
+          <DataItemLabel>Biosample Parts</DataItemLabel>
+          <DataItemValue>
+            <Link href={item.parts["@id"]}>{item.parts.accession}</Link>
           </DataItemValue>
         </>
       )}
@@ -436,6 +465,8 @@ BiosampleDataItems.commonProperties = [
   "cellular_sub_pool",
   "embryonic",
   "nih_institutional_certification",
+  "parts",
+  "pooled_in",
   "sex",
 ];
 
