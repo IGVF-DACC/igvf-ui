@@ -87,16 +87,6 @@ export default function InVitroSystem({
                     </DataItemValue>
                   </>
                 )}
-                {inVitroSystem.origin_of && (
-                  <>
-                    <DataItemLabel>Origin Sample Of</DataItemLabel>
-                    <DataItemValue>
-                      <Link href={inVitroSystem.origin_of["@id"]}>
-                        {inVitroSystem.origin_of.accession}
-                      </Link>
-                    </DataItemValue>
-                  </>
-                )}
                 {targetedSampleTerm && (
                   <>
                     <DataItemLabel>Targeted Sample Term</DataItemLabel>
