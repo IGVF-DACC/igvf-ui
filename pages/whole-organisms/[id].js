@@ -34,9 +34,12 @@ export default function WholeOrganism({
   sample,
   donors,
   documents,
+  sortedFractions,
   sources,
   diseaseTerms,
+  parts,
   pooledFrom,
+  pooledIn,
   biomarkers,
   partOf,
   attribution = null,
@@ -61,8 +64,11 @@ export default function WholeOrganism({
                 donors={donors}
                 sampleTerms={sample.sample_terms}
                 diseaseTerms={diseaseTerms}
+                parts={parts}
                 pooledFrom={pooledFrom}
+                pooledIn={pooledIn}
                 partOf={partOf}
+                sortedFractions={sortedFractions}
                 options={{
                   dateObtainedTitle: "Date Obtained",
                 }}
@@ -121,8 +127,14 @@ WholeOrganism.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample(s) Parts
+  parts: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Pooled In
+  pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Sorted Fractions
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Part of Biosample
@@ -162,9 +174,21 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
+    const parts =
+      sample.parts?.length > 0
+        ? await requestBiosamples(sample.parts, request)
+        : [];
     const pooledFrom =
       sample.pooled_from?.length > 0
         ? await requestBiosamples(sample.pooled_from, request)
+        : [];
+    const pooledIn =
+      sample.pooled_in?.length > 0
+        ? await requestBiosamples(sample.pooled_in, request)
+        : [];
+    const sortedFractions =
+      sample.sorted_fractions?.length > 0
+        ? await requestBiosamples(sample.sorted_fractions, request)
         : [];
     const biomarkers =
       sample.biomarkers?.length > 0
@@ -186,8 +210,11 @@ export async function getServerSideProps({ params, req, query }) {
         donors,
         sources,
         diseaseTerms,
+        parts,
         pooledFrom,
+        pooledIn,
         partOf,
+        sortedFractions,
         biomarkers,
         pageContext: {
           title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,

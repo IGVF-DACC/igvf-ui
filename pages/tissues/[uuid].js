@@ -43,7 +43,10 @@ export default function Tissue({
   documents,
   sources,
   diseaseTerms,
+  parts,
   pooledFrom,
+  pooledIn,
+  sortedFractions,
   biomarkers,
   partOf,
   attribution = null,
@@ -68,8 +71,11 @@ export default function Tissue({
                 donors={donors}
                 sampleTerms={tissue.sample_terms}
                 diseaseTerms={diseaseTerms}
+                parts={parts}
                 pooledFrom={pooledFrom}
+                pooledIn={pooledIn}
                 partOf={partOf}
+                sortedFractions={sortedFractions}
                 options={{
                   dateObtainedTitle: "Date Harvested",
                 }}
@@ -164,8 +170,14 @@ Tissue.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample(s) Parts
+  parts: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Pooled In
+  pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Sorted Fractions
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Part of Biosample
@@ -201,13 +213,25 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
+    const parts =
+      tissue.parts?.length > 0
+        ? await requestBiosamples(tissue.parts, request)
+        : [];
     const pooledFrom =
       tissue.pooled_from?.length > 0
         ? await requestBiosamples(tissue.pooled_from, request)
         : [];
+    const pooledIn =
+      tissue.pooled_in?.length > 0
+        ? await requestBiosamples(tissue.pooled_in, request)
+        : [];
     const partOf = tissue.part_of
       ? (await request.getObject(tissue.part_of)).optional()
       : null;
+    const sortedFractions =
+      tissue.sorted_fractions?.length > 0
+        ? await requestBiosamples(tissue.sorted_fractions, request)
+        : [];
     const biomarkers =
       tissue.biomarkers?.length > 0
         ? await requestBiomarkers(tissue.biomarkers, request)
@@ -223,10 +247,13 @@ export async function getServerSideProps({ params, req, query }) {
         tissue,
         documents,
         donors,
+        sortedFractions,
         sources,
         diseaseTerms,
         pooledFrom,
+        parts,
         partOf,
+        pooledIn,
         biomarkers,
         pageContext: {
           title: `${tissue.sample_terms[0].term_name} — ${tissue.accession}`,

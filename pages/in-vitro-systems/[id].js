@@ -21,6 +21,7 @@ import JsonDisplay from "../../components/json-display";
 import ModificationsTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -43,9 +44,12 @@ export default function InVitroSystem({
   diseaseTerms,
   documents,
   donors,
+  originOf,
   sortedFractions,
   sources,
+  parts,
   pooledFrom,
+  pooledIn,
   biomarkers,
   partOf,
   targetedSampleTerm = null,
@@ -72,7 +76,9 @@ export default function InVitroSystem({
                 sampleTerms={inVitroSystem.sample_terms}
                 diseaseTerms={diseaseTerms}
                 pooledFrom={pooledFrom}
+                parts={parts}
                 partOf={partOf}
+                pooledIn={pooledIn}
                 sortedFractions={sortedFractions}
                 classification={inVitroSystem.classification}
                 options={{
@@ -86,6 +92,20 @@ export default function InVitroSystem({
                       <Link href={inVitroSystem.originated_from["@id"]}>
                         {inVitroSystem.originated_from.accession}
                       </Link>
+                    </DataItemValue>
+                  </>
+                )}
+                {originOf?.length > 0 && (
+                  <>
+                    <DataItemLabel>Origin Of Biosample</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {originOf.map((sample) => (
+                          <Link href={sample["@id"]} key={sample.accession}>
+                            {sample.accession}
+                          </Link>
+                        ))}
+                      </SeparatedList>
                     </DataItemValue>
                   </>
                 )}
@@ -181,10 +201,16 @@ InVitroSystem.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample(s) Origin Of
+  originOf: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Parts
+  parts: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Pooled In
+  pooledIn: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Sorted Fractions
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
@@ -232,9 +258,21 @@ export async function getServerSideProps({ params, req, query }) {
       inVitroSystem.pooled_from?.length > 0
         ? await requestBiosamples(inVitroSystem.pooled_from, request)
         : [];
+    const pooledIn =
+      inVitroSystem.pooled_in?.length > 0
+        ? await requestBiosamples(inVitroSystem.pooled_in, request)
+        : [];
+    const originOf =
+      inVitroSystem.origin_of?.length > 0
+        ? await requestBiosamples(inVitroSystem.origin_of, request)
+        : [];
     const sortedFractions =
       inVitroSystem.sorted_fractions?.length > 0
         ? await requestBiosamples(inVitroSystem.sorted_fractions, request)
+        : [];
+    const parts =
+      inVitroSystem.parts?.length > 0
+        ? await requestBiosamples(inVitroSystem.parts, request)
         : [];
     const partOf = inVitroSystem.part_of
       ? (await request.getObject(inVitroSystem.part_of)).optional()
@@ -263,8 +301,11 @@ export async function getServerSideProps({ params, req, query }) {
         donors,
         sortedFractions,
         sources,
+        originOf,
         pooledFrom,
+        parts,
         partOf,
+        pooledIn,
         targetedSampleTerm,
         biomarkers,
         pageContext: {

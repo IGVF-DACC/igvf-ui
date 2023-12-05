@@ -29,6 +29,7 @@ import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestBiomarkers,
+  requestBiosamples,
   requestDocuments,
   requestDonors,
 } from "../../lib/common-requests";
@@ -42,6 +43,7 @@ export default function MultiplexedSample({
   biomarkers,
   documents,
   attribution = null,
+  sortedFractions,
   sources,
   isJson,
 }) {
@@ -60,7 +62,11 @@ export default function MultiplexedSample({
         <JsonDisplay item={multiplexedSample} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <SampleDataItems item={multiplexedSample} sources={sources}>
+              <SampleDataItems
+                item={multiplexedSample}
+                sources={sources}
+                sortedFractions={sortedFractions}
+              >
                 {multiplexedSample.cellular_sub_pool && (
                   <>
                     <DataItemLabel>Cellular Sub Pool</DataItemLabel>
@@ -139,6 +145,8 @@ MultiplexedSample.propTypes = {
   multiplexedSample: PropTypes.object.isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Biosample(s) Sorted Fractions
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Sources associated with the sample
   sources: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
@@ -179,6 +187,10 @@ export async function getServerSideProps({ params, req, query }) {
       multiplexedSample.biomarkers?.length > 0
         ? await requestBiomarkers(multiplexedSample.biomarkers, request)
         : [];
+    const sortedFractions =
+      multiplexedSample.sorted_fractions?.length > 0
+        ? await requestBiosamples(multiplexedSample.sorted_fractions, request)
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       multiplexedSample,
       "accession",
@@ -193,6 +205,7 @@ export async function getServerSideProps({ params, req, query }) {
         multiplexedSample,
         documents,
         donors,
+        sortedFractions,
         sources,
         pageContext: {
           title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,

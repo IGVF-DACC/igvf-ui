@@ -42,8 +42,11 @@ export default function PrimaryCell({
   diseaseTerms,
   documents,
   donors,
+  sortedFractions,
   sources,
+  parts,
   pooledFrom,
+  pooledIn,
   biomarkers,
   partOf,
   attribution = null,
@@ -68,8 +71,11 @@ export default function PrimaryCell({
                 donors={donors}
                 sampleTerms={primaryCell.sample_terms}
                 diseaseTerms={diseaseTerms}
+                parts={parts}
                 pooledFrom={pooledFrom}
+                pooledIn={pooledIn}
                 partOf={partOf}
+                sortedFractions={sortedFractions}
                 options={{
                   dateObtainedTitle: "Date Harvested",
                 }}
@@ -135,8 +141,14 @@ PrimaryCell.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Parts
+  parts: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Pooled In
+  pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Sorted Fractions
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Part of Biosample
@@ -176,13 +188,25 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
+    const parts =
+      primaryCell.parts?.length > 0
+        ? await requestBiosamples(primaryCell.parts, request)
+        : [];
     const pooledFrom =
       primaryCell.pooled_from?.length > 0
         ? await requestBiosamples(primaryCell.pooled_from, request)
         : [];
+    const pooledIn =
+      primaryCell.pooled_in?.length > 0
+        ? await requestBiosamples(primaryCell.pooled_in, request)
+        : [];
     const partOf = primaryCell.part_of
       ? (await request.getObject(primaryCell.part_of)).optional()
       : null;
+    const sortedFractions =
+      primaryCell.sorted_fractions?.length > 0
+        ? await requestBiosamples(primaryCell.sorted_fractions, request)
+        : [];
     const biomarkers =
       primaryCell.biomarkers?.length > 0
         ? await requestBiomarkers(primaryCell.biomarkers, request)
@@ -199,9 +223,12 @@ export async function getServerSideProps({ params, req, query }) {
         diseaseTerms,
         documents,
         donors,
+        sortedFractions,
         sources,
         pooledFrom,
+        parts,
         partOf,
+        pooledIn,
         biomarkers,
         pageContext: {
           title: `${primaryCell.sample_terms[0].term_name} — ${primaryCell.accession}`,

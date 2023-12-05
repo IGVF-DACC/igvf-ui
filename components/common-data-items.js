@@ -301,7 +301,9 @@ export function BiosampleDataItems({
   donors = null,
   sampleTerms = null,
   diseaseTerms = null,
+  parts = null,
   pooledFrom = null,
+  pooledIn = null,
   sortedFractions = null,
   partOf = null,
   classification = null,
@@ -386,6 +388,34 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
+      {pooledIn?.length > 0 && (
+        <>
+          <DataItemLabel>Biosample(s) Pooled In</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {pooledIn.map((biosample) => (
+                <Link href={biosample["@id"]} key={biosample["@id"]}>
+                  {biosample.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
+      {parts?.length > 0 && (
+        <>
+          <DataItemLabel>Biosample(s) Parts</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {parts.map((biosample) => (
+                <Link href={biosample["@id"]} key={biosample["@id"]}>
+                  {biosample.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
       {partOf && (
         <>
           <DataItemLabel>Part of Biosample</DataItemLabel>
@@ -446,6 +476,10 @@ BiosampleDataItems.propTypes = {
   diseaseTerms: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Pooled From
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Pooled In
+  pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Biosample(s) Pooled From
+  parts: PropTypes.arrayOf(PropTypes.object),
   // Biosample(s) Sorted Fraction
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Part of Biosample
