@@ -73,7 +73,7 @@
   --color-button-selected-label-disabled: #b1bad3;
 
   --color-button-audit-open-background: #d3dfff;
-  --color-button-audit-closed-background: transparet;
+  --color-button-audit-closed-background: transparent;
   --color-button-audit-border: #384977;
   --color-button-audit-level-detail: #f0f0f0;
   --color-audit-level-detail-background: #d0d0d0;
@@ -106,6 +106,49 @@
   --color-facet-filter-input-border-focus: #000000;
   --color-facet-filter-input-text: #85abd6;
   --color-facet-filter-input-text-focus: #000000;
+
+  --color-tab-group-border: #d0d0d0;
+  --color-tab-selected-border: #3b82f6;
+  --color-tab-unselected-border: transparent;
+  --color-tab-disabled-border: transparent;
+  --color-tab-hover-border: #bfdbfe;
+  --color-tab-title-selected-text: #2563eb;
+  --color-tab-title-unselected-text: #1f2937;
+  --color-tab-title-disabled-text: #d1d5db;
+  --color-tab-title-hover-text: #1f2937;
+
+  --color-json-panel-border: #d1d5db;
+
+  --color-schema-prop-text: #1d4ed8;
+  --color-schema-prop-description-text: #374151;
+
+  --color-schema-prop-type-bg-string: #bbf7d0;
+  --color-schema-prop-type-bg-number: #bfdbfe;
+  --color-schema-prop-type-bg-integer: #a5f3fc;
+  --color-schema-prop-type-bg-boolean: #fef08a;
+  --color-schema-prop-type-bg-array: #e9d5ff;
+  --color-schema-prop-type-bg-object: #fbcfe8;
+  --color-schema-prop-type-bg-link: #fed7aa;
+  --color-schema-prop-type-bg-null: #e5e7eb;
+  --color-schema-prop-type-bg-default: transparent;
+  --color-schema-prop-type-border-string: #22c55e;
+  --color-schema-prop-type-border-number: #3b82f6;
+  --color-schema-prop-type-border-integer: #06b6d4;
+  --color-schema-prop-type-border-boolean: #eab308;
+  --color-schema-prop-type-border-array: #a855f7;
+  --color-schema-prop-type-border-object: #ec4899;
+  --color-schema-prop-type-border-link: #f97316;
+  --color-schema-prop-type-border-null: #6b7280;
+  --color-schema-prop-type-border-default: #64748b;
+  --color-schema-prop-type-text-string: #166534;
+  --color-schema-prop-type-text-number: #1e40af;
+  --color-schema-prop-type-text-integer: #155e75;
+  --color-schema-prop-type-text-boolean: #854d0e;
+  --color-schema-prop-type-text-array: #6b21a8;
+  --color-schema-prop-type-text-object: #9d174d;
+  --color-schema-prop-type-text-link: #9a3412;
+  --color-schema-prop-type-text-null: #1f2937;
+  --color-schema-prop-type-text-default: #1f2937;
 
   --color-site-search-header-background: #c9ebe2;
 
@@ -210,6 +253,49 @@
   --color-facet-filter-input-border: #39495b;
   --color-facet-filter-input-text: #85abd6;
   --color-facet-filter-input-text-focus: #ffffff;
+
+  --color-tab-group-border: #4e5b75;
+  --color-tab-selected-border: #1d4ed8;
+  --color-tab-unselected-border: transparent;
+  --color-tab-disabled-border: transparent;
+  --color-tab-hover-border: #1e3a8a;
+  --color-tab-title-selected-text: #2563eb;
+  --color-tab-title-unselected-text: #cbd5e1;
+  --color-tab-title-disabled-text: #374151;
+  --color-tab-title-hover-text: #cbd5e1;
+
+  --color-json-panel-border: #4b5563;
+
+  --color-schema-prop-text: #3b82f6;
+  --color-schema-prop-description-text: #9ca3af;
+
+  --color-schema-prop-type-bg-string: #14532d;
+  --color-schema-prop-type-bg-number: #1e3a8a;
+  --color-schema-prop-type-bg-integer: #164e63;
+  --color-schema-prop-type-bg-boolean: #713f12;
+  --color-schema-prop-type-bg-array: #581c87;
+  --color-schema-prop-type-bg-object: #831843;
+  --color-schema-prop-type-bg-link: #7c2d12;
+  --color-schema-prop-type-bg-null: #111827;
+  --color-schema-prop-type-bg-default: transparent;
+  --color-schema-prop-type-border-string: #15803d;
+  --color-schema-prop-type-border-number: #1d4ed8;
+  --color-schema-prop-type-border-integer: #0e7490;
+  --color-schema-prop-type-border-boolean: #a16207;
+  --color-schema-prop-type-border-array: #7e22ce;
+  --color-schema-prop-type-border-object: #be185d;
+  --color-schema-prop-type-border-link: #c2410c;
+  --color-schema-prop-type-border-null: #374151;
+  --color-schema-prop-type-border-default: #64748b;
+  --color-schema-prop-type-text-string: #86efac;
+  --color-schema-prop-type-text-number: #7dd3fc;
+  --color-schema-prop-type-text-integer: #67e8f9;
+  --color-schema-prop-type-text-boolean: #fde047;
+  --color-schema-prop-type-text-array: #d8b4fe;
+  --color-schema-prop-type-text-object: #f9a8d4;
+  --color-schema-prop-type-text-link: #fdba74;
+  --color-schema-prop-type-text-null: #d1d5db;
+  --color-schema-prop-type-text-default: #e5e7eb;
 
   --color-site-search-header-background: #394240;
 

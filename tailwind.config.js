@@ -66,6 +66,16 @@ module.exports = {
         "facet-tag-neg": "var(--color-facet-tag-neg-background)",
 
         "site-search-header": "var(--color-site-search-header-background)",
+
+        "schema-prop-type-string": "var(--color-schema-prop-type-bg-string)",
+        "schema-prop-type-number": "var(--color-schema-prop-type-bg-number)",
+        "schema-prop-type-integer": "var(--color-schema-prop-type-bg-integer)",
+        "schema-prop-type-boolean": "var(--color-schema-prop-type-bg-boolean)",
+        "schema-prop-type-array": "var(--color-schema-prop-type-bg-array)",
+        "schema-prop-type-object": "var(--color-schema-prop-type-bg-object)",
+        "schema-prop-type-link": "var(--color-schema-prop-type-bg-link)",
+        "schema-prop-type-null": "var(--color-schema-prop-type-bg-null)",
+        "schema-prop-type-default": "var(--color-schema-prop-type-bg-default)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
@@ -96,6 +106,30 @@ module.exports = {
 
         "facet-filter": "var(--color-facet-filter-input-border)",
         "facet-filter-focus": "var(--color-facet-filter-input-border-focus)",
+
+        "tab-group": "var(--color-tab-group-border)",
+        "tab-selected": "var(--color-tab-selected-border)",
+        "tab-unselected": "var(--color-tab-unselected-border)",
+        "tab-disabled": "var(--color-tab-disabled-border)",
+        "tab-hover": "var(--color-tab-hover-border)",
+
+        "json-panel": "var(--color-json-panel-border)",
+
+        "schema-prop-type-string":
+          "var(--color-schema-prop-type-border-string)",
+        "schema-prop-type-number":
+          "var(--color-schema-prop-type-border-number)",
+        "schema-prop-type-integer":
+          "var(--color-schema-prop-type-border-integer)",
+        "schema-prop-type-boolean":
+          "var(--color-schema-prop-type-border-boolean)",
+        "schema-prop-type-array": "var(--color-schema-prop-type-border-array)",
+        "schema-prop-type-object":
+          "var(--color-schema-prop-type-border-object)",
+        "schema-prop-type-link": "var(--color-schema-prop-type-border-link)",
+        "schema-prop-type-null": "var(--color-schema-prop-type-border-null)",
+        "schema-prop-type-default":
+          "var(--color-schema-prop-type-border-default)",
       },
       fontSize: {
         xxs: "0.7rem",
@@ -122,6 +156,27 @@ module.exports = {
 
         "facet-filter": "var(--color-facet-filter-input-text)",
         "facet-filter-focus": "var(--color-facet-filter-input-text-focus)",
+
+        "tab-title-selected": "var(--color-tab-title-selected-text)",
+        "tab-title-unselected": "var(--color-tab-title-unselected-text)",
+        "tab-title-disabled": "var(--color-tab-title-disabled-text)",
+        "tab-title-hover": "var(--color-tab-title-hover-text)",
+
+        "schema-prop": "var(--color-schema-prop-text)",
+        "schema-prop-description": "var(--color-schema-prop-description-text)",
+
+        "schema-prop-type-string": "var(--color-schema-prop-type-text-string)",
+        "schema-prop-type-number": "var(--color-schema-prop-type-text-number)",
+        "schema-prop-type-integer":
+          "var(--color-schema-prop-type-text-integer)",
+        "schema-prop-type-boolean":
+          "var(--color-schema-prop-type-text-boolean)",
+        "schema-prop-type-array": "var(--color-schema-prop-type-text-array)",
+        "schema-prop-type-object": "var(--color-schema-prop-type-text-object)",
+        "schema-prop-type-link": "var(--color-schema-prop-type-text-link)",
+        "schema-prop-type-null": "var(--color-schema-prop-type-text-null)",
+        "schema-prop-type-default":
+          "var(--color-schema-prop-type-text-default)",
       },
       boxShadow: {
         // Status badges

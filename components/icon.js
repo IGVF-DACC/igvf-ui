@@ -200,7 +200,25 @@ const Icon = {
       <path d="M16,16H4V4h12V16z M5,15h10V5H5V15z" />
     </svg>
   ),
-
+  PencilSlash: ({ className = null, testid = "icon-pencil-slash" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path
+        d="M16.92,17.92c-0.26,0-0.51-0.1-0.71-0.29L2.49,3.91C2.1,3.52,2.1,2.89,2.49,2.5s1.02-0.39,1.41,0l13.72,13.72
+	c0.39,0.39,0.39,1.02,0,1.41C17.43,17.82,17.18,17.92,16.92,17.92z"
+      />
+      <path
+        d="M3.82,13.19c-0.38,0.38-0.68,0.84-0.88,1.34l-1.26,3.15c-0.16,0.4,0.24,0.81,0.65,0.65l3.15-1.26
+	c0.5-0.2,0.96-0.5,1.34-0.88l3.09-3.09l-3-3L3.82,13.19z"
+      />
+      <path d="M17.7,5.29c2-2-1-4.99-2.99-2.99l-4.62,4.62l2.99,2.99L17.7,5.29z" />
+    </svg>
+  ),
   Sample: ({ className = null, testid = "icon-sample" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -378,6 +396,10 @@ Icon.Gene.propTypes = {
   testid: PropTypes.string,
 };
 Icon.Methodology.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.PencilSlash.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
