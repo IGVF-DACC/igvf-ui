@@ -171,7 +171,7 @@ export function SampleDataItems({
       )}
       {item.sorted_from && (
         <>
-          <DataItemLabel>Sorted From</DataItemLabel>
+          <DataItemLabel>Sorted From Sample(s)</DataItemLabel>
           <DataItemValue>
             <Link href={item.sorted_from["@id"]}>
               {item.sorted_from.accession}
@@ -182,7 +182,7 @@ export function SampleDataItems({
       )}
       {sortedFractions?.length > 0 && (
         <>
-          <DataItemLabel>Sorted Fraction Samples</DataItemLabel>
+          <DataItemLabel>Sorted Fractions of Sample(s)</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {sortedFractions.map((sample) => (
@@ -376,7 +376,7 @@ export function BiosampleDataItems({
       </>
       {pooledFrom?.length > 0 && (
         <>
-          <DataItemLabel>Biosample(s) Pooled From</DataItemLabel>
+          <DataItemLabel>Pooled From Sample(s)</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {pooledFrom.map((biosample) => (
@@ -390,7 +390,7 @@ export function BiosampleDataItems({
       )}
       {pooledIn?.length > 0 && (
         <>
-          <DataItemLabel>Biosample(s) Pooled In</DataItemLabel>
+          <DataItemLabel>Pooled In Sample(s)</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {pooledIn.map((biosample) => (
@@ -404,7 +404,7 @@ export function BiosampleDataItems({
       )}
       {parts?.length > 0 && (
         <>
-          <DataItemLabel>Biosample(s) Parts</DataItemLabel>
+          <DataItemLabel>Sample(s) Parts</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {parts.map((biosample) => (
@@ -418,7 +418,7 @@ export function BiosampleDataItems({
       )}
       {partOf && (
         <>
-          <DataItemLabel>Part of Biosample</DataItemLabel>
+          <DataItemLabel>Part of Sample(s)</DataItemLabel>
           <DataItemValue>
             <Link href={partOf["@id"]}>{partOf.accession}</Link>
           </DataItemValue>

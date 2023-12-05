@@ -39,16 +39,16 @@ import { Ok } from "../../lib/result";
 
 export default function Tissue({
   tissue,
+  biomarkers,
   donors,
   documents,
-  sources,
   diseaseTerms,
   parts,
+  partOf,
   pooledFrom,
   pooledIn,
   sortedFractions,
-  biomarkers,
-  partOf,
+  sources,
   attribution = null,
   isJson,
 }) {
@@ -67,15 +67,15 @@ export default function Tissue({
             <DataArea>
               <BiosampleDataItems
                 item={tissue}
-                sources={sources}
-                donors={donors}
-                sampleTerms={tissue.sample_terms}
                 diseaseTerms={diseaseTerms}
+                donors={donors}
+                partOf={partOf}
                 parts={parts}
                 pooledFrom={pooledFrom}
                 pooledIn={pooledIn}
-                partOf={partOf}
+                sampleTerms={tissue.sample_terms}
                 sortedFractions={sortedFractions}
+                sources={sources}
                 options={{
                   dateObtainedTitle: "Date Harvested",
                 }}
@@ -162,26 +162,26 @@ export default function Tissue({
 Tissue.propTypes = {
   // Tissue sample to display
   tissue: PropTypes.object.isRequired,
+  // Biomarkers of the sample
+  biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Disease ontology for this sample
+  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Part of Sample
+  partOf: PropTypes.object,
+  // Sample parts
+  parts: PropTypes.arrayOf(PropTypes.object),
+  // Pooled from sample
+  pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Pooled in sample
+  pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Sorted fractions sample
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
-  // Disease ontology for this sample
-  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Biosample(s) Parts
-  parts: PropTypes.arrayOf(PropTypes.object),
-  // Biosample(s) Pooled From
-  pooledFrom: PropTypes.arrayOf(PropTypes.object),
-  // Biosample(s) Pooled In
-  pooledIn: PropTypes.arrayOf(PropTypes.object),
-  // Biosample(s) Sorted Fractions
-  sortedFractions: PropTypes.arrayOf(PropTypes.object),
-  // Biomarkers of the sample
-  biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Part of Biosample
-  partOf: PropTypes.object,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -193,6 +193,10 @@ export async function getServerSideProps({ params, req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = (await request.getObject(`/tissues/${params.uuid}/`)).union();
   if (FetchRequest.isResponseSuccess(tissue)) {
+    const biomarkers =
+      tissue.biomarkers?.length > 0
+        ? await requestBiomarkers(tissue.biomarkers, request)
+        : [];
     let diseaseTerms = [];
     if (tissue.disease_terms?.length > 0) {
       const diseaseTermPaths = tissue.disease_terms.map((term) => term["@id"]);
@@ -204,15 +208,9 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = tissue.donors
       ? await requestDonors(tissue.donors, request)
       : [];
-    let sources = [];
-    if (tissue.sources?.length > 0) {
-      const sourcePaths = tissue.sources.map((source) => source["@id"]);
-      sources = Ok.all(
-        await request.getMultipleObjects(sourcePaths, {
-          filterErrors: true,
-        })
-      );
-    }
+    const partOf = tissue.part_of
+      ? (await request.getObject(tissue.part_of)).optional()
+      : null;
     const parts =
       tissue.parts?.length > 0
         ? await requestBiosamples(tissue.parts, request)
@@ -225,17 +223,19 @@ export async function getServerSideProps({ params, req, query }) {
       tissue.pooled_in?.length > 0
         ? await requestBiosamples(tissue.pooled_in, request)
         : [];
-    const partOf = tissue.part_of
-      ? (await request.getObject(tissue.part_of)).optional()
-      : null;
     const sortedFractions =
       tissue.sorted_fractions?.length > 0
         ? await requestBiosamples(tissue.sorted_fractions, request)
         : [];
-    const biomarkers =
-      tissue.biomarkers?.length > 0
-        ? await requestBiomarkers(tissue.biomarkers, request)
-        : [];
+    let sources = [];
+    if (tissue.sources?.length > 0) {
+      const sourcePaths = tissue.sources.map((source) => source["@id"]);
+      sources = Ok.all(
+        await request.getMultipleObjects(sourcePaths, {
+          filterErrors: true,
+        })
+      );
+    }
     const breadcrumbs = await buildBreadcrumbs(
       tissue,
       tissue.accession,
@@ -245,16 +245,16 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         tissue,
+        biomarkers,
+        diseaseTerms,
         documents,
         donors,
-        sortedFractions,
-        sources,
-        diseaseTerms,
-        pooledFrom,
         parts,
         partOf,
+        pooledFrom,
         pooledIn,
-        biomarkers,
+        sortedFractions,
+        sources,
         pageContext: {
           title: `${tissue.sample_terms[0].term_name} — ${tissue.accession}`,
         },

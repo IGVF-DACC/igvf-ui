@@ -51,8 +51,8 @@ export default function TechnicalSample({
             <DataArea>
               <SampleDataItems
                 item={sample}
-                sources={sources}
                 sortedFractions={sortedFractions}
+                sources={sources}
               >
                 <DataItemLabel>Sample Material</DataItemLabel>
                 <DataItemValue>{sample.sample_material}</DataItemValue>
@@ -93,7 +93,7 @@ TechnicalSample.propTypes = {
   sample: PropTypes.object.isRequired,
   // Documents associated with this technical sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Biosample(s) Sorted Fractions
+  // Sorted fractions sample
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this technical sample
   sources: PropTypes.arrayOf(PropTypes.object),
@@ -113,6 +113,10 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = sample.documents
       ? await requestDocuments(sample.documents, request)
       : [];
+    const sortedFractions =
+      sample.sorted_fractions?.length > 0
+        ? await requestBiosamples(sample.sorted_fractions, request)
+        : [];
     let sources = [];
     if (sample.sources?.length > 0) {
       const sourcePaths = sample.sources.map((source) => source["@id"]);
@@ -122,10 +126,6 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
-    const sortedFractions =
-      sample.sorted_fractions?.length > 0
-        ? await requestBiosamples(sample.sorted_fractions, request)
-        : [];
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       sample.accession,

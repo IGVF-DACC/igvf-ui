@@ -145,7 +145,7 @@ MultiplexedSample.propTypes = {
   multiplexedSample: PropTypes.object.isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Biosample(s) Sorted Fractions
+  // Sorted fractions sample
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Sources associated with the sample
   sources: PropTypes.arrayOf(PropTypes.object),
@@ -164,12 +164,20 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/multiplexed-samples/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(multiplexedSample)) {
+    const biomarkers =
+      multiplexedSample.biomarkers?.length > 0
+        ? await requestBiomarkers(multiplexedSample.biomarkers, request)
+        : [];
     const documents = multiplexedSample.documents
       ? await requestDocuments(multiplexedSample.documents, request)
       : [];
     const donors = multiplexedSample.donors
       ? await requestDonors(multiplexedSample.donors, request)
       : [];
+    const sortedFractions =
+      multiplexedSample.sorted_fractions?.length > 0
+        ? await requestBiosamples(multiplexedSample.sorted_fractions, request)
+        : [];
     // For sources, use getMultipleObjects for sources instead of getMultipleObjectBulk.
     // Sources point at both lab and source objects, however, it currently only LinkTo sources.
     let sources = [];
@@ -183,14 +191,6 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
-    const biomarkers =
-      multiplexedSample.biomarkers?.length > 0
-        ? await requestBiomarkers(multiplexedSample.biomarkers, request)
-        : [];
-    const sortedFractions =
-      multiplexedSample.sorted_fractions?.length > 0
-        ? await requestBiosamples(multiplexedSample.sorted_fractions, request)
-        : [];
     const breadcrumbs = await buildBreadcrumbs(
       multiplexedSample,
       "accession",
@@ -203,6 +203,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         multiplexedSample,
+        biomarkers,
         documents,
         donors,
         sortedFractions,
@@ -210,7 +211,6 @@ export async function getServerSideProps({ params, req, query }) {
         pageContext: {
           title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,
         },
-        biomarkers,
         breadcrumbs,
         attribution,
         isJson,
