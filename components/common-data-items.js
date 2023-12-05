@@ -117,9 +117,9 @@ DonorDataItems.commonProperties = [
  */
 export function SampleDataItems({
   item,
+  sortedFractions,
   sources = null,
   children,
-  sortedFractions,
 }) {
   return (
     <>
@@ -171,18 +171,20 @@ export function SampleDataItems({
       )}
       {item.sorted_from && (
         <>
-          <DataItemLabel>Sorted From Sample(s)</DataItemLabel>
+          <DataItemLabel>Sorted From Sample</DataItemLabel>
           <DataItemValue>
             <Link href={item.sorted_from["@id"]}>
               {item.sorted_from.accession}
             </Link>
-            {item.sorted_from_detail ? <> {item.sorted_from_detail}</> : ""}
+            {item.sorted_from_detail && <> {item.sorted_from_detail}</>}
           </DataItemValue>
         </>
       )}
       {sortedFractions?.length > 0 && (
         <>
-          <DataItemLabel>Sorted Fractions of Sample(s)</DataItemLabel>
+          <DataItemLabel>
+            Sorted Fractions of Sample{sortedFractions.length === 1 ? "s" : ""}
+          </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {sortedFractions.map((sample) => (
@@ -297,16 +299,16 @@ SampleDataItems.commonProperties = [
  */
 export function BiosampleDataItems({
   item,
-  sources = null,
+  classification = null,
   donors = null,
-  sampleTerms = null,
   diseaseTerms = null,
+  partOf = null,
   parts = null,
   pooledFrom = null,
   pooledIn = null,
+  sampleTerms = null,
   sortedFractions = null,
-  partOf = null,
-  classification = null,
+  sources = null,
   children,
 }) {
   return (
@@ -376,7 +378,9 @@ export function BiosampleDataItems({
       </>
       {pooledFrom?.length > 0 && (
         <>
-          <DataItemLabel>Pooled From Sample(s)</DataItemLabel>
+          <DataItemLabel>
+            Pooled From Sample{pooledFrom.length === 1 ? "s" : ""}
+          </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {pooledFrom.map((biosample) => (
@@ -390,7 +394,9 @@ export function BiosampleDataItems({
       )}
       {pooledIn?.length > 0 && (
         <>
-          <DataItemLabel>Pooled In Sample(s)</DataItemLabel>
+          <DataItemLabel>
+            Pooled In Sample{pooledIn.length === 1 ? "s" : ""}
+          </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {pooledIn.map((biosample) => (
@@ -404,7 +410,9 @@ export function BiosampleDataItems({
       )}
       {parts?.length > 0 && (
         <>
-          <DataItemLabel>Sample(s) Parts</DataItemLabel>
+          <DataItemLabel>
+            Sample{parts.length === 1 ? "s" : ""} Parts
+          </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {parts.map((biosample) => (
@@ -418,7 +426,7 @@ export function BiosampleDataItems({
       )}
       {partOf && (
         <>
-          <DataItemLabel>Part of Sample(s)</DataItemLabel>
+          <DataItemLabel>Part of Sample</DataItemLabel>
           <DataItemValue>
             <Link href={partOf["@id"]}>{partOf.accession}</Link>
           </DataItemValue>
