@@ -16,7 +16,6 @@ const relatedDonorsColumns = [
   {
     id: "relationship_type",
     title: "Relationship Type",
-    display: ({ source }) => source.relationship_type,
   },
 ];
 
