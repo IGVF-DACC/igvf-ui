@@ -183,7 +183,7 @@ export function SampleDataItems({
       {sortedFractions?.length > 0 && (
         <>
           <DataItemLabel>
-            Sorted Fractions of Sample{sortedFractions.length === 1 ? "" : "s"}
+            Sorted Fraction of Sample{sortedFractions.length === 1 ? "" : "s"}
           </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
@@ -410,9 +410,7 @@ export function BiosampleDataItems({
       )}
       {parts?.length > 0 && (
         <>
-          <DataItemLabel>
-            Sample{parts.length === 1 ? "" : "s"} Parts
-          </DataItemLabel>
+          <DataItemLabel>Sample Parts</DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {parts.map((biosample) => (
