@@ -183,7 +183,7 @@ export function SampleDataItems({
       {sortedFractions?.length > 0 && (
         <>
           <DataItemLabel>
-            Sorted Fraction of Sample{sortedFractions.length === 1 ? "" : "s"}
+            Sorted Fraction{sortedFractions.length === 1 ? "" : "s"} of Sample
           </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
