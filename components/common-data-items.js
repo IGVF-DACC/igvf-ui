@@ -183,7 +183,7 @@ export function SampleDataItems({
       {sortedFractions?.length > 0 && (
         <>
           <DataItemLabel>
-            Sorted Fractions of Sample{sortedFractions.length === 1 ? "s" : ""}
+            Sorted Fractions of Sample{sortedFractions.length === 1 ? "" : "s"}
           </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
@@ -379,7 +379,7 @@ export function BiosampleDataItems({
       {pooledFrom?.length > 0 && (
         <>
           <DataItemLabel>
-            Pooled From Sample{pooledFrom.length === 1 ? "s" : ""}
+            Pooled From Sample{pooledFrom.length === 1 ? "" : "s"}
           </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
@@ -395,7 +395,7 @@ export function BiosampleDataItems({
       {pooledIn?.length > 0 && (
         <>
           <DataItemLabel>
-            Pooled In Sample{pooledIn.length === 1 ? "s" : ""}
+            Pooled In Sample{pooledIn.length === 1 ? "" : "s"}
           </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
@@ -411,7 +411,7 @@ export function BiosampleDataItems({
       {parts?.length > 0 && (
         <>
           <DataItemLabel>
-            Sample{parts.length === 1 ? "s" : ""} Parts
+            Sample{parts.length === 1 ? "" : "s"} Parts
           </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
