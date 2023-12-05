@@ -113,10 +113,14 @@ export default function Tissue({
             </DataArea>
           </DataPanel>
           {tissue.file_sets.length > 0 && (
-            <>
-              <DataAreaTitle>File Sets</DataAreaTitle>
-              <FileSetTable fileSets={tissue.file_sets} />
-            </>
+            <FileSetTable
+              fileSets={tissue.file_sets}
+              reportLinkSpecs={{
+                fileSetType: "FileSet",
+                identifierProp: "samples.accession",
+                itemIdentifier: tissue.accession,
+              }}
+            />
           )}
           {tissue.modifications?.length > 0 && (
             <>

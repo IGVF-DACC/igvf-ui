@@ -154,18 +154,26 @@ export default function AuxiliarySet({
             />
           )}
           {relatedDatasets.length > 0 && (
-            <>
-              <DataAreaTitle>Related Measurement Sets</DataAreaTitle>
-              <FileSetTable fileSets={relatedDatasets} />
-            </>
+            <FileSetTable
+              fileSets={relatedDatasets}
+              title="Related Measurement Sets"
+              reportLinkSpecs={{
+                fileSetType: "MeasurementSet",
+                identifierProp: "auxiliary_sets.accession",
+                itemIdentifier: auxiliarySet.accession,
+              }}
+            />
           )}
           {controlForSets.length > 0 && (
-            <>
-              <DataAreaTitle>
-                File Sets This Auxiliary Set Serves as a Control For
-              </DataAreaTitle>
-              <FileSetTable fileSets={controlForSets} />
-            </>
+            <FileSetTable
+              fileSets={controlForSets}
+              title="File Sets This Auxiliary Set Serves as a Control For"
+              reportLinkSpecs={{
+                fileSetType: "FileSet",
+                identifierProp: "control_file_sets.accession",
+                itemIdentifier: auxiliarySet.accession,
+              }}
+            />
           )}
           {documents.length > 0 && (
             <>

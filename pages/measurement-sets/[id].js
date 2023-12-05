@@ -227,16 +227,21 @@ export default function MeasurementSet({
             />
           )}
           {controlFileSets.length > 0 && (
-            <>
-              <DataAreaTitle>Control File Sets</DataAreaTitle>
-              <FileSetTable fileSets={controlFileSets} />
-            </>
+            <FileSetTable
+              fileSets={controlFileSets}
+              title="Control File Sets"
+              reportLinkSpecs={{
+                fileSetType: "FileSet",
+                identifierProp: "control_for.accession",
+                itemIdentifier: measurementSet.accession,
+              }}
+            />
           )}
           {relatedFileSets.length > 0 && (
-            <>
-              <DataAreaTitle>Related File Sets</DataAreaTitle>
-              <FileSetTable fileSets={relatedFileSets} />
-            </>
+            <FileSetTable
+              fileSets={relatedFileSets}
+              title="Related File Sets"
+            />
           )}
           {documents.length > 0 && (
             <>

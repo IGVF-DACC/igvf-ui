@@ -108,7 +108,6 @@ export interface Schema {
  * Describes the /profiles endpoint object, which is an object with `@type`s as its keys and
  * the corresponding schemas for each type as the values.
  */
-export type Profiles = ProfilesProps & ProfilesGeneric;
 
 export interface ProfilesProps {
   "@type": string[];
@@ -125,6 +124,8 @@ export interface ProfilesProps {
 export interface ProfilesGeneric {
   [key: string]: Schema;
 }
+
+export type Profiles = ProfilesProps | ProfilesGeneric;
 
 /**
  * Describes the search-results object returned by the data provider.

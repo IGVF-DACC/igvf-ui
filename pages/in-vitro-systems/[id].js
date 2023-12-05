@@ -122,10 +122,14 @@ export default function InVitroSystem({
             </DataArea>
           </DataPanel>
           {inVitroSystem.file_sets.length > 0 && (
-            <>
-              <DataAreaTitle>File Sets</DataAreaTitle>
-              <FileSetTable fileSets={inVitroSystem.file_sets} />
-            </>
+            <FileSetTable
+              fileSets={inVitroSystem.file_sets}
+              reportLinkSpecs={{
+                fileSetType: "FileSet",
+                identifierProp: "samples.accession",
+                itemIdentifier: inVitroSystem.accession,
+              }}
+            />
           )}
           {inVitroSystem.modifications?.length > 0 && (
             <>

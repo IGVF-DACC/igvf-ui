@@ -14,9 +14,9 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es6",
-    "types": ["jest", "node", "cypress"],
+    "types": ["jest", "node"],
     "typeRoots": ["./node_modules/@types"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "cypress/e2e/**/*.cy.js"],
-  "exclude": ["node_modules"]
+  "exclude": ["cypress", "node_modules"]
 }

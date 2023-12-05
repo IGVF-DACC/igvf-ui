@@ -1,4 +1,5 @@
 // node_modules
+import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -9,6 +10,7 @@ import { SampleDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataAreaTitle,
+  DataAreaTitleLink,
   DataItemLabel,
   DataItemValue,
   DataPanel,
@@ -18,10 +20,10 @@ import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationsTable from "../../components/modification-table";
-import SampleTable from "../../components/sample-table";
-import TreatmentTable from "../../components/treatment-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
+import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -43,6 +45,8 @@ export default function MultiplexedSample({
   sources,
   isJson,
 }) {
+  const reportLink = `/multireport/?type=Sample&field=%40id&field=multiplexed_in&field=taxa&field=sample_terms.term_name&field=donors&field=disease_terms&field=status&field=summary&field=%40type&multiplexed_in.accession=${multiplexedSample.accession}&field=construct_library_sets`;
+
   return (
     <>
       <Breadcrumbs />
@@ -70,7 +74,15 @@ export default function MultiplexedSample({
           </DataPanel>
           {multiplexedSample.multiplexed_samples.length > 0 && (
             <>
-              <DataAreaTitle>Multiplexed Samples</DataAreaTitle>
+              <DataAreaTitle>
+                Multiplexed Samples
+                <DataAreaTitleLink
+                  href={reportLink}
+                  label="Report of multiplexed samples that have this item as their multiplexed sample"
+                >
+                  <TableCellsIcon className="h-4 w-4" />
+                </DataAreaTitleLink>
+              </DataAreaTitle>
               <SampleTable
                 samples={multiplexedSample.multiplexed_samples}
                 constructLibrarySetAccessions={
@@ -80,10 +92,14 @@ export default function MultiplexedSample({
             </>
           )}
           {multiplexedSample.file_sets.length > 0 && (
-            <>
-              <DataAreaTitle>File Sets</DataAreaTitle>
-              <FileSetTable fileSets={multiplexedSample.file_sets} />
-            </>
+            <FileSetTable
+              fileSets={multiplexedSample.file_sets}
+              reportLinkSpecs={{
+                fileSetType: "FileSet",
+                identifierProp: "samples.accession",
+                itemIdentifier: multiplexedSample.accession,
+              }}
+            />
           )}
           {multiplexedSample.modifications?.length > 0 && (
             <>
