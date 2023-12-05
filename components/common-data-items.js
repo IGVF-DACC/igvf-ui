@@ -410,7 +410,9 @@ export function BiosampleDataItems({
       )}
       {parts?.length > 0 && (
         <>
-          <DataItemLabel>Sample Parts</DataItemLabel>
+          <DataItemLabel>
+            Sample Part{parts.length === 1 ? "" : "s"}
+          </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {parts.map((biosample) => (
