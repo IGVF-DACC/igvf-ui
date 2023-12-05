@@ -267,10 +267,10 @@ export function SampleDataItems({
 SampleDataItems.propTypes = {
   // Object derived from the sample.json schema
   item: PropTypes.object.isRequired,
+  // Sorted fractions sample
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
-  // Biosample(s) sorted fraction
-  sortedFractions: PropTypes.arrayOf(PropTypes.object),
 };
 
 SampleDataItems.commonProperties = [
@@ -466,26 +466,26 @@ export function BiosampleDataItems({
 BiosampleDataItems.propTypes = {
   // Object derived from the biosample.json schema
   item: PropTypes.object.isRequired,
-  // Source lab or source for this biosample
-  sources: PropTypes.arrayOf(PropTypes.object),
-  // Donors for this biosample
-  donors: PropTypes.array,
-  // Sample ontology for the biosample
-  sampleTerms: PropTypes.arrayOf(PropTypes.object),
-  // Disease ontology for the biosample
-  diseaseTerms: PropTypes.arrayOf(PropTypes.object),
-  // Biosample(s) Pooled From
-  pooledFrom: PropTypes.arrayOf(PropTypes.object),
-  // Biosample(s) Pooled In
-  pooledIn: PropTypes.arrayOf(PropTypes.object),
-  // Biosample(s) Pooled From
-  parts: PropTypes.arrayOf(PropTypes.object),
-  // Biosample(s) Sorted Fraction
-  sortedFractions: PropTypes.arrayOf(PropTypes.object),
-  // Part of Biosample
-  partOf: PropTypes.object,
   // Classification if this biosample has one
   classification: PropTypes.string,
+  // Disease ontology for the biosample
+  diseaseTerms: PropTypes.arrayOf(PropTypes.object),
+  // Donors for this biosample
+  donors: PropTypes.array,
+  // Part of Sample
+  partOf: PropTypes.object,
+  // Sample parts
+  parts: PropTypes.arrayOf(PropTypes.object),
+  // Pooled from sample
+  pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Pooled in sample
+  pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Sample ontology for the biosample
+  sampleTerms: PropTypes.arrayOf(PropTypes.object),
+  // Sorted fractions sample
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
+  // Source lab or source for this biosample
+  sources: PropTypes.arrayOf(PropTypes.object),
 };
 
 BiosampleDataItems.commonProperties = [
