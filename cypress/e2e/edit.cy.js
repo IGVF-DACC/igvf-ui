@@ -96,7 +96,6 @@ describe("Test Edit button", () => {
     cy.get("textarea").type('"job_title": "Principal Investigator",\n');
     cy.get("textarea").type('"lab": "/labs/christina-leslie/",\n');
     cy.get("textarea").type('"last_name": "Leslie",\n');
-    cy.get("textarea").type('"schema_version": "2",\n');
     cy.get("textarea").type('"status": "current",\n');
     cy.get("textarea").type('"submits_for": [\n');
     cy.get("textarea").type('"/labs/christina-leslie/"\n');
