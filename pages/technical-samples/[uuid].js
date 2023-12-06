@@ -22,7 +22,7 @@ import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { requestDocuments } from "../../lib/common-requests";
+import { requestDocuments, requestBiosamples } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -32,6 +32,7 @@ export default function TechnicalSample({
   sample,
   documents,
   attribution = null,
+  sortedFractions,
   sources,
   isJson,
 }) {
@@ -48,7 +49,11 @@ export default function TechnicalSample({
         <JsonDisplay item={sample} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <SampleDataItems item={sample} sources={sources}>
+              <SampleDataItems
+                item={sample}
+                sortedFractions={sortedFractions}
+                sources={sources}
+              >
                 <DataItemLabel>Sample Material</DataItemLabel>
                 <DataItemValue>{sample.sample_material}</DataItemValue>
                 <DataItemLabel>Sample Terms</DataItemLabel>
@@ -88,6 +93,8 @@ TechnicalSample.propTypes = {
   sample: PropTypes.object.isRequired,
   // Documents associated with this technical sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Sorted fractions sample
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this technical sample
   sources: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this technical sample
@@ -106,6 +113,10 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = sample.documents
       ? await requestDocuments(sample.documents, request)
       : [];
+    const sortedFractions =
+      sample.sorted_fractions?.length > 0
+        ? await requestBiosamples(sample.sorted_fractions, request)
+        : [];
     let sources = [];
     if (sample.sources?.length > 0) {
       const sourcePaths = sample.sources.map((source) => source["@id"]);
@@ -125,6 +136,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         sample,
         documents,
+        sortedFractions,
         sources,
         pageContext: {
           title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,

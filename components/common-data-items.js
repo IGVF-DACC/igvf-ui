@@ -115,7 +115,12 @@ DonorDataItems.commonProperties = [
 /**
  * Display data items common to all sample-derived objects.
  */
-export function SampleDataItems({ item, sources = null, children }) {
+export function SampleDataItems({
+  item,
+  sortedFractions,
+  sources = null,
+  children,
+}) {
   return (
     <>
       <DataItemLabel>Summary</DataItemLabel>
@@ -164,18 +169,30 @@ export function SampleDataItems({ item, sources = null, children }) {
           </DataItemValue>
         </>
       )}
-      {item.sorted_fraction && (
+      {item.sorted_from && (
         <>
-          <DataItemLabel>Sorted Fraction</DataItemLabel>
+          <DataItemLabel>Sorted From Sample</DataItemLabel>
           <DataItemValue>
-            <Link href={item.sorted_fraction["@id"]}>
-              {item.sorted_fraction.accession}
+            <Link href={item.sorted_from["@id"]}>
+              {item.sorted_from.accession}
             </Link>
-            {item.sorted_fraction_detail ? (
-              <> {item.sorted_fraction_detail}</>
-            ) : (
-              ""
-            )}
+            {item.sorted_from_detail && <> {item.sorted_from_detail}</>}
+          </DataItemValue>
+        </>
+      )}
+      {sortedFractions?.length > 0 && (
+        <>
+          <DataItemLabel>
+            Sorted Fraction{sortedFractions.length === 1 ? "" : "s"} of Sample
+          </DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {sortedFractions.map((sample) => (
+                <Link href={sample["@id"]} key={sample.accession}>
+                  {sample.accession}
+                </Link>
+              ))}
+            </SeparatedList>
           </DataItemValue>
         </>
       )}
@@ -252,6 +269,8 @@ export function SampleDataItems({ item, sources = null, children }) {
 SampleDataItems.propTypes = {
   // Object derived from the sample.json schema
   item: PropTypes.object.isRequired,
+  // Sorted fractions sample
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
 };
@@ -264,8 +283,8 @@ SampleDataItems.commonProperties = [
   "lot_id",
   "publication_identifiers",
   "revoke_detail",
-  "sorted_fraction",
-  "sorted_fraction_detail",
+  "sorted_from",
+  "sorted_from_detail",
   "starting_amount",
   "starting_amount_units",
   "submitter_comment",
@@ -280,17 +299,24 @@ SampleDataItems.commonProperties = [
  */
 export function BiosampleDataItems({
   item,
-  sources = null,
-  donors = null,
-  sampleTerms = null,
-  diseaseTerms = null,
-  pooledFrom = null,
-  partOf = null,
   classification = null,
+  donors = null,
+  diseaseTerms = null,
+  partOf = null,
+  parts = null,
+  pooledFrom = null,
+  pooledIn = null,
+  sampleTerms = null,
+  sortedFractions = null,
+  sources = null,
   children,
 }) {
   return (
-    <SampleDataItems item={item} sources={sources}>
+    <SampleDataItems
+      item={item}
+      sources={sources}
+      sortedFractions={sortedFractions}
+    >
       {sampleTerms?.length > 0 && (
         <>
           <DataItemLabel>Sample Terms</DataItemLabel>
@@ -352,7 +378,9 @@ export function BiosampleDataItems({
       </>
       {pooledFrom?.length > 0 && (
         <>
-          <DataItemLabel>Biosample(s) Pooled From</DataItemLabel>
+          <DataItemLabel>
+            Pooled From Sample{pooledFrom.length === 1 ? "" : "s"}
+          </DataItemLabel>
           <DataItemValue>
             <SeparatedList>
               {pooledFrom.map((biosample) => (
@@ -364,9 +392,41 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
+      {pooledIn?.length > 0 && (
+        <>
+          <DataItemLabel>
+            Pooled In Sample{pooledIn.length === 1 ? "" : "s"}
+          </DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {pooledIn.map((biosample) => (
+                <Link href={biosample["@id"]} key={biosample["@id"]}>
+                  {biosample.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
+      {parts?.length > 0 && (
+        <>
+          <DataItemLabel>
+            Sample Part{parts.length === 1 ? "" : "s"}
+          </DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {parts.map((biosample) => (
+                <Link href={biosample["@id"]} key={biosample["@id"]}>
+                  {biosample.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
       {partOf && (
         <>
-          <DataItemLabel>Part of Biosample</DataItemLabel>
+          <DataItemLabel>Part of Sample</DataItemLabel>
           <DataItemValue>
             <Link href={partOf["@id"]}>{partOf.accession}</Link>
           </DataItemValue>
@@ -414,20 +474,26 @@ export function BiosampleDataItems({
 BiosampleDataItems.propTypes = {
   // Object derived from the biosample.json schema
   item: PropTypes.object.isRequired,
-  // Source lab or source for this biosample
-  sources: PropTypes.arrayOf(PropTypes.object),
-  // Donors for this biosample
-  donors: PropTypes.array,
-  // Sample ontology for the biosample
-  sampleTerms: PropTypes.arrayOf(PropTypes.object),
-  // Disease ontology for the biosample
-  diseaseTerms: PropTypes.arrayOf(PropTypes.object),
-  // Biosample(s) Pooled From
-  pooledFrom: PropTypes.arrayOf(PropTypes.object),
-  // Part of Biosample
-  partOf: PropTypes.object,
   // Classification if this biosample has one
   classification: PropTypes.string,
+  // Disease ontology for the biosample
+  diseaseTerms: PropTypes.arrayOf(PropTypes.object),
+  // Donors for this biosample
+  donors: PropTypes.array,
+  // Part of Sample
+  partOf: PropTypes.object,
+  // Sample parts
+  parts: PropTypes.arrayOf(PropTypes.object),
+  // Pooled from sample
+  pooledFrom: PropTypes.arrayOf(PropTypes.object),
+  // Pooled in sample
+  pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Sample ontology for the biosample
+  sampleTerms: PropTypes.arrayOf(PropTypes.object),
+  // Sorted fractions sample
+  sortedFractions: PropTypes.arrayOf(PropTypes.object),
+  // Source lab or source for this biosample
+  sources: PropTypes.arrayOf(PropTypes.object),
 };
 
 BiosampleDataItems.commonProperties = [
