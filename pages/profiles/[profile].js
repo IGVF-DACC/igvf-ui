@@ -89,7 +89,7 @@ function Dependency({
       <button
         id={dependencyControlId}
         onClick={(e) => setJsonDetailOpen(dependencyProperty, e.altKey)}
-        className="flex items-center pr-2 text-sm font-bold text-schema-prop"
+        className="text-schema-prop flex items-center pr-2 text-sm font-bold"
         aria-label={`${dependencyProperty} dependency`}
         aria-expanded={isJsonDetailOpen}
         aria-controls={dependencyPanelId}
@@ -101,7 +101,7 @@ function Dependency({
         )}
         <div className="break-all text-left">{dependencyProperty}</div>
       </button>
-      <div className="ml-5 text-sm text-schema-prop-description">
+      <div className="text-schema-prop-description ml-5 text-sm">
         {dependency.comment}
       </div>
       <SchemaJsonPanel
@@ -152,7 +152,7 @@ function Dependencies({ dependencies = null }) {
     }
   }
 
-  if (dependencies) {
+  if (dependencies && Object.keys(dependencies).length > 0) {
     const properties = Object.keys(dependencies).sort();
     return (
       <div className="p-4">
@@ -285,7 +285,7 @@ function SchemaProperty({
         <button
           id={propertyControlId}
           onClick={(e) => setJsonDetailOpen(propertyId, e.altKey)}
-          className="flex items-center pr-1 text-sm font-bold text-schema-prop"
+          className="text-schema-prop flex items-center pr-1 text-sm font-bold"
           aria-label={`${propertyId} property`}
           aria-expanded={isJsonDetailOpen}
           aria-controls={propertyPanelId}
@@ -303,7 +303,7 @@ function SchemaProperty({
         </div>
       </div>
       {property.description && (
-        <div className="ml-5 text-sm text-schema-prop-description">
+        <div className="text-schema-prop-description ml-5 text-sm">
           {property.description}
         </div>
       )}
