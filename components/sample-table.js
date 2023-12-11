@@ -5,6 +5,7 @@ import Link from "next/link";
 import PagedDataGrid from "./paged-data-grid";
 import SeparatedList from "./separated-list";
 import SortableGrid from "./sortable-grid";
+import Status from "./status";
 
 /**
  * Columns for samples
@@ -102,6 +103,9 @@ const sampleColumns = [
   {
     id: "status",
     title: "Status",
+    display: ({ source }) => {
+      return <Status status={source.status} />;
+    },
   },
 ];
 
