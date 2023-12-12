@@ -29,7 +29,7 @@
     "isomorphic-dompurify": "^1.0.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
-    "marked": "^10.0.0",
+    "marked": "^11.0.0",
     "next": "13.4.12",
     "pretty-format": "^29.5.0",
     "prop-types": "^15.8.1",
@@ -38,6 +38,7 @@
     "react-dom": "^18.2.0",
     "react-svg-pan-zoom": "^3.12.1",
     "react-svg-pan-zoom-loader": "^1.6.1",
+    "react-syntax-highlighter": "^15.5.0",
     "typescript": "^5.1.6"
   },
   "devDependencies": {
@@ -52,7 +53,7 @@
     "coveralls": "^3.1.1",
     "cypress": "^13.3.3",
     "eslint": "^8.17.0",
-    "eslint-config-next": "^13.0.3",
+    "eslint-config-next": "^14.0.3",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-testing-library": "^6.0.0",
