@@ -22,6 +22,7 @@ import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
+import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -57,7 +58,7 @@ export default function MeasurementSet({
   isJson,
 }) {
   const samplesCollapser = useDataAreaCollapser(measurementSet.samples || []);
-  const { filesWithReadType, filesWithoutReadType } =
+  const { filesWithReadType, filesWithoutReadType, imageFileType } =
     splitIlluminaSequenceFiles(files);
 
   // Collect all sample summaries and display them as a collapsible list.
@@ -220,6 +221,16 @@ export default function MeasurementSet({
             <SequencingFileTable
               files={filesWithoutReadType}
               title="Sequencing Results"
+              isIlluminaReadType={false}
+              itemPath={measurementSet["@id"]}
+              seqspecFiles={seqspecFiles}
+              sequencingPlatforms={sequencingPlatforms}
+            />
+          )}
+          {imageFileType.length > 0 && (
+            <FileTable
+              files={imageFileType}
+              title="Imaging Results"
               isIlluminaReadType={false}
               itemPath={measurementSet["@id"]}
               seqspecFiles={seqspecFiles}

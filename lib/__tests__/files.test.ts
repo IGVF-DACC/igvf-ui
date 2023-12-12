@@ -6,7 +6,7 @@ import {
 import type { DatabaseObject } from "../../globals.d";
 
 describe("Test the splitIlluminaSequenceFiles function", () => {
-  it("returns both arrays when given an array of both types of files", () => {
+  it("returns all arrays when given an array of each types of files", () => {
     const files: Array<DatabaseObject> = [
       {
         "@context": "/terms/",
@@ -31,6 +31,16 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       },
       {
         "@context": "/terms/",
+        "@id": "/image-files/IGVFFI0000ILRI/",
+        "@type": ["ImageFile", "File", "Item"],
+        accession: "IGVFFI0000ILRI",
+        content_type: "low resolution tissue",
+        file_format: "jpg",
+        status: "in progress",
+        uuid: "00000000-0000-0000-0000-000000000000",
+      },
+      {
+        "@context": "/terms/",
         "@id": "/sequence-files/IGVFFI0001ILRT/",
         "@type": ["SequenceFile", "File", "Item"],
         accession: "IGVFFI0001ILRT",
@@ -50,6 +60,16 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
       },
+      {
+        "@context": "/terms/",
+        "@id": "/image-files/IGVFFI0001ILRI/",
+        "@type": ["ImageFile", "File", "Item"],
+        accession: "IGVFFI0001ILRI",
+        content_type: "high resolution tissue",
+        file_format: "png",
+        status: "in progress",
+        uuid: "00000000-0000-0000-0000-000000000000",
+      },
     ];
 
     const results = splitIlluminaSequenceFiles(files);
@@ -59,12 +79,14 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
     const withoutIlluminaIds = results.filesWithoutReadType.map(
       (file) => file.accession
     );
+    const withImageFiles = results.imageFileType.map((file) => file.accession);
 
     expect(withIlluminaIds).toEqual(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
     expect(withoutIlluminaIds).toEqual(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
+    expect(withImageFiles).toEqual(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
   });
 
-  it("returns an empty array for filesWithReadType when given an array of files without illumina_read_type", () => {
+  it("returns an empty array for filesWithReadType and imageFileType when given an array of sequence files without illumina_read_type", () => {
     const files: Array<DatabaseObject> = [
       {
         "@context": "/terms/",
@@ -95,12 +117,14 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
     const withoutIlluminaIds = results.filesWithoutReadType.map(
       (file) => file.accession
     );
+    const withImageFiles = results.imageFileType.map((file) => file.accession);
 
     expect(withIlluminaIds).toEqual([]);
+    expect(withImageFiles).toEqual([]);
     expect(withoutIlluminaIds).toEqual(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
   });
 
-  it("returns an empty array for filesWithoutReadType when given an array of files with illumina_read_type", () => {
+  it("returns an empty array for filesWithoutReadType and imageFileType when given an array of sequence files with illumina_read_type", () => {
     const files: Array<DatabaseObject> = [
       {
         "@context": "/terms/",
@@ -133,12 +157,52 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
     const withoutIlluminaIds = results.filesWithoutReadType.map(
       (file) => file.accession
     );
+    const withImageFiles = results.imageFileType.map((file) => file.accession);
 
     expect(withIlluminaIds).toEqual(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
     expect(withoutIlluminaIds).toEqual([]);
+    expect(withImageFiles).toEqual([]);
   });
 
-  it("returns an empty array for both filesWithReadType and filesWithoutReadType when given an empty array", () => {
+  it("returns an empty array for filesWithoutReadType and filesWithReadType when given an array of image files", () => {
+    const files: Array<DatabaseObject> = [
+      {
+        "@context": "/terms/",
+        "@id": "/image-files/IGVFFI0000ILRI/",
+        "@type": ["ImageFile", "File", "Item"],
+        accession: "IGVFFI0000ILRI",
+        content_type: "low resolution tissue",
+        file_format: "jpg",
+        status: "in progress",
+        uuid: "00000000-0000-0000-0000-000000000000",
+      },
+      {
+        "@context": "/terms/",
+        "@id": "/image-files/IGVFFI0001ILRI/",
+        "@type": ["ImageFile", "File", "Item"],
+        accession: "IGVFFI0001ILRI",
+        content_type: "high resolution tissue",
+        file_format: "png",
+        status: "in progress",
+        uuid: "00000000-0000-0000-0000-000000000000",
+      },
+    ];
+
+    const results = splitIlluminaSequenceFiles(files);
+    const withIlluminaIds = results.filesWithReadType.map(
+      (file) => file.accession
+    );
+    const withoutIlluminaIds = results.filesWithoutReadType.map(
+      (file) => file.accession
+    );
+    const withImageFiles = results.imageFileType.map((file) => file.accession);
+
+    expect(withIlluminaIds).toEqual([]);
+    expect(withoutIlluminaIds).toEqual([]);
+    expect(withImageFiles).toEqual(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
+  });
+
+  it("returns an empty array for both filesWithReadType, withImageFiles and filesWithoutReadType when given an empty array", () => {
     const files: Array<DatabaseObject> = [];
 
     const results = splitIlluminaSequenceFiles(files);
@@ -148,9 +212,11 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
     const withoutIlluminaIds = results.filesWithoutReadType.map(
       (file) => file.accession
     );
+    const withImageFiles = results.imageFileType.map((file) => file.accession);
 
     expect(withIlluminaIds).toEqual([]);
     expect(withoutIlluminaIds).toEqual([]);
+    expect(withImageFiles).toEqual([]);
   });
 });
 

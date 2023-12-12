@@ -12,6 +12,7 @@ import { DatabaseObject } from "../globals.d";
 export type IlluminaSequenceFiles = {
   filesWithReadType: Array<DatabaseObject>;
   filesWithoutReadType: Array<DatabaseObject>;
+  imageFileType: Array<DatabaseObject>;
 };
 
 /**
@@ -25,14 +26,16 @@ export function splitIlluminaSequenceFiles(
 ): IlluminaSequenceFiles {
   return files.reduce(
     (acc: IlluminaSequenceFiles, file) => {
-      if (file.illumina_read_type) {
+      if (file["@type"][0] === "ImageFile") {
+        acc.imageFileType.push(file);
+      } else if (file.illumina_read_type) {
         acc.filesWithReadType.push(file);
       } else {
         acc.filesWithoutReadType.push(file);
       }
       return acc;
     },
-    { filesWithReadType: [], filesWithoutReadType: [] }
+    { filesWithReadType: [], filesWithoutReadType: [], imageFileType: [] }
   );
 }
 

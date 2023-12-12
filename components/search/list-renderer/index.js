@@ -94,6 +94,7 @@ const renderers = {
   Gene,
   HumanDonor,
   HumanGenomicVariant,
+  ImageFile: File,
   InVitroSystem: Biosample,
   Lab,
   MatrixFile: File,
