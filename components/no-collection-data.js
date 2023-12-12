@@ -19,7 +19,7 @@ export default function NoCollectionData({ pageTitle = "" }) {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
 
   return (
-    <DataPanel className="my-0.5">
+    <DataPanel className="my-0.5 p-4">
       <div className="italic">No {pageTitle || page.title} to display.</div>
       {!isAuthenticated && (
         <p className="mt-4 text-sm">
