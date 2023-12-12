@@ -89,7 +89,7 @@ function Dependency({
       <button
         id={dependencyControlId}
         onClick={(e) => setJsonDetailOpen(dependencyProperty, e.altKey)}
-        className="text-schema-prop flex items-center pr-2 text-sm font-bold"
+        className="flex items-center pr-2 text-sm font-bold text-schema-prop"
         aria-label={`${dependencyProperty} dependency`}
         aria-expanded={isJsonDetailOpen}
         aria-controls={dependencyPanelId}
@@ -101,7 +101,7 @@ function Dependency({
         )}
         <div className="break-all text-left">{dependencyProperty}</div>
       </button>
-      <div className="text-schema-prop-description ml-5 text-sm">
+      <div className="ml-5 text-sm text-schema-prop-description">
         {dependency.comment}
       </div>
       <SchemaJsonPanel
@@ -214,7 +214,8 @@ const TYPE_COLORS = {
     "text-schema-prop-type-array bg-schema-prop-type-array border-schema-prop-type-array",
   object:
     "text-schema-prop-type-object bg-schema-prop-type-object border-schema-prop-type-object",
-  link: "text-schema-prop-type-link bg-schema-prop-type-link border-schema-prop-type-link",
+  linkto:
+    "text-schema-prop-type-link bg-schema-prop-type-link border-schema-prop-type-link",
   null: "text-schema-prop-type-null bg-schema-prop-type-null border-schema-prop-type-null",
   default:
     "text-schema-prop-type-default bg-schema-prop-type-default border-schema-prop-type-default",
@@ -234,13 +235,40 @@ function SchemaTypes({ property }) {
 
     // Convert any "string" entries to "link" if the property has a `linkTo` property.
     const typesWithLinks = types.map((type) => {
-      return type === "string" && property.linkTo ? "link" : type;
+      return type === "string" && property.linkTo ? "linkto" : type;
     });
+
+    // For single-type properties that are arrays, determine the type of the array elements and add
+    // that to the "array" badge.
+    if (typesWithLinks.length === 1 && typesWithLinks[0] === "array") {
+      if (property.items) {
+        let arrayElementType = "";
+        if (property.items.type === "string") {
+          if (property.items.linkTo) {
+            arrayElementType = "linkto";
+          } else {
+            arrayElementType = "string";
+          }
+        } else if (property.items.type === "number") {
+          arrayElementType = "number";
+        } else if (property.items.type === "object") {
+          arrayElementType = "object";
+        }
+        if (arrayElementType) {
+          typesWithLinks[0] = `${typesWithLinks[0]}[${arrayElementType}]`;
+        }
+      }
+    }
 
     return (
       <div className="flex gap-1">
         {typesWithLinks.map((type) => {
-          const typeColor = TYPE_COLORS[type] || TYPE_COLORS.default;
+          // If the type starts with "array" use the "array" color. Otherwise, use the type itself
+          // to determine the color.
+          const typeColor = type.startsWith("array")
+            ? TYPE_COLORS.array
+            : TYPE_COLORS[type] || TYPE_COLORS.default;
+
           return (
             <div
               key={type}
@@ -285,7 +313,7 @@ function SchemaProperty({
         <button
           id={propertyControlId}
           onClick={(e) => setJsonDetailOpen(propertyId, e.altKey)}
-          className="text-schema-prop flex items-center pr-1 text-sm font-bold"
+          className="flex items-center pr-1 text-sm font-bold text-schema-prop"
           aria-label={`${propertyId} property`}
           aria-expanded={isJsonDetailOpen}
           aria-controls={propertyPanelId}
@@ -303,7 +331,7 @@ function SchemaProperty({
         </div>
       </div>
       {property.description && (
-        <div className="text-schema-prop-description ml-5 text-sm">
+        <div className="ml-5 text-sm text-schema-prop-description">
           {property.description}
         </div>
       )}
