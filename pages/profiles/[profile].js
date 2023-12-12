@@ -36,6 +36,19 @@ import FetchRequest from "../../lib/fetch-request";
 import { AddLink } from "../../components/add";
 
 /**
+ * Determine whether a schema property is not submittable.
+ * @param {object} property Property to test to see if it's not submittable
+ * @returns {boolean} True if the property is not submittable
+ */
+function notSubmittableProperty(property) {
+  return (
+    property.notSubmittable ||
+    property.readonly ||
+    property.permission === "import_items"
+  );
+}
+
+/**
  * Display an expandable/collapsable JSON panel for the given schema property or dependency.
  */
 function SchemaJsonPanel({ property, panelId, isJsonDetailOpen }) {
@@ -185,7 +198,7 @@ Dependencies.propTypes = {
  * If a property is not user submittable, display this status. Otherwise, display nothing.
  */
 function NotSubmittableStatus({ property }) {
-  return property.notSubmittable ? (
+  return notSubmittableProperty(property) ? (
     <Icon.PencilSlash
       className="mr-1 h-4 w-4"
       testid={`property-not-submittable-${toShishkebabCase(property.title)}`}
@@ -386,9 +399,7 @@ function SchemaProperties({ properties }) {
   const visiblePropertyIds = isNotSubmittableVisible
     ? allPropertyIds
     : allPropertyIds.filter(
-        (propertyId) =>
-          !properties[propertyId].notSubmittable &&
-          !properties[propertyId].readonly
+        (propertyId) => !notSubmittableProperty(properties[propertyId])
       );
 
   return (
