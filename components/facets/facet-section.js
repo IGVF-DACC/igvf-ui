@@ -74,7 +74,7 @@ export default function FacetSection({ searchResults }) {
   const visibleFacets = getVisibleFacets(searchResults.facets);
   if (visibleFacets.length > 0 || facetGroupsWithFacets.length > 0) {
     return (
-      <DataPanel className="mb-4 lg:mb-0 lg:w-72 lg:shrink-0 lg:grow-0 lg:overflow-y-auto">
+      <DataPanel className="mb-4 p-3 lg:mb-0 lg:w-72 lg:shrink-0 lg:grow-0 lg:overflow-y-auto">
         {facetGroupsWithFacets.length > 0 && (
           <div
             className="flex flex-wrap content-start gap-0.5 text-sm font-semibold"
