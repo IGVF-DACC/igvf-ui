@@ -150,6 +150,13 @@
   --color-schema-prop-type-text-null: #1f2937;
   --color-schema-prop-type-text-default: #1f2937;
 
+  --color-indexed-state-background: #4ade80;
+  --color-indexed-state-border: #22c55e;
+  --color-indexed-state-content: #f0fdf4;
+  --color-indexing-state-background: #fb923c;
+  --color-indexing-state-border: #f97316;
+  --color-indexing-state-content: #7c2d12;
+
   --color-site-search-header-background: #c9ebe2;
 
   --color-form-element-background: #ffffff;
@@ -296,6 +303,13 @@
   --color-schema-prop-type-text-link: #fdba74;
   --color-schema-prop-type-text-null: #d1d5db;
   --color-schema-prop-type-text-default: #e5e7eb;
+
+  --color-indexed-state-background: #14532d;
+  --color-indexed-state-border: #15803d;
+  --color-indexed-state-content: #22c55e;
+  --color-indexing-state-background: #9a3412;
+  --color-indexing-state-border: #c2410c;
+  --color-indexing-state-content: #fdba74;
 
   --color-site-search-header-background: #394240;
 

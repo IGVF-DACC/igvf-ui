@@ -20,6 +20,7 @@ import GlobalContext from "../components/global-context";
 import NavigationSection from "../components/navigation";
 import ScrollToTop from "../components/scroll-to-top";
 import { Session } from "../components/session-context";
+import { Tooltip, useTooltip } from "../components/tooltip";
 import ViewportOverlay from "../components/viewport-overlay";
 // CSS
 import "../styles/globals.css";
@@ -30,6 +31,8 @@ function Site({ Component, pageProps, authentication }) {
   const { isLoading } = useAuth0();
   // Keep track of current dark mode settings
   const [isDarkMode, setIsDarkMode] = useState(false);
+  // Tooltip attributes for the indexer state badge; here so nav div doesn't clip tooltip
+  const tooltipAttr = useTooltip("indexer-state");
 
   useEffect(() => {
     // Install the dark-mode event listener to react to dark-mode changes.
@@ -59,6 +62,7 @@ function Site({ Component, pageProps, authentication }) {
       darkMode: {
         enabled: isDarkMode,
       },
+      indexerStateTooltip: tooltipAttr,
     };
   }, [
     pageProps.breadcrumbs,
@@ -127,6 +131,11 @@ function Site({ Component, pageProps, authentication }) {
                 )}
               </div>
             </div>
+            <Tooltip tooltipAttr={tooltipAttr}>
+              Database indexer state. Green indicates indexing has completed.
+              Orange indicates indexing in progress, as well as the number of
+              items left to index.
+            </Tooltip>
           </Session>
         </GlobalContext.Provider>
       </div>

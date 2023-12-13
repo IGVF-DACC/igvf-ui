@@ -10,6 +10,7 @@ const GlobalContext = React.createContext({
   page: {},
   breadcrumbs: [],
   darkMode: {},
+  indexerStateTooltip: null,
 });
 
 export default GlobalContext;

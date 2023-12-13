@@ -76,6 +76,9 @@ module.exports = {
         "schema-prop-type-link": "var(--color-schema-prop-type-bg-link)",
         "schema-prop-type-null": "var(--color-schema-prop-type-bg-null)",
         "schema-prop-type-default": "var(--color-schema-prop-type-bg-default)",
+
+        "indexed-state": "var(--color-indexed-state-background)",
+        "indexing-state": "var(--color-indexing-state-background)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
@@ -130,6 +133,9 @@ module.exports = {
         "schema-prop-type-null": "var(--color-schema-prop-type-border-null)",
         "schema-prop-type-default":
           "var(--color-schema-prop-type-border-default)",
+
+        "indexed-state": "var(--color-indexed-state-border)",
+        "indexing-state": "var(--color-indexing-state-border)",
       },
       fontSize: {
         xxs: "0.7rem",
@@ -177,6 +183,9 @@ module.exports = {
         "schema-prop-type-null": "var(--color-schema-prop-type-text-null)",
         "schema-prop-type-default":
           "var(--color-schema-prop-type-text-default)",
+
+        "indexed-state": "var(--color-indexed-state-content)",
+        "indexing-state": "var(--color-indexing-state-content)",
       },
       boxShadow: {
         // Status badges
@@ -209,6 +218,9 @@ module.exports = {
         "facet-clear-filter-icon": "var(--color-facet-clear-filter-icon-fill)",
         "facet-filter-icon-set": "var(--color-facet-filter-icon-set-fill)",
         "facet-filter-icon": "var(--color-facet-filter-icon-fill)",
+
+        "indexed-state": "var(--color-indexed-state-content)",
+        "indexing-state": "var(--color-indexing-state-content)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
