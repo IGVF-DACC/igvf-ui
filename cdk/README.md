@@ -9,14 +9,15 @@ $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bas
 Then in new terminal:
 
 ```
-# Install and use node 18.
-$ nvm install 18
-$ nvm use 18
+# Install and use node 20.
+$ nvm install 20
+$ nvm use 20
+$ nvm alias default 20
 # Check version.
 $ node --version
 ```
 
-Install CDK toolkit (requires Node.js 18.x):
+Install CDK toolkit
 
 ```
 $ npm install -g aws-cdk@2.114.1
