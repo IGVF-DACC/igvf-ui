@@ -1,5 +1,9 @@
 // node_modules
-import { Bars4Icon, TableCellsIcon } from "@heroicons/react/20/solid";
+import {
+  Bars4Icon,
+  QuestionMarkCircleIcon,
+  TableCellsIcon,
+} from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
@@ -8,7 +12,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import { AttachedButtons, ButtonLink } from "../../components/form-elements";
 import PagePreamble from "../../components/page-preamble";
 import SchemaIcon from "../../components/schema-icon";
-import Tooltip from "../../components/tooltip";
+import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { deprecatedSchemas } from "../../lib/constants";
@@ -87,6 +91,8 @@ SearchAndReportType.propTypes = {
  * different times exists as a child and a parent -- possibly a parent with no children.
  */
 function SubTree({ tree, objectType, schemas, collectionTitles = null }) {
+  const tooltipAttr = useTooltip(objectType);
+
   const title = collectionTitles?.[objectType] || objectType;
   const schema = schemas[objectType];
   const childObjectTypes = Object.keys(tree).filter((childObjectType) =>
@@ -109,7 +115,14 @@ function SubTree({ tree, objectType, schemas, collectionTitles = null }) {
             >
               {title}
             </Link>
-            <Tooltip content={schema.description} />
+            <TooltipRef tooltipAttr={tooltipAttr}>
+              <button>
+                <QuestionMarkCircleIcon className="h-4 w-4 cursor-pointer" />
+              </button>
+            </TooltipRef>
+            <Tooltip tooltipAttr={tooltipAttr}>
+              {schema.description || "No description available"}
+            </Tooltip>
             <SearchAndReportType type={objectType} title={title} />
             <AddLink schema={schema} label={`Add ${schema.title}`} />
           </>

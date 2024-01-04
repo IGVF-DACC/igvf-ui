@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.0.2",
+    "@floating-ui/react": "^0.26.4",
     "@headlessui/react": "1.7.11",
     "@heroicons/react": "^2.0.10",
     "@tailwindcss/container-queries": "^0.1.1",
@@ -63,7 +64,6 @@
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.4",
     "pretty-format": "^29.5.0",
-    "react-popper": "2.3.0",
     "tailwindcss": "^3.1.8"
   }
 }
