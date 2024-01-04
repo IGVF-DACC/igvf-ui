@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import "../__mocks__/intersectionObserverMock";
+import "../__mocks__/resize-observer-mock";
 import Modal from "../modal";
 
 describe("Test a basic modal", () => {

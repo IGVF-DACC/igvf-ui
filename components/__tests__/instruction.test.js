@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import "../__mocks__/intersectionObserverMock";
+import "../__mocks__/resize-observer-mock";
 import Instruction from "../instruction";
 
 describe("Test Instruction component", () => {

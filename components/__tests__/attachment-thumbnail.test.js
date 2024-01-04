@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import AttachmentThumbnail from "../attachment-thumbnail";
 import "../__mocks__/intersectionObserverMock";
+import "../__mocks__/resize-observer-mock";
 
 describe("Test AttachmentThumbnail component for non-previewable attachments", () => {
   let ownerPath;

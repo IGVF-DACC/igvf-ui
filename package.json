@@ -13,7 +13,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.0.2",
     "@floating-ui/react": "^0.26.4",
-    "@headlessui/react": "1.7.11",
+    "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.10",
     "@tailwindcss/container-queries": "^0.1.1",
     "@testing-library/user-event": "^14.5.1",
