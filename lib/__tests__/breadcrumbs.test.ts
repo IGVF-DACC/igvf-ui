@@ -60,7 +60,10 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       uuid: "d91b048e-2d8a-4562-893d-93f0e68397c0",
     };
 
-    breadcrumbs = await buildBreadcrumbs(unknownItemData, "An unknown item");
+    breadcrumbs = await buildBreadcrumbs(
+      unknownItemData,
+      unknownItemData.title as string
+    );
     expect(breadcrumbs).toHaveLength(2);
     expect(breadcrumbs[0].title).toBe("Unknown");
     expect(breadcrumbs[0].href).toBe("/search?type=Unknown");
@@ -87,7 +90,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
 
     const breadcrumbs = await buildBreadcrumbs(
       humanDonorItemData,
-      "IGVFDO856PXB"
+      humanDonorItemData.accession as string
     );
     expect(breadcrumbs).toHaveLength(2);
     expect(breadcrumbs[0].title).toBe("HumanDonor");
@@ -119,7 +122,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
 
     const breadcrumbs = await buildBreadcrumbs(
       humanDonorItemData,
-      "IGVFDO856PXB"
+      humanDonorItemData.accession as string
     );
     expect(breadcrumbs).toHaveLength(2);
     expect(breadcrumbs[0].title).toBe("HumanDonor");
@@ -191,7 +194,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
 
     const breadcrumbs = await buildBreadcrumbs(
       subpageData,
-      "title",
+      subpageData.title as string,
       "fake-cookie"
     );
     expect(breadcrumbs).toHaveLength(2);

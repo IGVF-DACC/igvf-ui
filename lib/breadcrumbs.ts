@@ -160,7 +160,7 @@ function buildSearchResultBreadcrumbs(data: SearchResults): Breadcrumb[] {
 
 /**
  * Generate the breadcrumb data for a schema page.
- * @param schema {DatabaseObject | null} The schema object, or null for the schema index page
+ * @param schema {DatabaseObject} The schema object, or null for the schema index page
  * @param title {string} The data type associated with a schema, e.g. "Biomarker"
  * @returns {Breadcrumb[]} Breadcrumb data for the given schema
  */
