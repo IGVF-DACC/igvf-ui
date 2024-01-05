@@ -145,10 +145,10 @@ export function SampleDataItems({
               return (
                 <div key={con["@id"]} className="my-1 first:mt-0 last:mb-0">
                   <div>
-                    <Link href={con["@id"]}>{con.summary}</Link>
+                    <Link href={con["@id"]}>{con.accession}</Link>
                     <span className="text-gray-400 dark:text-gray-600">
                       {" "}
-                      {con.accession}
+                      {con.summary}
                     </span>
                   </div>
                   {i ===
