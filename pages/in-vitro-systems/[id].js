@@ -31,6 +31,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestDonors,
+  requestFileSets,
   requestOntologyTerms,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -41,6 +42,7 @@ import { Ok } from "../../lib/result";
 
 export default function InVitroSystem({
   inVitroSystem,
+  constructLibrarySets,
   diseaseTerms,
   documents,
   donors,
@@ -72,6 +74,7 @@ export default function InVitroSystem({
               <BiosampleDataItems
                 item={inVitroSystem}
                 classification={inVitroSystem.classification}
+                constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 donors={donors}
                 parts={parts}
@@ -197,6 +200,8 @@ InVitroSystem.propTypes = {
   inVitroSystem: PropTypes.object.isRequired,
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Construct libraries that link to this object
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
@@ -284,6 +289,9 @@ export async function getServerSideProps({ params, req, query }) {
     const targetedSampleTerm = inVitroSystem.targeted_sample_term
       ? (await request.getObject(inVitroSystem.targeted_sample_term)).optional()
       : null;
+    const constructLibrarySets = inVitroSystem.construct_library_sets
+      ? await requestFileSets(inVitroSystem.construct_library_sets, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,
       inVitroSystem.accession,
@@ -297,6 +305,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         inVitroSystem,
         biomarkers,
+        constructLibrarySets,
         diseaseTerms,
         documents,
         donors,

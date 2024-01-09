@@ -1,5 +1,6 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
+import { Fragment } from "react";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -32,6 +33,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestDonors,
+  requestFileSets,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -40,6 +42,7 @@ import { Ok } from "../../lib/result";
 
 export default function MultiplexedSample({
   multiplexedSample,
+  constructLibrarySets = [],
   biomarkers,
   documents,
   attribution = null,
@@ -66,6 +69,7 @@ export default function MultiplexedSample({
                 item={multiplexedSample}
                 sources={sources}
                 sortedFractions={sortedFractions}
+                constructLibrarySets={constructLibrarySets}
               >
                 {multiplexedSample.cellular_sub_pool && (
                   <>
@@ -143,6 +147,8 @@ export default function MultiplexedSample({
 MultiplexedSample.propTypes = {
   // MultiplexedSample-cell sample to display
   multiplexedSample: PropTypes.object.isRequired,
+  // Construct libraries that link to this MutliplexedSample
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sorted fractions sample
@@ -164,6 +170,17 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/multiplexed-samples/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(multiplexedSample)) {
+    let constructLibrarySets = [];
+    if (multiplexedSample.construct_library_sets.length > 0) {
+      const constructLibrarySetPaths =
+        multiplexedSample.construct_library_sets.map(
+          (constructLibrarySet) => constructLibrarySet["@id"]
+        );
+      constructLibrarySets = await requestFileSets(
+        constructLibrarySetPaths,
+        request
+      );
+    }
     const biomarkers =
       multiplexedSample.biomarkers?.length > 0
         ? await requestBiomarkers(multiplexedSample.biomarkers, request)
@@ -203,6 +220,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         multiplexedSample,
+        constructLibrarySets,
         biomarkers,
         documents,
         donors,

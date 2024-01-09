@@ -47,6 +47,17 @@ export default function PredictionSet({
 }) {
   const genesCollapser = useDataAreaCollapser(predictionSet.targeted_genes);
   const lociCollapser = useDataAreaCollapser(predictionSet.targeted_loci);
+  const constructLibrarySets =
+    predictionSet.samples?.length > 0
+      ? predictionSet.samples.reduce((acc, sample) => {
+          if (sample.construct_library_sets) {
+            return acc.concat(sample.construct_library_sets);
+          }
+          return acc;
+        }, [])
+      : [];
+  const constructLibrarySetCollapser =
+    useDataAreaCollapser(constructLibrarySets);
 
   return (
     <>
@@ -87,6 +98,43 @@ export default function PredictionSet({
                           </Link>
                         ))}
                       </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {constructLibrarySetCollapser.displayedData.length > 0 && (
+                  <>
+                    <DataItemLabel>Construct Library Sets</DataItemLabel>
+                    <DataItemValue>
+                      {constructLibrarySetCollapser.displayedData.map(
+                        (con, i) => {
+                          return (
+                            <div
+                              key={con["@id"]}
+                              className="my-1 first:mt-0 last:mb-0"
+                            >
+                              <div>
+                                <Link href={con["@id"]}>{con.accession}</Link>
+                                <span className="text-gray-400 dark:text-gray-600">
+                                  {" "}
+                                  {con.summary}
+                                </span>
+                              </div>
+                              {i ===
+                                constructLibrarySetCollapser.displayedData
+                                  .length -
+                                  1 && (
+                                <DataItemValueCollapseControl
+                                  collapser={constructLibrarySetCollapser}
+                                >
+                                  <DataItemValueControlLabel
+                                    collapser={constructLibrarySetCollapser}
+                                  />
+                                </DataItemValueCollapseControl>
+                              )}
+                            </div>
+                          );
+                        }
+                      )}
                     </DataItemValue>
                   </>
                 )}

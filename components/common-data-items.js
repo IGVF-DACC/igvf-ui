@@ -15,7 +15,14 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AliasList from "./alias-list";
-import { DataItemLabel, DataItemValue, DataItemValueUrl } from "./data-area";
+import {
+  DataItemLabel,
+  DataItemValue,
+  DataItemValueCollapseControl,
+  DataItemValueControlLabel,
+  DataItemValueUrl,
+  useDataAreaCollapser,
+} from "./data-area";
 import DbxrefList from "./dbxref-list";
 import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
@@ -119,13 +126,47 @@ export function SampleDataItems({
   item,
   sortedFractions,
   sources = null,
+  constructLibrarySets = [],
   children,
 }) {
+  const constructLibrarySetCollapser =
+    useDataAreaCollapser(constructLibrarySets);
+
   return (
     <>
       <DataItemLabel>Summary</DataItemLabel>
       <DataItemValue>{item.summary}</DataItemValue>
       {children}
+      {constructLibrarySetCollapser.displayedData.length > 0 && (
+        <>
+          <DataItemLabel>Construct Library Sets</DataItemLabel>
+          <DataItemValue>
+            {constructLibrarySetCollapser.displayedData.map((con, i) => {
+              return (
+                <div key={con["@id"]} className="my-1 first:mt-0 last:mb-0">
+                  <div>
+                    <Link href={con["@id"]}>{con.accession}</Link>
+                    <span className="text-gray-400 dark:text-gray-600">
+                      {" "}
+                      {con.summary}
+                    </span>
+                  </div>
+                  {i ===
+                    constructLibrarySetCollapser.displayedData.length - 1 && (
+                    <DataItemValueCollapseControl
+                      collapser={constructLibrarySetCollapser}
+                    >
+                      <DataItemValueControlLabel
+                        collapser={constructLibrarySetCollapser}
+                      />
+                    </DataItemValueCollapseControl>
+                  )}
+                </div>
+              );
+            })}
+          </DataItemValue>
+        </>
+      )}
       {item.virtual && (
         <>
           <DataItemLabel>Virtual</DataItemLabel>
@@ -273,6 +314,8 @@ SampleDataItems.propTypes = {
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
+  // Construct library sets for this sample
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
 };
 
 SampleDataItems.commonProperties = [
@@ -300,6 +343,7 @@ SampleDataItems.commonProperties = [
 export function BiosampleDataItems({
   item,
   classification = null,
+  constructLibrarySets = [],
   donors = null,
   diseaseTerms = null,
   partOf = null,
@@ -314,6 +358,7 @@ export function BiosampleDataItems({
   return (
     <SampleDataItems
       item={item}
+      constructLibrarySets={constructLibrarySets}
       sources={sources}
       sortedFractions={sortedFractions}
     >
@@ -476,6 +521,8 @@ BiosampleDataItems.propTypes = {
   item: PropTypes.object.isRequired,
   // Classification if this biosample has one
   classification: PropTypes.string,
+  // Construct library sets for this biosample
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for the biosample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object),
   // Donors for this biosample

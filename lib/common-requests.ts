@@ -205,6 +205,21 @@ export async function requestPhenotypicFeatures(
 }
 
 /**
+ * Retrieve the samples objects for the given sample paths from the data provider.
+ * @param {Array<string>} paths Paths to the samples objects to request
+ * @param {FetchRequest} request The request object to use to make the request
+ * @returns {Array<object>} The samples objects requested
+ */
+export async function requestSamples(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, ["construct_library_sets"])
+  ).unwrap_or([]);
+}
+
+/**
  * Retrieve the software-version objects for the given software-version paths from the data
  * provider.
  * @param {Array<string>} paths Paths to the software-version objects to request
