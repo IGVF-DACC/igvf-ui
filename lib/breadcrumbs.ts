@@ -6,9 +6,28 @@
  */
 
 // lib
+import type {
+  DatabaseObject,
+  DataProviderObject,
+  Schema,
+  SearchResults,
+} from "../globals.d";
+import type { ErrorObject } from "./fetch-request.d";
 import FetchRequest from "./fetch-request";
 import { getPageTitleAndOrdering } from "./page";
 import { Ok } from "./result";
+
+type Breadcrumb = {
+  title: string;
+  href: string;
+  operation?: string;
+};
+
+type ProfilesTitles = {
+  "@type": string[];
+} & {
+  [key: string]: string;
+};
 
 /**
  * Codes for special actions for the front end to perform when rendering breadcrumbs.
@@ -23,16 +42,23 @@ export const REPLACE_TYPE = "REPLACE_TYPE";
  * @param {string} cookie Server cookie to authenticate the request
  * @returns {array} Breadcrumb data for the given item
  */
-async function buildItemBreadcrumbs(item, title, cookie) {
+async function buildItemBreadcrumbs(
+  item: DatabaseObject,
+  title: string,
+  cookie?: string
+): Promise<Breadcrumb[]> {
   const itemType = item["@type"][0];
 
   // Retrieve the mapping to map the item's `@type` to the corresponding title.
   const request = new FetchRequest({ cookie });
-  const profilesTitles = (await request.getObject("/profiles-titles/")).union();
-  const parentTitle =
-    profilesTitles && !profilesTitles["@type"].includes("Error")
-      ? profilesTitles[itemType] || itemType
-      : itemType;
+  const result: DataProviderObject | ErrorObject = (
+    await request.getObject("/profiles-titles/")
+  ).union();
+  const maybeError = result as ErrorObject;
+  const profilesTitles = result as ProfilesTitles;
+  const parentTitle = maybeError?.["@type"].includes("Error")
+    ? itemType
+    : profilesTitles?.[itemType] || itemType;
 
   // Build the breadcrumb data from the collection and item.
   const breadcrumbs = [
@@ -54,7 +80,7 @@ async function buildItemBreadcrumbs(item, title, cookie) {
  * @param {string} path Path for a page
  * @returns {array} Array of paths that are parents of the given path
  */
-export function generatePageParentPaths(path) {
+export function generatePageParentPaths(path: string): string[] {
   // For pages beginning with /help, just use "/help" as the parent page regardless of the help
   // page's depth so that breadcrumbs don't contain links to empty intermediate pages.
   if (path.startsWith("/help")) {
@@ -63,7 +89,7 @@ export function generatePageParentPaths(path) {
 
   // For non-help pages, generate paths for every parent of the current page's path.
   const pathElements = path.split("/").filter((path) => path !== "");
-  const pathHierarchy = pathElements.reduce((acc, element, index) => {
+  const pathHierarchy = pathElements.reduce((acc: string[], element, index) => {
     if (index === 0) {
       return [`/${element}/`];
     }
@@ -79,7 +105,10 @@ export function generatePageParentPaths(path) {
  * @param {string} cookie Server cookie to authenticate the request
  * @returns {array} Breadcrumb data for the given page
  */
-async function buildPageBreadcrumbs(page, cookie) {
+async function buildPageBreadcrumbs(
+  page: DatabaseObject,
+  cookie?: string
+): Promise<Breadcrumb[]> {
   const pagePaths = generatePageParentPaths(page["@id"]);
 
   // Retrieve the page objects for the given page's parents so we can get their titles.
@@ -92,13 +121,16 @@ async function buildPageBreadcrumbs(page, cookie) {
 
   // Build the breadcrumb data from the collection and item.
   const breadcrumbs = pathObjects.map((pathObject) => {
-    return { title: pathObject.title, href: pathObject["@id"] };
+    return { title: pathObject.title, href: pathObject["@id"] } as Breadcrumb;
   });
 
   // Removed the current page path to avoid requesting it from the server when we already have
   // it. Add it back here.
-  const { title } = getPageTitleAndOrdering(page);
-  return breadcrumbs.concat({ title, href: page["@id"] });
+  const { title } = getPageTitleAndOrdering(page) as {
+    title: string;
+    ordering?: number;
+  };
+  return breadcrumbs.concat({ title, href: page["@id"] } as Breadcrumb);
 }
 
 /**
@@ -106,7 +138,7 @@ async function buildPageBreadcrumbs(page, cookie) {
  * @param {object} data Search results data from the server
  * @returns {array} Breadcrumb data for the given search results
  */
-function buildSearchResultBreadcrumbs(data) {
+function buildSearchResultBreadcrumbs(data: SearchResults): Breadcrumb[] {
   // Get all the type filters from the search results to determine what to display in the
   // breadcrumb.
   const types = data.filters
@@ -126,8 +158,14 @@ function buildSearchResultBreadcrumbs(data) {
   return [];
 }
 
-function buildSchemaBreadcrumbs(schema, profile) {
-  if (!profile) {
+/**
+ * Generate the breadcrumb data for a schema page.
+ * @param schema {DatabaseObject} The schema object, or null for the schema index page
+ * @param title {string} The data type associated with a schema, e.g. "Biomarker"
+ * @returns {Breadcrumb[]} Breadcrumb data for the given schema
+ */
+function buildSchemaBreadcrumbs(schema: Schema, title: string): Breadcrumb[] {
+  if (!title) {
     return [
       {
         title: "Schemas",
@@ -142,7 +180,7 @@ function buildSchemaBreadcrumbs(schema, profile) {
     },
     {
       title: schema.title,
-      href: `/profiles/${profile}`,
+      href: `/profiles/${title}`,
     },
   ];
 }
@@ -156,23 +194,30 @@ function buildSchemaBreadcrumbs(schema, profile) {
  * @param {string} cookie Server cookie to authenticate the request
  * @returns {array} Breadcrumb data for the given item or collection
  */
-export default async function buildBreadcrumbs(data, title, cookie = null) {
-  let breadcrumbs = [];
-  if (data["@type"].includes("Page")) {
-    breadcrumbs = await buildPageBreadcrumbs(data, cookie);
+export default async function buildBreadcrumbs(
+  data: DataProviderObject,
+  title: string,
+  cookie?: string
+): Promise<Breadcrumb[]> {
+  const databaseObject = data as DatabaseObject;
+  let breadcrumbs: Breadcrumb[] = [];
+  if (databaseObject["@type"].includes("Page")) {
+    breadcrumbs = await buildPageBreadcrumbs(databaseObject, cookie);
   } else if (
-    data["@type"].includes("Search") ||
-    data["@type"].includes("Report")
+    databaseObject["@type"].includes("Search") ||
+    databaseObject["@type"].includes("Report")
   ) {
-    breadcrumbs = buildSearchResultBreadcrumbs(data);
-  } else if (data["@type"].includes("Item")) {
-    breadcrumbs = await buildItemBreadcrumbs(data, title, cookie);
+    breadcrumbs = buildSearchResultBreadcrumbs(
+      data as unknown as SearchResults
+    );
+  } else if (databaseObject["@type"].includes("Item")) {
+    breadcrumbs = await buildItemBreadcrumbs(databaseObject, title, cookie);
   } else if (
-    data["@type"].includes("JSONSchemas") ||
-    data["@type"].includes("JSONSchema")
+    databaseObject["@type"].includes("JSONSchemas") ||
+    databaseObject["@type"].includes("JSONSchema")
   ) {
     // To handle the schema pages...
-    breadcrumbs = buildSchemaBreadcrumbs(data, title);
+    breadcrumbs = buildSchemaBreadcrumbs(data as unknown as Schema, title);
   }
   return breadcrumbs;
 }

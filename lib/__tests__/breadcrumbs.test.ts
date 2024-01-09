@@ -1,3 +1,8 @@
+import {
+  DatabaseObject,
+  DataProviderObject,
+  SearchResults,
+} from "../../globals";
 import buildBreadcrumbs from "../breadcrumbs";
 import { generatePageParentPaths, REPLACE_TYPE } from "../breadcrumbs";
 
@@ -8,11 +13,9 @@ describe("Test breadcrumb composition and rendering functionality", () => {
   const { window } = global;
 
   beforeAll(() => {
-    delete global.window;
-  });
-
-  afterAll(() => {
-    global.window = window;
+    Object.defineProperty(global, "window", {
+      value: undefined,
+    });
   });
 
   it("builds an item breadcrumb data properly", async () => {
@@ -27,14 +30,20 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       })
     );
 
-    const labItemData = {
+    const labItemData: DatabaseObject = {
+      "@context": "/terms/",
       name: "j-michael-cherry",
       "@id": "/labs/j-michael-cherry/",
       "@type": ["Lab", "Item"],
       title: "J. Michael Cherry, Stanford",
+      status: "current",
+      uuid: "d91b048e-2d8a-4562-893d-93f0e68397c0",
     };
 
-    let breadcrumbs = await buildBreadcrumbs(labItemData, labItemData.title);
+    let breadcrumbs = await buildBreadcrumbs(
+      labItemData,
+      "J. Michael Cherry, Stanford"
+    );
     expect(breadcrumbs).toHaveLength(2);
     expect(breadcrumbs[0].title).toBe("Lab");
     expect(breadcrumbs[0].href).toBe("/search?type=Lab");
@@ -42,15 +51,18 @@ describe("Test breadcrumb composition and rendering functionality", () => {
     expect(breadcrumbs[1].href).toBe("/labs/j-michael-cherry/");
 
     // Test using an object for which no profile schema exists.
-    const unknownItemData = {
+    const unknownItemData: DatabaseObject = {
+      "@context": "/terms/",
       "@id": "/unknowns/ACCESSION/",
       "@type": ["Unknown", "Item"],
       title: "An unknown item",
+      status: "current",
+      uuid: "d91b048e-2d8a-4562-893d-93f0e68397c0",
     };
 
     breadcrumbs = await buildBreadcrumbs(
       unknownItemData,
-      unknownItemData.title
+      unknownItemData.title as string
     );
     expect(breadcrumbs).toHaveLength(2);
     expect(breadcrumbs[0].title).toBe("Unknown");
@@ -67,15 +79,18 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       })
     );
 
-    const humanDonorItemData = {
+    const humanDonorItemData: DatabaseObject = {
+      "@context": "/terms/",
       "@id": "/human-donors/IGVFDO856PXB/",
       "@type": ["HumanDonor", "Donor", "Item"],
       accession: "IGVFDO856PXB",
+      status: "current",
+      uuid: "d91b048e-2d8a-4562-893d-93f0e68397c0",
     };
 
     const breadcrumbs = await buildBreadcrumbs(
       humanDonorItemData,
-      humanDonorItemData.accession
+      humanDonorItemData.accession as string
     );
     expect(breadcrumbs).toHaveLength(2);
     expect(breadcrumbs[0].title).toBe("HumanDonor");
@@ -96,15 +111,18 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       })
     );
 
-    const humanDonorItemData = {
+    const humanDonorItemData: DatabaseObject = {
+      "@context": "/terms/",
       "@id": "/human-donors/IGVFDO856PXB/",
       "@type": ["HumanDonor", "Donor", "Item"],
       accession: "IGVFDO856PXB",
+      status: "current",
+      uuid: "d91b048e-2d8a-4562-893d-93f0e68397c0",
     };
 
     const breadcrumbs = await buildBreadcrumbs(
       humanDonorItemData,
-      humanDonorItemData.accession
+      humanDonorItemData.accession as string
     );
     expect(breadcrumbs).toHaveLength(2);
     expect(breadcrumbs[0].title).toBe("HumanDonor");
@@ -114,15 +132,18 @@ describe("Test breadcrumb composition and rendering functionality", () => {
   });
 
   it("builds a schema breadcrumb properly", async () => {
-    const mockSchemaData = {
-      "@graph": [],
+    const mockSchemaData: DataProviderObject = {
       title: "Primary Cell",
-      description: "Schema for submitting a primary cell sample.",
-      "@id": "/profiles/primary_cell.json",
+      description:
+        "A biosample that is directly harvested from a donor as cells, such as fibroblasts or immune cells.",
+      $id: "/profiles/primary_cell.json",
       "@type": ["JSONSchema"],
     };
 
-    const breadcrumbs = await buildBreadcrumbs(mockSchemaData, "primary_cell");
+    const breadcrumbs = await buildBreadcrumbs(
+      mockSchemaData as DatabaseObject,
+      "primary_cell"
+    );
     expect(breadcrumbs).toHaveLength(2);
     expect(breadcrumbs[0].title).toBe("Schemas");
     expect(breadcrumbs[0].href).toBe("/profiles");
@@ -141,14 +162,14 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       })
     );
 
-    const breadcrumbs = await buildBreadcrumbs(mockSchemaData);
+    const breadcrumbs = await buildBreadcrumbs(mockSchemaData, "");
     expect(breadcrumbs).toHaveLength(1);
     expect(breadcrumbs[0].title).toBe("Schemas");
     expect(breadcrumbs[0].href).toBe("/profiles");
   });
 
   it("builds subpage breadcrumbs properly", async () => {
-    const parentPageData = {
+    const parentPageData: DataProviderObject = {
       lab: "/labs/j-michael-cherry/",
       name: "parent-page",
       title: "Parent Page",
@@ -173,7 +194,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
 
     const breadcrumbs = await buildBreadcrumbs(
       subpageData,
-      "title",
+      subpageData.title as string,
       "fake-cookie"
     );
     expect(breadcrumbs).toHaveLength(2);
@@ -188,7 +209,8 @@ describe("Test breadcrumb composition and rendering functionality", () => {
   });
 
   it("builds search-result breadcrumbs properly", async () => {
-    const searchResultData = {
+    const searchResultData: SearchResults = {
+      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/treatments/bd2cb34e-c72c-11ec-9d64-0242ac120002/",
@@ -215,6 +237,20 @@ describe("Test breadcrumb composition and rendering functionality", () => {
           title: "Status",
         },
       },
+      facets: [
+        {
+          field: "purpose",
+          terms: [
+            {
+              doc_count: 2,
+              key: "differentiation",
+            },
+          ],
+          title: "Purpose",
+          total: 2,
+          type: "terms",
+        },
+      ],
       filters: [
         {
           field: "type",
@@ -223,11 +259,20 @@ describe("Test breadcrumb composition and rendering functionality", () => {
         },
       ],
       notification: "Success",
+      sort: {
+        date_created: {
+          order: "desc",
+          unmapped_type: "keyword",
+        },
+      },
       title: "Search",
       total: 1,
     };
 
-    const breadcrumbs = await buildBreadcrumbs(searchResultData);
+    const breadcrumbs = await buildBreadcrumbs(
+      searchResultData as unknown as DataProviderObject,
+      ""
+    );
     expect(breadcrumbs).toHaveLength(1);
     expect(breadcrumbs[0]).toEqual({
       title: "Treatment",
@@ -237,7 +282,8 @@ describe("Test breadcrumb composition and rendering functionality", () => {
   });
 
   it("builds search-result breadcrumbs with multiple types properly", async () => {
-    const searchResultData = {
+    const searchResultData: SearchResults = {
+      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/treatments/bd2cb34e-c72c-11ec-9d64-0242ac120002/",
@@ -264,6 +310,20 @@ describe("Test breadcrumb composition and rendering functionality", () => {
           title: "Status",
         },
       },
+      facets: [
+        {
+          field: "purpose",
+          terms: [
+            {
+              doc_count: 2,
+              key: "differentiation",
+            },
+          ],
+          title: "Purpose",
+          total: 2,
+          type: "terms",
+        },
+      ],
       filters: [
         {
           field: "type",
@@ -277,11 +337,20 @@ describe("Test breadcrumb composition and rendering functionality", () => {
         },
       ],
       notification: "Success",
+      sort: {
+        date_created: {
+          order: "desc",
+          unmapped_type: "keyword",
+        },
+      },
       title: "Search",
       total: 1,
     };
 
-    const breadcrumbs = await buildBreadcrumbs(searchResultData);
+    const breadcrumbs = await buildBreadcrumbs(
+      searchResultData as unknown as DataProviderObject,
+      ""
+    );
     expect(breadcrumbs).toHaveLength(1);
     expect(breadcrumbs[0]).toEqual({
       title: "Multiple",
@@ -291,7 +360,8 @@ describe("Test breadcrumb composition and rendering functionality", () => {
   });
 
   it("builds empty search-result breadcrumbs with no type filters", async () => {
-    const searchResultData = {
+    const searchResultData: SearchResults = {
+      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/treatments/bd2cb34e-c72c-11ec-9d64-0242ac120002/",
@@ -318,13 +388,36 @@ describe("Test breadcrumb composition and rendering functionality", () => {
           title: "Status",
         },
       },
+      facets: [
+        {
+          field: "purpose",
+          terms: [
+            {
+              doc_count: 2,
+              key: "differentiation",
+            },
+          ],
+          title: "Purpose",
+          total: 2,
+          type: "terms",
+        },
+      ],
       filters: [],
       notification: "Success",
+      sort: {
+        date_created: {
+          order: "desc",
+          unmapped_type: "keyword",
+        },
+      },
       title: "Search",
       total: 1,
     };
 
-    const breadcrumbs = await buildBreadcrumbs(searchResultData);
+    const breadcrumbs = await buildBreadcrumbs(
+      searchResultData as unknown as DataProviderObject,
+      ""
+    );
     expect(breadcrumbs).toHaveLength(0);
   });
 
@@ -333,7 +426,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       throw "mock network error";
     });
 
-    const subpageData = {
+    const subpageData: DataProviderObject = {
       lab: "/labs/j-michael-cherry/",
       name: "subpage",
       title: "Sub Page",
@@ -342,7 +435,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "@type": ["Page", "Item"],
     };
 
-    const breadcrumbs = await buildBreadcrumbs(subpageData);
+    const breadcrumbs = await buildBreadcrumbs(subpageData, "");
     expect(breadcrumbs).toHaveLength(1);
     expect(breadcrumbs[0]).toEqual({
       title: "Sub Page",
@@ -351,7 +444,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
   });
 
   it("builds top-level page breadcrumbs correctly", async () => {
-    const topPageData = {
+    const topPageData: DataProviderObject = {
       lab: "/labs/j-michael-cherry/",
       name: "top-level-page",
       title: "Top-Level Page",
@@ -359,7 +452,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "@type": ["Page", "Item"],
     };
 
-    const breadcrumbs = await buildBreadcrumbs(topPageData);
+    const breadcrumbs = await buildBreadcrumbs(topPageData, "");
     expect(breadcrumbs).toHaveLength(1);
     expect(breadcrumbs[0]).toEqual({
       title: "Top-Level Page",
