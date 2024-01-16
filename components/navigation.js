@@ -28,6 +28,7 @@ import { Button } from "./form-elements";
 import GlobalContext from "./global-context";
 import Icon from "./icon";
 import IdSearchTrigger from "./id-search-trigger";
+import IndexerState from "./indexer-state";
 import SiteLogo from "./logo";
 import Modal from "./modal";
 import SessionContext from "./session-context";
@@ -471,6 +472,16 @@ NavigationGroupItem.propTypes = {
   handleGroupClick: PropTypes.func.isRequired,
 };
 
+/**
+ * Wraps a generic navigation item in an <li> tag.
+ */
+function NavigationItem({ children }) {
+  return <li>{children}</li>;
+}
+
+/**
+ * Handles the button to expand or collapse the sidebar navigation.
+ */
 function NavigationCollapseButton({ toggleNavCollapsed, isNavCollapsed }) {
   return (
     <button
@@ -498,6 +509,9 @@ NavigationCollapseButton.propTypes = {
   isNavCollapsed: PropTypes.bool.isRequired,
 };
 
+/**
+ * Navigation-area item to handle the collapse/expand button.
+ */
 function NavigationCollapseItem({ toggleNavCollapsed, isNavCollapsed }) {
   return (
     <li>
@@ -732,6 +746,9 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             Sign In
           </NavigationSignInItem>
         )}
+        <NavigationItem>
+          <IndexerState />
+        </NavigationItem>
       </NavigationList>
     </>
   );
@@ -787,6 +804,9 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
           <QuestionMarkCircleIcon />
         </NavigationIcon>
       </NavigationHrefItem>
+      <NavigationItem>
+        <IndexerState isCollapsed />
+      </NavigationItem>
     </NavigationList>
   );
 }
