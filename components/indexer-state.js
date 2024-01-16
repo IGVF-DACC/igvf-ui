@@ -8,6 +8,7 @@ import SessionContext from "./session-context";
 import { TooltipRef } from "./tooltip";
 // lib
 import FetchRequest from "../lib/fetch-request";
+import { abbreviateNumber } from "../lib/general";
 
 /**
  * Interval in milliseconds to request the indexer state from the data provider.
@@ -34,33 +35,6 @@ const indexerStyles = {
   INDEXING:
     "[&_#indexer-background]:bg-indexing-state [&_#indexer-outline]:border-indexing-state [&_#indexer-outline]:bg-none text-indexing-state [&_#indexer-icon]:fill-indexing-state",
 };
-
-/**
- * Abbreviate a number to a string with an order-of-magnitude suffix (e.g. 1000 => 1K). Works well
- * for numbers less than 1 trillion.
- * @param {number} number The number to abbreviate
- * @returns {string} The abbreviated number
- */
-function abbreviateNumber(number) {
-  // Round to the nearest tenth if two digits or less, otherwise round to the nearest whole.
-  function toTenthOrWhole(hundredsOf) {
-    return hundredsOf.toFixed(hundredsOf < 100 ? 1 : 0);
-  }
-
-  if (number >= 1_000_000_000) {
-    const hundredsOf = number / 1_000_000_000;
-    return `${toTenthOrWhole(hundredsOf)}B`;
-  }
-  if (number >= 1_000_000) {
-    const hundredsOf = number / 1_000_000;
-    return `${toTenthOrWhole(hundredsOf)}M`;
-  }
-  if (number >= 1000) {
-    const hundredsOf = number / 1000;
-    return `${toTenthOrWhole(hundredsOf)}K`;
-  }
-  return number;
-}
 
 /**
  * Display the icon within the indexing-state badge that indicates that an indexer-state request

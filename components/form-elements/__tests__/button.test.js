@@ -110,6 +110,15 @@ describe("ButtonLink component", () => {
     );
     expect(container.firstChild).toHaveClass("text-button-secondary-disabled");
   });
+
+  it("renders an `<a>` tag when `isExternal` is set to true", () => {
+    const { container } = render(
+      <ButtonLink href="https://zzz.com" isExternal>
+        External
+      </ButtonLink>
+    );
+    expect(container.firstChild.tagName).toBe("A");
+  });
 });
 
 describe("Test the Tailwind CSS classes resulting from using the `hasIconOnly` flag", () => {

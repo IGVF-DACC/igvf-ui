@@ -69,6 +69,8 @@ export default function ListSelect({
   onChange,
   isMultiple = false,
   className = "",
+  scrollId = null,
+  isBorderHidden = false,
   children,
 }) {
   /**
@@ -113,8 +115,14 @@ export default function ListSelect({
   return (
     <div className={className}>
       {label && <FormLabel>{label}</FormLabel>}
-      <div className="flex rounded border border-panel bg-panel">
-        <div className="w-full overflow-y-scroll p-2">{clonedChildren}</div>
+      <div
+        className={`flex rounded bg-panel${
+          isBorderHidden ? "" : " border border-panel"
+        }`}
+      >
+        <div id={scrollId} className="w-full overflow-y-scroll p-2">
+          {clonedChildren}
+        </div>
       </div>
     </div>
   );
@@ -137,6 +145,10 @@ ListSelect.propTypes = {
   isMultiple: PropTypes.bool,
   // Tailwind CSS classes to apply to the wrapper element
   className: PropTypes.string,
+  // ID of the scrolling div
+  scrollId: PropTypes.string,
+  // True to hide the border around the list
+  isBorderHidden: PropTypes.bool,
 };
 
 /**
@@ -160,6 +172,7 @@ function Option({
 
   return (
     <button
+      id={id}
       onClick={() => onClick(id)}
       className={`my-0.5 flex w-full items-center rounded p-1 px-2 ${selectedButtonStyle}`}
       aria-label={`${parentLabel ? `${parentLabel} ` : ""}${label}${

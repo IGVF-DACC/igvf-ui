@@ -169,6 +169,33 @@ Button.propTypes = {
 Button.displayName = "Button";
 
 /**
+ * Return a <Link> element for internal links, and an <a> element for external links.
+ */
+function LinkElement(props) {
+  const { isExternal } = props;
+
+  // Make a copy of `props` but without `isExternal` in case it was included.
+  const { isExternal: _, ...propsWithoutIsExternal } = props;
+
+  if (isExternal) {
+    const { isExternal: _, ...propsWithoutIsExternal } = props;
+    return (
+      <a
+        {...propsWithoutIsExternal}
+        target="_blank"
+        rel="noopener noreferrer"
+      />
+    );
+  }
+  return <Link {...propsWithoutIsExternal} />;
+}
+
+LinkElement.propTypes = {
+  // True for external links
+  isExternal: PropTypes.bool,
+};
+
+/**
  * Displays a button that links to a URL instead of performing an action. When these
  * are "disabled" they show just the children element using the "disabled" CSS.
  *
@@ -185,6 +212,7 @@ export function ButtonLink({
   hasIconOnly = false,
   hasIconCircleOnly = false,
   isDisabled = false,
+  isExternal = false,
   className = "",
   children,
 }) {
@@ -205,14 +233,15 @@ export function ButtonLink({
       {children}
     </div>
   ) : (
-    <Link
+    <LinkElement
+      isExternal={isExternal}
       href={href}
       aria-label={label}
       id={id}
       className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[type]} ${className}`}
     >
       {children}
-    </Link>
+    </LinkElement>
   );
 }
 
@@ -233,6 +262,8 @@ ButtonLink.propTypes = {
   hasIconCircleOnly: PropTypes.bool,
   // Is Disabled
   isDisabled: PropTypes.bool,
+  // True if the link is external
+  isExternal: PropTypes.bool,
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
 };

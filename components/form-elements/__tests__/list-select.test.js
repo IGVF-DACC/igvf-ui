@@ -18,6 +18,12 @@ describe("Test ListSelect", () => {
       </ListSelect>
     );
 
+    // Make sure the `<div>` immediately following the `<label>` that has the "form-label"
+    // data-testid has both "border" and "border-panel" Tailwind classes.
+    const label = screen.getByTestId("form-label");
+    const nextDiv = label.nextSibling;
+    expect(nextDiv).toHaveClass("border border-panel");
+
     // Get all option elements starting with the "Option" label
     const options = screen.queryAllByLabelText(/^Test Option \d list item$/, {
       exact: false,
@@ -37,6 +43,7 @@ describe("Test ListSelect", () => {
         value="2"
         onChange={onChange}
         className="bg-white"
+        isBorderHidden
       >
         <ListSelect.Option id="1" label="Option 1">
           One
@@ -49,6 +56,12 @@ describe("Test ListSelect", () => {
         </ListSelect.Option>
       </ListSelect>
     );
+
+    // Make sure the `<div>` immediately following the `<label>` that has the "form-label"
+    // data-testid has neither "border" nor "border-panel" Tailwind classes.
+    const label = screen.getByTestId("form-label");
+    const nextDiv = label.nextSibling;
+    expect(nextDiv).not.toHaveClass("border border-panel");
 
     // Get all option elements starting with the "Option" label
     const options = screen.queryAllByLabelText(/^Test Option/);
