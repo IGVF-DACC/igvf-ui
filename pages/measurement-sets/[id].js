@@ -280,7 +280,10 @@ export default function MeasurementSet({
                   )}
                   {measurementSet.protocols.length > 0 && (
                     <>
-                      <DataItemLabel>Protocol(s)</DataItemLabel>
+                      <DataItemLabel>
+                        Protocol
+                        {measurementSet.protocols.length === 1 ? "" : "s"}
+                      </DataItemLabel>
                       <DataItemValue>
                         <SeparatedList>
                           {measurementSet.protocols.map((protocol) => (
