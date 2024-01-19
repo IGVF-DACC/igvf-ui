@@ -12,7 +12,6 @@ import {
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
-  DataItemValueUrl,
   DataItemValueCollapseControl,
   DataItemValueControlLabel,
   DataPanel,
@@ -262,7 +261,7 @@ export default function MeasurementSet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
-          {(libraryConstructionPlatform || measurementSet.protocol) && (
+          {(libraryConstructionPlatform || measurementSet.protocols) && (
             <>
               <DataAreaTitle>Assay Details</DataAreaTitle>
               <DataPanel>
@@ -279,18 +278,21 @@ export default function MeasurementSet({
                       </DataItemValue>
                     </>
                   )}
-                  {measurementSet.protocol && (
+                  {measurementSet.protocols.length > 0 && (
                     <>
-                      <DataItemLabel>Protocol</DataItemLabel>
-                      <DataItemValueUrl>
-                        <a
-                          href={measurementSet.protocol}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {measurementSet.protocol}
-                        </a>
-                      </DataItemValueUrl>
+                      <DataItemLabel>
+                        Protocol
+                        {measurementSet.protocols.length === 1 ? "" : "s"}
+                      </DataItemLabel>
+                      <DataItemValue>
+                        <SeparatedList>
+                          {measurementSet.protocols.map((protocol) => (
+                            <Link href={protocol} key={protocol}>
+                              {protocol}
+                            </Link>
+                          ))}
+                        </SeparatedList>
+                      </DataItemValue>
                     </>
                   )}
                 </DataArea>
