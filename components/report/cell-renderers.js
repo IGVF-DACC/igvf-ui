@@ -460,6 +460,9 @@ FilesHref.propTypes = {
  */
 
 export const reportPropertyRenderers = {
+  Biosample: {
+    sample_terms: SampleTerms,
+  },
   Gene: {
     locations: GeneLocations,
   },
@@ -473,6 +476,9 @@ export const reportPropertyRenderers = {
     parent: PageParent,
   },
   PrimaryCell: {
+    sample_terms: SampleTerms,
+  },
+  Sample: {
     sample_terms: SampleTerms,
   },
   TechnicalSample: {
