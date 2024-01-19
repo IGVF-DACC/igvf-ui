@@ -73,6 +73,31 @@ Attachment.propTypes = {
 };
 
 /**
+ * Display a linked list of biosample sample terms, showing the sample term name as the link text.
+ */
+function SampleTerms({ id, source }) {
+  const sampleTerms = source[id];
+  return (
+    <SeparatedList>
+      {sampleTerms.map((sampleTerm) => {
+        return (
+          <Link key={sampleTerm["@id"]} href={sampleTerm["@id"]}>
+            {sampleTerm.term_name}
+          </Link>
+        );
+      })}
+    </SeparatedList>
+  );
+}
+
+SampleTerms.propTypes = {
+  // Property name of column being rendered
+  id: PropTypes.string.isRequired,
+  // Object displayed in a row
+  source: PropTypes.object.isRequired,
+};
+
+/**
  * Display a generic boolean as a "yes" or "no" string.
  */
 function Boolean({ id, source }) {
@@ -438,8 +463,26 @@ export const reportPropertyRenderers = {
   Gene: {
     locations: GeneLocations,
   },
+  InVitroSystem: {
+    sample_terms: SampleTerms,
+  },
+  MultiplexedSample: {
+    sample_terms: SampleTerms,
+  },
   Page: {
     parent: PageParent,
+  },
+  PrimaryCell: {
+    sample_terms: SampleTerms,
+  },
+  TechnicalSample: {
+    sample_terms: SampleTerms,
+  },
+  Tissue: {
+    sample_terms: SampleTerms,
+  },
+  WholeOrganism: {
+    sample_terms: SampleTerms,
   },
 };
 
