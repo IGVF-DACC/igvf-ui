@@ -1275,8 +1275,8 @@ describe("Unknown-field cell-rendering tests", () => {
     // Test that the unknown field has two links.
     const unknownLinks = within(cells[COLUMN_UNKNOWN]).getAllByRole("link");
     expect(unknownLinks).toHaveLength(2);
-    expect(unknownLinks[0]).toHaveTextContent("/sample-terms/CL_0011001/");
-    expect(unknownLinks[1]).toHaveTextContent("/sample-terms/EFO_0007093/");
+    expect(unknownLinks[0]).toHaveTextContent("motor neuron");
+    expect(unknownLinks[1]).toHaveTextContent("HUES8");
   });
 
   it("renders an unknown field containing an array simple objects", () => {
