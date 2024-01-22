@@ -80,7 +80,7 @@ This passes the branch name as a context variable, and tells the CDK to use your
 
 ### Delete Github branch
 
-The easiest way to clean up demo stacks is to delete the Github branch associated with it (e.g. after the branch is merged). This will automatically clean up any stacks (frontend or backend) with a matching branch name.
+The easiest way to clean up demo stacks is to delete the Github branch associated with them (e.g. after the branch is merged). This will automatically clean up any stacks (frontend or backend) with a matching branch name.
 
 Note there is a lag between when a branch is deleted and when the cleaner runs and deletes demo stacks. If you try to redeploy a demo with the same branch name before the cleaner is done processing a branch, the new stacks will also get deleted.
 
