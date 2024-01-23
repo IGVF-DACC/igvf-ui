@@ -649,6 +649,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Genome References
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="audits"
+            href="/audits"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Audit Documentation
+          </NavigationHrefItem>
         </NavigationGroupItem>
 
         <NavigationGroupItem
@@ -673,14 +681,6 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             isChildItem
           >
             Schemas
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="audits"
-            href="/audits"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Audit Documentation
           </NavigationHrefItem>
         </NavigationGroupItem>
 
