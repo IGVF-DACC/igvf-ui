@@ -17,6 +17,7 @@ import UnspecifiedProperty from "../unspecified-property";
 // lib
 import { attachmentToServerHref } from "../../lib/attachment";
 import { API_URL } from "../../lib/constants";
+import { dataSize, truthyOrZero } from "../../lib/general";
 import { getUnknownProperty } from "../../lib/report";
 
 /**
@@ -437,6 +438,20 @@ FilesHref.propTypes = {
 };
 
 /**
+ * Display a formatted file size.
+ */
+function FileSize({ id, source }) {
+  return truthyOrZero(source[id]) ? <div>{dataSize(source[id])}</div> : null;
+}
+
+FileSize.propTypes = {
+  // Property name of column
+  id: PropTypes.string.isRequired,
+  // Object displayed in the current row
+  source: PropTypes.object.isRequired,
+};
+
+/**
  * The following objects define which cell-renderer components to use for each object property
  * displayed in the table. Each new cell renderer you add should go into one of these objects:
  *
@@ -502,6 +517,7 @@ export const propertyRenderers = {
   href: Href,
   "attachment.href": AttachmentHref,
   "files.href": FilesHref,
+  file_size: FileSize,
 };
 
 export const typeRenderers = {

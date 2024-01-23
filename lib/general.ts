@@ -175,3 +175,24 @@ export function snakeCaseToHuman(text: string): string {
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(" ");
 }
+
+/**
+ * Display the size of data in a human-readable format, including magnitude units such as B, KB,
+ * MB, GB, TB, and PB. If the result has only one digit before the decimal point, show one digit
+ * after the decimal point. Otherwise, show no digits after the decimal point. Values above PB
+ * produce undefined results.
+ * @param {number} size The size of the data in bytes
+ * @returns {string} The size of the data in a human-readable format
+ */
+export function dataSize(size: number): string {
+  if (size > 0) {
+    const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+    const magnitude = Math.floor(Math.log10(size) / 3);
+    const value = size / Math.pow(10, magnitude * 3);
+    const digits = value < 10 ? 1 : 0;
+    return `${value.toFixed(digits)} ${units[magnitude]}`;
+  }
+
+  // Can't do calculation for zero or negative sizes.
+  return "0 B";
+}
