@@ -288,7 +288,7 @@ export function ButtonAsLink({ onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className={`inline ${LINK_INLINE_STYLE}`}
+      className={`inline underline ${LINK_INLINE_STYLE}`}
     >
       {children}
     </button>

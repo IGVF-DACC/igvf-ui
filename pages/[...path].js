@@ -97,28 +97,10 @@ FallbackObject.propTypes = {
   isJson: PropTypes.bool,
 };
 
-/**
- * Detects if the generic object appears not to be an object the UI can handle even though the UI
- * has no specific page for it. Generally, the object has to have both an `@type` and `@id` to be
- * considered valid. If an object is missing these traits but we want to render something for it,
- * we need to make a specific page for it.
- * @param {object} generic Generic object or collection
- * @returns {boolean} True if the object is invalid for the UI
- */
-function invalidObject(generic) {
-  return !(generic["@type"] && generic["@id"]);
-}
-
 export async function getServerSideProps({ req, resolvedUrl, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const generic = (await request.getObject(resolvedUrl)).union();
-
-  // Unknown pages that don't appear to be objects we can handle generically get a 404.
-  if (invalidObject(generic)) {
-    return { notFound: true };
-  }
-
   if (FetchRequest.isResponseSuccess(generic)) {
     let awards = null;
     let labs = null;
