@@ -194,6 +194,7 @@ export default function MultiReport({ searchResults }) {
   if (schemaProperties) {
     const pageTitle = composeSearchResultsPageTitle(
       searchResults,
+      profiles,
       collectionTitles
     );
     const items = searchResults["@graph"];

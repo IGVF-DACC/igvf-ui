@@ -46,7 +46,7 @@ FacetTerm.propTypes = {
   // Term to display in the checkbox
   term: PropTypes.shape({
     key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    doc_count: PropTypes.number.isRequired,
+    doc_count: PropTypes.number,
     key_as_string: PropTypes.string,
   }).isRequired,
   // True if the checkbox is checked

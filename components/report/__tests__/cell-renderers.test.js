@@ -1696,6 +1696,111 @@ describe("Unknown-field cell-rendering tests", () => {
 
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent("motor neuron");
   });
+
+  it("renders a blank sample-terms column when the data doesn't exist", () => {
+    const COLUMN_SAMPLE_TERM = 1;
+
+    const searchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/genes/ENSG00000163930/",
+          "@type": ["Gene", "Item"],
+        },
+        {
+          "@id": "/tissues/IGVFSM0003DDDD/",
+          "@type": ["Tissue", "Biosample", "Sample", "Item"],
+          sample_terms: [
+            {
+              "@id": "/sample-terms/UBERON_0002048/",
+              term_name: "lung",
+            },
+          ],
+        },
+      ],
+      "@id": "/multireport/?type=Sample&type=Gene",
+      "@type": ["Report"],
+      clear_filters: "/multireport/?type=Sample&type=Gene",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+        accession: {
+          title: "Accession",
+        },
+        sample_terms: {
+          title: "Sample Terms",
+        },
+      },
+      facets: [
+        {
+          appended: false,
+          field: "sample_terms.term_name",
+          open_on_load: false,
+          terms: [],
+          title: "Sample Terms",
+          total: 4,
+          type: "terms",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/multireport/?type=Gene",
+          term: "Sample",
+        },
+        {
+          field: "type",
+          remove: "/multireport/?type=Sample",
+          term: "Gene",
+        },
+      ],
+      notification: "Success",
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        sample_terms: {
+          title: "Sample Terms",
+        },
+      },
+      title: "Report",
+      total: 3,
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.InVitroSystem.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Make sure the cell is empty.
+    expect(cells[COLUMN_SAMPLE_TERM]).not.toHaveTextContent();
+  });
 });
 
 describe("`attachment.href` cell rendering tests", () => {

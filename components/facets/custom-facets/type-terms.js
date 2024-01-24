@@ -371,7 +371,7 @@ TypeTerms.propTypes = {
         // Label for the facet term
         key: PropTypes.string.isRequired,
         // Number of results for the facet term
-        doc_count: PropTypes.number.isRequired,
+        doc_count: PropTypes.number,
       })
     ).isRequired,
   }).isRequired,

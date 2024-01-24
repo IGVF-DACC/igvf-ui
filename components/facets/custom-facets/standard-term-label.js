@@ -20,7 +20,7 @@ StandardTermLabel.propTypes = {
     // Term name
     key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     // Number of times the term appears in the search results
-    doc_count: PropTypes.number.isRequired,
+    doc_count: PropTypes.number,
     // Term name as a string when available
     key_as_string: PropTypes.string,
   }).isRequired,

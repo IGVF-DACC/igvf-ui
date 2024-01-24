@@ -196,3 +196,11 @@ export interface SessionObject {
 export interface NextJsServerQuery {
   [key: string]: string | string[] | undefined;
 }
+
+/**
+ * Response from /collection-titles.
+ */
+type CollectionTitles = {
+  "@type": string[];
+  [key: string]: string;
+};
