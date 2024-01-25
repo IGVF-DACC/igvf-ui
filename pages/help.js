@@ -57,7 +57,7 @@ function Social() {
         className="block"
         href="mailto:igvf-portal-help@lists.stanford.edu"
         target="_blank"
-        rel="noreferrer"
+        rel="noreferrer noopener"
         aria-label="Email the IGVF help desk"
       >
         <EnvelopeIcon className="h-6 w-6 fill-brand" />
@@ -66,8 +66,8 @@ function Social() {
         className="block"
         href="https://twitter.com/IGVFConsortium"
         target="_blank"
-        rel="noreferrer"
-        aria-label="IGVF on Twitter"
+        rel="noreferrer noopener"
+        aria-label="IGVF Consortium on X"
       >
         <Icon.Twitter className="h-6 w-6" />
       </a>
