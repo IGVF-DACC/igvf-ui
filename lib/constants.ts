@@ -87,4 +87,4 @@ export const MAX_URL_LENGTH: number = 4000;
 /**
  * Default inline text styles for links.
  */
-export const LINK_INLINE_STYLE: string = "font-medium underline";
+export const LINK_INLINE_STYLE: string = "font-medium";
