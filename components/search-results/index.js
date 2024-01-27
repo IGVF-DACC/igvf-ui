@@ -4,7 +4,8 @@
 
 // components/search-results
 import SearchResultsHeader from "./header";
+import ResultsTitle from "./results-title";
 import useSearchLimits from "./search-limits";
 import SearchPager from "./search-pager";
 
-export { SearchPager, SearchResultsHeader, useSearchLimits };
+export { ResultsTitle, SearchPager, SearchResultsHeader, useSearchLimits };

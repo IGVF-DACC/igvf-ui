@@ -12,7 +12,11 @@ import {
   getSearchListItemRenderer,
   SearchListItem,
 } from "../components/search";
-import { SearchPager, useSearchLimits } from "../components/search-results";
+import {
+  ResultsTitle,
+  SearchPager,
+  useSearchLimits,
+} from "../components/search-results";
 import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
 import TableCount from "../components/table-count";
@@ -22,7 +26,7 @@ import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { getQueryStringFromServerQuery } from "../lib/query-utils";
 import {
-  composeSearchResultsPageTitle,
+  generateSearchResultsTypes,
   stripLimitQueryIfNeeded,
 } from "../lib/search-results";
 
@@ -34,7 +38,7 @@ import {
 export default function Search({ searchResults, accessoryData = null }) {
   const { collectionTitles, profiles } = useContext(SessionContext);
   const { totalPages } = useSearchLimits(searchResults);
-  const pageTitle = composeSearchResultsPageTitle(
+  const resultTypes = generateSearchResultsTypes(
     searchResults,
     profiles,
     collectionTitles
@@ -43,7 +47,9 @@ export default function Search({ searchResults, accessoryData = null }) {
   return (
     <>
       <Breadcrumbs />
-      {pageTitle && <PagePreamble pageTitle={pageTitle} />}
+      {resultTypes.length > 0 && (
+        <PagePreamble pageTitle={<ResultsTitle types={resultTypes} />} />
+      )}
       {searchResults.total > 0 ? (
         <div className="lg:flex lg:items-start lg:gap-1">
           <FacetSection searchResults={searchResults} />

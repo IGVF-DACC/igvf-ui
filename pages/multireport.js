@@ -11,7 +11,11 @@ import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 import { generateColumns, ReportHeaderCell } from "../components/report/";
 import ScrollIndicators from "../components/scroll-indicators";
-import { SearchPager, useSearchLimits } from "../components/search-results";
+import {
+  ResultsTitle,
+  SearchPager,
+  useSearchLimits,
+} from "../components/search-results";
 import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
 import SortableGrid from "../components/sortable-grid";
@@ -34,7 +38,7 @@ import {
   getSortColumn,
 } from "../lib/report";
 import {
-  composeSearchResultsPageTitle,
+  generateSearchResultsTypes,
   stripLimitQueryIfNeeded,
 } from "../lib/search-results";
 
@@ -192,7 +196,7 @@ export default function MultiReport({ searchResults }) {
   }
 
   if (schemaProperties) {
-    const pageTitle = composeSearchResultsPageTitle(
+    const resultTypes = generateSearchResultsTypes(
       searchResults,
       profiles,
       collectionTitles
@@ -207,7 +211,9 @@ export default function MultiReport({ searchResults }) {
     return (
       <>
         <Breadcrumbs />
-        {pageTitle && <PagePreamble pageTitle={pageTitle} />}
+        {resultTypes.length > 0 && (
+          <PagePreamble pageTitle={<ResultsTitle types={resultTypes} />} />
+        )}
         {items.length > 0 ? (
           <div className="lg:flex lg:items-start lg:gap-1">
             <FacetSection searchResults={searchResults} />

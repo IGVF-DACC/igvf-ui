@@ -12,23 +12,6 @@ import {
 } from "../globals.d";
 
 /**
- * Gets an array of type= values from the search/report query string, returning them sorted
- * alphabetically, and with duplicates removed.
- * @param {SearchResults} searchResults Search results from igvfd
- * @returns {string[]} Sorted unique item types in the search result items
- */
-function getSearchResultItemTypes(searchResults: SearchResults): string[] {
-  const typeFilters = searchResults.filters.filter(
-    (filter) => filter.field === "type"
-  );
-  if (typeFilters.length > 0) {
-    const itemTypes = new Set(typeFilters.map((filter) => filter.term));
-    return Array.from(itemTypes).sort();
-  }
-  return [];
-}
-
-/**
  * Composes a page title for search result pages. The profiles object has to have been loaded to
  * get results from this function. An empty string gets returned if the profiles object doesn't
  * have a schema for the first item type in the search results.
@@ -37,27 +20,31 @@ function getSearchResultItemTypes(searchResults: SearchResults): string[] {
  * @param {CollectionTitles|null} collectionTitles Map of collection identifiers to titles
  * @returns {string} Page title for search results page, or empty if unable to compose
  */
-export function composeSearchResultsPageTitle(
+export function generateSearchResultsTypes(
   searchResults: SearchResults,
   profiles: Profiles | null,
   collectionTitles: CollectionTitles | null
-): string {
+): string[] {
   if (profiles) {
-    const types = getSearchResultItemTypes(searchResults);
-    if (types.length > 0) {
-      const titleElements = types.map((type) => {
-        // Determine the concrete subtypes of an abstract type. A single subtype indicates that
-        // `type` is a concrete type and has no subtypes.
-        const subTypes = (profiles as ProfilesProps)._subtypes[type];
-        const hasSubTypes = subTypes ? subTypes.length > 1 : false;
-
-        const displayedType = collectionTitles ? collectionTitles[type] : type;
-        return hasSubTypes ? `Subtypes of ${displayedType}` : displayedType;
+    // Find the "type" facet in the search results.
+    const typeFacet = searchResults.facets.find(
+      (facet) => facet.field === "type"
+    );
+    if (typeFacet) {
+      // Get all concrete types from the search results.
+      const allResultTypes = typeFacet.terms.map((term) => term.key);
+      const concreteTypes = allResultTypes.filter((type) => {
+        const typeSubtypes = (profiles as ProfilesProps)._subtypes[type];
+        return typeSubtypes
+          ? typeSubtypes.length === 1 && type === typeSubtypes[0]
+          : false;
       });
-      return titleElements.join(", ");
+      return collectionTitles
+        ? concreteTypes.map((type) => collectionTitles[type])
+        : concreteTypes;
     }
   }
-  return "";
+  return [];
 }
 
 /**
