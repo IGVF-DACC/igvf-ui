@@ -298,7 +298,7 @@ StandardTerms.propTypes = {
         key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
           .isRequired,
         // Number of results for the facet term
-        doc_count: PropTypes.number.isRequired,
+        doc_count: PropTypes.number,
         // Label for the facet term as a string when available
         key_as_string: PropTypes.string,
       })

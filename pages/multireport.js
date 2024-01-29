@@ -34,7 +34,7 @@ import {
   getSortColumn,
 } from "../lib/report";
 import {
-  composeSearchResultsPageTitle,
+  generateSearchResultsTypes,
   stripLimitQueryIfNeeded,
 } from "../lib/search-results";
 
@@ -192,8 +192,9 @@ export default function MultiReport({ searchResults }) {
   }
 
   if (schemaProperties) {
-    const pageTitle = composeSearchResultsPageTitle(
+    const resultTypes = generateSearchResultsTypes(
       searchResults,
+      profiles,
       collectionTitles
     );
     const items = searchResults["@graph"];
@@ -206,7 +207,15 @@ export default function MultiReport({ searchResults }) {
     return (
       <>
         <Breadcrumbs />
-        {pageTitle && <PagePreamble pageTitle={pageTitle} />}
+        {resultTypes.length > 0 && (
+          <PagePreamble
+            pageTitle={
+              resultTypes.length > 3
+                ? `${resultTypes.slice(0, 3).join(", ")}...`
+                : resultTypes.join(", ")
+            }
+          />
+        )}
         {items.length > 0 ? (
           <div className="lg:flex lg:items-start lg:gap-1">
             <FacetSection searchResults={searchResults} />

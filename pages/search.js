@@ -22,7 +22,7 @@ import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { getQueryStringFromServerQuery } from "../lib/query-utils";
 import {
-  composeSearchResultsPageTitle,
+  generateSearchResultsTypes,
   stripLimitQueryIfNeeded,
 } from "../lib/search-results";
 
@@ -32,17 +32,26 @@ import {
  * search-result display pages, such as /report.
  */
 export default function Search({ searchResults, accessoryData = null }) {
-  const { collectionTitles } = useContext(SessionContext);
+  const { collectionTitles, profiles } = useContext(SessionContext);
   const { totalPages } = useSearchLimits(searchResults);
-  const pageTitle = composeSearchResultsPageTitle(
+  const resultTypes = generateSearchResultsTypes(
     searchResults,
+    profiles,
     collectionTitles
   );
 
   return (
     <>
       <Breadcrumbs />
-      {pageTitle && <PagePreamble pageTitle={pageTitle} />}
+      {resultTypes.length > 0 && (
+        <PagePreamble
+          pageTitle={
+            resultTypes.length > 3
+              ? `${resultTypes.slice(0, 3).join(", ")}...`
+              : resultTypes.join(", ")
+          }
+        />
+      )}
       {searchResults.total > 0 ? (
         <div className="lg:flex lg:items-start lg:gap-1">
           <FacetSection searchResults={searchResults} />

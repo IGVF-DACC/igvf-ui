@@ -77,17 +77,20 @@ Attachment.propTypes = {
  */
 function SampleTerms({ id, source }) {
   const sampleTerms = source[id];
-  return (
-    <SeparatedList>
-      {sampleTerms.map((sampleTerm) => {
-        return (
-          <Link key={sampleTerm["@id"]} href={sampleTerm["@id"]}>
-            {sampleTerm.term_name}
-          </Link>
-        );
-      })}
-    </SeparatedList>
-  );
+  if (sampleTerms) {
+    return (
+      <SeparatedList>
+        {sampleTerms.map((sampleTerm) => {
+          return (
+            <Link key={sampleTerm["@id"]} href={sampleTerm["@id"]}>
+              {sampleTerm.term_name}
+            </Link>
+          );
+        })}
+      </SeparatedList>
+    );
+  }
+  return null;
 }
 
 SampleTerms.propTypes = {
