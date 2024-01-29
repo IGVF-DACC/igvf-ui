@@ -2070,3 +2070,128 @@ describe("`files.href` cell rendering tests", () => {
     expect(filesHref).toHaveTextContent("");
   });
 });
+
+describe("file_size cell rendering tests", () => {
+  it("renders the file_size columns", () => {
+    const COLUMN_FILES_FILE_SIZE = 1;
+    const searchResults = {
+      "@id": "/multireport/?type=File&field=%40id&field=file_size",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/alignment-files/IGVFFI0000ALGN/",
+          "@type": ["AlignmentFile", "File", "Item"],
+          file_size: 9828031,
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        file_size: {
+          title: "File Size",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          remove: "/multireport/?field=%40id&field=file_size",
+          term: "File",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Document.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+    const filesHref = cells[COLUMN_FILES_FILE_SIZE];
+    expect(filesHref).toHaveTextContent("9.8 MB");
+  });
+
+  it("renders the file_size columns", () => {
+    const COLUMN_FILES_FILE_SIZE = 1;
+    const searchResults = {
+      "@id": "/multireport/?type=File&field=%40id&field=file_size",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/alignment-files/IGVFFI0000ALGN/",
+          "@type": ["AlignmentFile", "File", "Item"],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        file_size: {
+          title: "File Size",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          remove: "/multireport/?field=%40id&field=file_size",
+          term: "File",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.Document.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+    const filesHref = cells[COLUMN_FILES_FILE_SIZE];
+    expect(filesHref).toHaveTextContent("");
+  });
+});

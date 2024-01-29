@@ -11,6 +11,8 @@ import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 import TableCount from "./table-count";
+// lib
+import { dataSize, truthyOrZero } from "../lib/general";
 
 /**
  * Columns for the two file tables; both those with `illumina_read_type` (meta.hasReadType is true)
@@ -79,6 +81,8 @@ const filesColumns = [
   {
     id: "file_size",
     title: "File Size",
+    display: ({ source }) =>
+      truthyOrZero(source.file_size) ? dataSize(source.file_size) : "",
   },
   {
     id: "lab",

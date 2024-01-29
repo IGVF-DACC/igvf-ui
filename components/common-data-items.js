@@ -28,7 +28,7 @@ import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
 // lib
 import { formatDate } from "../lib/dates";
-import { truthyOrZero } from "../lib/general";
+import { dataSize, truthyOrZero } from "../lib/general";
 
 /**
  * Display the data items common to all donor-derived objects.
@@ -675,7 +675,7 @@ export function FileDataItems({ item, fileSet = null, children }) {
       {truthyOrZero(item.file_size) && (
         <>
           <DataItemLabel>File Size</DataItemLabel>
-          <DataItemValue>{item.file_size}</DataItemValue>
+          <DataItemValue>{dataSize(item.file_size)}</DataItemValue>
         </>
       )}
       {item.submitted_file_name && (
