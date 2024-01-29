@@ -12,11 +12,7 @@ import {
   getSearchListItemRenderer,
   SearchListItem,
 } from "../components/search";
-import {
-  ResultsTitle,
-  SearchPager,
-  useSearchLimits,
-} from "../components/search-results";
+import { SearchPager, useSearchLimits } from "../components/search-results";
 import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
 import TableCount from "../components/table-count";
@@ -48,7 +44,13 @@ export default function Search({ searchResults, accessoryData = null }) {
     <>
       <Breadcrumbs />
       {resultTypes.length > 0 && (
-        <PagePreamble pageTitle={<ResultsTitle types={resultTypes} />} />
+        <PagePreamble
+          pageTitle={
+            resultTypes.length > 3
+              ? `${resultTypes.slice(0, 3).join(", ")}...`
+              : resultTypes.join(", ")
+          }
+        />
       )}
       {searchResults.total > 0 ? (
         <div className="lg:flex lg:items-start lg:gap-1">

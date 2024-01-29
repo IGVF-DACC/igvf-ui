@@ -38,9 +38,10 @@ export function generateSearchResultsTypes(
           ? typeSubtypes.length === 1 && type === typeSubtypes[0]
           : false;
       });
-      return collectionTitles
+      const readableTitles = collectionTitles
         ? concreteTypes.map((type) => collectionTitles[type])
         : concreteTypes;
+      return readableTitles.sort();
     }
   }
   return [];

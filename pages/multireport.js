@@ -11,11 +11,7 @@ import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 import { generateColumns, ReportHeaderCell } from "../components/report/";
 import ScrollIndicators from "../components/scroll-indicators";
-import {
-  ResultsTitle,
-  SearchPager,
-  useSearchLimits,
-} from "../components/search-results";
+import { SearchPager, useSearchLimits } from "../components/search-results";
 import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
 import SortableGrid from "../components/sortable-grid";
@@ -212,7 +208,13 @@ export default function MultiReport({ searchResults }) {
       <>
         <Breadcrumbs />
         {resultTypes.length > 0 && (
-          <PagePreamble pageTitle={<ResultsTitle types={resultTypes} />} />
+          <PagePreamble
+            pageTitle={
+              resultTypes.length > 3
+                ? `${resultTypes.slice(0, 3).join(", ")}...`
+                : resultTypes.join(", ")
+            }
+          />
         )}
         {items.length > 0 ? (
           <div className="lg:flex lg:items-start lg:gap-1">
