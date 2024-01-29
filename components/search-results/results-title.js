@@ -12,7 +12,7 @@ import SeparatedList from "../separated-list";
 /**
  * Displays the title of a search-results page. This is a list of all the types of search results
  * that appear on the page. Only the first three display initially, but a button lets the user
- * expand that list to he full set of types.
+ * expand that list to the full set of types.
  */
 export default function ResultsTitle({ types }) {
   const typesCollapser = useDataAreaCollapser(types);

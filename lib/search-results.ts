@@ -12,13 +12,12 @@ import {
 } from "../globals.d";
 
 /**
- * Composes a page title for search result pages. The profiles object has to have been loaded to
- * get results from this function. An empty string gets returned if the profiles object doesn't
- * have a schema for the first item type in the search results.
+ * Builds an array of concrete types returned from search results. The profiles object has to have
+ * loaded to get results from this function, or else it returns an empty array.
  * @param {SearchResults} searchResults Search results from igvfd
  * @param {Profiles|null} profiles Profiles object from igvfd if loaded
  * @param {CollectionTitles|null} collectionTitles Map of collection identifiers to titles
- * @returns {string} Page title for search results page, or empty if unable to compose
+ * @returns {string[]} Page title for search results page
  */
 export function generateSearchResultsTypes(
   searchResults: SearchResults,
@@ -26,7 +25,7 @@ export function generateSearchResultsTypes(
   collectionTitles: CollectionTitles | null
 ): string[] {
   if (profiles) {
-    // Find the "type" facet in the search results.
+    // Use the "type" facet in the search results.
     const typeFacet = searchResults.facets.find(
       (facet) => facet.field === "type"
     );
