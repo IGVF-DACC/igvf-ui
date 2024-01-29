@@ -20,5 +20,5 @@ export default function SiteTitle({ pageTitle = "" }) {
 
 SiteTitle.propTypes = {
   // Page title for pages in which the server doesn't supply one
-  pageTitle: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+  pageTitle: PropTypes.string,
 };

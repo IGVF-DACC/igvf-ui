@@ -18,5 +18,5 @@ export default function PagePreamble({ pageTitle = "", children }) {
 
 PagePreamble.propTypes = {
   // Page title for pages in which the server doesn't supply one
-  pageTitle: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+  pageTitle: PropTypes.string,
 };
