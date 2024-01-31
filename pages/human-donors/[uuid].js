@@ -28,58 +28,6 @@ import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import { isJsonFormat } from "../../lib/query-utils";
 import buildAttribution from "../../lib/attribution";
 
-// TEMPORARY starting here
-import { ListSelect } from "../../components/form-elements";
-import { useState } from "react";
-import {
-  Dropdown,
-  DROPDOWN_ALIGN_LEFT,
-  DROPDOWN_ALIGN_RIGHT,
-  DropdownRef,
-  useDropdown,
-} from "../../components/dropdown";
-
-const months = ["January", "February", "March", "April", "May", "June", "July"];
-
-function DropdownExampleComponent({ alignment }) {
-  const dropdownAttr = useDropdown("dropdown-id", alignment);
-  const [selectedMonth, setSelectedMonth] = useState(null);
-
-  // Called when the user selects a month from the dropdown.
-  function monthSelection(month) {
-    setSelectedMonth(month);
-    dropdownAttr.isVisible = false;
-  }
-
-  return (
-    <>
-      <DropdownRef dropdownAttr={dropdownAttr}>
-        <button className="rounded border border-black px-2">Click Me</button>
-      </DropdownRef>
-      <Dropdown dropdownAttr={dropdownAttr}>
-        <ListSelect
-          value={selectedMonth}
-          onChange={monthSelection}
-          className="shadow-lg [&>div]:max-h-52"
-        >
-          {months.map((month) => {
-            return (
-              <ListSelect.Option key={month} id={month} label={month}>
-                <div className="text-left">{month}</div>
-              </ListSelect.Option>
-            );
-          })}
-        </ListSelect>
-      </Dropdown>
-    </>
-  );
-}
-
-DropdownExampleComponent.propTypes = {
-  alignment: PropTypes.oneOf([DROPDOWN_ALIGN_LEFT, DROPDOWN_ALIGN_RIGHT]),
-};
-// TEMPORARY mostly ending here
-
 export default function HumanDonor({
   donor,
   documents,
@@ -131,10 +79,6 @@ export default function HumanDonor({
               <DocumentTable documents={documents} />
             </>
           )}
-          <div className="flex justify-between py-2">
-            <DropdownExampleComponent alignment={DROPDOWN_ALIGN_LEFT} />
-            <DropdownExampleComponent alignment={DROPDOWN_ALIGN_RIGHT} />
-          </div>
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
