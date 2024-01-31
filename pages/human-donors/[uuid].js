@@ -13,12 +13,12 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
-import RelatedDonorsTable from "../../components/related-donors-table";
 import { EditableItem } from "../../components/edit";
 import ExternalResources from "../../components/external-resources";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import RelatedDonorsTable from "../../components/related-donors-table";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments } from "../../lib/common-requests";

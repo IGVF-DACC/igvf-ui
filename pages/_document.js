@@ -1,5 +1,6 @@
 // node_modules
 import { Html, Head, Main, NextScript } from "next/document";
+import { DropdownPortalRoot } from "../components/dropdown";
 
 export default function Document() {
   return (
@@ -8,6 +9,7 @@ export default function Document() {
       <body className="bg-background">
         <Main />
         <NextScript />
+        <DropdownPortalRoot />
       </body>
     </Html>
   );
