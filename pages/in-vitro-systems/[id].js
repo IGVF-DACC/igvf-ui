@@ -42,6 +42,7 @@ import { Ok } from "../../lib/result";
 
 export default function InVitroSystem({
   inVitroSystem,
+  cellFateProtocol,
   constructLibrarySets,
   diseaseTerms,
   documents,
@@ -143,6 +144,16 @@ export default function InVitroSystem({
                     </DataItemValue>
                   </>
                 )}
+                {cellFateProtocol && (
+                  <>
+                    <DataItemLabel>Cell Fate Change Protocol</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={cellFateProtocol["@id"]}>
+                        {cellFateProtocol.attachment.download}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
@@ -200,6 +211,8 @@ InVitroSystem.propTypes = {
   inVitroSystem: PropTypes.object.isRequired,
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Cell Fate Change Protocols of the sample
+  cellFateProtocol: PropTypes.object,
   // Construct libraries that link to this object
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
@@ -241,6 +254,12 @@ export async function getServerSideProps({ params, req, query }) {
       inVitroSystem.biomarkers?.length > 0
         ? await requestBiomarkers(inVitroSystem.biomarkers, request)
         : [];
+    let cellFateProtocol = null;
+    if (inVitroSystem.cell_fate_change_protocol) {
+      cellFateProtocol = (
+        await request.getObject(inVitroSystem.cell_fate_change_protocol)
+      ).optional();
+    }
     let diseaseTerms = [];
     if (inVitroSystem.disease_terms) {
       const diseaseTermPaths = inVitroSystem.disease_terms.map(
@@ -305,6 +324,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         inVitroSystem,
         biomarkers,
+        cellFateProtocol,
         constructLibrarySets,
         diseaseTerms,
         documents,
