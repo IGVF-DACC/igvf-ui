@@ -118,6 +118,7 @@ export default function ChartFileSetRelease({ releaseData, title }) {
           legendOffset: -60,
           legendPosition: "middle",
           renderTick: CustomYTick,
+          tickValues: releaseData.at(-1).y < 10 ? 4 : 10,
         }}
         colors={[CHART_COLOR]}
         curve="catmullRom"
