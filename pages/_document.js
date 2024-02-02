@@ -1,6 +1,7 @@
 // node_modules
 import { Html, Head, Main, NextScript } from "next/document";
 import { DropdownPortalRoot } from "../components/dropdown";
+import { TooltipPortalRoot } from "../components/tooltip";
 
 export default function Document() {
   return (
@@ -10,6 +11,7 @@ export default function Document() {
         <Main />
         <NextScript />
         <DropdownPortalRoot />
+        <TooltipPortalRoot />
       </body>
     </Html>
   );

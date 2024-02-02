@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
+import { Tooltip, TooltipPortalRoot, TooltipRef, useTooltip } from "../tooltip";
 
 describe("Test tooltips", () => {
   it("should render a tooltip", async () => {
@@ -14,6 +14,7 @@ describe("Test tooltips", () => {
             <button>Tooltip Reference</button>
           </TooltipRef>
           <Tooltip tooltipAttr={tooltipAttr}>Tooltip content</Tooltip>
+          <TooltipPortalRoot />
         </>
       );
     }
