@@ -157,6 +157,8 @@
   --color-indexing-state-border: #f97316;
   --color-indexing-state-content: #7c2d12;
 
+  --color-schema-name-highlight-background: #fde047;
+
   --color-site-search-header-background: #c9ebe2;
 
   --color-form-element-background: #ffffff;
@@ -310,6 +312,8 @@
   --color-indexing-state-background: #9a3412;
   --color-indexing-state-border: #c2410c;
   --color-indexing-state-content: #fdba74;
+
+  --color-schema-name-highlight-background: #15803d;
 
   --color-site-search-header-background: #394240;
 

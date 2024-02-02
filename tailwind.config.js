@@ -79,6 +79,9 @@ module.exports = {
 
         "indexed-state": "var(--color-indexed-state-background)",
         "indexing-state": "var(--color-indexing-state-background)",
+
+        "schema-name-highlight":
+          "var(--color-schema-name-highlight-background)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
