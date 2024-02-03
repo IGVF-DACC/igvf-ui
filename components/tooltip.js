@@ -17,8 +17,15 @@ import {
 } from "@floating-ui/react";
 import PropTypes from "prop-types";
 import { Children, cloneElement, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 // lib
 import { toShishkebabCase } from "../lib/general";
+
+/**
+ * ID of the tooltip portal DOM root-level element that tooltips render into to avoid z-index and
+ * parent-width issues.
+ */
+const TOOLTIP_PORTAL_ROOT_ID = "tooltip-portal-root";
 
 /**
  * Height of the tooltip arrow (the small pointer from the tooltip to the tooltip ref) in pixels.
@@ -123,30 +130,33 @@ TooltipRef.propTypes = {
  * browser widths.
  */
 export function Tooltip({ tooltipAttr, children }) {
-  if (tooltipAttr.isVisible) {
-    return (
-      <div
-        className="max-w-[90%] rounded-md border border-gray-500 bg-gray-800 px-2 py-1 text-xs text-white drop-shadow-md md:max-w-[40%] 2xl:max-w-[20%] dark:border-white dark:bg-gray-300 dark:text-black"
-        ref={tooltipAttr.tooltipEl}
-        style={tooltipAttr.styles}
-        role="tooltip"
-        {...tooltipAttr.tooltipProps()}
-        id={tooltipAttr.id}
-        data-testid={tooltipAttr.id}
-      >
-        {children}
-        <FloatingArrow
-          className="fill-gray-800 dark:fill-gray-300 [&>path:first-of-type]:stroke-gray-500 dark:[&>path:first-of-type]:stroke-white [&>path:last-of-type]:stroke-gray-800 dark:[&>path:last-of-type]:stroke-gray-300"
-          ref={tooltipAttr.arrowRef}
-          context={tooltipAttr.context}
-          height={ARROW_HEIGHT}
-          width={ARROW_WIDTH}
-          strokeWidth={1}
-        />
-      </div>
-    );
-  }
-  return null;
+  return (
+    <>
+      {tooltipAttr.isVisible &&
+        createPortal(
+          <div
+            className="max-w-[90%] rounded-md border border-gray-500 bg-gray-800 px-2 py-1 text-xs text-white drop-shadow-md dark:border-white dark:bg-gray-300 dark:text-black md:max-w-[40%] 2xl:max-w-[20%]"
+            ref={tooltipAttr.tooltipEl}
+            style={tooltipAttr.styles}
+            role="tooltip"
+            {...tooltipAttr.tooltipProps()}
+            id={tooltipAttr.id}
+            data-testid={tooltipAttr.id}
+          >
+            {children}
+            <FloatingArrow
+              className="fill-gray-800 dark:fill-gray-300 [&>path:first-of-type]:stroke-gray-500 dark:[&>path:first-of-type]:stroke-white [&>path:last-of-type]:stroke-gray-800 dark:[&>path:last-of-type]:stroke-gray-300"
+              ref={tooltipAttr.arrowRef}
+              context={tooltipAttr.context}
+              height={ARROW_HEIGHT}
+              width={ARROW_WIDTH}
+              strokeWidth={1}
+            />
+          </div>,
+          document.getElementById(TOOLTIP_PORTAL_ROOT_ID)
+        )}
+    </>
+  );
 }
 
 Tooltip.propTypes = {
@@ -161,3 +171,13 @@ Tooltip.propTypes = {
     isVisible: PropTypes.bool,
   }),
 };
+
+/**
+ * Drop this component into the `<body>` of your HTML document. It creates the DOM root-level
+ * portal that the tooltips render into.
+ */
+export function TooltipPortalRoot() {
+  return (
+    <div id={TOOLTIP_PORTAL_ROOT_ID} data-testid={TOOLTIP_PORTAL_ROOT_ID} />
+  );
+}

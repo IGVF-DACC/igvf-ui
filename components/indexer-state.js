@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 // components
 import GlobalContext from "./global-context";
 import SessionContext from "./session-context";
-import { TooltipRef } from "./tooltip";
+import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import FetchRequest from "../lib/fetch-request";
 
@@ -85,45 +85,54 @@ function IndexerStateExpanded({
   indexingCount,
   isAdmin,
   onClick,
-  indexerStateTooltip,
 }) {
+  // Tooltip attributes for the indexer state badge; here so nav div doesn't clip tooltip
+  const tooltipAttr = useTooltip("indexer-state");
+
   const indexerStyle = isIndexing
     ? INDEXER_STYLE_INDEXING
     : INDEXER_STYLE_INDEXED;
 
   return (
-    <div
-      data-testid="indexer-state-expanded"
-      className={`mt-2 flex items-center justify-center border-t border-gray-200 p-4 dark:border-gray-700 ${indexerStyles[indexerStyle]}`}
-    >
-      <TooltipRef tooltipAttr={indexerStateTooltip}>
-        <button
-          id="indexer-outline"
-          className={`h-5 w-2/3 rounded-full border p-px ${
-            isAdmin ? "cursor-pointer" : "cursor-default"
-          }`}
-          onClick={isAdmin ? onClick : null}
-          data-testid="indexer-state-button"
-        >
-          <div
-            id="indexer-background"
-            className="flex h-full w-full items-center justify-center rounded-full text-[0.6rem] font-bold"
+    <>
+      <div
+        data-testid="indexer-state-expanded"
+        className={`mt-2 flex items-center justify-center border-t border-gray-200 p-4 dark:border-gray-700 ${indexerStyles[indexerStyle]}`}
+      >
+        <TooltipRef tooltipAttr={tooltipAttr}>
+          <button
+            id="indexer-outline"
+            className={`h-5 w-2/3 rounded-full border p-px ${
+              isAdmin ? "cursor-pointer" : "cursor-default"
+            }`}
+            onClick={isAdmin ? onClick : null}
+            data-testid="indexer-state-button"
           >
-            {isRequesting ? (
-              <RequestingIcon />
-            ) : (
-              <>
-                {isIndexing ? (
-                  <>INDEXING {abbreviateNumber(indexingCount)}</>
-                ) : (
-                  "INDEXED"
-                )}
-              </>
-            )}
-          </div>
-        </button>
-      </TooltipRef>
-    </div>
+            <div
+              id="indexer-background"
+              className="flex h-full w-full items-center justify-center rounded-full text-[0.6rem] font-bold"
+            >
+              {isRequesting ? (
+                <RequestingIcon />
+              ) : (
+                <>
+                  {isIndexing ? (
+                    <>INDEXING {abbreviateNumber(indexingCount)}</>
+                  ) : (
+                    "INDEXED"
+                  )}
+                </>
+              )}
+            </div>
+          </button>
+        </TooltipRef>
+      </div>
+      <Tooltip tooltipAttr={tooltipAttr}>
+        Database indexer state. Green indicates indexing has completed. Orange
+        indicates indexing in progress, as well as the number of items left to
+        index.
+      </Tooltip>
+    </>
   );
 }
 
@@ -138,8 +147,6 @@ IndexerStateExpanded.propTypes = {
   isAdmin: PropTypes.bool.isRequired,
   // Function to call when the user clicks the indexer-state badge
   onClick: PropTypes.func.isRequired,
-  // Tooltip attributes for the indexer-state badge
-  indexerStateTooltip: PropTypes.object.isRequired,
 };
 
 /**
@@ -151,48 +158,57 @@ function IndexerStateCollapsed({
   indexingCount,
   isAdmin,
   onClick,
-  indexerStateTooltip,
 }) {
+  // Tooltip attributes for the indexer state badge; here so nav div doesn't clip tooltip
+  const tooltipAttr = useTooltip("indexer-state");
+
   const indexerStyle = isIndexing
     ? INDEXER_STYLE_INDEXING
     : INDEXER_STYLE_INDEXED;
 
   return (
-    <div
-      data-testid="indexer-state-collapsed"
-      className={`my-2 ${indexerStyles[indexerStyle]}`}
-    >
-      <TooltipRef tooltipAttr={indexerStateTooltip}>
-        <button
-          id="indexer-outline"
-          className={`mx-auto h-8 w-8 rounded-full border p-px ${
-            isAdmin ? "cursor-pointer" : "cursor-default"
-          }`}
-          onClick={isAdmin ? onClick : null}
-          data-testid="indexer-state-button"
-        >
-          <div
-            id="indexer-background"
-            className="flex h-full w-full items-center justify-center rounded-full p-2 text-[0.45rem] font-bold"
+    <>
+      <div
+        data-testid="indexer-state-collapsed"
+        className={`my-2 ${indexerStyles[indexerStyle]}`}
+      >
+        <TooltipRef tooltipAttr={tooltipAttr}>
+          <button
+            id="indexer-outline"
+            className={`mx-auto h-8 w-8 rounded-full border p-px ${
+              isAdmin ? "cursor-pointer" : "cursor-default"
+            }`}
+            onClick={isAdmin ? onClick : null}
+            data-testid="indexer-state-button"
           >
-            {isRequesting ? (
-              <RequestingIcon />
-            ) : (
-              <>
-                {isIndexing ? (
-                  <>{abbreviateNumber(indexingCount)}</>
-                ) : (
-                  <CheckIcon
-                    data-testid="indexer-state-indexed-icon"
-                    className="h-full w-full fill-white"
-                  />
-                )}
-              </>
-            )}
-          </div>
-        </button>
-      </TooltipRef>
-    </div>
+            <div
+              id="indexer-background"
+              className="flex h-full w-full items-center justify-center rounded-full p-2 text-[0.45rem] font-bold"
+            >
+              {isRequesting ? (
+                <RequestingIcon />
+              ) : (
+                <>
+                  {isIndexing ? (
+                    <>{abbreviateNumber(indexingCount)}</>
+                  ) : (
+                    <CheckIcon
+                      data-testid="indexer-state-indexed-icon"
+                      className="h-full w-full fill-white"
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          </button>
+        </TooltipRef>
+      </div>
+      <Tooltip tooltipAttr={tooltipAttr}>
+        Database indexer state. Green indicates indexing has completed. Orange
+        indicates indexing in progress, as well as the number of items left to
+        index.
+      </Tooltip>
+    </>
   );
 }
 
@@ -207,8 +223,6 @@ IndexerStateCollapsed.propTypes = {
   isAdmin: PropTypes.bool.isRequired,
   // Function to call when the user clicks the indexer-state badge
   onClick: PropTypes.func.isRequired,
-  // Tooltip attributes for the indexer-state badge
-  indexerStateTooltip: PropTypes.object.isRequired,
 };
 
 /**
