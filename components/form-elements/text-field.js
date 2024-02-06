@@ -27,6 +27,7 @@ const labelSizeClasses = {
  */
 export default function TextField({
   label = "",
+  fieldLabel = "",
   name,
   value,
   message = "",
@@ -38,6 +39,7 @@ export default function TextField({
   isRequired = false,
   isDisabled = false,
   isSpellCheckDisabled = false,
+  isMessageAllowed = true,
   placeholder = null,
 }) {
   return (
@@ -53,6 +55,7 @@ export default function TextField({
       )}
       <input
         className={`block w-full rounded border border-form-element bg-form-element text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled ${sizeClasses[size]}`}
+        aria-label={fieldLabel || label}
         name={name}
         id={name}
         value={value}
@@ -63,9 +66,11 @@ export default function TextField({
         onBlur={onBlur}
         onFocus={onFocus}
       />
-      <div className="mt-1 text-xs font-bold uppercase text-red-500">
-        {message || UC.nbsp}
-      </div>
+      {isMessageAllowed && (
+        <div className="mt-1 text-xs font-bold uppercase text-red-500">
+          {message || UC.nbsp}
+        </div>
+      )}
     </div>
   );
 }
@@ -79,6 +84,8 @@ TextField.propTypes = {
   ]),
   // Name of the text field
   name: PropTypes.string.isRequired,
+  // aria-label for the input text field
+  fieldLabel: PropTypes.string,
   // Value of the text field
   value: PropTypes.string.isRequired,
   // Message to display below the field
@@ -99,6 +106,8 @@ TextField.propTypes = {
   isDisabled: PropTypes.bool,
   // True if the text field should have spell checking disabled
   isSpellCheckDisabled: PropTypes.bool,
+  // True to allow space for a message below the field
+  isMessageAllowed: PropTypes.bool,
   // Placeholder text to display in the text field
   placeholder: PropTypes.string,
 };
