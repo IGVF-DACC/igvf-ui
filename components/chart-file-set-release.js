@@ -114,7 +114,7 @@ export default function ChartFileSetRelease({ releaseData, title }) {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: "Cumulative Released File Sets",
+          legend: "Cumulative Released Data Sets",
           legendOffset: -60,
           legendPosition: "middle",
           renderTick: CustomYTick,

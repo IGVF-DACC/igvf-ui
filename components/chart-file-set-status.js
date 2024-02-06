@@ -44,7 +44,7 @@ const CHART_TICK_COUNT = 5;
 /**
  * Order that data should appear in the chart bars, left to right.
  */
-const keys = ["released", "initiated", "withFiles"];
+const keys = ["released", "withFiles", "initiated"];
 
 /**
  * Order that legend labels should appear, left to right.
@@ -253,6 +253,7 @@ export default function ChartFileSetStatus({ fileSets, title }) {
   const selectedFileSets = filterFileSetsByMonth(fileSets, selectedMonth);
   const { fileSetData, maxCount } =
     convertFileSetsToStatusData(selectedFileSets);
+  console.log("fileSetData", fileSetData);
 
   // Determine the number of items in the legend based on whether the user has logged in or not.
   const { isAuthenticated } = useAuth0();
@@ -294,7 +295,7 @@ export default function ChartFileSetStatus({ fileSets, title }) {
           from: "color",
           modifiers: [["darker", 1.6]],
         }}
-        colors={[dataColor.released, dataColor.initiated, dataColor.withFiles]}
+        colors={[dataColor.released, dataColor.withFiles, dataColor.initiated]}
         enableGridX={true}
         enableGridY={false}
         indexBy="summary"

@@ -192,6 +192,8 @@ export default function HomeTitle() {
         </a>
         <a
           href="https://igvf.org/"
+          target="_blank"
+          rel="noopener noreferrer"
           className="block rounded-full bg-brand px-3 py-0 text-sm text-white no-underline @lg/home:py-1"
         >
           IGVF Consortium

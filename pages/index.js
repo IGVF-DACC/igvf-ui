@@ -76,7 +76,7 @@ FileSetChartSection.propTypes = {
  * Titles for the two charts on the home page. Used for the chart panel title and the chart aria
  * labels.
  */
-const FILESET_RELEASE_TITLE = "Data Set Releases";
+const FILESET_RELEASE_TITLE = "Data Sets Released";
 const FILESET_STATUS_TITLE = "Data Sets Produced by IGVF Labs";
 
 export default function Home({ fileSets, fileCount, sampleCount }) {
