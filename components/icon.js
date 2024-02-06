@@ -50,6 +50,22 @@ const Icon = {
       />
     </svg>
   ),
+  Catalog: ({ className = null, testid = "icon-catalog" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path
+        d="M16.33,4.23V2.49h-4.88c-0.58,0-1.09,0.3-1.45,0.79C9.64,2.8,9.12,2.49,8.55,2.49H3.67v1.73H2v13.28h16V4.23H16.33z
+	 M10.5,4.86L10.5,4.86c0-0.74,0.44-1.37,0.95-1.37h3.88v10.76h-3.88c-0.35,0-0.67,0.12-0.95,0.32V4.86z M4.67,3.49h3.88
+	c0.5,0,0.93,0.59,0.95,1.3c0,0.02,0,0.04,0,0.06h0c0,0,0,0,0,0h0v9.71c-0.28-0.19-0.6-0.31-0.95-0.31H4.67V3.49z M17,16.51H3V5.23
+	h0.67v10.02h4.88c0.38,0,0.71,0.34,0.86,0.81h1.17c0.15-0.47,0.49-0.81,0.86-0.81h4.88V5.23H17V16.51z"
+      />
+    </svg>
+  ),
   Circle: ({ className = null, testid = "icon-circle" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -358,6 +374,10 @@ Icon.Award.propTypes = {
   testid: PropTypes.string,
 };
 Icon.Brand.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Catalog.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };

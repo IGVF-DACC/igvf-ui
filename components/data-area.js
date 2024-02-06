@@ -56,10 +56,13 @@ export function DataArea({ children }) {
 /**
  * Displays the title above a data panel or table.
  */
-export function DataAreaTitle({ className = "", children }) {
+export function DataAreaTitle({
+  className = "flex items-end justify-between",
+  children,
+}) {
   return (
     <h2
-      className={`mb-1 mt-4 flex items-end justify-between text-2xl font-light ${className}`}
+      className={`mb-1 mt-4 text-2xl font-light ${className}`}
       data-testid="dataareatitle"
     >
       {children}

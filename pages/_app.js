@@ -116,7 +116,7 @@ function Site({ Component, pageProps, authentication }) {
           <Session authentication={authentication}>
             <div className="md:flex">
               <NavigationSection />
-              <div className="min-w-0 shrink grow px-3 py-2 text-black dark:text-white md:px-8">
+              <div className="min-w-0 shrink grow px-3 py-2 md:px-8">
                 {pageProps.serverSideError ? (
                   <Error
                     statusCode={pageProps.serverSideError.code}

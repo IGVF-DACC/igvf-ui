@@ -196,3 +196,30 @@ export function dataSize(size: number): string {
   // Can't do calculation for zero or negative sizes.
   return "0 B";
 }
+
+/**
+ * Abbreviate a number to a string with an order-of-magnitude suffix (e.g. 1000 => 1K). Works well
+ * for numbers less than 1 trillion.
+ * @param {number} number The number to abbreviate
+ * @returns {string} The abbreviated number
+ */
+export function abbreviateNumber(number: number): string {
+  // Round to the nearest tenth if two digits or less, otherwise round to the nearest whole.
+  function toTenthOrWhole(hundredsOf: number): string {
+    return hundredsOf.toFixed(hundredsOf < 100 ? 1 : 0);
+  }
+
+  if (number >= 1_000_000_000) {
+    const hundredsOf = number / 1_000_000_000;
+    return `${toTenthOrWhole(hundredsOf)}B`;
+  }
+  if (number >= 1_000_000) {
+    const hundredsOf = number / 1_000_000;
+    return `${toTenthOrWhole(hundredsOf)}M`;
+  }
+  if (number >= 1000) {
+    const hundredsOf = number / 1000;
+    return `${toTenthOrWhole(hundredsOf)}K`;
+  }
+  return number.toString();
+}

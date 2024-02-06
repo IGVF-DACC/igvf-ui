@@ -7,7 +7,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body className="bg-background">
+      <body className="bg-background text-black dark:text-white">
         <Main />
         <NextScript />
         <DropdownPortalRoot />

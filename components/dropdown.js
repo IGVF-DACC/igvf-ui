@@ -98,7 +98,7 @@ export function useDropdown(id, alignment = DROPDOWN_ALIGN_LEFT) {
   // components should consider this object mostly opaque. They should only read and mutate the
   // `isVisible` property.
   return {
-    id: `tooltip-${toShishkebabCase(id)}`,
+    id: `dropdown-${toShishkebabCase(id)}`,
     refEl: refs.setReference,
     refProps: getReferenceProps,
     dropdownEl: refs.setFloating,
