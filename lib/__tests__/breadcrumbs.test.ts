@@ -145,7 +145,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "primary_cell"
     );
     expect(breadcrumbs).toHaveLength(2);
-    expect(breadcrumbs[0].title).toBe("Schemas");
+    expect(breadcrumbs[0].title).toBe("Schema Directory");
     expect(breadcrumbs[0].href).toBe("/profiles");
     expect(breadcrumbs[1].title).toBe("Primary Cell");
     expect(breadcrumbs[1].href).toBe("/profiles/primary_cell");
@@ -164,7 +164,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
 
     const breadcrumbs = await buildBreadcrumbs(mockSchemaData, "");
     expect(breadcrumbs).toHaveLength(1);
-    expect(breadcrumbs[0].title).toBe("Schemas");
+    expect(breadcrumbs[0].title).toBe("Schema Directory");
     expect(breadcrumbs[0].href).toBe("/profiles");
   });
 

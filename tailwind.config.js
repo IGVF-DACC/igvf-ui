@@ -82,6 +82,7 @@ module.exports = {
 
         "schema-name-highlight":
           "var(--color-schema-name-highlight-background)",
+        "schema-search": "var(--color-schema-search-background)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",

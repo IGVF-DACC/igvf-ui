@@ -158,6 +158,7 @@
   --color-indexing-state-content: #7c2d12;
 
   --color-schema-name-highlight-background: #fde047;
+  --color-schema-search-background: #f0f7ff;
 
   --color-site-search-header-background: #c9ebe2;
 
@@ -275,7 +276,7 @@
 
   --color-json-panel-border: #4b5563;
 
-  --color-schema-prop-text: #3b82f6;
+  --color-schema-prop-text: #93c5fd;
   --color-schema-prop-description-text: #9ca3af;
 
   --color-schema-prop-type-bg-string: #14532d;
@@ -314,6 +315,7 @@
   --color-indexing-state-content: #fdba74;
 
   --color-schema-name-highlight-background: #15803d;
+  --color-schema-search-background: #25303c;
 
   --color-site-search-header-background: #394240;
 

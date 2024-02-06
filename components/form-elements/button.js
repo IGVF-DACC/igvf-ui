@@ -121,6 +121,8 @@ export function Button({
   size = "md",
   hasIconOnly = false,
   hasIconCircleOnly = false,
+  role = "button",
+  isSelected = false,
   isDisabled = false,
   className = "",
   children,
@@ -134,10 +136,12 @@ export function Button({
   return (
     <button
       type="button"
+      role={role}
       id={id}
       onClick={onClick}
       className={`${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[type]} ${className}`}
       aria-label={label}
+      aria-checked={isSelected}
       disabled={isDisabled}
     >
       {children}
@@ -160,6 +164,10 @@ Button.propTypes = {
   hasIconOnly: PropTypes.bool,
   // True for buttons that only contain an icon in a circular button
   hasIconCircleOnly: PropTypes.bool,
+  // Role of the button if not "button"
+  role: PropTypes.string,
+  // True for selected buttons; only use for attached buttons to show which one is selected
+  isSelected: PropTypes.bool,
   // True to disable the button
   isDisabled: PropTypes.bool,
   // Additional Tailwind CSS classes to apply to the <button> element

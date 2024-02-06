@@ -20,7 +20,7 @@ describe("Navigation", () => {
 
     cy.get("[data-testid=navigation-schemas]").click();
     cy.url().should("include", "/profiles/");
-    cy.get("h1").should("have.text", "Schemas");
+    cy.get("h1").should("have.text", "Schema Directory");
 
     // Test Data submenus.
     cy.get("[data-testid=navigation-data]").click();
