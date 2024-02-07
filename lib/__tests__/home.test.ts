@@ -175,49 +175,61 @@ describe("Test convertFileSetsToStatusData function", () => {
         "@context": "/terms/",
         "@id": "/measurement-sets/IGVFDS3380CCRQ/",
         "@type": ["MeasurementSet", "FileSet", "Item"],
+        assay_term: {
+          term_name:
+            "muscular dystrophy-dystroglycanopathy (congenital with brain and eye anomalies), type A14",
+        },
         creation_timestamp: "2023-06-07T11:07:43.000000+00:00",
         lab: {
           title: "J. Michael Cherry, Stanford",
         },
+        preferred_assay_title: "10x multiome",
         status: "released",
-        summary: "MPRA (lentiMPRA) followed by bulk RNA-seq",
         uuid: "f3c038f8-3b58-4d1b-8468-f845340dd7e3",
       },
       {
         "@context": "/terms/",
         "@id": "/measurement-sets/IGVFDS9298GEKM/",
         "@type": ["MeasurementSet", "FileSet", "Item"],
+        assay_term: {
+          term_name: "imaging assay",
+        },
         creation_timestamp: "2023-09-19T05:22:02.000000+00:00",
         lab: {
           title: "J. Michael Cherry, Stanford",
         },
         status: "in progress",
-        summary: "single-cell RNA sequencing assay (Parse Split-seq)",
         uuid: "f1f04a03-009f-434f-a31b-3f12c6ead3aa",
       },
       {
         "@context": "/terms/",
         "@id": "/measurement-sets/IGVFDS3135GTPC/",
         "@type": ["MeasurementSet", "FileSet", "Item"],
+        assay_term: {
+          term_name: "MPRA",
+        },
         creation_timestamp: "2022-07-05T16:59:01.000000+00:00",
         lab: {
           title: "J. Michael Cherry, Stanford",
         },
         files: ["file1", "file2"],
+        preferred_assay_title: "yN2H",
         status: "in progress",
-        summary: "localizing STARR-seq (SUPERSTARR)",
         uuid: "fcff4286-f31e-4530-8f10-a5843f08c43c",
       },
       {
         "@context": "/terms/",
         "@id": "/measurement-sets/IGVFDS0077DACQ/",
         "@type": ["MeasurementSet", "FileSet", "Item"],
+        assay_term: {
+          term_name: "snM3C-seq",
+        },
         creation_timestamp: "2022-07-05T16:59:01.000000+00:00",
         lab: {
           title: "J. Michael Cherry, Stanford",
         },
+        preferred_assay_title: "snMCT-seq",
         status: "in progress",
-        summary: "localizing STARR-seq (SUPERSTARR)",
         uuid: "ccadf134-1e17-47db-84c1-72c67de06d84",
       },
     ];
@@ -226,28 +238,31 @@ describe("Test convertFileSetsToStatusData function", () => {
     expect(nivoData).toEqual({
       fileSetData: [
         {
-          summary:
-            "J. Michael Cherry, Stanford|single-cell RNA sequencing assay (Parse Split-seq)",
+          title: "J. Michael Cherry, Stanford|yN2H",
+          initiated: 0,
+          released: 0,
+          withFiles: 1,
+        },
+        {
+          title: "J. Michael Cherry, Stanford|snMCT-seq",
           released: 0,
           initiated: 1,
           withFiles: 0,
         },
         {
-          summary:
-            "J. Michael Cherry, Stanford|localizing STARR-seq (SUPERSTARR)",
+          title: "J. Michael Cherry, Stanford|imaging assay",
           released: 0,
           initiated: 1,
-          withFiles: 1,
+          withFiles: 0,
         },
         {
-          summary:
-            "J. Michael Cherry, Stanford|MPRA (lentiMPRA) followed by bulk RNA-seq",
+          title: "J. Michael Cherry, Stanford|10x multiome",
           released: 1,
           initiated: 0,
           withFiles: 0,
         },
       ],
-      maxCount: 2,
+      maxCount: 1,
     });
   });
 });

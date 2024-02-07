@@ -1,3 +1,6 @@
+// lib
+import { UC } from "./constants";
+
 /**
  * Convert an object path into the object type.
  * @param {string} path The @id of the object to get the type for.
@@ -222,4 +225,30 @@ export function abbreviateNumber(number: number): string {
     return `${toTenthOrWhole(hundredsOf)}K`;
   }
   return number.toString();
+}
+
+/**
+ * Truncates a string to the given maximum length, adding an ellipsis if the string is longer than
+ * the maximum length. Try not to truncate a string in the middle of a word, backing up to the
+ * previous space if possible. This isn't possible if the string consists a single word that's
+ * longer than the maximum length. In that case, just truncate the text to the maximum length.
+ * @param text Text to truncate
+ * @param maxLength Maximum length of the text
+ * @returns Truncated text
+ */
+export function truncateText(text: string, maxLength: number) {
+  let processedText = text;
+  if (processedText.length > maxLength) {
+    const trimmedText = processedText.replace(/(^\s)|(\s$)/gi, ""); // Trim leading/trailing white space
+    const truncatedText = trimmedText.substring(0, maxLength); // Truncate to maxLength
+    const isOneWord = truncatedText.match(/\s/gi) === null; // Detect single-word string
+
+    // Truncate to the previous word boundary in the truncated string unless the entire string has
+    // no spaces, in which case we just truncate in the middle of that word.
+    const finalTruncatedText = isOneWord
+      ? truncatedText
+      : truncatedText.substring(0, truncatedText.lastIndexOf(" "));
+    processedText = `${finalTruncatedText}${UC.hellip}`;
+  }
+  return processedText;
 }

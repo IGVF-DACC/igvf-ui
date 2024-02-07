@@ -100,7 +100,7 @@ export function filterFileSetsByMonth(
  * Represents each file set datum in the FileSet status bar chart.
  */
 type FileSetStatusData = {
-  summary: string;
+  title: string;
   initiated: number;
   withFiles: number;
   released: number;
@@ -117,7 +117,7 @@ type FileSetStatusChartData = {
 /**
  * Convert an array of FileSet objects into status data in the form of an array of objects that the
  * Nivo bar chart can use. Each output array element handles a single bar in the chart, which is a
- * combination of lab and summary. The output array is sorted by lab and then summary.
+ * combination of lab and title. The output array is sorted by lab and then title.
  * @param {DatabaseObject[]} fileSets FileSet objects to convert to Nivo data
  * @returns {object} Nivo data for a bar chart and maximum count of file sets in a single bar
  * @returns {object[]} fileSetData Nivo data for a bar chart
@@ -126,20 +126,25 @@ type FileSetStatusChartData = {
 export function convertFileSetsToStatusData(
   fileSets: DatabaseObject[]
 ): FileSetStatusChartData {
-  // Group all the file sets by keys that concatenate each lab and summary -- {lab}|{summary}.
+  // Group all the file sets by keys that concatenate each lab and title -- {lab}|{title}.
   const labSummaryGroups = _.groupBy(fileSets, (fileSet: DatabaseObject) => {
-    return `${(fileSet.lab as { title: string }).title}|${fileSet.summary}`;
+    // Get the `term_name` property of the `assay_term` object of the `fileSet` object.
+    const assayTerm = fileSet.assay_term;
+    const termName = (assayTerm as { term_name: string }).term_name;
+    return `${(fileSet.lab as { title: string }).title}|${
+      fileSet.preferred_assay_title || termName
+    }`;
   });
 
-  // Sort the group names effectively by lab and then summary. The Nivo bar chart needs this list
+  // Sort the group names effectively by lab and then title. The Nivo bar chart needs this list
   // in reverse order.
   const labSummaryGroupNames = Object.keys(labSummaryGroups)
     .sort()
     .toReversed();
 
   // Convert the grouped data into a flat array of objects that the Nivo bar chart can use. Each
-  // object has the lab|summary key, and the number of released, initiated, and with-files file
-  // sets. Each output array element corresponds to a lab|summary bar in the chart.
+  // object has the lab|title key, and the number of released, initiated, and with-files file
+  // sets. Each output array element corresponds to a lab|title bar in the chart.
   let maxCount = 0;
   const fileSetData = labSummaryGroupNames.map((key) => {
     const labSummaryFileSets = labSummaryGroups[key];
@@ -161,7 +166,7 @@ export function convertFileSetsToStatusData(
     maxCount = Math.max(maxCount, released + initiated + withFiles);
 
     return {
-      summary: key,
+      title: key,
       initiated,
       withFiles,
       released,

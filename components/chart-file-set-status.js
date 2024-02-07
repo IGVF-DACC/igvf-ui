@@ -14,7 +14,11 @@ import {
 import { ListSelect } from "./form-elements";
 import GlobalContext from "./global-context";
 // lib
-import { abbreviateNumber, toShishkebabCase } from "../lib/general";
+import {
+  abbreviateNumber,
+  toShishkebabCase,
+  truncateText,
+} from "../lib/general";
 import {
   collectFileSetMonths,
   convertFileSetsToStatusData,
@@ -31,8 +35,13 @@ const ResponsiveBar = dynamic(
 );
 
 /**
+ * Maximum number of characters to display in a status chart title.
+ */
+const MAX_TITLE_LENGTH = 64;
+
+/**
  * Width of the axis on the left side of the chart in pixels. This has to allow enough space for
- * the longest summary string.
+ * the longest title string.
  */
 const AXIS_LEFT_WIDTH = 400;
 
@@ -88,12 +97,12 @@ const baseLegendProps = {
 };
 
 /**
- * Nivo calls this component to render each tick on the Y axis. It renders the lab and summary
- * strings for the tick. When building the Nivo data, the lab and summary got concatenated into a
- * single {lab}|{summary} string, so we have to break those back apart here.
+ * Nivo calls this component to render each tick on the Y axis. It renders the lab and title
+ * strings for the tick. When building the Nivo data, the lab and title got concatenated into a
+ * single {lab}|{title} string, so we have to break those back apart here.
  */
 function CustomYTick({ value, y }) {
-  const [lab, summary] = value.split("|");
+  const [lab, title] = value.split("|");
 
   return (
     <g transform={`translate(40,${y})`} id={`bar-${toShishkebabCase(value)}`}>
@@ -115,14 +124,14 @@ function CustomYTick({ value, y }) {
         className="fill-black dark:fill-white"
         fontSize={12}
       >
-        {summary}
+        {truncateText(title, MAX_TITLE_LENGTH)}
       </text>
     </g>
   );
 }
 
 CustomYTick.propTypes = {
-  // Combined {lab}|{summary} string for the tick
+  // Combined {lab}|{title} string for the tick
   value: PropTypes.string.isRequired,
   // Y coordinate of the tick
   y: PropTypes.number.isRequired,
@@ -242,8 +251,9 @@ MonthSelector.propTypes = {
 };
 
 /**
- * Display a bar chart of MeasurementSets by lab and summary, breaking each bar into counts by
- * status.
+ * Display a bar chart of MeasurementSets by lab and title, breaking each bar into counts by
+ * status. The title comes from the `preferred_assay_title` of the MeasurementSet if it exists, or
+ * the `assay_term.term_name` if not.
  */
 export default function ChartFileSetStatus({ fileSets, title }) {
   // Currently selected month to filter the chart by
@@ -287,8 +297,8 @@ export default function ChartFileSetStatus({ fileSets, title }) {
         axisRight={null}
         axisTop={null}
         barAriaLabel={(datum) => {
-          const [lab, summary] = datum.indexValue.split("|");
-          return `${datum.formattedValue} ${datum.id} ${summary} from ${lab}`;
+          const [lab, title] = datum.indexValue.split("|");
+          return `${datum.formattedValue} ${datum.id} ${title} from ${lab}`;
         }}
         borderColor={{
           from: "color",
@@ -297,7 +307,7 @@ export default function ChartFileSetStatus({ fileSets, title }) {
         colors={[dataColor.released, dataColor.withFiles, dataColor.initiated]}
         enableGridX={true}
         enableGridY={false}
-        indexBy="summary"
+        indexBy="title"
         indexScale={{ type: "band", round: true }}
         keys={keys}
         labelSkipWidth={12}
