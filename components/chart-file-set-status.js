@@ -253,7 +253,6 @@ export default function ChartFileSetStatus({ fileSets, title }) {
   const selectedFileSets = filterFileSetsByMonth(fileSets, selectedMonth);
   const { fileSetData, maxCount } =
     convertFileSetsToStatusData(selectedFileSets);
-  console.log("fileSetData", fileSetData);
 
   // Determine the number of items in the legend based on whether the user has logged in or not.
   const { isAuthenticated } = useAuth0();
