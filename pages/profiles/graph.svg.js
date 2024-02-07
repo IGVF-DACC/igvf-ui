@@ -33,7 +33,7 @@ export default function GraphSvg({ graph }) {
       width: container.current.clientWidth,
       height: window.innerHeight - box.top,
     });
-  });
+  }, []);
 
   useEffect(() => {
     setLeftoverSize();
