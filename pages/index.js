@@ -125,9 +125,14 @@ export default function Home({ fileSets, fileCount, sampleCount }) {
           />
         </FileSetChartSection>
       )}
-      <FileSetChartSection title={FILESET_STATUS_TITLE}>
-        <ChartFileSetStatus fileSets={fileSets} title={FILESET_STATUS_TITLE} />
-      </FileSetChartSection>
+      {fileSets.length > 0 && (
+        <FileSetChartSection title={FILESET_STATUS_TITLE}>
+          <ChartFileSetStatus
+            fileSets={fileSets}
+            title={FILESET_STATUS_TITLE}
+          />
+        </FileSetChartSection>
+      )}
     </div>
   );
 }
@@ -147,7 +152,7 @@ export async function getServerSideProps({ req }) {
   // We might need to paginate this request in the future, but for now just get all the results.
   const results = (
     await request.getObject(
-      "/report/?type=MeasurementSet&field=%40id&field=summary&field=files.@id&field=lab.title&field=status&field=creation_timestamp&field=release_timestamp&limit=all"
+      "/report/?type=MeasurementSet&field=%40id&field=preferred_assay_title&field=assay_term.term_name&field=files.@id&field=lab.title&field=status&field=creation_timestamp&field=release_timestamp&limit=all"
     )
   ).union();
 
