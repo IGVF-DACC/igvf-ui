@@ -42,6 +42,32 @@ import FetchRequest from "../../lib/fetch-request";
 import { splitIlluminaSequenceFiles } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 
+/**
+ * Maximum number of samples to include in the related multiome datasets report link. This is based
+ * on the maximum URL size of 4000 (really 4096, but we'll be conservative) characters. Subtract a
+ * longish demo domain name and the `/multireport/?type=MeasurementSet` search string, and subtract
+ * the length of the `field=prop` queries for displaying all possible report columns. Then divide
+ * by the length of the `samples.accession=...` query string to get the maximum number of samples
+ * that can be included in the report link.
+ */
+const MAX_SAMPLES_IN_REPORT_LINK = 100;
+
+/**
+ * Compose the report link for the related multiome datasets table.
+ */
+function composeRelatedDatasetReportLink(measurementSet) {
+  if (measurementSet.samples.length > 0) {
+    const samples = measurementSet.samples.slice(0, MAX_SAMPLES_IN_REPORT_LINK);
+    const sampleQueries = samples.map(
+      (sample) => `samples.accession=${sample.accession}`
+    );
+    return `/multireport/?type=MeasurementSet&${sampleQueries.join(
+      "&"
+    )}&accession!=${measurementSet.accession}`;
+  }
+  return "";
+}
+
 export default function MeasurementSet({
   measurementSet,
   assayTerm = null,
@@ -49,7 +75,8 @@ export default function MeasurementSet({
   documents,
   donors,
   files,
-  relatedFileSets,
+  relatedMultiomeSets,
+  auxiliarySets,
   seqspecFiles,
   sequencingPlatforms,
   libraryConstructionPlatform = null,
@@ -214,36 +241,6 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {measurementSet.related_multiome_datasets?.length > 0 && (
-                  <>
-                    <DataItemLabel>Related Multiome Datasets</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {measurementSet.related_multiome_datasets.map(
-                          (dataset) => (
-                            <Link href={dataset["@id"]} key={dataset["@id"]}>
-                              {dataset.accession}
-                            </Link>
-                          )
-                        )}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                {measurementSet.auxiliary_sets?.length > 0 && (
-                  <>
-                    <DataItemLabel>Auxiliary Sets</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {measurementSet.auxiliary_sets.map((set) => (
-                          <Link href={set["@id"]} key={set["@id"]}>
-                            {set.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
                 {measurementSet.control_file_sets?.length > 0 && (
                   <>
                     <DataItemLabel>Control File Sets</DataItemLabel>
@@ -341,10 +338,22 @@ export default function MeasurementSet({
               }}
             />
           )}
-          {relatedFileSets.length > 0 && (
+          {relatedMultiomeSets.length > 0 && (
             <FileSetTable
-              fileSets={relatedFileSets}
-              title="Related File Sets"
+              fileSets={relatedMultiomeSets}
+              title="Related Multiome Datasets"
+              reportLink={composeRelatedDatasetReportLink(measurementSet)}
+            />
+          )}
+          {auxiliarySets.length > 0 && (
+            <FileSetTable
+              fileSets={auxiliarySets}
+              title="Auxiliary Datasets"
+              reportLinkSpecs={{
+                fileSetType: "AuxiliarySet",
+                identifierProp: "measurement_sets.accession",
+                itemIdentifier: measurementSet.accession,
+              }}
             />
           )}
           {documents.length > 0 && (
@@ -371,8 +380,10 @@ MeasurementSet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Related multiome datasets and auxiliary sets to display
-  relatedFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Related multiome datasets
+  relatedMultiomeSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Auxiliary datasets
+  auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform objects associated with `files`
@@ -423,22 +434,29 @@ export async function getServerSideProps({ params, req, query }) {
       );
       controlFileSets = await requestFileSets(controlPaths, request);
     }
-    // Retrieve all available related_multiome_datasets and auxiliary_sets
-    const relatedMultiomeSet =
+
+    let relatedMultiomeSets = [];
+    const relatedMultiomeSetPaths =
       measurementSet.related_multiome_datasets?.length > 0
         ? measurementSet.related_multiome_datasets.map(
             (dataset) => dataset["@id"]
           )
         : [];
-    const relatedAuxiliarySet =
+    if (relatedMultiomeSetPaths.length > 0) {
+      relatedMultiomeSets = await requestFileSets(
+        relatedMultiomeSetPaths,
+        request
+      );
+    }
+
+    let auxiliarySets = [];
+    const auxiliarySetPaths =
       measurementSet.auxiliary_sets?.length > 0
         ? measurementSet.auxiliary_sets.map((dataset) => dataset["@id"])
         : [];
-    const relatedFileSetPaths = relatedMultiomeSet.concat(relatedAuxiliarySet);
-    const relatedFileSets =
-      relatedFileSetPaths?.length > 0
-        ? await requestFileSets(relatedFileSetPaths, request)
-        : [];
+    if (auxiliarySetPaths.length > 0) {
+      auxiliarySets = await requestFileSets(auxiliarySetPaths, request);
+    }
 
     // Use the files to retrieve all the seqspec files they might link to.
     let seqspecFiles = [];
@@ -481,7 +499,8 @@ export async function getServerSideProps({ params, req, query }) {
         donors,
         files,
         libraryConstructionPlatform,
-        relatedFileSets,
+        relatedMultiomeSets,
+        auxiliarySets,
         seqspecFiles,
         sequencingPlatforms,
         pageContext: { title: measurementSet.accession },
