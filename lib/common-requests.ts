@@ -79,6 +79,7 @@ export async function requestFiles(
     await request.getMultipleObjectsBulk(paths, [
       "accession",
       "content_type",
+      "creation_timestamp",
       "file_format",
       "file_size",
       "file_set",

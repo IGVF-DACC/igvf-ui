@@ -1,4 +1,4 @@
-import { formatDate, formatDateRange } from "../dates";
+import { formatDate, formatDateRange, iso8601ToYearDate } from "../dates";
 
 describe("Date formatter", () => {
   it("should return a formatted date", () => {
@@ -26,5 +26,17 @@ describe("Date-range formatter", () => {
   it("should return one date if only the end date provided", () => {
     const actual = formatDateRange(undefined, "2021-12-31");
     expect(actual).toBe(`December 31, 2021`);
+  });
+});
+
+describe("Test iso8601ToYearDate", () => {
+  it("should return a formatted date with a zero-padded month", () => {
+    const actual = iso8601ToYearDate("2023-08-01T04:12:31.890123+00:00");
+    expect(actual).toBe("2023-08");
+  });
+
+  it("should return a formatted year and month for a two-digit month", () => {
+    const actual = iso8601ToYearDate("2023-12-01T04:12:31.890123+00:00");
+    expect(actual).toBe("2023-12");
   });
 });

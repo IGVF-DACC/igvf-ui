@@ -1,9 +1,9 @@
 // node_modules
-import { useAuth0 } from "@auth0/auth0-react";
 import _ from "lodash";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import PropTypes from "prop-types";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 // components
 import {
   DROPDOWN_ALIGN_RIGHT,
@@ -11,8 +11,7 @@ import {
   DropdownRef,
   useDropdown,
 } from "./dropdown";
-import { ListSelect } from "./form-elements";
-import GlobalContext from "./global-context";
+import { ButtonLink, ListSelect } from "./form-elements";
 // lib
 import {
   abbreviateNumber,
@@ -20,12 +19,15 @@ import {
   truncateText,
 } from "../lib/general";
 import {
-  collectFileSetMonths,
-  convertFileSetsToStatusData,
+  composeFileSetQueryElements,
+  convertFileSetsToLabData,
   filterFileSetsByMonth,
   formatMonth,
+  generateFileSetMonthList,
+  collectFileSetMonths,
   generateNumberArray,
 } from "../lib/home";
+import { encodeUriElement } from "../lib/query-encoding";
 
 // Use a dynamic import to avoid an import error for nivo modules.
 // https://github.com/plouc/nivo/issues/2310#issuecomment-1552663752
@@ -35,9 +37,9 @@ const ResponsiveBar = dynamic(
 );
 
 /**
- * Maximum number of characters to display in a status chart title.
+ * Maximum number of characters to display in the file-set lab chart title.
  */
-const MAX_TITLE_LENGTH = 64;
+const MAX_TERM_LENGTH = 64;
 
 /**
  * Width of the axis on the left side of the chart in pixels. This has to allow enough space for
@@ -53,48 +55,32 @@ const CHART_TICK_COUNT = 5;
 /**
  * Order that data should appear in the chart bars, left to right.
  */
-const keys = ["released", "withFiles", "initiated"];
+const fileSetTypeOrder = ["released", "withFiles", "initiated"];
 
 /**
- * Order that legend labels should appear, left to right.
+ * Configuration for each legend element in display order:
+ *   - id: Unique identifier for the legend element
+ *   - color: Color to display the legend element
+ *   - label: Text to display for the legend element
  */
-const legendKeys = ["initiated", "withFiles", "released"];
-
-/**
- * Colors for each legend chip.
- */
-const dataColor = {
-  released: "#59a14f",
-  initiated: "#f8a72b",
-  withFiles: "#64cccb",
-};
-
-/**
- * Labels for the legend.
- */
-const legendLabelText = {
-  released: "Released Data Sets",
-  initiated: "Initiated Data Sets",
-  withFiles: "Data Sets With Files",
-};
-
-/**
- * Configures the appearance of the chart legend. Add the `data` prop to this before displaying
- * the legend.
- */
-const baseLegendProps = {
-  anchor: "bottom-left",
-  dataFrom: "keys",
-  direction: "row",
-  itemDirection: "left-to-right",
-  justify: false,
-  itemsSpacing: 0,
-  itemWidth: 140,
-  itemHeight: 20,
-  symbolSize: 14,
-  translateX: -AXIS_LEFT_WIDTH,
-  translateY: 40,
-};
+const legendProps = [
+  {
+    id: "initiated",
+    color: "#f8a72b",
+    label: "Initiated Data Sets",
+  },
+  {
+    id: "withFiles",
+    color: "#64cccb",
+    label: "Data Sets With Files",
+  },
+  {
+    id: "released",
+    color: "#59a14f",
+    label: "Released Data Sets",
+  },
+];
+Object.freeze(legendProps);
 
 /**
  * Nivo calls this component to render each tick on the Y axis. It renders the lab and title
@@ -102,7 +88,8 @@ const baseLegendProps = {
  * single {lab}|{title} string, so we have to break those back apart here.
  */
 function CustomYTick({ value, y }) {
-  const [lab, title] = value.split("|");
+  const [lab, termAndPrefix] = value.split("|");
+  const term = termAndPrefix.split("^")[1];
 
   return (
     <g transform={`translate(40,${y})`} id={`bar-${toShishkebabCase(value)}`}>
@@ -124,7 +111,7 @@ function CustomYTick({ value, y }) {
         className="fill-black dark:fill-white"
         fontSize={12}
       >
-        {truncateText(title, MAX_TITLE_LENGTH)}
+        {truncateText(term, MAX_TERM_LENGTH)}
       </text>
     </g>
   );
@@ -167,10 +154,60 @@ CustomXTick.propTypes = {
 };
 
 /**
+ * Renders a custom segment of a bar within a bar chart. The segment represents a count of
+ * MeasurementSets with a specific data-set type. This custom component does the same as the default
+ * `Bar` component, but it wraps the bar in a link to the report page with the appropriate filters.
+ */
+function CustomBar({ bar }) {
+  const barData = bar.data;
+  const dataPoint = barData.data;
+  const [lab, prefixedTerm] = dataPoint.title.split("|");
+  const queryElements = composeFileSetQueryElements(
+    barData.id,
+    dataPoint.selectedMonth
+  );
+
+  // Extract the preferred assay title or assay term name based on the prefix we added earlier.
+  const [prefix, term] = prefixedTerm.split("^");
+  const queryKey =
+    prefix === "prf" ? "preferred_assay_title" : "assay_term.term_name";
+  const termQuery = `&${queryKey}=${encodeUriElement(term)}`;
+
+  return (
+    <Link
+      href={`/multireport/?type=MeasurementSet&lab.title=${encodeUriElement(
+        lab
+      )}${termQuery}${queryElements}`}
+    >
+      <g transform={`translate(${bar.x},${bar.y})`}>
+        <rect width={bar.width} height={bar.height} fill={bar.color} />
+      </g>
+    </Link>
+  );
+}
+
+CustomBar.propTypes = {
+  bar: PropTypes.shape({
+    // X coordinate of the bar
+    x: PropTypes.number.isRequired,
+    // Y coordinate of the bar
+    y: PropTypes.number.isRequired,
+    // Width of the bar
+    width: PropTypes.number.isRequired,
+    // Height of the bar
+    height: PropTypes.number.isRequired,
+    // Data for the bar
+    data: PropTypes.object.isRequired,
+    // Color of the bar
+    color: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
+/**
  * Presents a button that lets the user select a month to filter the chart by.
  */
 function MonthSelector({
-  fileSets,
+  fileSetMonths,
   selectedMonth,
   setSelectedMonth,
   className = "",
@@ -179,7 +216,7 @@ function MonthSelector({
 
   // Collect all the creation months from the file sets and add "All" as the first option. For
   // display, format the currently selected month as "All" or "MMMM yyyy".
-  const months = ["All"].concat(collectFileSetMonths(fileSets));
+  const months = ["All"].concat(generateFileSetMonthList(fileSetMonths));
   const selectedMonthFormatted = formatMonth(selectedMonth, "MMMM yyyy");
 
   // Called when the user selects a month from the dropdown. Update the chart to show only data for
@@ -240,8 +277,8 @@ function MonthSelector({
 }
 
 MonthSelector.propTypes = {
-  // FileSet objects to collect months for
-  fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // FileSet months to collect
+  fileSetMonths: PropTypes.object.isRequired,
   // Currently selected month
   selectedMonth: PropTypes.string.isRequired,
   // Called when the user selects a month
@@ -251,35 +288,85 @@ MonthSelector.propTypes = {
 };
 
 /**
- * Display a bar chart of MeasurementSets by lab and title, breaking each bar into counts by
- * status. The title comes from the `preferred_assay_title` of the MeasurementSet if it exists, or
- * the `assay_term.term_name` if not.
+ * Display the legend for the chart, with a button for each file-set type. The button links to the
+ * report page with the appropriate filters, including a date range if the user has selected a
+ * month.
  */
-export default function ChartFileSetStatus({ fileSets, title }) {
+function Legend({ selectedMonth, fileSetTypeCounts }) {
+  return (
+    <div className="flex items-center gap-1">
+      {legendProps.map((legend) => {
+        if (fileSetTypeCounts[legend.id] > 0) {
+          const queryElement = composeFileSetQueryElements(
+            legend.id,
+            selectedMonth
+          );
+          return (
+            <ButtonLink
+              key={legend.id}
+              type="secondary"
+              size="sm"
+              href={`/multireport/?type=MeasurementSet${queryElement}`}
+              className="gap-1"
+            >
+              <div
+                className="h-3 w-5"
+                style={{ backgroundColor: legend.color }}
+              />
+              <div className="text-xs">{legend.label}</div>
+            </ButtonLink>
+          );
+        }
+      })}
+    </div>
+  );
+}
+
+Legend.propTypes = {
+  // Selected month to filter the chart by in yyyy-MM format, or "All"
+  selectedMonth: PropTypes.string.isRequired,
+  // Counts for each file-set type
+  fileSetTypeCounts: PropTypes.exact({
+    initiated: PropTypes.number,
+    withFiles: PropTypes.number,
+    released: PropTypes.number,
+  }),
+};
+
+/**
+ * Display a bar chart of MeasurementSets by lab and title, breaking each bar into counts by
+ * file-set type. The title comes from the `preferred_assay_title` of the MeasurementSet if it
+ * exists, or the `assay_term.term_name` if not.
+ */
+export default function ChartFileSetLab({ fileSets, title }) {
   // Currently selected month to filter the chart by
   const [selectedMonth, setSelectedMonth] = useState("All");
 
-  // Filter the file sets by the selected month, then convert to a form the Nivo bar chart can use.
-  const selectedFileSets = filterFileSetsByMonth(fileSets, selectedMonth);
-  const { fileSetData, maxCount } =
-    convertFileSetsToStatusData(selectedFileSets);
+  // Generate the array of colors for the bars based on the legend colors and sorted by
+  // `fileSetTypeOrder`. Sort because the order of colors in the bars differs from the order they
+  // appear in the legend.
+  const barColors = legendProps
+    .toSorted(
+      (a, b) => fileSetTypeOrder.indexOf(a.id) - fileSetTypeOrder.indexOf(b.id)
+    )
+    .map((d) => d.color);
 
-  // Determine the number of items in the legend based on whether the user has logged in or not.
-  const { isAuthenticated } = useAuth0();
-  const { darkMode } = useContext(GlobalContext);
-  const legendItems = isAuthenticated ? legendKeys : ["released"];
-  const legendData = legendItems.map((id) => ({
-    id,
-    color: dataColor[id],
-    label: legendLabelText[id],
-  }));
-  const itemTextColor = darkMode.enabled ? "#ffffff" : "#000000";
-  const legendProps = { ...baseLegendProps, data: legendData, itemTextColor };
+  // Filter the file sets by the selected month, then convert to a form the Nivo bar chart can use.
+  const fileSetMonths = collectFileSetMonths(fileSets);
+  const selectedFileSets = filterFileSetsByMonth(
+    fileSets,
+    fileSetMonths,
+    selectedMonth
+  );
+  const { fileSetData, counts, maxCount } = convertFileSetsToLabData(
+    selectedFileSets,
+    selectedMonth
+  );
 
   return (
     <div
       className="relative pb-1"
-      style={{ height: 40 * fileSetData.length + 60 }}
+      style={{ height: 30 * fileSetData.length + 60 }}
     >
       <ResponsiveBar
         data={fileSetData}
@@ -300,16 +387,17 @@ export default function ChartFileSetStatus({ fileSets, title }) {
           const [lab, title] = datum.indexValue.split("|");
           return `${datum.formattedValue} ${datum.id} ${title} from ${lab}`;
         }}
+        barComponent={CustomBar}
         borderColor={{
           from: "color",
           modifiers: [["darker", 1.6]],
         }}
-        colors={[dataColor.released, dataColor.withFiles, dataColor.initiated]}
+        colors={barColors}
         enableGridX={true}
         enableGridY={false}
         indexBy="title"
         indexScale={{ type: "band", round: true }}
-        keys={keys}
+        keys={fileSetTypeOrder}
         labelSkipWidth={12}
         labelSkipHeight={12}
         labelTextColor={{
@@ -317,9 +405,8 @@ export default function ChartFileSetStatus({ fileSets, title }) {
           modifiers: [["darker", 1.6]],
         }}
         layout="horizontal"
-        legends={[legendProps]}
-        margin={{ top: 0, right: 50, bottom: 40, left: AXIS_LEFT_WIDTH + 10 }}
-        padding={0.3}
+        margin={{ top: 0, right: 50, bottom: 50, left: AXIS_LEFT_WIDTH + 10 }}
+        padding={0.2}
         role="application"
         theme={{
           grid: { line: { className: "stroke-gray-300 dark:stroke-gray-700" } },
@@ -328,17 +415,19 @@ export default function ChartFileSetStatus({ fileSets, title }) {
         valueScale={{ type: "linear" }}
         valueFormat={() => null}
       />
-      <MonthSelector
-        fileSets={fileSets}
-        selectedMonth={selectedMonth}
-        setSelectedMonth={(month) => setSelectedMonth(month || "All")}
-        className="absolute bottom-0 right-0"
-      />
+      <div className="right=0 absolute bottom-0 left-0 flex w-full justify-between">
+        <Legend selectedMonth={selectedMonth} fileSetTypeCounts={counts} />
+        <MonthSelector
+          fileSetMonths={fileSetMonths}
+          selectedMonth={selectedMonth}
+          setSelectedMonth={(month) => setSelectedMonth(month || "All")}
+        />
+      </div>
     </div>
   );
 }
 
-ChartFileSetStatus.propTypes = {
+ChartFileSetLab.propTypes = {
   // FileSet objects to display in the chart
   fileSets: PropTypes.arrayOf(PropTypes.object),
   // Title for the chart; used for the chart's aria label
