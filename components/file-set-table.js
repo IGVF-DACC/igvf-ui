@@ -46,7 +46,7 @@ const fileSetColumns = [
 
 /**
  * Display a sortable table of the given file sets. Optionally display a link to a report page of
- * the file sets in this table if you provide the `reportLinkInfo` property.
+ * the file sets in this table.
  *
  * To allow this report link to work, the file sets in this table must each include a link back to
  * the currently displayed item. You specify the nature of this link through the `identifierProp`
@@ -54,6 +54,12 @@ const fileSetColumns = [
  * include a `samples` property containing the accession of the currently displayed item, then
  * `identifierProp` would contain `samples.accession` and `itemIdentifier` would contain the
  * accession of the currently displayed item.
+ *
+ * If you want a link to the report page, you must provide either the `reportLink` or
+ * `reportLinkSpecs` property (not both). If you provide `reportLink`, it must contain the
+ * complete URL of the report page. If you provide `reportLinkSpecs`, it must contain the
+ * properties needed to construct the URL of the report page. The `reportLinkSpecs` object must
+ * contain the following properties:
  *
  * Summary of the `reportLinkInfo` properties:
  *
@@ -66,6 +72,7 @@ const fileSetColumns = [
  */
 export default function FileSetTable({
   fileSets,
+  reportLink = "",
   reportLinkSpecs = null,
   title = "File Sets",
 }) {
@@ -73,21 +80,21 @@ export default function FileSetTable({
   const gridRef = useRef(null);
 
   // Generate the link to the report page if requested.
-  const reportLink = reportLinkSpecs
+  const composedReportLink = reportLinkSpecs
     ? `/multireport/?type=${reportLinkSpecs.fileSetType}&${
         reportLinkSpecs.identifierProp
       }=${encodeUriElement(
         reportLinkSpecs.itemIdentifier
       )}&field=%40id&field=accession&field=samples&field=lab&field=status&field=aliases`
-    : "";
+    : reportLink;
 
   return (
     <>
       <DataAreaTitle>
         {title}
-        {reportLinkSpecs && (
+        {composedReportLink && (
           <DataAreaTitleLink
-            href={reportLink}
+            href={composedReportLink}
             label="Report of file sets that belong to this item"
           >
             <TableCellsIcon className="h-4 w-4" />
@@ -111,7 +118,9 @@ export default function FileSetTable({
 FileSetTable.propTypes = {
   // File sets to display
   fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Object for the page containing this file-set table; null to not include a report link
+  // Link to the report page containing the same file sets as this table
+  reportLink: PropTypes.string,
+  // Object to build a link to the report page containing the same file sets as this table
   reportLinkSpecs: PropTypes.exact({
     // `@type` of the file sets referring to the currently displayed item
     fileSetType: PropTypes.string.isRequired,
