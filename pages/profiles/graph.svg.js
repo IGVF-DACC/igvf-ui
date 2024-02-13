@@ -1,7 +1,7 @@
 // node_modules
 import FetchRequest from "../../lib/fetch-request";
 import PropTypes from "prop-types";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ReactSVGPanZoom,
   INITIAL_VALUE,
@@ -14,59 +14,35 @@ import { ReactSvgPanZoomLoader } from "react-svg-pan-zoom-loader";
 import Breadcrumbs from "../../components/breadcrumbs";
 import PagePreamble from "../../components/page-preamble";
 
-/**
- * Calculates the leftover width and height of a container element. The width goes across
- * the window, and the height goes from the top of the container to the bottom of the
- * window. This is recalculated when the window changes size
- * @param {*} containerRef A ref to the container element, like a <div>
- * @param {*} The inital width and height to use for the returned size
- * @returns An array [width, height] in pixels
- */
-function useLeftoverSize(containerRef, { initialWidth, initialHeight }) {
-  const [size, setSize] = useState({
-    width: initialWidth,
-    height: initialHeight,
-  });
-
-  useEffect(() => {
-    // Once rendered, we can set a value
-    const box = containerRef.current.getBoundingClientRect();
-    setSize({
-      width: containerRef.current.clientWidth,
-      height: window.innerHeight - box.top,
-    });
-
-    window.addEventListener("resize", () => {
-      setSize({
-        width: containerRef.current.clientWidth,
-        height: window.innerHeight - box.top,
-      });
-    });
-
-    return () => {
-      window.removeEventListener("resize", () => {
-        setSize({
-          width: containerRef.current.clientWidth,
-          height: window.innerHeight - box.top,
-        });
-      });
-    };
-  }, []);
-
-  return [size.width, size.height];
-}
-
 export default function GraphSvg({ graph }) {
-  const viewer = useRef(null);
-  const container = useRef(null);
-
+  const [size, setSize] = useState({
+    width: 300,
+    height: 300,
+  });
   const [tool, setTool] = useState(TOOL_NONE);
   const [value, setValue] = useState(INITIAL_VALUE);
 
-  const [width, height] = useLeftoverSize(container, {
-    initialWidth: 300,
-    initialHeight: 300,
-  });
+  const viewer = useRef(null);
+  const container = useRef(null);
+
+  // Called to set the size of the SVG viewer based on the size of the window. We have to cache
+  // this callback so that we can add and remove the same instance of the callback.
+  const setLeftoverSize = useCallback(() => {
+    const box = container.current.getBoundingClientRect();
+    setSize({
+      width: container.current.clientWidth,
+      height: window.innerHeight - box.top,
+    });
+  }, []);
+
+  useEffect(() => {
+    setLeftoverSize();
+    window.addEventListener("resize", setLeftoverSize);
+
+    return () => {
+      window.removeEventListener("resize", setLeftoverSize);
+    };
+  }, []);
 
   useEffect(() => {
     setTool(TOOL_PAN);
@@ -83,8 +59,8 @@ export default function GraphSvg({ graph }) {
           render={(content) => (
             <ReactSVGPanZoom
               ref={viewer}
-              width={width}
-              height={0.9 * height}
+              width={size.width}
+              height={0.9 * size.height}
               tool={tool}
               onChangeTool={setTool}
               value={value}
