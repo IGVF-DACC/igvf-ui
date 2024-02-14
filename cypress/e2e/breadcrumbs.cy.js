@@ -32,7 +32,7 @@ describe("Breadcrumb tests", () => {
 
     cy.get("[aria-label='breadcrumbs']").should("exist");
     cy.get("[data-testid='/']").should("have.text", "Home");
-    cy.get("[data-testid='/profiles']").should("have.text", "Schemas");
+    cy.get("[data-testid='/profiles']").should("have.text", "Schema Directory");
   });
 
   it("shows a three-element breadcrumb on an individual schema page", () => {
@@ -47,7 +47,7 @@ describe("Breadcrumb tests", () => {
 
     cy.get("[aria-label='breadcrumbs']").should("exist");
     cy.get("[data-testid='/']").should("have.text", "Home");
-    cy.get("[data-testid='/profiles']").should("have.text", "Schemas");
+    cy.get("[data-testid='/profiles']").should("have.text", "Schema Directory");
     cy.get("[data-testid='/profiles/award']").should("have.text", "Grant");
   });
 });

@@ -23,7 +23,7 @@ import {
   logoutAuthProvider,
 } from "../lib/authentication";
 import getCollectionTitles from "../lib/collection-titles";
-import getProfiles from "../lib/profiles";
+import { getProfiles } from "../lib/profiles";
 /* istanbul ignore file */
 
 /**

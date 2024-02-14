@@ -30,6 +30,7 @@ export default function TextField({
   fieldLabel = "",
   name,
   value,
+  type = "text",
   message = "",
   size = "md",
   onChange,
@@ -60,6 +61,7 @@ export default function TextField({
         id={name}
         value={value}
         placeholder={placeholder}
+        type={type}
         spellCheck={isSpellCheckDisabled ? "false" : "true"}
         disabled={isDisabled}
         onChange={onChange}
@@ -88,6 +90,8 @@ TextField.propTypes = {
   fieldLabel: PropTypes.string,
   // Value of the text field
   value: PropTypes.string.isRequired,
+  // Type of the text field
+  type: PropTypes.oneOf(["text", "search", "email", "number"]),
   // Message to display below the field
   message: PropTypes.string,
   // Size of the text field

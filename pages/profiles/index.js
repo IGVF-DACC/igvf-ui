@@ -1,20 +1,27 @@
 // node_modules
 import {
   Bars4Icon,
-  MagnifyingGlassIcon,
   QuestionMarkCircleIcon,
   TableCellsIcon,
-  XCircleIcon,
 } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import router from "next/router";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 // components
 import { AddLink } from "../../components/add";
 import Breadcrumbs from "../../components/breadcrumbs";
-import { AttachedButtons, ButtonLink } from "../../components/form-elements";
-import { TextField } from "../../components/form-elements";
+import { useSessionStorage } from "../../components/browser-storage";
+import { DataPanel } from "../../components/data-area";
+import {
+  AttachedButtons,
+  Button,
+  ButtonLink,
+  FormLabel,
+} from "../../components/form-elements";
+import HelpTip from "../../components/help-tip";
 import PagePreamble from "../../components/page-preamble";
+import { SchemaSearchField } from "../../components/profiles";
 import SchemaIcon from "../../components/schema-icon";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
@@ -23,6 +30,13 @@ import { deprecatedSchemas } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { toShishkebabCase } from "../../lib/general";
+import {
+  checkSearchTermSchema,
+  checkSearchTermTitle,
+  SEARCH_MODE_PROPERTIES,
+  SEARCH_MODE_TITLE,
+} from "../../lib/profiles";
+import { decodeUriElement, encodeUriElement } from "../../lib/query-encoding";
 
 /**
  * Copy the given schema object and delete deprecated schemas from it.
@@ -56,34 +70,82 @@ function isDisplayableType(objectType, schemas, tree) {
 }
 
 /**
+ * Display a help tip for the schema search field. Its contents depend on the current search mode.
+ */
+function SchemaSearchHelpTip({ searchMode }) {
+  return (
+    <HelpTip>
+      {searchMode === SEARCH_MODE_TITLE ? (
+        <>Highlight schemas with matching titles.</>
+      ) : (
+        <>
+          Highlight schemas with properties having matching names,{" "}
+          &ldquo;title&rdquo; attributes, or an enum of those properties.
+        </>
+      )}
+    </HelpTip>
+  );
+}
+
+SchemaSearchHelpTip.propTypes = {
+  // The current search mode
+  searchMode: PropTypes.oneOf([SEARCH_MODE_TITLE, SEARCH_MODE_PROPERTIES])
+    .isRequired,
+};
+
+/**
  * Show a text field that lets the user type in a search term to filter the list of schemas.
  */
-function SearchSection({ searchTerm, setSearchTerm }) {
+function SearchSection({
+  searchTerm,
+  setSearchTerm,
+  searchMode,
+  setSearchMode,
+}) {
   return (
-    <section className="sticky top-0 flex items-center gap-2 border-b border-panel bg-background py-4">
-      <label htmlFor="search-schema-name" className="flex items-center gap-1">
-        <MagnifyingGlassIcon className="h-4 w-4" />
-        Name
-      </label>
-      <div className="relative grow">
-        <TextField
-          name="search-schema-name"
-          value={searchTerm}
-          fieldLabel="Schema name search"
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="[&>input]:pr-7"
-          isSpellCheckDisabled
-          isMessageAllowed={false}
-          placeholder="Search schema name"
+    <section className="sticky top-0 border-b border-panel bg-schema-search px-4 py-3">
+      <FormLabel htmlFor="schema-search">
+        {searchMode === SEARCH_MODE_TITLE
+          ? "Search Schema Titles"
+          : "Search Schema Properties"}
+      </FormLabel>
+      <div className="flex gap-2">
+        <AttachedButtons className="[&>button]:h-full">
+          <Button
+            onClick={() => setSearchMode(SEARCH_MODE_TITLE)}
+            type={searchMode === SEARCH_MODE_TITLE ? "selected" : "secondary"}
+            size="sm"
+            label="Search schema titles"
+            role="radio"
+            isSelected={searchMode === SEARCH_MODE_TITLE}
+          >
+            Title
+          </Button>
+          <Button
+            onClick={() => setSearchMode(SEARCH_MODE_PROPERTIES)}
+            type={
+              searchMode === SEARCH_MODE_PROPERTIES ? "selected" : "secondary"
+            }
+            size="sm"
+            label="Search schema properties"
+            role="radio"
+            isSelected={searchMode === SEARCH_MODE_PROPERTIES}
+          >
+            Properties
+          </Button>
+        </AttachedButtons>
+        <SchemaSearchField
+          label={
+            searchMode === SEARCH_MODE_TITLE
+              ? "Schema title search"
+              : "schema property search"
+          }
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          searchMode={searchMode}
         />
-        <button
-          onClick={() => setSearchTerm("")}
-          className="absolute right-0 top-0 flex h-full w-8 cursor-pointer items-center justify-center"
-          aria-label="Clear schema name search"
-        >
-          <XCircleIcon className="h-4 w-4" />
-        </button>
       </div>
+      <SchemaSearchHelpTip searchMode={searchMode} />
     </section>
   );
 }
@@ -93,6 +155,10 @@ SearchSection.propTypes = {
   searchTerm: PropTypes.string.isRequired,
   // Function to set the search term
   setSearchTerm: PropTypes.func.isRequired,
+  // Current search mode: title or properties
+  searchMode: PropTypes.string.isRequired,
+  // Function to set the search mode
+  setSearchMode: PropTypes.func.isRequired,
 };
 
 /**
@@ -139,6 +205,7 @@ function SubTree({
   objectType,
   schemas,
   searchTerm,
+  searchMode,
   collectionTitles = null,
 }) {
   const tooltipAttr = useTooltip(objectType);
@@ -149,8 +216,14 @@ function SubTree({
     isDisplayableType(childObjectType, schemas, tree[childObjectType])
   );
 
-  const isTitleHighlighted =
-    searchTerm && title.toLowerCase().includes(searchTerm.toLowerCase());
+  let isTitleHighlighted = false;
+  if (searchMode === SEARCH_MODE_TITLE) {
+    isTitleHighlighted = checkSearchTermTitle(searchTerm, title);
+  } else {
+    isTitleHighlighted = schema?.properties
+      ? checkSearchTermSchema(searchTerm, schema.properties)
+      : false;
+  }
 
   useEffect(() => {
     if (searchTerm) {
@@ -164,6 +237,17 @@ function SubTree({
     }
   }, [searchTerm]);
 
+  // If at least one title is highlighted and the user has selected the "properties" search mode,
+  // prevent the default link action and instead use the router to navigate to the schema page
+  // with the search term as a hash. Idea from:
+  // https://stackoverflow.com/questions/75657476/next-js-execute-onclick-event-before-href-link-routing#75658026
+  async function onClick(event) {
+    if (isTitleHighlighted && searchMode === SEARCH_MODE_PROPERTIES) {
+      event.preventDefault();
+      await router.push(`${event.target.href}#${encodeUriElement(searchTerm)}`);
+    }
+  }
+
   return (
     <div className="my-1">
       <div
@@ -174,9 +258,12 @@ function SubTree({
         {schema ? (
           <>
             <Link
+              onClick={onClick}
               href={`${schema.$id.replace(".json", "")}`}
-              aria-label={`View schema for ${title}`}
-              className={`block scroll-mt-16${
+              aria-label={`View schema for ${title}${
+                isTitleHighlighted ? " (highlighted)" : ""
+              }`}
+              className={`block scroll-mt-28 @xl:scroll-mt-24${
                 isTitleHighlighted ? " bg-schema-name-highlight" : ""
               }`}
             >
@@ -210,6 +297,7 @@ function SubTree({
                 objectType={childObjectType}
                 schemas={schemas}
                 searchTerm={searchTerm}
+                searchMode={searchMode}
                 collectionTitles={collectionTitles}
                 key={childObjectType}
               />
@@ -230,6 +318,8 @@ SubTree.propTypes = {
   schemas: PropTypes.object.isRequired,
   // Current search term
   searchTerm: PropTypes.string.isRequired,
+  // Search mode: title or properties
+  searchMode: PropTypes.string.isRequired,
   // Maps collection names to corresponding human-readable schema titles
   collectionTitles: PropTypes.object.isRequired,
 };
@@ -237,6 +327,11 @@ SubTree.propTypes = {
 export default function Profiles({ schemas, collectionTitles = null }) {
   // Search term for schema
   const [searchTerm, setSearchTerm] = useState("");
+  // Search mode: title or properties
+  const [searchMode, setSearchMode] = useSessionStorage(
+    "schema-search-mode",
+    SEARCH_MODE_TITLE
+  );
 
   const topLevelObjectTypes = Object.keys(schemas._hierarchy.Item).filter(
     (objectType) =>
@@ -246,26 +341,44 @@ export default function Profiles({ schemas, collectionTitles = null }) {
         schemas._hierarchy.Item[objectType]
       )
   );
+
+  useEffect(() => {
+    // Rerender the page with relevant properties highlighted if we detect a search term in the URL
+    // hash.
+    if (window.location.hash) {
+      setSearchTerm(decodeUriElement(window.location.hash.slice(1)));
+      setSearchMode(SEARCH_MODE_PROPERTIES);
+    }
+  }, []);
+
   return (
     <>
       <Breadcrumbs />
       <PagePreamble />
-      <>
-        <SearchSection searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-        {topLevelObjectTypes.map((objectType) => {
-          const topOfTree = schemas._hierarchy.Item[objectType];
-          return (
-            <SubTree
-              tree={topOfTree}
-              objectType={objectType}
-              schemas={schemas}
-              searchTerm={searchTerm}
-              collectionTitles={collectionTitles}
-              key={objectType}
-            />
-          );
-        })}
-      </>
+      <DataPanel className="p-0">
+        <SearchSection
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          searchMode={searchMode}
+          setSearchMode={setSearchMode}
+        />
+        <div className="px-4 py-2">
+          {topLevelObjectTypes.map((objectType) => {
+            const topOfTree = schemas._hierarchy.Item[objectType];
+            return (
+              <SubTree
+                tree={topOfTree}
+                objectType={objectType}
+                schemas={schemas}
+                searchTerm={searchTerm}
+                searchMode={searchMode}
+                collectionTitles={collectionTitles}
+                key={objectType}
+              />
+            );
+          })}
+        </div>
+      </DataPanel>
     </>
   );
 }
@@ -294,7 +407,7 @@ export async function getServerSideProps({ req }) {
       props: {
         schemas: schemasWithoutDeprecated,
         collectionTitles,
-        pageContext: { title: "Schemas" },
+        pageContext: { title: "Schema Directory" },
         breadcrumbs,
       },
     };

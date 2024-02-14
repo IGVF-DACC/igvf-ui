@@ -168,14 +168,14 @@ function buildSchemaBreadcrumbs(schema: Schema, title: string): Breadcrumb[] {
   if (!title) {
     return [
       {
-        title: "Schemas",
+        title: "Schema Directory",
         href: "/profiles",
       },
     ];
   }
   return [
     {
-      title: "Schemas",
+      title: "Schema Directory",
       href: "/profiles",
     },
     {
