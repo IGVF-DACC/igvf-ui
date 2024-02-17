@@ -14,6 +14,7 @@ const collectionMap = {
   GREGoR: "gregor.svg",
   "IGVF_catalog_beta_v0.1": "igvf-catalog.svg",
   MaveDB: "mave-db.svg",
+  MPRAbase: "mpra-base.svg",
 };
 
 /**
