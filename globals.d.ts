@@ -73,6 +73,11 @@ interface SearchResultsObjectGenerics {
 export interface SchemaProperty {
   title: string;
   type: string;
+  items?: SchemaProperty;
+  properties?: SchemaProperties;
+  enum?: string[];
+  anyOf?: object[];
+  oneOf?: object[];
 }
 
 export interface SchemaProperties {
