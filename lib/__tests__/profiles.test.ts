@@ -4,6 +4,8 @@ import {
   checkSearchTermTitle,
   getProfiles,
 } from "../profiles";
+// types
+import { SchemaProperties } from "../../globals";
 
 describe("Test getProfiles functionality", () => {
   it("retrieves the schema profiles object", () => {
@@ -29,7 +31,7 @@ describe("Test getProfiles functionality", () => {
       })
     );
 
-    getProfiles({ _csfrt_: "mocktoken" }).then((data) => {
+    getProfiles("/data-provider").then((data) => {
       expect(data).toEqual(mockData);
     });
   });
@@ -56,13 +58,14 @@ describe("Test the checkSearchTermTitle", () => {
 });
 
 describe("Test the checkSearchTermSchemas function", () => {
-  const schemaProps = {
+  const schemaProps: SchemaProperties = {
     "@id": {
       title: "ID",
       type: "string",
     },
     "@type": {
       items: {
+        title: "Type Items",
         type: "string",
       },
       title: "Type",
@@ -118,6 +121,18 @@ describe("Test the checkSearchTermSchemas function", () => {
           },
           {
             enum: ["signal", "signal of all reads", "signal of unique reads"],
+          },
+          {
+            oneOf: [
+              {
+                enum: [
+                  "biological_context",
+                  "complexes",
+                  "complexes_complexes",
+                  "complexes_proteins",
+                ],
+              },
+            ],
           },
         ],
       },
@@ -186,6 +201,11 @@ describe("Test the checkSearchTermSchemas function", () => {
       "sparse peak count matrix",
       schemaProps
     );
+    expect(results).toBeTruthy();
+  });
+
+  it("finds a matching embedded oneOf value", () => {
+    const results = checkSearchTermSchema("complexes_proteins", schemaProps);
     expect(results).toBeTruthy();
   });
 
