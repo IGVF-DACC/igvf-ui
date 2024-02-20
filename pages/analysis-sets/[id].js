@@ -62,6 +62,8 @@ export default function AnalysisSet({
                   </DataItemValue>
                 </>
               )}
+              <DataItemLabel>File Set Type</DataItemLabel>
+              <DataItemValue>{analysisSet.file_set_type}</DataItemValue>
               {analysisSet.publication_identifiers?.length > 0 && (
                 <>
                   <DataItemLabel>Publication Identifiers</DataItemLabel>
@@ -110,6 +112,12 @@ export default function AnalysisSet({
                       ))}
                     </SeparatedList>
                   </DataItemValue>
+                </>
+              )}
+              {analysisSet.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{analysisSet.submitter_comment}</DataItemValue>
                 </>
               )}
             </DataArea>
