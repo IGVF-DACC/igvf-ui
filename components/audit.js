@@ -23,7 +23,11 @@ function ErrorIcon({ className }) {
       fill="currentColor"
       data-testid="audit-error-icon"
     >
-      <path d="M18.9,16L11.2,2.7c-0.5-0.9-1.9-0.9-2.4,0L1.1,16C0.6,16.9,1.3,18,2.3,18h15.4C18.7,18,19.4,16.9,18.9,16z" />
+      <path
+        d="M18.9,16L11.2,2.7c-0.5-0.9-1.9-0.9-2.4,0L1.1,16C0.6,16.9,1.3,18,2.3,18h15.4C18.7,18,19.4,16.9,18.9,16z M8.5,5.8
+	C8.5,5,9.2,4.3,10,4.3s1.5,0.7,1.5,1.5v5c0,0.8-0.7,1.5-1.5,1.5s-1.5-0.7-1.5-1.5V5.8z M10,16.9c-0.8,0-1.5-0.7-1.5-1.5
+	s0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5S10.8,16.9,10,16.9z"
+      />
     </svg>
   );
 }
@@ -42,7 +46,11 @@ function WarningIcon({ className }) {
       fill="currentColor"
       data-testid="audit-warning-icon"
     >
-      <circle cx="10" cy="10" r="8" />
+      <path
+        d="M17.7,2H2.3C1.3,2,0.6,3.1,1.1,4l7.7,13.3c0.5,0.9,1.9,0.9,2.4,0L18.9,4C19.4,3.1,18.7,2,17.7,2z M8.5,4.4
+	c0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5v5c0,0.8-0.7,1.5-1.5,1.5s-1.5-0.7-1.5-1.5V4.4z M10,15.5c-0.8,0-1.5-0.7-1.5-1.5
+	s0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5S10.8,15.5,10,15.5z"
+      />
     </svg>
   );
 }
@@ -61,7 +69,12 @@ function NotCompliantIcon({ className }) {
       fill="currentColor"
       data-testid="audit-not-compliant-icon"
     >
-      <path d="M18,4.2C18,3,17,2,15.8,2H4.2C3,2,2,3,2,4.2v11.5C2,17,3,18,4.2,18h11.5c1.2,0,2.3-1,2.3-2.3" />
+      <path
+        d="M15.8,2H4.2C3,2,2,3,2,4.2v11.5C2,17,3,18,4.2,18h11.5c1.2,0,2.3-1,2.3-2.3V4.2C18,3,17,2,15.8,2z M5.8,3.9h3.6
+	c0.8,0,1.5,0.7,1.5,1.5s-0.7,1.5-1.5,1.5H5.8C5,6.9,4.3,6.2,4.3,5.4S5,3.9,5.8,3.9z M11.6,16.3H5.9c-0.8,0-1.5-0.7-1.5-1.5
+	s0.7-1.5,1.5-1.5h5.7c0.8,0,1.5,0.7,1.5,1.5S12.4,16.3,11.6,16.3z M14.2,11.6C14.2,11.6,14.2,11.6,14.2,11.6l-8.3-0.1
+	c-0.8,0-1.5-0.7-1.5-1.5c0-0.8,0.7-1.5,1.5-1.5l8.3,0.1c0.8,0,1.5,0.7,1.5,1.5C15.7,11,15,11.6,14.2,11.6z"
+      />
     </svg>
   );
 }
@@ -80,7 +93,7 @@ function InternalActionIcon({ className }) {
       fill="currentColor"
       data-testid="audit-internal-action-icon"
     >
-      <path d="M18.9,4l-7.7,13.3c-0.5,0.9-1.9,0.9-2.4,0L1.1,4C0.6,3.1,1.3,2,2.3,2h15.4C18.7,2,19.4,3.1,18.9,4z" />
+      <circle cx="10" cy="10" r="8" />
     </svg>
   );
 }
@@ -96,22 +109,22 @@ InternalActionIcon.propTypes = {
 export const auditMap = {
   ERROR: {
     Icon: ErrorIcon,
-    color: "fill-red-500",
+    color: "fill-red-400",
     humanReadable: "Error",
   },
   WARNING: {
     Icon: WarningIcon,
-    color: "fill-orange-500",
+    color: "fill-yellow-300",
     humanReadable: "Warning",
   },
   NOT_COMPLIANT: {
     Icon: NotCompliantIcon,
-    color: "fill-fuchsia-500",
+    color: "fill-orange-400",
     humanReadable: "Not Compliant",
   },
   INTERNAL_ACTION: {
     Icon: InternalActionIcon,
-    color: "fill-blue-600",
+    color: "fill-blue-300",
     humanReadable: "Internal Action",
   },
 };
@@ -258,9 +271,11 @@ export function AuditDetail({ item, auditState, className = null }) {
                           >
                             <div className="flex items-center text-sm font-semibold">
                               {AuditIcon && (
-                                <AuditIcon
-                                  className={`mr-1 h-5 w-5 ${auditMap[level].color}`}
-                                />
+                                <div className="bg-audit mr-1 rounded-sm dark:bg-transparent">
+                                  <AuditIcon
+                                    className={`h-5 w-5 ${auditMap[level].color}`}
+                                  />
+                                </div>
                               )}
                               <div>{audit.category}</div>
                             </div>

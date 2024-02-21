@@ -78,10 +78,11 @@
   --color-button-warning-label-disabled: #d8d8d8;
   --color-button-selected-label-disabled: #b1bad3;
 
-  --color-button-audit-open-background: #d3dfff;
-  --color-button-audit-closed-background: transparent;
+  --color-button-audit-open-background: #0369a1;
+  --color-button-audit-closed-background: #082f49;
   --color-button-audit-border: #384977;
   --color-button-audit-level-detail: #f0f0f0;
+  --color-audit-background: var(--color-button-audit-closed-background);
   --color-audit-level-detail-background: #d0d0d0;
 
   --color-facet-group-button-background: #f0e7ca;
@@ -255,6 +256,7 @@
   --color-button-audit-level: #4e5b75;
   --color-audit-level-detail-background: #4e5b75;
   --color-button-audit-level-detail: #111827;
+  --color-audit-background: #030712;
 
   --color-facet-title-background: #536167;
   --color-facet-title-text: #ffffff;
