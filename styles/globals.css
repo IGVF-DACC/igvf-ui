@@ -88,6 +88,7 @@
   --color-audit-warning-fill: #fad50c;
   --color-audit-not-compliant-fill: #f57b18;
   --color-audit-internal-action-fill: #93c5fd;
+  --color-audit-facet-fill: var(--color-audit-background);
 
   --color-facet-group-button-background: #f0e7ca;
   --color-facet-group-button-selected-background: #bfa678;
@@ -262,6 +263,7 @@
   --color-audit-level-detail-background: #4e5b75;
   --color-button-audit-level-detail: #111827;
   --color-audit-background: #030712;
+  --color-audit-facet-fill: var(--color-audit-closed-background);
 
   --color-facet-title-background: #536167;
   --color-facet-title-text: #ffffff;

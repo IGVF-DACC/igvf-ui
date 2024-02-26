@@ -231,6 +231,7 @@ module.exports = {
         "audit-warning": "var(--color-audit-warning-fill)",
         "audit-not-compliant": "var(--color-audit-not-compliant-fill)",
         "audit-internal-action": "var(--color-audit-internal-action-fill)",
+        "audit-facet": "var(--color-audit-facet-fill)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
