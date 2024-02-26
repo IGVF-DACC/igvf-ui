@@ -78,12 +78,16 @@
   --color-button-warning-label-disabled: #d8d8d8;
   --color-button-selected-label-disabled: #b1bad3;
 
-  --color-button-audit-open-background: #0369a1;
-  --color-button-audit-closed-background: #082f49;
-  --color-button-audit-border: #384977;
+  --color-button-audit-open-background: #d1fae5;
+  --color-button-audit-closed-background: #ffffff;
+  --color-audit-border: #a0a0a0;
   --color-button-audit-level-detail: #f0f0f0;
   --color-audit-background: var(--color-button-audit-closed-background);
   --color-audit-level-detail-background: #d0d0d0;
+  --color-audit-error-fill: #f53333;
+  --color-audit-warning-fill: #fad50c;
+  --color-audit-not-compliant-fill: #f57b18;
+  --color-audit-internal-action-fill: #93c5fd;
 
   --color-facet-group-button-background: #f0e7ca;
   --color-facet-group-button-selected-background: #bfa678;
@@ -251,7 +255,8 @@
   --color-facet-group-button-text: #ffffff;
   --color-facet-group-button-selected-text: #ffffff;
 
-  --color-button-audit-open-background: #384977;
+  --color-button-audit-open-background: #064e3b;
+  --color-button-audit-closed-background: #000000;
   --color-button-audit-border: #8facff;
   --color-button-audit-level: #4e5b75;
   --color-audit-level-detail-background: #4e5b75;

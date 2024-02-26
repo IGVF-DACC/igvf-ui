@@ -109,22 +109,22 @@ InternalActionIcon.propTypes = {
 export const auditMap = {
   ERROR: {
     Icon: ErrorIcon,
-    color: "fill-red-400",
+    color: "fill-audit-error",
     humanReadable: "Error",
   },
   WARNING: {
     Icon: WarningIcon,
-    color: "fill-yellow-300",
+    color: "fill-audit-warning",
     humanReadable: "Warning",
   },
   NOT_COMPLIANT: {
     Icon: NotCompliantIcon,
-    color: "fill-orange-400",
+    color: "fill-audit-not-compliant",
     humanReadable: "Not Compliant",
   },
   INTERNAL_ACTION: {
     Icon: InternalActionIcon,
-    color: "fill-blue-300",
+    color: "fill-audit-internal-action",
     humanReadable: "Internal Action",
   },
 };
@@ -271,7 +271,7 @@ export function AuditDetail({ item, auditState, className = null }) {
                           >
                             <div className="flex items-center text-sm font-semibold">
                               {AuditIcon && (
-                                <div className="bg-audit mr-1 rounded-sm dark:bg-transparent">
+                                <div className="mr-1 rounded-sm bg-audit dark:bg-transparent">
                                   <AuditIcon
                                     className={`h-5 w-5 ${auditMap[level].color}`}
                                   />
@@ -349,7 +349,7 @@ export function AuditStatus({ item, auditState }) {
     return (
       <button
         onClick={auditState.toggleDetailsOpen}
-        className={`flex h-[22px] items-center rounded-full border border-button-audit px-1 ${
+        className={`border-audit flex h-[22px] items-center rounded-full border px-1 ${
           auditState.isDetailOpen
             ? "bg-button-audit-open"
             : "bg-button-audit-closed"
@@ -364,7 +364,7 @@ export function AuditStatus({ item, auditState }) {
           if (Icon) {
             return (
               <Icon
-                className={`h-3 w-3 ${auditMap[level].color}`}
+                className={`h-4 w-4 ${auditMap[level].color}`}
                 key={level}
               />
             );

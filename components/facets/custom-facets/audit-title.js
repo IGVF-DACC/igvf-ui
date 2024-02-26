@@ -19,7 +19,7 @@ export default function AuditTitle({ facet }) {
     >
       <div className="flex items-center justify-center gap-1">
         <div>Audit {mapping.humanReadable}</div>
-        <div className="bg-audit h-4 w-4 rounded-sm">
+        <div className="border-audit h-4 w-4 rounded-sm bg-audit">
           <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
         </div>
       </div>
