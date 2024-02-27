@@ -47,6 +47,8 @@ export interface DatabaseObject {
   "@type": Array<string>;
   actions?: Array<ObjectActions>;
   audit?: Audits;
+  creation_timestamp: string;
+  release_timestamp?: string;
   status: string;
   uuid: string;
   [key: string]: unknown;
