@@ -56,6 +56,7 @@ module.exports = {
         "button-audit-closed": "var(--color-button-audit-closed-background)",
         "button-audit-level-detail": "var(--color-button-audit-level-detail)",
         "audit-level-detail": "var(--color-audit-level-detail-background)",
+        audit: "var(--color-audit-background)",
 
         "facet-group-button": "var(--color-facet-group-button-background)",
         "facet-group-button-selected":
@@ -102,7 +103,7 @@ module.exports = {
         "button-selected-disabled":
           "var(--color-button-selected-border-disabled)",
 
-        "button-audit": "var(--color-button-audit-border)",
+        audit: "var(--color-audit-border)",
 
         "facet-tag": "var(--color-facet-tag-border)",
         "facet-tag-neg": "var(--color-facet-tag-neg-border)",
@@ -225,6 +226,12 @@ module.exports = {
 
         "indexed-state": "var(--color-indexed-state-content)",
         "indexing-state": "var(--color-indexing-state-content)",
+
+        "audit-error": "var(--color-audit-error-fill)",
+        "audit-warning": "var(--color-audit-warning-fill)",
+        "audit-not-compliant": "var(--color-audit-not-compliant-fill)",
+        "audit-internal-action": "var(--color-audit-internal-action-fill)",
+        "audit-facet": "var(--color-audit-facet-fill)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
