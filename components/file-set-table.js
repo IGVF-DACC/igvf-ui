@@ -2,14 +2,11 @@
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useRef } from "react";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
-import { DataGridContainer } from "./data-grid";
-import ScrollIndicators from "./scroll-indicators";
+import PagedDataGrid from "./paged-data-grid";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
-import TableCount from "./table-count";
 // lib
 import { encodeUriElement } from "../lib/query-encoding";
 
@@ -76,9 +73,6 @@ export default function FileSetTable({
   reportLinkSpecs = null,
   title = "File Sets",
 }) {
-  // DOM element for the table so we can attach the scroll indicators
-  const gridRef = useRef(null);
-
   // Generate the link to the report page if requested.
   const composedReportLink = reportLinkSpecs
     ? `/multireport/?type=${reportLinkSpecs.fileSetType}&${
@@ -101,16 +95,15 @@ export default function FileSetTable({
           </DataAreaTitleLink>
         )}
       </DataAreaTitle>
-      <TableCount count={fileSets.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
+      <PagedDataGrid data={fileSets}>
+        {(pageFileSets) => (
           <SortableGrid
-            data={fileSets}
+            data={pageFileSets}
             columns={fileSetColumns}
             keyProp="@id"
           />
-        </DataGridContainer>
-      </ScrollIndicators>
+        )}
+      </PagedDataGrid>
     </>
   );
 }

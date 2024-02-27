@@ -241,20 +241,6 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {measurementSet.control_file_sets?.length > 0 && (
-                  <>
-                    <DataItemLabel>Control File Sets</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {measurementSet.control_file_sets.map((set) => (
-                          <Link href={set["@id"]} key={set["@id"]}>
-                            {set.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
