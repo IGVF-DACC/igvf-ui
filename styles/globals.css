@@ -87,7 +87,7 @@
   --color-audit-error-fill: #f53333;
   --color-audit-warning-fill: #fad50c;
   --color-audit-not-compliant-fill: #f57b18;
-  --color-audit-internal-action-fill: #93c5fd;
+  --color-audit-internal-action-fill: #1b84fa;
   --color-audit-facet-fill: var(--color-audit-background);
 
   --color-facet-group-button-background: #f0e7ca;
