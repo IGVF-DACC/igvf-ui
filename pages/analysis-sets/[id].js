@@ -16,6 +16,7 @@ import {
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -28,6 +29,7 @@ import {
   requestDocuments,
   requestDonors,
   requestFiles,
+  requestFileSets,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -38,6 +40,7 @@ export default function AnalysisSet({
   documents,
   donors,
   files,
+  inputFileSets,
   attribution = null,
   isJson,
 }) {
@@ -69,20 +72,6 @@ export default function AnalysisSet({
                   <DataItemLabel>Publication Identifiers</DataItemLabel>
                   <DataItemValue>
                     <DbxrefList dbxrefs={analysisSet.publication_identifiers} />
-                  </DataItemValue>
-                </>
-              )}
-              {analysisSet.input_file_sets?.length > 0 && (
-                <>
-                  <DataItemLabel>Input File Sets</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {analysisSet.input_file_sets.map((fileSet) => (
-                        <Link href={fileSet["@id"]} key={fileSet["@id"]}>
-                          {fileSet.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
                   </DataItemValue>
                 </>
               )}
@@ -122,6 +111,10 @@ export default function AnalysisSet({
               )}
             </DataArea>
           </DataPanel>
+
+          {inputFileSets.length > 0 && (
+            <FileSetTable fileSets={inputFileSets} title="Input File Sets" />
+          )}
           {files.length > 0 && (
             <FileTable files={files} itemPath={analysisSet["@id"]} />
           )}
@@ -144,6 +137,8 @@ AnalysisSet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Input file sets to display
+  inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
@@ -162,14 +157,25 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = analysisSet.documents
       ? await requestDocuments(analysisSet.documents, request)
       : [];
+
     const filePaths = analysisSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
+
     let donors = [];
     if (analysisSet.donors) {
       const donorPaths = analysisSet.donors.map((donor) => donor["@id"]);
       donors = await requestDonors(donorPaths, request);
     }
+
+    let inputFileSets = [];
+    if (analysisSet.input_file_sets) {
+      const inputFileSetPaths = analysisSet.input_file_sets.map(
+        (inputFileSet) => inputFileSet["@id"]
+      );
+      inputFileSets = await requestFileSets(inputFileSetPaths, request);
+    }
+
     const breadcrumbs = await buildBreadcrumbs(
       analysisSet,
       analysisSet.accession,
@@ -182,6 +188,7 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         files,
+        inputFileSets,
         pageContext: { title: analysisSet.accession },
         breadcrumbs,
         attribution,
