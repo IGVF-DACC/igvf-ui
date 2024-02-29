@@ -9,6 +9,7 @@ import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
+  DataItemList,
   DataItemValue,
   DataItemValueUrl,
   DataPanel,
@@ -91,27 +92,28 @@ export default function Workflow({
               {workflow.workflow_repositories?.length > 0 && (
                 <>
                   <DataItemLabel>Workflow Repositories</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {workflow.workflow_repositories.map((repository) => (
-                        <a
-                          key={repository}
-                          href={repository}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {repository}
-                        </a>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
+                  <DataItemList isCollapsible>
+                    {workflow.workflow_repositories.map((repository) => (
+                      <a
+                        key={repository}
+                        href={repository}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {repository}
+                      </a>
+                    ))}
+                  </DataItemList>
                 </>
               )}
               {workflow.publication_identifiers?.length > 0 && (
                 <>
                   <DataItemLabel>Publication Identifiers</DataItemLabel>
                   <DataItemValue>
-                    <DbxrefList dbxrefs={workflow.publication_identifiers} />
+                    <DbxrefList
+                      dbxrefs={workflow.publication_identifiers}
+                      isCollapsible
+                    />
                   </DataItemValue>
                 </>
               )}

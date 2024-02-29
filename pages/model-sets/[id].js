@@ -96,7 +96,10 @@ export default function ModelSet({
                   <>
                     <DataItemLabel>Publication Identifiers</DataItemLabel>
                     <DataItemValue>
-                      <DbxrefList dbxrefs={modelSet.publication_identifiers} />
+                      <DbxrefList
+                        dbxrefs={modelSet.publication_identifiers}
+                        isCollapsible
+                      />
                     </DataItemValue>
                   </>
                 )}

@@ -8,8 +8,8 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
   DataItemLabel,
+  DataItemList,
   DataItemValue,
-  DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
 import DocumentAttachmentLink from "../../components/document-link";
@@ -63,7 +63,7 @@ export default function Document({ document, attribution = null, isJson }) {
               {document.urls?.length > 0 && (
                 <>
                   <DataItemLabel>Additional Information</DataItemLabel>
-                  <DataItemValueUrl>
+                  <DataItemList isCollapsible isUrlList>
                     {document.urls.map((url) => (
                       <div key={url}>
                         <a href={url} target="_blank" rel="noopener noreferrer">
@@ -71,7 +71,7 @@ export default function Document({ document, attribution = null, isJson }) {
                         </a>
                       </div>
                     ))}
-                  </DataItemValueUrl>
+                  </DataItemList>
                 </>
               )}
               <DataItemLabel>Download</DataItemLabel>

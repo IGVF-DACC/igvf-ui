@@ -71,7 +71,10 @@ export default function AnalysisSet({
                 <>
                   <DataItemLabel>Publication Identifiers</DataItemLabel>
                   <DataItemValue>
-                    <DbxrefList dbxrefs={analysisSet.publication_identifiers} />
+                    <DbxrefList
+                      dbxrefs={analysisSet.publication_identifiers}
+                      isCollapsible
+                    />
                   </DataItemValue>
                 </>
               )}

@@ -7,16 +7,13 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
-import ChromosomeLocations from "../../components/chromosome-locations";
 import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
+  DataItemList,
   DataItemValue,
-  DataItemValueCollapseControl,
-  DataItemValueControlLabel,
   DataPanel,
-  useDataAreaCollapser,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
@@ -45,19 +42,16 @@ export default function PredictionSet({
   attribution = null,
   isJson,
 }) {
-  const genesCollapser = useDataAreaCollapser(predictionSet.targeted_genes);
-  const lociCollapser = useDataAreaCollapser(predictionSet.targeted_loci);
   const constructLibrarySets =
     predictionSet.samples?.length > 0
-      ? predictionSet.samples.reduce((acc, sample) => {
-          if (sample.construct_library_sets) {
-            return acc.concat(sample.construct_library_sets);
-          }
-          return acc;
-        }, [])
+      ? predictionSet.samples.reduce(
+          (acc, sample) =>
+            sample.construct_library_sets
+              ? acc.concat(sample.construct_library_sets)
+              : acc,
+          []
+        )
       : [];
-  const constructLibrarySetCollapser =
-    useDataAreaCollapser(constructLibrarySets);
 
   return (
     <>
@@ -77,7 +71,7 @@ export default function PredictionSet({
                   <>
                     <DataItemLabel>Donors</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
+                      <SeparatedList isCollapsible>
                         {donors.map((donor) => (
                           <Link href={donor["@id"]} key={donor.uuid}>
                             {donor.accession}
@@ -91,7 +85,7 @@ export default function PredictionSet({
                   <>
                     <DataItemLabel>Samples</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
+                      <SeparatedList isCollapsible>
                         {predictionSet.samples.map((sample) => (
                           <Link href={sample["@id"]} key={sample["@id"]}>
                             {sample.accession}
@@ -101,88 +95,30 @@ export default function PredictionSet({
                     </DataItemValue>
                   </>
                 )}
-                {constructLibrarySetCollapser.displayedData.length > 0 && (
+                {constructLibrarySets.length > 0 && (
                   <>
                     <DataItemLabel>Construct Library Sets</DataItemLabel>
-                    <DataItemValue>
-                      {constructLibrarySetCollapser.displayedData.map(
-                        (con, i) => {
-                          return (
-                            <div
-                              key={con["@id"]}
-                              className="my-1 first:mt-0 last:mb-0"
-                            >
-                              <div>
-                                <Link href={con["@id"]}>{con.accession}</Link>
-                                <span className="text-gray-400 dark:text-gray-600">
-                                  {" "}
-                                  {con.summary}
-                                </span>
-                              </div>
-                              {i ===
-                                constructLibrarySetCollapser.displayedData
-                                  .length -
-                                  1 && (
-                                <DataItemValueCollapseControl
-                                  collapser={constructLibrarySetCollapser}
-                                >
-                                  <DataItemValueControlLabel
-                                    collapser={constructLibrarySetCollapser}
-                                  />
-                                </DataItemValueCollapseControl>
-                              )}
-                            </div>
-                          );
-                        }
-                      )}
-                    </DataItemValue>
+                    <DataItemList isCollapsible>
+                      {constructLibrarySets.map((fileSet) => {
+                        return (
+                          <div key={fileSet["@id"]}>
+                            <Link href={fileSet["@id"]}>
+                              {fileSet.accession}
+                            </Link>
+                            <span className="text-gray-600 dark:text-gray-400">
+                              {" "}
+                              {fileSet.summary}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </DataItemList>
                   </>
                 )}
                 {predictionSet.scope && (
                   <>
                     <DataItemLabel>Scope</DataItemLabel>
                     <DataItemValue>{predictionSet.scope}</DataItemValue>
-                  </>
-                )}
-                {genesCollapser.displayedData.length > 0 && (
-                  <>
-                    <DataItemLabel>Targeted Genes</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {genesCollapser.displayedData.map((gene, index) => (
-                          <Fragment key={gene}>
-                            <Link href={gene}>{gene}</Link>
-                            {index ===
-                              genesCollapser.displayedData.length - 1 && (
-                              <DataItemValueCollapseControl
-                                key="more-control"
-                                collapser={genesCollapser}
-                                className="ml-1 inline-block"
-                              >
-                                <DataItemValueControlLabel
-                                  key="more-control"
-                                  collapser={genesCollapser}
-                                  className="ml-1 inline-block"
-                                />
-                              </DataItemValueCollapseControl>
-                            )}
-                          </Fragment>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                {lociCollapser.displayedData.length > 0 && (
-                  <>
-                    <DataItemLabel>Targeted Loci</DataItemLabel>
-                    <DataItemValue>
-                      <ChromosomeLocations
-                        locations={lociCollapser.displayedData}
-                      />
-                      <DataItemValueCollapseControl collapser={lociCollapser}>
-                        <DataItemValueControlLabel collapser={lociCollapser} />
-                      </DataItemValueCollapseControl>
-                    </DataItemValue>
                   </>
                 )}
               </FileSetDataItems>

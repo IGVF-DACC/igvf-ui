@@ -13,7 +13,7 @@ export default function ProductInfo({
   productId = null,
   lotId = null,
 }) {
-  const prodLot = lotId ? `${productId} (${lotId})` : "";
+  const prodLot = lotId ? `${productId} (${lotId})` : productId;
   if (sources.length > 0) {
     const sourceType = pathToType(sources[0]["@id"]);
     if (sourceType === "sources") {

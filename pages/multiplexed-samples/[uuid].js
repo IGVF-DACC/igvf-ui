@@ -32,7 +32,6 @@ import {
   requestBiomarkers,
   requestBiosamples,
   requestDocuments,
-  requestDonors,
   requestFileSets,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -42,7 +41,7 @@ import { Ok } from "../../lib/result";
 
 export default function MultiplexedSample({
   multiplexedSample,
-  constructLibrarySets = [],
+  constructLibrarySets,
   biomarkers,
   documents,
   attribution = null,
@@ -148,7 +147,7 @@ MultiplexedSample.propTypes = {
   // MultiplexedSample-cell sample to display
   multiplexedSample: PropTypes.object.isRequired,
   // Construct libraries that link to this MutliplexedSample
-  constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sorted fractions sample
@@ -188,15 +187,13 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = multiplexedSample.documents
       ? await requestDocuments(multiplexedSample.documents, request)
       : [];
-    const donors = multiplexedSample.donors
-      ? await requestDonors(multiplexedSample.donors, request)
-      : [];
     const sortedFractions =
       multiplexedSample.sorted_fractions?.length > 0
         ? await requestBiosamples(multiplexedSample.sorted_fractions, request)
         : [];
-    // For sources, use getMultipleObjects for sources instead of getMultipleObjectBulk.
-    // Sources point at both lab and source objects, however, it currently only LinkTo sources.
+
+    // Use getMultipleObjects for sources instead of getMultipleObjectBulk. Sources point at both
+    // lab and source objects, however, it currently only LinkTo sources.
     let sources = [];
     if (multiplexedSample.sources?.length > 0) {
       const sourcePaths = multiplexedSample.sources.map(
@@ -223,7 +220,6 @@ export async function getServerSideProps({ params, req, query }) {
         constructLibrarySets,
         biomarkers,
         documents,
-        donors,
         sortedFractions,
         sources,
         pageContext: {

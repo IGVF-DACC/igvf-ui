@@ -33,7 +33,6 @@ import {
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { truthyOrZero } from "../../lib/general";
 import { splitIlluminaSequenceFiles } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 
@@ -42,7 +41,6 @@ export default function AuxiliarySet({
   documents,
   donors,
   libraryConstructionPlatform = null,
-  constructLibraries,
   files,
   relatedDatasets,
   seqspecFiles,
@@ -72,7 +70,7 @@ export default function AuxiliarySet({
                   <>
                     <DataItemLabel>Donors</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
+                      <SeparatedList isCollapsible>
                         {donors.map((donor) => (
                           <Link href={donor["@id"]} key={donor.uuid}>
                             {donor.accession}
@@ -86,7 +84,7 @@ export default function AuxiliarySet({
                   <>
                     <DataItemLabel>Samples</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
+                      <SeparatedList isCollapsible>
                         {auxiliarySet.samples.map((sample) => (
                           <Link href={sample["@id"]} key={sample["@id"]}>
                             {sample.accession}
@@ -104,29 +102,6 @@ export default function AuxiliarySet({
                         {libraryConstructionPlatform.term_name}
                       </Link>
                     </DataItemValue>
-                  </>
-                )}
-                {constructLibraries.length > 0 && (
-                  <>
-                    <DataItemLabel>Construct Libraries</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {constructLibraries.map((constructLibrary) => (
-                          <Link
-                            href={constructLibrary["@id"]}
-                            key={constructLibrary["@id"]}
-                          >
-                            {constructLibrary.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                {truthyOrZero(auxiliarySet.moi) && (
-                  <>
-                    <DataItemLabel>MOI</DataItemLabel>
-                    <DataItemValue>{auxiliarySet.moi}</DataItemValue>
                   </>
                 )}
               </FileSetDataItems>
@@ -196,8 +171,6 @@ AuxiliarySet.propTypes = {
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Library construction platform object
   libraryConstructionPlatform: PropTypes.object,
-  // Construct library objects
-  constructLibraries: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Related Datasets to display
@@ -239,10 +212,6 @@ export async function getServerSideProps({ params, req, query }) {
             await request.getObject(auxiliarySet.library_construction_platform)
           ).optional()
         : null;
-
-    const constructLibraries = auxiliarySet.construct_libraries
-      ? await requestFileSets(auxiliarySet.construct_libraries, request)
-      : [];
 
     let files = [];
     if (auxiliarySet.files.length > 0) {
@@ -302,7 +271,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         libraryConstructionPlatform,
-        constructLibraries,
         files,
         relatedDatasets,
         seqspecFiles,

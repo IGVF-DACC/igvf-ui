@@ -185,27 +185,6 @@ export async function requestOntologyTerms(
 }
 
 /**
- * Retrieve the phenotypic-feature objects for the given phenotypic-feature paths from the data
- * provider.
- * @param {Array<string>} paths Paths to the phenotypic-feature objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The phenotypic features objects requested
- */
-export async function requestPhenotypicFeatures(
-  paths: Array<string>,
-  request: FetchRequest
-): Promise<Array<DataProviderObject>> {
-  return (
-    await request.getMultipleObjectsBulk(paths, [
-      "feature",
-      "observation_date",
-      "quantity",
-      "quantity_units",
-    ])
-  ).unwrap_or([]);
-}
-
-/**
  * Retrieve the samples objects for the given sample paths from the data provider.
  * @param {Array<string>} paths Paths to the samples objects to request
  * @param {FetchRequest} request The request object to use to make the request

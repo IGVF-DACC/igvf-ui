@@ -48,6 +48,10 @@
   --color-data-background: #ffffff;
   --color-data-header-background: #e0e0e0;
   --color-data-border: #c0c0c0;
+  --color-data-list-item-border: #e5e7eb;
+  --color-collapse-ctrl-border: #e5e7eb;
+  --color-collapse-ctrl-text: #374151;
+  --color-collapse-ctrl-background: #f3f4f6;
 
   --color-panel-background: #fff;
   --color-panel-border: #d0d0d0;
@@ -230,6 +234,11 @@
   --color-highlight: #2c3f66;
   --color-highlight-border: #45629f;
   --color-title-border: #6b7280;
+
+  --color-data-list-item-border: #374151;
+  --color-collapse-ctrl-border: #374151;
+  --color-collapse-ctrl-text: #9ca3af;
+  --color-collapse-ctrl-background: #1f2937;
 
   --color-panel-background: #000205;
   --color-panel-border: #4e5b75;

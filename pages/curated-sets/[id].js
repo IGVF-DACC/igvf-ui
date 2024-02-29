@@ -67,6 +67,7 @@ export default function CuratedSet({
                     <DataItemValue>
                       <DbxrefList
                         dbxrefs={curatedSet.publication_identifiers}
+                        isCollapsible
                       />
                     </DataItemValue>
                   </>
@@ -75,7 +76,7 @@ export default function CuratedSet({
                   <>
                     <DataItemLabel>Donors</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
+                      <SeparatedList isCollapsible>
                         {donors.map((donor) => (
                           <Link href={donor["@id"]} key={donor.uuid}>
                             {donor.accession}
@@ -89,7 +90,7 @@ export default function CuratedSet({
                   <>
                     <DataItemLabel>Samples</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
+                      <SeparatedList isCollapsible>
                         {curatedSet.samples.map((sample) => (
                           <Link href={sample["@id"]} key={sample["@id"]}>
                             {sample.accession}

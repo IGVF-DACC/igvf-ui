@@ -1,6 +1,12 @@
 // node_modules
 import PropTypes from "prop-types";
-import React from "react";
+import { Children, Fragment } from "react";
+// components
+import {
+  CollapseControlInline,
+  DEFAULT_MAX_COLLAPSE_ITEMS_INLINE,
+  useCollapseControl,
+} from "./collapse-control";
 
 /**
  * Display a list of inline React components with a separator between the items -- sort of like
@@ -42,23 +48,42 @@ export default function SeparatedList({
   separator = ", ",
   className = "",
   testid = null,
+  isCollapsible = false,
+  maxItemsBeforeCollapse = DEFAULT_MAX_COLLAPSE_ITEMS_INLINE,
   children,
 }) {
-  if (children.length > 0) {
+  const collapser = useCollapseControl(
+    children,
+    isCollapsible,
+    maxItemsBeforeCollapse
+  );
+  const items = isCollapsible ? collapser.items : Children.toArray(children);
+
+  if (items.length > 0) {
     return (
       <div className={className || ""} data-testid={testid}>
-        {children
+        {items
           .filter(Boolean)
-          .map((item) => <React.Fragment key={item.key}>{item}</React.Fragment>)
+          .map((item) => <Fragment key={item.key}>{item}</Fragment>)
           .reduce((combined, curr, index) => [
             combined,
-            <React.Fragment key={`sep-${index}`}>{separator}</React.Fragment>,
-            curr,
+            <Fragment key={`sep-${index}`}>{separator}</Fragment>,
+            <Fragment key={`sep-${index + 1}`}>
+              {curr}
+              {collapser.isCollapseControlVisible &&
+              index === collapser.items.length - 1 ? (
+                <CollapseControlInline
+                  length={children.length}
+                  isCollapsed={collapser.isCollapsed}
+                  setIsCollapsed={collapser.setIsCollapsed}
+                />
+              ) : null}
+            </Fragment>,
           ])}
       </div>
     );
   }
-  return <div className={className || ""}>{children}</div>;
+  return null;
 }
 
 SeparatedList.propTypes = {
@@ -68,4 +93,8 @@ SeparatedList.propTypes = {
   className: PropTypes.string,
   // Test ID for wrapper element
   testid: PropTypes.string,
+  // True if the list should be collapsible
+  isCollapsible: PropTypes.bool,
+  // Maximum number of items before the list appears collapsed
+  maxItemsBeforeCollapse: PropTypes.number,
 };

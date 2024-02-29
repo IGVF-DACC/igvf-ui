@@ -39,6 +39,8 @@ module.exports = {
         panel: "var(--color-panel-background)",
         "form-element": "var(--color-form-element-background)",
 
+        "collapse-ctrl": "var(--color-collapse-ctrl-background)",
+
         "button-primary": "var(--color-button-primary-background)",
         "button-secondary": "var(--color-button-secondary-background)",
         "button-warning": "var(--color-button-warning-background)",
@@ -89,6 +91,10 @@ module.exports = {
         panel: "var(--color-panel-border)",
         "form-element": "var(--color-form-element-border)",
         "form-element-disabled": "var(--color-form-element-border-disabled)",
+
+        "data-list-item": "var(--color-data-list-item-border)",
+
+        "collapse-ctrl": "var(--color-collapse-ctrl-border)",
 
         "button-primary": "var(--color-button-primary-border)",
         "button-secondary": "var(--color-button-secondary-border)",
@@ -157,6 +163,8 @@ module.exports = {
           "var(--color-button-selected-label-disabled)",
         "form-element": "var(--color-form-element-label)",
         "form-element-disabled": "var(--color-form-element-label-disabled)",
+
+        "collapse-ctrl": "var(--color-collapse-ctrl-text)",
 
         "button-facet-group": "var(--color-button-facet-group-text)",
         "button-facet-group-selected":

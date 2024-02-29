@@ -11,11 +11,9 @@ import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
+  DataItemList,
   DataItemValue,
-  DataItemValueCollapseControl,
-  DataItemValueControlLabel,
   DataPanel,
-  useDataAreaCollapser,
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
@@ -83,28 +81,30 @@ export default function MeasurementSet({
   attribution = null,
   isJson,
 }) {
-  const samplesCollapser = useDataAreaCollapser(measurementSet.samples || []);
   const { filesWithReadType, filesWithoutReadType, imageFileType } =
     splitIlluminaSequenceFiles(files);
 
-  // Collect all the embedded construct library sets from all the samples in the FileSet.
-  const constructLibrarySets = measurementSet.samples.reduce((acc, sample) => {
-    if (sample.construct_library_sets) {
-      return acc.concat(sample.construct_library_sets);
-    }
-    return acc;
-  }, []);
-  const constructLibrarySetCollapser =
-    useDataAreaCollapser(constructLibrarySets);
+  // Collect all the embedded construct library sets from all the samples in the FileSet. Remove
+  // those with duplicate `@id` values.
+  const constructLibrarySets = measurementSet.samples.reduce(
+    (acc, sample) =>
+      sample.construct_library_sets
+        ? acc.concat(sample.construct_library_sets)
+        : acc,
+    []
+  );
+  const uniqueConstructLibrarySets = constructLibrarySets.filter(
+    (fileSet, index, self) =>
+      index ===
+      self.findIndex((otherFileSet) => otherFileSet["@id"] === fileSet["@id"])
+  );
 
   // Collect all sample summaries and display them as a collapsible list.
   const sampleSummaries =
     measurementSet.samples?.length > 0
       ? measurementSet.samples.map((sample) => sample.summary)
       : [];
-  const sampleSummariesCollapser = useDataAreaCollapser([
-    ...new Set(sampleSummaries),
-  ]);
+  const uniqueSampleSummaries = [...new Set(sampleSummaries)];
 
   return (
     <>
@@ -134,6 +134,7 @@ export default function MeasurementSet({
                     <DataItemValue>
                       <DbxrefList
                         dbxrefs={measurementSet.publication_identifiers}
+                        isCollapsible
                       />
                     </DataItemValue>
                   </>
@@ -142,7 +143,7 @@ export default function MeasurementSet({
                   <>
                     <DataItemLabel>Donors</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
+                      <SeparatedList isCollapsible>
                         {donors.map((donor) => (
                           <Link href={donor["@id"]} key={donor.uuid}>
                             {donor.accession}
@@ -152,93 +153,42 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {samplesCollapser.displayedData.length > 0 && (
+                {measurementSet.samples?.length > 0 && (
                   <>
                     <DataItemLabel>Samples</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
-                        {samplesCollapser.displayedData.map((sample, index) => (
-                          <Fragment key={sample["@id"]}>
-                            <Link href={sample["@id"]}>{sample.accession}</Link>
-                            {index ===
-                              samplesCollapser.displayedData.length - 1 && (
-                              <DataItemValueCollapseControl
-                                key="more-control"
-                                collapser={samplesCollapser}
-                                className="ml-1 inline-block"
-                              >
-                                <DataItemValueControlLabel
-                                  collapser={samplesCollapser}
-                                />
-                              </DataItemValueCollapseControl>
-                            )}
-                          </Fragment>
+                      <SeparatedList isCollapsible>
+                        {measurementSet.samples.map((sample) => (
+                          <Link key={sample["@id"]} href={sample["@id"]}>
+                            {sample.accession}
+                          </Link>
                         ))}
                       </SeparatedList>
                     </DataItemValue>
                   </>
                 )}
-                {sampleSummariesCollapser.displayedData.length > 0 && (
+                {uniqueSampleSummaries.length > 0 && (
                   <>
                     <DataItemLabel>Sample Summaries</DataItemLabel>
-                    <DataItemValue>
-                      <>
-                        {sampleSummariesCollapser.displayedData.map(
-                          (summary) => (
-                            <div
-                              key={summary}
-                              className="my-2 first:mt-0 last:mb-0"
-                            >
-                              {summary}
-                            </div>
-                          )
-                        )}
-                        <DataItemValueCollapseControl
-                          collapser={sampleSummariesCollapser}
-                        >
-                          <DataItemValueControlLabel
-                            collapser={sampleSummariesCollapser}
-                          />
-                        </DataItemValueCollapseControl>
-                      </>
-                    </DataItemValue>
+                    <DataItemList isCollapsible>
+                      {uniqueSampleSummaries}
+                    </DataItemList>
                   </>
                 )}
-                {constructLibrarySetCollapser.displayedData.length > 0 && (
+                {uniqueConstructLibrarySets.length > 0 && (
                   <>
                     <DataItemLabel>Construct Library Sets</DataItemLabel>
-                    <DataItemValue>
-                      {constructLibrarySetCollapser.displayedData.map(
-                        (con, i) => {
-                          return (
-                            <div
-                              key={con["@id"]}
-                              className="my-1 first:mt-0 last:mb-0"
-                            >
-                              <div>
-                                <Link href={con["@id"]}>{con.accession}</Link>
-                                <span className="text-gray-400 dark:text-gray-600">
-                                  {" "}
-                                  {con.summary}
-                                </span>
-                              </div>
-                              {i ===
-                                constructLibrarySetCollapser.displayedData
-                                  .length -
-                                  1 && (
-                                <DataItemValueCollapseControl
-                                  collapser={constructLibrarySetCollapser}
-                                >
-                                  <DataItemValueControlLabel
-                                    collapser={constructLibrarySetCollapser}
-                                  />
-                                </DataItemValueCollapseControl>
-                              )}
-                            </div>
-                          );
-                        }
-                      )}
-                    </DataItemValue>
+                    <DataItemList isCollapsible>
+                      {uniqueConstructLibrarySets.map((fileSet) => (
+                        <Fragment key={fileSet["@id"]}>
+                          <Link href={fileSet["@id"]}>{fileSet.accession}</Link>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            {" "}
+                            {fileSet.summary}
+                          </span>
+                        </Fragment>
+                      ))}
+                    </DataItemList>
                   </>
                 )}
               </FileSetDataItems>
@@ -267,15 +217,13 @@ export default function MeasurementSet({
                         Protocol
                         {measurementSet.protocols.length === 1 ? "" : "s"}
                       </DataItemLabel>
-                      <DataItemValue>
-                        <SeparatedList>
-                          {measurementSet.protocols.map((protocol) => (
-                            <Link href={protocol} key={protocol}>
-                              {protocol}
-                            </Link>
-                          ))}
-                        </SeparatedList>
-                      </DataItemValue>
+                      <DataItemList isCollapsible isUrlList>
+                        {measurementSet.protocols.map((protocol) => (
+                          <Link href={protocol} key={protocol}>
+                            {protocol}
+                          </Link>
+                        ))}
+                      </DataItemList>
                     </>
                   )}
                 </DataArea>
