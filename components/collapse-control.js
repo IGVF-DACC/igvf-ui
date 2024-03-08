@@ -145,7 +145,7 @@ export function CollapseControlVertical({
   return (
     <button
       onClick={() => setIsCollapsed(!isCollapsed)}
-      className="block items-center rounded-b-sm border-b border-l border-r border-collapse-ctrl bg-collapse-ctrl py-0.5 pl-2.5 pr-1.5 text-xs font-bold text-collapse-ctrl"
+      className="border-collapse-ctrl bg-collapse-ctrl text-collapse-ctrl block flex items-center rounded-b-sm border-b border-l border-r py-0.5 pl-2.5 pr-1.5 text-xs font-bold"
       data-testid="collapse-control-vertical"
       aria-label={label}
     >
@@ -153,12 +153,12 @@ export function CollapseControlVertical({
         <>
           {"ALL "}
           {length}
-          <ArrowDownIcon className="ml-0.5 inline-block h-3 w-3" />
+          <ArrowDownIcon className="ml-0.5 h-3 w-3" />
         </>
       ) : (
         <>
           {"FEWER "}
-          <ArrowUpIcon className="inline h-4 w-4" />
+          <ArrowUpIcon className="h-4 w-4" />
         </>
       )}
     </button>
