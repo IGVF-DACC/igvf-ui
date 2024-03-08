@@ -2,15 +2,13 @@
 import _ from "lodash";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 // components
 import Breadcrumbs from "../components/breadcrumbs";
-import { DataGridContainer } from "../components/data-grid";
 import { FacetSection, FacetTags } from "../components/facets";
 import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
 import { generateColumns, ReportHeaderCell } from "../components/report/";
-import ScrollIndicators from "../components/scroll-indicators";
 import { SearchPager, useSearchLimits } from "../components/search-results";
 import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
@@ -127,9 +125,6 @@ export default function MultiReport({ searchResults }) {
   const { collectionTitles, profiles } = useContext(SessionContext);
   const { totalPages } = useSearchLimits(searchResults);
 
-  // Ref of the scrollable table DOM <div> so we can detect scroll position
-  const gridRef = useRef(null);
-
   const { path, queryString } = splitPathAndQueryString(searchResults["@id"]);
   const sortedColumnId = getSortColumn(searchResults);
   const nonSortableColumnIds = searchResults.non_sortable || [];
@@ -232,21 +227,18 @@ export default function MultiReport({ searchResults }) {
               />
               <TableCount count={searchResults.total} />
               {totalPages > 1 && <SearchPager searchResults={searchResults} />}
-              <ScrollIndicators gridRef={gridRef}>
-                <DataGridContainer ref={gridRef}>
-                  <SortableGrid
-                    data={items}
-                    columns={columns}
-                    initialSort={{ isSortingSuppressed: true }}
-                    meta={{
-                      onHeaderCellClick,
-                      sortedColumnId,
-                      nonSortableColumnIds,
-                    }}
-                    CustomHeaderCell={ReportHeaderCell}
-                  />
-                </DataGridContainer>
-              </ScrollIndicators>
+              <SortableGrid
+                data={items}
+                columns={columns}
+                initialSort={{ isSortingSuppressed: true }}
+                meta={{
+                  onHeaderCellClick,
+                  sortedColumnId,
+                  nonSortableColumnIds,
+                }}
+                isTotalCountHidden
+                CustomHeaderCell={ReportHeaderCell}
+              />
             </div>
           </div>
         ) : (

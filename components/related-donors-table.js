@@ -2,7 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
-import { DataGridContainer } from "./data-grid";
+import { DataAreaTitle } from "./data-area";
 import SortableGrid from "./sortable-grid";
 
 const relatedDonorsColumns = [
@@ -12,6 +12,7 @@ const relatedDonorsColumns = [
     display: ({ source }) => {
       return <Link href={source.donor["@id"]}>{source.donor.accession}</Link>;
     },
+    sorter: (item) => item.donor.accession,
   },
   {
     id: "relationship_type",
@@ -22,19 +23,25 @@ const relatedDonorsColumns = [
 /**
  * Display a sortable table of the given donors.
  */
-export default function RelatedDonorsTable({ relatedDonors }) {
+export default function RelatedDonorsTable({
+  relatedDonors,
+  title = "Related Donors",
+}) {
   return (
-    <DataGridContainer>
+    <>
+      <DataAreaTitle>{title}</DataAreaTitle>
       <SortableGrid
         data={relatedDonors}
         columns={relatedDonorsColumns}
-        keyProp="@id"
+        pager={{}}
       />
-    </DataGridContainer>
+    </>
   );
 }
 
 RelatedDonorsTable.propTypes = {
   // Related donors to display
   relatedDonors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Title of the table if not "Related Donors"
+  title: PropTypes.string,
 };

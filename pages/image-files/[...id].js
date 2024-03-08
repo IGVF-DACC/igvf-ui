@@ -5,7 +5,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
-import { DataArea, DataAreaTitle, DataPanel } from "../../components/data-area";
+import { DataArea, DataPanel } from "../../components/data-area";
 import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
@@ -58,28 +58,19 @@ export default function ImageFile({
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (
-            <>
-              <DataAreaTitle>
-                Files {imageFile.accession} Derives From
-              </DataAreaTitle>
-              <DerivedFromTable
-                derivedFrom={derivedFrom}
-                derivedFromFileSets={derivedFromFileSets}
-              />
-            </>
+            <DerivedFromTable
+              derivedFrom={derivedFrom}
+              derivedFromFileSets={derivedFromFileSets}
+              title={`Files ${imageFile.accession} Derives From`}
+            />
           )}
           {fileFormatSpecifications.length > 0 && (
-            <>
-              <DataAreaTitle>File Format Specifications</DataAreaTitle>
-              <DocumentTable documents={fileFormatSpecifications} />
-            </>
+            <DocumentTable
+              documents={fileFormatSpecifications}
+              title="File Format Specifications"
+            />
           )}
-          {documents.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

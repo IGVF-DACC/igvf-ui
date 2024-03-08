@@ -1,14 +1,11 @@
 // node_modules
 import PropTypes from "prop-types";
-import { useRef } from "react";
 // components
 import AttachmentThumbnail from "./attachment-thumbnail";
-import { DataGridContainer } from "./data-grid";
+import { DataAreaTitle } from "./data-area";
 import DocumentAttachmentLink from "./document-link";
 import ItemLink from "./item-link";
-import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
-import TableCount from "./table-count";
 
 /**
  * Columns displayed in the document table.
@@ -41,6 +38,7 @@ const columns = [
     display: ({ source }) => {
       return <DocumentAttachmentLink document={source} />;
     },
+    sorter: (item) => item.attachment.download.toLowerCase(),
   },
   {
     id: "attachment",
@@ -65,17 +63,11 @@ const columns = [
  * Display the given documents in a table, useful for pages displaying objects containing document
  * arrays.
  */
-export default function DocumentTable({ documents }) {
-  const gridRef = useRef(null);
-
+export default function DocumentTable({ documents, title = "Documents" }) {
   return (
     <>
-      <TableCount count={documents.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
-          <SortableGrid data={documents} columns={columns} />
-        </DataGridContainer>
-      </ScrollIndicators>
+      <DataAreaTitle>{title}</DataAreaTitle>
+      <SortableGrid data={documents} columns={columns} pager={{}} />
     </>
   );
 }
@@ -83,4 +75,6 @@ export default function DocumentTable({ documents }) {
 DocumentTable.propTypes = {
   // Documents to display in the table
   documents: PropTypes.array.isRequired,
+  // Title of the table if not "Documents"
+  title: PropTypes.string,
 };

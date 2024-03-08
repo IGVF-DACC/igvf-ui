@@ -8,7 +8,6 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
-  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
@@ -122,12 +121,7 @@ export default function CuratedSet({
           {files.length > 0 && (
             <FileTable files={files} itemPath={curatedSet["@id"]} />
           )}
-          {documents.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

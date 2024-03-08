@@ -1,8 +1,9 @@
 // node_modules
+import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import Link from "next/link";
 // components
-import PagedDataGrid from "./paged-data-grid";
+import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import SeparatedList from "./separated-list";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
@@ -22,6 +23,7 @@ const sampleColumns = [
     id: "type",
     title: "Type",
     display: ({ source }) => source["@type"][0],
+    sorter: (item) => item["@type"][0],
   },
   {
     id: "sample_terms",
@@ -32,6 +34,7 @@ const sampleColumns = [
         .join(", ");
       return <>{termId}</>;
     },
+    isSortable: false,
   },
   {
     id: "summary",
@@ -110,31 +113,43 @@ const sampleColumns = [
 ];
 
 /**
- * Display a sortable table of the given multiplexed_samples.
+ * Display a sortable table of the given sample objects.
  */
 export default function SampleTable({
   samples,
+  reportLink = null,
   constructLibrarySetAccessions = null,
+  title = "Samples",
 }) {
   return (
-    <PagedDataGrid data={samples}>
-      {(pageSamples) => {
-        return (
-          <SortableGrid
-            data={pageSamples}
-            columns={sampleColumns}
-            meta={{ constructLibrarySetAccessions }}
-            keyProp="@id"
-          />
-        );
-      }}
-    </PagedDataGrid>
+    <>
+      <DataAreaTitle>
+        {title}
+        <DataAreaTitleLink
+          href={reportLink}
+          label="Report of multiplexed samples that have this item as their multiplexed sample"
+        >
+          <TableCellsIcon className="h-4 w-4" />
+        </DataAreaTitleLink>
+      </DataAreaTitle>
+      <SortableGrid
+        data={samples}
+        columns={sampleColumns}
+        keyProp="@id"
+        meta={{ constructLibrarySetAccessions }}
+        pager={{}}
+      />
+    </>
   );
 }
 
 SampleTable.propTypes = {
   // Samples to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Link to the report page containing the same samples as this table
+  reportLink: PropTypes.string,
   // The construct libraries of the parent object
   constructLibrarySetAccessions: PropTypes.arrayOf(PropTypes.object),
+  // Title of the table if not "Samples"
+  title: PropTypes.string,
 };

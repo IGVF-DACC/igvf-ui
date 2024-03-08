@@ -1,5 +1,4 @@
 // node_modules
-import { TableCellsIcon } from "@heroicons/react/20/solid";
 import { Fragment } from "react";
 import PropTypes from "prop-types";
 // components
@@ -10,8 +9,6 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import { SampleDataItems } from "../../components/common-data-items";
 import {
   DataArea,
-  DataAreaTitle,
-  DataAreaTitleLink,
   DataItemLabel,
   DataItemValue,
   DataPanel,
@@ -20,7 +17,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
-import ModificationsTable from "../../components/modification-table";
+import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
@@ -82,23 +79,14 @@ export default function MultiplexedSample({
             </DataArea>
           </DataPanel>
           {multiplexedSample.multiplexed_samples.length > 0 && (
-            <>
-              <DataAreaTitle>
-                Multiplexed Samples
-                <DataAreaTitleLink
-                  href={reportLink}
-                  label="Report of multiplexed samples that have this item as their multiplexed sample"
-                >
-                  <TableCellsIcon className="h-4 w-4" />
-                </DataAreaTitleLink>
-              </DataAreaTitle>
-              <SampleTable
-                samples={multiplexedSample.multiplexed_samples}
-                constructLibrarySetAccessions={
-                  multiplexedSample.construct_library_sets
-                }
-              />
-            </>
+            <SampleTable
+              samples={multiplexedSample.multiplexed_samples}
+              reportLink={reportLink}
+              constructLibrarySetAccessions={
+                multiplexedSample.construct_library_sets
+              }
+              title="Multiplexed Samples"
+            />
           )}
           {multiplexedSample.file_sets.length > 0 && (
             <FileSetTable
@@ -111,31 +99,15 @@ export default function MultiplexedSample({
             />
           )}
           {multiplexedSample.modifications?.length > 0 && (
-            <>
-              <DataAreaTitle>Modifications</DataAreaTitle>
-              <ModificationsTable
-                modifications={multiplexedSample.modifications}
-              />
-            </>
+            <ModificationTable
+              modifications={multiplexedSample.modifications}
+            />
           )}
-          {biomarkers.length > 0 && (
-            <>
-              <DataAreaTitle>Biomarkers</DataAreaTitle>
-              <BiomarkerTable biomarkers={biomarkers} />
-            </>
-          )}
+          {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
           {multiplexedSample.treatments.length > 0 && (
-            <>
-              <DataAreaTitle>Treatments</DataAreaTitle>
-              <TreatmentTable treatments={multiplexedSample.treatments} />
-            </>
+            <TreatmentTable treatments={multiplexedSample.treatments} />
           )}
-          {documents.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

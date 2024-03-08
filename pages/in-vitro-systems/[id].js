@@ -9,7 +9,6 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
 import {
   DataArea,
-  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
@@ -18,7 +17,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
-import ModificationsTable from "../../components/modification-table";
+import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
@@ -168,37 +167,19 @@ export default function InVitroSystem({
             />
           )}
           {inVitroSystem.modifications?.length > 0 && (
-            <>
-              <DataAreaTitle>Modifications</DataAreaTitle>
-              <ModificationsTable modifications={inVitroSystem.modifications} />
-            </>
+            <ModificationTable modifications={inVitroSystem.modifications} />
           )}
-          {biomarkers.length > 0 && (
-            <>
-              <DataAreaTitle>Biomarkers</DataAreaTitle>
-              <BiomarkerTable biomarkers={biomarkers} />
-            </>
-          )}
+          {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
           {inVitroSystem.treatments?.length > 0 && (
-            <>
-              <DataAreaTitle>Treatments</DataAreaTitle>
-              <TreatmentTable treatments={inVitroSystem.treatments} />
-            </>
+            <TreatmentTable treatments={inVitroSystem.treatments} />
           )}
           {inVitroSystem.cell_fate_change_treatments?.length > 0 && (
-            <>
-              <DataAreaTitle>Cell Fate Change Treatments</DataAreaTitle>
-              <TreatmentTable
-                treatments={inVitroSystem.cell_fate_change_treatments}
-              />
-            </>
+            <TreatmentTable
+              treatments={inVitroSystem.cell_fate_change_treatments}
+              title="Cell Fate Change Treatments"
+            />
           )}
-          {documents.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

@@ -255,10 +255,7 @@ export default function MeasurementSet({
             <FileTable
               files={imageFileType}
               title="Imaging Results"
-              isIlluminaReadType={false}
               itemPath={measurementSet["@id"]}
-              seqspecFiles={seqspecFiles}
-              sequencingPlatforms={sequencingPlatforms}
             />
           )}
           {controlFileSets.length > 0 && (
@@ -290,12 +287,7 @@ export default function MeasurementSet({
               }}
             />
           )}
-          {documents.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

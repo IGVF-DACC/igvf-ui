@@ -1,13 +1,10 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useRef } from "react";
 // components
-import { DataGridContainer } from "./data-grid";
-import ScrollIndicators from "./scroll-indicators";
+import { DataAreaTitle } from "./data-area";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
-import TableCount from "./table-count";
 
 const treatmentColumns = [
   {
@@ -24,6 +21,7 @@ const treatmentColumns = [
     display: ({ source }) => {
       return <Link href={source["@id"]}>{source.summary}</Link>;
     },
+    isSortable: false,
   },
   {
     id: "status",
@@ -37,21 +35,16 @@ const treatmentColumns = [
 /**
  * Display a sortable table of the given treatments.
  */
-export default function TreatmentTable({ treatments }) {
-  const gridRef = useRef(null);
-
+export default function TreatmentTable({ treatments, title = "Treatments" }) {
   return (
     <>
-      <TableCount count={treatments.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
-          <SortableGrid
-            data={treatments}
-            columns={treatmentColumns}
-            keyProp="@id"
-          />
-        </DataGridContainer>
-      </ScrollIndicators>
+      <DataAreaTitle>{title}</DataAreaTitle>
+      <SortableGrid
+        data={treatments}
+        columns={treatmentColumns}
+        pager={{}}
+        keyProp="@id"
+      />
     </>
   );
 }
@@ -59,4 +52,6 @@ export default function TreatmentTable({ treatments }) {
 TreatmentTable.propTypes = {
   // Treatments to display
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Optional title to display if not "Treatments"
+  title: PropTypes.string,
 };

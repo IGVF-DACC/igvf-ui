@@ -1,13 +1,10 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useRef } from "react";
 // components
-import { DataGridContainer } from "./data-grid";
-import ScrollIndicators from "./scroll-indicators";
+import { DataAreaTitle } from "./data-area";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
-import TableCount from "./table-count";
 
 const modificationsColumns = [
   {
@@ -33,26 +30,25 @@ const modificationsColumns = [
 /**
  * Display a sortable table of the given modifications.
  */
-export default function ModificationsTable({ modifications }) {
-  const gridRef = useRef(null);
-
+export default function ModificationTable({
+  modifications,
+  title = "Modifications",
+}) {
   return (
     <>
-      <TableCount count={modifications.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
-          <SortableGrid
-            data={modifications}
-            columns={modificationsColumns}
-            keyProp="@id"
-          />
-        </DataGridContainer>
-      </ScrollIndicators>
+      <DataAreaTitle>{title}</DataAreaTitle>
+      <SortableGrid
+        data={modifications}
+        columns={modificationsColumns}
+        keyProp="@id"
+      />
     </>
   );
 }
 
-ModificationsTable.propTypes = {
+ModificationTable.propTypes = {
   // Modifications to display
   modifications: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Title for the table if not "Modifications"
+  title: PropTypes.string,
 };

@@ -4,7 +4,6 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
-import PagedDataGrid from "./paged-data-grid";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
@@ -21,6 +20,7 @@ const fileSetColumns = [
   {
     id: "summary",
     title: "Summary",
+    sorter: (item) => item.summary.toLowerCase(),
   },
   {
     id: "aliases",
@@ -31,6 +31,7 @@ const fileSetColumns = [
     id: "lab",
     title: "Lab",
     display: ({ source }) => source.lab?.title || null,
+    sorter: (item) => (item.lab?.title ? item.lab.title.toLowerCase() : ""),
   },
   {
     id: "status",
@@ -95,15 +96,12 @@ export default function FileSetTable({
           </DataAreaTitleLink>
         )}
       </DataAreaTitle>
-      <PagedDataGrid data={fileSets}>
-        {(pageFileSets) => (
-          <SortableGrid
-            data={pageFileSets}
-            columns={fileSetColumns}
-            keyProp="@id"
-          />
-        )}
-      </PagedDataGrid>
+      <SortableGrid
+        data={fileSets}
+        columns={fileSetColumns}
+        keyProp="@id"
+        pager={{}}
+      />
     </>
   );
 }

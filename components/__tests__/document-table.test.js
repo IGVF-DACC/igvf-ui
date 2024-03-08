@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import DocumentTable from "../document-table";
 
 describe("Test the document table", () => {
@@ -69,12 +69,22 @@ describe("Test the document table", () => {
     expect(pageLinks[0].href).toEqual(
       "http://localhost/documents/ad1f3c3e-23bf-4e33-3b4d-7333eb1ba33e"
     );
-    const downloadLinks = screen.getAllByLabelText(
+    let downloadLinks = screen.getAllByLabelText(
       "Download hnRNPA1_aviva-1_WB_HeLa_Fu.TIF"
     );
     expect(downloadLinks).toHaveLength(1);
     expect(downloadLinks[0].href).toEqual(
       "http://localhost/documents/ad1f3c3e-23bf-4e33-3b4d-7333eb1ba33e/@@download/attachment/hnRNPA1_aviva-1_WB_HeLa_Fu.TIF"
     );
+
+    // Find the header cell containing a button for "Download" and click it.
+    const downloadHeaderButton = screen.getByRole("button", {
+      name: "Download",
+    });
+    expect(downloadHeaderButton).toBeInTheDocument();
+    fireEvent.click(downloadHeaderButton);
+
+    downloadLinks = screen.getAllByLabelText("Download pLKO1_vector.png");
+    expect(downloadLinks).toHaveLength(1);
   });
 });

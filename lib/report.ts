@@ -178,7 +178,9 @@ function sortColumnSpecs(columnSpecs: ColumnSpec[]): ColumnSpec[] {
   return _.sortBy(columnSpecs, [
     (columnSpec) => columnSpec.id !== "@id",
     (columnSpec) => {
-      return columnSpec.id === "@id" ? 0 : columnSpec.title.toLowerCase();
+      return columnSpec.id === "@id" || !columnSpec.title
+        ? 0
+        : columnSpec.title.toLowerCase();
     },
   ]);
 }

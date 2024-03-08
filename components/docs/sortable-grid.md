@@ -1,6 +1,6 @@
 # Sortable Grid Component
 
-The `SortableGrid` component renders a sortable (case insensitive) table of data with a header. Pass in an array of objects to render — one object per row — as well as a column-configuration object that describes the column headers as well as other aspects about each column. Example:
+The `SortableGrid` component renders a sortable table of data with a header. Pass in an array of objects to render — one object per row — as well as a column-configuration object that describes the column headers as well as other aspects about each column. Example:
 
 ```javascript
 // Array of objects to display in the table
@@ -49,11 +49,7 @@ const columns = [
   }
 }
 
-return (
-  <DataGridContainer>
-    <SortableGrid data={data} columns={columns} keyProp="uuid" />
-  </DataGridContainer>
-)
+return <SortableGrid data={data} columns={columns} keyProp="uuid" />
 ```
 
 Expected output:
@@ -63,9 +59,6 @@ Expected output:
 | First item  | 5     | This is the first item  | HepG2 / cell line |
 | Second item | 2     | This is the second item | context / tissue  |
 
-<br>
-<br>
-
 ## Column Configuration Array
 
 You define the appearance and functionality of the table columns with the column-configuration array of objects. Each object in the array represents a column in the displayed table in left-to-right order. Use the following properties for each column configuration object:
@@ -74,7 +67,7 @@ You define the appearance and functionality of the table columns with the column
 
 **id** {string} required
 
-Unique identifier for the column that must match the name of the property within each object that this column displays.
+Unique identifier for the column that normally matches the name of the property within each object that this column displays. In special cases, you can simply invent an identifier for columns that show data not in a single property of each object — perhaps they combine multiple properties.
 
 ---
 
@@ -118,7 +111,7 @@ If the values for the property don’t sort well with a regular case-insensitive
   {
     id: "age",
     title: "Age",
-    sorter: (item) => Number(item.age),
+    sorter: (item, meta) => Number(item.age),
   },
 ...
 ```
@@ -131,8 +124,17 @@ Use this property if the data for the cell needs displaying with something more 
 
 ---
 
-<br>
-<br>
+**hide** {boolean}
+
+This function gets called only once per column it applies to during the rendering of a table; not for every value in that column. Use this to conditionally hide a column based on some data — perhaps all the data in the column, or perhaps something you had placed in the `meta` property.
+
+```javascript
+  {
+    id: "illumina_read_type",
+    title: "Illumina Read Type",
+    hide: (data, columns, meta) => !meta.hasReadType,
+  },
+```
 
 ## <a name="title-component-properties"></a>Title Component Properties
 
@@ -173,9 +175,6 @@ const CountDisplay = ({ columnConfiguration, sortBy, sortDirection, bold }) => {
 }
 ```
 
-<br>
-<br>
-
 ## <a name="display-function-arguments"></a>Display Function Arguments
 
 The function you provide the `display` property of a column-configuration object receives these arguments:
@@ -212,3 +211,25 @@ This holds the meta object you pass to `SortableGrid`, and in addition it holds:
   }
 ...
 ```
+
+## <a name="initial-sort"></a>Initial Sorting Configuration
+
+By default, the table initially gets rendered with the first column set to an ascending sort. But if you need some other column sorted, or a column with a descending sort on initial render, you can use the `initialSort` object property to `<SortableGrid>`. `initialSort` can contain any subset of these properties:
+
+**`id`** {string} ID of the column to sort on initial render.
+
+**`direction`** {"ASC"|"DESC"} Initial direction to sort the column on initial render.
+
+\*\*`isSortingSuppressed` {boolean} Unusual property to prevent any sorting of the table at all. You can use this to handle sorting in the parent component.
+
+## <a name="pager"></a>Pager
+
+You can include a pager to handle tables with too much data to show all at once. The pager appears between the count of items in the table and the table itself.
+
+To enable the pager, pass a `pager` property with an object as the value. The object lets you configure the pager, so if the default configuration works for this application, just pass an empty object in `pager`. If you don’t pass the `pager` property, no pager appears, and all items in the table always appear at once. The properties the `pager` property accepts includes:
+
+**maxItems** {number} (Default: 10) Maximum number of items on a single page. If fewer than this number of items exists in the table, no pager appears.
+
+**currentPageIndex** {number} Only used if the paging gets handled by the parent of `<SortableGrid>`. This functionality isn’t complete yet.
+
+**setCurrentPageIndex** {function} Only used if the paging gets handled by the parent of `<SortableGrid>`. This functionality isn’t complete yet.

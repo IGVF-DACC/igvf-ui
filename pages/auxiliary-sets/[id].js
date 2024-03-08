@@ -8,7 +8,6 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
-  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
@@ -150,12 +149,7 @@ export default function AuxiliarySet({
               }}
             />
           )}
-          {documents.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
 
           <Attribution attribution={attribution} />
         </JsonDisplay>

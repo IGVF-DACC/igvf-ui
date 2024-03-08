@@ -7,7 +7,6 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
-  DataAreaTitle,
   DataItemLabel,
   DataItemList,
   DataItemValue,
@@ -145,12 +144,7 @@ export default function Workflow({
               )}
             </DataArea>
           </DataPanel>
-          {documents?.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents?.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

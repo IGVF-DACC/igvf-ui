@@ -90,28 +90,19 @@ export default function MatrixFile({
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (
-            <>
-              <DataAreaTitle>
-                Files {matrixFile.accession} Derives From
-              </DataAreaTitle>
-              <DerivedFromTable
-                derivedFrom={derivedFrom}
-                derivedFromFileSets={derivedFromFileSets}
-              />
-            </>
+            <DerivedFromTable
+              derivedFrom={derivedFrom}
+              derivedFromFileSets={derivedFromFileSets}
+              title={`Files ${matrixFile.accession} Derives From`}
+            />
           )}
           {fileFormatSpecifications.length > 0 && (
-            <>
-              <DataAreaTitle>File Format Specifications</DataAreaTitle>
-              <DocumentTable documents={fileFormatSpecifications} />
-            </>
+            <DocumentTable
+              documents={fileFormatSpecifications}
+              title="File Format Specifications"
+            />
           )}
-          {documents.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

@@ -1,12 +1,9 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useRef } from "react";
 // components
-import { DataGridContainer } from "./data-grid";
-import ScrollIndicators from "./scroll-indicators";
+import { DataAreaTitle } from "./data-area";
 import SortableGrid from "./sortable-grid";
-import TableCount from "./table-count";
 
 const biomarkersColumns = [
   {
@@ -19,6 +16,7 @@ const biomarkersColumns = [
         </Link>
       );
     },
+    sorter: (item) => item.name,
   },
   {
     id: "classification",
@@ -29,32 +27,29 @@ const biomarkersColumns = [
     title: "Synonyms",
     display: ({ source }) =>
       source.synonyms ? source.synonyms.join(", ") : "",
+    isSortable: false,
   },
   {
     id: "aliases",
     title: "Aliases",
     display: ({ source }) => source.aliases?.join(", "),
+    isSortable: false,
   },
 ];
 
 /**
  * Display a sortable table of the given treatments.
  */
-export default function BiomarkerTable({ biomarkers }) {
-  const gridRef = useRef(null);
-
+export default function BiomarkerTable({ biomarkers, title = "Biomarkers" }) {
   return (
     <>
-      <TableCount count={biomarkers.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
-          <SortableGrid
-            data={biomarkers}
-            columns={biomarkersColumns}
-            keyProp="@id"
-          />
-        </DataGridContainer>
-      </ScrollIndicators>
+      <DataAreaTitle>{title}</DataAreaTitle>
+      <SortableGrid
+        data={biomarkers}
+        columns={biomarkersColumns}
+        pager={{}}
+        keyProp="@id"
+      />
     </>
   );
 }
@@ -62,4 +57,6 @@ export default function BiomarkerTable({ biomarkers }) {
 BiomarkerTable.propTypes = {
   // Biomarkers to display
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Title to display if not "Biomarkers"
+  title: PropTypes.string,
 };

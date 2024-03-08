@@ -2,15 +2,11 @@
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useRef } from "react";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
-import { DataGridContainer } from "./data-grid";
 import { FileAccessionAndDownload } from "./file-download";
-import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
-import TableCount from "./table-count";
 // lib
 import { dataSize, truthyOrZero } from "../lib/general";
 
@@ -65,6 +61,12 @@ const filesColumns = [
       );
       return matchingPlatform?.term_name || null;
     },
+    sorter: (item, meta) => {
+      const matchingPlatform = meta.sequencingPlatforms.find(
+        (platform) => platform["@id"] === item.sequencing_platform
+      );
+      return matchingPlatform?.term_name || "";
+    },
   },
   {
     id: "flowcell_id",
@@ -116,8 +118,6 @@ export default function SequencingFileTable({
   hasReadType = false,
   isSeqspecHidden = false,
 }) {
-  const gridRef = useRef(null);
-
   // True or false isIlluminaReadType adds a positive or negative `illumina_read_type` selector to
   // the report link. Undefined generates no `illumina_read_type` selector in the file query string.
   let illuminaSelector = "";
@@ -146,22 +146,18 @@ export default function SequencingFileTable({
           </DataAreaTitleLink>
         )}
       </DataAreaTitle>
-      <TableCount count={files.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
-          <SortableGrid
-            data={files}
-            columns={filesColumns}
-            meta={{
-              seqspecFiles,
-              sequencingPlatforms,
-              hasReadType,
-              isSeqspecHidden,
-            }}
-            keyProp="@id"
-          />
-        </DataGridContainer>
-      </ScrollIndicators>
+      <SortableGrid
+        data={files}
+        columns={filesColumns}
+        pager={{}}
+        meta={{
+          seqspecFiles,
+          sequencingPlatforms,
+          hasReadType,
+          isSeqspecHidden,
+        }}
+        keyProp="@id"
+      />
     </>
   );
 }
