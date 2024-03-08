@@ -8,42 +8,30 @@ import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
 import TableCount from "./table-count";
 
-const auditColumns = [
+const auditKeyColumns = [
   {
     id: "audit_level",
     title: "Severity Level",
     display: ({ source }) => {
-      const filteredSource = source.audit_levels.filter(
-        (audit) => audit !== "INTERNAL_ACTION"
-      );
+      const auditLevel = source.audit_level;
+      const mapping = auditMap[auditLevel];
       return (
         <div>
-          {filteredSource.map((level) => {
-            const mapping = auditMap[level];
-            return (
-              <Fragment key={level}>
-                <div className="flex items-center justify-start gap-1">
-                  <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
-                  <div>{mapping.humanReadable}</div>
-                </div>
-              </Fragment>
-            );
-          })}
+          <Fragment key={auditLevel}>
+            <div className="flex items-center justify-start gap-1">
+              <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
+              <div>{mapping.humanReadable}</div>
+            </div>
+          </Fragment>
         </div>
       );
     },
     isSortable: false,
   },
   {
-    id: "audit_category",
-    title: "Category",
-    display: ({ source }) => source.audit_category,
-    isSortable: false,
-  },
-  {
-    id: "audit_detail",
+    id: "audit_description",
     title: "Description",
-    display: ({ source }) => source.audit_detail,
+    display: ({ source }) => source.audit_description,
     isSortable: false,
   },
 ];
@@ -51,7 +39,7 @@ const auditColumns = [
 /**
  * Display a sortable table of the given audits.
  */
-export default function AuditTable({ data }) {
+export default function AuditKeyTable({ data }) {
   const gridRef = useRef(null);
 
   return (
@@ -59,14 +47,14 @@ export default function AuditTable({ data }) {
       <TableCount count={data.length} />
       <ScrollIndicators gridRef={gridRef}>
         <DataGridContainer ref={gridRef}>
-          <SortableGrid data={data} columns={auditColumns} />
+          <SortableGrid data={data} columns={auditKeyColumns} />
         </DataGridContainer>
       </ScrollIndicators>
     </>
   );
 }
 
-AuditTable.propTypes = {
+AuditKeyTable.propTypes = {
   // Audits to display
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

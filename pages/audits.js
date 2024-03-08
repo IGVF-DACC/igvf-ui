@@ -3,6 +3,7 @@ import _ from "lodash";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // component
+import AuditKeyTable from "../components/audit-key-table";
 import AuditTable from "../components/audit-table";
 import PagePreamble from "../components/page-preamble";
 // lib
@@ -18,6 +19,23 @@ export default function AuditDoc({ auditDoc }) {
     };
   });
   const auditsGroupedByCollection = _.groupBy(keyedAudits, "key");
+
+  let auditKeyColor = [
+    {
+      audit_level: "ERROR",
+      audit_description: "Incorrect or inconsistent metadata",
+    },
+    {
+      audit_level: "NOT_COMPLIANT",
+      audit_description:
+        "Not fulfilling a compliance standard like attached documents",
+    },
+    {
+      audit_level: "WARNING",
+      audit_description:
+        "Possibly inconsistent metadata. Data will be released with warnings",
+    },
+  ];
   return (
     <>
       <PagePreamble />
@@ -31,6 +49,7 @@ export default function AuditDoc({ auditDoc }) {
         category, there could be one or more icons, each assigned a distinct
         color corresponding to the severity level of the audit category.
       </p>
+      <AuditKeyTable data={auditKeyColor} />
       {Object.keys(auditsGroupedByCollection).map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];
         const filteredAudits = typeAudits.filter(
