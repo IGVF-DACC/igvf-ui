@@ -15,6 +15,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { getBiomarkerTitle } from "../../lib/biomarker";
@@ -65,7 +66,11 @@ export default function Biomarker({
               {biomarker.synonyms?.length > 0 && (
                 <>
                   <DataItemLabel>Synonyms</DataItemLabel>
-                  <DataItemValue>{biomarker.synonyms.join(", ")}</DataItemValue>
+                  <DataItemValue>
+                    <SeparatedList isCollapsible>
+                      {biomarker.synonyms}
+                    </SeparatedList>
+                  </DataItemValue>
                 </>
               )}
               {biomarker.aliases?.length > 0 && (

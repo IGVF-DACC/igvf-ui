@@ -19,6 +19,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import RelatedDonorsTable from "../../components/related-donors-table";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments } from "../../lib/common-requests";
@@ -52,7 +53,9 @@ export default function HumanDonor({
                 <>
                   <DataItemLabel>Identifiers</DataItemLabel>
                   <DataItemValue>
-                    {donor.human_donor_identifiers.join(", ")}
+                    <SeparatedList isCollapsible>
+                      {donor.human_donor_identifiers}
+                    </SeparatedList>
                   </DataItemValue>
                 </>
               )}

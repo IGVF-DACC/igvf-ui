@@ -41,7 +41,7 @@ export default function Attribution({ attribution = null }) {
               <>
                 <DataItemLabel>Principal Investigator(s)</DataItemLabel>
                 <DataItemValue>
-                  <SeparatedList>
+                  <SeparatedList isCollapsible>
                     {attribution.pis.map((pi) => (
                       <Link href={pi["@id"]} key={pi["@id"]}>
                         {pi.title}

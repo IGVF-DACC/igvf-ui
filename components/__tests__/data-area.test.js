@@ -4,14 +4,11 @@ import {
   DataAreaTitle,
   DataAreaTitleLink,
   DataItemLabel,
+  DataItemList,
   DataItemValue,
   DataItemValueUrl,
-  DataItemValueCollapseControl,
-  DataItemValueControlLabel,
   DataPanel,
-  useDataAreaCollapser,
 } from "../data-area";
-import SeparatedList from "../separated-list";
 import Status from "../status";
 
 describe("Test the DataArea component", () => {
@@ -91,172 +88,82 @@ describe("Test the DataArea component", () => {
   });
 });
 
-describe("Test the useDataAreaCollapser hook", () => {
-  it("properly collapses and expands the data area", () => {
-    const data = [
-      "IGVFFS0001AAAA",
-      "IGVFFS0002AAAA",
-      "IGVFFS0003AAAA",
-      "IGVFFS0004AAAA",
-      "IGVFFS0005AAAA",
-      "IGVFFS0006AAAA",
-    ];
-
-    function TestComponent() {
-      const collapser = useDataAreaCollapser(data);
-      return (
-        <>
-          <DataPanel>
-            <DataArea>
-              <DataItemLabel>Status</DataItemLabel>
-              <DataItemValue>
-                <SeparatedList>
-                  {collapser.displayedData.map((item) => (
-                    <div key={item} data-testid={`displayed-item-${item}`}>
-                      {item}
-                    </div>
-                  ))}
-                </SeparatedList>
-                <DataItemValueCollapseControl collapser={collapser}>
-                  <DataItemValueControlLabel collapser={collapser} />
-                </DataItemValueCollapseControl>
-              </DataItemValue>
-            </DataArea>
-          </DataPanel>
-        </>
-      );
-    }
-
-    render(<TestComponent />);
-
-    // Get the SVG within the button and check its data-testid attribute
-    const button = screen.getByRole("button");
-    expect(button.firstChild).toHaveAttribute(
-      "data-testid",
-      "data-item-value-expand-icon"
+describe("Test DataItemList", () => {
+  it("renders a list of items that's not collapsible", () => {
+    render(
+      <DataItemList>
+        {"Item 1"}
+        {"Item 2"}
+        {"Item 3"}
+        {"Item 4"}
+        {"Item 5"}
+        {"Item 6"}
+        {"Item 7"}
+      </DataItemList>
     );
 
-    // Only the first 3 items should be displayed
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0001AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0002AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0003AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0004AAAA")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0005AAAA")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0006AAAA")
-    ).not.toBeInTheDocument();
+    const items = screen.getAllByText(/Item [0-9]/);
+    expect(items.length).toBe(7);
+
+    const listItems = screen.getAllByRole("listitem");
+    listItems.forEach((item) => {
+      expect(item).toHaveClass("border-data-list-item");
+    });
+  });
+
+  it("renders a collapsible list that collapses when the control is clicked", () => {
+    render(
+      <DataItemList isCollapsible maxItemsBeforeCollapse={4}>
+        {"Item 1"}
+        {"Item 2"}
+        {"Item 3"}
+        {"Item 4"}
+        {"Item 5"}
+        {"Item 6"}
+        {"Item 7"}
+      </DataItemList>
+    );
+
+    let items = screen.getAllByText(/Item [0-9]/);
+    expect(items.length).toBe(4);
+
+    const button = screen.getByTestId("collapse-control-vertical");
+    fireEvent.click(button);
+    items = screen.getAllByText(/Item [0-9]/);
+    expect(items.length).toBe(7);
 
     fireEvent.click(button);
-    expect(button.firstChild).toHaveAttribute(
-      "data-testid",
-      "data-item-value-collapse-icon"
+    items = screen.getAllByText(/Item [0-9]/);
+    expect(items.length).toBe(4);
+  });
+
+  it("renders a single-item list and doesn't contain a border class", () => {
+    render(<DataItemList>{"Item 1"}</DataItemList>);
+
+    const listItems = screen.getAllByRole("listitem");
+    listItems.forEach((item) => {
+      expect(item).not.toHaveClass("border-data-list-item");
+    });
+  });
+
+  it("renders a list for URLs with the break-all class", () => {
+    render(
+      <DataItemList isUrlList>
+        <a href="https://igvf.org/" target="_blank" rel="noopener noreferrer">
+          https://igvf.org/
+        </a>
+        <a href="https://igvf.org/" target="_blank" rel="noopener noreferrer">
+          https://igvf.org/
+        </a>
+        <a href="https://igvf.org/" target="_blank" rel="noopener noreferrer">
+          https://igvf.org/
+        </a>
+      </DataItemList>
     );
 
-    // All items should be displayed
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0001AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0002AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0003AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0004AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0005AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0006AAAA")
-    ).toBeInTheDocument();
-  });
-
-  it("does not render the collapse button if there are no items to collapse", () => {
-    const data = ["IGVFFS0001AAAA", "IGVFFS0002AAAA", "IGVFFS0003AAAA"];
-
-    function TestComponent() {
-      const collapser = useDataAreaCollapser(data);
-      return (
-        <>
-          <DataPanel>
-            <DataArea>
-              <DataItemLabel>Status</DataItemLabel>
-              <DataItemValue>
-                <SeparatedList>
-                  {collapser.displayedData.map((item) => (
-                    <div key={item} data-testid={`displayed-item-${item}`}>
-                      {item}
-                    </div>
-                  ))}
-                </SeparatedList>
-                <DataItemValueCollapseControl collapser={collapser}>
-                  <DataItemValueControlLabel collapser={collapser} />
-                </DataItemValueCollapseControl>
-              </DataItemValue>
-            </DataArea>
-          </DataPanel>
-        </>
-      );
-    }
-
-    render(<TestComponent />);
-
-    const button = screen.queryByRole("button");
-    expect(button).not.toBeInTheDocument();
-
-    // All items should be displayed
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0001AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0002AAAA")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("displayed-item-IGVFFS0003AAAA")
-    ).toBeInTheDocument();
-  });
-
-  it("renders nothing if you provide no data", () => {
-    function TestComponent() {
-      const collapser = useDataAreaCollapser();
-      return (
-        <>
-          <DataPanel>
-            <DataArea>
-              <DataItemLabel>Status</DataItemLabel>
-              <DataItemValue>
-                <SeparatedList>
-                  {collapser.displayedData.map((item) => (
-                    <div key={item} data-testid={`displayed-item-${item}`}>
-                      {item}
-                    </div>
-                  ))}
-                </SeparatedList>
-                <DataItemValueCollapseControl collapser={collapser}>
-                  <DataItemValueControlLabel collapser={collapser} />
-                </DataItemValueCollapseControl>
-              </DataItemValue>
-            </DataArea>
-          </DataPanel>
-        </>
-      );
-    }
-
-    render(<TestComponent />);
-
-    const button = screen.queryByRole("button");
-    expect(button).not.toBeInTheDocument();
+    const listItems = screen.getAllByRole("listitem");
+    listItems.forEach((item) => {
+      expect(item).toHaveClass("break-all");
+    });
   });
 });

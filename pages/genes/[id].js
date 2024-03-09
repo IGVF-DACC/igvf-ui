@@ -20,6 +20,7 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import SeparatedList from "../../components/separated-list";
 
 function EnsemblLink({ geneid, taxa }) {
   const organism = taxa.replace(/ /g, "_");
@@ -66,6 +67,7 @@ export default function Gene({ gene, isJson }) {
                     <DbxrefList
                       dbxrefs={gene.dbxrefs}
                       meta={{ taxa: gene.taxa }}
+                      isCollapsible
                     />
                   </DataItemValue>
                 </>
@@ -79,14 +81,23 @@ export default function Gene({ gene, isJson }) {
               {gene.synonyms?.length > 0 && (
                 <>
                   <DataItemLabel>Synonyms</DataItemLabel>
-                  <DataItemValue>{gene.synonyms.join(", ")}</DataItemValue>
+                  <DataItemValue>
+                    <SeparatedList isCollapsible>
+                      {gene.synonyms.map((synonym) => (
+                        <span key={synonym}>{synonym}</span>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
                 </>
               )}
               {gene.locations?.length > 0 && (
                 <>
                   <DataItemLabel>Gene Locations</DataItemLabel>
                   <DataItemValue>
-                    <ChromosomeLocations locations={gene.locations} />
+                    <ChromosomeLocations
+                      locations={gene.locations}
+                      isCollapsible
+                    />
                   </DataItemValue>
                 </>
               )}

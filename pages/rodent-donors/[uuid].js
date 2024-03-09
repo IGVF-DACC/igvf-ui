@@ -20,10 +20,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import {
-  requestDocuments,
-  requestPhenotypicFeatures,
-} from "../../lib/common-requests";
+import { requestDocuments } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
@@ -36,7 +33,6 @@ export default function RodentDonor({
   donor,
   documents,
   attribution = null,
-  phenotypicFeatures = [],
   sources = null,
   isJson,
 }) {
@@ -83,10 +79,12 @@ export default function RodentDonor({
               </DonorDataItems>
             </DataArea>
           </DataPanel>
-          {phenotypicFeatures.length > 0 && (
+          {donor.phenotypic_features?.length > 0 && (
             <>
               <DataAreaTitle>Phenotypic Features</DataAreaTitle>
-              <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
+              <PhenotypicFeatureTable
+                phenotypicFeatures={donor.phenotypic_features}
+              />
             </>
           )}
           <ExternalResources resources={donor.external_resources} />
@@ -110,8 +108,6 @@ RodentDonor.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this donor
   attribution: PropTypes.object,
-  // Phenotypic Features of this donor
-  phenotypicFeatures: PropTypes.arrayOf(PropTypes.object),
   // Source of donor
   sources: PropTypes.arrayOf(PropTypes.object),
   // Is the format JSON?
@@ -127,9 +123,6 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(donor)) {
     const documents = donor.documents
       ? await requestDocuments(donor.documents, request)
-      : [];
-    const phenotypicFeatures = donor.phenotypic_features
-      ? await requestPhenotypicFeatures(donor.phenotypic_features, request)
       : [];
     let sources = [];
     if (donor.sources?.length > 0) {
@@ -150,7 +143,6 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         donor,
         documents,
-        phenotypicFeatures,
         sources,
         pageContext: { title: donor.accession },
         breadcrumbs,

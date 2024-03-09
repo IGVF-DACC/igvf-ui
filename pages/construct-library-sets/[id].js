@@ -6,17 +6,13 @@ import { Fragment } from "react";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
-import ChromosomeLocations from "../../components/chromosome-locations";
 import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
   DataItemLabel,
   DataAreaTitle,
   DataItemValue,
-  DataItemValueCollapseControl,
-  DataItemValueControlLabel,
   DataPanel,
-  useDataAreaCollapser,
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
@@ -47,9 +43,6 @@ import { isJsonFormat } from "../../lib/query-utils";
  * case the data is malformed.
  */
 function LibraryDetails({ library }) {
-  const genesCollapser = useDataAreaCollapser(library.genes);
-  const lociCollapser = useDataAreaCollapser(library.loci);
-
   return (
     <>
       <DataAreaTitle className="capitalize">
@@ -65,7 +58,7 @@ function LibraryDetails({ library }) {
             <>
               <DataItemLabel>Associated Phenotypes</DataItemLabel>
               <DataItemValue>
-                <SeparatedList>
+                <SeparatedList isCollapsible>
                   {library.associated_phenotypes.map((phenotype) => (
                     <Link href={phenotype["@id"]} key={phenotype["@id"]}>
                       {phenotype.term_name}
@@ -123,44 +116,6 @@ function LibraryDetails({ library }) {
             <>
               <DataItemLabel>Exon</DataItemLabel>
               <DataItemValue>{library.exon}</DataItemValue>
-            </>
-          )}
-          {genesCollapser.displayedData.length > 0 && (
-            <>
-              <DataItemLabel>Genes</DataItemLabel>
-              <DataItemValue>
-                <SeparatedList>
-                  {genesCollapser.displayedData.map((gene, index) => (
-                    <Fragment key={gene["@id"]}>
-                      <Link href={gene["@id"]}>{gene.geneid}</Link>
-                      {index === genesCollapser.displayedData.length - 1 && (
-                        <DataItemValueCollapseControl
-                          key="more-control"
-                          collapser={genesCollapser}
-                          className="ml-1 inline-block"
-                        >
-                          <DataItemValueControlLabel
-                            key="more-control"
-                            collapser={genesCollapser}
-                            className="ml-1 inline-block"
-                          />
-                        </DataItemValueCollapseControl>
-                      )}
-                    </Fragment>
-                  ))}
-                </SeparatedList>
-              </DataItemValue>
-            </>
-          )}
-          {lociCollapser.displayedData.length > 0 && (
-            <>
-              <DataItemLabel>Loci</DataItemLabel>
-              <DataItemValue>
-                <ChromosomeLocations locations={lociCollapser.displayedData} />
-                <DataItemValueCollapseControl collapser={lociCollapser}>
-                  <DataItemValueControlLabel collapser={lociCollapser} />
-                </DataItemValueCollapseControl>
-              </DataItemValue>
             </>
           )}
         </DataArea>

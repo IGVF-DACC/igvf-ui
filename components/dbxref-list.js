@@ -242,9 +242,13 @@ DbxrefItem.propTypes = {
 /**
  * Display a comma-separated list of linked dbxrefs.
  */
-export default function DbxrefList({ dbxrefs, meta = {} }) {
+export default function DbxrefList({
+  dbxrefs,
+  isCollapsible = false,
+  meta = {},
+}) {
   return (
-    <SeparatedList>
+    <SeparatedList isCollapsible={isCollapsible}>
       {_.uniq(dbxrefs).map((dbxref) => {
         return <DbxrefItem key={dbxref} dbxref={dbxref} meta={meta} />;
       })}
@@ -255,6 +259,8 @@ export default function DbxrefList({ dbxrefs, meta = {} }) {
 DbxrefList.propTypes = {
   // Dbxrefs to display
   dbxrefs: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // True if the list of linked dbxrefs should be collapsible
+  isCollapsible: PropTypes.bool,
   // Metadata that affects certain dbxrefs
   meta: PropTypes.object,
 };

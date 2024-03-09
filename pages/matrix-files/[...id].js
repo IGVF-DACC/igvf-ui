@@ -73,7 +73,7 @@ export default function MatrixFile({
                 <>
                   <DataItemLabel>Reference Files</DataItemLabel>
                   <DataItemValue>
-                    <SeparatedList>
+                    <SeparatedList isCollapsible>
                       {referenceFiles.map((file) => (
                         <Link href={file["@id"]} key={file["@id"]}>
                           {file.accession}

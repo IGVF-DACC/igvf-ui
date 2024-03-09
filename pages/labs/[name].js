@@ -53,7 +53,7 @@ export default function Lab({ lab, awards = null, pi = null, isJson }) {
               {awards?.length > 0 && (
                 <>
                   <DataItemLabel>Awards</DataItemLabel>
-                  <SeparatedList>
+                  <SeparatedList isCollapsible>
                     {awards.map((award) => (
                       <Link
                         href={award["@id"]}

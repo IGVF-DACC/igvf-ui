@@ -45,7 +45,7 @@ export default function Award({ award, pis, contactPi, isJson }) {
                 <>
                   <DataItemLabel>Principal Investigator(s)</DataItemLabel>
                   <DataItemValue>
-                    <SeparatedList>
+                    <SeparatedList isCollapsible>
                       {pis.map((pi) => (
                         <Link href={pi["@id"]} key={pi["@id"]}>
                           {pi.title}

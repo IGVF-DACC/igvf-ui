@@ -63,19 +63,23 @@ export default function AnalysisStep({
               </DataItemValue>
               <DataItemLabel>Input Content Types</DataItemLabel>
               <DataItemValue>
-                {analysisStep.input_content_types.join(", ")}
+                <SeparatedList isCollapsible>
+                  {analysisStep.input_content_types}
+                </SeparatedList>
               </DataItemValue>
               <DataItemLabel>Output Content Types</DataItemLabel>
               <DataItemValue>
-                {analysisStep.output_content_types.join(", ")}
+                <SeparatedList isCollapsible>
+                  {analysisStep.output_content_types}
+                </SeparatedList>
               </DataItemValue>
               {analysisStep.parents?.length > 0 && (
                 <>
                   <DataItemLabel>Parents</DataItemLabel>
                   <DataItemValue>
-                    <SeparatedList>
+                    <SeparatedList isCollapsible>
                       {analysisStep.parents.map((parent) => (
-                        <Link href={parent} key={parent}>
+                        <Link href={parent["@id"]} key={parent["@id"]}>
                           {parent.title}
                         </Link>
                       ))}

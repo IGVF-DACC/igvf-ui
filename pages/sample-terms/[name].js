@@ -34,7 +34,10 @@ export default function SampleOntologyTerm({ sampleOntologyTerm, isJson }) {
                 <>
                   <DataItemLabel>External Resources</DataItemLabel>
                   <DataItemValue>
-                    <DbxrefList dbxrefs={sampleOntologyTerm.dbxrefs} />
+                    <DbxrefList
+                      dbxrefs={sampleOntologyTerm.dbxrefs}
+                      isCollapsible
+                    />
                   </DataItemValue>
                 </>
               )}

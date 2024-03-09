@@ -103,7 +103,7 @@ export default function InVitroSystem({
                   <>
                     <DataItemLabel>Origin Sample Of</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
+                      <SeparatedList isCollapsible>
                         {originOf.map((sample) => (
                           <Link href={sample["@id"]} key={sample.accession}>
                             {sample.accession}

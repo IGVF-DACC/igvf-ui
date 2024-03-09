@@ -67,7 +67,10 @@ export default function Software({
                 <>
                   <DataItemLabel>Publication Identifiers</DataItemLabel>
                   <DataItemValue>
-                    <DbxrefList dbxrefs={software.publication_identifiers} />
+                    <DbxrefList
+                      dbxrefs={software.publication_identifiers}
+                      isCollapsible
+                    />
                   </DataItemValue>
                 </>
               )}

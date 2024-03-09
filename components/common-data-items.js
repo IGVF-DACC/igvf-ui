@@ -13,15 +13,14 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { Fragment } from "react";
 // components
 import AliasList from "./alias-list";
 import {
   DataItemLabel,
+  DataItemList,
   DataItemValue,
-  DataItemValueCollapseControl,
-  DataItemValueControlLabel,
   DataItemValueUrl,
-  useDataAreaCollapser,
 } from "./data-area";
 import DbxrefList from "./dbxref-list";
 import ProductInfo from "./product-info";
@@ -85,7 +84,7 @@ export function DonorDataItems({ item, children }) {
         <>
           <DataItemLabel>Publication Identifiers</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={item.publication_identifiers} />
+            <DbxrefList dbxrefs={item.publication_identifiers} isCollapsible />
           </DataItemValue>
         </>
       )}
@@ -129,42 +128,25 @@ export function SampleDataItems({
   constructLibrarySets = [],
   children,
 }) {
-  const constructLibrarySetCollapser =
-    useDataAreaCollapser(constructLibrarySets);
-
   return (
     <>
       <DataItemLabel>Summary</DataItemLabel>
       <DataItemValue>{item.summary}</DataItemValue>
       {children}
-      {constructLibrarySetCollapser.displayedData.length > 0 && (
+      {constructLibrarySets.length > 0 && (
         <>
           <DataItemLabel>Construct Library Sets</DataItemLabel>
-          <DataItemValue>
-            {constructLibrarySetCollapser.displayedData.map((con, i) => {
-              return (
-                <div key={con["@id"]} className="my-1 first:mt-0 last:mb-0">
-                  <div>
-                    <Link href={con["@id"]}>{con.accession}</Link>
-                    <span className="text-gray-400 dark:text-gray-600">
-                      {" "}
-                      {con.summary}
-                    </span>
-                  </div>
-                  {i ===
-                    constructLibrarySetCollapser.displayedData.length - 1 && (
-                    <DataItemValueCollapseControl
-                      collapser={constructLibrarySetCollapser}
-                    >
-                      <DataItemValueControlLabel
-                        collapser={constructLibrarySetCollapser}
-                      />
-                    </DataItemValueCollapseControl>
-                  )}
-                </div>
-              );
-            })}
-          </DataItemValue>
+          <DataItemList isCollapsible>
+            {constructLibrarySets.map((fileSet) => (
+              <Fragment key={fileSet["@id"]}>
+                <Link href={fileSet["@id"]}>{fileSet.accession}</Link>
+                <span className="text-gray-600 dark:text-gray-400">
+                  {" "}
+                  {fileSet.summary}
+                </span>
+              </Fragment>
+            ))}
+          </DataItemList>
         </>
       )}
       {item.virtual && (
@@ -227,7 +209,7 @@ export function SampleDataItems({
             Sorted Fraction{sortedFractions.length === 1 ? "" : "s"} of Sample
           </DataItemLabel>
           <DataItemValue>
-            <SeparatedList>
+            <SeparatedList isCollapsible>
               {sortedFractions.map((sample) => (
                 <Link href={sample["@id"]} key={sample.accession}>
                   {sample.accession}
@@ -241,7 +223,7 @@ export function SampleDataItems({
         <>
           <DataItemLabel>Multiplexed In</DataItemLabel>
           <DataItemValue>
-            <SeparatedList>
+            <SeparatedList isCollapsible>
               {item.multiplexed_in.map((sample) => (
                 <Link href={sample["@id"]} key={sample.accession}>
                   {sample.accession}
@@ -271,7 +253,7 @@ export function SampleDataItems({
         <>
           <DataItemLabel>External Resources</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={item.dbxrefs} />
+            <DbxrefList dbxrefs={item.dbxrefs} isCollapsible />
           </DataItemValue>
         </>
       )}
@@ -299,7 +281,7 @@ export function SampleDataItems({
         <>
           <DataItemLabel>Publication Identifiers</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={item.publication_identifiers} />
+            <DbxrefList dbxrefs={item.publication_identifiers} isCollapsible />
           </DataItemValue>
         </>
       )}
@@ -427,7 +409,7 @@ export function BiosampleDataItems({
             Pooled From Sample{pooledFrom.length === 1 ? "" : "s"}
           </DataItemLabel>
           <DataItemValue>
-            <SeparatedList>
+            <SeparatedList isCollapsible>
               {pooledFrom.map((biosample) => (
                 <Link href={biosample["@id"]} key={biosample["@id"]}>
                   {biosample.accession}
@@ -443,7 +425,7 @@ export function BiosampleDataItems({
             Pooled In Sample{pooledIn.length === 1 ? "" : "s"}
           </DataItemLabel>
           <DataItemValue>
-            <SeparatedList>
+            <SeparatedList isCollapsible>
               {pooledIn.map((biosample) => (
                 <Link href={biosample["@id"]} key={biosample["@id"]}>
                   {biosample.accession}
@@ -459,7 +441,7 @@ export function BiosampleDataItems({
             Sample Part{parts.length === 1 ? "" : "s"}
           </DataItemLabel>
           <DataItemValue>
-            <SeparatedList>
+            <SeparatedList isCollapsible>
               {parts.map((biosample) => (
                 <Link href={biosample["@id"]} key={biosample["@id"]}>
                   {biosample.accession}
@@ -481,7 +463,7 @@ export function BiosampleDataItems({
         <>
           <DataItemLabel>Disease Terms</DataItemLabel>
           <DataItemValue>
-            <SeparatedList>
+            <SeparatedList isCollapsible>
               {diseaseTerms.map((diseaseTerm) => (
                 <Link href={diseaseTerm["@id"]} key={diseaseTerm["@id"]}>
                   {diseaseTerm.term_name}
@@ -501,7 +483,7 @@ export function BiosampleDataItems({
         <>
           <DataItemLabel>Donors</DataItemLabel>
           <DataItemValue>
-            <SeparatedList>
+            <SeparatedList isCollapsible>
               {donors.map((donor) => (
                 <Link href={donor["@id"]} key={donor.uuid}>
                   {donor.accession}
@@ -568,7 +550,7 @@ export function OntologyTermDataItems({ item, isA, children }) {
         <>
           <DataItemLabel>List of Term Names</DataItemLabel>
           <DataItemValue>
-            <SeparatedList>
+            <SeparatedList isCollapsible>
               {isA.map((term) => (
                 <Link href={term["@id"]} key={term.term_id}>
                   {term.term_name}
@@ -660,7 +642,7 @@ export function FileDataItems({ item, fileSet = null, children }) {
         <>
           <DataItemLabel>External Resources</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={item.dbxrefs} />
+            <DbxrefList dbxrefs={item.dbxrefs} isCollapsible />
           </DataItemValue>
         </>
       )}
@@ -774,7 +756,7 @@ export function FileSetDataItems({ item, children }) {
         <>
           <DataItemLabel>External Resources</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={item.dbxrefs} />
+            <DbxrefList dbxrefs={item.dbxrefs} isCollapsible />
           </DataItemValue>
         </>
       )}
