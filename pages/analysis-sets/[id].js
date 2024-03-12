@@ -9,7 +9,6 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
   DataItemLabel,
-  DataAreaTitle,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
@@ -121,12 +120,7 @@ export default function AnalysisSet({
           {files.length > 0 && (
             <FileTable files={files} itemPath={analysisSet["@id"]} />
           )}
-          {documents.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

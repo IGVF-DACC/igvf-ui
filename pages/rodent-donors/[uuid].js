@@ -7,7 +7,6 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import { DonorDataItems } from "../../components/common-data-items";
 import {
   DataArea,
-  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
@@ -80,20 +79,12 @@ export default function RodentDonor({
             </DataArea>
           </DataPanel>
           {donor.phenotypic_features?.length > 0 && (
-            <>
-              <DataAreaTitle>Phenotypic Features</DataAreaTitle>
-              <PhenotypicFeatureTable
-                phenotypicFeatures={donor.phenotypic_features}
-              />
-            </>
+            <PhenotypicFeatureTable
+              phenotypicFeatures={donor.phenotypic_features}
+            />
           )}
           <ExternalResources resources={donor.external_resources} />
-          {documents.length > 0 && (
-            <>
-              <DataAreaTitle>Documents</DataAreaTitle>
-              <DocumentTable documents={documents} />
-            </>
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

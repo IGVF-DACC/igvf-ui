@@ -1,13 +1,10 @@
 // node_modules
 import PropTypes from "prop-types";
 import Link from "next/link";
-import { useRef } from "react";
 // components
-import { DataGridContainer } from "./data-grid";
-import ScrollIndicators from "./scroll-indicators";
+import { DataAreaTitle } from "./data-area";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
-import TableCount from "./table-count";
 // lib
 import { dataSize, truthyOrZero } from "../lib/general";
 
@@ -18,7 +15,6 @@ const columns = [
   {
     id: "@id",
     title: "Accession",
-    isSortable: false,
     display: (source) => {
       const accession = source.source.accession;
       return <Link href={source.source["@id"]}>{accession}</Link>;
@@ -33,6 +29,12 @@ const columns = [
       );
       return fileSet && <Link href={fileSet["@id"]}>{fileSet.accession}</Link>;
     },
+    sorter: (item, meta) => {
+      const fileSet = meta.derivedFromFileSets.find(
+        (fileSet) => fileSet["@id"] === item.file_set
+      );
+      return fileSet?.accession || "";
+    },
   },
   {
     id: "file_format",
@@ -41,6 +43,7 @@ const columns = [
   {
     id: "content_type",
     title: "Content Type",
+    sorter: (item) => item.content_type.toLowerCase(),
   },
   {
     id: "lab.title",
@@ -68,22 +71,21 @@ const columns = [
 /**
  * Display the given files in a table, useful for pages displaying files derived from other files.
  */
-export default function DerivedFromTable({ derivedFrom, derivedFromFileSets }) {
-  const gridRef = useRef(null);
-
+export default function DerivedFromTable({
+  derivedFrom,
+  derivedFromFileSets,
+  title = "Derived From",
+}) {
   return (
     <>
-      <TableCount count={derivedFrom.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
-          <SortableGrid
-            data={derivedFrom}
-            columns={columns}
-            meta={{ derivedFromFileSets }}
-            keyProp="@id"
-          />
-        </DataGridContainer>
-      </ScrollIndicators>
+      <DataAreaTitle>{title}</DataAreaTitle>
+      <SortableGrid
+        data={derivedFrom}
+        columns={columns}
+        meta={{ derivedFromFileSets }}
+        pager={{}}
+        keyProp="@id"
+      />
     </>
   );
 }
@@ -93,4 +95,6 @@ DerivedFromTable.propTypes = {
   derivedFrom: PropTypes.array.isRequired,
   // File sets of the files
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Optional title to display if not "Derived From"
+  title: PropTypes.string,
 };

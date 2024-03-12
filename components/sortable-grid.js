@@ -9,9 +9,17 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import PropTypes from "prop-types";
-import { Children, cloneElement, useState } from "react";
+import { Children, cloneElement, useRef, useState } from "react";
 // components
-import DataGrid from "./data-grid";
+import DataGrid, { DataGridContainer } from "./data-grid";
+import Pager from "./pager";
+import ScrollIndicators from "./scroll-indicators";
+import TableCount from "./table-count";
+
+/**
+ * The default maximum number of items in the table before the pager gets displayed.
+ */
+const DEFAULT_MAX_ITEMS_PER_PAGE = 10;
 
 // enums for the column-sorting directions.
 const SORT_DIRECTIONS = {
@@ -48,16 +56,17 @@ function convertObjectArrayToDataGrid(items, columns, keyProp) {
 /**
  * Sort the data according to the provided column and direction.
  * @param {array} data Array of objects to sort
+ * @param {object} meta Metadata for the grid
  * @param {string} sortBy ID of the column to sort by
  * @param {string} sortDirections Sort direction; asc or desc
  * @returns {array} Sorted copy of incoming array of objects
  */
-function sortData(data, columns, sortBy, sortDirections) {
+function sortData(data, meta, columns, sortBy, sortDirections) {
   const sortedColumnConfig = columns.find((column) => column.id === sortBy);
   if (sortedColumnConfig.sorter) {
     return _.orderBy(
       data,
-      (item) => sortedColumnConfig.sorter(item),
+      (item) => sortedColumnConfig.sorter(item, meta),
       sortDirections
     );
   }
@@ -236,6 +245,45 @@ HeaderCell.propTypes = {
 };
 
 /**
+ * Displays a pager control intended for a table, often used with `<SortableGrid>`. The pager only
+ * appears when the number of items in the table exceeds the maximum number of items per page.
+ */
+function TablePager({
+  data,
+  currentPageIndex,
+  setCurrentPageIndex,
+  maxItemsPerPage,
+}) {
+  const totalPages = Math.ceil(data.length / maxItemsPerPage);
+  if (totalPages > 1) {
+    return (
+      <div
+        className="flex justify-center border-l border-r border-panel bg-gray-100 py-0.5 dark:bg-gray-900"
+        data-testid="table-pager"
+      >
+        <Pager
+          currentPage={currentPageIndex + 1}
+          totalPages={totalPages}
+          onClick={(newCurrentPage) => setCurrentPageIndex(newCurrentPage - 1)}
+        />
+      </div>
+    );
+  }
+  return null;
+}
+
+TablePager.propTypes = {
+  // Data to display in the table
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Currently displayed page; 0-based index
+  currentPageIndex: PropTypes.number.isRequired,
+  // Function to call when the user selects a new page; new page index passed as argument
+  setCurrentPageIndex: PropTypes.func.isRequired,
+  // Maximum number of items to display in the table before the pager gets displayed
+  maxItemsPerPage: PropTypes.number.isRequired,
+};
+
+/**
  * Display a sortable grid of data according to the provided columns. The data has to be an array
  * of objects requiring no column nor row spans. It uses the provided `columns` configurations to
  * convert `data` to data-grid format. To help the header cells know how to react to the user's
@@ -247,7 +295,9 @@ export default function SortableGrid({
   columns,
   keyProp = "",
   initialSort = {},
+  pager = null,
   meta = {},
+  isTotalCountHidden = false,
   CustomHeaderCell = HeaderCell,
 }) {
   // id of the currently sorted column
@@ -256,6 +306,12 @@ export default function SortableGrid({
   const [sortDirection, setSortDirection] = useState(
     initialSort.direction || SORT_DIRECTIONS.ASC
   );
+  const gridRef = useRef(null);
+
+  // Current page if the table has a pager and not managed by the parent
+  const [pageIndex, setPageIndex] = useState(0);
+  const currentPageIndex = pager?.currentPageIndex ?? pageIndex;
+  const maxItemsPerPage = pager?.maxItemsPerPage || DEFAULT_MAX_ITEMS_PER_PAGE;
 
   /**
    * Called when the user clicks a column header to set its sorting.
@@ -312,24 +368,46 @@ export default function SortableGrid({
   // Convert the data (simple array of objects) into a data grid array and render the table.
   const sortedData = initialSort.isSortingSuppressed
     ? data
-    : sortData(data, visibleColumns, sortBy, sortDirection);
+    : sortData(data, meta, visibleColumns, sortBy, sortDirection);
+  // Extract the current page of data from sortedData if the table has a pager.
+  const pagedData = pager
+    ? sortedData.slice(
+        currentPageIndex * maxItemsPerPage,
+        (currentPageIndex + 1) * maxItemsPerPage
+      )
+    : sortedData;
   const dataRows = convertObjectArrayToDataGrid(
-    sortedData,
+    pagedData,
     visibleColumns,
     keyProp
   );
   return (
-    <DataGrid
-      data={headerRow.concat(dataRows)}
-      meta={{
-        ...meta,
-        sortBy,
-        columns: visibleColumns,
-        sortDirection,
-        handleSortClick,
-        dataLength: dataRows.length,
-      }}
-    />
+    <div>
+      {!isTotalCountHidden && <TableCount count={data.length} />}
+      {pager && (
+        <TablePager
+          data={data}
+          currentPageIndex={currentPageIndex}
+          setCurrentPageIndex={setPageIndex}
+          maxItemsPerPage={maxItemsPerPage}
+        />
+      )}
+      <ScrollIndicators gridRef={gridRef}>
+        <DataGridContainer ref={gridRef}>
+          <DataGrid
+            data={headerRow.concat(dataRows)}
+            meta={{
+              ...meta,
+              sortBy,
+              columns: visibleColumns,
+              sortDirection,
+              handleSortClick,
+              dataLength: data.length,
+            }}
+          />
+        </DataGridContainer>
+      </ScrollIndicators>
+    </div>
   );
 }
 
@@ -349,8 +427,19 @@ SortableGrid.propTypes = {
     // True to not sort the data
     isSortingSuppressed: PropTypes.bool,
   }),
+  // Pager configuration; null to not use a pager
+  pager: PropTypes.exact({
+    // Maximum number of items to display in the table before the pager gets displayed
+    maxItemsPerPage: PropTypes.number,
+    // 0-based current page index; needed only if parent manages the current page
+    currentPageIndex: PropTypes.number,
+    // Called when the user selects a new page; needed only if parent manages the current page
+    setCurrentPageIndex: PropTypes.func,
+  }),
   // meta property for the data cells
   meta: PropTypes.object,
+  // True to hide the total count area
+  isTotalCountHidden: PropTypes.bool,
   // Optional component to render a header cell, overriding the default
   CustomHeaderCell: PropTypes.elementType,
 };

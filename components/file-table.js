@@ -1,15 +1,11 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
-import { useRef } from "react";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
-import { DataGridContainer } from "./data-grid";
 import { FileAccessionAndDownload } from "./file-download";
-import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
-import TableCount from "./table-count";
 // lib
 import { dataSize, truthyOrZero } from "../lib/general";
 
@@ -22,10 +18,12 @@ const filesColumns = [
   {
     id: "file_format",
     title: "File Format",
+    sorter: (item) => item.file_format.toLowerCase(),
   },
   {
     id: "content_type",
     title: "Content Type",
+    sorter: (item) => item.content_type.toLowerCase(),
   },
   {
     id: "lab",
@@ -56,8 +54,6 @@ const filesColumns = [
  * Display a sortable table of the given files.
  */
 export default function FileTable({ files, title = "Files", itemPath = "" }) {
-  const gridRef = useRef(null);
-
   const reportLink = itemPath
     ? `/multireport/?type=File&file_set=${encodeURIComponent(itemPath)}`
     : "";
@@ -66,19 +62,21 @@ export default function FileTable({ files, title = "Files", itemPath = "" }) {
     <>
       <DataAreaTitle>
         {title}
-        <DataAreaTitleLink
-          href={reportLink}
-          label="Report of files that have this item as their file set"
-        >
-          <TableCellsIcon className="h-4 w-4" />
-        </DataAreaTitleLink>
+        {reportLink && (
+          <DataAreaTitleLink
+            href={reportLink}
+            label="Report of files that have this item as their file set"
+          >
+            <TableCellsIcon className="h-4 w-4" />
+          </DataAreaTitleLink>
+        )}
       </DataAreaTitle>
-      <TableCount count={files.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
-          <SortableGrid data={files} columns={filesColumns} keyProp="@id" />
-        </DataGridContainer>
-      </ScrollIndicators>
+      <SortableGrid
+        data={files}
+        columns={filesColumns}
+        keyProp="@id"
+        pager={{}}
+      />
     </>
   );
 }
