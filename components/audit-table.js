@@ -13,26 +13,20 @@ const auditColumns = [
     id: "audit_level",
     title: "Severity Level",
     display: ({ source }) => {
-      const filteredSource = source.audit_level.filter(
-        (audit) => audit !== "INTERNAL_ACTION"
-      );
+      const auditLevel = source.audit_level;
+      const mapping = auditMap[auditLevel];
       return (
         <div>
-          {filteredSource.map((level) => {
-            const mapping = auditMap[level];
-            return (
-              <Fragment key={level}>
-                <div className="flex items-center justify-start gap-1">
-                  <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
-                  <div>{mapping.humanReadable}</div>
-                </div>
-              </Fragment>
-            );
-          })}
+          <Fragment key={auditLevel}>
+            <div className="flex items-center justify-start gap-1">
+              <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
+              <div>{mapping.humanReadable}</div>
+            </div>
+          </Fragment>
         </div>
       );
     },
-    isSortable: false,
+    isSortable: true,
   },
   {
     id: "audit_category",

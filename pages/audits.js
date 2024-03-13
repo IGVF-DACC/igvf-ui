@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { Fragment } from "react";
 // component
 import AuditKeyTable from "../components/audit-key-table";
+import AuditTable from "../components/audit-table";
 import PagePreamble from "../components/page-preamble";
 // lib
 import { errorObjectToProps } from "../lib/errors";
@@ -11,13 +12,13 @@ import FetchRequest from "../lib/fetch-request";
 import { snakeCaseToHuman } from "../lib/general";
 
 export default function AuditDoc({ auditDoc }) {
-  const keyedAudits = Object.keys(auditDoc).map((key) => {
-    return {
-      key: key.split(".")[2],
-      ...auditDoc[key],
-    };
+  const result = _.flatMap(auditDoc, (auditGroup, key) => {
+    return auditGroup.map((audit) => {
+      const newKeys = key.split(".")[2];
+      return { ...audit, newKeys };
+    });
   });
-  const auditsGroupedByCollection = _.groupBy(keyedAudits, "key");
+  const auditsGroupedByCollection = _.groupBy(result, "newKeys");
 
   const auditKeyColor = [
     {
@@ -34,6 +35,10 @@ export default function AuditDoc({ auditDoc }) {
       audit_description:
         "Possibly inconsistent metadata. Data will be released with warnings",
     },
+    {
+      audit_level: "INTERNAL_ACTION",
+      audit_description: "Metadata errors that require DCC staff to resolve",
+    },
   ];
   return (
     <>
@@ -48,20 +53,16 @@ export default function AuditDoc({ auditDoc }) {
         category, there could be one or more icons, each assigned a distinct
         color corresponding to the severity level of the audit category.
       </p>
-      <p>{console.log(keyedAudits)}</p>
       <AuditKeyTable data={auditKeyColor} />
       {Object.keys(auditsGroupedByCollection).map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];
-        const filteredAudits = typeAudits.filter(
-          (audit) => audit.audit_level === "INTERNAL_ACTION"
-        );
-        if (filteredAudits.length > 0) {
+        if (itemType.length > 0) {
           return (
             <Fragment key={itemType}>
               <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
                 {snakeCaseToHuman(itemType)}
               </h2>
-              <AuditKeyTable data={filteredAudits} key={itemType} />
+              <AuditTable data={typeAudits} key={itemType} />
             </Fragment>
           );
         }
@@ -82,14 +83,6 @@ export async function getServerSideProps({ req }) {
     await request.getObject("/static/doc/auditdoc.json")
   ).union();
   if (FetchRequest.isResponseSuccess(auditDoc)) {
-    const keyedAudits = Object.keys(auditDoc).map((key) => {
-      return {
-        key: key.split(".")[2],
-        ...auditDoc[key],
-      };
-    });
-    const auditsGroupedByCollection = _.groupBy(keyedAudits, "key");
-    console.log(auditsGroupedByCollection);
     return {
       props: {
         auditDoc,
