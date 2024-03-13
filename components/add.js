@@ -13,7 +13,7 @@ import { ButtonLink } from "./form-elements";
 import SessionContext from "./session-context";
 // lib
 import FetchRequest from "../lib/fetch-request";
-import { urlWithoutParams, sortedJson } from "../lib/general";
+import { urlWithoutParams, sortObjectProps } from "../lib/general";
 import { collectionToSchema } from "../lib/schema";
 /* istanbul ignore file */
 
@@ -204,7 +204,7 @@ export function AddInstancePage({ collection }) {
       errors: [],
     });
 
-    const value = sortedJson(JSON.parse(text));
+    const value = sortObjectProps(JSON.parse(text));
     const collectPath = urlWithoutParams(collection["@id"]);
     new FetchRequest({ session })
       .postObject(collectPath, value)

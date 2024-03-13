@@ -1,7 +1,9 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import { DataPanel } from "./data-area";
+import JsonPanel from "./json-panel";
+// lib
+import { sortObjectProps } from "../lib/general";
 
 /**
  * This function will display a raw JSON view for a given object if the query is in JSON format, otherwise it will display an object view.
@@ -11,16 +13,12 @@ import { DataPanel } from "./data-area";
  * @returns either a raw JSON view or a object view
  */
 export default function JsonDisplay({ item, isJsonFormat, children }) {
+  const sortedItem = sortObjectProps(item);
+
   return (
     <>
       {isJsonFormat ? (
-        <DataPanel>
-          <div className="border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
-            <pre className="overflow-x-scroll p-1">
-              {JSON.stringify(item, null, 4)}
-            </pre>
-          </div>
-        </DataPanel>
+        <JsonPanel>{JSON.stringify(sortedItem, null, 4)}</JsonPanel>
       ) : (
         <>{children}</>
       )}

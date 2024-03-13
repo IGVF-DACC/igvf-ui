@@ -1,6 +1,7 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { Fragment } from "react";
 // components
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -64,13 +65,17 @@ export default function AnalysisStep({
               <DataItemLabel>Input Content Types</DataItemLabel>
               <DataItemValue>
                 <SeparatedList isCollapsible>
-                  {analysisStep.input_content_types}
+                  {analysisStep.input_content_types.map((type) => (
+                    <Fragment key={type}>{type}</Fragment>
+                  ))}
                 </SeparatedList>
               </DataItemValue>
               <DataItemLabel>Output Content Types</DataItemLabel>
               <DataItemValue>
                 <SeparatedList isCollapsible>
-                  {analysisStep.output_content_types}
+                  {analysisStep.output_content_types.map((type) => (
+                    <Fragment key={type}>{type}</Fragment>
+                  ))}
                 </SeparatedList>
               </DataItemValue>
               {analysisStep.parents?.length > 0 && (
