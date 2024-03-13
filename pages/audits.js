@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import { Fragment } from "react";
 // component
 import AuditKeyTable from "../components/audit-key-table";
-import AuditTable from "../components/audit-table";
 import PagePreamble from "../components/page-preamble";
 // lib
 import { errorObjectToProps } from "../lib/errors";
@@ -20,7 +19,7 @@ export default function AuditDoc({ auditDoc }) {
   });
   const auditsGroupedByCollection = _.groupBy(keyedAudits, "key");
 
-  let auditKeyColor = [
+  const auditKeyColor = [
     {
       audit_level: "ERROR",
       audit_description: "Incorrect or inconsistent metadata",
@@ -49,11 +48,12 @@ export default function AuditDoc({ auditDoc }) {
         category, there could be one or more icons, each assigned a distinct
         color corresponding to the severity level of the audit category.
       </p>
+      <p>{console.log(keyedAudits)}</p>
       <AuditKeyTable data={auditKeyColor} />
       {Object.keys(auditsGroupedByCollection).map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];
         const filteredAudits = typeAudits.filter(
-          (audit) => audit.audit_levels[0] !== "INTERNAL_ACTION"
+          (audit) => audit.audit_level === "INTERNAL_ACTION"
         );
         if (filteredAudits.length > 0) {
           return (
@@ -61,7 +61,7 @@ export default function AuditDoc({ auditDoc }) {
               <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
                 {snakeCaseToHuman(itemType)}
               </h2>
-              <AuditTable data={filteredAudits} key={itemType} />
+              <AuditKeyTable data={filteredAudits} key={itemType} />
             </Fragment>
           );
         }
@@ -82,6 +82,14 @@ export async function getServerSideProps({ req }) {
     await request.getObject("/static/doc/auditdoc.json")
   ).union();
   if (FetchRequest.isResponseSuccess(auditDoc)) {
+    const keyedAudits = Object.keys(auditDoc).map((key) => {
+      return {
+        key: key.split(".")[2],
+        ...auditDoc[key],
+      };
+    });
+    const auditsGroupedByCollection = _.groupBy(keyedAudits, "key");
+    console.log(auditsGroupedByCollection);
     return {
       props: {
         auditDoc,

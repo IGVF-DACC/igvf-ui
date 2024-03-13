@@ -13,7 +13,7 @@ const auditColumns = [
     id: "audit_level",
     title: "Severity Level",
     display: ({ source }) => {
-      const filteredSource = source.audit_levels.filter(
+      const filteredSource = source.audit_level.filter(
         (audit) => audit !== "INTERNAL_ACTION"
       );
       return (
@@ -41,9 +41,9 @@ const auditColumns = [
     isSortable: false,
   },
   {
-    id: "audit_detail",
+    id: "audit_description",
     title: "Description",
-    display: ({ source }) => source.audit_detail,
+    display: ({ source }) => source.audit_description,
     isSortable: false,
   },
 ];
