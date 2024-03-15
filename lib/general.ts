@@ -84,29 +84,48 @@ export function nullOnError<T, E extends IsError>(x: T | E | null): T | null {
 }
 
 /**
- * Takes an Object to be represented as JSON and sorts
- * the top level keys and arrays.
- * Arrays get ordered, and the objects in arrays also have
- * their keys sorted.
- * @param {object} obj The JSON object to sort
- * @returns The sorted JSON object
+ * Copy the given object but with its properties sorted alphabetically. Properties that are
+ * themselves objects get sorted recursively. Properties that are arrays of objects have their
+ * objects sorted. This does not handle arrays of arrays of objects, so hopefully we don't have to
+ * deal with that.
+ * @param obj Sort the properties of this object
+ * @returns Copy of `obj` with its properties sorted
  */
-export function sortedJson(obj: JSON): JSON {
-  if (Array.isArray(obj)) {
-    return obj.map((value) => sortedJson(value)).sort();
-  }
-  // We know it's not an array at this point
-  if (typeof obj === "object") {
-    const sorted: { [key: string]: JSON } = {};
-    const o = obj as { [key: string]: JSON };
-    Object.keys(o)
-      .sort()
-      .forEach((key) => {
-        sorted[key] = o[key];
-      });
-    return sorted;
-  }
-  return obj;
+export function sortObjectProps(obj: object): object {
+  return Object.keys(obj)
+    .sort()
+    .reduce((sorted, key) => {
+      const prop = (obj as Record<string, unknown>)[key];
+
+      if (typeof prop === "object") {
+        // Properties that are objects should themselves get sorted recursively.
+        if (!Array.isArray(prop)) {
+          return {
+            ...sorted,
+            [key]: sortObjectProps(prop!),
+          };
+        }
+
+        // Properties that are arrays of objects should have their objects sorted.
+        if (
+          prop.length > 0 &&
+          typeof prop[0] === "object" &&
+          !Array.isArray(prop[0])
+        ) {
+          return {
+            ...sorted,
+            [key]: prop.map((item) => sortObjectProps(item)),
+          };
+        }
+      }
+
+      // Simple properties, arrays of simple properties, and empty arrays simply get added to the
+      // sorted object.
+      return {
+        ...sorted,
+        [key]: prop,
+      };
+    }, {});
 }
 
 /**

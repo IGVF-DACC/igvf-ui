@@ -9,9 +9,9 @@ import { isJsonFormat } from "../lib/query-utils";
 // components
 import { AddableItem } from "../components/add";
 import Breadcrumbs from "../components/breadcrumbs";
-import { DataPanel } from "../components/data-area";
 import { EditableItem } from "../components/edit";
 import JsonDisplay from "../components/json-display";
+import JsonPanel from "../components/json-panel";
 import ObjectPageHeader from "../components/object-page-header";
 import Page from "../components/page";
 import PagePreamble from "../components/page-preamble";
@@ -55,11 +55,7 @@ export default function FallbackObject({
         <>
           <PagePreamble />
           <AddableItem collection={generic}>
-            <DataPanel>
-              <div className="overflow-x-auto border border-gray-300 bg-gray-100 text-xs dark:border-gray-800 dark:bg-gray-900">
-                <pre className="p-1">{JSON.stringify(generic, null, 4)}</pre>
-              </div>
-            </DataPanel>
+            <JsonPanel>{JSON.stringify(generic, null, 4)}</JsonPanel>
           </AddableItem>
         </>
       );

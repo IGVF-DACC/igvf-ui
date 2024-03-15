@@ -73,7 +73,8 @@ function SchemaJsonPanel({ property, panelId, isJsonDetailOpen }) {
         >
           <JsonPanel
             id={`schema-json-${panelId}`}
-            className="ml-5 border border-gray-300 text-xs"
+            className="ml-5 border border-panel text-xs"
+            isLowContrast
           >
             {JSON.stringify(property, null, 2)}
           </JsonPanel>
@@ -435,7 +436,7 @@ function SchemaProperties({ properties, searchTerm, setSearchTerm }) {
 
   return (
     <>
-      <section className="bg-schema-search sticky top-0 border-b border-panel px-4 py-2">
+      <section className="sticky top-0 border-b border-panel bg-schema-search px-4 py-2">
         <FormLabel>Search Schema Properties</FormLabel>
         <div className="mb-4">
           <SchemaSearchField

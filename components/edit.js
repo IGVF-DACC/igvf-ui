@@ -11,7 +11,7 @@ import SessionContext from "./session-context";
 import PagePreamble from "./page-preamble";
 // lib
 import FetchRequest from "../lib/fetch-request";
-import { sortedJson } from "../lib/general";
+import { sortObjectProps } from "../lib/general";
 import { itemToSchema } from "../lib/schema";
 /* istanbul ignore file */
 
@@ -134,7 +134,7 @@ export default function EditPage({ item }) {
   useEffect(() => {
     const getRequest = new FetchRequest({ session });
     getRequest.getObject(`${path}?frame=edit`).then((value) => {
-      setText(JSON.stringify(sortedJson(value.union()), null, 4));
+      setText(JSON.stringify(sortObjectProps(value.union()), null, 4));
     });
   }, [path, session]);
 
@@ -166,7 +166,7 @@ export default function EditPage({ item }) {
       canSave: false,
       errors: [],
     });
-    const value = sortedJson(JSON.parse(text));
+    const value = sortObjectProps(JSON.parse(text));
     const putRequest = new FetchRequest({ session });
     putRequest.putObject(path, value).then((response) => {
       if (response.status === "success") {
