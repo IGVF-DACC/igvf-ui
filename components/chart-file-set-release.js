@@ -100,7 +100,7 @@ export default function ChartFileSetRelease({ releaseData, title }) {
         data={data}
         animate={false}
         ariaLabel={title}
-        areaBaselineValue={releaseData[0].y}
+        areaBaselineValue={0}
         areaOpacity={0.2}
         axisBottom={{
           orient: "bottom",
@@ -121,7 +121,7 @@ export default function ChartFileSetRelease({ releaseData, title }) {
           tickValues: releaseData.at(-1).y < 10 ? 4 : 10,
         }}
         colors={[CHART_COLOR]}
-        curve="catmullRom"
+        curve="linear"
         enableArea={true}
         enableGridX={false}
         margin={{
@@ -144,7 +144,7 @@ export default function ChartFileSetRelease({ releaseData, title }) {
         yScale={{
           type: "linear",
           stacked: true,
-          min: "auto",
+          min: 0,
           max: "auto",
         }}
       />

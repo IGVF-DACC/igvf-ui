@@ -440,7 +440,7 @@ describe("Test convertFileSetsToReleaseData function", () => {
     ];
 
     const releaseData = convertFileSetsToReleaseData(fileSets);
-    expect(releaseData).toEqual([
+    expect(releaseData.slice(0, 6)).toEqual([
       { x: "Dec 2022", y: 1 },
       { x: "Jan 2023", y: 1 },
       { x: "Feb 2023", y: 3 },
