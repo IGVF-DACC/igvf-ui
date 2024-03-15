@@ -11,7 +11,7 @@ describe("Test the inline collapse control", () => {
 
     function Component() {
       const items = ["Test", "Test", "Test", "Test", "Test"];
-      const collapser = useCollapseControl(items, true, 2);
+      const collapser = useCollapseControl(items, 2);
 
       return (
         <>
@@ -45,7 +45,7 @@ describe("Test the inline collapse control", () => {
 
     function Component() {
       const items = ["Test", "Test", "Test", "Test", "Test"];
-      const collapser = useCollapseControl(items, true, 6);
+      const collapser = useCollapseControl(items, 6, true);
 
       return (
         <>
@@ -77,7 +77,7 @@ describe("Test the inline collapse control", () => {
 
     function Component() {
       const items = ["Test", "Test", "Test", "Test", "Test"];
-      const collapser = useCollapseControl(items, false, 2);
+      const collapser = useCollapseControl(items, 2, false);
 
       return (
         <>
@@ -111,7 +111,7 @@ describe("Test the vertical collapse control", () => {
 
     function Component() {
       const items = ["Test", "Test", "Test", "Test", "Test"];
-      const collapser = useCollapseControl(items, true, 2);
+      const collapser = useCollapseControl(items, 2);
 
       return (
         <>
@@ -125,6 +125,7 @@ describe("Test the vertical collapse control", () => {
               length={items.length}
               isCollapsed={true}
               setIsCollapsed={setIsCollapsed}
+              isFullBorder={true}
             />
           )}
         </>
@@ -145,7 +146,7 @@ describe("Test the vertical collapse control", () => {
 
     function Component() {
       const items = ["Test", "Test", "Test", "Test", "Test"];
-      const collapser = useCollapseControl(items, true, 6);
+      const collapser = useCollapseControl(items, 6);
 
       return (
         <>
@@ -177,7 +178,7 @@ describe("Test the vertical collapse control", () => {
 
     function Component() {
       const items = ["Test", "Test", "Test", "Test", "Test"];
-      const collapser = useCollapseControl(items, false, 2);
+      const collapser = useCollapseControl(items, 2, false);
 
       return (
         <>

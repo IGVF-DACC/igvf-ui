@@ -100,7 +100,7 @@ describe("DataGrid", () => {
           },
           {
             id: "cell-3",
-            content: (cell, meta) => {
+            content: ({ meta }) => {
               return <div style={{ color: `${meta.color}` }}>3</div>;
             },
           },

@@ -167,8 +167,8 @@ export function DataItemList({
   const childArray = Children.toArray(children);
   const collapser = useCollapseControl(
     childArray,
-    isCollapsible,
-    maxItemsBeforeCollapse
+    maxItemsBeforeCollapse,
+    isCollapsible
   );
 
   const hasSingleChild = childArray.length === 1;

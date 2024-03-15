@@ -54,7 +54,7 @@ const sampleColumns = [
   {
     id: "construct_library_sets",
     title: "Construct Library Set",
-    display: ({ source }, { constructLibrarySetAccessions }) => {
+    display: ({ source, meta }) => {
       if (
         source.construct_library_sets &&
         source.construct_library_sets.length > 0
@@ -62,8 +62,8 @@ const sampleColumns = [
         return (
           <SeparatedList>
             {source.construct_library_sets.map((id) => {
-              if (constructLibrarySetAccessions) {
-                const accession = constructLibrarySetAccessions.find(
+              if (meta.constructLibrarySetAccessions) {
+                const accession = meta.constructLibrarySetAccessions.find(
                   (lib) => lib["@id"] === id
                 )?.accession;
 

@@ -54,8 +54,8 @@ export default function SeparatedList({
 }) {
   const collapser = useCollapseControl(
     children,
-    isCollapsible,
-    maxItemsBeforeCollapse
+    maxItemsBeforeCollapse,
+    isCollapsible
   );
   const items = isCollapsible ? collapser.items : Children.toArray(children);
 

@@ -184,13 +184,11 @@ function HeaderCell({ cells, cellIndex, meta, children }) {
   // header cell title renderers. A child of type "object" indicates a React component, while
   // anything else gets treated as a primitive type which can't accept any extra properties.
   const headerCellChildren = Children.map(children, (child) => {
-    return typeof child === "object"
-      ? cloneElement(child, {
-          columnConfiguration,
-          sortBy: meta.sortBy,
-          sortDirection: meta.sortDirection,
-        })
-      : child;
+    return cloneElement(child, {
+      columnConfiguration,
+      sortBy: meta.sortBy,
+      sortDirection: meta.sortDirection,
+    });
   });
 
   // Determine whether to render a sortable (`isSortable` true or not used) or non-sortable

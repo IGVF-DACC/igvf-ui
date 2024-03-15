@@ -45,8 +45,8 @@ export default function ChromosomeLocations({
 }) {
   const collapser = useCollapseControl(
     locations,
-    isCollapsible,
-    maxItemsBeforeCollapse
+    maxItemsBeforeCollapse,
+    isCollapsible
   );
 
   return (
