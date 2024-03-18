@@ -53,7 +53,9 @@ export default function AuditDoc({ auditDoc }) {
         category, there could be one or more icons, each assigned a distinct
         color corresponding to the severity level of the audit category.
       </p>
-      <div className="mb-1 mt-4" />
+      <div className="mb-1 mt-4 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
+        {"Severity Level and Description Key"}
+      </div>
       <AuditKeyTable data={auditKeyColor} />
       {Object.keys(auditsGroupedByCollection).map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];

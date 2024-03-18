@@ -3,10 +3,7 @@ import PropTypes from "prop-types";
 import { Fragment, useRef } from "react";
 // components
 import { auditMap } from "./audit";
-import { DataGridContainer } from "./data-grid";
-import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
-import TableCount from "./table-count";
 
 const auditColumns = [
   {
@@ -16,13 +13,9 @@ const auditColumns = [
       const auditLevel = source.audit_level;
       const mapping = auditMap[auditLevel];
       return (
-        <div>
-          <Fragment key={auditLevel}>
-            <div className="flex items-center justify-start gap-1">
-              <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
-              <div>{mapping.humanReadable}</div>
-            </div>
-          </Fragment>
+        <div className="flex items-center justify-start gap-1">
+          <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
+          <div>{mapping.humanReadable}</div>
         </div>
       );
     },
@@ -46,16 +39,9 @@ const auditColumns = [
  * Display a sortable table of the given audits.
  */
 export default function AuditTable({ data }) {
-  const gridRef = useRef(null);
-
   return (
     <>
-      <TableCount count={data.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
-          <SortableGrid data={data} columns={auditColumns} />
-        </DataGridContainer>
-      </ScrollIndicators>
+      <SortableGrid data={data} columns={auditColumns} />
     </>
   );
 }
