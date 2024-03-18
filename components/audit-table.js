@@ -1,6 +1,5 @@
 // node_modules
 import PropTypes from "prop-types";
-import { Fragment, useRef } from "react";
 // components
 import { auditMap } from "./audit";
 import SortableGrid from "./sortable-grid";
