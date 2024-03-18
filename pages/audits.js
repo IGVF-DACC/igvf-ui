@@ -33,11 +33,11 @@ export default function AuditDoc({ auditDoc }) {
     {
       audit_level: "WARNING",
       audit_description:
-        "Possibly inconsistent metadata. Data will be released with warnings",
+        "Possibly inconsistent metadata. Data can be released with warnings",
     },
     {
       audit_level: "INTERNAL_ACTION",
-      audit_description: "Metadata errors that require DCC staff to resolve",
+      audit_description: "Metadata errors that require DACC staff to resolve",
     },
   ];
   return (
