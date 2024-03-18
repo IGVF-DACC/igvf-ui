@@ -12,6 +12,11 @@ import PropTypes from "prop-types";
 // components
 import ChromosomeLocations from "../chromosome-locations";
 import { FileDownload } from "../file-download";
+import {
+  CollapseControlVertical,
+  DEFAULT_MAX_COLLAPSE_ITEMS_VERTICAL,
+  useCollapseControl,
+} from "../collapse-control";
 import SeparatedList from "../separated-list";
 import UnspecifiedProperty from "../unspecified-property";
 // lib
@@ -189,7 +194,7 @@ GeneLocations.propTypes = {
   // Object displayed in a row
   source: PropTypes.shape({
     // Array of embedded gene locations objects
-    locations: PropTypes.object.isRequired,
+    locations: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
 };
 
@@ -286,26 +291,41 @@ Path.propTypes = {
  * Report cell renderer for an array of paths/@ids linking to other pages on the site.
  */
 function PathArray({ id, source }) {
-  const paths = source[id];
-  if (paths?.length > 0) {
+  const paths = source[id] || [];
+  const collapser = useCollapseControl(
+    paths,
+    DEFAULT_MAX_COLLAPSE_ITEMS_VERTICAL
+  );
+
+  if (paths.length > 0) {
     return (
-      <div data-testid="cell-type-path-array">
-        {paths.map((path, index) => {
-          // The report page's `getServerSideProps()` might have embedded the linked object in this
-          // property. So if this path property has an object instead of a path string, get its @id
-          // and use that as the link.
-          const isObject = path !== null && typeof path === "object";
-          const resolvedPath = isObject ? path["@id"] : path;
-          return (
-            <Link
-              key={index}
-              href={resolvedPath}
-              className="my-2 block first:mt-0 last:mb-0"
-            >
-              {resolvedPath}
-            </Link>
-          );
-        })}
+      <div>
+        <ul data-testid="cell-type-path-array">
+          {collapser.items.map((path, index) => {
+            // The report page's `getServerSideProps()` might have embedded the linked object in this
+            // property. So if this path property has an object instead of a path string, get its @id
+            // and use that as the link.
+            const isObject = path !== null && typeof path === "object";
+            const resolvedPath = isObject ? path["@id"] : path;
+            return (
+              <li key={index} className={`my-2 block first:mt-0 last:mb-0`}>
+                <Link key={index} href={resolvedPath}>
+                  {resolvedPath}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+        {collapser.isCollapseControlVisible && (
+          <div className="mt-2">
+            <CollapseControlVertical
+              length={paths.length}
+              isCollapsed={collapser.isCollapsed}
+              setIsCollapsed={collapser.setIsCollapsed}
+              isFullBorder
+            />
+          </div>
+        )}
       </div>
     );
   }

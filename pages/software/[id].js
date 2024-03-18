@@ -5,7 +5,6 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
-  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataItemValueUrl,
@@ -78,10 +77,7 @@ export default function Software({
           </DataPanel>
 
           {software.versions?.length > 0 && (
-            <>
-              <DataAreaTitle>Software Versions</DataAreaTitle>
-              <SoftwareVersionTable versions={versions} />
-            </>
+            <SoftwareVersionTable versions={versions} />
           )}
           <Attribution attribution={attribution} />
         </JsonDisplay>

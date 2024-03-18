@@ -23,9 +23,9 @@ const columns = [
   {
     id: "file_set",
     title: "File Set",
-    display: (cell, meta) => {
+    display: ({ source, meta }) => {
       const fileSet = meta.derivedFromFileSets.find(
-        (fileSet) => fileSet["@id"] === cell.source.file_set
+        (fileSet) => fileSet["@id"] === source.file_set
       );
       return fileSet && <Link href={fileSet["@id"]}>{fileSet.accession}</Link>;
     },

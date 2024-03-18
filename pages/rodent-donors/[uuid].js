@@ -13,7 +13,6 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import ExternalResources from "../../components/external-resources";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -83,7 +82,6 @@ export default function RodentDonor({
               phenotypicFeatures={donor.phenotypic_features}
             />
           )}
-          <ExternalResources resources={donor.external_resources} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>

@@ -9,17 +9,17 @@ const phenotypicFeaturesColumns = [
   {
     id: "phenotypic_feature_id",
     title: "Feature Name",
-    display: (source) => {
-      const featureTerm = source.source.feature;
-      return <Link href={source.source["@id"]}>{featureTerm.term_name}</Link>;
+    display: ({ source }) => {
+      const featureTerm = source.feature;
+      return <Link href={source["@id"]}>{featureTerm.term_name}</Link>;
     },
   },
   {
     id: "feature",
     title: "Feature ID",
-    display: (source) => {
-      const termId = source.source.feature.term_id;
-      return <Link href={source.source.feature["@id"]}>{termId}</Link>;
+    display: ({ source }) => {
+      const termId = source.feature.term_id;
+      return <Link href={source.feature["@id"]}>{termId}</Link>;
     },
   },
   {

@@ -5,6 +5,7 @@
  * the documentation up to date.
  */
 
+// node_modules
 import PropTypes from "prop-types";
 import { forwardRef } from "react";
 
@@ -65,6 +66,15 @@ export default function DataGrid({
     const childCount = row.children?.length || 1;
     const CellWrapper = row.RowComponent || CellComponent;
     const rowRenders = row.cells.map((cell, index) => {
+      // The cell could contain a simple type or a React component.
+      let CellRenderer;
+      let cellContent;
+      if (typeof cell.content === "function") {
+        CellRenderer = cell.content;
+      } else {
+        cellContent = cell.content;
+      }
+
       // Render a single cell.
       const rowRender = (
         <div
@@ -81,9 +91,11 @@ export default function DataGrid({
             cellIndex={index}
             meta={meta}
           >
-            {typeof cell.content === "function"
-              ? cell.content(cell, meta)
-              : cell.content}
+            {CellRenderer ? (
+              <CellRenderer id={cell.id} source={cell.source} meta={meta} />
+            ) : (
+              <>{cellContent}</>
+            )}
           </CellWrapper>
         </div>
       );
