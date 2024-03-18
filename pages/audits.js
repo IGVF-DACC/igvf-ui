@@ -11,6 +11,27 @@ import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { snakeCaseToHuman } from "../lib/general";
 
+const auditKeyColor = [
+  {
+    audit_level: "ERROR",
+    audit_description: "Incorrect or inconsistent metadata",
+  },
+  {
+    audit_level: "NOT_COMPLIANT",
+    audit_description:
+      "Not fulfilling a compliance standard like attached documents",
+  },
+  {
+    audit_level: "WARNING",
+    audit_description:
+      "Possibly inconsistent metadata. Data can be released with warnings",
+  },
+  {
+    audit_level: "INTERNAL_ACTION",
+    audit_description: "Metadata errors that require DACC staff to resolve",
+  },
+];
+
 export default function AuditDoc({ auditDoc }) {
   const result = _.flatMap(auditDoc, (auditGroup, key) => {
     return auditGroup.map((audit) => {
@@ -19,27 +40,6 @@ export default function AuditDoc({ auditDoc }) {
     });
   });
   const auditsGroupedByCollection = _.groupBy(result, "newKeys");
-
-  const auditKeyColor = [
-    {
-      audit_level: "ERROR",
-      audit_description: "Incorrect or inconsistent metadata",
-    },
-    {
-      audit_level: "NOT_COMPLIANT",
-      audit_description:
-        "Not fulfilling a compliance standard like attached documents",
-    },
-    {
-      audit_level: "WARNING",
-      audit_description:
-        "Possibly inconsistent metadata. Data can be released with warnings",
-    },
-    {
-      audit_level: "INTERNAL_ACTION",
-      audit_description: "Metadata errors that require DACC staff to resolve",
-    },
-  ];
   return (
     <>
       <PagePreamble />

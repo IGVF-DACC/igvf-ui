@@ -37,6 +37,7 @@ export default function AuditKeyTable({ data }) {
       data={data}
       columns={auditKeyColumns}
       initialSort={{ isSortingSuppressed: true }}
+      isTotalCountHidden
     />
   );
 }

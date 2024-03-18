@@ -38,7 +38,7 @@ const auditColumns = [
  * Display a sortable table of the given audits.
  */
 export default function AuditTable({ data }) {
-  return <SortableGrid data={data} columns={auditColumns} />;
+  return <SortableGrid data={data} columns={auditColumns} isTotalCountHidden />;
 }
 
 AuditTable.propTypes = {
