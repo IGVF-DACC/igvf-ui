@@ -33,13 +33,11 @@ const auditKeyColumns = [
  */
 export default function AuditKeyTable({ data }) {
   return (
-    <>
-      <SortableGrid
-        data={data}
-        columns={auditKeyColumns}
-        initialSort={{ isSortingSuppressed: true }}
-      />
-    </>
+    <SortableGrid
+      data={data}
+      columns={auditKeyColumns}
+      initialSort={{ isSortingSuppressed: true }}
+    />
   );
 }
 
