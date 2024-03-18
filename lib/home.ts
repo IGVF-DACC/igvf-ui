@@ -392,10 +392,11 @@ export function convertFileSetsToReleaseData(
   // Generate the release data for the Nivo line chart.
   let releaseData: FileSetReleaseData[] = [];
   const allMonthsWithData = Object.keys(releasesByMonth).sort();
+  const currentMonth = dateFns.format(new Date(), "yyyy-MM");
   if (allMonthsWithData.length > 0) {
     const allMonths = generateEveryMonthBetween(
       allMonthsWithData.at(0) as string,
-      allMonthsWithData.at(-1) as string
+      currentMonth
     );
 
     // Use the sorted array of all months to generate the running count of file sets released.
