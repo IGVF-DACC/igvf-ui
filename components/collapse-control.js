@@ -7,8 +7,8 @@
  * ```jsx
  * const collapser = useCollapseControl(
  *   items,
- *   isCollapsible,
- *   maxItemsBeforeCollapse
+ *   maxItemsBeforeCollapse,
+ *   isCollapsible
  * );
  *
  * return (
@@ -46,15 +46,15 @@ import { useState } from "react";
  * Hook to control the collapsed state of a list. It keeps the collapsed/expanded state and
  * handles the truncation of the list of items while collapsed.
  * @param {Array} items List of items to display
- * @param {boolean} isCollapsible True if the list should be collapsible
  * @param {number} maxItemsBeforeCollapse Max number of items before the list appears collapsed
+ * @param {boolean} isCollapsible True if the list should be collapsible
  * @returns {Object} Object containing the collapsed state, the collapsed/expanded state setter,
  *   and the truncated list of items
  */
 export function useCollapseControl(
   items,
-  isCollapsible,
-  maxItemsBeforeCollapse
+  maxItemsBeforeCollapse,
+  isCollapsible = true
 ) {
   // True if the list appears collapsed
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -137,15 +137,19 @@ export function CollapseControlVertical({
   length,
   isCollapsed,
   setIsCollapsed,
+  isFullBorder = false,
 }) {
   const label = isCollapsed
     ? `Show all ${length} items in list`
     : `Show fewer items in list`;
+  const borderClass = isFullBorder
+    ? "border rounded-sm"
+    : "border-b border-l border-r rounded-b-sm";
 
   return (
     <button
       onClick={() => setIsCollapsed(!isCollapsed)}
-      className="border-collapse-ctrl bg-collapse-ctrl text-collapse-ctrl block flex items-center rounded-b-sm border-b border-l border-r py-0.5 pl-2.5 pr-1.5 text-xs font-bold"
+      className={`flex items-center border-collapse-ctrl bg-collapse-ctrl py-0.5 pl-2.5 pr-1.5 text-xs font-bold text-collapse-ctrl ${borderClass}`}
       data-testid="collapse-control-vertical"
       aria-label={label}
     >
@@ -172,4 +176,6 @@ CollapseControlVertical.propTypes = {
   isCollapsed: PropTypes.bool.isRequired,
   // Function to set the collapsed state
   setIsCollapsed: PropTypes.func.isRequired,
+  // True to have all four sides of the button have a border; false to have all but the top border
+  isFullBorder: PropTypes.bool,
 };

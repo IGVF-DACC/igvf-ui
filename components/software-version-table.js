@@ -1,12 +1,9 @@
 // node_modules
 import PropTypes from "prop-types";
-import { useRef } from "react";
 // components
-import { DataGridContainer } from "./data-grid";
+import { DataAreaTitle } from "./data-area";
 import ItemLink from "./item-link";
-import ScrollIndicators from "./scroll-indicators";
 import SortableGrid from "./sortable-grid";
-import TableCount from "./table-count";
 
 /**
  * Columns displayed in the software version table.
@@ -45,17 +42,14 @@ const columns = [
 /**
  * Display the given software versions in a table,
  */
-export default function SoftwareVersionTable({ versions }) {
-  const gridRef = useRef(null);
-
+export default function SoftwareVersionTable({
+  versions,
+  title = "Software Versions",
+}) {
   return (
     <>
-      <TableCount count={versions.length} />
-      <ScrollIndicators gridRef={gridRef}>
-        <DataGridContainer ref={gridRef}>
-          <SortableGrid data={versions} columns={columns} />
-        </DataGridContainer>
-      </ScrollIndicators>
+      <DataAreaTitle>{title}</DataAreaTitle>
+      <SortableGrid data={versions} columns={columns} pager={{}} />;
     </>
   );
 }
@@ -63,4 +57,6 @@ export default function SoftwareVersionTable({ versions }) {
 SoftwareVersionTable.propTypes = {
   // versions to display in the table
   versions: PropTypes.array.isRequired,
+  // Title for the table if not "Software Versions"
+  title: PropTypes.string,
 };

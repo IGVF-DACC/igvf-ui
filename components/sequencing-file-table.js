@@ -40,7 +40,7 @@ const filesColumns = [
   {
     id: "seqspec",
     title: "Associated seqspec File",
-    display: ({ source }, meta) => {
+    display: ({ source, meta }) => {
       const matchingSeqspec = meta.seqspecFiles.find(
         (seqspec) => seqspec["@id"] === source.seqspec
       );
@@ -55,9 +55,9 @@ const filesColumns = [
   {
     id: "sequencing_platform",
     title: "Sequencing Platform",
-    display: (cell, meta) => {
+    display: ({ source, meta }) => {
       const matchingPlatform = meta.sequencingPlatforms.find(
-        (platform) => platform["@id"] === cell.source.sequencing_platform
+        (platform) => platform["@id"] === source.sequencing_platform
       );
       return matchingPlatform?.term_name || null;
     },
