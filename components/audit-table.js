@@ -18,7 +18,6 @@ const auditColumns = [
         </div>
       );
     },
-    isSortable: true,
   },
   {
     id: "audit_category",
