@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { auditMap } from "./audit";
 import SortableGrid from "./sortable-grid";
 
-const auditColumns = [
+const auditKeyColumns = [
   {
     id: "audit_level",
     title: "Severity Level",
@@ -18,11 +18,6 @@ const auditColumns = [
         </div>
       );
     },
-  },
-  {
-    id: "audit_category",
-    title: "Category",
-    display: ({ source }) => source.audit_category,
     isSortable: false,
   },
   {
@@ -36,11 +31,18 @@ const auditColumns = [
 /**
  * Display a sortable table of the given audits.
  */
-export default function AuditTable({ data }) {
-  return <SortableGrid data={data} columns={auditColumns} isTotalCountHidden />;
+export default function AuditKeyTable({ data }) {
+  return (
+    <SortableGrid
+      data={data}
+      columns={auditKeyColumns}
+      initialSort={{ isSortingSuppressed: true }}
+      isTotalCountHidden
+    />
+  );
 }
 
-AuditTable.propTypes = {
+AuditKeyTable.propTypes = {
   // Audits to display
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
