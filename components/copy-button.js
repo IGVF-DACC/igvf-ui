@@ -83,7 +83,7 @@ CopyButton.propTypes = {
  * Supply a function as the child of this button that takes an argument that gets set to true for
  * two seconds after the user clicks the copy button.
  */
-function Icon({ target, label, className = "", children }) {
+function Icon({ target, label, size = "md", className = "", children }) {
   const { isCopied, initiateCopy } = useCopyAction(target);
 
   return (
@@ -91,6 +91,7 @@ function Icon({ target, label, className = "", children }) {
       onClick={initiateCopy}
       className={className}
       label={label}
+      size={size}
       hasIconOnly
     >
       {children(isCopied)}
@@ -103,6 +104,8 @@ Icon.propTypes = {
   target: PropTypes.string.isRequired,
   // Accessible label for the button
   label: PropTypes.string.isRequired,
+  // Size of the button
+  size: PropTypes.oneOf(["sm", "md", "lg"]),
   // Additional Tailwind CSS class names
   className: PropTypes.string,
 };

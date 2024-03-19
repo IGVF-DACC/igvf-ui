@@ -3,9 +3,11 @@ import {
   checkSearchTermSchema,
   checkSearchTermTitle,
   getProfiles,
+  notSubmittableProperty,
+  schemaPageTabUrl,
 } from "../profiles";
 // types
-import { SchemaProperties } from "../../globals";
+import { SchemaProperties, SchemaProperty } from "../../globals";
 
 describe("Test getProfiles functionality", () => {
   it("retrieves the schema profiles object", () => {
@@ -240,5 +242,55 @@ describe("Test the checkSearchTermSchemas function", () => {
   it("doesn't find a match with an incorrect property name", () => {
     const results = checkSearchTermSchema("loci", schemaProps, "nonexistent");
     expect(results).toBeFalsy();
+  });
+});
+
+describe("Test the notSubmittableProperty function", () => {
+  it("returns false for a submittable property", () => {
+    const property: SchemaProperty = {
+      title: "ID",
+      type: "string",
+    };
+    const result = notSubmittableProperty(property);
+    expect(result).toBeFalsy();
+  });
+
+  it("returns true for a non-submittable property", () => {
+    const propertyNotSubmittable: SchemaProperty = {
+      title: "ID",
+      type: "string",
+      notSubmittable: true,
+    };
+    const propertyReadonly: SchemaProperty = {
+      title: "ID",
+      type: "string",
+      readonly: true,
+    };
+    const propertyPermission: SchemaProperty = {
+      title: "ID",
+      type: "string",
+      permission: "import_items",
+    };
+
+    expect(notSubmittableProperty(propertyNotSubmittable)).toBeTruthy();
+    expect(notSubmittableProperty(propertyReadonly)).toBeTruthy();
+    expect(notSubmittableProperty(propertyPermission)).toBeTruthy();
+  });
+});
+
+describe("Test the schemaPageTabUrl function", () => {
+  it("returns the correct URL for the schema page tab", () => {
+    const url = schemaPageTabUrl("https://data-provider.org/", "schema");
+    expect(url).toBe("https://data-provider.org/schema/");
+  });
+
+  it("returns an empty string with no schema page URL", () => {
+    const url = schemaPageTabUrl(null, "schema");
+    expect(url).toBe("");
+  });
+
+  it("returns an empty string with no schema page URL", () => {
+    const url = schemaPageTabUrl("", "schema");
+    expect(url).toBe("");
   });
 });
