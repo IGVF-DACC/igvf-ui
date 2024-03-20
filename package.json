@@ -35,6 +35,7 @@
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "marked": "^12.0.0",
+    "marked-react": "^2.0.0",
     "next": "13.4.12",
     "pretty-format": "^29.5.0",
     "prop-types": "^15.8.1",

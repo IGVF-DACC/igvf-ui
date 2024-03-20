@@ -1,6 +1,7 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
 import { AnimatePresence, motion } from "framer-motion";
+import Markdown from "marked-react";
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { useState } from "react";
@@ -10,6 +11,8 @@ import {
   standardAnimationVariants,
 } from "./animation";
 import Icon from "./icon";
+// lib
+import { isValidPath, isValidUrl } from "../lib/general";
 
 /**
  * The following small components render the custom icons for each audit level.
@@ -139,50 +142,6 @@ const allLevels = Object.keys(auditMap);
  */
 const publicLevels = allLevels.filter((level) => level !== "INTERNAL_ACTION");
 
-// Regex to find a simplified markdown in the form "{link text|path}"
-const markdownRegex = /{(.+?)\|(.+?)}/g;
-
-/**
- * Display the audit narrative with embedded links. This gets displayed in each row of the audit
- * details. Links, if they exist in the `narrative` text, must be formatted in this form:
- * {link text|URI}
- */
-function NarrativeWithLinks({ narrative }) {
-  let linkMatches = markdownRegex.exec(narrative);
-  if (linkMatches) {
-    // `narrative` has at least one "markdown" sequence, so treat the whole thing as marked-down
-    // text. Each loop iteration finds each markdown sequence. That gets broken into the non-link
-    // text before the link and then the link itself.
-    const renderedDetail = [];
-    let segmentIndex = 0;
-    while (linkMatches) {
-      const linkText = linkMatches[1];
-      const linkPath = linkMatches[2];
-      const preText = narrative.substring(segmentIndex, linkMatches.index);
-      renderedDetail.push(
-        preText ? <span key={segmentIndex}>{preText}</span> : null,
-        <Link href={linkPath} key={linkMatches.index}>
-          {linkText}
-        </Link>
-      );
-      segmentIndex = linkMatches.index + linkMatches[0].length;
-      linkMatches = markdownRegex.exec(narrative);
-    }
-
-    // Lastly, render any non-link text after the last link.
-    const postText = narrative.substring(segmentIndex, narrative.length);
-    return renderedDetail.concat(
-      postText ? <span key={segmentIndex}>{postText}</span> : null
-    );
-  }
-  return narrative;
-}
-
-NarrativeWithLinks.propTypes = {
-  // Audit narrative text containing formatted links
-  narrative: PropTypes.string.isRequired,
-};
-
 /**
  * Custom hook to allow components that display audits to manage the audit status button and
  * details without needing to know the audit implementation.
@@ -233,6 +192,40 @@ function AuditLevelDetail({ level, children }) {
 AuditLevelDetail.propTypes = {
   // Audit level
   level: PropTypes.string.isRequired,
+};
+
+/**
+ * Pass this object to `<Markdown>` to render links within audit narratives.
+ */
+const auditRenderOptions = {
+  link(href, text, title) {
+    // Open full URLs in a new tab.
+    if (isValidUrl(href)) {
+      return (
+        <a
+          key={href}
+          href={href}
+          title={title}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {text}
+        </a>
+      );
+    }
+
+    // Open paths without reloading the page.
+    if (isValidPath(href)) {
+      return (
+        <Link key={href} href={href} title={title}>
+          {text}
+        </Link>
+      );
+    }
+
+    // Neither a URL nor a path, so just return the text.
+    return <span key={href}>text</span>;
+  },
 };
 
 /**
@@ -290,12 +283,12 @@ export function AuditDetail({ item, auditState, className = null }) {
                                   variants={standardAnimationVariants}
                                 >
                                   <div
-                                    className="mt-2"
+                                    className="prose mt-2 px-1 dark:prose-invert prose-p:text-sm"
                                     data-testid={`audit-level-detail-narrative-${audit.level_name}`}
                                   >
-                                    <NarrativeWithLinks
-                                      narrative={audit.detail}
-                                    />
+                                    <Markdown renderer={auditRenderOptions}>
+                                      {audit.detail}
+                                    </Markdown>
                                   </div>
                                 </motion.div>
                               )}
@@ -349,7 +342,7 @@ export function AuditStatus({ item, auditState }) {
     return (
       <button
         onClick={auditState.toggleDetailsOpen}
-        className={`border-audit flex h-[22px] items-center rounded-full border px-1 ${
+        className={`flex h-[22px] items-center rounded-full border border-audit px-1 ${
           auditState.isDetailOpen
             ? "bg-button-audit-open"
             : "bg-button-audit-closed"
