@@ -79,6 +79,38 @@ Attachment.propTypes = {
 };
 
 /**
+ * Display a vertical list of aliases and allow it to break on any character to avoid making an
+ * unreasonably wide column. It seems unlikely that a cell would have so many aliases that it
+ * needs a collapse/expand button.
+ */
+function Aliases({ source }) {
+  if (source.aliases?.length > 0) {
+    return (
+      <ul>
+        {source.aliases.map((alias) => (
+          <li
+            key={alias}
+            data-testid="cell-type-aliases"
+            className="my-2 min-w-48 break-all first:mt-0 last:mb-0"
+          >
+            {alias}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return null;
+}
+
+Aliases.propTypes = {
+  // Object displayed in a row
+  source: PropTypes.shape({
+    // Array of aliases
+    aliases: PropTypes.arrayOf(PropTypes.string),
+  }),
+};
+
+/**
  * Display a linked list of biosample sample terms, showing the sample term name as the link text.
  */
 function SampleTerms({ id, source }) {
@@ -532,6 +564,7 @@ export const reportPropertyRenderers = {
 
 export const propertyRenderers = {
   "@id": AtId,
+  aliases: Aliases,
   attachment: Attachment,
   external_resources: ExternalResources,
   href: Href,
