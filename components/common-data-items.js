@@ -610,13 +610,16 @@ export function FileDataItems({ item, fileSet = null, children }) {
         <>
           <DataItemLabel>File Set</DataItemLabel>
           <DataItemValue>
-            <Link
-              href={fileSet["@id"]}
-              aria-label={`FileSet ${fileSet.accession}`}
-              key={fileSet.uuid}
-            >
-              {fileSet.accession}
-            </Link>
+            <div className="flex gap-1">
+              <Link
+                href={fileSet["@id"]}
+                aria-label={`FileSet ${fileSet.accession}`}
+                key={fileSet.uuid}
+              >
+                {fileSet.accession}
+              </Link>
+              ({fileSet.summary})
+            </div>
           </DataItemValue>
         </>
       )}
