@@ -80,6 +80,9 @@ export interface SchemaProperty {
   enum?: string[];
   anyOf?: object[];
   oneOf?: object[];
+  notSubmittable?: boolean;
+  readonly?: boolean;
+  permission?: string;
 }
 
 export interface SchemaProperties {

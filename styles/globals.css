@@ -22,6 +22,12 @@
   [type="search"]::-webkit-search-cancel-button {
     appearance: none;
   }
+
+  /* <code> elements within role="tooltip" should have a different background color */
+  [role="tooltip"] code {
+    background-color: var(--color-tooltip-code-background);
+    color: var(--color-tooltip-code-text);
+  }
 }
 
 @layer components {
@@ -197,6 +203,9 @@
   --color-data-label: #6b7280;
   --color-data-value: #000000;
 
+  --color-tooltip-code-background: #9ca3af;
+  --color-tooltip-code-text: #000000;
+
   /** Navigation collapse button */
   --color-nav-collapse: #85abd6;
 
@@ -361,6 +370,9 @@
   --color-data-title: #9ca3af;
   --color-data-label: #9ca3af;
   --color-data-value: #ffffff;
+
+  --color-tooltip-code-background: #6b7280;
+  --color-tooltip-code-text: #ffffff;
 
   /** Navigation collapse button */
   --color-nav-collapse: #4b627a;

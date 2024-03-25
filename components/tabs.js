@@ -21,8 +21,7 @@ function getTabIdsWithinTabGroup(children) {
   const tabTitleComponents = Children.toArray(children)
     .filter((child) => child.type === TabList)
     .map((tabList) => Children.toArray(tabList.props.children))
-    .flat()
-    .filter((child) => child.type === TabTitle);
+    .flat();
   return tabTitleComponents.map((tabTitle) => tabTitle.props.id);
 }
 
@@ -30,8 +29,14 @@ function getTabIdsWithinTabGroup(children) {
  * Wraps the entire tab complex including all tabs and their associated panes. Optionally, pass
  * user clicks in tabs to the parent component.
  */
-export function TabGroup({ onChange = null, className = null, children }) {
+export function TabGroup({
+  onChange = null,
+  defaultId = "",
+  className = null,
+  children,
+}) {
   const tabIds = getTabIdsWithinTabGroup(children);
+  const defaultTabIndex = defaultId ? tabIds.indexOf(defaultId) : 0;
 
   // Convert the tab index from headlessui to the corresponding tab id, then invoke the parent's
   // onChange callback with the id, if provided.
@@ -42,7 +47,10 @@ export function TabGroup({ onChange = null, className = null, children }) {
   }
 
   return (
-    <Tab.Group onChange={onChangeWithId}>
+    <Tab.Group
+      onChange={onChangeWithId}
+      defaultIndex={defaultTabIndex === -1 ? 0 : defaultTabIndex}
+    >
       <div className={className}>{children}</div>
     </Tab.Group>
   );
@@ -51,6 +59,8 @@ export function TabGroup({ onChange = null, className = null, children }) {
 TabGroup.propTypes = {
   // Optional callback function to invoke when the selected tab changes
   onChange: PropTypes.func,
+  // The id of the tab to select by default
+  defaultId: PropTypes.string,
   // Tailwind CSS classes to apply to the outermost element
   className: PropTypes.string,
 };
@@ -82,11 +92,25 @@ TabList.propTypes = {
  * mouse clicks nor hovers.
  */
 export function TabTitle({
+  id = null,
   label = null,
   isDisabled = false,
   className = "items-center font-semibold",
   children,
 }) {
+  // Clone the children of TabTitle and add TabTitle's id prop to each clone's props.
+  const childrenWithId = Children.map(children, (child) => {
+    return child && typeof child === "object"
+      ? {
+          ...child,
+          props: {
+            ...child.props,
+            id,
+          },
+        }
+      : child;
+  });
+
   return (
     <Tab
       disabled={isDisabled}
@@ -97,9 +121,7 @@ export function TabTitle({
         return (
           <div
             className={`flex border-b-4 px-5 pb-1.5 pt-2 ${
-              selected
-                ? "pointer-events-none border-tab-selected text-tab-title-selected"
-                : ""
+              selected ? "border-tab-selected text-tab-title-selected" : ""
             } ${
               isDisabled ? "border-tab-disabled text-tab-title-disabled" : ""
             } ${
@@ -109,8 +131,8 @@ export function TabTitle({
             }`}
           >
             {typeof children === "function"
-              ? children({ selected, isDisabled })
-              : children}
+              ? childrenWithId({ selected, isDisabled })
+              : childrenWithId}
           </div>
         );
       }}
@@ -119,6 +141,8 @@ export function TabTitle({
 }
 
 TabTitle.propTypes = {
+  // Unique ID to identify this tab
+  id: PropTypes.string,
   // Accessible label if the tab title isn't enough
   label: PropTypes.string,
   // True to disable this tab
@@ -142,6 +166,11 @@ TabPanes.propTypes = {
 /**
  * Wraps a single tab content area for a single tab.
  */
-export function TabPane({ children }) {
-  return <Tab.Panel>{children}</Tab.Panel>;
+export function TabPane({ className = null, children }) {
+  return <Tab.Panel className={className}>{children}</Tab.Panel>;
 }
+
+TabPane.propTypes = {
+  // Tailwind CSS classes to apply to the tab pane
+  className: PropTypes.string,
+};

@@ -26,6 +26,52 @@ Wrap the entire tab complex within a `<TabGroup>` component. The tab titles then
 
 As the user clicks each tab, the “Content 1” gets replaced by the pane for “Content 2” and “Content 3.” You don’t have to do anything about the clicks for each tab — these tab components handle all of that for you.
 
+## Tab Group
+
+Wrap the entire tab complex — tabs themselves as well as the content they control — within a `<TabGroup>` component. `<TabGroup>` has no required properties, but it has these optional ones:
+
+### TabGroup Properties
+
+#### `onChange` {function}
+
+This callback gets called whenever the user clicks a tab. This tabs module takes care of switching the current content whenever the user clicks a tab, so you often don’t need to use this property. The callback receives the string ID assigned to the clicked tab. The IDs come from the `<TabTitle>` component. Basic usages of this Tab module don’t need IDs on each `<TabTitle>`, but you probably need them if you use the `onChange` property.
+
+Example use of `onChange`.
+
+```javascript
+function tabClickHandler(tabId) {
+  console.log("Clicked tab:", tabId);
+}
+
+return (
+  <TabGroup onClick={tabClickHandler}>
+    <TabList>
+      <TabTitle id="first">First Tab</TabTitle>
+      <TabTitle id="second">Second Tab</TabTitle>
+    </TabList>
+    <TabPanes>...</TabPanes>
+  </TabGroup>
+);
+```
+
+#### `defaultId` {string}
+
+By the default, tab groups appear with the first tab selected on mount. If you instead want a different tab selected, use the `id` property to assign unique IDs to each of the `<TabTitle>` components. Then pass the one you want to appear as the default tab in this `defaultId` property.
+
+#### `className` {string}
+
+Use this property to add Tailwind CSS classes to a wrapper around all the tabs and the content.
+
+## Tab List
+
+Wrap all your `<TabTitle>` components in a single `<TabList>` component that helps manage the mechanics of the tabs so we don’t need to worry about it.
+
+### TabList Properties
+
+#### `className` {string}
+
+Use this property to add Tailwind CSS classes to a wrapper around all the tabs and the content.
+
 ## Tab Titles
 
 The example above shows each tab contains a simple string. But you can also use a React component as the title. For example, if you wanted to show icons along with the tab text, you can:
@@ -42,6 +88,24 @@ The example above shows each tab contains a simple string. But you can also use 
   </TabTitle>
 </TabList>
 ```
+
+### TabTitle Properties
+
+#### `id` {string}
+
+Unique ID to assign to each tab. You can use this to identify the clicked tab to an `onChange` handler to `<TabGroup>`. You can also use this to specify the default when the tabs mount. If you have neither of these needs, you don’t need to specify the `id` for each tab title.
+
+#### `label` {string}
+
+Used as the `aria-label` for the tab.
+
+#### `isDisabled` {boolean}
+
+True to make this tab non-clickable, and to appear differently from clickable tabs. More Information below under “Disabling Tabs.”
+
+#### `className` {string}
+
+Tailwind CSS classes to use in a wrapper around the child `<TabTitle>` component.
 
 ## Disabling Tabs
 
@@ -85,23 +149,3 @@ This `<TabTitle>` component’s child is a function instead of a string or React
 - `disabled` — True if the parent component has disabled this tab.
 
 `<TabTitle>` always passes this object to the child component, but in most cases the child component doesn’t need them. Implement the child as a function only if your custom tab renderer needs to render itself differently for either or both of these states.
-
-## Custom Click Handler
-
-If you want a function called when the user selects a tab, you need to provide two extra items:
-
-- a callback function in the optional `onChange` property of `<Tab Group>`
-- an `id` property for each `<TabTitle>`:
-
-```javascript
-<TabGroup onChange={changeHandler}>
-  <TabList>
-    <TabTitle id="tab-1">Tab 1</TabTitle>
-    <TabTitle id="tab-2">Tab 2</TabTitle>
-    <TabTitle id="tab-3">Tab 3</TabTitle>
-  </TabList>
-  <TabPanes>...</TabPanes>
-</TabGroup>
-```
-
-When the user clicks on a tab, the `changeHandler` function gets called with a single parameter equal to the id of the clicked tab.

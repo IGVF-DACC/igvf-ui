@@ -21,9 +21,13 @@ export default function Checkbox({
   useLongClick(id, onClick, longClickHandler);
 
   return (
-    <label id={id} data-testid="checkbox-label" className={`flex ${className}`}>
+    <label
+      id={id}
+      data-testid="checkbox-label"
+      className={`flex cursor-pointer ${className}`}
+    >
       <input
-        className="mr-1"
+        className="mr-1 cursor-pointer"
         type="checkbox"
         aria-label={name}
         checked={checked}
