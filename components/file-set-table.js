@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
+import { AliasesCell } from "./table-cells";
 // lib
 import { encodeUriElement } from "../lib/query-encoding";
 
@@ -25,7 +26,7 @@ const fileSetColumns = [
   {
     id: "aliases",
     title: "Aliases",
-    display: ({ source }) => source.aliases?.join(", "),
+    display: ({ source }) => <AliasesCell source={source} />,
   },
   {
     id: "lab",

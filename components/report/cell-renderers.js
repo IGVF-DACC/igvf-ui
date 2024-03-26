@@ -18,6 +18,7 @@ import {
   useCollapseControl,
 } from "../collapse-control";
 import SeparatedList from "../separated-list";
+import { AliasesCell } from "../table-cells";
 import UnspecifiedProperty from "../unspecified-property";
 // lib
 import { attachmentToServerHref } from "../../lib/attachment";
@@ -84,22 +85,7 @@ Attachment.propTypes = {
  * needs a collapse/expand button.
  */
 function Aliases({ source }) {
-  if (source.aliases?.length > 0) {
-    return (
-      <ul>
-        {source.aliases.map((alias) => (
-          <li
-            key={alias}
-            data-testid="cell-type-aliases"
-            className="my-2 min-w-48 break-all first:mt-0 last:mb-0"
-          >
-            {alias}
-          </li>
-        ))}
-      </ul>
-    );
-  }
-  return null;
+  return <AliasesCell source={source} />;
 }
 
 Aliases.propTypes = {
