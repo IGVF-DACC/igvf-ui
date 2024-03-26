@@ -28,7 +28,7 @@ const demoAudit = {
     {
       category: "extremely low read depth",
       detail:
-        "Alignment file {ENCFF557RSA|/files/ENCFF557RSA/} processed by ATAC-seq ENCODE4 v2.1.1 GRCh38 pipeline has 8585759 usable fragments. According to ENCODE4 standards, ATAC-seq assays processed by the uniform processing pipeline should have > 25 million usable fragments. 20-25 million is acceptable and < 15 million is not compliant.",
+        "Alignment file [ENCFF557RSA](/files/ENCFF557RSA/) processed by ATAC-seq ENCODE4 v2.1.1 GRCh38 pipeline has 8585759 usable fragments. According to ENCODE4 standards, ATAC-seq assays processed by the uniform processing pipeline should have > 25 million usable fragments. 20-25 million is acceptable and < 15 million is not compliant.",
       level: 60,
       level_name: "ERROR",
       path: "/analyses/ENCAN615CMZ/",
@@ -39,7 +39,7 @@ const demoAudit = {
     {
       category: "mixed read lengths",
       detail:
-        "Biological replicate 1 in experiment {ENCSR859USB|/experiments/ENCSR859USB/} has mixed sequencing read lengths (33, 36).",
+        "Biological replicate 1 in experiment [ENCSR859USB](/experiments/ENCSR859USB/) has mixed sequencing read lengths (33, 36).",
       level: 40,
       level_name: "WARNING",
       path: "/experiments/ENCSR859USB/",
@@ -48,7 +48,7 @@ const demoAudit = {
     {
       category: "moderate number of reproducible peaks",
       detail:
-        "According to ENCODE4 standards, ATAC-seq assays processed by the uniform processing pipeline should have either >150k reproducible peaks in an overlap peaks file, or >70k in an IDR thresholded peaks file. 100-150k or 50-70k peaks respectively is acceptable, and <100k or <50k respectively is not compliant. File(s) {ENCFF055NNT|/files/ENCFF055NNT/} (overlap peaks) and {ENCFF926KTI|/files/ENCFF926KTI/} (IDR thresholded peaks) processed by ATAC-seq ENCODE4 v2.1.1 GRCh38 pipeline have 99862 and 55575 peaks.",
+        "According to ENCODE4 standards, ATAC-seq assays processed by the uniform processing pipeline should have either >150k reproducible peaks in an overlap peaks file, or >70k in an IDR thresholded peaks file. 100-150k or 50-70k peaks respectively is acceptable, and <100k or <50k respectively is not compliant. File(s) [ENCFF055NNT](/files/ENCFF055NNT/) (overlap peaks) and [ENCFF926KTI](/files/ENCFF926KTI/) (IDR thresholded peaks) processed by ATAC-seq ENCODE4 v2.1.1 GRCh38 pipeline have 99862 and 55575 peaks.",
       level: 40,
       level_name: "WARNING",
       path: "/analyses/ENCAN615CMZ/",
@@ -70,7 +70,7 @@ const demoAudit = {
     {
       category: "mismatched status",
       detail:
-        "{ENCAN615CMZ|/analyses/ENCAN615CMZ/} has in progress subobject quality standard {encode4-atac-seq|/quality-standards/encode4-atac-seq/}",
+        "[ENCAN615CMZ](/analyses/ENCAN615CMZ/) has in progress subobject quality standard [encode4-atac-seq](quality-standards). See [IGVF](https://igvf.org) for information.",
       level: 30,
       level_name: "INTERNAL_ACTION",
       path: "/analyses/ENCAN615CMZ/",

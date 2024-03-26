@@ -15,6 +15,15 @@ export function pathToType(path: string): string {
 }
 
 /**
+ * Check whether the input string is a path or not.
+ * @param input String to check if it is a path
+ * @returns True if the input is a path
+ */
+export function isValidPath(input: string): boolean {
+  return input.startsWith("/");
+}
+
+/**
  * Checks whether the given string is a valid URL. Paths with no protocol aren't considered valid
  * URLs.
  * @param {string} url The URL to check
