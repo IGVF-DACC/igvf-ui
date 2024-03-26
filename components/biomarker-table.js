@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 // components
 import { DataAreaTitle } from "./data-area";
 import SortableGrid from "./sortable-grid";
+import { AliasesCell } from "./table-cells";
 
 const biomarkersColumns = [
   {
@@ -32,7 +33,7 @@ const biomarkersColumns = [
   {
     id: "aliases",
     title: "Aliases",
-    display: ({ source }) => source.aliases?.join(", "),
+    display: ({ source }) => <AliasesCell source={source} />,
     isSortable: false,
   },
 ];

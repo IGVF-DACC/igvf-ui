@@ -491,6 +491,258 @@ describe("`attachment` cell rendering tests", () => {
   });
 });
 
+describe("`aliases` cell-rendering tests", () => {
+  it("renders a single alias", () => {
+    const COLUMN_ALIASES = 1;
+
+    const searchResults = {
+      "@id": "/multireport?type=HumanDonor",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO499FAP/",
+          "@type": ["HumanDonor", "Item"],
+          aliases: ["igvf:testing_alias"],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        aliases: {
+          title: "Aliases",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/multireport",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <SortableGrid
+          data={searchResults["@graph"]}
+          columns={columns}
+          initialSort={{ isSortingSuppressed: true }}
+          meta={{
+            onHeaderCellClick,
+            sortedColumnId,
+            nonSortableColumnIds: searchResults.non_sortable || [],
+          }}
+          CustomHeaderCell={ReportHeaderCell}
+        />
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Test that the alias has the correct text.
+    const aliasLink = cells[COLUMN_ALIASES].querySelector("li");
+    expect(aliasLink).toHaveTextContent("igvf:testing_alias");
+  });
+
+  it("renders multiple aliases", () => {
+    const COLUMN_ALIASES = 1;
+
+    const searchResults = {
+      "@id": "/multireport?type=HumanDonor",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO499FAP/",
+          "@type": ["HumanDonor", "Item"],
+          aliases: ["igvf:testing_alias", "igvf:another_alias"],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        aliases: {
+          title: "Aliases",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/multireport",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <SortableGrid
+          data={searchResults["@graph"]}
+          columns={columns}
+          initialSort={{ isSortingSuppressed: true }}
+          meta={{
+            onHeaderCellClick,
+            sortedColumnId,
+            nonSortableColumnIds: searchResults.non_sortable || [],
+          }}
+          CustomHeaderCell={ReportHeaderCell}
+        />
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    const aliases = cells[COLUMN_ALIASES].querySelectorAll("li");
+    expect(aliases).toHaveLength(2);
+    expect(aliases[0]).toHaveTextContent("igvf:testing_alias");
+    expect(aliases[1]).toHaveTextContent("igvf:another_alias");
+  });
+
+  it("renders nothing when `aliases` is an empty array", () => {
+    const COLUMN_ALIASES = 1;
+
+    const searchResults = {
+      "@id": "/multireport?type=HumanDonor",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO499FAP/",
+          "@type": ["HumanDonor", "Item"],
+          aliases: [],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        aliases: {
+          title: "Aliases",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/multireport",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <SortableGrid
+          data={searchResults["@graph"]}
+          columns={columns}
+          initialSort={{ isSortingSuppressed: true }}
+          meta={{
+            onHeaderCellClick,
+            sortedColumnId,
+            nonSortableColumnIds: searchResults.non_sortable || [],
+          }}
+          CustomHeaderCell={ReportHeaderCell}
+        />
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    const aliases = cells[COLUMN_ALIASES].querySelectorAll("li");
+    expect(aliases).toHaveLength(0);
+  });
+
+  it("renders nothing when `aliases` doesn't exist", () => {
+    const COLUMN_ALIASES = 1;
+
+    const searchResults = {
+      "@id": "/multireport?type=HumanDonor",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO499FAP/",
+          "@type": ["HumanDonor", "Item"],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        aliases: {
+          title: "Aliases",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/multireport",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      profiles.HumanDonor.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <SortableGrid
+          data={searchResults["@graph"]}
+          columns={columns}
+          initialSort={{ isSortingSuppressed: true }}
+          meta={{
+            onHeaderCellClick,
+            sortedColumnId,
+            nonSortableColumnIds: searchResults.non_sortable || [],
+          }}
+          CustomHeaderCell={ReportHeaderCell}
+        />
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    const aliases = cells[COLUMN_ALIASES].querySelectorAll("li");
+    expect(aliases).toHaveLength(0);
+  });
+});
+
 describe("`external_resources` cell-rendering tests", () => {
   const COLUMN_EXTERNAL_RESOURCES = 1;
 
