@@ -8,6 +8,7 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
+  DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
@@ -15,34 +16,134 @@ import {
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
+import SortableGrid from "../../components/sortable-grid";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestDonors,
-  requestFiles,
   requestFileSets,
+  requestFiles,
+  requestMeasurementSets,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { pathToType } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
+
+const fileSetColumns = [
+  {
+    id: "sample-summary",
+    title: "Sample Summary",
+    display: ({ source }) =>
+      source.samples.map((sample) => sample.summary).join(", "),
+  },
+  {
+    id: "summary",
+    title: "Summary",
+    sorter: (item) => item.summary.toLowerCase(),
+  },
+  {
+    id: "controls-accession",
+    title: "Controls",
+    display: ({ source }) => {
+      if (source.control_file_sets?.length > 0) {
+        return (
+          <SeparatedList>
+            {source.control_file_sets.map((controlSet) => (
+              <Link href={controlSet["@id"]} key={controlSet.accession}>
+                {controlSet.accession}
+              </Link>
+            ))}
+          </SeparatedList>
+        );
+      }
+      return null;
+    },
+  },
+  {
+    id: "auxiliary-sets",
+    title: "Auxiliary Sets",
+    display: ({ source }) => {
+      if (source.auxiliary_sets?.length > 0) {
+        return (
+          <SeparatedList>
+            {source.auxiliary_sets.map((auxSet) => (
+              <Link href={auxSet["@id"]} key={auxSet.accession}>
+                {auxSet.accession}
+              </Link>
+            ))}
+          </SeparatedList>
+        );
+      }
+      return null;
+    },
+  },
+  {
+    id: "construct-library-sets",
+    title: "Construct Library Sets",
+    display: ({ source }) => {
+      if (source.samples?.length > 0) {
+        const constructLibrarySets = source.samples.reduce((acc, sample) => {
+          if (sample.construct_library_sets?.length > 0) {
+            return acc.concat(sample.construct_library_sets);
+          }
+          return acc;
+        }, []);
+        return (
+          <SeparatedList>
+            {constructLibrarySets.map((cls) => (
+              <Link href={cls["@id"]} key={cls.accession} title={cls.summary}>
+                {cls.accession}
+              </Link>
+            ))}
+          </SeparatedList>
+        );
+      }
+      return null;
+    },
+  },
+];
+
+function TableOne({ fileSets }) {
+  return (
+    <>
+      <DataAreaTitle>Measurement Sets</DataAreaTitle>
+      <SortableGrid
+        data={fileSets}
+        columns={fileSetColumns}
+        keyProp="@id"
+        pager={{}}
+      />
+    </>
+  );
+}
+
+TableOne.propTypes = {
+  // File sets to display
+  fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
 
 export default function AnalysisSet({
   analysisSet,
   documents,
   donors,
   files,
-  inputFileSets,
+  measurementSets,
+  auxiliarySets,
+  constructLibrarySets,
   attribution = null,
   isJson,
 }) {
+  console.log("MEASUREMENT SETS", measurementSets);
+
   return (
     <>
       <Breadcrumbs />
@@ -114,9 +215,21 @@ export default function AnalysisSet({
             </DataArea>
           </DataPanel>
 
-          {inputFileSets.length > 0 && (
-            <FileSetTable fileSets={inputFileSets} title="Input File Sets" />
+          {measurementSets.length > 0 && (
+            <TableOne fileSets={measurementSets} />
           )}
+
+          {auxiliarySets.length > 0 && (
+            <FileSetTable fileSets={auxiliarySets} title="Auxiliary Sets" />
+          )}
+
+          {constructLibrarySets.length > 0 && (
+            <FileSetTable
+              fileSets={constructLibrarySets}
+              title="Construct Library Sets"
+            />
+          )}
+
           {files.length > 0 && (
             <FileTable files={files} itemPath={analysisSet["@id"]} />
           )}
@@ -135,7 +248,11 @@ AnalysisSet.propTypes = {
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Input file sets to display
-  inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // AuxiliarySets to display
+  auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // ConstructLibrarySets to display
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
@@ -165,12 +282,60 @@ export async function getServerSideProps({ params, req, query }) {
       donors = await requestDonors(donorPaths, request);
     }
 
-    let inputFileSets = [];
-    if (analysisSet.input_file_sets) {
-      const inputFileSetPaths = analysisSet.input_file_sets.map(
-        (inputFileSet) => inputFileSet["@id"]
+    let measurementSets = [];
+    if (analysisSet.input_file_sets?.length > 0) {
+      // Filter for measurement sets and request them.
+      const measurementSetPaths = analysisSet.input_file_sets
+        .filter((fileSet) => pathToType(fileSet["@id"]) === "measurement-sets")
+        .map((fileSet) => fileSet["@id"]);
+      const uniqueMeasurementSetPaths = Array.from(
+        new Set(measurementSetPaths)
       );
-      inputFileSets = await requestFileSets(inputFileSetPaths, request);
+      measurementSets = await requestMeasurementSets(
+        uniqueMeasurementSetPaths,
+        request
+      );
+    }
+
+    let auxiliarySets = [];
+    if (measurementSets.length > 0) {
+      const auxiliarySetsPaths = measurementSets.reduce((acc, ms) => {
+        if (ms.auxiliary_sets?.length > 0) {
+          return acc.concat(ms.auxiliary_sets.map((aux) => aux["@id"]));
+        }
+        return acc;
+      }, []);
+      auxiliarySets =
+        auxiliarySetsPaths.length > 0
+          ? await requestFileSets(auxiliarySetsPaths, request)
+          : [];
+    }
+
+    const samples = measurementSets.reduce((acc, ms) => {
+      if (ms.samples?.length > 0) {
+        return acc.concat(ms.samples);
+      }
+      return acc;
+    }, []);
+
+    let constructLibrarySets = [];
+    if (samples.length > 0) {
+      constructLibrarySets = samples.reduce((acc, sample) => {
+        if (sample.construct_library_sets?.length > 0) {
+          return acc.concat(sample.construct_library_sets);
+        }
+        return acc;
+      }, []);
+
+      if (constructLibrarySets.length > 0) {
+        const constructLibrarySetPaths = constructLibrarySets.map(
+          (cls) => cls["@id"]
+        );
+        constructLibrarySets = await requestFileSets(
+          constructLibrarySetPaths,
+          request
+        );
+      }
     }
 
     const breadcrumbs = await buildBreadcrumbs(
@@ -185,7 +350,9 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         files,
-        inputFileSets,
+        measurementSets,
+        auxiliarySets,
+        constructLibrarySets,
         pageContext: { title: analysisSet.accession },
         breadcrumbs,
         attribution,
