@@ -7,6 +7,7 @@ import { useContext } from "react";
 import { DataPanel } from "./data-area";
 import { ButtonAsLink } from "./form-elements";
 import GlobalContext from "./global-context";
+import SessionContext from "./session-context";
 // lib
 import { loginAuthProvider } from "../lib/authentication";
 import { LINK_INLINE_STYLE } from "../lib/constants";
@@ -17,6 +18,7 @@ import { LINK_INLINE_STYLE } from "../lib/constants";
 export default function NoCollectionData({ pageTitle = "" }) {
   const { page } = useContext(GlobalContext);
   const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { setAuthStageLogin } = useContext(SessionContext);
 
   return (
     <DataPanel className="my-0.5 p-4">
@@ -24,7 +26,12 @@ export default function NoCollectionData({ pageTitle = "" }) {
       {!isAuthenticated && (
         <p className="mt-4 text-sm">
           Please{" "}
-          <ButtonAsLink onClick={() => loginAuthProvider(loginWithRedirect)}>
+          <ButtonAsLink
+            onClick={() => {
+              loginAuthProvider(loginWithRedirect);
+              setAuthStageLogin();
+            }}
+          >
             sign in
           </ButtonAsLink>{" "}
           if you believe you should see {pageTitle || page.title}. See the

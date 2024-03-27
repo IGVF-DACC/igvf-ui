@@ -92,7 +92,7 @@ export async function logoutDataProvider(): Promise<
  * Log the user into the authentication provider.
  * @param {function} loginWithRedirect Auth0-react function to login
  */
-export function loginAuthProvider(
+export async function loginAuthProvider(
   loginWithRedirect: (o?: RedirectLoginOptions) => Promise<void>
 ) {
   // Get a URL to return to after logging in. If we're already on the error page, just return to
@@ -105,7 +105,7 @@ export function loginAuthProvider(
 
   // Trigger the login process. Pass the current URL as the returnTo parameter so that Auth0
   // redirects back to the current page after login.
-  loginWithRedirect({
+  return await loginWithRedirect({
     appState: {
       returnTo: returnUrl,
     },

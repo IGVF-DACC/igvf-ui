@@ -34,11 +34,7 @@ import Modal from "./modal";
 import SessionContext from "./session-context";
 import SiteSearchTrigger from "./site-search-trigger";
 // lib
-import {
-  loginAuthProvider,
-  logoutAuthProvider,
-  logoutDataProvider,
-} from "../lib/authentication";
+import { loginAuthProvider, logoutAuthProvider } from "../lib/authentication";
 import { UC } from "../lib/constants";
 
 /**
@@ -261,12 +257,16 @@ NavigationButton.propTypes = {
  */
 function NavigationSignInItem({ id, isNarrowNav = false, children }) {
   const { isLoading, loginWithRedirect } = useAuth0();
+  const { setAuthStageLogin } = useContext(SessionContext);
 
   return (
     <li>
       <NavigationButton
         id={id}
-        onClick={() => loginAuthProvider(loginWithRedirect)}
+        onClick={() => {
+          loginAuthProvider(loginWithRedirect);
+          setAuthStageLogin();
+        }}
         isNarrowNav={isNarrowNav}
         isDisabled={isLoading}
       >
@@ -296,9 +296,8 @@ function NavigationSignOutItem({
 }) {
   // True if sign-out warning modal open
   const [isWarningOpen, setIsWarningOpen] = useState(false);
-  // Session properties object
-  // Logged-in session-properties object
-  const { sessionProperties } = useContext(SessionContext);
+
+  const { sessionProperties, setAuthStageLogout } = useContext(SessionContext);
   const { logout } = useAuth0();
 
   /**
@@ -307,7 +306,7 @@ function NavigationSignOutItem({
    */
   function handleAuthClick() {
     logoutAuthProvider(logout);
-    logoutDataProvider();
+    setAuthStageLogout();
   }
 
   return (
