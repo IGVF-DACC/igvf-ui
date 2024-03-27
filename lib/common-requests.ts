@@ -100,19 +100,44 @@ export async function requestFiles(
 
 /**
  * Retrieve the FileSet objects for the given FileSet paths from the data provider.
+ * @param paths Paths to the FileSet objects to request
+ * @param request The request object to use to make the request
+ * @param addedProperties Additional properties to request
+ * @returns The file-set objects requested
+ */
+export async function requestFileSets(
+  paths: string[],
+  request: FetchRequest,
+  addedProperties: string[] = []
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(
+      paths,
+      ["accession", "aliases", "lab.title", "summary", "status"].concat(
+        addedProperties
+      )
+    )
+  ).unwrap_or([]);
+}
+
+/**
+ * Retrieve the FileSet objects for the given FileSet paths from the data provider.
  * @param {Array<string>} paths Paths to the FileSet objects to request
  * @param {FetchRequest} request The request object to use to make the request
  * @returns {Array<object>} The file-set objects requested
  */
-export async function requestFileSets(
-  paths: Array<string>,
+export async function requestMeasurementSets(
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<DataProviderObject[]> {
   return (
     await request.getMultipleObjectsBulk(paths, [
       "accession",
       "aliases",
+      "auxiliary_sets",
+      "control_file_sets",
       "lab.title",
+      "samples",
       "summary",
       "status",
     ])
@@ -195,7 +220,12 @@ export async function requestSamples(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["construct_library_sets"])
+    await request.getMultipleObjectsBulk(paths, [
+      "accession",
+      "construct_library_sets",
+      "status",
+      "summary",
+    ])
   ).unwrap_or([]);
 }
 
