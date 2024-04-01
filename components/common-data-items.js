@@ -610,13 +610,16 @@ export function FileDataItems({ item, fileSet = null, children }) {
         <>
           <DataItemLabel>File Set</DataItemLabel>
           <DataItemValue>
-            <Link
-              href={fileSet["@id"]}
-              aria-label={`FileSet ${fileSet.accession}`}
-              key={fileSet.uuid}
-            >
-              {fileSet.accession}
-            </Link>
+            <div className="flex gap-1">
+              <Link
+                href={fileSet["@id"]}
+                aria-label={`FileSet ${fileSet.accession}`}
+                key={fileSet.uuid}
+              >
+                {fileSet.accession}
+              </Link>
+              ({fileSet.summary})
+            </div>
           </DataItemValue>
         </>
       )}
@@ -647,7 +650,7 @@ export function FileDataItems({ item, fileSet = null, children }) {
         </>
       )}
       <DataItemLabel>md5sum</DataItemLabel>
-      <DataItemValue>{item.md5sum}</DataItemValue>
+      <DataItemValue className="break-all">{item.md5sum}</DataItemValue>
       {item.content_md5sum && (
         <>
           <DataItemLabel>Content MD5sum</DataItemLabel>
@@ -663,7 +666,9 @@ export function FileDataItems({ item, fileSet = null, children }) {
       {item.submitted_file_name && (
         <>
           <DataItemLabel>Submitted File Name</DataItemLabel>
-          <DataItemValue>{item.submitted_file_name}</DataItemValue>
+          <DataItemValue className="break-all">
+            {item.submitted_file_name}
+          </DataItemValue>
         </>
       )}
       {item.validation_error_detail && (

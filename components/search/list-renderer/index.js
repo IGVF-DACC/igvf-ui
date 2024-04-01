@@ -117,6 +117,7 @@ const renderers = {
   Software,
   SoftwareVersion,
   Source,
+  TabularFile: File,
   TechnicalSample,
   Tissue: Biosample,
   Treatment,
