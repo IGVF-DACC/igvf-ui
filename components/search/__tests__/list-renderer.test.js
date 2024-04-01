@@ -19,6 +19,7 @@ import MeasurementSet from "../list-renderer/measurement-set";
 import ModelSet from "../list-renderer/model-set";
 import MultiplexedSample from "../list-renderer/multiplexed-sample";
 import OntologyTerm from "../list-renderer/ontology-term";
+import OpenReadingFrame from "../list-renderer/open-reading-frame";
 import Page from "../list-renderer/page";
 import PhenotypicFeature from "../list-renderer/phenotypic-feature";
 import PredictionSet from "../list-renderer/prediction-set";
@@ -861,6 +862,69 @@ describe("Test the Lab component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("current");
+  });
+});
+
+describe("Test OpenReadingFrame component", () => {
+  it("renders a orf item with protein_id", () => {
+    const item = {
+      "@id": "/open-reading-frames/CCSBORF1234/",
+      "@type": ["OpenReadingFrame", "Item"],
+      dbxrefs: ["hORFeome:8945"],
+      gene: ["/genes/ENSG00000163930/"],
+      status: "released",
+      orf_id: "CCSBORF1234",
+      protein_id: "ENSP00000001146.2",
+      uuid: "d300d307-8fd2-4f4c-98fc-6406256b09e0",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <OpenReadingFrame item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Open Reading Frame/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^CCSBORF1234/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("ENSP00000001146.2");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders an OpenReadingFrame item without protein_id", () => {
+    const item = {
+      "@id": "/open-reading-frames/CCSBORF1234/",
+      "@type": ["OpenReadingFrame", "Item"],
+      dbxrefs: ["hORFeome:8945"],
+      gene: ["/genes/ENSG00000163930/"],
+      status: "released",
+      orf_id: "CCSBORF1234",
+      uuid: "d300d307-8fd2-4f4c-98fc-6406256b09e0",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <OpenReadingFrame item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Open Reading Frame/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^CCSBORF1234/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
   });
 });
 

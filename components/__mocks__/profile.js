@@ -660,6 +660,70 @@ const profiles = {
     },
   },
 
+  OpenReadingFrame: {
+    title: "Open Reading Frame",
+    $id: "/profiles/open_reading_frame.json",
+    required: ["gene", "orf_id"],
+    identifyingProperties: ["uuid", "orf_id", "aliases"],
+    properties: {
+      orf_id: {
+        title: "ORF ID",
+        description: "Open reading frame ID.",
+        type: "string",
+        pattern: "^CCSBORF[1-9][0-9]*$",
+      },
+      gene: {
+        title: "ENSEMBL GeneID",
+        description:
+          "ENSEMBL GeneID of official nomenclature approved gene. The GeneID does not include the current version number suffix.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "ENSEMBL GeneID",
+          description: "An identifier of the Gene.",
+          type: "string",
+          linkTo: "Gene",
+        },
+      },
+      protein_id: {
+        title: "ENSEMBL ProteinID",
+        description:
+          "ENSEMBL ProteinID of official nomenclature approved protein. The ProteinID does not include the current version number suffix.",
+        type: "string",
+        pattern: "^ENSP\\d{11}.?\\d*?$",
+      },
+      dbxrefs: {
+        title: "External Resources",
+        description: "Unique identifiers from the hORFeome database",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "External identifier",
+          description: "A unique identifier from hORFeome database.",
+          comment:
+            "Submit as database_name:id. See changelog for potential databases.",
+          type: "string",
+          pattern: "^(hORFeome:[1-9][0-9]*)$",
+        },
+      },
+      "@id": {
+        title: "ID",
+        type: "string",
+        notSubmittable: true,
+      },
+      "@type": {
+        title: "Type",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        notSubmittable: true,
+      },
+    },
+  },
+
   HumanDonor: {
     title: "Human Donor",
     $id: "/profiles/human_donor.json",
