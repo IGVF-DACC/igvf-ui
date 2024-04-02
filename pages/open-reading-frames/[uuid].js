@@ -10,6 +10,7 @@ import {
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import { EditableItem } from "../../components/edit";
+import EnsemblLink from "../../components/ensemble-link";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -19,19 +20,6 @@ import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
-
-function EnsemblLink({ ensemblid }) {
-  return (
-    <a href={`http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=${ensemblid}`}>
-      {ensemblid}
-    </a>
-  );
-}
-
-EnsemblLink.propTypes = {
-  // EnsemblID to display as a link
-  ensemblid: PropTypes.string.isRequired,
-};
 
 export default function OpenReadingFrame({ orf, isJson }) {
   return (
@@ -51,7 +39,11 @@ export default function OpenReadingFrame({ orf, isJson }) {
                   <DataItemValue>
                     <SeparatedList isCollapsible>
                       {orf.gene.map((gene) => (
-                        <EnsemblLink ensemblid={gene.geneid} key={gene} />
+                        <EnsemblLink
+                          geneid={gene.geneid}
+                          key={gene}
+                          taxa={"Homo sapiens"}
+                        />
                       ))}
                     </SeparatedList>
                   </DataItemValue>

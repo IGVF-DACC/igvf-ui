@@ -12,7 +12,7 @@ import {
 } from "./search-list-item";
 
 export default function OpenReadingFrame({ item: openReadingFrame }) {
-  const geneId = openReadingFrame.gene?.map((gene) => gene.geneid).join(", ");
+  const geneId = openReadingFrame.gene.map((gene) => gene.geneid).join(", ");
   const geneSymbol = openReadingFrame.gene
     ?.map((gene) => gene.symbol)
     .join(", ");
