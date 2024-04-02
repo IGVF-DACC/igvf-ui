@@ -216,11 +216,11 @@ This holds the meta object you pass to `SortableGrid`, and in addition it holds:
 
 By default, the table initially gets rendered with the first column set to an ascending sort. But if you need some other column sorted, or a column with a descending sort on initial render, you can use the `initialSort` object property to `<SortableGrid>`. `initialSort` can contain any subset of these properties:
 
-**`id`** {string} ID of the column to sort on initial render.
+**`columnId`** {string} ID of the column to sort on initial render.
 
 **`direction`** {"ASC"|"DESC"} Initial direction to sort the column on initial render.
 
-\*\*`isSortingSuppressed` {boolean} Unusual property to prevent any sorting of the table at all. You can use this to handle sorting in the parent component.
+**`isSortingSuppressed`** {boolean} Unusual property to prevent any sorting of the table at all. You can use this to handle sorting in the parent component.
 
 ## <a name="pager"></a>Pager
 

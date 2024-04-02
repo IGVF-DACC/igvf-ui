@@ -6,13 +6,13 @@ import PropTypes from "prop-types";
  */
 export default function AliasList({ aliases }) {
   return (
-    <>
+    <div>
       {aliases.map((alias) => (
-        <div key={alias} className="break-all">
+        <div key={alias} className="my-2 break-all first:mt-0 last:mb-0">
           {alias}
         </div>
       ))}
-    </>
+    </div>
   );
 }
 
