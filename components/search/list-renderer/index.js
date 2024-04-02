@@ -63,6 +63,7 @@ import MeasurementSet from "./measurement-set";
 import MultiplexedSample from "./multiplexed-sample";
 import ModelSet from "./model-set";
 import OntologyTerm from "./ontology-term";
+import OpenReadingFrame from "./open-reading-frame";
 import Page from "./page";
 import PhenotypicFeature from "./phenotypic-feature";
 import PredictionSet from "./prediction-set";
@@ -102,6 +103,7 @@ const renderers = {
   ModelSet,
   Modification,
   MultiplexedSample,
+  OpenReadingFrame,
   Page,
   PhenotypeTerm: OntologyTerm,
   PhenotypicFeature,

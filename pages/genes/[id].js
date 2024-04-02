@@ -11,6 +11,7 @@ import {
 import DbxrefList from "../../components/dbxref-list";
 import ChromosomeLocations from "../../components/chromosome-locations";
 import { EditableItem } from "../../components/edit";
+import EnsemblLink from "../../components/ensemble-link";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -21,22 +22,6 @@ import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
-
-function EnsemblLink({ geneid, taxa }) {
-  const organism = taxa.replace(/ /g, "_");
-  return (
-    <a href={`http://www.ensembl.org/${organism}/Gene/Summary?g=${geneid}`}>
-      {geneid}
-    </a>
-  );
-}
-
-EnsemblLink.propTypes = {
-  // GeneID to display as a link
-  geneid: PropTypes.string.isRequired,
-  // Metadata that affects certain dbxrefs
-  taxa: PropTypes.string.isRequired,
-};
 
 export default function Gene({ gene, isJson }) {
   return (
