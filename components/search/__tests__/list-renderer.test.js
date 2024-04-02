@@ -1595,7 +1595,7 @@ describe("Test the AnalysisSet component", () => {
 });
 
 describe("Test the CuratedSet component", () => {
-  it("renders a CuratedSet item", () => {
+  it("renders a CuratedSet item with a description", () => {
     const item = {
       "@id": "/curated-sets/IGVFDS0000AAAA/",
       "@type": ["CuratedSet", "FileSet", "Item"],
@@ -1603,6 +1603,8 @@ describe("Test the CuratedSet component", () => {
       alternate_accessions: ["IGVFDS0000AAAB"],
       aliases: ["igvf-dacc:GRCh38.p14_assembly"],
       award: "/awards/HG012012/",
+      description: "A curated set for Cherry lab guide RNAs.",
+      file_set_type: "external data for catalog",
       lab: {
         "@id": "/labs/tim-reddy/",
         title: "Tim Reddy, Duke",
@@ -1624,7 +1626,9 @@ describe("Test the CuratedSet component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDS0000AAAA$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^Curated set$/);
+    expect(title).toHaveTextContent(
+      /^A curated set for Cherry lab guide RNAs.$/
+    );
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Tim Reddy, Duke");
@@ -1640,6 +1644,8 @@ describe("Test the CuratedSet component", () => {
       accession: "IGVFDS0000AAAA",
       aliases: ["igvf-dacc:GRCh38.p14_assembly"],
       award: "/awards/HG012012/",
+      description: "A curated set for Cherry lab guide RNAs.",
+      file_set_type: "external data for catalog",
       lab: {
         "@id": "/labs/tim-reddy/",
         title: "Tim Reddy, Duke",
@@ -1660,9 +1666,50 @@ describe("Test the CuratedSet component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDS0000AAAA$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^Curated set$/);
+    expect(title).toHaveTextContent(
+      /^A curated set for Cherry lab guide RNAs.$/
+    );
 
     const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("Tim Reddy, Duke");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a CuratedSet item without a description", () => {
+    const item = {
+      "@id": "/curated-sets/IGVFDS0000AAAA/",
+      "@type": ["CuratedSet", "FileSet", "Item"],
+      accession: "IGVFDS0000AAAA",
+      alternate_accessions: ["IGVFDS0000AAAB"],
+      aliases: ["igvf-dacc:GRCh38.p14_assembly"],
+      award: "/awards/HG012012/",
+      file_set_type: "external data for catalog",
+      lab: {
+        "@id": "/labs/tim-reddy/",
+        title: "Tim Reddy, Duke",
+      },
+      status: "released",
+      taxa: "Homo sapiens",
+      summary: "IGVFDS0000AAAA",
+      uuid: "40f1e08c-5d6d-4d19-8f69-3fd91420c09f",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <CuratedSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^CuratedSet/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS0000AAAA$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^external data for catalog$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Tim Reddy, Duke");
 
     const status = screen.getByTestId("search-list-item-quality");
