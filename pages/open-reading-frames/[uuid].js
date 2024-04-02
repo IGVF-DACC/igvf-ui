@@ -16,6 +16,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
+import AliasList from "../../components/alias-list";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -33,6 +34,12 @@ export default function OpenReadingFrame({ orf, isJson }) {
             <DataArea>
               <DataItemLabel>Open Reading Frame ID</DataItemLabel>
               <DataItemValue>{orf.orf_id}</DataItemValue>
+              {orf.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{orf.description}</DataItemValue>
+                </>
+              )}
               {orf.gene.length > 0 && (
                 <>
                   <DataItemLabel>ENSEMBL GeneID</DataItemLabel>
@@ -63,7 +70,7 @@ export default function OpenReadingFrame({ orf, isJson }) {
                   </DataItemValue>
                 </>
               )}
-              {orf.pct_identical_protein && (
+              {orf.pct_identical_protein >= 0 && (
                 <>
                   <DataItemLabel>
                     Percentage of Identical Matches to Ensembl Protein
@@ -71,7 +78,7 @@ export default function OpenReadingFrame({ orf, isJson }) {
                   <DataItemValue>{orf.pct_identical_protein}</DataItemValue>
                 </>
               )}
-              {orf.pct_coverage_protein && (
+              {orf.pct_coverage_protein >= 0 && (
                 <>
                   <DataItemLabel>
                     Percentage of ORF Covered by Ensembl Protein
@@ -79,12 +86,20 @@ export default function OpenReadingFrame({ orf, isJson }) {
                   <DataItemValue>{orf.pct_coverage_protein}</DataItemValue>
                 </>
               )}
-              {orf.pct_coverage_orf && (
+              {orf.pct_coverage_orf >= 0 && (
                 <>
                   <DataItemLabel>
                     Percentage of Ensembl Protein Covered by ORF
                   </DataItemLabel>
                   <DataItemValue>{orf.pct_coverage_orf}</DataItemValue>
+                </>
+              )}
+              {orf.aliases?.length > 0 && (
+                <>
+                  <DataItemLabel>Aliases</DataItemLabel>
+                  <DataItemValue>
+                    <AliasList aliases={orf.aliases} />
+                  </DataItemValue>
                 </>
               )}
               {orf.submitter_comment && (
