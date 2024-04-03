@@ -1,9 +1,5 @@
 // node_modules
-import {
-  Bars4Icon,
-  QuestionMarkCircleIcon,
-  TableCellsIcon,
-} from "@heroicons/react/20/solid";
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import router from "next/router";
 import PropTypes from "prop-types";
@@ -16,12 +12,14 @@ import { DataPanel } from "../../components/data-area";
 import {
   AttachedButtons,
   Button,
-  ButtonLink,
   FormLabel,
 } from "../../components/form-elements";
 import HelpTip from "../../components/help-tip";
 import PagePreamble from "../../components/page-preamble";
-import { SchemaSearchField } from "../../components/profiles";
+import {
+  SchemaSearchField,
+  SearchAndReportType,
+} from "../../components/profiles";
 import SchemaIcon from "../../components/schema-icon";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
@@ -159,41 +157,6 @@ SearchSection.propTypes = {
   searchMode: PropTypes.string.isRequired,
   // Function to set the search mode
   setSearchMode: PropTypes.func.isRequired,
-};
-
-/**
- * Displays links to the search-list and report pages for the given schema object type.
- */
-function SearchAndReportType({ type, title }) {
-  return (
-    <AttachedButtons>
-      <ButtonLink
-        href={`/search?type=${type}`}
-        label={`List view of all ${title} objects`}
-        type="secondary"
-        size="sm"
-        hasIconOnly
-      >
-        <Bars4Icon />
-      </ButtonLink>
-      <ButtonLink
-        href={`/multireport?type=${type}`}
-        label={`Report view of all ${title} objects`}
-        type="secondary"
-        size="sm"
-        hasIconOnly
-      >
-        <TableCellsIcon />
-      </ButtonLink>
-    </AttachedButtons>
-  );
-}
-
-SearchAndReportType.propTypes = {
-  // @type to search for
-  type: PropTypes.string.isRequired,
-  // Human-readable title for the schema
-  title: PropTypes.string.isRequired,
 };
 
 /**

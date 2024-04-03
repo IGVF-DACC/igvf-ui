@@ -5,9 +5,15 @@ import {
   getProfiles,
   notSubmittableProperty,
   schemaPageTabUrl,
+  schemaToType,
 } from "../profiles";
 // types
-import { SchemaProperties, SchemaProperty } from "../../globals";
+import {
+  Profiles,
+  Schema,
+  SchemaProperties,
+  SchemaProperty,
+} from "../../globals";
 
 describe("Test getProfiles functionality", () => {
   it("retrieves the schema profiles object", () => {
@@ -292,5 +298,166 @@ describe("Test the schemaPageTabUrl function", () => {
   it("returns an empty string with no schema page URL", () => {
     const url = schemaPageTabUrl("", "schema");
     expect(url).toBe("");
+  });
+});
+
+describe("Test the schemaToType function", () => {
+  it("finds the correct schema type", () => {
+    const schema: Schema = {
+      "@type": ["JSONSchema"],
+      title: "Human Donor",
+      $id: "/profiles/human_donor.json",
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      additionalProperties: false,
+      description: "Derived schema submitting human donors.",
+      required: ["award", "lab", "taxa"],
+      type: "object",
+      mixinProperties: [
+        {
+          $ref: "donor.json#/properties",
+        },
+      ],
+      properties: {
+        "@id": {
+          notSubmittable: true,
+          title: "ID",
+          type: "string",
+        },
+        "@type": {
+          notSubmittable: true,
+          title: "Type",
+          type: "array",
+        },
+      },
+    };
+
+    const profiles: Profiles = {
+      HumanDonor: {
+        "@type": ["JSONSchema"],
+        title: "Human Donor",
+        $id: "/profiles/human_donor.json",
+        $schema: "https://json-schema.org/draft/2020-12/schema",
+        additionalProperties: false,
+        description: "Derived schema submitting human donors.",
+        required: ["award", "lab", "taxa"],
+        type: "object",
+        mixinProperties: [
+          {
+            $ref: "donor.json#/properties",
+          },
+        ],
+        properties: {
+          "@id": {
+            notSubmittable: true,
+            title: "ID",
+            type: "string",
+          },
+          "@type": {
+            notSubmittable: true,
+            title: "Type",
+            type: "array",
+          },
+        },
+      },
+    };
+
+    const result = schemaToType(schema, profiles);
+    expect(result).toBe("HumanDonor");
+  });
+
+  it("returns an empty string for an unknown schema path", () => {
+    const schema: Schema = {
+      "@type": ["JSONSchema"],
+      title: "Human Donor",
+      $id: "/profiles/human_donor.json",
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      additionalProperties: false,
+      description: "Derived schema submitting human donors.",
+      required: ["award", "lab", "taxa"],
+      type: "object",
+      mixinProperties: [
+        {
+          $ref: "donor.json#/properties",
+        },
+      ],
+      properties: {
+        "@id": {
+          notSubmittable: true,
+          title: "ID",
+          type: "string",
+        },
+        "@type": {
+          notSubmittable: true,
+          title: "Type",
+          type: "array",
+        },
+      },
+    };
+
+    const profiles: Profiles = {
+      RodentDonor: {
+        "@type": ["JSONSchema"],
+        title: "Rodent Donor",
+        $id: "/profiles/rodent_donor.json",
+        $schema: "https://json-schema.org/draft/2020-12/schema",
+        additionalProperties: false,
+        description: "Derived schema submitting rodent donors.",
+        required: ["award", "lab", "taxa"],
+        type: "object",
+        mixinProperties: [
+          {
+            $ref: "donor.json#/properties",
+          },
+        ],
+        properties: {
+          "@id": {
+            notSubmittable: true,
+            title: "ID",
+            type: "string",
+          },
+          "@type": {
+            notSubmittable: true,
+            title: "Type",
+            type: "array",
+          },
+        },
+      },
+    };
+
+    const result = schemaToType(schema, profiles);
+    expect(result).toBe("");
+  });
+
+  it("returns an empty string with no profiles", () => {
+    const schema: Schema = {
+      "@type": ["JSONSchema"],
+      title: "Human Donor",
+      $id: "/profiles/human_donor.json",
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      additionalProperties: false,
+      description: "Derived schema submitting human donors.",
+      required: ["award", "lab", "taxa"],
+      type: "object",
+      mixinProperties: [
+        {
+          $ref: "donor.json#/properties",
+        },
+      ],
+      properties: {
+        "@id": {
+          notSubmittable: true,
+          title: "ID",
+          type: "string",
+        },
+        "@type": {
+          notSubmittable: true,
+          title: "Type",
+          type: "array",
+        },
+      },
+    };
+
+    const result = schemaToType(schema, {});
+    expect(result).toBe("");
   });
 });

@@ -31,7 +31,10 @@ import HelpTip from "../../components/help-tip";
 import Icon from "../../components/icon";
 import JsonPanel, { JsonPanelTool } from "../../components/json-panel";
 import PagePreamble from "../../components/page-preamble";
-import { SchemaSearchField } from "../../components/profiles";
+import {
+  SchemaSearchField,
+  SearchAndReportType,
+} from "../../components/profiles";
 import SessionContext from "../../components/session-context";
 import {
   TabGroup,
@@ -50,6 +53,7 @@ import {
   checkSearchTermSchema,
   notSubmittableProperty,
   schemaPageTabUrl,
+  schemaToType,
   SEARCH_MODE_PROPERTIES,
 } from "../../lib/profiles";
 import { decodeUriElement, encodeUriElement } from "../../lib/query-encoding";
@@ -799,8 +803,9 @@ export default function Schema({
   // Full URL of the page so we can link to tabs and properties within tabs
   const [schemaPageUrl, setSchemaPageUrl] = useState("");
 
-  const { collectionTitles } = useContext(SessionContext);
+  const { collectionTitles, profiles } = useContext(SessionContext);
   const pageTitle = collectionTitles?.[collection] || schema.title;
+  const schemaType = schemaToType(schema, profiles);
 
   // Generate URLs for each of the top-level tabs; used to open those tabs on page load.
   const tabUrls = {
@@ -826,15 +831,18 @@ export default function Schema({
       <Breadcrumbs />
       <PagePreamble pageTitle={pageTitle} />
       <div className="mb-1 flex justify-between">
-        <ButtonLink
-          href={`/profiles${
-            searchTerm ? `#${encodeUriElement(searchTerm)}` : ""
-          }`}
-          size="sm"
-          label="Back to schema directory"
-        >
-          Schema Directory
-        </ButtonLink>
+        <div className="flex gap-1">
+          <ButtonLink
+            href={`/profiles${
+              searchTerm ? `#${encodeUriElement(searchTerm)}` : ""
+            }`}
+            size="sm"
+            label="Back to schema directory"
+          >
+            Schema Directory
+          </ButtonLink>
+          <SearchAndReportType type={schemaType} title={schema.title} />
+        </div>
         <AddLink schema={schema} label="Add" />
       </div>
       <DataPanel className="p-0 @container">
