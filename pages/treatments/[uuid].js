@@ -167,10 +167,10 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = treatment.documents
       ? await requestDocuments(treatment.documents, request)
       : [];
-    let treatmentId = "";
-    treatment.treatment_type === "environmental"
-      ? (treatmentId = treatment.summary)
-      : (treatmentId = treatment.treatment_term_id);
+    const treatmentId =
+      treatment.treatment_type === "environmental"
+        ? treatment.summary
+        : treatment.treatment_term_id;
     const breadcrumbs = await buildBreadcrumbs(
       treatment,
       treatmentId,
