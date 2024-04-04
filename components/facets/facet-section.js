@@ -58,16 +58,20 @@ export default function FacetSection({ searchResults }) {
   );
 
   // Facet group selected by the user clicking on its button, bringing up the facets for that group.
-  const [selectedGroup, setSelectedGroup] = useState(facetGroupsWithFacets[0]);
+  const [selectedGroup, setSelectedGroup] = useState(
+    facetGroupsWithFacets[0] || null
+  );
 
   // Reset selected facet group if the facet groups change, so we can handle having the selected
   // group disappear if the user selects a term that removes all the facets in the selected group.
-  const facetGroupTitles = facetGroupsWithFacets
-    .map((group) => group.title)
-    .join();
+  const facetGroupTitles = facetGroupsWithFacets.map((group) => group.title);
   useEffect(() => {
-    setSelectedGroup(facetGroupsWithFacets[0]);
-  }, [facetGroupTitles]);
+    const isSelectedGroupValid =
+      Boolean(selectedGroup) && facetGroupTitles.includes(selectedGroup.title);
+    if (!isSelectedGroupValid) {
+      setSelectedGroup(facetGroupsWithFacets[0]);
+    }
+  }, [facetGroupTitles.join()]);
 
   // Determine if we should show facets at all. This is the case when no facet groups exist, and
   // the search results have no displayable facets.
