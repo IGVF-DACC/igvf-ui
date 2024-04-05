@@ -167,9 +167,13 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = treatment.documents
       ? await requestDocuments(treatment.documents, request)
       : [];
+    const treatmentId =
+      treatment.treatment_type === "environmental"
+        ? treatment.summary
+        : treatment.treatment_term_id;
     const breadcrumbs = await buildBreadcrumbs(
       treatment,
-      treatment.treatment_term_id,
+      treatmentId,
       req.headers.cookie
     );
     let sources = [];
@@ -187,7 +191,9 @@ export async function getServerSideProps({ params, req, query }) {
         treatment,
         documents,
         sources,
-        pageContext: { title: treatment.treatment_term_id },
+        pageContext: {
+          title: treatmentId,
+        },
         breadcrumbs,
         attribution,
         isJson,
