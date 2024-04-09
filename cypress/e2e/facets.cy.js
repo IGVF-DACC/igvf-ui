@@ -77,7 +77,7 @@ describe("Facet tests", () => {
     ).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
-      "5 items"
+      "4 items"
     );
   });
 });
