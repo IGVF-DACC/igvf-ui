@@ -334,7 +334,7 @@ export default function ConstructLibrarySet({
           {controlForSets.length > 0 && (
             <FileSetTable
               fileSets={controlForSets}
-              title="File Sets This ConstructLibrary Set Serves as a Control For"
+              title={`File Sets with ${controlForSets.accession} as a Control`}
               reportLinkSpecs={{
                 fileSetType: "FileSet",
                 identifierProp: "control_file_sets.accession",
