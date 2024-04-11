@@ -118,7 +118,7 @@ function LibraryDetails({ library }) {
               <DataItemValue>
                 <SeparatedList isCollapsible>
                   {library.orf_list.map((orf) => (
-                    <Link href={orf["@id["]} key={orf["@id"]}>
+                    <Link href={orf["@id"]} key={orf["@id"]}>
                       {orf.orf_id}
                     </Link>
                   ))}
