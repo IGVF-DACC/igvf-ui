@@ -1,8 +1,13 @@
 // node_modules
-import { XCircleIcon } from "@heroicons/react/20/solid";
+import {
+  Bars4Icon,
+  TableCellsIcon,
+  XCircleIcon,
+} from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
-import { TextField } from "./form-elements";
+import { AttachedButtons, ButtonLink, TextField } from "./form-elements";
+// lib
 import { SEARCH_MODE_TITLE } from "../lib/profiles";
 
 /**
@@ -49,4 +54,39 @@ SchemaSearchField.propTypes = {
   searchMode: PropTypes.string.isRequired,
   // Additional Tailwind CSS classes to apply to the wrapper div
   className: PropTypes.string,
+};
+
+/**
+ * Displays links to the search-list and report pages for the given schema object type.
+ */
+export function SearchAndReportType({ type, title }) {
+  return (
+    <AttachedButtons>
+      <ButtonLink
+        href={`/search?type=${type}`}
+        label={`List view of all ${title} objects`}
+        type="secondary"
+        size="sm"
+        hasIconOnly
+      >
+        <Bars4Icon />
+      </ButtonLink>
+      <ButtonLink
+        href={`/multireport?type=${type}`}
+        label={`Report view of all ${title} objects`}
+        type="secondary"
+        size="sm"
+        hasIconOnly
+      >
+        <TableCellsIcon />
+      </ButtonLink>
+    </AttachedButtons>
+  );
+}
+
+SearchAndReportType.propTypes = {
+  // @type to search for
+  type: PropTypes.string.isRequired,
+  // Human-readable title for the schema
+  title: PropTypes.string.isRequired,
 };

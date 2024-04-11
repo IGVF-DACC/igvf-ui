@@ -3,6 +3,9 @@ import FetchRequest from "./fetch-request";
 // types
 import {
   DataProviderObject,
+  Profiles,
+  ProfilesGeneric,
+  Schema,
   SchemaProperties,
   SchemaProperty,
 } from "../globals.d";
@@ -195,4 +198,22 @@ export function schemaPageTabUrl(
   tabId: string
 ): string {
   return schemaPageUrl ? `${schemaPageUrl}${tabId}/` : "";
+}
+
+/**
+ * Get the @type corresponding to the given schema.
+ * @param schema Individual schema to get the type of
+ * @param profiles Output of the /profiles endpoint
+ * @returns The @type of the schema; empty string if schema not found in profiles, or no profiles
+ */
+export function schemaToType(schema: Schema, profiles: Profiles): string {
+  let objectType: string | undefined;
+  if (profiles) {
+    const objectTypes = Object.keys(profiles);
+    const profilesGeneric = profiles as ProfilesGeneric;
+    objectType = objectTypes.find(
+      (type) => profilesGeneric[type].$id === schema.$id
+    );
+  }
+  return objectType || "";
 }
