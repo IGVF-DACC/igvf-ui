@@ -36,7 +36,7 @@ import {
   Select,
   TextField,
 } from "./form-elements";
-import Markdown from "./markdown";
+import MarkdownSection from "./markdown-section";
 import Modal from "./modal";
 import PageComponent from "./page-component";
 import PagePreamble from "./page-preamble";
@@ -365,9 +365,12 @@ function BlockEditor({ block, dispatchLiveBlocks, previewedBlockIds }) {
 
   if (isBlockInPreviewMode) {
     return (
-      <div className="prose h-96 w-full overflow-y-auto border border-panel bg-panel p-2 dark:prose-invert">
-        <Markdown direction={block.direction} markdown={block.body} />
-      </div>
+      <MarkdownSection
+        direction={block.direction}
+        className="h-96 w-full overflow-y-auto border border-panel bg-panel p-2"
+      >
+        {block.body}
+      </MarkdownSection>
     );
   }
 
@@ -1036,11 +1039,12 @@ export default function Page({
               {editableBlocks.map((block) => {
                 if (block["@type"] === BLOCK_TYPE_MARKDOWN) {
                   return (
-                    <Markdown
+                    <MarkdownSection
                       key={block["@id"]}
-                      markdown={block.body}
                       direction={block.direction}
-                    />
+                    >
+                      {block.body}
+                    </MarkdownSection>
                   );
                 }
                 if (block["@type"] === BLOCK_TYPE_COMPONENT) {

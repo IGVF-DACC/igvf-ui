@@ -330,6 +330,7 @@ module.exports = {
             code: {
               "background-color": "var(--color-code-background)",
               padding: "0.1rem 0.4rem",
+              "word-break": "break-all",
               "border-radius": "0.2rem",
               "font-weight": "normal",
             },

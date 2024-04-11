@@ -1,8 +1,6 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
 import { AnimatePresence, motion } from "framer-motion";
-import Markdown from "marked-react";
-import Link from "next/link";
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
@@ -11,8 +9,7 @@ import {
   standardAnimationVariants,
 } from "./animation";
 import Icon from "./icon";
-// lib
-import { isValidPath, isValidUrl } from "../lib/general";
+import MarkdownSection from "./markdown-section";
 
 /**
  * The following small components render the custom icons for each audit level.
@@ -195,40 +192,6 @@ AuditLevelDetail.propTypes = {
 };
 
 /**
- * Pass this object to `<Markdown>` to render links within audit narratives.
- */
-const auditRenderOptions = {
-  link(href, text, title) {
-    // Open full URLs in a new tab.
-    if (isValidUrl(href)) {
-      return (
-        <a
-          key={href}
-          href={href}
-          title={title}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {text}
-        </a>
-      );
-    }
-
-    // Open paths without reloading the page.
-    if (isValidPath(href)) {
-      return (
-        <Link key={href} href={href} title={title}>
-          {text}
-        </Link>
-      );
-    }
-
-    // Neither a URL nor a path, so just return the text.
-    return <span key={href}>text</span>;
-  },
-};
-
-/**
  * Displays the details of an audit, including all audit levels. The user can open audit details,
  * and then can also open the audit narratives for each audit level.
  */
@@ -282,14 +245,12 @@ export function AuditDetail({ item, auditState, className = null }) {
                                   transition={standardAnimationTransition}
                                   variants={standardAnimationVariants}
                                 >
-                                  <div
-                                    className="prose mt-2 px-1 dark:prose-invert prose-p:text-sm"
-                                    data-testid={`audit-level-detail-narrative-${audit.level_name}`}
+                                  <MarkdownSection
+                                    className="mt-2 px-1 prose-p:text-sm"
+                                    testid={`audit-level-detail-narrative-${audit.level_name}`}
                                   >
-                                    <Markdown renderer={auditRenderOptions}>
-                                      {audit.detail}
-                                    </Markdown>
-                                  </div>
+                                    {audit.detail}
+                                  </MarkdownSection>
                                 </motion.div>
                               )}
                             </AnimatePresence>

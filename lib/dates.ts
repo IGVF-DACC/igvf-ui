@@ -5,15 +5,25 @@
  */
 
 // node_modules
-import dayjs from "dayjs";
+import * as dateFns from "date-fns";
+// lib
+import { UC } from "./constants";
 
 /**
- * Convert an ISO 8601 date string to a human-readable form.
+ * Convert an ISO 8601 date string to a human-readable form in the local time zone. The given date
+ * can use an abbreviated time common in this system, such as YYYY-MM-DD.
  * @param date ISO 8601 date string
  * @returns Human-readable date string
  */
 export function formatDate(date?: string): string {
-  return date ? dayjs(date).format("MMMM D, YYYY") : "";
+  if (date) {
+    const jsDate = new Date(date);
+    const midnightDate = new Date(
+      jsDate.valueOf() + jsDate.getTimezoneOffset() * 60 * 1000
+    );
+    return dateFns.format(midnightDate, "MMMM d, yyyy");
+  }
+  return "";
 }
 
 /**
@@ -27,7 +37,7 @@ export function formatDateRange(startDate?: string, endDate?: string): string {
   const dateRange = [startDate, endDate]
     .filter((date) => date)
     .map((date) => formatDate(date));
-  return dateRange.join(" - ");
+  return dateRange.join(` ${UC.ndash} `);
 }
 
 /**

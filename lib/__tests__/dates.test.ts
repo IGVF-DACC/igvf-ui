@@ -1,4 +1,5 @@
 import { formatDate, formatDateRange, iso8601ToYearDate } from "../dates";
+import { UC } from "../constants";
 
 describe("Date formatter", () => {
   it("should return a formatted date", () => {
@@ -15,7 +16,7 @@ describe("Date formatter", () => {
 describe("Date-range formatter", () => {
   it("should return a formatted date range", () => {
     const actual = formatDateRange("2020-01-01", "2020-01-31");
-    expect(actual).toBe("January 1, 2020 - January 31, 2020");
+    expect(actual).toBe(`January 1, 2020 ${UC.ndash} January 31, 2020`);
   });
 
   it("should return one date if only the start date provided", () => {
