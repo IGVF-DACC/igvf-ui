@@ -18,6 +18,7 @@ import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -30,6 +31,7 @@ import {
   requestDocuments,
   requestFiles,
   requestOntologyTerms,
+  requestFileSets,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
@@ -54,6 +56,76 @@ function LibraryDetails({ library }) {
           <DataItemValue>{library.scope}</DataItemValue>
           <DataItemLabel>Selection Criteria</DataItemLabel>
           <DataItemValue>{library.selection_criteria.join(", ")}</DataItemValue>
+          {library.small_scale_gene_list && (
+            <>
+              <DataItemLabel>Small Scale Gene List</DataItemLabel>
+              <DataItemValue>
+                <SeparatedList isCollapsible>
+                  {library.small_scale_gene_list.map((gene) => (
+                    <Link href={gene["@id"]} key={gene["@id"]}>
+                      {gene.symbol}
+                    </Link>
+                  ))}
+                </SeparatedList>
+              </DataItemValue>
+            </>
+          )}
+          {library.small_scale_loci_list && (
+            <>
+              <DataItemLabel>Small Scale Loci List</DataItemLabel>
+              <DataItemValue>
+                <SeparatedList isCollapsible>
+                  {library.small_scale_loci_list.map((loci) => (
+                    <>
+                      {loci.assembly} {loci.chromosome} {loci.start}
+                      {"-"}
+                      {loci.end}
+                    </>
+                  ))}
+                </SeparatedList>
+              </DataItemValue>
+            </>
+          )}
+          {library.large_scale_gene_list && (
+            <>
+              <DataItemLabel>Large Scale Gene List</DataItemLabel>
+              <DataItemValue>
+                <Link
+                  href={library.large_scale_gene_list["@id"]}
+                  key={library.large_scale_gene_list["@id"]}
+                >
+                  {library.large_scale_gene_list.accession}
+                </Link>
+              </DataItemValue>
+            </>
+          )}
+          {library.large_scale_loci_list && (
+            <>
+              <DataItemLabel>Large Scale Loci List</DataItemLabel>
+              <DataItemValue>
+                <Link
+                  href={library.large_scale_loci_list["@id"]}
+                  key={library.large_scale_loci_list["@id"]}
+                >
+                  {library.large_scale_loci_list.accession}
+                </Link>
+              </DataItemValue>
+            </>
+          )}
+          {library.orf_list && (
+            <>
+              <DataItemLabel>Open Reading Frame List</DataItemLabel>
+              <DataItemValue>
+                <SeparatedList isCollapsible>
+                  {library.orf_list.map((orf) => (
+                    <Link href={orf["@id"]} key={orf["@id"]}>
+                      {orf.orf_id}
+                    </Link>
+                  ))}
+                </SeparatedList>
+              </DataItemValue>
+            </>
+          )}
           {library.associated_phenotypes?.length > 0 && (
             <>
               <DataItemLabel>Associated Phenotypes</DataItemLabel>
@@ -77,11 +149,25 @@ function LibraryDetails({ library }) {
           {library.lower_bound_insert_size &&
             library.upper_bound_insert_size && (
               <>
-                <DataItemLabel>Insert Size Range</DataItemLabel>
-                <DataItemValue>
-                  {library.lower_bound_insert_size} {UC.ndash}{" "}
-                  {library.upper_bound_insert_size}
-                </DataItemValue>
+                {library.lower_bound_insert_size !==
+                  library.upper_bound_insert_size && (
+                  <>
+                    <DataItemLabel>Insert Size Range</DataItemLabel>
+                    <DataItemValue>
+                      {library.lower_bound_insert_size} {UC.ndash}{" "}
+                      {library.upper_bound_insert_size}
+                    </DataItemValue>
+                  </>
+                )}
+                {library.lower_bound_insert_size ===
+                  library.upper_bound_insert_size && (
+                  <>
+                    <DataItemLabel>Insert Size</DataItemLabel>
+                    <DataItemValue>
+                      {library.lower_bound_insert_size}
+                    </DataItemValue>
+                  </>
+                )}
               </>
             )}
           {library.guide_type && (
@@ -105,17 +191,41 @@ function LibraryDetails({ library }) {
           {library.lower_bound_guide_coverage &&
             library.upper_bound_guide_coverage && (
               <>
-                <DataItemLabel>Guide Coverage Range</DataItemLabel>
-                <DataItemValue>
-                  {library.lower_bound_guide_coverage} {UC.ndash}{" "}
-                  {library.upper_bound_guide_coverage}
-                </DataItemValue>
+                {library.lower_bound_guide_coverage !==
+                  library.upper_bound_guide_coverage && (
+                  <>
+                    <DataItemLabel>Guide Coverage Range</DataItemLabel>
+                    <DataItemValue>
+                      {library.lower_bound_guide_coverage} {UC.ndash}{" "}
+                      {library.upper_bound_guide_coverage}
+                    </DataItemValue>
+                  </>
+                )}
+                {library.lower_bound_guide_coverage ===
+                  library.upper_bound_guide_coverage && (
+                  <>
+                    <DataItemLabel>Guide Coverage</DataItemLabel>
+                    <DataItemValue>
+                      {library.lower_bound_guide_coverage}
+                    </DataItemValue>
+                  </>
+                )}
               </>
             )}
           {library.exon && (
             <>
               <DataItemLabel>Exon</DataItemLabel>
               <DataItemValue>{library.exon}</DataItemValue>
+            </>
+          )}
+          {library.tile && (
+            <>
+              <DataItemLabel>Tile</DataItemLabel>
+              <DataItemValue>
+                {library.tile.tile_id} {library.tile.tile_start}
+                {"-"}
+                {library.tile.tile_end}
+              </DataItemValue>
             </>
           )}
         </DataArea>
@@ -131,6 +241,7 @@ LibraryDetails.propTypes = {
 
 export default function ConstructLibrarySet({
   constructLibrarySet,
+  controlForSets,
   documents,
   files,
   seqspecFiles,
@@ -157,7 +268,13 @@ export default function ConstructLibrarySet({
                   <>
                     <DataItemLabel>Product ID</DataItemLabel>
                     <DataItemValue>
-                      {constructLibrarySet.product_id}
+                      <Link
+                        href={`https://www.addgene.org/${
+                          constructLibrarySet.product_id.split(":")[1]
+                        }/`}
+                      >
+                        {constructLibrarySet.product_id}
+                      </Link>
                     </DataItemValue>
                   </>
                 )}
@@ -187,6 +304,20 @@ export default function ConstructLibrarySet({
                     </DataItemValue>
                   </>
                 )}
+                {constructLibrarySet.sources && (
+                  <>
+                    <DataItemLabel>Sources</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {constructLibrarySet.sources.map((source) => (
+                          <Link href={source} key={source}>
+                            {source.split("/")[2]}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
@@ -198,6 +329,17 @@ export default function ConstructLibrarySet({
               itemPath={constructLibrarySet["@id"]}
               seqspecFiles={seqspecFiles}
               sequencingPlatforms={sequencingPlatforms}
+            />
+          )}
+          {controlForSets.length > 0 && (
+            <FileSetTable
+              fileSets={controlForSets}
+              title={`File Sets with ${constructLibrarySet.accession} as a Control`}
+              reportLinkSpecs={{
+                fileSetType: "FileSet",
+                identifierProp: "control_file_sets.accession",
+                itemIdentifier: constructLibrarySet.accession,
+              }}
             />
           )}
           {integratedContentFiles.length > 0 && (
@@ -217,6 +359,8 @@ export default function ConstructLibrarySet({
 ConstructLibrarySet.propTypes = {
   // Construct library object this page displays
   constructLibrarySet: PropTypes.object.isRequired,
+  // File sets controlled by this file set
+  controlForSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
@@ -243,7 +387,13 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = constructLibrarySet.documents
       ? await requestDocuments(constructLibrarySet.documents, request)
       : [];
-
+    let controlForSets = [];
+    if (constructLibrarySet.control_for.length > 0) {
+      const controlForPaths = constructLibrarySet.control_for.map(
+        (controlFor) => controlFor["@id"]
+      );
+      controlForSets = await requestFileSets(controlForPaths, request);
+    }
     // Request files and their sequencing platforms.
     const filePaths = constructLibrarySet.files.map((file) => file["@id"]);
     const files =
@@ -262,7 +412,6 @@ export async function getServerSideProps({ params, req, query }) {
           request
         )
       : [];
-
     // Use the files to retrieve all the seqspec files they might link to.
     let seqspecFiles = [];
     if (files.length > 0) {
@@ -288,6 +437,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         constructLibrarySet,
+        controlForSets,
         documents,
         files,
         seqspecFiles,
