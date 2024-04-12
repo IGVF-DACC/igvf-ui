@@ -25,6 +25,7 @@ import {
   requestDonors,
   requestFileSets,
   requestOntologyTerms,
+  requestTreatments,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -43,6 +44,7 @@ export default function WholeOrganism({
   pooledFrom,
   pooledIn,
   sortedFractions,
+  treatments,
   sources,
   attribution = null,
   isJson,
@@ -92,9 +94,7 @@ export default function WholeOrganism({
             <ModificationTable modifications={sample.modifications} />
           )}
           {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
-          {sample.treatments?.length > 0 && (
-            <TreatmentTable treatments={sample.treatments} />
-          )}
+          {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -128,6 +128,8 @@ WholeOrganism.propTypes = {
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
+  // Treatments associated with the sample
+  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -177,6 +179,13 @@ export async function getServerSideProps({ params, req, query }) {
       sample.sorted_fractions?.length > 0
         ? await requestBiosamples(sample.sorted_fractions, request)
         : [];
+    let treatments = [];
+    if (sample.treatments?.length > 0) {
+      const treatmentPaths = sample.treatments.map(
+        (treatment) => treatment["@id"]
+      );
+      treatments = await requestTreatments(treatmentPaths, request);
+    }
     let sources = [];
     if (sample.sources?.length > 0) {
       const sourcePaths = sample.sources.map((source) => source["@id"]);
@@ -208,6 +217,7 @@ export async function getServerSideProps({ params, req, query }) {
         pooledFrom,
         pooledIn,
         sortedFractions,
+        treatments,
         sources,
         pageContext: {
           title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,

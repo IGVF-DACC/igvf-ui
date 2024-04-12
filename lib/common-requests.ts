@@ -1,4 +1,4 @@
-import { DataProviderObject } from "../globals";
+import { DatabaseObject, DataProviderObject } from "../globals";
 import FetchRequest from "./fetch-request";
 
 /**
@@ -44,7 +44,8 @@ export async function requestBiomarkers(
       "aliases",
       "classification",
       "name",
-      "qualification",
+      "quantification",
+      "status",
       "synonyms",
     ])
   ).unwrap_or([]);
@@ -89,13 +90,50 @@ export async function requestFiles(
       "index",
       "lab.title",
       "lane",
-      "seqspec",
+      "seqspecs",
       "sequencing_platform",
       "sequencing_run",
       "status",
       "upload_status",
     ])
   ).unwrap_or([]);
+}
+
+/**
+ * Files can contain seqspec paths or partial embedded objects. This function retrieves the seqspec
+ * files referenced by the given files for both cases.
+ * @param files Files potentially containing seqspec paths or objects to request
+ * @param request The request object to use to make the request
+ * @returns The seqspec files requested; [] if no seqspec files found
+ */
+export async function requestSeqspecFiles(
+  files: DatabaseObject[],
+  request: FetchRequest
+): Promise<DataProviderObject[]> {
+  let seqspecFiles: DataProviderObject[] = [];
+  if (files.length > 0) {
+    const seqspecPaths: string[] = files.reduce((acc: string[], file) => {
+      const fileSeqspecs = file.seqspecs as string[] | undefined;
+      if (fileSeqspecs && fileSeqspecs.length > 0) {
+        // File schemas define seqspecs as either an array of @ids or partial embedded
+        // configuration-file objects. If the latter, extract the @id paths from each object.
+        const paths: string[] =
+          typeof fileSeqspecs[0] === "string"
+            ? fileSeqspecs
+            : (fileSeqspecs as unknown as DatabaseObject[]).map(
+                (seqspec) => seqspec["@id"]
+              );
+        return [...acc, ...paths];
+      }
+      return acc;
+    }, []);
+    const uniqueSeqspecPaths = [...new Set(seqspecPaths)];
+    seqspecFiles =
+      uniqueSeqspecPaths.length > 0
+        ? await requestFiles(uniqueSeqspecPaths, request)
+        : [];
+  }
+  return seqspecFiles;
 }
 
 /**
@@ -175,7 +213,7 @@ export async function requestDonors(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["accession", "uuid"])
+    await request.getMultipleObjectsBulk(paths, ["accession", "status", "uuid"])
   ).unwrap_or([]);
 }
 
@@ -206,6 +244,30 @@ export async function requestOntologyTerms(
 ): Promise<Array<DataProviderObject>> {
   return (
     await request.getMultipleObjectsBulk(paths, ["term_id", "term_name"])
+  ).unwrap_or([]);
+}
+
+/**
+ * Retrieve the phenotype objects for the given phenotype paths from the data provider. This
+ * includes a partial embed of the associated ontology-term object.
+ * @param paths Paths to the phenotypic feature objects to request
+ * @param request The request object to use to make the request
+ * @returns The phenotypic feature objects requested
+ */
+export async function requestPhenotypicFeatures(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "feature.@id",
+      "feature.term_id",
+      "feature.term_name",
+      "observation_date",
+      "quantity",
+      "quantity_units",
+      "status",
+    ])
   ).unwrap_or([]);
 }
 
@@ -241,7 +303,33 @@ export async function requestSoftwareVersions(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["version", "downloaded_url"])
+    await request.getMultipleObjectsBulk(paths, [
+      "downloaded_url",
+      "name",
+      "status",
+      "version",
+    ])
+  ).unwrap_or([]);
+}
+
+/**
+ * Retrieve the treatments objects for the given paths from the data provider.
+ * @param {Array<string>} paths Paths to the treatment objects to request
+ * @param {FetchRequest} request The request object to use to make the request
+ * @returns {Array<object>} The treatment objects requested
+ */
+export async function requestTreatments(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<DataProviderObject>> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "purpose",
+      "status",
+      "summary",
+      "treatment_term_name",
+      "treatment_type",
+    ])
   ).unwrap_or([]);
 }
 

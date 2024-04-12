@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 // components
 import { DataAreaTitle } from "./data-area";
-import ItemLink from "./item-link";
+import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
 
 /**
@@ -15,10 +15,9 @@ const columns = [
     isSortable: false,
     display: ({ source }) => {
       return (
-        <ItemLink
-          href={source["@id"]}
-          label={`View page for software version ${source.version}`}
-        />
+        <LinkedIdAndStatus item={source}>
+          {source.name || source["@id"]}
+        </LinkedIdAndStatus>
       );
     },
   },
@@ -49,7 +48,7 @@ export default function SoftwareVersionTable({
   return (
     <>
       <DataAreaTitle>{title}</DataAreaTitle>
-      <SortableGrid data={versions} columns={columns} pager={{}} />;
+      <SortableGrid data={versions} columns={columns} pager={{}} />
     </>
   );
 }

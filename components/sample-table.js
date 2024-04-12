@@ -4,9 +4,9 @@ import PropTypes from "prop-types";
 import Link from "next/link";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
+import LinkedIdAndStatus from "./linked-id-and-status";
 import SeparatedList from "./separated-list";
 import SortableGrid from "./sortable-grid";
-import Status from "./status";
 
 /**
  * Columns for samples
@@ -16,7 +16,9 @@ const sampleColumns = [
     id: "accession",
     title: "Accession",
     display: ({ source }) => {
-      return <Link href={source["@id"]}>{source.accession}</Link>;
+      return (
+        <LinkedIdAndStatus item={source}>{source.accession}</LinkedIdAndStatus>
+      );
     },
   },
   {
@@ -102,13 +104,6 @@ const sampleColumns = [
       }
     },
     isSortable: false,
-  },
-  {
-    id: "status",
-    title: "Status",
-    display: ({ source }) => {
-      return <Status status={source.status} />;
-    },
   },
 ];
 

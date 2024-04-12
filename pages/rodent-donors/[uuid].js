@@ -18,7 +18,10 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { requestDocuments } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestPhenotypicFeatures,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import buildAttribution from "../../lib/attribution";
@@ -29,6 +32,7 @@ import { Ok } from "../../lib/result";
 
 export default function RodentDonor({
   donor,
+  phenotypicFeatures,
   documents,
   attribution = null,
   sources = null,
@@ -77,10 +81,8 @@ export default function RodentDonor({
               </DonorDataItems>
             </DataArea>
           </DataPanel>
-          {donor.phenotypic_features?.length > 0 && (
-            <PhenotypicFeatureTable
-              phenotypicFeatures={donor.phenotypic_features}
-            />
+          {phenotypicFeatures.length > 0 && (
+            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
@@ -93,6 +95,8 @@ export default function RodentDonor({
 RodentDonor.propTypes = {
   // Rodent donor to display
   donor: PropTypes.object.isRequired,
+  // Phenotypic features associated with rodent donor
+  phenotypicFeatures: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the rodent donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this donor
@@ -110,6 +114,17 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/rodent-donors/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(donor)) {
+    let phenotypicFeatures = [];
+    if (donor.phenotypic_features?.length > 0) {
+      const phenotypicFeaturePaths = donor.phenotypic_features.map(
+        (feature) => feature["@id"]
+      );
+      phenotypicFeatures = await requestPhenotypicFeatures(
+        phenotypicFeaturePaths,
+        request
+      );
+    }
+
     const documents = donor.documents
       ? await requestDocuments(donor.documents, request)
       : [];
@@ -131,6 +146,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         donor,
+        phenotypicFeatures,
         documents,
         sources,
         pageContext: { title: donor.accession },

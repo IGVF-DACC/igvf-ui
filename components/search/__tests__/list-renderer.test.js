@@ -1436,7 +1436,7 @@ it("renders a seqspec configuration File item with accessory data", () => {
       dbxrefs: ["SRA:SRR12345"],
       illumina_read_type: "R1",
       sequencing_run: 1,
-      seqspec: "/configuration-file/IGVFFI1234CONF/",
+      seqspecs: ["/configuration-file/IGVFFI1234CONF/"],
     },
     "/sequence-files/IGVFDS8812ASDF/": {
       "@id": "/sequence-file/IGVFDS8812ASDF/",
@@ -1455,7 +1455,7 @@ it("renders a seqspec configuration File item with accessory data", () => {
       dbxrefs: ["SRA:SRR12346"],
       illumina_read_type: "R2",
       sequencing_run: 1,
-      seqspec: "/configuration-file/IGVFFI1234CONF/",
+      seqspecs: ["/configuration-file/IGVFFI1234CONF/"],
     },
   };
 

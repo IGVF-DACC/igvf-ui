@@ -3,7 +3,10 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataAreaTitle } from "./data-area";
+import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
+// lib
+import { formatDate } from "../lib/dates";
 
 const phenotypicFeaturesColumns = [
   {
@@ -11,7 +14,11 @@ const phenotypicFeaturesColumns = [
     title: "Feature Name",
     display: ({ source }) => {
       const featureTerm = source.feature;
-      return <Link href={source["@id"]}>{featureTerm.term_name}</Link>;
+      return (
+        <LinkedIdAndStatus item={source}>
+          {featureTerm.term_name}
+        </LinkedIdAndStatus>
+      );
     },
     sorter: (item) => item.feature.term_name.toLowerCase(),
   },
@@ -48,6 +55,7 @@ const phenotypicFeaturesColumns = [
   {
     id: "observation_date",
     title: "Observation Date",
+    display: ({ source }) => formatDate(source.observation_date),
   },
 ];
 

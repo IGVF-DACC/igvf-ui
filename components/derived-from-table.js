@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import Link from "next/link";
 // components
 import { DataAreaTitle } from "./data-area";
+import { FileAccessionAndDownload } from "./file-download";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
@@ -15,9 +16,8 @@ const columns = [
   {
     id: "@id",
     title: "Accession",
-    display: (source) => {
-      const accession = source.source.accession;
-      return <Link href={source.source["@id"]}>{accession}</Link>;
+    display: ({ source }) => {
+      return <FileAccessionAndDownload file={source} />;
     },
   },
   {
@@ -55,11 +55,6 @@ const columns = [
     title: "File Size",
     display: ({ source }) =>
       truthyOrZero(source.file_size) ? dataSize(source.file_size) : "",
-  },
-  {
-    id: "status",
-    title: "Status",
-    display: ({ source }) => <Status status={source.status} />,
   },
   {
     id: "upload_status",

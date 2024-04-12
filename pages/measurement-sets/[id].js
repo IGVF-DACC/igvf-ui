@@ -34,6 +34,7 @@ import {
   requestFiles,
   requestFileSets,
   requestOntologyTerms,
+  requestSeqspecFiles,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -385,17 +386,8 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     // Use the files to retrieve all the seqspec files they might link to.
-    let seqspecFiles = [];
-    if (files.length > 0) {
-      const seqspecPaths = files
-        .map((file) => file.seqspec)
-        .filter((seqspec) => seqspec);
-      const uniqueSeqspecPaths = [...new Set(seqspecPaths)];
-      seqspecFiles =
-        uniqueSeqspecPaths.length > 0
-          ? await requestFiles(uniqueSeqspecPaths, request)
-          : [];
-    }
+    const seqspecFiles =
+      files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
     // Use the files to retrieve all the sequencing platform objects they link to.
     const sequencingPlatformPaths = files

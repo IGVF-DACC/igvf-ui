@@ -67,8 +67,8 @@ export default function ConfigurationFile({
               title="seqspec File Of"
               sequencingPlatforms={sequencingPlatforms}
               itemPath={configurationFile["@id"]}
-              itemPathProp="seqspec"
-              isSeqspecHidden={true}
+              itemPathProp="seqspecs"
+              isSeqspecHidden
             />
           )}
           {derivedFrom.length > 0 && (

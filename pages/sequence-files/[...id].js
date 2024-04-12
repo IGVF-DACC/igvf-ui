@@ -20,6 +20,7 @@ import { FileHeaderDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -27,6 +28,7 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
+  requestSeqspecFiles,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -46,7 +48,7 @@ export default function SequenceFile({
   fileFormatSpecifications,
   attribution = null,
   isJson,
-  seqSpec = null,
+  seqspecs,
   sequencingPlatform = null,
 }) {
   return (
@@ -120,11 +122,17 @@ export default function SequenceFile({
                   <DataItemValue>{sequenceFile.read_count}</DataItemValue>
                 </>
               )}
-              {seqSpec && (
+              {seqspecs.length > 0 && (
                 <>
-                  <DataItemLabel>Associated seqspec File</DataItemLabel>
+                  <DataItemLabel>Associated seqspec Files</DataItemLabel>
                   <DataItemValue>
-                    <Link href={seqSpec["@id"]}>{seqSpec.accession}</Link>
+                    <SeparatedList>
+                      {seqspecs.map((seqSpec) => (
+                        <Link key={seqSpec["@id"]} href={seqSpec["@id"]}>
+                          {seqSpec.accession}
+                        </Link>
+                      ))}
+                    </SeparatedList>
                   </DataItemValue>
                 </>
               )}
@@ -168,8 +176,8 @@ SequenceFile.propTypes = {
   attribution: PropTypes.object,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
-  // Linked seqspec configuration file
-  seqSpec: PropTypes.object,
+  // Linked seqspec configuration files
+  seqspecs: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform ontology term object
   sequencingPlatform: PropTypes.object,
 };
@@ -209,9 +217,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const fileFormatSpecifications = sequenceFile.file_format_specifications
       ? await requestDocuments(sequenceFile.file_format_specifications, request)
       : [];
-    const seqSpec = sequenceFile.seqspec
-      ? (await request.getObject(sequenceFile.seqspec)).optional()
-      : null;
+    const seqspecs =
+      sequenceFile.seqspecs?.length > 0
+        ? await requestSeqspecFiles([sequenceFile], request)
+        : [];
     const sequencingPlatform = sequenceFile.sequencing_platform
       ? (await request.getObject(sequenceFile.sequencing_platform)).optional()
       : null;
@@ -236,7 +245,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         breadcrumbs,
         attribution,
         isJson,
-        seqSpec,
+        seqspecs,
         sequencingPlatform,
       },
     };

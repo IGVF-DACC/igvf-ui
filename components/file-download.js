@@ -1,7 +1,8 @@
 // node_modules
 import { ArrowDownTrayIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import PropTypes from "prop-types";
+// components
+import LinkedIdAndStatus from "./linked-id-and-status";
 // lib
 import { API_URL } from "../lib/constants";
 import { ButtonLink } from "./form-elements";
@@ -65,7 +66,7 @@ export function FileAccessionAndDownload({ file }) {
   return (
     <div>
       <div className="flex items-center gap-1">
-        <Link href={file["@id"]}>{file.accession}</Link>
+        <LinkedIdAndStatus item={file}>{file.accession}</LinkedIdAndStatus>
         <FileDownload file={file} />
       </div>
     </div>

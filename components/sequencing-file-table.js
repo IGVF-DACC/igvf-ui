@@ -1,10 +1,12 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
+import SeparatedList from "./separated-list";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
@@ -38,17 +40,31 @@ const filesColumns = [
     title: "Sequencing Run",
   },
   {
-    id: "seqspec",
-    title: "Associated seqspec File",
+    id: "seqspecs",
+    title: "Associated seqspec Files",
     display: ({ source, meta }) => {
-      const matchingSeqspec = meta.seqspecFiles.find(
-        (seqspec) => seqspec["@id"] === source.seqspec
-      );
-      return (
-        matchingSeqspec && (
-          <Link href={matchingSeqspec.href}>{matchingSeqspec.accession}</Link>
-        )
-      );
+      if (source.seqspecs?.length > 0) {
+        const sourceSeqspecPaths =
+          typeof source.seqspecs[0] === "string"
+            ? source.seqspecs
+            : source.seqspecs.map((seqspec) => seqspec["@id"]);
+        let matchingSeqspecs = meta.seqspecFiles.filter((seqspec) =>
+          sourceSeqspecPaths.includes(seqspec["@id"])
+        );
+        if (matchingSeqspecs.length > 0) {
+          matchingSeqspecs = _.sortBy(matchingSeqspecs, "accession");
+          return (
+            <SeparatedList>
+              {matchingSeqspecs.map((matchingSeqspec) => (
+                <Link key={matchingSeqspec["@id"]} href={matchingSeqspec.href}>
+                  {matchingSeqspec.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          );
+        }
+      }
+      return null;
     },
     hide: (data, columns, meta) => meta.isSeqspecHidden,
   },
@@ -90,11 +106,6 @@ const filesColumns = [
     id: "lab",
     title: "Lab",
     display: ({ source }) => source.lab?.title,
-  },
-  {
-    id: "status",
-    title: "Status",
-    display: ({ source }) => <Status status={source.status} />,
   },
   {
     id: "upload_status",

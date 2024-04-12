@@ -76,9 +76,7 @@ export default function Software({
             </DataArea>
           </DataPanel>
 
-          {software.versions?.length > 0 && (
-            <SoftwareVersionTable versions={versions} />
-          )}
+          {versions?.length > 0 && <SoftwareVersionTable versions={versions} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
