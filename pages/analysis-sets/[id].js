@@ -505,7 +505,11 @@ export async function getServerSideProps({ params, req, query }) {
       // Retrieve the input file sets' auxiliary sets.
       let auxiliarySetsPaths = measurementSets.reduce((acc, measurementSet) => {
         return measurementSet.auxiliary_sets?.length > 0
-          ? acc.concat(measurementSet.auxiliary_sets)
+          ? acc.concat(
+              measurementSet.auxiliary_sets.map(
+                (auxiliarySet) => auxiliarySet["@id"]
+              )
+            )
           : acc;
       }, []);
       auxiliarySetsPaths = [...new Set(auxiliarySetsPaths)];
