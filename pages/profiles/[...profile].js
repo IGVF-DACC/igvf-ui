@@ -9,7 +9,6 @@ import {
   PlusIcon,
 } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
-import { marked } from "marked";
 import { useContext, useEffect, useState } from "react";
 // components
 import { AddLink } from "../../components/add";
@@ -30,6 +29,7 @@ import { ButtonLink, FormLabel } from "../../components/form-elements";
 import HelpTip from "../../components/help-tip";
 import Icon from "../../components/icon";
 import JsonPanel, { JsonPanelTool } from "../../components/json-panel";
+import MarkdownSection from "../../components/markdown-section";
 import PagePreamble from "../../components/page-preamble";
 import {
   SchemaSearchField,
@@ -736,14 +736,7 @@ FormattedSchema.propTypes = {
  * Display the formatted changelog for a schema.
  */
 function Changelog({ changelog }) {
-  const html = marked(changelog);
-
-  return (
-    <div
-      className="prose px-4 py-2 dark:prose-invert"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
+  return <MarkdownSection className="px-4 py-2">{changelog}</MarkdownSection>;
 }
 
 Changelog.propTypes = {
