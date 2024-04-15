@@ -13,8 +13,6 @@ import {
 } from "./search-list-item";
 
 export default function CuratedSet({ item: curatedSet }) {
-  const summary = curatedSet.summary;
-
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -22,10 +20,14 @@ export default function CuratedSet({ item: curatedSet }) {
           <SearchListItemType item={curatedSet} />
           {curatedSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>Curated set</SearchListItemTitle>
+        <SearchListItemTitle>
+          {curatedSet.description || curatedSet.file_set_type}
+        </SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{curatedSet.lab.title}</div>
-          {summary && <div key="summary">{summary}</div>}
+          <span key="lab">{curatedSet.lab.title}</span>
+          {curatedSet.summary && (
+            <span key="summary">{curatedSet.summary}</span>
+          )}
           {curatedSet.alternate_accessions?.length > 0 && (
             <AlternateAccessions
               alternateAccessions={curatedSet.alternate_accessions}
