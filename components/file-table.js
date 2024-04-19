@@ -29,6 +29,7 @@ const filesColumns = [
     id: "lab",
     title: "Lab",
     display: ({ source }) => source.lab?.title,
+    sorter: (item) => (item.lab ? item.lab.title.toLowerCase() : ""),
   },
   {
     id: "file_size",
