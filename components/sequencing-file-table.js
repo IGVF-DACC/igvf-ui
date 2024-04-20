@@ -1,6 +1,5 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import _ from "lodash";
 import PropTypes from "prop-types";
 // components
