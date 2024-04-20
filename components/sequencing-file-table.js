@@ -56,9 +56,10 @@ const filesColumns = [
           return (
             <SeparatedList>
               {matchingSeqspecs.map((matchingSeqspec) => (
-                <Link key={matchingSeqspec["@id"]} href={matchingSeqspec.href}>
-                  {matchingSeqspec.accession}
-                </Link>
+                <FileAccessionAndDownload
+                  key={matchingSeqspec["@id"]}
+                  file={matchingSeqspec}
+                />
               ))}
             </SeparatedList>
           );
