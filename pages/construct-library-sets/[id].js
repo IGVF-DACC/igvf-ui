@@ -278,16 +278,6 @@ export default function ConstructLibrarySet({
                     </DataItemValue>
                   </>
                 )}
-                {constructLibrarySet.publication_identifiers && (
-                  <>
-                    <DataItemLabel>Publication Identifiers</DataItemLabel>
-                    <DataItemValue>
-                      <DbxrefList
-                        dbxrefs={constructLibrarySet.publication_identifiers}
-                      />
-                    </DataItemValue>
-                  </>
-                )}
                 {constructLibrarySet.applied_to_samples.length > 0 && (
                   <>
                     <DataItemLabel>Applied to Samples</DataItemLabel>

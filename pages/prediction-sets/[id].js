@@ -120,6 +120,20 @@ export default function PredictionSet({
                     <DataItemValue>{predictionSet.scope}</DataItemValue>
                   </>
                 )}
+                {predictionSet.small_scale_gene_list && (
+                  <>
+                    <DataItemLabel>Small Scale Gene List</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {predictionSet.small_scale_gene_list.map((gene) => (
+                          <Link href={gene["@id"]} key={gene["@id"]}>
+                            {gene.symbol}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
                 {predictionSet.small_scale_loci_list && (
                   <>
                     <DataItemLabel>Small Scale Loci List</DataItemLabel>
