@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
-import SeparatedList from "./separated-list";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
@@ -53,14 +52,16 @@ const filesColumns = [
         if (matchingSeqspecs.length > 0) {
           matchingSeqspecs = _.sortBy(matchingSeqspecs, "accession");
           return (
-            <SeparatedList>
+            <div>
               {matchingSeqspecs.map((matchingSeqspec) => (
-                <FileAccessionAndDownload
+                <div
+                  className="my-1.5 first:mt-0 last:mb-0"
                   key={matchingSeqspec["@id"]}
-                  file={matchingSeqspec}
-                />
+                >
+                  <FileAccessionAndDownload file={matchingSeqspec} />
+                </div>
               ))}
-            </SeparatedList>
+            </div>
           );
         }
       }
