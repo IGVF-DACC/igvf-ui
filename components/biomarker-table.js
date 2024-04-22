@@ -1,8 +1,8 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataAreaTitle } from "./data-area";
+import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
 import { AliasesCell } from "./table-cells";
 
@@ -12,9 +12,9 @@ const biomarkersColumns = [
     title: "Biomarker",
     display: ({ source }) => {
       return (
-        <Link href={source["@id"]}>
+        <LinkedIdAndStatus item={source}>
           {source.name} {source.quantification}
-        </Link>
+        </LinkedIdAndStatus>
       );
     },
     sorter: (item) => item.name,

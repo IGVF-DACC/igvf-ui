@@ -1,29 +1,21 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataAreaTitle } from "./data-area";
+import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
-import Status from "./status";
 
 const modificationsColumns = [
   {
-    id: "modality",
-    title: "Modality",
-  },
-  {
     id: "summary",
     title: "Summary",
-    display: ({ source }) => {
-      return <Link href={source["@id"]}>{source.summary}</Link>;
-    },
+    display: ({ source }) => (
+      <LinkedIdAndStatus item={source}>{source.summary}</LinkedIdAndStatus>
+    ),
   },
   {
-    id: "status",
-    title: "Status",
-    display: ({ source }) => {
-      return <Status status={source.status} />;
-    },
+    id: "modality",
+    title: "Modality",
   },
 ];
 

@@ -30,6 +30,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestFileSets,
+  requestTreatments,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -44,6 +45,7 @@ export default function MultiplexedSample({
   attribution = null,
   sortedFractions,
   sources,
+  treatments,
   isJson,
 }) {
   const reportLink = `/multireport/?type=Sample&field=%40id&field=multiplexed_in&field=taxa&field=sample_terms.term_name&field=donors&field=disease_terms&field=status&field=summary&field=%40type&multiplexed_in.accession=${multiplexedSample.accession}&field=construct_library_sets`;
@@ -104,9 +106,7 @@ export default function MultiplexedSample({
             />
           )}
           {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
-          {multiplexedSample.treatments.length > 0 && (
-            <TreatmentTable treatments={multiplexedSample.treatments} />
-          )}
+          {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -126,6 +126,8 @@ MultiplexedSample.propTypes = {
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Sources associated with the sample
   sources: PropTypes.arrayOf(PropTypes.object),
+  // Treatments associated with the sample
+  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
@@ -177,6 +179,13 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
+    let treatments = [];
+    if (multiplexedSample.treatments?.length > 0) {
+      const treatmentPaths = multiplexedSample.treatments.map(
+        (treatment) => treatment["@id"]
+      );
+      treatments = await requestTreatments(treatmentPaths, request);
+    }
     const breadcrumbs = await buildBreadcrumbs(
       multiplexedSample,
       "accession",
@@ -194,6 +203,7 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         sortedFractions,
         sources,
+        treatments,
         pageContext: {
           title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,
         },

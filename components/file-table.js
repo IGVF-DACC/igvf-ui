@@ -29,19 +29,13 @@ const filesColumns = [
     id: "lab",
     title: "Lab",
     display: ({ source }) => source.lab?.title,
+    sorter: (item) => (item.lab ? item.lab.title.toLowerCase() : ""),
   },
   {
     id: "file_size",
     title: "File Size",
     display: ({ source }) =>
       truthyOrZero(source.file_size) ? dataSize(source.file_size) : "",
-  },
-  {
-    id: "status",
-    title: "Status",
-    display: ({ source }) => {
-      return <Status status={source.status} />;
-    },
   },
   {
     id: "upload_status",

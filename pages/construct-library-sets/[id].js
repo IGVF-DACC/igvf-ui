@@ -32,6 +32,7 @@ import {
   requestFiles,
   requestOntologyTerms,
   requestFileSets,
+  requestSeqspecFiles,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
@@ -75,12 +76,12 @@ function LibraryDetails({ library }) {
               <DataItemLabel>Small Scale Loci List</DataItemLabel>
               <DataItemValue>
                 <SeparatedList isCollapsible>
-                  {library.small_scale_loci_list.map((loci) => (
-                    <>
+                  {library.small_scale_loci_list.map((loci, index) => (
+                    <Fragment key={index}>
                       {loci.assembly} {loci.chromosome} {loci.start}
                       {"-"}
                       {loci.end}
-                    </>
+                    </Fragment>
                   ))}
                 </SeparatedList>
               </DataItemValue>
@@ -394,6 +395,7 @@ export async function getServerSideProps({ params, req, query }) {
       );
       controlForSets = await requestFileSets(controlForPaths, request);
     }
+
     // Request files and their sequencing platforms.
     const filePaths = constructLibrarySet.files.map((file) => file["@id"]);
     const files =
@@ -412,18 +414,8 @@ export async function getServerSideProps({ params, req, query }) {
           request
         )
       : [];
-    // Use the files to retrieve all the seqspec files they might link to.
-    let seqspecFiles = [];
-    if (files.length > 0) {
-      const seqspecPaths = files
-        .map((file) => file.seqspec)
-        .filter((seqspec) => seqspec);
-      const uniqueSeqspecPaths = [...new Set(seqspecPaths)];
-      seqspecFiles =
-        uniqueSeqspecPaths.length > 0
-          ? await requestFiles(uniqueSeqspecPaths, request)
-          : [];
-    }
+    const seqspecFiles =
+      files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
     const breadcrumbs = await buildBreadcrumbs(
       constructLibrarySet,

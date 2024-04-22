@@ -22,11 +22,11 @@ import FileTable from "../../components/file-table";
 import FileSetTable from "../../components/file-set-table";
 import Checkbox from "../../components/checkbox";
 import JsonDisplay from "../../components/json-display";
+import LinkedIdAndStatus from "../../components/linked-id-and-status";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 import SortableGrid from "../../components/sortable-grid";
-import Status from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -42,25 +42,6 @@ import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { pathToType } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
-
-/**
- * Display an object's accession and an abbreviated status.
- */
-function AccessionAndStatus({ item }) {
-  return (
-    <div className="mb-1 flex gap-1">
-      <Link href={item["@id"]} className="block">
-        {item.accession}
-      </Link>
-      <Status status={item.status} isAbbreviated />
-    </div>
-  );
-}
-
-AccessionAndStatus.propTypes = {
-  // Item to display the accession and status of
-  item: PropTypes.object.isRequired,
-};
 
 /**
  * Columns for the measurement sets table.
@@ -90,7 +71,9 @@ const fileSetColumns = [
         <div>
           {measurementSetSamples.map((sample) => (
             <div key={sample["@id"]} className="my-5 first:mt-0 last:mb-0">
-              <AccessionAndStatus item={sample} />
+              <LinkedIdAndStatus item={sample}>
+                {sample.accession}
+              </LinkedIdAndStatus>
               {sample.summary}
             </div>
           ))}
@@ -140,7 +123,9 @@ const fileSetColumns = [
     display: ({ source }) => {
       return (
         <div>
-          <AccessionAndStatus item={source} />
+          <LinkedIdAndStatus item={source}>
+            {source.accession}
+          </LinkedIdAndStatus>
           {source.summary}
         </div>
       );
@@ -181,7 +166,9 @@ const fileSetColumns = [
           return (
             <div>
               {controlFileSets.map((controlSet) => (
-                <AccessionAndStatus item={controlSet} key={controlSet["@id"]} />
+                <LinkedIdAndStatus item={controlSet} key={controlSet["@id"]}>
+                  {controlSet.accession}
+                </LinkedIdAndStatus>
               ))}
             </div>
           );
@@ -210,10 +197,9 @@ const fileSetColumns = [
         return (
           <div>
             {auxiliarySets.map((auxiliarySet) => (
-              <AccessionAndStatus
-                item={auxiliarySet}
-                key={auxiliarySet["@id"]}
-              />
+              <LinkedIdAndStatus item={auxiliarySet} key={auxiliarySet["@id"]}>
+                {auxiliarySet.accession}
+              </LinkedIdAndStatus>
             ))}
           </div>
         );
@@ -250,7 +236,9 @@ const fileSetColumns = [
         return (
           <div>
             {constructLibrarySets.map((cls) => (
-              <AccessionAndStatus item={cls} key={cls["@id"]} />
+              <LinkedIdAndStatus item={cls} key={cls["@id"]}>
+                {cls.accession}
+              </LinkedIdAndStatus>
             ))}
           </div>
         );

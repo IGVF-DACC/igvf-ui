@@ -17,19 +17,25 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import RelatedDonorsTable from "../../components/related-donors-table";
 import SeparatedList from "../../components/separated-list";
 // lib
+import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { requestDocuments } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestDonors,
+  requestPhenotypicFeatures,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import { isJsonFormat } from "../../lib/query-utils";
-import buildAttribution from "../../lib/attribution";
 
 export default function HumanDonor({
   donor,
+  phenotypicFeatures,
+  relatedDonors,
   documents,
   attribution = null,
   isJson,
@@ -62,13 +68,14 @@ export default function HumanDonor({
               )}
             </DataArea>
           </DataPanel>
-          {donor.phenotypic_features && (
-            <PhenotypicFeatureTable
-              phenotypicFeatures={donor.phenotypic_features}
-            />
+          {phenotypicFeatures.length > 0 && (
+            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
           )}
-          {donor.related_donors?.length > 0 && (
-            <RelatedDonorsTable relatedDonors={donor.related_donors} />
+          {relatedDonors.length > 0 && (
+            <RelatedDonorsTable
+              relatedDonors={relatedDonors}
+              embeddedDonors={donor.related_donors}
+            />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
@@ -81,6 +88,10 @@ export default function HumanDonor({
 HumanDonor.propTypes = {
   // Human donor to display
   donor: PropTypes.object.isRequired,
+  // Phenotypic features associated with human donor
+  phenotypicFeatures: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Related donors associated with human donor
+  relatedDonors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with human donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // HumanDonor attribution
@@ -96,9 +107,29 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/human-donors/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(donor)) {
+    let phenotypicFeatures = [];
+    if (donor.phenotypic_features?.length > 0) {
+      const phenotypicFeaturePaths = donor.phenotypic_features.map(
+        (feature) => feature["@id"]
+      );
+      phenotypicFeatures = await requestPhenotypicFeatures(
+        phenotypicFeaturePaths,
+        request
+      );
+    }
+
+    let relatedDonors = [];
+    if (donor.related_donors?.length > 0) {
+      const relatedDonorPaths = donor.related_donors.map(
+        (relatedDonor) => relatedDonor.donor["@id"]
+      );
+      relatedDonors = await requestDonors(relatedDonorPaths, request);
+    }
+
     const documents = donor.documents
       ? await requestDocuments(donor.documents, request)
       : [];
+
     const breadcrumbs = await buildBreadcrumbs(
       donor,
       donor.accession,
@@ -108,6 +139,8 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         donor,
+        phenotypicFeatures,
+        relatedDonors,
         documents,
         pageContext: { title: donor.accession },
         breadcrumbs,

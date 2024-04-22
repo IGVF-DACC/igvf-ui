@@ -32,6 +32,7 @@ import {
   requestDonors,
   requestFileSets,
   requestOntologyTerms,
+  requestTreatments,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -53,6 +54,8 @@ export default function InVitroSystem({
   pooledIn,
   sortedFractions,
   sources,
+  treatments,
+  cellFateChangeTreatments,
   biomarkers,
   targetedSampleTerm = null,
   attribution = null,
@@ -170,12 +173,10 @@ export default function InVitroSystem({
             <ModificationTable modifications={inVitroSystem.modifications} />
           )}
           {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
-          {inVitroSystem.treatments?.length > 0 && (
-            <TreatmentTable treatments={inVitroSystem.treatments} />
-          )}
-          {inVitroSystem.cell_fate_change_treatments?.length > 0 && (
+          {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
+          {cellFateChangeTreatments.length > 0 && (
             <TreatmentTable
-              treatments={inVitroSystem.cell_fate_change_treatments}
+              treatments={cellFateChangeTreatments}
               title="Cell Fate Change Treatments"
             />
           )}
@@ -216,6 +217,10 @@ InVitroSystem.propTypes = {
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
+  // Treatments of the sample
+  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Treatments for cell fate change of the sample
+  cellFateChangeTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // The targeted endpoint biosample resulting from differentiation or reprogramming
   targetedSampleTerm: PropTypes.object,
   // Attribution for this sample
@@ -286,6 +291,24 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
+    let treatments = [];
+    if (inVitroSystem.treatments?.length > 0) {
+      const treatmentPaths = inVitroSystem.treatments.map(
+        (treatment) => treatment["@id"]
+      );
+      treatments = await requestTreatments(treatmentPaths, request);
+    }
+    let cellFateChangeTreatments = [];
+    if (inVitroSystem.cell_fate_change_treatments?.length > 0) {
+      const cellFateChangeTreatmentPaths =
+        inVitroSystem.cell_fate_change_treatments.map(
+          (treatment) => treatment["@id"]
+        );
+      cellFateChangeTreatments = await requestTreatments(
+        cellFateChangeTreatmentPaths,
+        request
+      );
+    }
     const targetedSampleTerm = inVitroSystem.targeted_sample_term
       ? (await request.getObject(inVitroSystem.targeted_sample_term)).optional()
       : null;
@@ -317,6 +340,8 @@ export async function getServerSideProps({ params, req, query }) {
         pooledIn,
         sortedFractions,
         sources,
+        treatments,
+        cellFateChangeTreatments,
         targetedSampleTerm,
         pageContext: {
           title: `${inVitroSystem.sample_terms[0].term_name} — ${inVitroSystem.accession}`,
