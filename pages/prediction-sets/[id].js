@@ -120,6 +120,48 @@ export default function PredictionSet({
                     <DataItemValue>{predictionSet.scope}</DataItemValue>
                   </>
                 )}
+                {predictionSet.small_scale_loci_list && (
+                  <>
+                    <DataItemLabel>Small Scale Loci List</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {predictionSet.small_scale_loci_list.map((loci) => (
+                          <>
+                            {loci.assembly} {loci.chromosome} {loci.start}
+                            {"-"}
+                            {loci.end}
+                          </>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {predictionSet.large_scale_gene_list && (
+                  <>
+                    <DataItemLabel>Large Scale Gene List</DataItemLabel>
+                    <DataItemValue>
+                      <Link
+                        href={predictionSet.large_scale_gene_list["@id"]}
+                        key={predictionSet.large_scale_gene_list["@id"]}
+                      >
+                        {predictionSet.large_scale_gene_list.accession}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
+                {predictionSet.large_scale_loci_list && (
+                  <>
+                    <DataItemLabel>Large Scale Loci List</DataItemLabel>
+                    <DataItemValue>
+                      <Link
+                        href={predictionSet.large_scale_loci_list["@id"]}
+                        key={predictionSet.large_scale_loci_list["@id"]}
+                      >
+                        {predictionSet.large_scale_loci_list.accession}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
