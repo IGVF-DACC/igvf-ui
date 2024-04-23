@@ -2,7 +2,7 @@
 
 describe("Audit tests", () => {
   it("shows audit status buttons on a search-list page which open audit details when clicked", () => {
-    cy.visit("/search?type=InVitroSystem");
+    cy.visit("/search/?type=InVitroSystem");
     cy.get(`[data-testid="audit-status-button"]`).should("have.length.gte", 2);
 
     // Click the first status button to open a details panel.
@@ -10,13 +10,19 @@ describe("Audit tests", () => {
     cy.get(`[data-testid="audit-detail-panel"]`).should("exist");
 
     // Click the details narrative button to open a narrative for the audit.
-    cy.get(`[aria-label="Closed narratives for Error audits"]`).click();
-    cy.get(`[data-testid^="audit-level-detail-narrative"]`).should("exist");
+    cy.get(
+      `[aria-label="Open inconsistent donor Error audit narratives"]`
+    ).click();
+    cy.get(`[data-testid="audit-narrative-error-inconsistent-donor"]`).should(
+      "exist"
+    );
 
     // Click the status button to close the narrative and details panel.
     cy.get(`[data-testid="audit-status-button"]`).first().click();
     cy.get(`[data-testid="audit-detail-panel"]`).should("not.exist");
-    cy.get(`[data-testid^="audit-level-detail-narrative"]`).should("not.exist");
+    cy.get(`[data-testid^="audit-narrative-error-inconsistent-donor"]`).should(
+      "not.exist"
+    );
   });
 
   it("shows an audit status button on an object page that opens audit details when clicked", () => {
@@ -28,12 +34,18 @@ describe("Audit tests", () => {
     cy.get(`[data-testid="audit-detail-panel"]`).should("exist");
 
     // Click the details narrative button to open the narrative for the audit.
-    cy.get(`[aria-label="Closed narratives for Error audits"]`).click();
-    cy.get(`[data-testid^="audit-level-detail-narrative"]`).should("exist");
+    cy.get(
+      `[aria-label="Open inconsistent donor Error audit narratives"]`
+    ).click();
+    cy.get(`[data-testid="audit-narrative-error-inconsistent-donor"]`).should(
+      "exist"
+    );
 
     // Click the status button to close the narrative and details panel.
     cy.get(`[data-testid="audit-status-button"]`).click();
     cy.get(`[data-testid="audit-detail-panel"]`).should("not.exist");
-    cy.get(`[data-testid^="audit-level-detail-narrative"]`).should("not.exist");
+    cy.get(`[data-testid^="audit-narrative-error-inconsistent-donor"]`).should(
+      "not.exist"
+    );
   });
 });

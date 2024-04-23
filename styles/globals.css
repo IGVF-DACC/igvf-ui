@@ -99,6 +99,10 @@
   --color-audit-not-compliant-fill: #f57b18;
   --color-audit-internal-action-fill: #1b84fa;
   --color-audit-facet-fill: var(--color-audit-background);
+  --color-audit-error-background: #ffb2b2;
+  --color-audit-warning-background: #fff4b2;
+  --color-audit-not-compliant-background: #ffd5b2;
+  --color-audit-internal-action-background: #b2d6ff;
 
   --color-facet-group-button-background: #f0e7ca;
   --color-facet-group-button-selected-background: #bfa678;
@@ -282,6 +286,10 @@
   --color-button-audit-level-detail: #111827;
   --color-audit-background: #030712;
   --color-audit-facet-fill: var(--color-audit-closed-background);
+  --color-audit-error-background: #4c1717;
+  --color-audit-warning-background: #4c4417;
+  --color-audit-not-compliant-background: #4c2f17;
+  --color-audit-internal-action-background: #17304c;
 
   --color-facet-title-background: #536167;
   --color-facet-title-text: #ffffff;
