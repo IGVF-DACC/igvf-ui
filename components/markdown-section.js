@@ -6,6 +6,15 @@ import PropTypes from "prop-types";
 // lib
 import { isValidPath, isValidUrl } from "../lib/general";
 
+/**
+ * Check whether the input string is a hashtag.
+ * @param {string} href String to check if it is a hashtag
+ * @returns {boolean} True if the string is a hashtag
+ */
+function isValidHashTag(input) {
+  return input.length > 1 && input.startsWith("#");
+}
+
 const renderOptions = {
   /**
    * Render local links that don't cause a page reload, and external links that open in a new tab.
@@ -34,6 +43,22 @@ const renderOptions = {
         </Link>
       );
     }
+
+    // Link to hashtags.
+    if (isValidHashTag(href)) {
+      return (
+        <a key={this.elementId} href={href} title={title}>
+          {text}
+        </a>
+      );
+    }
+
+    // Treat anything as an anchor tag that you can link to with a hashtag.
+    return (
+      <a key={this.elementId} name={href}>
+        {text}
+      </a>
+    );
   },
 
   /**

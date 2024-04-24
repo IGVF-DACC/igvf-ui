@@ -28,7 +28,7 @@ By default, each block holds Markdown text. But you can have any block specify a
 
 #### Text Language Direction
 
-Use these buttons to specify that this text block holds the usual left-to-right language or a right-to-left language like Hebrew or Arabic. Do not use this to right-justify text — use this only for right-to-left languages. Instead use HTML and CSS to right or center justify text. You can mix left-to-right and right-to-left language blocks on one page.
+Use these buttons to specify that this text block holds the usual left-to-right language or a right-to-left language like Hebrew or Arabic. Do not use this to right-justify text — use this only for right-to-left languages. You can mix left-to-right and right-to-left language blocks on one page.
 
 If you have the Component block type set, these buttons disappear because this control only works for Markdown text.
 
@@ -133,24 +133,6 @@ Make sure you have enough text in following text blocks to wrap around the entir
 
 See the [IMAGE_ALIGNED page component](../components/page-components/docs/image-aligned.md) for more details.
 
-## Center and Right Justification
-
-Markdown generally favors left-justified text, so you'd generally have the least friction accepting this for your pages.
-
-You need to use a little HTML to center- or right-justify your text using inline styles, wrapping your text within `<p>` tags.
-
-```
-<p style="text-align:center">
-Some centered text.
-</p>
-
-<p style="text-align:right">
-Some right-aligned text.
-</p>
-```
-
-Use these sparingly, as HTML tags tend to clutter the Markdown, making the page more difficult to edit. You can reduce the friction for yourself and future editors by using Markdown’s natural left alignment.
-
 <a name="page-components"></a>
 
 ## Page Components
@@ -159,4 +141,20 @@ As mentioned previously, text blocks come up with the Markdown type by default t
 
 The first line of a Component block contains the name of the page component you want displayed at this point on the page. This normally appears in all caps, possibly with underscores between words. In the [Images](#images) section above, you see the `IMAGE_ALIGNED` page component name.
 
-Follow this with required and optional properties to affect the display of the page component. These have the form `propertyName=Property Value`. Each page component takes a different set of properties. See the other Markdown files in this directory to see documentation for each page component.
+Follow this with required and optional properties to affect the display of the page component. These have the form `propertyName=Property Value`. Each page component takes a different set of properties. See the Markdown files in the components/page-component/docs directory for details about each page component.
+
+## Anchors
+
+You can mark anchors on the page that you can link to so that the page scrolls to that part of the page when the user clicks on a link elsewhere on the page or just from its URL. Each anchor on a page needs a unique name.
+
+To mark an anchor, use an empty link text, and a unique anchor string as the link, such as:
+
+```
+[](unique-anchor)
+```
+
+To link to this anchor, use the same unique anchor with a hash as the link. For example, you can link to the anchor above with the following link:
+
+```
+[Link Text](#unique-anchor)
+```

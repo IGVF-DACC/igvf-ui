@@ -35,6 +35,18 @@ describe("Test the MarkdownSection component", () => {
     expect(screen.getByText("Test link")).toHaveAttribute("href", "/example");
   });
 
+  it("renders an <a> tag without a target for hash tags within the markdown", () => {
+    render(<MarkdownSection>[Test link](#example)</MarkdownSection>);
+
+    expect(screen.getByText("Test link")).not.toHaveAttribute("target");
+  });
+
+  it("renders an <a> tag with a name attribute for tags targeting a hashtag", () => {
+    render(<MarkdownSection>[Test link](example)</MarkdownSection>);
+
+    expect(screen.getByText("Test link")).toHaveAttribute("name", "example");
+  });
+
   it("renders a table within a wrapper div", () => {
     render(
       <MarkdownSection>
