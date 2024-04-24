@@ -600,20 +600,20 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
-            id="datasets"
-            href="/search?type=MeasurementSet"
+            id="raw-datasets"
+            href="/search/?type=MeasurementSet"
             navigationClick={navigationClick}
             isChildItem
           >
-            Datasets
+            Raw Data Sets
           </NavigationHrefItem>
           <NavigationHrefItem
             id="files"
-            href="/search?type=File"
+            href="/search/?type=AnalysisSet"
             navigationClick={navigationClick}
             isChildItem
           >
-            Files
+            Processed Data Sets
           </NavigationHrefItem>
         </NavigationGroupItem>
 
