@@ -615,6 +615,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Processed Data Sets
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="files"
+            href="/search/?type=File"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Files
+          </NavigationHrefItem>
         </NavigationGroupItem>
 
         <NavigationGroupItem
