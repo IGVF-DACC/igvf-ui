@@ -608,7 +608,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             Raw Data Sets
           </NavigationHrefItem>
           <NavigationHrefItem
-            id="files"
+            id="processed-datasets"
             href="/search/?type=AnalysisSet"
             navigationClick={navigationClick}
             isChildItem
