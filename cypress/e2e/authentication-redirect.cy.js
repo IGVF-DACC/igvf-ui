@@ -3,7 +3,7 @@ describe("Test that the post-login redirect goes to the correct URI", () => {
     // Navigate to a gene page.
     cy.visit("/");
     cy.get("[data-testid=navigation-data]").click();
-    cy.get("[data-testid=navigation-datasets]").click();
+    cy.get("[data-testid=navigation-raw-datasets]").click();
     cy.url().should("include", "/search/?type=MeasurementSet");
 
     // Sign in.
