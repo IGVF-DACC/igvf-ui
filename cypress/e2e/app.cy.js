@@ -25,8 +25,12 @@ describe("Navigation", () => {
     // Test Data submenus.
     cy.get("[data-testid=navigation-data]").click();
 
-    cy.get("[data-testid=navigation-datasets]").click();
+    cy.get("[data-testid=navigation-raw-datasets]").click();
     cy.url().should("include", "/search/?type=MeasurementSet");
+    cy.get("h1").should("exist"); // Actual title depends on data
+
+    cy.get("[data-testid=navigation-processed-datasets]").click();
+    cy.url().should("include", "/search/?type=AnalysisSet");
     cy.get("h1").should("exist"); // Actual title depends on data
 
     cy.get("[data-testid=navigation-files]").click();
