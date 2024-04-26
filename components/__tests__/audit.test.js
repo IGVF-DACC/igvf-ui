@@ -269,15 +269,11 @@ describe("Test the AuditDetail panel", () => {
     expect(screen.getByTestId("audit-detail-panel")).toBeInTheDocument();
 
     // Make sure all four of the level panels appear.
-    expect(screen.getByTestId("audit-level-detail-ERROR")).toBeInTheDocument();
+    expect(screen.getByTestId("audit-level-error")).toBeInTheDocument();
+    expect(screen.getByTestId("audit-level-warning")).toBeInTheDocument();
+    expect(screen.getByTestId("audit-level-not-compliant")).toBeInTheDocument();
     expect(
-      screen.getByTestId("audit-level-detail-WARNING")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("audit-level-detail-NOT_COMPLIANT")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("audit-level-detail-INTERNAL_ACTION")
+      screen.getByTestId("audit-level-internal-action")
     ).toBeInTheDocument();
   });
 
@@ -298,16 +294,10 @@ describe("Test the AuditDetail panel", () => {
     expect(screen.getByTestId("audit-detail-panel")).toBeInTheDocument();
 
     // Make sure all four of the level panels appear.
-    expect(screen.getByTestId("audit-level-detail-ERROR")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("audit-level-detail-WARNING")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("audit-level-detail-NOT_COMPLIANT")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("audit-level-detail-INTERNAL_ACTION")
-    ).toBeNull();
+    expect(screen.getByTestId("audit-level-error")).toBeInTheDocument();
+    expect(screen.getByTestId("audit-level-warning")).toBeInTheDocument();
+    expect(screen.getByTestId("audit-level-not-compliant")).toBeInTheDocument();
+    expect(screen.queryByTestId("audit-level-internal-action")).toBeNull();
   });
 
   it("reacts to clicks in a detail button to render the detail text", async () => {
@@ -327,46 +317,48 @@ describe("Test the AuditDetail panel", () => {
     expect(screen.getByTestId("audit-detail-panel")).toBeInTheDocument();
 
     // Click on the button for the ERROR level that includes a link.
-    const errorDetail = screen.getByTestId("audit-level-detail-ERROR");
+    const errorDetail = screen.getByTestId("audit-level-error");
     expect(errorDetail).toBeInTheDocument();
     const errorDetailButton = within(errorDetail).getByRole("button");
     fireEvent.click(errorDetailButton);
     await waitFor(() =>
-      screen.queryByTestId("audit-level-detail-narrative-ERROR")
+      screen.queryByTestId("audit-narrative-error-extremely-low-read-depth")
     );
 
-    let narrative = screen.queryByTestId("audit-level-detail-narrative-ERROR");
+    let narrative = screen.queryByTestId(
+      "audit-narrative-error-extremely-low-read-depth"
+    );
     expect(within(narrative).getByRole("link")).toHaveAttribute(
       "href",
       "/files/ENCFF557RSA"
     );
 
     // Click on the button for the NOT_COMPLIANT level that doesn't include a link.
-    const notCompliantDetail = screen.getByTestId(
-      "audit-level-detail-NOT_COMPLIANT"
-    );
+    const notCompliantDetail = screen.getByTestId("audit-level-not-compliant");
     expect(notCompliantDetail).toBeInTheDocument();
     const internalActionButton = within(notCompliantDetail).getByRole("button");
     fireEvent.click(internalActionButton);
     await waitFor(() =>
-      screen.queryByTestId("audit-level-detail-narrative-NOT_COMPLIANT")
+      screen.queryByTestId(
+        "audit-narrative-not-compliant-insufficient-read-depth"
+      )
     );
 
     narrative = screen.queryByTestId(
-      "audit-level-detail-narrative-NOT_COMPLIANT"
+      "audit-narrative-not-compliant-insufficient-read-depth"
     );
     expect(within(narrative).queryByRole("link")).toBeNull();
 
     // Click on the button for the INTERNAL_ACTION level that begins with a link.
     const internalActionDetail = screen.getByTestId(
-      "audit-level-detail-INTERNAL_ACTION"
+      "audit-level-internal-action"
     );
     expect(internalActionDetail).toBeInTheDocument();
     const internalActionDetailButton =
       within(internalActionDetail).getByRole("button");
     fireEvent.click(internalActionDetailButton);
     await waitFor(() =>
-      screen.queryByTestId("audit-level-detail-narrative-INTERNAL_ACTION")
+      screen.queryByTestId("audit-narrative-internal-action-mismatched-status")
     );
   });
 

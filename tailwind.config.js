@@ -59,6 +59,11 @@ module.exports = {
         "button-audit-level-detail": "var(--color-button-audit-level-detail)",
         "audit-level-detail": "var(--color-audit-level-detail-background)",
         audit: "var(--color-audit-background)",
+        "audit-error": "var(--color-audit-error-background)",
+        "audit-warning": "var(--color-audit-warning-background)",
+        "audit-not-compliant": "var(--color-audit-not-compliant-background)",
+        "audit-internal-action":
+          "var(--color-audit-internal-action-background)",
 
         "facet-group-button": "var(--color-facet-group-button-background)",
         "facet-group-button-selected":
