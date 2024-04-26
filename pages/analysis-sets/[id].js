@@ -23,6 +23,7 @@ import FileSetTable from "../../components/file-set-table";
 import Checkbox from "../../components/checkbox";
 import JsonDisplay from "../../components/json-display";
 import LinkedIdAndStatus from "../../components/linked-id-and-status";
+import LinkedIdAndStatusStack from "../../components/linked-id-and-status-stack";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
@@ -164,13 +165,9 @@ const fileSetColumns = [
 
         if (controlFileSets.length > 0) {
           return (
-            <div>
-              {controlFileSets.map((controlSet) => (
-                <LinkedIdAndStatus item={controlSet} key={controlSet["@id"]}>
-                  {controlSet.accession}
-                </LinkedIdAndStatus>
-              ))}
-            </div>
+            <LinkedIdAndStatusStack items={controlFileSets}>
+              {(controlSet) => controlSet.accession}
+            </LinkedIdAndStatusStack>
           );
         }
       }
@@ -195,13 +192,9 @@ const fileSetColumns = [
         );
 
         return (
-          <div>
-            {auxiliarySets.map((auxiliarySet) => (
-              <LinkedIdAndStatus item={auxiliarySet} key={auxiliarySet["@id"]}>
-                {auxiliarySet.accession}
-              </LinkedIdAndStatus>
-            ))}
-          </div>
+          <LinkedIdAndStatusStack items={auxiliarySets}>
+            {(auxiliarySet) => auxiliarySet.accession}
+          </LinkedIdAndStatusStack>
         );
       }
       return null;
@@ -234,13 +227,9 @@ const fileSetColumns = [
         );
 
         return (
-          <div>
-            {constructLibrarySets.map((cls) => (
-              <LinkedIdAndStatus item={cls} key={cls["@id"]}>
-                {cls.accession}
-              </LinkedIdAndStatus>
-            ))}
-          </div>
+          <LinkedIdAndStatusStack items={constructLibrarySets}>
+            {(constructLibrarySets) => constructLibrarySets.accession}
+          </LinkedIdAndStatusStack>
         );
       }
       return null;
