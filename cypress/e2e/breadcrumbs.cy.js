@@ -14,7 +14,7 @@ describe("Breadcrumb tests", () => {
   it("shows a three-element breadcrumb on an object page", () => {
     cy.visit("/");
     cy.get("[data-testid=navigation-data]").click();
-    cy.get("[data-testid=navigation-datasets]").click();
+    cy.get("[data-testid=navigation-raw-datasets]").click();
     cy.get(`[aria-label^="View details for"]`).eq(0).click();
 
     cy.get("[aria-label='breadcrumbs']").should("exist");
