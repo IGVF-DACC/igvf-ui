@@ -46,6 +46,7 @@ export default function MultiplexedSample({
   sortedFractions,
   sources,
   treatments,
+  multiplexedInSamples,
   isJson,
 }) {
   const reportLink = `/multireport/?type=Sample&field=%40id&field=multiplexed_in&field=taxa&field=sample_terms.term_name&field=donors&field=disease_terms&field=status&field=summary&field=%40type&multiplexed_in.accession=${multiplexedSample.accession}&field=construct_library_sets`;
@@ -66,7 +67,6 @@ export default function MultiplexedSample({
               <SampleDataItems
                 item={multiplexedSample}
                 sources={sources}
-                sortedFractions={sortedFractions}
                 constructLibrarySets={constructLibrarySets}
               >
                 {multiplexedSample.cellular_sub_pool && (
@@ -80,14 +80,6 @@ export default function MultiplexedSample({
               </SampleDataItems>
             </DataArea>
           </DataPanel>
-          {multiplexedSample.multiplexed_samples.length > 0 && (
-            <SampleTable
-              samples={multiplexedSample.multiplexed_samples}
-              reportLink={reportLink}
-              constructLibrarySets={constructLibrarySets}
-              title="Multiplexed Samples"
-            />
-          )}
           {multiplexedSample.file_sets.length > 0 && (
             <FileSetTable
               fileSets={multiplexedSample.file_sets}
@@ -98,9 +90,30 @@ export default function MultiplexedSample({
               }}
             />
           )}
+          {multiplexedSample.multiplexed_samples.length > 0 && (
+            <SampleTable
+              samples={multiplexedSample.multiplexed_samples}
+              reportLink={reportLink}
+              title="Multiplexed Samples"
+            />
+          )}
+          {multiplexedInSamples.length > 0 && (
+            <SampleTable
+              samples={multiplexedInSamples}
+              reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${multiplexedSample["@id"]}`}
+              title="Multiplexed In Samples"
+            />
+          )}
           {multiplexedSample.modifications?.length > 0 && (
             <ModificationTable
               modifications={multiplexedSample.modifications}
+            />
+          )}
+          {sortedFractions.length > 0 && (
+            <SampleTable
+              samples={sortedFractions}
+              reportLink={`/multireport/?type=Sample&sorted_from.@id=${multiplexedSample["@id"]}`}
+              title="Sorted Fractions of Sample"
             />
           )}
           {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
@@ -128,6 +141,8 @@ MultiplexedSample.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Biomarkers of the sample
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Multiplexed in samples
+  multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -190,6 +205,16 @@ export async function getServerSideProps({ params, req, query }) {
       );
       treatments = await requestTreatments(treatmentPaths, request);
     }
+    let multiplexedInSamples = [];
+    if (multiplexedSample.multiplexed_in.length > 0) {
+      const multiplexedInPaths = multiplexedSample.multiplexed_in.map(
+        (sample) => sample["@id"]
+      );
+      multiplexedInSamples = await requestBiosamples(
+        multiplexedInPaths,
+        request
+      );
+    }
     const breadcrumbs = await buildBreadcrumbs(
       multiplexedSample,
       "accession",
@@ -208,6 +233,7 @@ export async function getServerSideProps({ params, req, query }) {
         sortedFractions,
         sources,
         treatments,
+        multiplexedInSamples,
         pageContext: {
           title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,
         },

@@ -24,7 +24,6 @@ import {
 } from "./data-area";
 import DbxrefList from "./dbxref-list";
 import ProductInfo from "./product-info";
-import ReportLink from "./report-link";
 import SeparatedList from "./separated-list";
 // lib
 import { formatDate } from "../lib/dates";
@@ -124,7 +123,6 @@ DonorDataItems.commonProperties = [
  */
 export function SampleDataItems({
   item,
-  sortedFractions,
   sources = null,
   constructLibrarySets = [],
   children,
@@ -204,40 +202,6 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
-      {sortedFractions?.length > 0 && (
-        <>
-          <DataItemLabel>Sorted Fractions of Sample</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList isCollapsible>
-              {sortedFractions.map((sample) => (
-                <Link href={sample["@id"]} key={sample.accession}>
-                  {sample.accession}
-                </Link>
-              ))}
-            </SeparatedList>
-            <ReportLink
-              href={`/multireport/?type=Sample&sorted_from.@id=${item["@id"]}`}
-            />
-          </DataItemValue>
-        </>
-      )}
-      {item.multiplexed_in.length > 0 && (
-        <>
-          <DataItemLabel>Multiplexed In</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList isCollapsible>
-              {item.multiplexed_in.map((sample) => (
-                <Link href={sample["@id"]} key={sample.accession}>
-                  {sample.accession}
-                </Link>
-              ))}
-            </SeparatedList>
-            <ReportLink
-              href={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${item["@id"]}`}
-            />
-          </DataItemValue>
-        </>
-      )}
       {item.date_obtained && (
         <>
           <DataItemLabel>Date Harvested</DataItemLabel>
@@ -297,8 +261,6 @@ export function SampleDataItems({
 SampleDataItems.propTypes = {
   // Object derived from the sample.json schema
   item: PropTypes.object.isRequired,
-  // Sorted fractions sample
-  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
   sources: PropTypes.arrayOf(PropTypes.object),
   // Construct library sets for this sample
@@ -331,14 +293,9 @@ export function BiosampleDataItems({
   item,
   classification = null,
   constructLibrarySets = [],
-  donors = null,
   diseaseTerms = null,
   partOf = null,
-  parts = null,
-  pooledFrom = null,
-  pooledIn = null,
   sampleTerms = null,
-  sortedFractions = null,
   sources = null,
   children,
 }) {
@@ -347,7 +304,6 @@ export function BiosampleDataItems({
       item={item}
       constructLibrarySets={constructLibrarySets}
       sources={sources}
-      sortedFractions={sortedFractions}
     >
       {sampleTerms?.length > 0 && (
         <>
@@ -408,57 +364,6 @@ export function BiosampleDataItems({
           )}
         </DataItemValue>
       </>
-      {pooledFrom?.length > 0 && (
-        <>
-          <DataItemLabel>Biosamples Pooled From</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList isCollapsible>
-              {pooledFrom.map((biosample) => (
-                <Link href={biosample["@id"]} key={biosample["@id"]}>
-                  {biosample.accession}
-                </Link>
-              ))}
-            </SeparatedList>
-            <ReportLink
-              href={`/multireport/?type=Biosample&pooled_in=${item["@id"]}`}
-            />
-          </DataItemValue>
-        </>
-      )}
-      {pooledIn?.length > 0 && (
-        <>
-          <DataItemLabel>Pooled In</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList isCollapsible>
-              {pooledIn.map((biosample) => (
-                <Link href={biosample["@id"]} key={biosample["@id"]}>
-                  {biosample.accession}
-                </Link>
-              ))}
-            </SeparatedList>
-            <ReportLink
-              href={`/multireport/?type=Biosample&pooled_from=${item["@id"]}`}
-            />
-          </DataItemValue>
-        </>
-      )}
-      {parts?.length > 0 && (
-        <>
-          <DataItemLabel>Sample Parts</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList isCollapsible>
-              {parts.map((biosample) => (
-                <Link href={biosample["@id"]} key={biosample["@id"]}>
-                  {biosample.accession}
-                </Link>
-              ))}
-            </SeparatedList>
-            <ReportLink
-              href={`/multireport/?type=Biosample&part_of=${item["@id"]}`}
-            />
-          </DataItemValue>
-        </>
-      )}
       {partOf && (
         <>
           <DataItemLabel>Part of Sample</DataItemLabel>
@@ -487,20 +392,6 @@ export function BiosampleDataItems({
           <DataItemValue>{item.nih_institutional_certification}</DataItemValue>
         </>
       )}
-      {donors?.length > 0 && (
-        <>
-          <DataItemLabel>Donors</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList isCollapsible>
-              {donors.map((donor) => (
-                <Link href={donor["@id"]} key={donor.uuid}>
-                  {donor.accession}
-                </Link>
-              ))}
-            </SeparatedList>
-          </DataItemValue>
-        </>
-      )}
       {children}
     </SampleDataItems>
   );
@@ -515,20 +406,10 @@ BiosampleDataItems.propTypes = {
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for the biosample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object),
-  // Donors for this biosample
-  donors: PropTypes.array,
   // Part of Sample
   partOf: PropTypes.object,
-  // Sample parts
-  parts: PropTypes.arrayOf(PropTypes.object),
-  // Pooled from sample
-  pooledFrom: PropTypes.arrayOf(PropTypes.object),
-  // Pooled in sample
-  pooledIn: PropTypes.arrayOf(PropTypes.object),
   // Sample ontology for the biosample
   sampleTerms: PropTypes.arrayOf(PropTypes.object),
-  // Sorted fractions sample
-  sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this biosample
   sources: PropTypes.arrayOf(PropTypes.object),
 };

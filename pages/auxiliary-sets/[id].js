@@ -13,20 +13,19 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import ReportLink from "../../components/report-link";
-import SeparatedList from "../../components/separated-list";
+import SampleTable from "../../components/sample-table";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
-  requestDonors,
   requestFiles,
   requestFileSets,
   requestOntologyTerms,
@@ -40,7 +39,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function AuxiliarySet({
   auxiliarySet,
   documents,
-  donors,
   libraryConstructionPlatform = null,
   files,
   relatedDatasets,
@@ -67,37 +65,6 @@ export default function AuxiliarySet({
           <DataPanel>
             <DataArea>
               <FileSetDataItems item={auxiliarySet}>
-                {donors.length > 0 && (
-                  <>
-                    <DataItemLabel>Donors</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {donors.map((donor) => (
-                          <Link href={donor["@id"]} key={donor.uuid}>
-                            {donor.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                {auxiliarySet.samples?.length > 0 && (
-                  <>
-                    <DataItemLabel>Samples</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {auxiliarySet.samples.map((sample) => (
-                          <Link href={sample["@id"]} key={sample["@id"]}>
-                            {sample.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                      <ReportLink
-                        href={`/multireport/?type=Sample&file_sets.@id=${auxiliarySet["@id"]}`}
-                      />
-                    </DataItemValue>
-                  </>
-                )}
                 {libraryConstructionPlatform && (
                   <>
                     <DataItemLabel>Library Construction Platform</DataItemLabel>
@@ -154,6 +121,15 @@ export default function AuxiliarySet({
               }}
             />
           )}
+          {auxiliarySet.samples?.length > 0 && (
+            <SampleTable
+              samples={auxiliarySet.samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${auxiliarySet["@id"]}`}
+            />
+          )}
+          {auxiliarySet.donors?.length > 0 && (
+            <DonorTable donors={auxiliarySet.donors} />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
 
           <Attribution attribution={attribution} />
@@ -166,8 +142,6 @@ export default function AuxiliarySet({
 AuxiliarySet.propTypes = {
   // Auxiliary set to display
   auxiliarySet: PropTypes.object.isRequired,
-  // Donors to display
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Library construction platform object
   libraryConstructionPlatform: PropTypes.object,
   // Files to display
@@ -198,12 +172,6 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = auxiliarySet.documents
       ? await requestDocuments(auxiliarySet.documents, request)
       : [];
-
-    let donors = [];
-    if (auxiliarySet.donors) {
-      const donorPaths = auxiliarySet.donors.map((donor) => donor["@id"]);
-      donors = await requestDonors(donorPaths, request);
-    }
 
     const libraryConstructionPlatform =
       auxiliarySet.library_construction_platform
@@ -258,7 +226,6 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         auxiliarySet,
         documents,
-        donors,
         libraryConstructionPlatform,
         files,
         relatedDatasets,

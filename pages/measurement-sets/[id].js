@@ -17,21 +17,20 @@ import {
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import ReportLink from "../../components/report-link";
-import SeparatedList from "../../components/separated-list";
+import SampleTable from "../../components/sample-table";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
-  requestDonors,
   requestFiles,
   requestFileSets,
   requestOntologyTerms,
@@ -137,7 +136,6 @@ export default function MeasurementSet({
   assayTerm = null,
   controlFileSets,
   documents,
-  donors,
   files,
   relatedMultiomeSets,
   auxiliarySets,
@@ -204,37 +202,6 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {donors.length > 0 && (
-                  <>
-                    <DataItemLabel>Donors</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {donors.map((donor) => (
-                          <Link href={donor["@id"]} key={donor.uuid}>
-                            {donor.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                {measurementSet.samples?.length > 0 && (
-                  <>
-                    <DataItemLabel>Samples</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {measurementSet.samples.map((sample) => (
-                          <Link key={sample["@id"]} href={sample["@id"]}>
-                            {sample.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                      <ReportLink
-                        href={`/multireport/?type=Sample&file_sets.@id=${measurementSet["@id"]}`}
-                      />
-                    </DataItemValue>
-                  </>
-                )}
                 {uniqueSampleSummaries.length > 0 && (
                   <>
                     <DataItemLabel>Sample Summaries</DataItemLabel>
@@ -288,7 +255,7 @@ export default function MeasurementSet({
             <FileTable
               files={imageFileType}
               title="Imaging Results"
-              itemPath={measurementSet["@id"]}
+              fileSetPath={measurementSet["@id"]}
             />
           )}
           {controlFileSets.length > 0 && (
@@ -320,6 +287,15 @@ export default function MeasurementSet({
               }}
             />
           )}
+          {measurementSet.samples?.length > 0 && (
+            <SampleTable
+              samples={measurementSet.samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${measurementSet["@id"]}`}
+            />
+          )}
+          {measurementSet.donors?.length > 0 && (
+            <DonorTable donors={measurementSet.donors} />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -335,8 +311,6 @@ MeasurementSet.propTypes = {
   assayTerm: PropTypes.object,
   // Control File Sets of the measurement set
   controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Donors to display
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Related multiome datasets
@@ -368,11 +342,6 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = measurementSet.documents
       ? await requestDocuments(measurementSet.documents, request)
       : [];
-    let donors = [];
-    if (measurementSet.donors) {
-      const donorPaths = measurementSet.donors.map((donor) => donor["@id"]);
-      donors = await requestDonors(donorPaths, request);
-    }
     let files = [];
     if (measurementSet.files.length > 0) {
       const filePaths = measurementSet.files.map((file) => file["@id"]) || [];
@@ -438,7 +407,6 @@ export async function getServerSideProps({ params, req, query }) {
         assayTerm,
         controlFileSets,
         documents,
-        donors,
         files,
         relatedMultiomeSets,
         auxiliarySets,

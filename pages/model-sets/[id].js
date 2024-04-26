@@ -110,7 +110,7 @@ export default function ModelSet({
             <FileSetTable fileSets={inputFileSets} title="Input File Sets" />
           )}
           {files.length > 0 && (
-            <FileTable files={files} itemPath={modelSet["@id"]} />
+            <FileTable files={files} fileSetPath={modelSet["@id"]} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />

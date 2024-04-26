@@ -10,15 +10,17 @@ import Status from "./status";
 export default function LinkedIdAndStatus({
   item,
   status = "",
-  className = "",
+  className = null,
   children,
 }) {
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
-      <Link href={item["@id"]} className="block">
-        {children}
-      </Link>
-      <Status status={status || item.status} isAbbreviated />
+    <div className={className}>
+      <div className="flex items-center gap-1">
+        <Link href={item["@id"]} className="block">
+          {children}
+        </Link>
+        <Status status={status || item.status} isAbbreviated />
+      </div>
     </div>
   );
 }

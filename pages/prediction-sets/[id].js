@@ -21,24 +21,20 @@ import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import ReportLink from "../../components/report-link";
+import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import {
-  requestDocuments,
-  requestDonors,
-  requestFiles,
-} from "../../lib/common-requests";
+import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import DonorTable from "../../components/donor-table";
 
 export default function PredictionSet({
   predictionSet,
   documents,
-  donors,
   files,
   attribution = null,
   isJson,
@@ -68,37 +64,6 @@ export default function PredictionSet({
           <DataPanel>
             <DataArea>
               <FileSetDataItems item={predictionSet}>
-                {donors?.length > 0 && (
-                  <>
-                    <DataItemLabel>Donors</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {donors.map((donor) => (
-                          <Link href={donor["@id"]} key={donor.uuid}>
-                            {donor.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                {predictionSet.samples?.length > 0 && (
-                  <>
-                    <DataItemLabel>Samples</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {predictionSet.samples.map((sample) => (
-                          <Link href={sample["@id"]} key={sample["@id"]}>
-                            {sample.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                      <ReportLink
-                        href={`/multireport/?type=Sample&file_sets.@id=${predictionSet["@id"]}`}
-                      />
-                    </DataItemValue>
-                  </>
-                )}
                 {constructLibrarySets.length > 0 && (
                   <>
                     <DataItemLabel>Construct Library Sets</DataItemLabel>
@@ -180,7 +145,16 @@ export default function PredictionSet({
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
-            <FileTable files={files} itemPath={predictionSet["@id"]} />
+            <FileTable files={files} fileSetPath={predictionSet["@id"]} />
+          )}
+          {predictionSet.samples?.length > 0 && (
+            <SampleTable
+              samples={predictionSet.samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${predictionSet["@id"]}`}
+            />
+          )}
+          {predictionSet.donors?.length > 0 && (
+            <DonorTable donors={predictionSet.donors} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
@@ -193,8 +167,6 @@ export default function PredictionSet({
 PredictionSet.propTypes = {
   // Prediction set to display
   predictionSet: PropTypes.object.isRequired,
-  // Donors to display
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this prediction set
@@ -216,12 +188,6 @@ export async function getServerSideProps({ params, req, query }) {
       ? await requestDocuments(predictionSet.documents, request)
       : [];
 
-    let donors = [];
-    if (predictionSet.donors) {
-      const donorPaths = predictionSet.donors.map((donor) => donor["@id"]);
-      donors = await requestDonors(donorPaths, request);
-    }
-
     let files = [];
     if (predictionSet.files.length > 0) {
       const filePaths = predictionSet.files.map((file) => file["@id"]) || [];
@@ -241,7 +207,6 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         predictionSet,
         documents,
-        donors,
         files,
         pageContext: { title: predictionSet.accession },
         breadcrumbs,

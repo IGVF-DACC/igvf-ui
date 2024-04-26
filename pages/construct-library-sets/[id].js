@@ -21,7 +21,7 @@ import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import ReportLink from "../../components/report-link";
+import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
@@ -279,25 +279,6 @@ export default function ConstructLibrarySet({
                     </DataItemValue>
                   </>
                 )}
-                {constructLibrarySet.applied_to_samples.length > 0 && (
-                  <>
-                    <DataItemLabel>Applied to Samples</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {constructLibrarySet.applied_to_samples.map(
-                          (sample) => (
-                            <Link href={sample["@id"]} key={sample["@id"]}>
-                              {sample.accession}
-                            </Link>
-                          )
-                        )}
-                      </SeparatedList>
-                      <ReportLink
-                        href={`/multireport/?type=Sample&construct_library_sets=${constructLibrarySet["@id"]}`}
-                      />
-                    </DataItemValue>
-                  </>
-                )}
                 {constructLibrarySet.sources && (
                   <>
                     <DataItemLabel>Sources</DataItemLabel>
@@ -325,6 +306,12 @@ export default function ConstructLibrarySet({
               sequencingPlatforms={sequencingPlatforms}
             />
           )}
+          {integratedContentFiles.length > 0 && (
+            <FileTable
+              files={integratedContentFiles}
+              title="Integrated Content Files"
+            />
+          )}
           {controlForSets.length > 0 && (
             <FileSetTable
               fileSets={controlForSets}
@@ -336,10 +323,11 @@ export default function ConstructLibrarySet({
               }}
             />
           )}
-          {integratedContentFiles.length > 0 && (
-            <FileTable
-              files={integratedContentFiles}
-              title="Integrated Content Files"
+          {constructLibrarySet.applied_to_samples.length > 0 && (
+            <SampleTable
+              samples={constructLibrarySet.applied_to_samples}
+              reportLink={`/multireport/?type=Sample&construct_library_sets=${constructLibrarySet["@id"]}`}
+              title="Applied to Samples"
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}

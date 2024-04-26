@@ -17,11 +17,10 @@ import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
+import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import ReportLink from "../../components/report-link";
-import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -123,23 +122,6 @@ export default function SequenceFile({
                   <DataItemValue>{sequenceFile.read_count}</DataItemValue>
                 </>
               )}
-              {seqspecs.length > 0 && (
-                <>
-                  <DataItemLabel>Associated seqspec Files</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
-                      {seqspecs.map((seqSpec) => (
-                        <Link key={seqSpec["@id"]} href={seqSpec["@id"]}>
-                          {seqSpec.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                    <ReportLink
-                      href={`/multireport/?type=ConfigurationFile&seqspec_of=${sequenceFile["@id"]}`}
-                    />
-                  </DataItemValue>
-                </>
-              )}
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (
@@ -147,6 +129,13 @@ export default function SequenceFile({
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
               title={`Files ${sequenceFile.accession} Derives From`}
+            />
+          )}
+          {seqspecs.length > 0 && (
+            <FileTable
+              files={seqspecs}
+              title="Associated seqspec Files"
+              reportLink={`/multireport/?type=ConfigurationFile&seqspec_of=${sequenceFile["@id"]}`}
             />
           )}
           {fileFormatSpecifications.length > 0 && (
