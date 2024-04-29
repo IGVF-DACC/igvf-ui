@@ -7,6 +7,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
+import ChromosomeLocations from "../../components/chromosome-locations";
 import {
   DataArea,
   DataItemLabel,
