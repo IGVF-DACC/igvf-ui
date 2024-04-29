@@ -138,15 +138,10 @@ export default function PredictionSet({
                   <>
                     <DataItemLabel>Small Scale Loci List</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {predictionSet.small_scale_loci_list.map((loci) => (
-                          <>
-                            {loci.assembly} {loci.chromosome} {loci.start}
-                            {"-"}
-                            {loci.end}
-                          </>
-                        ))}
-                      </SeparatedList>
+                      <ChromosomeLocations
+                        locations={predictionSet.small_scale_loci_list}
+                        isCollapsible
+                      />
                     </DataItemValue>
                   </>
                 )}

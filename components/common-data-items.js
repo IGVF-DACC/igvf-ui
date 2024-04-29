@@ -769,7 +769,7 @@ export function FileSetDataItems({ item, children }) {
         <>
           <DataItemLabel>Publication Identifiers</DataItemLabel>
           <DataItemValue>
-            <DbxrefList dbxrefs={item.publication_identifiers} is Collapsible />
+            <DbxrefList dbxrefs={item.publication_identifiers} isCollapsible />
           </DataItemValue>
         </>
       )}
