@@ -750,37 +750,6 @@ const profiles = {
           type: "string",
         },
       },
-      external_resources: {
-        title: "External Resources",
-        description: "A list of external resources associated with the donor.",
-        type: "array",
-        minItems: 1,
-        uniqueItems: false,
-        items: {
-          title: "External Resource",
-          description: "An external resource associated with the donor.",
-          type: "object",
-          required: ["resource_identifier", "resource_name"],
-          additionalProperties: false,
-          properties: {
-            resource_name: {
-              title: "External Resource Name",
-              description: "Name of external resource.",
-              type: "string",
-            },
-            resource_identifier: {
-              title: "External Resource Identifier",
-              description: "Identifier of external resource.",
-              type: "string",
-            },
-            resource_url: {
-              title: "External Resource URL",
-              description: "URL for the external resource",
-              type: "string",
-            },
-          },
-        },
-      },
       sex: {
         title: "Sex",
         type: "string",

@@ -20,6 +20,7 @@ import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import ReportLink from "../../components/report-link";
 import SeparatedList from "../../components/separated-list";
 import TreatmentTable from "../../components/treatment-table";
 // lib
@@ -112,6 +113,9 @@ export default function InVitroSystem({
                           </Link>
                         ))}
                       </SeparatedList>
+                      <ReportLink
+                        href={`/multireport/?type=InVitroSystem&originated_from.@id=${inVitroSystem["@id"]}`}
+                      />
                     </DataItemValue>
                   </>
                 )}

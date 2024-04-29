@@ -23,6 +23,7 @@ import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import ReportLink from "../../components/report-link";
 import SeparatedList from "../../components/separated-list";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
@@ -165,6 +166,9 @@ export default function MeasurementSet({
                           </Link>
                         ))}
                       </SeparatedList>
+                      <ReportLink
+                        href={`/multireport/?type=Sample&file_sets.@id=${measurementSet["@id"]}`}
+                      />
                     </DataItemValue>
                   </>
                 )}

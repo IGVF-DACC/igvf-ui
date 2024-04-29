@@ -29,7 +29,7 @@ import { LINK_INLINE_STYLE } from "../../lib/constants";
  * Tailwind CSS classes common to all buttons; both <Button> and <ButtonLink> types.
  */
 const commonButtonClasses =
-  "flex items-center justify-center border font-semibold leading-none";
+  "items-center justify-center border font-semibold leading-none";
 
 /**
  * Background colors for each of the button types.
@@ -104,6 +104,15 @@ function generateButtonSizeClasses(size, hasIconOnly, hasIconCircleOnly) {
   return buttonSizeClasses[size];
 }
 
+/**
+ * Generate the Tailwind CSS classes for the button to appear inline with text when requested.
+ * @param {boolean} isInline True to style the button to appear inline with text
+ * @returns {string} Tailwind CSS classes for the button to appear inline with text when needed
+ */
+function inlineClasses(isInline) {
+  return isInline ? "inline-flex" : "flex";
+}
+
 /*
  * Displays a button with a site-standard style. Use this for buttons that perform an action; not
  * for buttons that navigate to a new page -- use <ButtonLink> for those. Supply any content you
@@ -122,6 +131,7 @@ export function Button({
   hasIconOnly = false,
   hasIconCircleOnly = false,
   role = "button",
+  isInline = false,
   isSelected = false,
   isDisabled = false,
   className = "",
@@ -139,7 +149,11 @@ export function Button({
       role={role}
       id={id}
       onClick={onClick}
-      className={`${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[type]} ${className}`}
+      className={`${inlineClasses(
+        isInline
+      )} ${commonButtonClasses} ${sizeClasses} ${
+        buttonTypeClasses[type]
+      } ${className}`}
       aria-label={label}
       aria-checked={isSelected}
       disabled={isDisabled}
@@ -166,6 +180,8 @@ Button.propTypes = {
   hasIconCircleOnly: PropTypes.bool,
   // Role of the button if not "button"
   role: PropTypes.string,
+  // True to make the button appear inline with text
+  isInline: PropTypes.bool,
   // True for selected buttons; only use for attached buttons to show which one is selected
   isSelected: PropTypes.bool,
   // True to disable the button
@@ -219,6 +235,7 @@ export function ButtonLink({
   size = "md",
   hasIconOnly = false,
   hasIconCircleOnly = false,
+  isInline = false,
   isDisabled = false,
   isExternal = false,
   className = "",
@@ -236,7 +253,11 @@ export function ButtonLink({
     <div
       aria-label={label}
       id={id}
-      className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[disabledType]} ${className}`}
+      className={`text-center no-underline ${inlineClasses(
+        isInline
+      )} ${commonButtonClasses} ${sizeClasses} ${
+        buttonTypeClasses[disabledType]
+      } ${className}`}
     >
       {children}
     </div>
@@ -246,7 +267,11 @@ export function ButtonLink({
       href={href}
       aria-label={label}
       id={id}
-      className={`text-center no-underline ${commonButtonClasses} ${sizeClasses} ${buttonTypeClasses[type]} ${className}`}
+      className={`text-center no-underline ${inlineClasses(
+        isInline
+      )} ${commonButtonClasses} ${sizeClasses} ${
+        buttonTypeClasses[type]
+      } ${className}`}
     >
       {children}
     </LinkElement>
@@ -268,6 +293,8 @@ ButtonLink.propTypes = {
   hasIconOnly: PropTypes.bool,
   // True for buttons that only contain an icon in a circular button
   hasIconCircleOnly: PropTypes.bool,
+  // True to make the button appear inline with text
+  isInline: PropTypes.bool,
   // Is Disabled
   isDisabled: PropTypes.bool,
   // True if the link is external

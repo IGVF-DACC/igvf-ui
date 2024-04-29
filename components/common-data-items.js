@@ -24,6 +24,7 @@ import {
 } from "./data-area";
 import DbxrefList from "./dbxref-list";
 import ProductInfo from "./product-info";
+import ReportLink from "./report-link";
 import SeparatedList from "./separated-list";
 // lib
 import { formatDate } from "../lib/dates";
@@ -205,9 +206,7 @@ export function SampleDataItems({
       )}
       {sortedFractions?.length > 0 && (
         <>
-          <DataItemLabel>
-            Sorted Fraction{sortedFractions.length === 1 ? "" : "s"} of Sample
-          </DataItemLabel>
+          <DataItemLabel>Sorted Fractions of Sample</DataItemLabel>
           <DataItemValue>
             <SeparatedList isCollapsible>
               {sortedFractions.map((sample) => (
@@ -216,6 +215,9 @@ export function SampleDataItems({
                 </Link>
               ))}
             </SeparatedList>
+            <ReportLink
+              href={`/multireport/?type=Sample&sorted_from.@id=${item["@id"]}`}
+            />
           </DataItemValue>
         </>
       )}
@@ -230,6 +232,9 @@ export function SampleDataItems({
                 </Link>
               ))}
             </SeparatedList>
+            <ReportLink
+              href={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${item["@id"]}`}
+            />
           </DataItemValue>
         </>
       )}
@@ -405,9 +410,7 @@ export function BiosampleDataItems({
       </>
       {pooledFrom?.length > 0 && (
         <>
-          <DataItemLabel>
-            Pooled From Sample{pooledFrom.length === 1 ? "" : "s"}
-          </DataItemLabel>
+          <DataItemLabel>Biosamples Pooled From</DataItemLabel>
           <DataItemValue>
             <SeparatedList isCollapsible>
               {pooledFrom.map((biosample) => (
@@ -416,14 +419,15 @@ export function BiosampleDataItems({
                 </Link>
               ))}
             </SeparatedList>
+            <ReportLink
+              href={`/multireport/?type=Biosample&pooled_in=${item["@id"]}`}
+            />
           </DataItemValue>
         </>
       )}
       {pooledIn?.length > 0 && (
         <>
-          <DataItemLabel>
-            Pooled In Sample{pooledIn.length === 1 ? "" : "s"}
-          </DataItemLabel>
+          <DataItemLabel>Pooled In</DataItemLabel>
           <DataItemValue>
             <SeparatedList isCollapsible>
               {pooledIn.map((biosample) => (
@@ -432,14 +436,15 @@ export function BiosampleDataItems({
                 </Link>
               ))}
             </SeparatedList>
+            <ReportLink
+              href={`/multireport/?type=Biosample&pooled_from=${item["@id"]}`}
+            />
           </DataItemValue>
         </>
       )}
       {parts?.length > 0 && (
         <>
-          <DataItemLabel>
-            Sample Part{parts.length === 1 ? "" : "s"}
-          </DataItemLabel>
+          <DataItemLabel>Sample Parts</DataItemLabel>
           <DataItemValue>
             <SeparatedList isCollapsible>
               {parts.map((biosample) => (
@@ -448,6 +453,9 @@ export function BiosampleDataItems({
                 </Link>
               ))}
             </SeparatedList>
+            <ReportLink
+              href={`/multireport/?type=Biosample&part_of=${item["@id"]}`}
+            />
           </DataItemValue>
         </>
       )}
@@ -548,7 +556,7 @@ export function OntologyTermDataItems({ item, isA, children }) {
       </DataItemValue>
       {isA?.length > 0 && (
         <>
-          <DataItemLabel>List of Term Names</DataItemLabel>
+          <DataItemLabel>Is A</DataItemLabel>
           <DataItemValue>
             <SeparatedList isCollapsible>
               {isA.map((term) => (

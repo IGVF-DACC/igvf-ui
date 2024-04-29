@@ -19,6 +19,7 @@ import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import ReportLink from "../../components/report-link";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -96,6 +97,9 @@ export default function CuratedSet({
                           </Link>
                         ))}
                       </SeparatedList>
+                      <ReportLink
+                        href={`/multireport/?type=Sample&file_sets.@id=${curatedSet["@id"]}`}
+                      />
                     </DataItemValue>
                   </>
                 )}

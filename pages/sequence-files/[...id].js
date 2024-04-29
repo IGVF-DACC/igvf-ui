@@ -20,6 +20,7 @@ import { FileHeaderDownload } from "../../components/file-download";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import ReportLink from "../../components/report-link";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -126,13 +127,16 @@ export default function SequenceFile({
                 <>
                   <DataItemLabel>Associated seqspec Files</DataItemLabel>
                   <DataItemValue>
-                    <SeparatedList>
+                    <SeparatedList isCollapsible>
                       {seqspecs.map((seqSpec) => (
                         <Link key={seqSpec["@id"]} href={seqSpec["@id"]}>
                           {seqSpec.accession}
                         </Link>
                       ))}
                     </SeparatedList>
+                    <ReportLink
+                      href={`/multireport/?type=ConfigurationFile&seqspec_of=${sequenceFile["@id"]}`}
+                    />
                   </DataItemValue>
                 </>
               )}

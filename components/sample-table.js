@@ -62,7 +62,7 @@ const sampleColumns = [
         source.construct_library_sets.length > 0
       ) {
         return (
-          <SeparatedList>
+          <SeparatedList isCollapsible>
             {source.construct_library_sets.map((id) => {
               if (meta.constructLibrarySetAccessions) {
                 const accession = meta.constructLibrarySetAccessions.find(
@@ -93,7 +93,7 @@ const sampleColumns = [
     display: ({ source }) => {
       if (source.donors) {
         return (
-          <SeparatedList>
+          <SeparatedList isCollapsible>
             {source.donors.map((donor) => (
               <Link href={donor["@id"]} key={donor["@id"]}>
                 {donor.accession}
