@@ -765,6 +765,14 @@ export function FileSetDataItems({ item, children }) {
           </DataItemValue>
         </>
       )}
+      {item.publication_identifiers?.length > 0 && (
+        <>
+          <DataItemLabel>Publication Identifiers</DataItemLabel>
+          <DataItemValue>
+            <DbxrefList dbxrefs={item.publication_identifiers} isCollapsible />
+          </DataItemValue>
+        </>
+      )}
     </>
   );
 }
@@ -783,6 +791,7 @@ FileSetDataItems.commonProperties = [
   "submitter_comment",
   "revoke_detail",
   "dbxrefs",
+  "publication_identifiers",
 ];
 
 /**

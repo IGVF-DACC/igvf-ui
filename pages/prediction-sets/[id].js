@@ -7,6 +7,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
+import ChromosomeLocations from "../../components/chromosome-locations";
 import {
   DataArea,
   DataItemLabel,
@@ -118,6 +119,57 @@ export default function PredictionSet({
                   <>
                     <DataItemLabel>Scope</DataItemLabel>
                     <DataItemValue>{predictionSet.scope}</DataItemValue>
+                  </>
+                )}
+                {predictionSet.small_scale_gene_list && (
+                  <>
+                    <DataItemLabel>Small Scale Gene List</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {predictionSet.small_scale_gene_list.map((gene) => (
+                          <Link href={gene["@id"]} key={gene["@id"]}>
+                            {gene.symbol}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {predictionSet.small_scale_loci_list && (
+                  <>
+                    <DataItemLabel>Small Scale Loci List</DataItemLabel>
+                    <DataItemValue>
+                      <ChromosomeLocations
+                        locations={predictionSet.small_scale_loci_list}
+                        isCollapsible
+                      />
+                    </DataItemValue>
+                  </>
+                )}
+                {predictionSet.large_scale_gene_list && (
+                  <>
+                    <DataItemLabel>Large Scale Gene List</DataItemLabel>
+                    <DataItemValue>
+                      <Link
+                        href={predictionSet.large_scale_gene_list["@id"]}
+                        key={predictionSet.large_scale_gene_list["@id"]}
+                      >
+                        {predictionSet.large_scale_gene_list.accession}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
+                {predictionSet.large_scale_loci_list && (
+                  <>
+                    <DataItemLabel>Large Scale Loci List</DataItemLabel>
+                    <DataItemValue>
+                      <Link
+                        href={predictionSet.large_scale_loci_list["@id"]}
+                        key={predictionSet.large_scale_loci_list["@id"]}
+                      >
+                        {predictionSet.large_scale_loci_list.accession}
+                      </Link>
+                    </DataItemValue>
                   </>
                 )}
               </FileSetDataItems>

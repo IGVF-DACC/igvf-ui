@@ -14,7 +14,6 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
@@ -276,16 +275,6 @@ export default function ConstructLibrarySet({
                       >
                         {constructLibrarySet.product_id}
                       </Link>
-                    </DataItemValue>
-                  </>
-                )}
-                {constructLibrarySet.publication_identifiers && (
-                  <>
-                    <DataItemLabel>Publication Identifiers</DataItemLabel>
-                    <DataItemValue>
-                      <DbxrefList
-                        dbxrefs={constructLibrarySet.publication_identifiers}
-                      />
                     </DataItemValue>
                   </>
                 )}
