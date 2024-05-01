@@ -622,124 +622,18 @@ describe("Test the HumanDonor component", () => {
       uuid: "ee99221f-a11a-4f8b-baf3-9919db92f2f9",
       collections: ["ENCODE"],
       phenotypic_features: [
-        "/phenotypic-features/123/",
-        "/phenotypic-features/456/",
-        "/phenotypic-features/111/",
+        {
+          "@id": "/phenotypic-features/123/",
+          feature: {
+            "@id": "/phenotype-terms/NCIT_C92648/",
+            term_id: "NCIT:C92648",
+            term_name: "Body Weight Measurement",
+          },
+          observation_date: "2022-11-15",
+          quantity: 58,
+          quantity_units: "kilogram",
+        },
       ],
-    };
-    const accessoryData = {
-      "/phenotypic-features/123/": {
-        lab: "/labs/j-michael-cherry/",
-        award: "/awards/HG012012/",
-        notes: "Phenotypic feature of body weight",
-        status: "released",
-        feature: {
-          "@id": "/phenotype-terms/NCIT_C92648/",
-          term_id: "NCIT:C92648",
-          term_name: "Body Weight Measurement",
-        },
-        quantity: 58,
-        quantity_units: "kilogram",
-        schema_version: "1",
-        observation_date: "2022-11-15",
-        creation_timestamp: "2023-03-13T23:26:17.586384+00:00",
-        "@id": "/phenotypic-features/123/",
-        "@type": ["PhenotypicFeature", "Item"],
-        uuid: "123",
-        summary: "123",
-        "@context": "/terms/",
-      },
-      "/phenotypic-features/456/": {
-        lab: "/labs/j-michael-cherry/",
-        award: "/awards/HG012012/",
-        status: "released",
-        feature: {
-          "@id": "/phenotype-terms/NCIT_C92648/",
-          term_id: "NCIT:C92648",
-          term_name: "Some other phenotype",
-        },
-        schema_version: "1",
-        observation_date: "2022-11-15",
-        creation_timestamp: "2023-03-13T23:26:17.586384+00:00",
-        "@id": "/phenotypic-features/123/",
-        "@type": ["PhenotypicFeature", "Item"],
-        uuid: "123",
-        summary: "123",
-        "@context": "/terms/",
-      },
-      "/phenotypic-features/111/": {
-        lab: "/labs/j-michael-cherry/",
-        award: "/awards/HG012012/",
-        status: "released",
-        feature: {
-          "@id": "/phenotype-terms/NCIT_C92648/",
-          term_id: "NCIT:C92648",
-          term_name: "Weight",
-        },
-        quantity: 1,
-        quantity_units: "gram",
-        schema_version: "1",
-        observation_date: "2022-11-15",
-        creation_timestamp: "2023-03-13T23:26:17.586384+00:00",
-        "@id": "/phenotypic-features/123/",
-        "@type": ["PhenotypicFeature", "Item"],
-        uuid: "123",
-        summary: "123",
-        "@context": "/terms/",
-      },
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <HumanDonor item={item} accessoryData={accessoryData} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Human Donor/);
-    expect(uniqueId).toHaveTextContent(/IGVFDO856PXB$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^African American female$/);
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("Chongyuan Luo");
-    expect(meta).toHaveTextContent("Body Weight Measurement");
-    expect(meta).toHaveTextContent("58 kilograms");
-    expect(meta).toHaveTextContent("Some other phenotype");
-    expect(meta).toHaveTextContent("1 gram");
-    expect(meta).toHaveTextContent("ENCODE");
-
-    const status = screen.getByTestId("search-list-item-quality");
-    expect(status).toHaveTextContent("released");
-
-    const paths = HumanDonor.getAccessoryDataPaths([item]);
-    expect(paths.sort()).toEqual([
-      {
-        type: "PhenotypicFeature",
-        paths: [
-          "/phenotypic-features/123/",
-          "/phenotypic-features/456/",
-          "/phenotypic-features/111/",
-        ],
-        fields: ["quantity", "quantity_units", "feature"],
-      },
-    ]);
-  });
-
-  it("renders a human donor item without accessory data", () => {
-    const item = {
-      "@id": "/human-donors/IGVFDO856PXB/",
-      "@type": ["HumanDonor", "Donor", "Item"],
-      accession: "IGVFDO856PXB",
-      aliases: ["chongyuan-luo:AA F donor of fibroblasts"],
-      award: "/awards/1U01HG012079-01/",
-      ethnicities: ["African American"],
-      lab: { "@id": "/labs/chongyuan-luo/", title: "Chongyuan Luo" },
-      sex: "female",
-      status: "released",
-      taxa: "Homo sapiens",
-      uuid: "ee99221f-a11a-4f8b-baf3-9919db92f2f9",
     };
 
     render(
@@ -757,6 +651,8 @@ describe("Test the HumanDonor component", () => {
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Chongyuan Luo");
+    expect(meta).toHaveTextContent("Body Weight Measurement");
+    expect(meta).toHaveTextContent("ENCODE");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
@@ -1007,7 +903,7 @@ describe("Test the RodentDonor component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders a RodentDonor item with accessory data", () => {
+  it("renders a RodentDonor item with a phenotypic feature", () => {
     const item = {
       "@id": "/rodent-donors/IGVFDO524ORO/",
       "@type": ["RodentDonor", "Donor", "Item"],
@@ -1032,40 +928,19 @@ describe("Test the RodentDonor component", () => {
       uuid: "c37934b0-4269-4470-be53-9eac7b196447",
       collections: ["ENCODE"],
       phenotypic_features: [
-        "/phenotypic-features/abc123/",
-        "/phenotypic-features/123abc",
-        "/phenotypic-features/999",
+        {
+          feature: {
+            "@id": "/phenotypic-features/abc123/",
+            term_name: "a special feature",
+            term_id: "HELLO:12345",
+          },
+        },
       ],
-    };
-
-    const accessoryData = {
-      "/phenotypic-features/abc123/": {
-        feature: {
-          term_name: "a special feature",
-          term_id: "HELLO:12345",
-        },
-      },
-      "/phenotypic-features/123abc": {
-        feature: {
-          term_name: "another quant feature",
-          term_id: "BYE:4567",
-        },
-        quantity: 20,
-        quantity_units: "kilogram",
-      },
-      "/phenotypic-features/999": {
-        feature: {
-          term_name: "one thing",
-          term_id: "ONE:111",
-        },
-        quantity: 1,
-        quantity_units: "gram",
-      },
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <RodentDonor item={item} accessoryData={accessoryData} />
+        <RodentDonor item={item} />
       </SessionContext.Provider>
     );
 
@@ -1080,24 +955,9 @@ describe("Test the RodentDonor component", () => {
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("ENCODE");
     expect(meta).toHaveTextContent("a special feature");
-    expect(meta).toHaveTextContent("20 kilograms");
-    expect(meta).toHaveTextContent("1 gram");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
-
-    const paths = RodentDonor.getAccessoryDataPaths([item]);
-    expect(paths).toEqual([
-      {
-        type: "PhenotypicFeature",
-        paths: [
-          "/phenotypic-features/abc123/",
-          "/phenotypic-features/123abc",
-          "/phenotypic-features/999",
-        ],
-        fields: ["quantity", "quantity_units", "feature"],
-      },
-    ]);
   });
 
   it("rodent donor without collection", () => {
