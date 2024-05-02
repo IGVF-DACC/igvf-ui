@@ -2,12 +2,18 @@
 import { PropTypes } from "prop-types";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
-import { DataArea, DataPanel } from "../../components/data-area";
+import {
+  DataArea,
+  DataItemLabel,
+  DataItemValue,
+  DataPanel,
+} from "../../components/data-area";
 import { OntologyTermDataItems } from "../../components/common-data-items";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
@@ -25,6 +31,16 @@ export default function PlatformOntologyTerm({ platformOntologyTerm, isJson }) {
           <DataPanel>
             <DataArea>
               <OntologyTermDataItems item={platformOntologyTerm} />
+              {platformOntologyTerm.sequencing_kits?.length > 0 && (
+                <>
+                  <DataItemLabel>Sequencing Kits</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {platformOntologyTerm.sequencing_kits}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
         </JsonDisplay>
