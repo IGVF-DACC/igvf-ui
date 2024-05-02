@@ -19,7 +19,7 @@ const auditKeyColor = [
   {
     audit_level: "NOT_COMPLIANT",
     audit_description:
-      "Not fulfilling a compliance standard like attached documents",
+      "Not fulfilling a compliance standard like attached documents. This will not be released without special exception.",
   },
   {
     audit_level: "WARNING",

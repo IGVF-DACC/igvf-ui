@@ -12,7 +12,7 @@ const auditColumns = [
       const auditLevel = source.audit_level;
       const mapping = auditMap[auditLevel];
       return (
-        <div className="flex items-center justify-start gap-1">
+        <div className="flex items-center justify-center gap-1">
           <mapping.Icon className={`h-4 w-4 ${mapping.color}`} />
           <div>{mapping.humanReadable}</div>
         </div>
@@ -22,7 +22,9 @@ const auditColumns = [
   {
     id: "audit_category",
     title: "Category",
-    display: ({ source }) => source.audit_category,
+    display: ({ source }) => {
+      return <div className="flex items-center">{source.audit_category}</div>;
+    },
     isSortable: false,
   },
   {
