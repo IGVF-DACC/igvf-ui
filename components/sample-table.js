@@ -91,19 +91,20 @@ const sampleColumns = [
   {
     id: "donors",
     title: "Donors",
-    display: ({ source }) => {
-      console.log("SOURCE DONORS", JSON.stringify(source, null, 2));
-      if (source.donors) {
-        return (
-          <SeparatedList isCollapsible>
-            {source.donors.map((donor) => (
-              <Link href={donor["@id"]} key={donor["@id"]}>
-                {donor.accession}
-              </Link>
-            ))}
-          </SeparatedList>
-        );
-      }
+    display: () => {
+      // console.log("SOURCE DONORS", JSON.stringify(source, null, 2));
+      // if (source.donors) {
+      //   return (
+      //     <SeparatedList isCollapsible>
+      //       {source.donors.map((donor) => (
+      //         <Link href={donor["@id"]} key={donor["@id"]}>
+      //           {donor.accession}
+      //         </Link>
+      //       ))}
+      //     </SeparatedList>
+      //   );
+      // }
+      return null;
     },
     isSortable: false,
   },
