@@ -57,7 +57,7 @@ const sampleColumns = [
     id: "construct_library_sets",
     title: "Construct Library Set",
     display: ({ source, meta }) => {
-      console.log("SOURCE CLS", source);
+      console.log("SOURCE CLS", JSON.stringify(source, null, 2));
       if (
         source.construct_library_sets &&
         source.construct_library_sets.length > 0
@@ -92,7 +92,7 @@ const sampleColumns = [
     id: "donors",
     title: "Donors",
     display: ({ source }) => {
-      console.log("SOURCE DONORS", source);
+      console.log("SOURCE DONORS", JSON.stringify(source, null, 2));
       if (source.donors) {
         return (
           <SeparatedList isCollapsible>
