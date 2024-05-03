@@ -1,11 +1,11 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
-import Link from "next/link";
+// import Link from "next/link";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
-import SeparatedList from "./separated-list";
+// import SeparatedList from "./separated-list";
 import SortableGrid from "./sortable-grid";
 
 /**
@@ -56,35 +56,35 @@ const sampleColumns = [
   {
     id: "construct_library_sets",
     title: "Construct Library Set",
-    display: ({ source, meta }) => {
-      console.log("SOURCE CLS", JSON.stringify(source, null, 2));
-      if (
-        source.construct_library_sets &&
-        source.construct_library_sets.length > 0
-      ) {
-        return (
-          <SeparatedList isCollapsible>
-            {source.construct_library_sets.map((id) => {
-              if (meta.constructLibrarySetAccessions) {
-                const accession = meta.constructLibrarySetAccessions.find(
-                  (lib) => lib["@id"] === id
-                )?.accession;
+    display: () => {
+      // console.log("SOURCE CLS", JSON.stringify(source, null, 2));
+      // if (
+      //   source.construct_library_sets &&
+      //   source.construct_library_sets.length > 0
+      // ) {
+      //   return (
+      //     <SeparatedList isCollapsible>
+      //       {source.construct_library_sets.map((id) => {
+      //         if (meta.constructLibrarySetAccessions) {
+      //           const accession = meta.constructLibrarySetAccessions.find(
+      //             (lib) => lib["@id"] === id
+      //           )?.accession;
 
-                return accession ? (
-                  <Link href={id} key={id}>
-                    {accession}
-                  </Link>
-                ) : null;
-              }
-              return (
-                <Link href={id} key={id}>
-                  {id}
-                </Link>
-              );
-            })}
-          </SeparatedList>
-        );
-      }
+      //           return accession ? (
+      //             <Link href={id} key={id}>
+      //               {accession}
+      //             </Link>
+      //           ) : null;
+      //         }
+      //         return (
+      //           <Link href={id} key={id}>
+      //             {id}
+      //           </Link>
+      //         );
+      //       })}
+      //     </SeparatedList>
+      //   );
+      // }
       return null;
     },
   },
