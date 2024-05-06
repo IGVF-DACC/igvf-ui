@@ -28,6 +28,12 @@ export default function File({ item: file, accessoryData = null }) {
   ].filter(Boolean);
   const fileSet = accessoryData?.[file.file_set];
 
+  // Get the seqspec_of objects from the accessory data.
+  let seqspecOfs = file.seqspec_of
+    ? file.seqspec_of.map((seqspecOfFile) => accessoryData?.[seqspecOfFile])
+    : [];
+  seqspecOfs = seqspecOfs.filter(Boolean);
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -48,7 +54,7 @@ export default function File({ item: file, accessoryData = null }) {
           )}
         </SearchListItemMeta>
         <SearchListItemQuality item={file} />
-        {(fileSet || file.seqspec_of?.length > 0) && (
+        {(fileSet || seqspecOfs.length > 0) && (
           <SearchListItemSupplement>
             {fileSet && (
               <SearchListItemSupplementSection>
@@ -60,18 +66,20 @@ export default function File({ item: file, accessoryData = null }) {
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {file.seqspec_of?.length > 0 && (
+            {seqspecOfs.length > 0 && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Seqspec Of
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   <SeparatedList>
-                    {file.seqspec_of.map((seqspecOfFile) => (
-                      <Link href={seqspecOfFile} key={seqspecOfFile}>
-                        {accessoryData[seqspecOfFile].accession}
-                      </Link>
-                    ))}
+                    {seqspecOfs.map((seqspecOf) => {
+                      return (
+                        <Link href={seqspecOf["@id"]} key={seqspecOf["@id"]}>
+                          {seqspecOf.accession}
+                        </Link>
+                      );
+                    })}
                   </SeparatedList>
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
