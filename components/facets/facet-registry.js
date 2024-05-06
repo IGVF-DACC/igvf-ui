@@ -1,5 +1,6 @@
 // components/facets/custom-facets
 import AuditTitle from "./custom-facets/audit-title";
+import InternalActionAuditTerms from "./custom-facets/audit-internal-action-terms";
 import StandardTagLabel from "./custom-facets/standard-tag-label";
 import StandardTermLabel from "./custom-facets/standard-term-label";
 import StandardTerms from "./custom-facets/standard-terms";
@@ -31,6 +32,7 @@ const facetRegistry = {
 
   // Custom terms, basically controlling the appearance of the entire facet sans title.
   terms: {
+    "audit.INTERNAL_ACTION.category": InternalActionAuditTerms,
     type: TypeTerm,
     standard: StandardTerms,
   },
