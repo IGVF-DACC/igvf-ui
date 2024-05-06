@@ -2,8 +2,6 @@
 import PropTypes from "prop-types";
 import Link from "next/link";
 // components/search/list-renderer
-import AlternateAccessions from "../../alternate-accessions";
-import SeparatedList from "../../separated-list";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -17,6 +15,9 @@ import {
   SearchListItemSupplementLabel,
   SearchListItemSupplementContent,
 } from "./search-list-item";
+// components
+import AlternateAccessions from "../../alternate-accessions";
+import SeparatedList from "../../separated-list";
 
 export default function File({ item: file, accessoryData = null }) {
   const titleElements = [
@@ -72,7 +73,7 @@ export default function File({ item: file, accessoryData = null }) {
                   Seqspec Of
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  <SeparatedList>
+                  <SeparatedList isCollapsible>
                     {seqspecOfs.map((seqspecOf) => {
                       return (
                         <Link href={seqspecOf["@id"]} key={seqspecOf["@id"]}>

@@ -15,7 +15,6 @@ import EnsemblLink from "../../components/ensemble-link";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import Status from "../../components/status";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
@@ -33,10 +32,6 @@ export default function Gene({ gene, isJson }) {
         <JsonDisplay item={gene} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Status</DataItemLabel>
-              <DataItemValue>
-                <Status status={gene.status} />
-              </DataItemValue>
               <DataItemLabel>ENSEMBL GeneID</DataItemLabel>
               <DataItemValue>
                 <EnsemblLink geneid={gene.geneid} taxa={gene.taxa} />

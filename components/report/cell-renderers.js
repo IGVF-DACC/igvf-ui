@@ -102,6 +102,7 @@ Aliases.propTypes = {
 function SampleTerms({ id, source }) {
   const sampleTerms = source[id];
   if (sampleTerms) {
+    // Non-collapsible list of sample terms because only one term can exist in this array.
     return (
       <SeparatedList>
         {sampleTerms.map((sampleTerm) => {
@@ -141,56 +142,6 @@ Boolean.propTypes = {
   id: PropTypes.string.isRequired,
   // Object displayed in a row
   source: PropTypes.object.isRequired,
-};
-
-/**
- * Display the `external_resources` property of a donor object. This takes care of those both with
- * and without a `resource_url` property, displaying a link to an external site if the external
- * resource includes `resource_url`.
- */
-function ExternalResources({ source }) {
-  if (source.external_resources?.length > 0) {
-    return (
-      <SeparatedList testid="cell-type-external-resources">
-        {source.external_resources.map((resource, index) => (
-          <div key={index} className="my-2 first:mt-0 last:mb-0">
-            {resource.resource_url ? (
-              <>
-                <a
-                  className="block"
-                  href={resource.resource_url}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {resource.resource_identifier}
-                </a>
-                <div>{resource.resource_name}</div>
-              </>
-            ) : (
-              <>
-                <div>{resource.resource_identifier}</div>
-                <div>{resource.resource_name}</div>
-              </>
-            )}
-          </div>
-        ))}
-      </SeparatedList>
-    );
-  }
-  return null;
-}
-
-ExternalResources.propTypes = {
-  // Object displayed in a row
-  source: PropTypes.shape({
-    // @id of the object displayed in a row
-    external_resources: PropTypes.arrayOf(
-      PropTypes.shape({
-        resource_url: PropTypes.string,
-        resource_identifier: PropTypes.string,
-      })
-    ),
-  }).isRequired,
 };
 
 /**
@@ -552,7 +503,6 @@ export const propertyRenderers = {
   "@id": AtId,
   aliases: Aliases,
   attachment: Attachment,
-  external_resources: ExternalResources,
   href: Href,
   "attachment.href": AttachmentHref,
   "files.href": FilesHref,

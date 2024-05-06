@@ -67,13 +67,14 @@ describe("ButtonLink component", () => {
 
   it("renders a secondary button with the correct classes", () => {
     const { container } = render(
-      <ButtonLink href="#" type="secondary">
+      <ButtonLink href="#" type="secondary" isInline>
         Secondary
       </ButtonLink>
     );
     expect(container.firstChild).toHaveClass("bg-button-secondary");
     expect(container.firstChild).toHaveClass("border-button-secondary");
     expect(container.firstChild).toHaveClass("text-button-secondary");
+    expect(container.firstChild).toHaveClass("inline-flex");
   });
 
   it("renders a warning button with the correct classes", () => {

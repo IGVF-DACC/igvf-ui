@@ -19,6 +19,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import ReportLink from "../../components/report-link";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -120,13 +121,16 @@ export default function Workflow({
                 <>
                   <DataItemLabel>Analysis Steps</DataItemLabel>
                   <DataItemValue>
-                    <SeparatedList>
+                    <SeparatedList isCollapsible>
                       {analysisSteps.map((astep) => (
                         <Link href={astep["@id"]} key={astep["@id"]}>
                           {astep.name}
                         </Link>
                       ))}
                     </SeparatedList>
+                    <ReportLink
+                      href={`/multireport/?type=AnalysisStep&workflow.@id=${workflow["@id"]}`}
+                    />
                   </DataItemValue>
                 </>
               )}

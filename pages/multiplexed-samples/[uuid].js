@@ -118,7 +118,7 @@ export default function MultiplexedSample({
 MultiplexedSample.propTypes = {
   // MultiplexedSample-cell sample to display
   multiplexedSample: PropTypes.object.isRequired,
-  // Construct libraries that link to this MutliplexedSample
+  // Construct libraries that link to this MultiplexedSample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,

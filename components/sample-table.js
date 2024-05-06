@@ -57,23 +57,23 @@ const sampleColumns = [
     id: "construct_library_sets",
     title: "Construct Library Set",
     display: ({ source, meta }) => {
-      if (
-        source.construct_library_sets &&
-        source.construct_library_sets.length > 0
-      ) {
+      if (source.construct_library_sets?.length > 0) {
         return (
-          <SeparatedList>
+          <SeparatedList isCollapsible>
             {source.construct_library_sets.map((id) => {
               if (meta.constructLibrarySetAccessions) {
-                const accession = meta.constructLibrarySetAccessions.find(
-                  (lib) => lib["@id"] === id
-                )?.accession;
+                const matchingConstructLibrarySet =
+                  meta.constructLibrarySetAccessions.find(
+                    (lib) => lib["@id"] === id
+                  );
 
-                return accession ? (
+                return matchingConstructLibrarySet ? (
                   <Link href={id} key={id}>
-                    {accession}
+                    {matchingConstructLibrarySet.accession}
                   </Link>
-                ) : null;
+                ) : (
+                  <>{id}</>
+                );
               }
               return (
                 <Link href={id} key={id}>
@@ -93,7 +93,7 @@ const sampleColumns = [
     display: ({ source }) => {
       if (source.donors) {
         return (
-          <SeparatedList>
+          <SeparatedList isCollapsible>
             {source.donors.map((donor) => (
               <Link href={donor["@id"]} key={donor["@id"]}>
                 {donor.accession}
@@ -102,6 +102,7 @@ const sampleColumns = [
           </SeparatedList>
         );
       }
+      return null;
     },
     isSortable: false,
   },

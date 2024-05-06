@@ -21,6 +21,7 @@ import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import ReportLink from "../../components/report-link";
 import SeparatedList from "../../components/separated-list";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
@@ -282,7 +283,7 @@ export default function ConstructLibrarySet({
                   <>
                     <DataItemLabel>Applied to Samples</DataItemLabel>
                     <DataItemValue>
-                      <SeparatedList>
+                      <SeparatedList isCollapsible>
                         {constructLibrarySet.applied_to_samples.map(
                           (sample) => (
                             <Link href={sample["@id"]} key={sample["@id"]}>
@@ -291,6 +292,9 @@ export default function ConstructLibrarySet({
                           )
                         )}
                       </SeparatedList>
+                      <ReportLink
+                        href={`/multireport/?type=Sample&construct_library_sets=${constructLibrarySet["@id"]}`}
+                      />
                     </DataItemValue>
                   </>
                 )}

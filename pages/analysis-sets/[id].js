@@ -26,6 +26,7 @@ import LinkedIdAndStatus from "../../components/linked-id-and-status";
 import LinkedIdAndStatusStack from "../../components/linked-id-and-status-stack";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import ReportLink from "../../components/report-link";
 import SeparatedList from "../../components/separated-list";
 import SortableGrid from "../../components/sortable-grid";
 // lib
@@ -347,7 +348,7 @@ export default function AnalysisSet({
                 <>
                   <DataItemLabel>Donors</DataItemLabel>
                   <DataItemValue>
-                    <SeparatedList>
+                    <SeparatedList isCollapsible>
                       {donors.map((donor) => (
                         <Link href={donor["@id"]} key={donor.uuid}>
                           {donor.accession}
@@ -368,6 +369,9 @@ export default function AnalysisSet({
                         </Link>
                       ))}
                     </SeparatedList>
+                    <ReportLink
+                      href={`/multireport/?type=Sample&file_sets.@id=${analysisSet["@id"]}`}
+                    />
                   </DataItemValue>
                 </>
               )}

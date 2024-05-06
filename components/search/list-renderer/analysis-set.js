@@ -1,9 +1,7 @@
 // node_modules
-import PropTypes from "prop-types";
 import Link from "next/link";
+import PropTypes from "prop-types";
 // components/search/list-renderer
-import AlternateAccessions from "../../alternate-accessions";
-import SeparatedList from "../../separated-list";
 import {
   SearchListItemContent,
   SearchListItemMain,
@@ -17,6 +15,9 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import AlternateAccessions from "../../alternate-accessions";
+import SeparatedList from "../../separated-list";
 
 export default function AnalysisSet({ item: analysisSet }) {
   const summary = analysisSet.summary;
@@ -45,9 +46,9 @@ export default function AnalysisSet({ item: analysisSet }) {
                 Input File Sets
               </SearchListItemSupplementLabel>
               <SearchListItemSupplementContent>
-                <SeparatedList>
+                <SeparatedList isCollapsible>
                   {analysisSet.input_file_sets.map((fileSet) => (
-                    <Link href={fileSet["@id"]} key={fileSet["@id"]}>
+                    <Link key={fileSet["@id"]} href={fileSet["@id"]}>
                       {fileSet.accession}
                     </Link>
                   ))}
