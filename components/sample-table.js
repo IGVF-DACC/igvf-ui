@@ -1,11 +1,13 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
 import Link from "next/link";
+import PropTypes from "prop-types";
+import { useContext } from "react";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SeparatedList from "./separated-list";
+import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
 
 /**
@@ -24,7 +26,12 @@ const sampleColumns = [
   {
     id: "type",
     title: "Type",
-    display: ({ source }) => source["@type"][0],
+    display: ({ source, meta }) => {
+      const title = meta.collectionTitles
+        ? meta.collectionTitles[source["@type"][0]]
+        : "";
+      return title || source["@type"][0];
+    },
     sorter: (item) => item["@type"][0],
   },
   {
@@ -61,11 +68,9 @@ const sampleColumns = [
         return (
           <SeparatedList isCollapsible>
             {source.construct_library_sets.map((id) => {
-              if (meta.constructLibrarySetAccessions) {
+              if (meta.constructLibrarySets) {
                 const matchingConstructLibrarySet =
-                  meta.constructLibrarySetAccessions.find(
-                    (lib) => lib["@id"] === id
-                  );
+                  meta.constructLibrarySets.find((lib) => lib["@id"] === id);
 
                 return matchingConstructLibrarySet ? (
                   <Link href={id} key={id}>
@@ -114,9 +119,11 @@ const sampleColumns = [
 export default function SampleTable({
   samples,
   reportLink = null,
-  constructLibrarySetAccessions = null,
+  constructLibrarySets = null,
   title = "Samples",
 }) {
+  const { collectionTitles } = useContext(SessionContext);
+
   return (
     <>
       <DataAreaTitle>
@@ -132,7 +139,7 @@ export default function SampleTable({
         data={samples}
         columns={sampleColumns}
         keyProp="@id"
-        meta={{ constructLibrarySetAccessions }}
+        meta={{ constructLibrarySets, collectionTitles }}
         pager={{}}
       />
     </>
@@ -145,7 +152,7 @@ SampleTable.propTypes = {
   // Link to the report page containing the same samples as this table
   reportLink: PropTypes.string,
   // The construct libraries of the parent object
-  constructLibrarySetAccessions: PropTypes.arrayOf(PropTypes.object),
+  constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
   // Title of the table if not "Samples"
   title: PropTypes.string,
 };
