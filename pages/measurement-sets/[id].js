@@ -68,6 +68,70 @@ function composeRelatedDatasetReportLink(measurementSet) {
   return "";
 }
 
+/**
+ * Display the assay details for the measurement set.
+ */
+function AssayDetails({ measurementSet }) {
+  if (
+    measurementSet.library_construction_platform ||
+    measurementSet.sequencing_library_types?.length > 0 ||
+    measurementSet.protocols?.length > 0
+  ) {
+    return (
+      <>
+        <DataAreaTitle>Assay Details</DataAreaTitle>
+        <DataPanel>
+          <DataArea>
+            {measurementSet.library_construction_platform && (
+              <>
+                <DataItemLabel>Library Construction Platform</DataItemLabel>
+                <DataItemValue>
+                  <Link
+                    href={measurementSet.library_construction_platform["@id"]}
+                  >
+                    {measurementSet.library_construction_platform.term_name}
+                  </Link>
+                </DataItemValue>
+              </>
+            )}
+            {measurementSet.sequencing_library_types?.length > 0 && (
+              <>
+                <DataItemLabel>Sequencing Library Types</DataItemLabel>
+                <DataItemValue>
+                  {measurementSet.sequencing_library_types.join(", ")}
+                </DataItemValue>
+              </>
+            )}
+            {measurementSet.protocols?.length > 0 && (
+              <>
+                <DataItemLabel>Protocols</DataItemLabel>
+                <DataItemList isCollapsible isUrlList>
+                  {measurementSet.protocols.map((protocol) => (
+                    <a
+                      href={protocol}
+                      key={protocol}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {protocol}
+                    </a>
+                  ))}
+                </DataItemList>
+              </>
+            )}
+          </DataArea>
+        </DataPanel>
+      </>
+    );
+  }
+  return null;
+}
+
+AssayDetails.propTypes = {
+  // Measurement set to display
+  measurementSet: PropTypes.object.isRequired,
+};
+
 export default function MeasurementSet({
   measurementSet,
   assayTerm = null,
@@ -79,7 +143,6 @@ export default function MeasurementSet({
   auxiliarySets,
   seqspecFiles,
   sequencingPlatforms,
-  libraryConstructionPlatform = null,
   attribution = null,
   isJson,
 }) {
@@ -199,42 +262,7 @@ export default function MeasurementSet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
-          {(libraryConstructionPlatform || measurementSet.protocols) && (
-            <>
-              <DataAreaTitle>Assay Details</DataAreaTitle>
-              <DataPanel>
-                <DataArea>
-                  {libraryConstructionPlatform && (
-                    <>
-                      <DataItemLabel>
-                        Library Construction Platform
-                      </DataItemLabel>
-                      <DataItemValue>
-                        <Link href={libraryConstructionPlatform["@id"]}>
-                          {libraryConstructionPlatform.term_name}
-                        </Link>
-                      </DataItemValue>
-                    </>
-                  )}
-                  {measurementSet.protocols.length > 0 && (
-                    <>
-                      <DataItemLabel>
-                        Protocol
-                        {measurementSet.protocols.length === 1 ? "" : "s"}
-                      </DataItemLabel>
-                      <DataItemList isCollapsible isUrlList>
-                        {measurementSet.protocols.map((protocol) => (
-                          <Link href={protocol} key={protocol}>
-                            {protocol}
-                          </Link>
-                        ))}
-                      </DataItemList>
-                    </>
-                  )}
-                </DataArea>
-              </DataPanel>
-            </>
-          )}
+          <AssayDetails measurementSet={measurementSet} />
           {filesWithReadType.length > 0 && (
             <SequencingFileTable
               files={filesWithReadType}
@@ -321,8 +349,6 @@ MeasurementSet.propTypes = {
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Library construction platform object
-  libraryConstructionPlatform: PropTypes.object,
   // Attribution for this measurement set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -351,12 +377,6 @@ export async function getServerSideProps({ params, req, query }) {
     if (measurementSet.files.length > 0) {
       const filePaths = measurementSet.files.map((file) => file["@id"]) || [];
       files = await requestFiles(filePaths, request);
-    }
-    let libraryConstructionPlatform = null;
-    if (measurementSet.library_construction_platform) {
-      libraryConstructionPlatform = (
-        await request.getObject(measurementSet.library_construction_platform)
-      ).optional();
     }
     let controlFileSets = [];
     if (measurementSet.control_file_sets?.length > 0) {
@@ -420,7 +440,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         donors,
         files,
-        libraryConstructionPlatform,
         relatedMultiomeSets,
         auxiliarySets,
         seqspecFiles,
