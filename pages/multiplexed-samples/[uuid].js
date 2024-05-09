@@ -84,9 +84,7 @@ export default function MultiplexedSample({
             <SampleTable
               samples={multiplexedSample.multiplexed_samples}
               reportLink={reportLink}
-              constructLibrarySetAccessions={
-                multiplexedSample.construct_library_sets
-              }
+              constructLibrarySets={constructLibrarySets}
               title="Multiplexed Samples"
             />
           )}
@@ -143,12 +141,18 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/multiplexed-samples/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(multiplexedSample)) {
+    // Request the construct library sets from all the embedded multiplexed samples instead of the
+    // `construct_library_sets` property of the multiplexed sample itself because the latter is
+    // not always fully populated.
     let constructLibrarySets = [];
-    if (multiplexedSample.construct_library_sets.length > 0) {
-      const constructLibrarySetPaths =
-        multiplexedSample.construct_library_sets.map(
-          (constructLibrarySet) => constructLibrarySet["@id"]
-        );
+    if (multiplexedSample.multiplexed_samples?.length > 0) {
+      let constructLibrarySetPaths =
+        multiplexedSample.multiplexed_samples.reduce((acc, sample) => {
+          return sample.construct_library_sets?.length > 0
+            ? acc.concat(sample.construct_library_sets)
+            : acc;
+        }, []);
+      constructLibrarySetPaths = [...new Set(constructLibrarySetPaths)];
       constructLibrarySets = await requestFileSets(
         constructLibrarySetPaths,
         request
