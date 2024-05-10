@@ -32,7 +32,7 @@ const auditKeyColor = [
   },
 ];
 
-export default function AuditDoc({ auditDoc }) {
+export default function AuditDoc({ auditDoc, schemas }) {
   const result = _.flatMap(auditDoc, (auditGroup, key) => {
     return auditGroup.map((audit) => {
       const newKeys = key.split(".")[2];
@@ -40,6 +40,11 @@ export default function AuditDoc({ auditDoc }) {
     });
   });
   const auditsGroupedByCollection = _.groupBy(result, "newKeys");
+  const allSchemaNames = flattenHierarchy(schemas._hierarchy.Item);
+  // const visibleSchemaNames = allSchemaNames.filter((schemaName) =>
+  //   isDisplayableType(schemaName, schemas)
+  // );
+  // console.log(allSchemaNames);
   return (
     <>
       <PagePreamble />
@@ -59,6 +64,7 @@ export default function AuditDoc({ auditDoc }) {
       <AuditKeyTable data={auditKeyColor} />
       {Object.keys(auditsGroupedByCollection).map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];
+        console.log(typeAudits);
         if (itemType.length > 0) {
           return (
             <Fragment key={itemType}>
@@ -80,18 +86,47 @@ AuditDoc.propTypes = {
   auditDoc: PropTypes.object.isRequired,
 };
 
+export function flattenHierarchy(hierarchy) {
+  const schemaNames = Object.keys(hierarchy).reduce((acc, schemaName) => {
+    if (Object.keys(hierarchy[schemaName]).length > 0) {
+      // The schema named schemaName has child schemas.
+      const childSchemaNames = flattenHierarchy(hierarchy[schemaName]);
+      return acc.concat(schemaName, childSchemaNames);
+    }
+    // The schema named schemaName does not have child schemas
+    return acc.concat(schemaName);
+  }, []);
+  return schemaNames;
+}
+
+/**
+ * Returns true if the given object type is displayable in the UI. This also indicates that you
+ * can add and edit objects of this type.
+ * @param {string} objectType Object @type to check
+ * @param {object} schemas List of schemas to display in the list; directly from /profiles endpoint
+ */
+function isDisplayableType(objectType, schemas) {
+  //console.log("schema names", schemas[objectType]);
+  return schemas[objectType]?.identifyingProperties?.length > 0;
+}
+
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const auditDoc = (
     await request.getObject("/static/doc/auditdoc.json")
   ).union();
-  if (FetchRequest.isResponseSuccess(auditDoc)) {
+  const schemas = (await request.getObject("/profiles")).union();
+  if (
+    FetchRequest.isResponseSuccess(auditDoc) &&
+    FetchRequest.isResponseSuccess(schemas)
+  ) {
     return {
       props: {
         auditDoc,
+        schemas,
         pageContext: { title: "Audit Documentation" },
       },
     };
   }
-  return errorObjectToProps(auditDoc);
+  return errorObjectToProps(auditDoc, schemas);
 }
