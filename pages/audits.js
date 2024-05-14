@@ -1,4 +1,5 @@
 // node_modules
+import { data } from "autoprefixer";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
@@ -39,12 +40,23 @@ export default function AuditDoc({ auditDoc, schemas }) {
       return { ...audit, newKeys };
     });
   });
+  // console.log(result);
   const auditsGroupedByCollection = _.groupBy(result, "newKeys");
-  const allSchemaNames = flattenHierarchy(schemas._hierarchy.Item);
-  // const visibleSchemaNames = allSchemaNames.filter((schemaName) =>
-  //   isDisplayableType(schemaName, schemas)
-  // );
-  // console.log(allSchemaNames);
+  console.log(auditsGroupedByCollection);
+  const allSchemaNames = flattenHierarchy(schemas._hierarchy.Item, schemas);
+  //maps all schema names to collectionNames
+  console.log(allSchemaNames);
+  const allCollectionNames = allSchemaNames.map((itemType) => {
+    // console.log(itemType, schemas[itemType]);
+    // const re = /\/profiles\/(.*)\.json/;
+    // const aMatchName = schemas[itemType].$id.match(re);
+    // return aMatchName[1] || "";
+  });
+  // console.log(allCollectionNames);
+
+  // const sorted = _.sortBy(result, (obj) => allSchemaNames.indexOf(obj));
+  // console.log(sorted);
+  // console.log(visibleSchemaNames);
   return (
     <>
       <PagePreamble />
@@ -62,18 +74,22 @@ export default function AuditDoc({ auditDoc, schemas }) {
         {"Severity Level and Description Key"}
       </div>
       <AuditKeyTable data={auditKeyColor} />
-      {Object.keys(auditsGroupedByCollection).map((itemType) => {
+      {allSchemaNames.map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];
         console.log(typeAudits);
-        if (itemType.length > 0) {
-          return (
-            <Fragment key={itemType}>
-              <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
-                {snakeCaseToHuman(itemType)}
-              </h2>
-              <AuditTable data={typeAudits} key={itemType} />
-            </Fragment>
-          );
+        if (itemType?.length > 0) {
+          // const sorted = _.sortBy(typeAudits, (obj) =>
+          //   allSchemaNames.indexOf(obj)
+          // );
+          // console.log(sorted);
+          // return (
+          //   <Fragment key={itemType}>
+          //     <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
+          //       {snakeCaseToHuman(itemType)}
+          //     </h2>
+          //     <AuditTable data={typeAudits} key={itemType} />
+          //   </Fragment>
+          // );
         }
         return null;
       })}
@@ -86,11 +102,16 @@ AuditDoc.propTypes = {
   auditDoc: PropTypes.object.isRequired,
 };
 
-export function flattenHierarchy(hierarchy) {
+//new function that maps 1 type name to 1 collection Names
+
+export function flattenHierarchy(hierarchy, schemas) {
   const schemaNames = Object.keys(hierarchy).reduce((acc, schemaName) => {
+    if (!isDisplayableType(schemaName, schemas, hierarchy[schemaName])) {
+      return acc;
+    }
     if (Object.keys(hierarchy[schemaName]).length > 0) {
       // The schema named schemaName has child schemas.
-      const childSchemaNames = flattenHierarchy(hierarchy[schemaName]);
+      const childSchemaNames = flattenHierarchy(hierarchy[schemaName], schemas);
       return acc.concat(schemaName, childSchemaNames);
     }
     // The schema named schemaName does not have child schemas
@@ -105,9 +126,12 @@ export function flattenHierarchy(hierarchy) {
  * @param {string} objectType Object @type to check
  * @param {object} schemas List of schemas to display in the list; directly from /profiles endpoint
  */
-function isDisplayableType(objectType, schemas) {
+function isDisplayableType(objectType, schemas, tree) {
   //console.log("schema names", schemas[objectType]);
-  return schemas[objectType]?.identifyingProperties?.length > 0;
+  return (
+    schemas[objectType]?.identifyingProperties?.length > 0 ||
+    Object.keys(tree).length > 0
+  );
 }
 
 export async function getServerSideProps({ req }) {
