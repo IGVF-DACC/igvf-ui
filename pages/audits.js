@@ -2,11 +2,12 @@
 import { data } from "autoprefixer";
 import _ from "lodash";
 import PropTypes from "prop-types";
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 // component
 import AuditKeyTable from "../components/audit-key-table";
 import AuditTable from "../components/audit-table";
 import PagePreamble from "../components/page-preamble";
+import SessionContext from "../components/session-context";
 // lib
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
@@ -34,35 +35,19 @@ const auditKeyColor = [
 ];
 
 export default function AuditDoc({ auditDoc, schemas }) {
+  const { collectionTitles } = useContext(SessionContext);
   const result = _.flatMap(auditDoc, (auditGroup, key) => {
     return auditGroup.map((audit) => {
       const newKeys = snakeCaseToPascalCase(key.split(".")[2]);
-      console.log("newKeys", newKeys);
+      //console.log("newKeys", newKeys);
       return { ...audit, newKeys };
     });
   });
   console.log("result", result);
-  // const newResult = result.map(({ newKeys }) => snakeCaseToPascalCase(newKeys));
-  // const newResult = result.map((a) => a.newKeys);
-  //const newResult = result.map(({newKeys}) => ({//
-  // console.log("newResult", newResult);
   const auditsGroupedByCollection = _.groupBy(result, "newKeys");
   console.log("auditsGroupedByCollection", auditsGroupedByCollection);
   const allSchemaNames = flattenHierarchy(schemas._hierarchy.Item, schemas);
-  //maps all schema names to collectionNames
-  // const newSchemaNames = snakeCaseToPascalCase(allSchemaNames);
   console.log("allSchemaNames", allSchemaNames);
-  const allCollectionNames = allSchemaNames.map((itemType) => {
-    // console.log(itemType, schemas[itemType]);
-    // const re = /\/profiles\/(.*)\.json/;
-    // const aMatchName = schemas[itemType].$id.match(re);
-    // return aMatchName[1] || "";
-  });
-  // console.log(allCollectionNames);
-
-  // const sorted = _.sortBy(result, (obj) => allSchemaNames.indexOf(obj));
-  // console.log(sorted);
-  // console.log(visibleSchemaNames);
   return (
     <>
       <PagePreamble />
@@ -82,16 +67,17 @@ export default function AuditDoc({ auditDoc, schemas }) {
       <AuditKeyTable data={auditKeyColor} />
       {allSchemaNames.map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];
-        console.log("typeAudits", typeAudits);
-        if (itemType?.length > 0) {
-          // return (
-          //   <Fragment key={itemType}>
-          //     <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
-          //       {snakeCaseToHuman(itemType)}
-          //     </h2>
-          //     <AuditTable data={typeAudits} key={itemType} />
-          //   </Fragment>
-          // );
+        console.log("typeAudits-2", itemType, typeAudits);
+        if (typeAudits) {
+          const title = collectionTitles?.[itemType] || itemType;
+          return (
+            <Fragment key={itemType}>
+              <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
+                {title}
+              </h2>
+              <AuditTable data={typeAudits} key={itemType} />
+            </Fragment>
+          );
         }
         return null;
       })}
@@ -106,7 +92,7 @@ AuditDoc.propTypes = {
 
 //new function that maps 1 type name to 1 collection Names
 
-export function flattenHierarchy(hierarchy, schemas) {
+function flattenHierarchy(hierarchy, schemas) {
   const schemaNames = Object.keys(hierarchy).reduce((acc, schemaName) => {
     if (!isDisplayableType(schemaName, schemas, hierarchy[schemaName])) {
       return acc;

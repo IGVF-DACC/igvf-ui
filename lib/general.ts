@@ -212,11 +212,24 @@ export function snakeCaseToHuman(text: string): string {
  * @param snakeCaseText Snake-case string to convert to Pascal case
  * @returns String converted to Pascal case
  */
-export function snakeCaseToPascalCase(snakeCaseText: string): string {
+export function snakeCaseToPascalCase2(snakeCaseText: string): string {
   return snakeCaseText
     .split("_")
     .map((element) => `${element.charAt(0).toUpperCase()}${element.slice(1)}`)
     .join("");
+}
+
+/**
+ * Convert a snake-case string to Pascal case.
+ * @param snakeCaseText Snake-case string to convert to Pascal case
+ * @returns String converted to Pascal case
+ */
+export function snakeCaseToPascalCase(snakeCaseText: string): string {
+  const snakeCaseElements = snakeCaseText.split("_");
+  const pascalCaseElements = snakeCaseElements.map(
+    (element) => `${element.charAt(0).toUpperCase()}${element.slice(1)}`
+  );
+  return pascalCaseElements.join("");
 }
 
 /**
