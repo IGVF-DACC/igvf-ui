@@ -10,7 +10,7 @@ import PagePreamble from "../components/page-preamble";
 // lib
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
-import { snakeCaseToHuman } from "../lib/general";
+import { snakeCaseToHuman, snakeCaseToPascalCase } from "../lib/general";
 
 const auditKeyColor = [
   {
@@ -36,16 +36,22 @@ const auditKeyColor = [
 export default function AuditDoc({ auditDoc, schemas }) {
   const result = _.flatMap(auditDoc, (auditGroup, key) => {
     return auditGroup.map((audit) => {
-      const newKeys = key.split(".")[2];
+      const newKeys = snakeCaseToPascalCase(key.split(".")[2]);
+      console.log("newKeys", newKeys);
       return { ...audit, newKeys };
     });
   });
-  // console.log(result);
+  console.log("result", result);
+  // const newResult = result.map(({ newKeys }) => snakeCaseToPascalCase(newKeys));
+  // const newResult = result.map((a) => a.newKeys);
+  //const newResult = result.map(({newKeys}) => ({//
+  // console.log("newResult", newResult);
   const auditsGroupedByCollection = _.groupBy(result, "newKeys");
-  console.log(auditsGroupedByCollection);
+  console.log("auditsGroupedByCollection", auditsGroupedByCollection);
   const allSchemaNames = flattenHierarchy(schemas._hierarchy.Item, schemas);
   //maps all schema names to collectionNames
-  console.log(allSchemaNames);
+  // const newSchemaNames = snakeCaseToPascalCase(allSchemaNames);
+  console.log("allSchemaNames", allSchemaNames);
   const allCollectionNames = allSchemaNames.map((itemType) => {
     // console.log(itemType, schemas[itemType]);
     // const re = /\/profiles\/(.*)\.json/;
@@ -76,12 +82,8 @@ export default function AuditDoc({ auditDoc, schemas }) {
       <AuditKeyTable data={auditKeyColor} />
       {allSchemaNames.map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];
-        console.log(typeAudits);
+        console.log("typeAudits", typeAudits);
         if (itemType?.length > 0) {
-          // const sorted = _.sortBy(typeAudits, (obj) =>
-          //   allSchemaNames.indexOf(obj)
-          // );
-          // console.log(sorted);
           // return (
           //   <Fragment key={itemType}>
           //     <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">

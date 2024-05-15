@@ -208,6 +208,18 @@ export function snakeCaseToHuman(text: string): string {
 }
 
 /**
+ * Convert a snake-case string to Pascal case.
+ * @param snakeCaseText Snake-case string to convert to Pascal case
+ * @returns String converted to Pascal case
+ */
+export function snakeCaseToPascalCase(snakeCaseText: string): string {
+  return snakeCaseText
+    .split("_")
+    .map((element) => `${element.charAt(0).toUpperCase()}${element.slice(1)}`)
+    .join("");
+}
+
+/**
  * Display the size of data in a human-readable format, including magnitude units such as B, KB,
  * MB, GB, TB, and PB. If the result has only one digit before the decimal point, show one digit
  * after the decimal point. Otherwise, show no digits after the decimal point. Values above PB
