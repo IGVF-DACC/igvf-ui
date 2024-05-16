@@ -1,5 +1,4 @@
 // node_modules
-import { data } from "autoprefixer";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import { Fragment, useContext } from "react";
@@ -11,7 +10,7 @@ import SessionContext from "../components/session-context";
 // lib
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
-import { snakeCaseToHuman, snakeCaseToPascalCase } from "../lib/general";
+import { snakeCaseToPascalCase } from "../lib/general";
 
 const auditKeyColor = [
   {
