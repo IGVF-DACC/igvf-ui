@@ -83,10 +83,17 @@ export default function AuditDoc({ auditDoc, schemas }) {
 AuditDoc.propTypes = {
   // Audits to display on this page
   auditDoc: PropTypes.object.isRequired,
+  // List of schemas to display in the list; directly from /profiles endpoint
+  schemas: PropTypes.shape({
+    _hierarchy: PropTypes.shape({
+      Item: PropTypes.object.isRequired,
+    }).isRequired,
+  }),
+  // Map of collection names to corresponding schema titles
+  collectionTitles: PropTypes.object,
 };
 
-//new function that maps 1 type name to 1 collection Names
-
+// Function that maps 1 type name to 1 collection Name
 function flattenHierarchy(hierarchy, schemas) {
   const schemaNames = Object.keys(hierarchy).reduce((acc, schemaName) => {
     if (!isDisplayableType(schemaName, schemas, hierarchy[schemaName])) {
