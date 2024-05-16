@@ -39,15 +39,11 @@ export default function AuditDoc({ auditDoc, schemas }) {
   const result = _.flatMap(auditDoc, (auditGroup, key) => {
     return auditGroup.map((audit) => {
       const newKeys = snakeCaseToPascalCase(key.split(".")[2]);
-      //console.log("newKeys", newKeys);
       return { ...audit, newKeys };
     });
   });
-  console.log("result", result);
   const auditsGroupedByCollection = _.groupBy(result, "newKeys");
-  console.log("auditsGroupedByCollection", auditsGroupedByCollection);
   const allSchemaNames = flattenHierarchy(schemas._hierarchy.Item, schemas);
-  console.log("allSchemaNames", allSchemaNames);
   return (
     <>
       <PagePreamble />
@@ -67,7 +63,6 @@ export default function AuditDoc({ auditDoc, schemas }) {
       <AuditKeyTable data={auditKeyColor} />
       {allSchemaNames.map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];
-        console.log("typeAudits-2", itemType, typeAudits);
         if (typeAudits) {
           const title = collectionTitles?.[itemType] || itemType;
           return (
@@ -115,7 +110,6 @@ function flattenHierarchy(hierarchy, schemas) {
  * @param {object} schemas List of schemas to display in the list; directly from /profiles endpoint
  */
 function isDisplayableType(objectType, schemas, tree) {
-  //console.log("schema names", schemas[objectType]);
   return (
     schemas[objectType]?.identifyingProperties?.length > 0 ||
     Object.keys(tree).length > 0
