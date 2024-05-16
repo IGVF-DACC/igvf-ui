@@ -88,8 +88,6 @@ AuditDoc.propTypes = {
       Item: PropTypes.object.isRequired,
     }).isRequired,
   }),
-  // Map of collection names to corresponding schema titles
-  collectionTitles: PropTypes.object,
 };
 
 // Function that maps 1 type name to 1 collection Name
