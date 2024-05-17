@@ -178,14 +178,6 @@ export function Session({ authentication, children }) {
           // path so we know we've completed both Auth0 and igvfd authentication.
           setSession(signedInSession);
           authentication.setAuthTransitionPath("");
-
-          // Auth0 might have redirected to the page the user had viewed when they signed in
-          // before igvfd authentication completed, so the page shows only public data. In this
-          // case, reload the page to get the latest data.
-          const viewedPath = `${window.location.pathname}${window.location.search}`;
-          if (authentication.authTransitionPath === viewedPath) {
-            router.push(viewedPath);
-          }
         });
     }
   }, [

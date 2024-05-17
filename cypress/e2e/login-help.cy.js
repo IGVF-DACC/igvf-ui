@@ -4,9 +4,7 @@ describe("Make sure the login help appears in the correct situations", () => {
   it("shows the login help text when viewing a protected page while signed out", () => {
     cy.visit("/documents/c7870a38-4286-42fc-9551-22436306e22a/");
     cy.contains("Access was denied to this resource");
-    cy.contains(
-      "Please sign in if you believe you should have access to this page"
-    );
+    cy.contains("Please sign in if you are affiliated with the IGVF project");
   });
 
   it("shows the login help when viewing no search results while signed out", () => {
