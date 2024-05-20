@@ -12,6 +12,7 @@ import { DataPanel } from "../../components/data-area";
 import {
   AttachedButtons,
   Button,
+  ButtonLink,
   FormLabel,
 } from "../../components/form-elements";
 import HelpTip from "../../components/help-tip";
@@ -90,6 +91,19 @@ SchemaSearchHelpTip.propTypes = {
   searchMode: PropTypes.oneOf([SEARCH_MODE_TITLE, SEARCH_MODE_PROPERTIES])
     .isRequired,
 };
+
+/**
+ * Display a header above the panel of schemas. Display within it a link to the schema graph.
+ */
+function ProfilesHeader() {
+  return (
+    <div className="mb-1 flex">
+      <ButtonLink href="/profiles/graph.svg" size="sm">
+        Schema Graph
+      </ButtonLink>
+    </div>
+  );
+}
 
 /**
  * Show a text field that lets the user type in a search term to filter the list of schemas.
@@ -318,6 +332,7 @@ export default function Profiles({ schemas, collectionTitles = null }) {
     <>
       <Breadcrumbs />
       <PagePreamble />
+      <ProfilesHeader />
       <DataPanel className="p-0">
         <SearchSection
           searchTerm={searchTerm}
