@@ -90,18 +90,22 @@ AuditDoc.propTypes = {
   }),
 };
 
-// Function that maps 1 type name to 1 collection Name
+/**
+ * Extracts the hierarchical schema type names from the hierarchy parameter and converts them
+ * to a flat array of schema type names in the order they appear on the Schemas page.
+ * @param {object} hierarchy _hierarchical tree from /profiles endpoint
+ * @param {object} schemas  List of schemas from /profiles endpoint
+ * @returns List of profiles name in PascalCase in hierarchical order
+ */
 function flattenHierarchy(hierarchy, schemas) {
   const schemaNames = Object.keys(hierarchy).reduce((acc, schemaName) => {
     if (!isDisplayableType(schemaName, schemas, hierarchy[schemaName])) {
       return acc;
     }
     if (Object.keys(hierarchy[schemaName]).length > 0) {
-      // The schema named schemaName has child schemas.
       const childSchemaNames = flattenHierarchy(hierarchy[schemaName], schemas);
       return acc.concat(schemaName, childSchemaNames);
     }
-    // The schema named schemaName does not have child schemas
     return acc.concat(schemaName);
   }, []);
   return schemaNames;
@@ -113,6 +117,7 @@ function flattenHierarchy(hierarchy, schemas) {
  * @param {string} objectType Object @type to check
  * @param {object} schemas List of schemas to display in the list; directly from /profiles endpoint
  * @param {object} tree Top of the _hierarchy tree at this level
+ * @returns {boolean} True if the object type is displayable/addable/editable
  */
 function isDisplayableType(objectType, schemas, tree) {
   return (
@@ -139,5 +144,5 @@ export async function getServerSideProps({ req }) {
       },
     };
   }
-  return errorObjectToProps(auditDoc, schemas);
+  return errorObjectToProps(auditDoc);
 }
