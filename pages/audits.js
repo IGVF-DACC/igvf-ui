@@ -112,6 +112,7 @@ function flattenHierarchy(hierarchy, schemas) {
  * can add and edit objects of this type.
  * @param {string} objectType Object @type to check
  * @param {object} schemas List of schemas to display in the list; directly from /profiles endpoint
+ * @param {object} tree Top of the _hierarchy tree at this level
  */
 function isDisplayableType(objectType, schemas, tree) {
   return (
