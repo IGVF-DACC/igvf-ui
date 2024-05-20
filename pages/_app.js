@@ -162,12 +162,7 @@ export default function App(props) {
    */
   function onRedirectCallback(appState) {
     if (appState?.returnTo) {
-      router.replace(appState.returnTo).then(() => {
-        // Delay reloading the page a bit to help Cypress test reliability.
-        setTimeout(() => {
-          router.reload();
-        }, 200);
-      });
+      router.replace(appState.returnTo);
     }
 
     // Indicate that Auth0 has completed authentication so Session context can log into igvfd, and
