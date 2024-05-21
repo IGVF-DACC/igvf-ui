@@ -91,6 +91,7 @@ export default function PrimaryCell({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {primaryCell.file_sets.length > 0 && (
             <FileSetTable
               fileSets={primaryCell.file_sets}
@@ -129,7 +130,6 @@ export default function PrimaryCell({
               title="Sample Parts"
             />
           )}
-          {donors.length > 0 && <DonorTable donors={donors} />}
           {primaryCell.modifications?.length > 0 && (
             <ModificationTable modifications={primaryCell.modifications} />
           )}

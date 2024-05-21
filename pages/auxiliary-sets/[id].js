@@ -78,6 +78,15 @@ export default function AuxiliarySet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
+          {auxiliarySet.samples?.length > 0 && (
+            <SampleTable
+              samples={auxiliarySet.samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${auxiliarySet["@id"]}`}
+            />
+          )}
+          {auxiliarySet.donors?.length > 0 && (
+            <DonorTable donors={auxiliarySet.donors} />
+          )}
           {filesWithReadType.length > 0 && (
             <SequencingFileTable
               files={filesWithReadType}
@@ -120,15 +129,6 @@ export default function AuxiliarySet({
                 itemIdentifier: auxiliarySet.accession,
               }}
             />
-          )}
-          {auxiliarySet.samples?.length > 0 && (
-            <SampleTable
-              samples={auxiliarySet.samples}
-              reportLink={`/multireport/?type=Sample&file_sets.@id=${auxiliarySet["@id"]}`}
-            />
-          )}
-          {auxiliarySet.donors?.length > 0 && (
-            <DonorTable donors={auxiliarySet.donors} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
 

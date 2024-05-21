@@ -85,9 +85,6 @@ export default function CuratedSet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
-          {files.length > 0 && (
-            <FileTable files={files} fileSetPath={curatedSet["@id"]} />
-          )}
           {curatedSet.samples?.length > 0 && (
             <SampleTable
               samples={curatedSet.samples}
@@ -96,6 +93,9 @@ export default function CuratedSet({
           )}
           {curatedSet.donors?.length > 0 && (
             <DonorTable donors={curatedSet.donors} />
+          )}
+          {files.length > 0 && (
+            <FileTable files={files} fileSetPath={curatedSet["@id"]} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />

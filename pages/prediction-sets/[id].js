@@ -144,9 +144,6 @@ export default function PredictionSet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
-          {files.length > 0 && (
-            <FileTable files={files} fileSetPath={predictionSet["@id"]} />
-          )}
           {predictionSet.samples?.length > 0 && (
             <SampleTable
               samples={predictionSet.samples}
@@ -155,6 +152,9 @@ export default function PredictionSet({
           )}
           {predictionSet.donors?.length > 0 && (
             <DonorTable donors={predictionSet.donors} />
+          )}
+          {files.length > 0 && (
+            <FileTable files={files} fileSetPath={predictionSet["@id"]} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />

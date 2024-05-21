@@ -143,6 +143,7 @@ export default function InVitroSystem({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {inVitroSystem.file_sets.length > 0 && (
             <FileSetTable
               fileSets={inVitroSystem.file_sets}
@@ -188,7 +189,6 @@ export default function InVitroSystem({
               title="Origin Sample Of"
             />
           )}
-          {donors.length > 0 && <DonorTable donors={donors} />}
           {inVitroSystem.modifications?.length > 0 && (
             <ModificationTable modifications={inVitroSystem.modifications} />
           )}

@@ -76,6 +76,7 @@ export default function WholeOrganism({
               />
             </DataArea>
           </DataPanel>
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {sample.file_sets.length > 0 && (
             <FileSetTable
               fileSets={sample.file_sets}
@@ -107,7 +108,6 @@ export default function WholeOrganism({
               title="Sample Parts"
             />
           )}
-          {donors.length > 0 && <DonorTable donors={donors} />}
           {sample.modifications?.length > 0 && (
             <ModificationTable modifications={sample.modifications} />
           )}

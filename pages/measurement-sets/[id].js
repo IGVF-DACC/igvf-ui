@@ -229,6 +229,15 @@ export default function MeasurementSet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
+          {measurementSet.samples?.length > 0 && (
+            <SampleTable
+              samples={measurementSet.samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${measurementSet["@id"]}`}
+            />
+          )}
+          {measurementSet.donors?.length > 0 && (
+            <DonorTable donors={measurementSet.donors} />
+          )}
           <AssayDetails measurementSet={measurementSet} />
           {filesWithReadType.length > 0 && (
             <SequencingFileTable
@@ -286,15 +295,6 @@ export default function MeasurementSet({
                 itemIdentifier: measurementSet.accession,
               }}
             />
-          )}
-          {measurementSet.samples?.length > 0 && (
-            <SampleTable
-              samples={measurementSet.samples}
-              reportLink={`/multireport/?type=Sample&file_sets.@id=${measurementSet["@id"]}`}
-            />
-          )}
-          {measurementSet.donors?.length > 0 && (
-            <DonorTable donors={measurementSet.donors} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />

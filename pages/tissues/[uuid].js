@@ -120,6 +120,7 @@ export default function Tissue({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {tissue.file_sets.length > 0 && (
             <FileSetTable
               fileSets={tissue.file_sets}
@@ -158,7 +159,6 @@ export default function Tissue({
               title="Sample Parts"
             />
           )}
-          {donors.length > 0 && <DonorTable donors={donors} />}
           {tissue.modifications?.length > 0 && (
             <ModificationTable modifications={tissue.modifications} />
           )}

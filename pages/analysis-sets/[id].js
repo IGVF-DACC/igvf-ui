@@ -350,6 +350,17 @@ export default function AnalysisSet({
             </DataArea>
           </DataPanel>
 
+          {analysisSet.samples?.length > 0 && (
+            <SampleTable
+              samples={analysisSet.samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${analysisSet["@id"]}`}
+            />
+          )}
+
+          {analysisSet.donors?.length > 0 && (
+            <DonorTable donors={analysisSet.donors} />
+          )}
+
           {measurementSets.length > 0 && (
             <InputFileSets
               fileSets={measurementSets}
@@ -373,17 +384,6 @@ export default function AnalysisSet({
 
           {curatedSets.length > 0 && (
             <FileSetTable fileSets={curatedSets} title="Curated Sets" />
-          )}
-
-          {analysisSet.donors?.length > 0 && (
-            <DonorTable donors={analysisSet.donors} />
-          )}
-
-          {analysisSet.samples?.length > 0 && (
-            <SampleTable
-              samples={analysisSet.samples}
-              reportLink={`/multireport/?type=Sample&file_sets.@id=${analysisSet["@id"]}`}
-            />
           )}
 
           {files.length > 0 && (
