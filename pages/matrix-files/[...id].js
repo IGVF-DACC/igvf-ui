@@ -1,6 +1,5 @@
 // node_modules
 import PropTypes from "prop-types";
-import Link from "next/link";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
@@ -17,10 +16,10 @@ import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
+import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -69,26 +68,15 @@ export default function MatrixFile({
           <DataAreaTitle>Matrix Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              {referenceFiles.length > 0 && (
-                <>
-                  <DataItemLabel>Reference Files</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
-                      {referenceFiles.map((file) => (
-                        <Link href={file["@id"]} key={file["@id"]}>
-                          {file.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
               <DataItemLabel>First Dimension</DataItemLabel>
               <DataItemValue>{matrixFile.dimension1}</DataItemValue>
               <DataItemLabel>Second Dimension</DataItemLabel>
               <DataItemValue>{matrixFile.dimension2}</DataItemValue>
             </DataArea>
           </DataPanel>
+          {referenceFiles.length > 0 && (
+            <FileTable files={referenceFiles} title="Reference Files" />
+          )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
@@ -119,7 +107,7 @@ MatrixFile.propTypes = {
   documents: PropTypes.array.isRequired,
   // The file is derived from
   derivedFrom: PropTypes.array.isRequired,
-  // Filesets derived from files belong to
+  // FileSets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,

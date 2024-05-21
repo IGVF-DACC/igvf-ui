@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
+import BiomarkerTable from "../../components/biomarker-table";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
 import {
@@ -13,13 +14,14 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
-import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -52,6 +54,7 @@ export default function Tissue({
   sortedFractions,
   sources,
   treatments,
+  multiplexedInSamples,
   attribution = null,
   isJson,
 }) {
@@ -72,13 +75,8 @@ export default function Tissue({
                 item={tissue}
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
-                donors={donors}
                 partOf={partOf}
-                parts={parts}
-                pooledFrom={pooledFrom}
-                pooledIn={pooledIn}
                 sampleTerms={tissue.sample_terms}
-                sortedFractions={sortedFractions}
                 sources={sources}
                 options={{
                   dateObtainedTitle: "Date Harvested",
@@ -122,6 +120,7 @@ export default function Tissue({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {tissue.file_sets.length > 0 && (
             <FileSetTable
               fileSets={tissue.file_sets}
@@ -132,8 +131,43 @@ export default function Tissue({
               }}
             />
           )}
+          {multiplexedInSamples.length > 0 && (
+            <SampleTable
+              samples={multiplexedInSamples}
+              reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${tissue["@id"]}`}
+              title="Multiplexed In Samples"
+            />
+          )}
+          {pooledFrom.length > 0 && (
+            <SampleTable
+              samples={pooledFrom}
+              reportLink={`/multireport/?type=Sample&pooled_in=${tissue["@id"]}`}
+              title="Biosamples Pooled From"
+            />
+          )}
+          {pooledIn.length > 0 && (
+            <SampleTable
+              samples={pooledIn}
+              reportLink={`/multireport/?type=Biosample&pooled_from=${tissue["@id"]}`}
+              title="Pooled In"
+            />
+          )}
+          {parts.length > 0 && (
+            <SampleTable
+              samples={parts}
+              reportLink={`/multireport/?type=Biosample&part_of=${tissue["@id"]}`}
+              title="Sample Parts"
+            />
+          )}
           {tissue.modifications?.length > 0 && (
             <ModificationTable modifications={tissue.modifications} />
+          )}
+          {sortedFractions.length > 0 && (
+            <SampleTable
+              samples={sortedFractions}
+              reportLink={`/multireport/?type=Sample&sorted_from.@id=${tissue["@id"]}`}
+              title="Sorted Fractions of Sample"
+            />
           )}
           {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
           {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
@@ -172,6 +206,8 @@ Tissue.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Multiplexed in samples
+  multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -236,6 +272,16 @@ export async function getServerSideProps({ params, req, query }) {
     const constructLibrarySets = tissue.construct_library_sets
       ? await requestFileSets(tissue.construct_library_sets, request)
       : [];
+    let multiplexedInSamples = [];
+    if (tissue.multiplexed_in.length > 0) {
+      const multiplexedInPaths = tissue.multiplexed_in.map(
+        (sample) => sample["@id"]
+      );
+      multiplexedInSamples = await requestBiosamples(
+        multiplexedInPaths,
+        request
+      );
+    }
     const breadcrumbs = await buildBreadcrumbs(
       tissue,
       tissue.accession,
@@ -257,6 +303,7 @@ export async function getServerSideProps({ params, req, query }) {
         sortedFractions,
         sources,
         treatments,
+        multiplexedInSamples,
         pageContext: {
           title: `${tissue.sample_terms[0].term_name} — ${tissue.accession}`,
         },

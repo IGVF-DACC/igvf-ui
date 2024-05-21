@@ -14,14 +14,14 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import ReportLink from "../../components/report-link";
-import SeparatedList from "../../components/separated-list";
+import SampleTable from "../../components/sample-table";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -59,6 +59,7 @@ export default function InVitroSystem({
   cellFateChangeTreatments,
   biomarkers,
   targetedSampleTerm = null,
+  multiplexedInSamples,
   attribution = null,
   isJson,
 }) {
@@ -80,13 +81,9 @@ export default function InVitroSystem({
                 classification={inVitroSystem.classification}
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
-                donors={donors}
                 parts={parts}
                 partOf={partOf}
-                pooledFrom={pooledFrom}
-                pooledIn={pooledIn}
                 sampleTerms={inVitroSystem.sample_terms}
-                sortedFractions={sortedFractions}
                 sources={sources}
                 options={{
                   dateObtainedTitle: "Date Collected",
@@ -99,23 +96,6 @@ export default function InVitroSystem({
                       <Link href={inVitroSystem.originated_from["@id"]}>
                         {inVitroSystem.originated_from.accession}
                       </Link>
-                    </DataItemValue>
-                  </>
-                )}
-                {originOf?.length > 0 && (
-                  <>
-                    <DataItemLabel>Origin Sample Of</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {originOf.map((sample) => (
-                          <Link href={sample["@id"]} key={sample.accession}>
-                            {sample.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                      <ReportLink
-                        href={`/multireport/?type=InVitroSystem&originated_from.@id=${inVitroSystem["@id"]}`}
-                      />
                     </DataItemValue>
                   </>
                 )}
@@ -163,6 +143,7 @@ export default function InVitroSystem({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {inVitroSystem.file_sets.length > 0 && (
             <FileSetTable
               fileSets={inVitroSystem.file_sets}
@@ -173,8 +154,50 @@ export default function InVitroSystem({
               }}
             />
           )}
+          {multiplexedInSamples.length > 0 && (
+            <SampleTable
+              samples={multiplexedInSamples}
+              reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${inVitroSystem["@id"]}`}
+              title="Multiplexed In Samples"
+            />
+          )}
+          {pooledFrom.length > 0 && (
+            <SampleTable
+              samples={pooledFrom}
+              reportLink={`/multireport/?type=Sample&pooled_in=${inVitroSystem["@id"]}`}
+              title="Biosamples Pooled From"
+            />
+          )}
+          {pooledIn.length > 0 && (
+            <SampleTable
+              samples={pooledIn}
+              reportLink={`/multireport/?type=Biosample&pooled_from=${inVitroSystem["@id"]}`}
+              title="Pooled In"
+            />
+          )}
+          {parts.length > 0 && (
+            <SampleTable
+              samples={parts}
+              reportLink={`/multireport/?type=Biosample&part_of=${inVitroSystem["@id"]}`}
+              title="Sample Parts"
+            />
+          )}
+          {originOf.length > 0 && (
+            <SampleTable
+              samples={originOf}
+              reportLink={`/multireport/?type=Biosample&originated_from.@id=${inVitroSystem["@id"]}`}
+              title="Origin Sample Of"
+            />
+          )}
           {inVitroSystem.modifications?.length > 0 && (
             <ModificationTable modifications={inVitroSystem.modifications} />
+          )}
+          {sortedFractions.length > 0 && (
+            <SampleTable
+              samples={sortedFractions}
+              reportLink={`/multireport/?type=Sample&sorted_from.@id=${inVitroSystem["@id"]}`}
+              title="Sorted Fractions of Sample"
+            />
           )}
           {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
           {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
@@ -227,6 +250,8 @@ InVitroSystem.propTypes = {
   cellFateChangeTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // The targeted endpoint biosample resulting from differentiation or reprogramming
   targetedSampleTerm: PropTypes.object,
+  // Multiplexed in samples
+  multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -319,6 +344,16 @@ export async function getServerSideProps({ params, req, query }) {
     const constructLibrarySets = inVitroSystem.construct_library_sets
       ? await requestFileSets(inVitroSystem.construct_library_sets, request)
       : [];
+    let multiplexedInSamples = [];
+    if (inVitroSystem.multiplexed_in.length > 0) {
+      const multiplexedInPaths = inVitroSystem.multiplexed_in.map(
+        (sample) => sample["@id"]
+      );
+      multiplexedInSamples = await requestBiosamples(
+        multiplexedInPaths,
+        request
+      );
+    }
     const breadcrumbs = await buildBreadcrumbs(
       inVitroSystem,
       inVitroSystem.accession,
@@ -347,6 +382,7 @@ export async function getServerSideProps({ params, req, query }) {
         treatments,
         cellFateChangeTreatments,
         targetedSampleTerm,
+        multiplexedInSamples,
         pageContext: {
           title: `${inVitroSystem.sample_terms[0].term_name} — ${inVitroSystem.accession}`,
         },

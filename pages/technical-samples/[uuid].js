@@ -18,6 +18,7 @@ import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -38,6 +39,7 @@ export default function TechnicalSample({
   attribution = null,
   sortedFractions,
   sources,
+  multiplexedInSamples,
   isJson,
 }) {
   return (
@@ -56,7 +58,6 @@ export default function TechnicalSample({
               <SampleDataItems
                 item={sample}
                 constructLibrarySets={constructLibrarySets}
-                sortedFractions={sortedFractions}
                 sources={sources}
               >
                 <DataItemLabel>Sample Material</DataItemLabel>
@@ -80,6 +81,20 @@ export default function TechnicalSample({
               }}
             />
           )}
+          {multiplexedInSamples.length > 0 && (
+            <SampleTable
+              samples={multiplexedInSamples}
+              reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${sample["@id"]}`}
+              title="Multiplexed In Samples"
+            />
+          )}
+          {sortedFractions.length > 0 && (
+            <SampleTable
+              samples={sortedFractions}
+              reportLink={`/multireport/?type=Sample&sorted_from.@id=${sample["@id"]}`}
+              title="Sorted Fractions of Sample"
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -99,6 +114,8 @@ TechnicalSample.propTypes = {
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this technical sample
   sources: PropTypes.arrayOf(PropTypes.object),
+  // Multiplexed in samples
+  multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this technical sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -131,6 +148,16 @@ export async function getServerSideProps({ params, req, query }) {
     const constructLibrarySets = sample.construct_library_sets
       ? await requestFileSets(sample.construct_library_sets, request)
       : [];
+    let multiplexedInSamples = [];
+    if (sample.multiplexed_in.length > 0) {
+      const multiplexedInPaths = sample.multiplexed_in.map(
+        (sample) => sample["@id"]
+      );
+      multiplexedInSamples = await requestBiosamples(
+        multiplexedInPaths,
+        request
+      );
+    }
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       sample.accession,
@@ -144,6 +171,7 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         sortedFractions,
         sources,
+        multiplexedInSamples,
         pageContext: {
           title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,
         },

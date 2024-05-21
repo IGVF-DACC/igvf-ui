@@ -1,5 +1,4 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -14,21 +13,17 @@ import {
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import ReportLink from "../../components/report-link";
-import SeparatedList from "../../components/separated-list";
+import SampleTable from "../../components/sample-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import {
-  requestDocuments,
-  requestDonors,
-  requestFiles,
-} from "../../lib/common-requests";
+import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -36,7 +31,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function CuratedSet({
   curatedSet,
   documents,
-  donors,
   files,
   attribution = null,
   isJson,
@@ -72,37 +66,6 @@ export default function CuratedSet({
                     </DataItemValue>
                   </>
                 )}
-                {donors.length > 0 && (
-                  <>
-                    <DataItemLabel>Donors</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {donors.map((donor) => (
-                          <Link href={donor["@id"]} key={donor.uuid}>
-                            {donor.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
-                {curatedSet.samples?.length > 0 && (
-                  <>
-                    <DataItemLabel>Samples</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
-                        {curatedSet.samples.map((sample) => (
-                          <Link href={sample["@id"]} key={sample["@id"]}>
-                            {sample.accession}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                      <ReportLink
-                        href={`/multireport/?type=Sample&file_sets.@id=${curatedSet["@id"]}`}
-                      />
-                    </DataItemValue>
-                  </>
-                )}
                 {curatedSet.assemblies?.length > 0 && (
                   <>
                     <DataItemLabel>Assemblies</DataItemLabel>
@@ -122,8 +85,17 @@ export default function CuratedSet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
+          {curatedSet.samples?.length > 0 && (
+            <SampleTable
+              samples={curatedSet.samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${curatedSet["@id"]}`}
+            />
+          )}
+          {curatedSet.donors?.length > 0 && (
+            <DonorTable donors={curatedSet.donors} />
+          )}
           {files.length > 0 && (
-            <FileTable files={files} itemPath={curatedSet["@id"]} />
+            <FileTable files={files} fileSetPath={curatedSet["@id"]} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
@@ -135,8 +107,6 @@ export default function CuratedSet({
 
 CuratedSet.propTypes = {
   curatedSet: PropTypes.object.isRequired,
-  // Donors to display
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this curated set
@@ -157,11 +127,6 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = curatedSet.documents
       ? await requestDocuments(curatedSet.documents, request)
       : [];
-    let donors = [];
-    if (curatedSet.donors) {
-      const donorPaths = curatedSet.donors.map((donor) => donor["@id"]);
-      donors = await requestDonors(donorPaths, request);
-    }
     const filePaths = curatedSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
@@ -175,7 +140,6 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         curatedSet,
         documents,
-        donors,
         files,
         pageContext: { title: curatedSet.accession },
         breadcrumbs,

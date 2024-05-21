@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
+import BiomarkerTable from "../../components/biomarker-table";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
 import {
@@ -11,14 +12,15 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -52,6 +54,7 @@ export default function PrimaryCell({
   sortedFractions,
   sources,
   treatments,
+  multiplexedInSamples,
   attribution = null,
   isJson,
 }) {
@@ -72,13 +75,8 @@ export default function PrimaryCell({
                 item={primaryCell}
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
-                donors={donors}
-                parts={parts}
-                pooledFrom={pooledFrom}
-                pooledIn={pooledIn}
                 partOf={partOf}
                 sampleTerms={primaryCell.sample_terms}
-                sortedFractions={sortedFractions}
                 sources={sources}
                 options={{
                   dateObtainedTitle: "Date Harvested",
@@ -93,6 +91,7 @@ export default function PrimaryCell({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {primaryCell.file_sets.length > 0 && (
             <FileSetTable
               fileSets={primaryCell.file_sets}
@@ -103,8 +102,43 @@ export default function PrimaryCell({
               }}
             />
           )}
+          {multiplexedInSamples.length > 0 && (
+            <SampleTable
+              samples={multiplexedInSamples}
+              reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${primaryCell["@id"]}`}
+              title="Multiplexed In Samples"
+            />
+          )}
+          {pooledFrom.length > 0 && (
+            <SampleTable
+              samples={pooledFrom}
+              reportLink={`/multireport/?type=Sample&pooled_in=${primaryCell["@id"]}`}
+              title="Biosamples Pooled From"
+            />
+          )}
+          {pooledIn.length > 0 && (
+            <SampleTable
+              samples={pooledIn}
+              reportLink={`/multireport/?type=Biosample&pooled_from=${primaryCell["@id"]}`}
+              title="Pooled In"
+            />
+          )}
+          {parts.length > 0 && (
+            <SampleTable
+              samples={parts}
+              reportLink={`/multireport/?type=Biosample&part_of=${primaryCell["@id"]}`}
+              title="Sample Parts"
+            />
+          )}
           {primaryCell.modifications?.length > 0 && (
             <ModificationTable modifications={primaryCell.modifications} />
+          )}
+          {sortedFractions.length > 0 && (
+            <SampleTable
+              samples={sortedFractions}
+              reportLink={`/multireport/?type=Sample&sorted_from.@id=${primaryCell["@id"]}`}
+              title="Sorted Fractions of Sample"
+            />
           )}
           {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
           {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
@@ -143,6 +177,8 @@ PrimaryCell.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Multiplexed in samples
+  multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -211,6 +247,16 @@ export async function getServerSideProps({ params, req, query }) {
     const constructLibrarySets = primaryCell.construct_library_sets
       ? await requestFileSets(primaryCell.construct_library_sets, request)
       : [];
+    let multiplexedInSamples = [];
+    if (primaryCell.multiplexed_in.length > 0) {
+      const multiplexedInPaths = primaryCell.multiplexed_in.map(
+        (sample) => sample["@id"]
+      );
+      multiplexedInSamples = await requestBiosamples(
+        multiplexedInPaths,
+        request
+      );
+    }
     const breadcrumbs = await buildBreadcrumbs(
       primaryCell,
       primaryCell.accession,
@@ -232,6 +278,7 @@ export async function getServerSideProps({ params, req, query }) {
         sortedFractions,
         sources,
         treatments,
+        multiplexedInSamples,
         pageContext: {
           title: `${primaryCell.sample_terms[0].term_name} — ${primaryCell.accession}`,
         },

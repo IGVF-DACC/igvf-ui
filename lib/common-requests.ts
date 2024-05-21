@@ -11,7 +11,17 @@ export async function requestAnalysisSteps(
   paths: Array<string>,
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["name"])).unwrap_or([]);
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "aliases",
+      "input_content_types",
+      "name",
+      "output_content_types",
+      "status",
+      "step_label",
+      "title",
+    ])
+  ).unwrap_or([]);
 }
 
 /**
@@ -61,9 +71,15 @@ export async function requestBiosamples(
   paths: Array<string>,
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["accession"])).unwrap_or(
-    []
-  );
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "accession",
+      "disease_terms",
+      "sample_terms",
+      "status",
+      "summary",
+    ])
+  ).unwrap_or([]);
 }
 
 /**
@@ -213,7 +229,13 @@ export async function requestDonors(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["accession", "status", "uuid"])
+    await request.getMultipleObjectsBulk(paths, [
+      "accession",
+      "aliases",
+      "sex",
+      "status",
+      "taxa",
+    ])
   ).unwrap_or([]);
 }
 

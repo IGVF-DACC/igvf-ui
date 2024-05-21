@@ -3,17 +3,19 @@ import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
+import BiomarkerTable from "../../components/biomarker-table";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { BiosampleDataItems } from "../../components/common-data-items";
 import { DataArea, DataPanel } from "../../components/data-area";
-import BiomarkerTable from "../../components/biomarker-table";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -39,13 +41,12 @@ export default function WholeOrganism({
   diseaseTerms,
   documents,
   donors,
-  partOf,
   parts,
-  pooledFrom,
   pooledIn,
   sortedFractions,
   treatments,
   sources,
+  multiplexedInSamples,
   attribution = null,
   isJson,
 }) {
@@ -67,12 +68,7 @@ export default function WholeOrganism({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 donors={donors}
-                partOf={partOf}
-                parts={parts}
-                pooledFrom={pooledFrom}
-                pooledIn={pooledIn}
                 sampleTerms={sample.sample_terms}
-                sortedFractions={sortedFractions}
                 sources={sources}
                 options={{
                   dateObtainedTitle: "Date Obtained",
@@ -80,6 +76,7 @@ export default function WholeOrganism({
               />
             </DataArea>
           </DataPanel>
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {sample.file_sets.length > 0 && (
             <FileSetTable
               fileSets={sample.file_sets}
@@ -90,8 +87,36 @@ export default function WholeOrganism({
               }}
             />
           )}
+          {multiplexedInSamples.length > 0 && (
+            <SampleTable
+              samples={multiplexedInSamples}
+              reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${sample["@id"]}`}
+              title="Multiplexed In Samples"
+            />
+          )}
+          {pooledIn.length > 0 && (
+            <SampleTable
+              samples={pooledIn}
+              reportLink={`/multireport/?type=Biosample&pooled_from=${sample["@id"]}`}
+              title="Pooled In"
+            />
+          )}
+          {parts.length > 0 && (
+            <SampleTable
+              samples={parts}
+              reportLink={`/multireport/?type=Biosample&part_of=${sample["@id"]}`}
+              title="Sample Parts"
+            />
+          )}
           {sample.modifications?.length > 0 && (
             <ModificationTable modifications={sample.modifications} />
+          )}
+          {sortedFractions.length > 0 && (
+            <SampleTable
+              samples={sortedFractions}
+              reportLink={`/multireport/?type=Sample&sorted_from.@id=${sample["@id"]}`}
+              title="Sorted Fractions of Sample"
+            />
           )}
           {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
           {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
@@ -116,12 +141,8 @@ WholeOrganism.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Part of Sample
-  partOf: PropTypes.object,
   // Sample parts
   parts: PropTypes.arrayOf(PropTypes.object),
-  // Pooled from sample
-  pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Pooled in sample
   pooledIn: PropTypes.arrayOf(PropTypes.object),
   // Sorted fractions sample
@@ -130,6 +151,8 @@ WholeOrganism.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments associated with the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Multiplexed in samples
+  multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -160,16 +183,9 @@ export async function getServerSideProps({ params, req, query }) {
     const donors = sample.donors
       ? await requestDonors(sample.donors, request)
       : [];
-    const partOf = sample.part_of
-      ? (await request.getObject(sample.part_of)).optional()
-      : null;
     const parts =
       sample.parts?.length > 0
         ? await requestBiosamples(sample.parts, request)
-        : [];
-    const pooledFrom =
-      sample.pooled_from?.length > 0
-        ? await requestBiosamples(sample.pooled_from, request)
         : [];
     const pooledIn =
       sample.pooled_in?.length > 0
@@ -198,6 +214,16 @@ export async function getServerSideProps({ params, req, query }) {
     const constructLibrarySets = sample.construct_library_sets
       ? await requestFileSets(sample.construct_library_sets, request)
       : [];
+    let multiplexedInSamples = [];
+    if (sample.multiplexed_in.length > 0) {
+      const multiplexedInPaths = sample.multiplexed_in.map(
+        (sample) => sample["@id"]
+      );
+      multiplexedInSamples = await requestBiosamples(
+        multiplexedInPaths,
+        request
+      );
+    }
     const breadcrumbs = await buildBreadcrumbs(
       sample,
       sample.accession,
@@ -212,13 +238,12 @@ export async function getServerSideProps({ params, req, query }) {
         diseaseTerms,
         documents,
         donors,
-        partOf,
         parts,
-        pooledFrom,
         pooledIn,
         sortedFractions,
         treatments,
         sources,
+        multiplexedInSamples,
         pageContext: {
           title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,
         },

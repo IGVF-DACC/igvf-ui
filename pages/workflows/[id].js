@@ -3,6 +3,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
+import AnalysisStepTable from "../../components/analysis-step-table";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -19,8 +20,6 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import ReportLink from "../../components/report-link";
-import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
@@ -117,23 +116,6 @@ export default function Workflow({
                   </DataItemValue>
                 </>
               )}
-              {analysisSteps.length > 0 && (
-                <>
-                  <DataItemLabel>Analysis Steps</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
-                      {analysisSteps.map((astep) => (
-                        <Link href={astep["@id"]} key={astep["@id"]}>
-                          {astep.name}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                    <ReportLink
-                      href={`/multireport/?type=AnalysisStep&workflow.@id=${workflow["@id"]}`}
-                    />
-                  </DataItemValue>
-                </>
-              )}
               {workflow.submitter_comment && (
                 <>
                   <DataItemLabel>Submitter Comment</DataItemLabel>
@@ -148,6 +130,13 @@ export default function Workflow({
               )}
             </DataArea>
           </DataPanel>
+          {analysisSteps.length > 0 && (
+            <AnalysisStepTable
+              analysisSteps={analysisSteps}
+              reportLink={`/multireport/?type=AnalysisStep&workflow.@id=${workflow["@id"]}`}
+              reportLabel="Analysis Steps that link to this workflow"
+            />
+          )}
           {documents?.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>

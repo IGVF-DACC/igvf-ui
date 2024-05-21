@@ -1,6 +1,5 @@
 // node_modules
 import PropTypes from "prop-types";
-import Link from "next/link";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
@@ -17,10 +16,10 @@ import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
+import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
@@ -69,20 +68,6 @@ export default function SignalFile({
           <DataAreaTitle>Signal Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              {referenceFiles.length > 0 && (
-                <>
-                  <DataItemLabel>Reference Files</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
-                      {referenceFiles.map((file) => (
-                        <Link href={file["@id"]} key={file["@id"]}>
-                          {file.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
               <>
                 <DataItemLabel>Strand Specificity</DataItemLabel>
                 <DataItemValue>{signalFile.strand_specificity}</DataItemValue>
@@ -115,6 +100,9 @@ export default function SignalFile({
               derivedFromFileSets={derivedFromFileSets}
               title={`Files ${signalFile.accession} Derives From`}
             />
+          )}
+          {referenceFiles.length > 0 && (
+            <FileTable files={referenceFiles} title="Reference Files" />
           )}
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable

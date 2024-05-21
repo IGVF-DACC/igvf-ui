@@ -47,20 +47,26 @@ const filesColumns = [
 /**
  * Display a sortable table of the given files.
  */
-export default function FileTable({ files, title = "Files", itemPath = "" }) {
-  const reportLink = itemPath
-    ? `/multireport/?type=File&file_set=${encodeURIComponent(itemPath)}`
-    : "";
+export default function FileTable({
+  files,
+  title = "Files",
+  reportLink = "",
+  reportLabel = "",
+  fileSetPath = "",
+}) {
+  const finalReportLink = fileSetPath
+    ? `/multireport/?type=File&file_set=${encodeURIComponent(fileSetPath)}`
+    : reportLink;
+  const label = fileSetPath
+    ? "Report of files that have this item as their file set"
+    : reportLabel;
 
   return (
     <>
       <DataAreaTitle>
         {title}
-        {reportLink && (
-          <DataAreaTitleLink
-            href={reportLink}
-            label="Report of files that have this item as their file set"
-          >
+        {finalReportLink && (
+          <DataAreaTitleLink href={finalReportLink} label={label}>
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
@@ -80,6 +86,10 @@ FileTable.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Title for the table; can be a string or a React component
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  // Path to the page containing the file table; used for the report link
-  itemPath: PropTypes.string,
+  // Full report link for file tables not on FileSet pages
+  reportLink: PropTypes.string,
+  // Label for the report link when `reportLink` used instead of `fileSetPath`
+  reportLabel: PropTypes.string,
+  // For the report link on FileSet pages, the path to this FileSet page
+  fileSetPath: PropTypes.string,
 };

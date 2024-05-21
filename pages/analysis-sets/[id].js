@@ -1,6 +1,5 @@
 // node_modules
 import _ from "lodash";
-import Link from "next/link";
 import PropTypes from "prop-types";
 import { useState } from "react";
 // components
@@ -17,6 +16,7 @@ import {
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
 import FileSetTable from "../../components/file-set-table";
@@ -26,15 +26,12 @@ import LinkedIdAndStatus from "../../components/linked-id-and-status";
 import LinkedIdAndStatusStack from "../../components/linked-id-and-status-stack";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import ReportLink from "../../components/report-link";
-import SeparatedList from "../../components/separated-list";
 import SortableGrid from "../../components/sortable-grid";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
-  requestDonors,
   requestFileSets,
   requestFiles,
   requestMeasurementSets,
@@ -44,6 +41,7 @@ import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { pathToType } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
+import SampleTable from "../../components/sample-table";
 
 /**
  * Columns for the measurement sets table.
@@ -299,7 +297,6 @@ InputFileSets.propTypes = {
 export default function AnalysisSet({
   analysisSet,
   documents,
-  donors,
   files,
   measurementSets,
   inputFileSetSamples,
@@ -344,37 +341,6 @@ export default function AnalysisSet({
                   </DataItemValue>
                 </>
               )}
-              {donors.length > 0 && (
-                <>
-                  <DataItemLabel>Donors</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
-                      {donors.map((donor) => (
-                        <Link href={donor["@id"]} key={donor.uuid}>
-                          {donor.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {analysisSet.samples?.length > 0 && (
-                <>
-                  <DataItemLabel>Samples</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
-                      {analysisSet.samples.map((sample) => (
-                        <Link href={sample["@id"]} key={sample["@id"]}>
-                          {sample.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                    <ReportLink
-                      href={`/multireport/?type=Sample&file_sets.@id=${analysisSet["@id"]}`}
-                    />
-                  </DataItemValue>
-                </>
-              )}
               {analysisSet.submitter_comment && (
                 <>
                   <DataItemLabel>Submitter Comment</DataItemLabel>
@@ -383,6 +349,17 @@ export default function AnalysisSet({
               )}
             </DataArea>
           </DataPanel>
+
+          {analysisSet.samples?.length > 0 && (
+            <SampleTable
+              samples={analysisSet.samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${analysisSet["@id"]}`}
+            />
+          )}
+
+          {analysisSet.donors?.length > 0 && (
+            <DonorTable donors={analysisSet.donors} />
+          )}
 
           {measurementSets.length > 0 && (
             <InputFileSets
@@ -410,8 +387,9 @@ export default function AnalysisSet({
           )}
 
           {files.length > 0 && (
-            <FileTable files={files} itemPath={analysisSet["@id"]} />
+            <FileTable files={files} fileSetPath={analysisSet["@id"]} />
           )}
+
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -422,8 +400,6 @@ export default function AnalysisSet({
 
 AnalysisSet.propTypes = {
   analysisSet: PropTypes.object.isRequired,
-  // Donors to display
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Input file sets to display
@@ -460,12 +436,6 @@ export async function getServerSideProps({ params, req, query }) {
     const filePaths = analysisSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
-
-    let donors = [];
-    if (analysisSet.donors) {
-      const donorPaths = analysisSet.donors.map((donor) => donor["@id"]);
-      donors = await requestDonors(donorPaths, request);
-    }
 
     let measurementSets = [];
     if (analysisSet.input_file_sets?.length > 0) {
@@ -588,7 +558,6 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         analysisSet,
         documents,
-        donors,
         files,
         measurementSets,
         inputFileSetSamples,
