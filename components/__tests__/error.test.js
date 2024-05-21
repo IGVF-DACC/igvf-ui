@@ -1,6 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Error from "../error";
+import SessionContext from "../session-context";
 
 jest.mock("@auth0/auth0-react", () => ({
   useAuth0: jest.fn(),
@@ -14,10 +15,16 @@ describe("Test the Error component while logged out", () => {
     });
 
     render(
-      <Error
-        statusCode="AUTHENTICATION"
-        title="Unable to sign in. You can still explore the site without viewing unreleased data."
-      />
+      <SessionContext.Provider
+        value={{
+          setAuthStageLogin: jest.fn(),
+        }}
+      >
+        <Error
+          statusCode="AUTHENTICATION"
+          title="Unable to sign in. You can still explore the site without viewing unreleased data."
+        />
+      </SessionContext.Provider>
     );
 
     expect(screen.getByText("AUTHENTICATION")).toBeInTheDocument();
@@ -35,7 +42,15 @@ describe("Test the Error component while logged out", () => {
       loginWithRedirect: jest.fn(),
     });
 
-    render(<Error statusCode={401} />);
+    render(
+      <SessionContext.Provider
+        value={{
+          setAuthStageLogin: jest.fn(),
+        }}
+      >
+        <Error statusCode={401} />
+      </SessionContext.Provider>
+    );
 
     expect(screen.getByText("401")).toBeInTheDocument();
     expect(screen.queryByTestId("error-title")).not.toBeInTheDocument();
@@ -50,7 +65,13 @@ describe("Test the Error component while logged out", () => {
     });
 
     render(
-      <Error statusCode={403} title="Access was denied to this resource" />
+      <SessionContext.Provider
+        value={{
+          setAuthStageLogin: jest.fn(),
+        }}
+      >
+        <Error statusCode={403} title="Access was denied to this resource" />
+      </SessionContext.Provider>
     );
 
     const title = screen.getByTestId("error-title");
@@ -70,7 +91,15 @@ describe("Test the Error component while logged out", () => {
       loginWithRedirect: jest.fn(),
     });
 
-    render(<Error title="Unable to sign in." />);
+    render(
+      <SessionContext.Provider
+        value={{
+          setAuthStageLogin: jest.fn(),
+        }}
+      >
+        <Error title="Unable to sign in." />
+      </SessionContext.Provider>
+    );
 
     expect(screen.getByText("ERROR")).toBeInTheDocument();
     expect(screen.getByText("Unable to sign in.")).toBeInTheDocument();
@@ -83,7 +112,15 @@ describe("Test the Error component while logged out", () => {
       loginWithRedirect: jest.fn(),
     });
 
-    render(<Error />);
+    render(
+      <SessionContext.Provider
+        value={{
+          setAuthStageLogin: jest.fn(),
+        }}
+      >
+        <Error />
+      </SessionContext.Provider>
+    );
 
     expect(screen.getByText("ERROR")).toBeInTheDocument();
     expect(screen.queryByTestId("error-title")).not.toBeInTheDocument();
@@ -100,7 +137,13 @@ describe("Test the Error component while logged in", () => {
     });
 
     render(
-      <Error statusCode={403} title="Access was denied to this resource" />
+      <SessionContext.Provider
+        value={{
+          setAuthStageLogin: jest.fn(),
+        }}
+      >
+        <Error statusCode={403} title="Access was denied to this resource" />
+      </SessionContext.Provider>
     );
 
     const title = screen.getByTestId("error-title");

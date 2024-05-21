@@ -35,6 +35,7 @@
  */
 Cypress.Commands.add("loginAuth0", (username, password, isHomeFirst = true) => {
   const args = { username, password };
+  cy.clearCookies();
 
   if (isHomeFirst) {
     cy.visit("/");
@@ -54,7 +55,7 @@ Cypress.Commands.add("loginAuth0", (username, password, isHomeFirst = true) => {
  */
 Cypress.Commands.add("logoutAuth0", () => {
   cy.get(`[data-testid="navigation-authenticate"]`).click();
-  cy.get(`[data-testid="navigation-sign-out"]`).click();
+  cy.get(`[data-testid="navigation-signout"]`).click();
   cy.get("#sign-out-confirm").click();
 });
 

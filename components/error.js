@@ -2,19 +2,22 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { HTTP_STATUS_CODE } from "../lib/fetch-request";
+import { useContext } from "react";
 // components
 import { ButtonAsLink } from "./form-elements";
+import SessionContext from "./session-context";
 // lib
 import { loginAuthProvider } from "../lib/authentication";
 import { LINK_INLINE_STYLE } from "../lib/constants";
 import { logError } from "../lib/errors";
+import { HTTP_STATUS_CODE } from "../lib/fetch-request";
 
 /**
  * Display the contents of a standard error page.
  */
 export default function Error({ statusCode = "ERROR", title = "" }) {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { setAuthStageLogin } = useContext(SessionContext);
 
   // Login help should appear if the status code is 403 and the user has not logged in.
   const isLoginHelpVisible =
@@ -35,13 +38,16 @@ export default function Error({ statusCode = "ERROR", title = "" }) {
             {title && <h2 data-testid="error-title">{title}</h2>}
             {isLoginHelpVisible && (
               <p className="mt-4 text-left md:w-96" data-testid="error-login">
-                Please{" "}
+                This object is not currently publicly released. Please{" "}
                 <ButtonAsLink
-                  onClick={() => loginAuthProvider(loginWithRedirect)}
+                  onClick={() => {
+                    loginAuthProvider(loginWithRedirect);
+                    setAuthStageLogin();
+                  }}
                 >
                   sign in
                 </ButtonAsLink>{" "}
-                if you believe you should have access to this page. See the
+                if you are affiliated with the IGVF project. See the
                 instructions for{" "}
                 <Link
                   href="/help/general-help/accessing-unreleased-data/"
