@@ -1,15 +1,16 @@
 // node_modules
 import _ from "lodash";
 import PropTypes from "prop-types";
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 // component
 import AuditKeyTable from "../components/audit-key-table";
 import AuditTable from "../components/audit-table";
 import PagePreamble from "../components/page-preamble";
+import SessionContext from "../components/session-context";
 // lib
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
-import { snakeCaseToHuman } from "../lib/general";
+import { snakeCaseToPascalCase } from "../lib/general";
 
 const auditKeyColor = [
   {
@@ -32,14 +33,16 @@ const auditKeyColor = [
   },
 ];
 
-export default function AuditDoc({ auditDoc }) {
+export default function AuditDoc({ auditDoc, schemas }) {
+  const { collectionTitles } = useContext(SessionContext);
   const result = _.flatMap(auditDoc, (auditGroup, key) => {
     return auditGroup.map((audit) => {
-      const newKeys = key.split(".")[2];
+      const newKeys = snakeCaseToPascalCase(key.split(".")[2]);
       return { ...audit, newKeys };
     });
   });
   const auditsGroupedByCollection = _.groupBy(result, "newKeys");
+  const allSchemaNames = flattenHierarchy(schemas._hierarchy.Item, schemas);
   return (
     <>
       <PagePreamble />
@@ -57,13 +60,14 @@ export default function AuditDoc({ auditDoc }) {
         {"Severity Level and Description Key"}
       </div>
       <AuditKeyTable data={auditKeyColor} />
-      {Object.keys(auditsGroupedByCollection).map((itemType) => {
+      {allSchemaNames.map((itemType) => {
         const typeAudits = auditsGroupedByCollection[itemType];
-        if (itemType.length > 0) {
+        if (typeAudits) {
+          const title = collectionTitles?.[itemType] || itemType;
           return (
             <Fragment key={itemType}>
               <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
-                {snakeCaseToHuman(itemType)}
+                {title}
               </h2>
               <AuditTable data={typeAudits} key={itemType} />
             </Fragment>
@@ -78,17 +82,64 @@ export default function AuditDoc({ auditDoc }) {
 AuditDoc.propTypes = {
   // Audits to display on this page
   auditDoc: PropTypes.object.isRequired,
+  // List of schemas to display in the list; directly from /profiles endpoint
+  schemas: PropTypes.shape({
+    _hierarchy: PropTypes.shape({
+      Item: PropTypes.object.isRequired,
+    }).isRequired,
+  }),
 };
+
+/**
+ * Extracts the hierarchical schema type names from the hierarchy parameter and converts them
+ * to a flat array of schema type names in the order they appear on the Schemas page.
+ * @param {object} hierarchy _hierarchical tree from /profiles endpoint
+ * @param {object} schemas  List of schemas from /profiles endpoint
+ * @returns List of profiles name in PascalCase in hierarchical order
+ */
+function flattenHierarchy(hierarchy, schemas) {
+  const schemaNames = Object.keys(hierarchy).reduce((acc, schemaName) => {
+    if (!isDisplayableType(schemaName, schemas, hierarchy[schemaName])) {
+      return acc;
+    }
+    if (Object.keys(hierarchy[schemaName]).length > 0) {
+      const childSchemaNames = flattenHierarchy(hierarchy[schemaName], schemas);
+      return acc.concat(schemaName, childSchemaNames);
+    }
+    return acc.concat(schemaName);
+  }, []);
+  return schemaNames;
+}
+
+/**
+ * Returns true if the given object type is displayable in the UI. This also indicates that you
+ * can add and edit objects of this type.
+ * @param {string} objectType Object @type to check
+ * @param {object} schemas List of schemas to display in the list; directly from /profiles endpoint
+ * @param {object} tree Top of the _hierarchy tree at this level
+ * @returns {boolean} True if the object type is displayable/addable/editable
+ */
+function isDisplayableType(objectType, schemas, tree) {
+  return (
+    schemas[objectType]?.identifyingProperties?.length > 0 ||
+    Object.keys(tree).length > 0
+  );
+}
 
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const auditDoc = (
     await request.getObject("/static/doc/auditdoc.json")
   ).union();
-  if (FetchRequest.isResponseSuccess(auditDoc)) {
+  const schemas = (await request.getObject("/profiles")).union();
+  if (
+    FetchRequest.isResponseSuccess(auditDoc) &&
+    FetchRequest.isResponseSuccess(schemas)
+  ) {
     return {
       props: {
         auditDoc,
+        schemas,
         pageContext: { title: "Audit Documentation" },
       },
     };
