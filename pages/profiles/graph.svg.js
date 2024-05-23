@@ -1,7 +1,13 @@
 // node_modules
 import FetchRequest from "../../lib/fetch-request";
 import PropTypes from "prop-types";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   ReactSVGPanZoom,
   INITIAL_VALUE,
@@ -44,7 +50,7 @@ export default function GraphSvg({ graph }) {
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setTool(TOOL_PAN);
     viewer.current.setPointOnViewerCenter(2600, 2200, 0.13);
   }, []);
