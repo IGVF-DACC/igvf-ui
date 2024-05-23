@@ -1,28 +1,28 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
-import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementAlternateAccessions,
+  SearchListItemSupplementContent,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function MeasurementSet({ item: measurementSet }) {
-  // Collect the summaries of all samples in the measurement set and use the first one as the
+  // Collect the summary of the sample object in the measurement set if available. MeasurementSet
+  // objects can have zero or one sample object, so we only need to check the first one.
   // representative sample summary.
-  const sampleSummaries =
-    measurementSet.samples?.length > 0
-      ? measurementSet.samples.map((sample) => sample.summary)
-      : [];
-  const representativeSampleSummary =
-    sampleSummaries.length > 0 ? sampleSummaries[0] : null;
-  const hiddenSampleSummaryCount =
-    sampleSummaries.length > 1 ? sampleSummaries.length - 1 : 0;
+  const sampleSummary = measurementSet.samples?.[0].summary || "";
+  const isSupplementsVisible =
+    measurementSet.alternate_accessions?.length > 0 || sampleSummary;
 
   return (
     <SearchListItemContent>
@@ -34,23 +34,24 @@ export default function MeasurementSet({ item: measurementSet }) {
         <SearchListItemTitle>{measurementSet.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{measurementSet.lab.title}</div>
-          {measurementSet.summary && (
-            <div key="summary">{measurementSet.summary}</div>
-          )}
-          {measurementSet.alternate_accessions?.length > 0 && (
-            <AlternateAccessions
-              alternateAccessions={measurementSet.alternate_accessions}
-            />
-          )}
-          {representativeSampleSummary && (
-            <div key="representative-sample-summary">
-              {representativeSampleSummary}
-              {hiddenSampleSummaryCount > 0 && (
-                <i> ({hiddenSampleSummaryCount} more)</i>
-              )}
-            </div>
-          )}
         </SearchListItemMeta>
+        {isSupplementsVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions
+              item={measurementSet}
+            />
+            {sampleSummary && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Sample Summary
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {sampleSummary}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={measurementSet} />
     </SearchListItemContent>

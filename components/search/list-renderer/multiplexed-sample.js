@@ -1,18 +1,22 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
-import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementAlternateAccessions,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function MultiplexedSample({ item: multiplexedSample }) {
+  const isSupplementsVisible =
+    multiplexedSample.alternate_accessions?.length > 0;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -22,13 +26,15 @@ export default function MultiplexedSample({ item: multiplexedSample }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{multiplexedSample.summary}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{multiplexedSample.lab.title}</div>
-          {multiplexedSample.alternate_accessions?.length > 0 && (
-            <AlternateAccessions
-              alternateAccessions={multiplexedSample.alternate_accessions}
-            />
-          )}
+          <span key="lab">{multiplexedSample.lab.title}</span>
         </SearchListItemMeta>
+        {isSupplementsVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions
+              item={multiplexedSample}
+            />
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={multiplexedSample} />
     </SearchListItemContent>

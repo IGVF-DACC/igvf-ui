@@ -1,18 +1,21 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
-import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementAlternateAccessions,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function TechnicalSample({ item: technicalSample }) {
+  const isSupplementVisible = technicalSample.alternate_accessions?.length > 0;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -22,13 +25,15 @@ export default function TechnicalSample({ item: technicalSample }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{technicalSample.summary}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{technicalSample.lab.title}</div>
-          {technicalSample.alternate_accessions?.length > 0 && (
-            <AlternateAccessions
-              alternateAccessions={technicalSample.alternate_accessions}
-            />
-          )}
+          <span key="lab">{technicalSample.lab.title}</span>
         </SearchListItemMeta>
+        {isSupplementVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions
+              item={technicalSample}
+            />
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={technicalSample} />
     </SearchListItemContent>

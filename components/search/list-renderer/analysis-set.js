@@ -1,5 +1,4 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components/search/list-renderer
 import {
@@ -8,19 +7,15 @@ import {
   SearchListItemMeta,
   SearchListItemQuality,
   SearchListItemSupplement,
-  SearchListItemSupplementSection,
-  SearchListItemSupplementLabel,
-  SearchListItemSupplementContent,
+  SearchListItemSupplementAlternateAccessions,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
-// components
-import AlternateAccessions from "../../alternate-accessions";
-import SeparatedList from "../../separated-list";
 
 export default function AnalysisSet({ item: analysisSet }) {
   const summary = analysisSet.summary;
+  const isSupplementVisible = analysisSet.alternate_accessions?.length > 0;
 
   return (
     <SearchListItemContent>
@@ -29,32 +24,14 @@ export default function AnalysisSet({ item: analysisSet }) {
           <SearchListItemType item={analysisSet} />
           {analysisSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>Analysis</SearchListItemTitle>
+        <SearchListItemTitle>{analysisSet.file_set_type}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{analysisSet.lab.title}</div>
-          {summary && <div key="summary">{summary}</div>}
-          {analysisSet.alternate_accessions?.length > 0 && (
-            <AlternateAccessions
-              alternateAccessions={analysisSet.alternate_accessions}
-            />
-          )}
+          <span key="lab">{analysisSet.lab.title}</span>
+          {summary && <span key="summary">{summary}</span>}
         </SearchListItemMeta>
-        {analysisSet.input_file_sets?.length > 0 && (
+        {isSupplementVisible && (
           <SearchListItemSupplement>
-            <SearchListItemSupplementSection>
-              <SearchListItemSupplementLabel>
-                Input File Sets
-              </SearchListItemSupplementLabel>
-              <SearchListItemSupplementContent>
-                <SeparatedList isCollapsible>
-                  {analysisSet.input_file_sets.map((fileSet) => (
-                    <Link key={fileSet["@id"]} href={fileSet["@id"]}>
-                      {fileSet.accession}
-                    </Link>
-                  ))}
-                </SeparatedList>
-              </SearchListItemSupplementContent>
-            </SearchListItemSupplementSection>
+            <SearchListItemSupplementAlternateAccessions item={analysisSet} />
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>

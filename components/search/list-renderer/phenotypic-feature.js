@@ -4,17 +4,23 @@ import PropTypes from "prop-types";
 import {
   SearchListItemContent,
   SearchListItemMain,
-  SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementSection,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementContent,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 // lib
+import { formatDate } from "../../../lib/dates";
 import { getPhenotypicFeatureTitle } from "../../../lib/phenotypic-feature";
 
 export default function PhenotypicFeature({ item: phenotypicFeature }) {
   const title = getPhenotypicFeatureTitle(phenotypicFeature);
+  const isSupplementVisible = Boolean(phenotypicFeature.observation_date);
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -23,12 +29,17 @@ export default function PhenotypicFeature({ item: phenotypicFeature }) {
           {phenotypicFeature.uuid}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{title}</SearchListItemTitle>
-        {phenotypicFeature.observation_date && (
-          <>
-            <SearchListItemMeta>
-              <div key="lab">{phenotypicFeature.observation_date}</div>
-            </SearchListItemMeta>
-          </>
+        {isSupplementVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                Observation Date
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                {formatDate(phenotypicFeature.observation_date)}
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          </SearchListItemSupplement>
         )}
       </SearchListItemMain>
       <SearchListItemQuality item={phenotypicFeature} />

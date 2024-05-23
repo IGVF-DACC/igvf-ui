@@ -22,7 +22,6 @@ export default function SoftwareVersion({ item: softwareVersion }) {
       <SearchListItemMain>
         <SearchListItemUniqueId>
           <SearchListItemType item={softwareVersion} />
-          {title}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{title}</SearchListItemTitle>
         <SearchListItemMeta>

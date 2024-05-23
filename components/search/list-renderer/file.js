@@ -11,12 +11,12 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
   SearchListItemSupplement,
+  SearchListItemSupplementAlternateAccessions,
   SearchListItemSupplementSection,
   SearchListItemSupplementLabel,
   SearchListItemSupplementContent,
 } from "./search-list-item";
 // components
-import AlternateAccessions from "../../alternate-accessions";
 import SeparatedList from "../../separated-list";
 
 export default function File({ item: file, accessoryData = null }) {
@@ -44,49 +44,40 @@ export default function File({ item: file, accessoryData = null }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{titleElements.join(" - ")}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{file.lab.title}</div>
-          {file.dbxrefs && (
-            <div key="external resources">{file.dbxrefs.join(", ")}</div>
-          )}
-          {file.alternate_accessions?.length > 0 && (
-            <AlternateAccessions
-              alternateAccessions={file.alternate_accessions}
-            />
-          )}
+          <span key="lab">{file.lab.title}</span>
         </SearchListItemMeta>
+        <SearchListItemSupplement>
+          <SearchListItemSupplementAlternateAccessions item={file} />
+          {fileSet && (
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                File Set
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                <Link href={fileSet["@id"]}>{fileSet.summary}</Link>
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          )}
+          {seqspecOfs.length > 0 && (
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                Seqspec Of
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                <SeparatedList isCollapsible>
+                  {seqspecOfs.map((seqspecOf) => {
+                    return (
+                      <Link href={seqspecOf["@id"]} key={seqspecOf["@id"]}>
+                        {seqspecOf.accession}
+                      </Link>
+                    );
+                  })}
+                </SeparatedList>
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          )}
+        </SearchListItemSupplement>
         <SearchListItemQuality item={file} />
-        {(fileSet || seqspecOfs.length > 0) && (
-          <SearchListItemSupplement>
-            {fileSet && (
-              <SearchListItemSupplementSection>
-                <SearchListItemSupplementLabel>
-                  File Set
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  <Link href={fileSet["@id"]}>{fileSet.summary}</Link>
-                </SearchListItemSupplementContent>
-              </SearchListItemSupplementSection>
-            )}
-            {seqspecOfs.length > 0 && (
-              <SearchListItemSupplementSection>
-                <SearchListItemSupplementLabel>
-                  Seqspec Of
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  <SeparatedList isCollapsible>
-                    {seqspecOfs.map((seqspecOf) => {
-                      return (
-                        <Link href={seqspecOf["@id"]} key={seqspecOf["@id"]}>
-                          {seqspecOf.accession}
-                        </Link>
-                      );
-                    })}
-                  </SeparatedList>
-                </SearchListItemSupplementContent>
-              </SearchListItemSupplementSection>
-            )}
-          </SearchListItemSupplement>
-        )}
       </SearchListItemMain>
     </SearchListItemContent>
   );

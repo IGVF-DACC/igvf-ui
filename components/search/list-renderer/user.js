@@ -24,7 +24,7 @@ export default function User({ item: user, accessoryData = null }) {
         <SearchListItemTitle>{user.title}</SearchListItemTitle>
         {lab && (
           <SearchListItemMeta>
-            <div key="lab">{lab.title}</div>
+            <span key="lab">{lab.title}</span>
           </SearchListItemMeta>
         )}
       </SearchListItemMain>

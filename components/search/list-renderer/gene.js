@@ -6,12 +6,18 @@ import {
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementContent,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function Gene({ item: gene }) {
+  const isSupplementVisible = gene.synonyms?.length > 0;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -21,11 +27,20 @@ export default function Gene({ item: gene }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{gene.title}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="symbol">{gene.symbol}</div>
-          {gene.synonyms?.length > 0 && (
-            <div key="synonyms">{gene.synonyms.join(", ")}</div>
-          )}
+          <span key="symbol">{gene.symbol}</span>
         </SearchListItemMeta>
+        {isSupplementVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                Synonyms
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                {gene.synonyms.join(", ")}
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={gene} />
     </SearchListItemContent>

@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components/search/list-renderer
 import {
@@ -6,16 +7,20 @@ import {
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementContent,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import SeparatedList from "../../separated-list";
 
 export default function OpenReadingFrame({ item: openReadingFrame }) {
-  const geneId = openReadingFrame.gene.map((gene) => gene.geneid).join(", ");
-  const geneSymbol = openReadingFrame.gene
-    ?.map((gene) => gene.symbol)
-    .join(", ");
+  const isMetaVisible = Boolean(openReadingFrame.protein_id);
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -23,13 +28,27 @@ export default function OpenReadingFrame({ item: openReadingFrame }) {
           <SearchListItemType item={openReadingFrame} />
         </SearchListItemUniqueId>
         <SearchListItemTitle>{openReadingFrame.orf_id}</SearchListItemTitle>
-        <SearchListItemMeta>
-          <div key="geneid">{geneId}</div>
-          <div key="genesymbpl">{geneSymbol}</div>
-          {openReadingFrame.protein_id && (
-            <div key="protein">{openReadingFrame.protein_id}</div>
-          )}
-        </SearchListItemMeta>
+        {isMetaVisible && (
+          <SearchListItemMeta>{openReadingFrame.protein_id}</SearchListItemMeta>
+        )}
+        <SearchListItemSupplement>
+          <SearchListItemSupplementSection>
+            <SearchListItemSupplementLabel>Genes</SearchListItemSupplementLabel>
+            <SearchListItemSupplementContent>
+              <SeparatedList isCollapsible>
+                {openReadingFrame.gene.map((gene) => (
+                  <Link
+                    href={gene["@id"]}
+                    key={gene["@id"]}
+                    className="whitespace-nowrap"
+                  >
+                    {gene.symbol}:{gene.geneid}
+                  </Link>
+                ))}
+              </SeparatedList>
+            </SearchListItemSupplementContent>
+          </SearchListItemSupplementSection>
+        </SearchListItemSupplement>
       </SearchListItemMain>
       <SearchListItemQuality item={openReadingFrame} />
     </SearchListItemContent>

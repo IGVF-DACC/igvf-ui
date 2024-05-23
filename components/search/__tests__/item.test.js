@@ -35,7 +35,7 @@ describe("Test a search-list item", () => {
             </SearchListItemUniqueId>
             <SearchListItemTitle>{term.term_name}</SearchListItemTitle>
             <SearchListItemMeta>
-              <div>{term.synonyms.join(", ")}</div>
+              <span>{term.synonyms.join(", ")}</span>
             </SearchListItemMeta>
           </SearchListItemMain>
           <SearchListItemSupplement>

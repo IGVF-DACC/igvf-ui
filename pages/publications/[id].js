@@ -16,11 +16,13 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { PublicationCitation } from "../../components/publication";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { checkPublicationCitationVisible } from "../../lib/publication";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Publication({
@@ -45,23 +47,11 @@ export default function Publication({
                   <DataItemValue>{publication.authors}</DataItemValue>
                 </>
               )}
-              {(publication.journal || publication.date_published) && (
+              {checkPublicationCitationVisible(publication) && (
                 <>
                   <DataItemLabel>Citation</DataItemLabel>
                   <DataItemValue>
-                    {publication.journal ? <i>{publication.journal}. </i> : ""}
-                    {publication.date_published ? (
-                      `${publication.date_published};`
-                    ) : (
-                      <span>&nbsp;</span>
-                    )}
-                    {publication.volume ? publication.volume : ""}
-                    {publication.issue ? `(${publication.issue})` : ""}
-                    {publication.page ? (
-                      `:${publication.page}.`
-                    ) : (
-                      <span>&nbsp;</span>
-                    )}
+                    <PublicationCitation publication={publication} />
                   </DataItemValue>
                 </>
               )}
@@ -71,7 +61,7 @@ export default function Publication({
                   <DataItemValue>{publication.abstract}</DataItemValue>
                 </>
               )}
-              <DataItemLabel>Publication Identifers</DataItemLabel>
+              <DataItemLabel>Publication Identifiers</DataItemLabel>
               <DataItemValue>
                 <DbxrefList dbxrefs={publication.publication_identifiers} />
               </DataItemValue>
