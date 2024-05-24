@@ -674,14 +674,6 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
-            id="overview"
-            href="/profiles/graph.svg"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Overview
-          </NavigationHrefItem>
-          <NavigationHrefItem
             id="schemas"
             href="/profiles"
             navigationClick={navigationClick}

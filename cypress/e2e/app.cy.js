@@ -14,10 +14,6 @@ describe("Navigation", () => {
     // Test Data Model submenus.
     cy.get("[data-testid=navigation-data-model]").click();
 
-    cy.get("[data-testid=navigation-overview]").click();
-    cy.url().should("include", "/profiles/graph.svg");
-    cy.get("h1").should("have.text", "Graph");
-
     cy.get("[data-testid=navigation-schemas]").click();
     cy.url().should("include", "/profiles/");
     cy.get("h1").should("have.text", "Schema Directory");
