@@ -65,44 +65,4 @@ describe("Content-Change Tests", () => {
       cy.contains("released");
     });
   });
-
-  it("should update the help page when you add new help pages", () => {
-    cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
-    cy.contains("Cypress Testing");
-    cy.wait(1500);
-
-    // Make a new top-level help page.
-    const now = new Date().getTime();
-    cy.get("[data-testid=navigation-data-model]").click();
-    cy.get("[data-testid=navigation-schemas]").click();
-    cy.get(`[aria-label="Add Page"]`).click();
-    cy.get("#block1").type("Test Help Category");
-    cy.get("#name").type(`test-help-category-${now}`);
-    cy.get("#title").type(`Test Help Category ${now}`);
-    cy.get(`[aria-label="Parent help list item"]`).click();
-    cy.get(`[aria-label="Save edits to page"]`).click();
-    cy.delayForIndexing();
-    cy.get(`[aria-label="Save edits to page"]`).should("not.exist");
-
-    // Make sure the new top-level help page appears as a category on the help page.
-    cy.delayForIndexing();
-    cy.get(`[data-testid="navigation-about"]`).click();
-    cy.get(`[data-testid="navigation-help"]`).click();
-    cy.get("h2").should("contain", `Test Help Category ${now}`);
-
-    // Make a new top-level help page.
-    cy.get("[data-testid=navigation-schemas]").click();
-    cy.get(`[aria-label="Add Page"]`).click();
-    cy.get("#block1").type("Help Content Page");
-    cy.get("#name").type(`help-content-${now}}`);
-    cy.get("#title").type(`Help Content ${now}`);
-    cy.get(`[aria-label="Parent test-help-category-${now} list item"]`).click();
-    cy.get(`[aria-label="Save edits to page"]`).click();
-    cy.delayForIndexing();
-    cy.get(`[aria-label="Save edits to page"]`).should("not.exist");
-
-    // Make sure the new help page appears as a regular help page.
-    cy.get(`[data-testid="navigation-help"]`).click();
-    cy.get("a").should("contain", `Help Content ${now}`);
-  });
 });

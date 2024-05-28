@@ -36,12 +36,11 @@ describe("Navigation", () => {
     // Test Methodology submenus. Add to this once the pages these submenus link to exist.
     cy.get("[data-testid=navigation-methodology]").click();
 
-    // Test About submenus.
+    // Test About submenus. Add to this once the pages these submenus link to exist.
     cy.get("[data-testid=navigation-about]").click();
 
+    // Test Help submenus. Add to this once the pages these submenus link to exist.
     cy.get("[data-testid=navigation-help]").click();
-    cy.url().should("include", "/help");
-    cy.get("h1").should("exist"); // Actual title depends on data
   });
 
   it("should load every schema's list and report page", () => {

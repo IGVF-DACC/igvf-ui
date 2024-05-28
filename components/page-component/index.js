@@ -30,6 +30,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/page-components
+import ButtonNavigation from "./button-navigation";
 import ChevronNavigation from "./chevron-navigation";
 import ImageAligned from "./image-aligned";
 import PageNavigation from "./page-navigation";
@@ -43,6 +44,7 @@ import VideoYouTube from "./video-youtube";
  * this object.
  */
 const componentMap = {
+  BUTTON_NAV: ButtonNavigation,
   CHEVRON_NAV: ChevronNavigation,
   IMAGE_ALIGNED: ImageAligned,
   PAGE_NAV: PageNavigation,
@@ -68,7 +70,8 @@ export default function PageComponent({ spec }) {
     // plugin component.
     if (Component) {
       const pluginProps = specParts.reduce((acc, part) => {
-        const [key, value] = part.split("=");
+        const [key] = part.split("=");
+        const value = part.substring(part.indexOf("=") + 1);
         acc[key] = value;
         return acc;
       }, {});

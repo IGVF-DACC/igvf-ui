@@ -45,7 +45,7 @@ import SessionContext from "./session-context";
 import FetchRequest from "../lib/fetch-request";
 import {
   detectConflictingName,
-  getPageTitleAndOrdering,
+  getPageTitleAndCodes,
   rewriteBlockIds,
   savePage,
   sliceBlocks,
@@ -1005,7 +1005,11 @@ export default function Page({
   }
 
   // Get the displayable page title.
-  const { title } = getPageTitleAndOrdering(page);
+  const { title, codes } = getPageTitleAndCodes(page);
+
+  // Determine whether to display the page border or not.
+  const isPanelHidden = codes.includes("nopanel");
+  const PanelComponent = isPanelHidden ? "div" : DataPanel;
 
   return (
     <PageCondition.Provider value={{ isDirty, setDirty, isNewPage }}>
@@ -1030,7 +1034,7 @@ export default function Page({
       ) : (
         <>
           {isAuthenticated && <EditPageTrigger href={router.asPath} />}
-          <DataPanel>
+          <PanelComponent>
             <div
               data-testid="page-blocks"
               id="page-content"
@@ -1052,7 +1056,7 @@ export default function Page({
                 }
               })}
             </div>
-          </DataPanel>
+          </PanelComponent>
         </>
       )}
     </PageCondition.Provider>

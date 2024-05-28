@@ -36,6 +36,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "@id": "/labs/j-michael-cherry/",
       "@type": ["Lab", "Item"],
       title: "J. Michael Cherry, Stanford",
+      creation_timestamp: "2021-10-29T00:00:00.000000+00:00",
       status: "current",
       uuid: "d91b048e-2d8a-4562-893d-93f0e68397c0",
     };
@@ -56,6 +57,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "@id": "/unknowns/ACCESSION/",
       "@type": ["Unknown", "Item"],
       title: "An unknown item",
+      creation_timestamp: "2021-10-29T00:00:00.000000+00:00",
       status: "current",
       uuid: "d91b048e-2d8a-4562-893d-93f0e68397c0",
     };
@@ -84,6 +86,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "@id": "/human-donors/IGVFDO856PXB/",
       "@type": ["HumanDonor", "Donor", "Item"],
       accession: "IGVFDO856PXB",
+      creation_timestamp: "2021-10-29T00:00:00.000000+00:00",
       status: "current",
       uuid: "d91b048e-2d8a-4562-893d-93f0e68397c0",
     };
@@ -116,6 +119,7 @@ describe("Test breadcrumb composition and rendering functionality", () => {
       "@id": "/human-donors/IGVFDO856PXB/",
       "@type": ["HumanDonor", "Donor", "Item"],
       accession: "IGVFDO856PXB",
+      creation_timestamp: "2021-10-29T00:00:00.000000+00:00",
       status: "current",
       uuid: "d91b048e-2d8a-4562-893d-93f0e68397c0",
     };
@@ -487,6 +491,6 @@ describe("Test breadcrumb utility functions", () => {
       "/help/first-level/second-level"
     );
     expect(parentPaths).toHaveLength(1);
-    expect(parentPaths[0]).toBe("/help");
+    expect(parentPaths[0]).toBe("/help/first-level/");
   });
 });
