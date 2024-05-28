@@ -1,5 +1,6 @@
 // node_modules
 import { Fragment } from "react";
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -21,6 +22,7 @@ import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import SeparatedList from "../../components/separated-list";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -66,9 +68,22 @@ export default function MultiplexedSample({
             <DataArea>
               <SampleDataItems
                 item={multiplexedSample}
-                sources={sources}
                 constructLibrarySets={constructLibrarySets}
               >
+                {sources?.length > 0 && (
+                  <>
+                    <DataItemLabel>Sources</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {sources.map((source) => (
+                          <Link href={source["@id"]} key={source["@id"]}>
+                            {source.title}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
                 {multiplexedSample.cellular_sub_pool && (
                   <>
                     <DataItemLabel>Cellular Sub Pool</DataItemLabel>
