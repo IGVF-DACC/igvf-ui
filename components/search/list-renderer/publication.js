@@ -20,8 +20,7 @@ import { PublicationCitation } from "../../publication";
 import { checkPublicationCitationVisible } from "../../../lib/publication";
 
 export default function Publication({ item: publication }) {
-  const isSupplementVisible =
-    publication.authors || checkPublicationCitationVisible(publication);
+  const isSupplementVisible = checkPublicationCitationVisible(publication);
 
   return (
     <SearchListItemContent>
