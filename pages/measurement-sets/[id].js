@@ -335,7 +335,6 @@ export async function getServerSideProps({ params, req, query }) {
   const measurementSet = (
     await request.getObject(`/measurement-sets/${params.id}/`)
   ).union();
-  console.log("***** AUDIT TEST", measurementSet);
   if (FetchRequest.isResponseSuccess(measurementSet)) {
     const assayTerm = (
       await request.getObject(measurementSet.assay_term["@id"])
