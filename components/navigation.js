@@ -706,7 +706,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="igvf-help"
-            href="/help/about/igvf"
+            href="/help/about-igvf"
             navigationClick={navigationClick}
             isChildItem
           >
