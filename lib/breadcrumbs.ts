@@ -14,7 +14,7 @@ import type {
 } from "../globals.d";
 import type { ErrorObject } from "./fetch-request.d";
 import FetchRequest from "./fetch-request";
-import { getPageTitleAndOrdering } from "./page";
+import { getPageTitleAndCodes } from "./page";
 import { Ok } from "./result";
 
 type Breadcrumb = {
@@ -81,12 +81,6 @@ async function buildItemBreadcrumbs(
  * @returns {array} Array of paths that are parents of the given path
  */
 export function generatePageParentPaths(path: string): string[] {
-  // For pages beginning with /help, just use "/help" as the parent page regardless of the help
-  // page's depth so that breadcrumbs don't contain links to empty intermediate pages.
-  if (path.startsWith("/help")) {
-    return ["/help"];
-  }
-
   // For non-help pages, generate paths for every parent of the current page's path.
   const pathElements = path.split("/").filter((path) => path !== "");
   const pathHierarchy = pathElements.reduce((acc: string[], element, index) => {
@@ -95,6 +89,12 @@ export function generatePageParentPaths(path: string): string[] {
     }
     return acc.concat([`${acc[index - 1]}${element}/`]);
   }, []);
+
+  // If the first element is "/help/", remove it
+  if (pathHierarchy[0] === "/help/") {
+    pathHierarchy.shift();
+  }
+
   return pathHierarchy.length > 1 ? pathHierarchy.slice(0, -1) : [];
 }
 
@@ -121,14 +121,18 @@ async function buildPageBreadcrumbs(
 
   // Build the breadcrumb data from the collection and item.
   const breadcrumbs = pathObjects.map((pathObject) => {
-    return { title: pathObject.title, href: pathObject["@id"] } as Breadcrumb;
+    const { title } = getPageTitleAndCodes(pathObject) as {
+      title: string;
+      codes?: string[];
+    };
+    return { title, href: pathObject["@id"] } as Breadcrumb;
   });
 
   // Removed the current page path to avoid requesting it from the server when we already have
   // it. Add it back here.
-  const { title } = getPageTitleAndOrdering(page) as {
+  const { title } = getPageTitleAndCodes(page) as {
     title: string;
-    ordering?: number;
+    codes?: string[];
   };
   return breadcrumbs.concat({ title, href: page["@id"] } as Breadcrumb);
 }

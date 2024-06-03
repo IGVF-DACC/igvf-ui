@@ -11,8 +11,8 @@ describe("Mobile menu tests", () => {
     cy.get("[data-testid='mobile-navigation']").should("be.visible");
 
     // Selecting a mobile navigation item should close the menu.
-    cy.get("[data-testid=navigation-about]").eq(1).click();
-    cy.get("[data-testid=navigation-help]").click();
+    cy.get("[data-testid=navigation-data-model]").eq(1).click();
+    cy.get("[data-testid=navigation-schemas]").click();
     cy.get("[data-testid='mobile-navigation']").should("not.exist");
   });
 });

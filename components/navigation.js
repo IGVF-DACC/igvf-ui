@@ -3,7 +3,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bars2Icon,
-  InformationCircleIcon,
   MinusIcon,
   PlusIcon,
   QuestionMarkCircleIcon,
@@ -137,11 +136,18 @@ function NavigationIcon({ isNarrowNav, children }) {
   const iconElement = Children.only(children);
   if (isValidElement(iconElement)) {
     return React.cloneElement(iconElement, {
-      className: isNarrowNav ? "h-8 w-8" : "mr-1 h-4 w-4",
+      className: `${isNarrowNav ? "h-8 w-8" : "mr-1 h-4 w-4}"} ${
+        iconElement.props.className || ""
+      }`,
     });
   }
   return children;
 }
+
+NavigationIcon.propTypes = {
+  // True if the navigation is in narrow mode
+  isNarrowNav: PropTypes.bool,
+};
 
 /**
  * Generate the Tailwind CSS classes for a navigation item.
@@ -686,7 +692,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         <NavigationGroupItem
           id="about"
           title="About"
-          icon={<InformationCircleIcon />}
+          icon={<Icon.Brand className="[&>g]:fill-black" />}
           isGroupOpened={openedParents.includes("about")}
           handleGroupClick={handleParentClick}
         >
@@ -699,14 +705,40 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             Policies
           </NavigationHrefItem>
           <NavigationHrefItem
-            id="help"
-            href="/help"
+            id="igvf-help"
+            href="/help/about-igvf"
             navigationClick={navigationClick}
             isChildItem
           >
-            Help
+            IGVF
           </NavigationHrefItem>
         </NavigationGroupItem>
+
+        <NavigationGroupItem
+          id="help"
+          title="Help"
+          icon={<QuestionMarkCircleIcon />}
+          isGroupOpened={openedParents.includes("help")}
+          handleGroupClick={handleParentClick}
+        >
+          <NavigationHrefItem
+            id="submission"
+            href="/help/data-submission"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Data Submission
+          </NavigationHrefItem>
+          <NavigationHrefItem
+            id="general-help"
+            href="/help/general-help"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            General Help
+          </NavigationHrefItem>
+        </NavigationGroupItem>
+
         {isAuthenticated ? (
           <NavigationGroupItem
             id="authenticate"
