@@ -10,12 +10,14 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function PhenotypeOntologyTerm({
   phenotypeOntologyTerm,
+  isA,
   isJson,
 }) {
   return (
@@ -27,7 +29,7 @@ export default function PhenotypeOntologyTerm({
         <JsonDisplay item={phenotypeOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <OntologyTermDataItems item={phenotypeOntologyTerm} />
+              <OntologyTermDataItems item={phenotypeOntologyTerm} isA={isA} />
             </DataArea>
           </DataPanel>
         </JsonDisplay>
@@ -39,6 +41,8 @@ export default function PhenotypeOntologyTerm({
 PhenotypeOntologyTerm.propTypes = {
   // Phenotype ontology term object to display
   phenotypeOntologyTerm: PropTypes.object.isRequired,
+  // List of term names
+  isA: PropTypes.arrayOf(PropTypes.object),
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
@@ -50,6 +54,9 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/phenotype-terms/${params.name}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(phenotypeOntologyTerm)) {
+    const isA = phenotypeOntologyTerm.is_a
+      ? await requestOntologyTerms(phenotypeOntologyTerm.is_a, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       phenotypeOntologyTerm,
       phenotypeOntologyTerm.term_id,
@@ -58,6 +65,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         phenotypeOntologyTerm,
+        isA,
         pageContext: { title: phenotypeOntologyTerm.term_id },
         breadcrumbs,
         isJson,
