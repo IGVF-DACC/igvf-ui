@@ -918,6 +918,7 @@ export default function Page({
   labs,
   pages,
   isNewPage = false,
+  titleDecoration = "",
 }) {
   // Blocks of content; gets updated on save
   const [editableBlocks, setEditableBlocks] = useState(() =>
@@ -1014,7 +1015,7 @@ export default function Page({
   return (
     <PageCondition.Provider value={{ isDirty, setDirty, isNewPage }}>
       <Breadcrumbs />
-      <PagePreamble pageTitle={title} />
+      <PagePreamble pageTitle={title}>{titleDecoration}</PagePreamble>
       {activeError && (
         <FlashMessage
           message={activeError}
@@ -1074,4 +1075,6 @@ Page.propTypes = {
   pages: PropTypes.arrayOf(PropTypes.object),
   // True if adding a page instead of updating an existing page
   isNewPage: PropTypes.bool,
+  // String or component to display after the page title
+  titleDecoration: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 };
