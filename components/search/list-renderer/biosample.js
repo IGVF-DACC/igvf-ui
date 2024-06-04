@@ -8,14 +8,13 @@ import {
   SearchListItemQuality,
   SearchListItemSupplement,
   SearchListItemSupplementAlternateAccessions,
+  SearchListItemSupplementSummary,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function Biosample({ item: biosample }) {
-  const isSupplementVisible = biosample.alternate_accessions?.length > 0;
-
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -27,11 +26,10 @@ export default function Biosample({ item: biosample }) {
         <SearchListItemMeta>
           <span key="lab">{biosample.lab.title}</span>
         </SearchListItemMeta>
-        {isSupplementVisible && (
-          <SearchListItemSupplement>
-            <SearchListItemSupplementAlternateAccessions item={biosample} />
-          </SearchListItemSupplement>
-        )}
+        <SearchListItemSupplement>
+          <SearchListItemSupplementAlternateAccessions item={biosample} />
+          <SearchListItemSupplementSummary item={biosample} />
+        </SearchListItemSupplement>
       </SearchListItemMain>
       <SearchListItemQuality item={biosample} />
     </SearchListItemContent>

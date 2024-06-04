@@ -68,8 +68,7 @@ export function SearchListItemUniqueId({ children }) {
 }
 
 /**
- * Display an object's alternate accessions in a search-list item. This is displayed in italics and
- * within square brackets.
+ * Display an object's alternate accessions in a search-list item as a supplement.
  */
 export function SearchListItemSupplementAlternateAccessions({ item }) {
   return (
@@ -94,6 +93,25 @@ export function SearchListItemSupplementAlternateAccessions({ item }) {
 
 SearchListItemSupplementAlternateAccessions.propTypes = {
   // Search-result item to display the alternate accessions for
+  item: PropTypes.object.isRequired,
+};
+
+/**
+ * Display an object's summary in a search-list item as a supplement.
+ */
+export function SearchListItemSupplementSummary({ item }) {
+  return (
+    <SearchListItemSupplementSection>
+      <SearchListItemSupplementLabel>Summary</SearchListItemSupplementLabel>
+      <SearchListItemSupplementContent>
+        {item.summary}
+      </SearchListItemSupplementContent>
+    </SearchListItemSupplementSection>
+  );
+}
+
+SearchListItemSupplementSummary.propTypes = {
+  // Search-result item to display the summary for
   item: PropTypes.object.isRequired,
 };
 

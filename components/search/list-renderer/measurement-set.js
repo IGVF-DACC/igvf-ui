@@ -11,6 +11,7 @@ import {
   SearchListItemSupplementContent,
   SearchListItemSupplementLabel,
   SearchListItemSupplementSection,
+  SearchListItemSupplementSummary,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -19,10 +20,7 @@ import {
 export default function MeasurementSet({ item: measurementSet }) {
   // Collect the summary of the sample object in the measurement set if available. MeasurementSet
   // objects can have zero or one sample object, so we only need to check the first one.
-  // representative sample summary.
   const sampleSummary = measurementSet.samples?.[0].summary || "";
-  const isSupplementsVisible =
-    measurementSet.alternate_accessions?.length > 0 || sampleSummary;
 
   return (
     <SearchListItemContent>
@@ -35,23 +33,20 @@ export default function MeasurementSet({ item: measurementSet }) {
         <SearchListItemMeta>
           <div key="lab">{measurementSet.lab.title}</div>
         </SearchListItemMeta>
-        {isSupplementsVisible && (
-          <SearchListItemSupplement>
-            <SearchListItemSupplementAlternateAccessions
-              item={measurementSet}
-            />
-            {sampleSummary && (
-              <SearchListItemSupplementSection>
-                <SearchListItemSupplementLabel>
-                  Sample Summary
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {sampleSummary}
-                </SearchListItemSupplementContent>
-              </SearchListItemSupplementSection>
-            )}
-          </SearchListItemSupplement>
-        )}
+        <SearchListItemSupplement>
+          <SearchListItemSupplementAlternateAccessions item={measurementSet} />
+          <SearchListItemSupplementSummary item={measurementSet} />
+          {sampleSummary && (
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                Sample Summary
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                {sampleSummary}
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          )}
+        </SearchListItemSupplement>
       </SearchListItemMain>
       <SearchListItemQuality item={measurementSet} />
     </SearchListItemContent>

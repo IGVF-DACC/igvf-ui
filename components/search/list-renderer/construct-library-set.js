@@ -30,10 +30,10 @@ export default function ConstructLibrarySet({ item: constructLibrarySet }) {
           <span key="scope">{constructLibrarySet.scope}</span>
         </SearchListItemMeta>
         <SearchListItemSupplement>
+          <SearchListItemSupplementAlternateAccessions
+            item={constructLibrarySet}
+          />
           <SearchListItemSupplementSection>
-            <SearchListItemSupplementAlternateAccessions
-              item={constructLibrarySet}
-            />
             <SearchListItemSupplementLabel>
               Selection Criteria
             </SearchListItemSupplementLabel>

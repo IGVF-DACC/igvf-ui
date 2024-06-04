@@ -8,18 +8,13 @@ import {
   SearchListItemQuality,
   SearchListItemSupplement,
   SearchListItemSupplementAlternateAccessions,
-  SearchListItemSupplementContent,
-  SearchListItemSupplementLabel,
-  SearchListItemSupplementSection,
+  SearchListItemSupplementSummary,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function CuratedSet({ item: curatedSet }) {
-  const isSupplementVisible =
-    curatedSet.summary || curatedSet.alternate_accessions?.length > 0;
-
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -33,23 +28,12 @@ export default function CuratedSet({ item: curatedSet }) {
         <SearchListItemMeta>
           <span key="lab">{curatedSet.lab.title}</span>
         </SearchListItemMeta>
-        {isSupplementVisible && (
-          <SearchListItemSupplement>
-            {curatedSet.alternate_accessions?.length > 0 && (
-              <SearchListItemSupplementAlternateAccessions item={curatedSet} />
-            )}
-            {curatedSet.summary && (
-              <SearchListItemSupplementSection>
-                <SearchListItemSupplementLabel>
-                  Summary
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {curatedSet.summary}
-                </SearchListItemSupplementContent>
-              </SearchListItemSupplementSection>
-            )}
-          </SearchListItemSupplement>
-        )}
+        <SearchListItemSupplement>
+          {curatedSet.alternate_accessions?.length > 0 && (
+            <SearchListItemSupplementAlternateAccessions item={curatedSet} />
+          )}
+          <SearchListItemSupplementSummary item={curatedSet} />
+        </SearchListItemSupplement>
       </SearchListItemMain>
       <SearchListItemQuality item={curatedSet} />
     </SearchListItemContent>
