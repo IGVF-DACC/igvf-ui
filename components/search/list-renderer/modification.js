@@ -18,7 +18,7 @@ export default function Modification({ item: modification }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{modification.summary}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{modification.lab.title}</div>
+          <span key="lab">{modification.lab.title}</span>
         </SearchListItemMeta>
       </SearchListItemMain>
     </SearchListItemContent>

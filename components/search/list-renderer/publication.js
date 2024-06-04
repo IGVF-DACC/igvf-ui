@@ -6,12 +6,22 @@ import {
   SearchListItemMeta,
   SearchListItemMain,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementSection,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementContent,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import { PublicationCitation } from "../../publication";
+// lib
+import { checkPublicationCitationVisible } from "../../../lib/publication";
 
 export default function Publication({ item: publication }) {
+  const isSupplementVisible = checkPublicationCitationVisible(publication);
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -21,24 +31,20 @@ export default function Publication({ item: publication }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{publication.title}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{publication.lab.title}</div>
-          {publication.authors && (
-            <div key="authors">{publication.authors}</div>
-          )}
-          {(publication.journal || publication.date_published) && (
-            <div key="citation">
-              {publication.journal ? <i>{publication.journal}. </i> : ""}
-              {publication.date_published ? (
-                `${publication.date_published};`
-              ) : (
-                <span>&nbsp;</span>
-              )}
-              {publication.volume ? publication.volume : ""}
-              {publication.issue ? `(${publication.issue})` : ""}
-              {publication.page ? `:${publication.page}.` : <span>&nbsp;</span>}
-            </div>
-          )}
+          <span key="lab">{publication.lab.title}</span>
         </SearchListItemMeta>
+        {isSupplementVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                Citation
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                <PublicationCitation publication={publication} />
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={publication} />
     </SearchListItemContent>

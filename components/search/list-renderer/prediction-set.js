@@ -1,19 +1,21 @@
 // node_modules
 import PropTypes from "prop-types";
-// components
-import AlternateAccessions from "../../alternate-accessions";
 // components/search/list-renderer
 import {
   SearchListItemContent,
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementAlternateAccessions,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function PredictionSet({ item: predictionSet }) {
+  const isSupplementsVisible = predictionSet.alternate_accessions?.length > 0;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -25,14 +27,16 @@ export default function PredictionSet({ item: predictionSet }) {
           {predictionSet.file_set_type} prediction
         </SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{predictionSet.lab.title}</div>
-          {predictionSet.alternate_accessions?.length > 0 && (
-            <AlternateAccessions
-              alternateAccessions={predictionSet.alternate_accessions}
-            />
+          <span key="lab">{predictionSet.lab.title}</span>
+          {predictionSet.scope && (
+            <span key="scope">{predictionSet.scope}</span>
           )}
-          {predictionSet.scope && <div key="scope">{predictionSet.scope}</div>}
         </SearchListItemMeta>
+        {isSupplementsVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions item={predictionSet} />
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={predictionSet} />
     </SearchListItemContent>

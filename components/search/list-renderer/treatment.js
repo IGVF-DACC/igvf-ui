@@ -21,9 +21,9 @@ export default function Treatment({ item: treatment }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{treatment.summary}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{treatment.lab.title}</div>
-          <div key="treatment type">{treatment.treatment_type}</div>
-          <div key="purpose">{treatment.purpose}</div>
+          <span key="lab">{treatment.lab.title}</span>
+          <span key="treatment type">{treatment.treatment_type}</span>
+          <span key="purpose">{treatment.purpose}</span>
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={treatment} />

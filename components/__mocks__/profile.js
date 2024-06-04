@@ -2789,7 +2789,7 @@ const profiles = {
   },
 
   SoftwareVersion: {
-    title: "Software version",
+    title: "Software Version",
     description: "Schema for submitting a tagged version of a software object.",
     $id: "/profiles/software_version.json",
 

@@ -76,7 +76,6 @@ import Treatment from "./treatment";
 import User from "./user";
 import File from "./file";
 import Source from "./source";
-import HumanGenomicVariant from "./human-genomic-variant";
 import Modification from "./modification";
 import Workflow from "./workflow";
 
@@ -94,7 +93,6 @@ const renderers = {
   Document,
   Gene,
   HumanDonor,
-  HumanGenomicVariant,
   ImageFile: File,
   InVitroSystem: Biosample,
   Lab,

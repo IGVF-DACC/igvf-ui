@@ -21,8 +21,8 @@ export default function Document({ item: document }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{document.description}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{document.lab.title}</div>
-          <div key="document_type">{document.document_type}</div>
+          <span key="lab">{document.lab.title}</span>
+          <span key="document_type">{document.document_type}</span>
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={document} />

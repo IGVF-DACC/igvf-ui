@@ -27,6 +27,20 @@ export function formatDate(date?: string): string {
 }
 
 /**
+ * Convert the given date to the APA date style -- (yyyy, MMMM d). This is useful for citing dates
+ * in APA format.
+ * @param date Date in any recognized format
+ * @returns Same as `date` but in APA format
+ */
+export function formatDateApaStyle(date: string): string {
+  const jsDate = new Date(date);
+  const midnightDate = new Date(
+    jsDate.valueOf() + jsDate.getTimezoneOffset() * 60 * 1000
+  );
+  return dateFns.format(midnightDate, "(yyyy, MMMM d)");
+}
+
+/**
  * Format a start and end date in YYYY-MM-DD format into a dash-separated string. If only one of
  * the dates is provided, this returns a single date.
  * @param startDate Start date in the format "YYYY-MM-DD"

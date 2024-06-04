@@ -2,6 +2,7 @@
 import PropTypes from "prop-types";
 import { Children, useContext } from "react";
 // components
+import AlternateAccessions from "../../alternate-accessions";
 import { AuditDetail, useAudit } from "../../audit";
 import Icon from "../../icon";
 import QualitySection from "../../quality-section";
@@ -67,6 +68,36 @@ export function SearchListItemUniqueId({ children }) {
 }
 
 /**
+ * Display an object's alternate accessions in a search-list item. This is displayed in italics and
+ * within square brackets.
+ */
+export function SearchListItemSupplementAlternateAccessions({ item }) {
+  return (
+    <>
+      {item.alternate_accessions?.length > 0 && (
+        <SearchListItemSupplementSection>
+          <SearchListItemSupplementLabel>
+            Alternate Accessions
+          </SearchListItemSupplementLabel>
+          <SearchListItemSupplementContent>
+            <AlternateAccessions
+              alternateAccessions={item.alternate_accessions}
+              className="inline text-xs text-gray-500 dark:text-gray-400"
+              isTitleHidden
+            />
+          </SearchListItemSupplementContent>
+        </SearchListItemSupplementSection>
+      )}
+    </>
+  );
+}
+
+SearchListItemSupplementAlternateAccessions.propTypes = {
+  // Search-result item to display the alternate accessions for
+  item: PropTypes.object.isRequired,
+};
+
+/**
  * Display a search-list item's title. This appears in large, bold text.
  */
 export function SearchListItemTitle({ children }) {
@@ -89,11 +120,9 @@ export function SearchListItemMeta({ children }) {
     <div className="mt-2" data-testid="search-list-item-meta">
       <SeparatedList
         separator={
-          <div className="mx-2 h-1.5 w-1.5 self-center">
-            <Icon.Circle className="fill-gray-300 dark:fill-gray-500" />
-          </div>
+          <Icon.Circle className="mx-1.5 inline-block h-1.5 w-1.5 self-center fill-gray-300 dark:fill-gray-600" />
         }
-        className="text-sm text-gray-600 dark:text-gray-400 [&>div]:inline-block"
+        className="text-sm text-gray-600 dark:text-gray-400"
       >
         {children}
       </SeparatedList>

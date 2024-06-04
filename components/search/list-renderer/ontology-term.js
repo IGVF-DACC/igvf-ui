@@ -4,14 +4,19 @@ import PropTypes from "prop-types";
 import {
   SearchListItemContent,
   SearchListItemMain,
-  SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementContent,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function OntologyTerm({ item: ontologyTerm }) {
+  const isSupplementsVisible = ontologyTerm.synonyms.length > 0;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -20,10 +25,17 @@ export default function OntologyTerm({ item: ontologyTerm }) {
           {ontologyTerm.term_id}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{ontologyTerm.term_name}</SearchListItemTitle>
-        {ontologyTerm.synonyms.length > 0 && (
-          <SearchListItemMeta>
-            <div key="synonyms">{ontologyTerm.synonyms.join(", ")}</div>
-          </SearchListItemMeta>
+        {isSupplementsVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                Synonyms
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                {ontologyTerm.synonyms.join(", ")}
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          </SearchListItemSupplement>
         )}
       </SearchListItemMain>
       <SearchListItemQuality item={ontologyTerm} />

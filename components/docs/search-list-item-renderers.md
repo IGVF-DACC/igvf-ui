@@ -39,8 +39,8 @@ export default function GenericRenderer({ item }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{item.title}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{item.lab.title}</div>
-          <div key="summary">{item.summary}</div>
+          <span key="lab">{item.lab.title}</span>
+          <span key="summary">{item.summary}</span>
         </SearchListItemMeta>
         {item.supplementItem && (
           <SearchListItemSupplement>
@@ -83,11 +83,22 @@ Use a human-readable name that reflects the object or a subset of objects in som
 
 #### Meta (optional)
 
-Provide a small number of type-specific details about an object here. For many objects, the lab title goes here. Also consider some short summary string, organizational identifier, etc. Try to keep this to a single line or a handful of lines of text. Each element in this section gets separated from other elements with a gray bullet. Try to avoid links in the meta section. Wrap the elements of the meta section within the `<SearchListItemMeta>` component. Each separate element within meta has to have a React key unique within the meta section because `<SearchListItemMeta>` iterates over each item.
+Provide a small number of short details about an object here. For many objects, the lab title goes here. Also consider an organizational identifier of some kind. Try to keep the items within the meta down to a handful of characters because they all appear on the same line (possibly broken across multiple lines at narrow browser widths), separated by bullets. Attributes containing long strings of text should instead go into the supplement described below. Avoid links in the meta section.
 
-#### Supplement (optional and discouraged)
+Wrap the elements of the meta section within the `<SearchListItemMeta>` component. Each separate element within meta must have a React key unique within the meta section because `<SearchListItemMeta>` iterates over each item. Wrap each item in a `<span>` instead of a `<div>` so that each item’s text can line break if needed.
 
-In rare cases, you can provide details about an object that don’t necessarily help the user identify a specific object, but provide some convenience. Often, connections with other objects can go here. You can link to other objects in this section. Because the supplement might not help identify a specific object, you can divide the supplement into multiple sections, each with a label wrapped by the `<SearchListItemSupplementLabel>` component. The content of each section gets wrapped in the `<SearchListItemSupplementContent>` component. Wrap both of these within the `<SearchListItemSupplement>` component. If the contents of the supplement take up a large portion of the browser window space, particularly at desktop browser widths, consider dropping elements from the supplement because large elements within the search-list results make browsing a large number of results difficult and time consuming for the user.
+#### Supplement (optional)
+
+Use this section for items that don’t necessarily visually fit well in the meta section. You must provide a supplement item with both the item’s data as well as its title. Examples of properties that work better in supplement than they do in meta:
+
+- Long strings, perhaps potentially longer than 20 characters or so.
+- Arrays of strings or other types of items
+- Items that link to other pages
+- Items that don’t have an obvious meaning without a title
+
+You can divide the supplement into multiple sections, each with a label wrapped by the `<SearchListItemSupplementLabel>` component. The content of each section gets wrapped in the `<SearchListItemSupplementContent>` component. Wrap both of these within the `<SearchListItemSupplement>` component.
+
+If the contents of the supplement take up a large portion of the browser window space, consider not displaying them at all — large elements within the search-list results make browsing a large number of results difficult and time consuming for the user. As an example, a list of dozens of linked accessions probably helps no one, and simply takes up a lot of space.
 
 #### Quality (automatic)
 

@@ -27,7 +27,7 @@ export default function Biomarker({ item: biomarker }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{title}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{biomarker.lab.title}</div>
+          <span key="lab">{biomarker.lab.title}</span>
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={biomarker} />

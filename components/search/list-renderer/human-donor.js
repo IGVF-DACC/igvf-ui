@@ -2,12 +2,16 @@
 import _ from "lodash";
 import PropTypes from "prop-types";
 // components/search/list-renderer
-import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementAlternateAccessions,
+  SearchListItemSupplementContent,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -26,6 +30,10 @@ export default function HumanDonor({ item: humanDonor }) {
       )
     : [];
   phenotypicFeatures = _.uniq(phenotypicFeatures);
+  const isSupplementVisible =
+    collections ||
+    humanDonor.alternate_accessions?.length > 0 ||
+    phenotypicFeatures.length > 0;
 
   return (
     <SearchListItemContent>
@@ -38,17 +46,33 @@ export default function HumanDonor({ item: humanDonor }) {
           {title.length > 0 ? title.join(" ") : humanDonor["@id"]}
         </SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{humanDonor.lab.title}</div>
-          {collections && <div key="collections">{collections}</div>}
-          {phenotypicFeatures.length > 0 && (
-            <div key="phenotypic-features">{phenotypicFeatures.join(", ")}</div>
-          )}
-          {humanDonor.alternate_accessions?.length > 0 && (
-            <AlternateAccessions
-              alternateAccessions={humanDonor.alternate_accessions}
-            />
-          )}
+          <span key="lab">{humanDonor.lab.title}</span>
         </SearchListItemMeta>
+        {isSupplementVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions item={humanDonor} />
+            {collections && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Collection
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {collections}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+            {phenotypicFeatures.length > 0 && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Phenotypic Feature
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {phenotypicFeatures.join(", ")}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={humanDonor} />
     </SearchListItemContent>

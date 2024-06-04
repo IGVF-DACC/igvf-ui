@@ -1,18 +1,21 @@
 // node_modules
 import PropTypes from "prop-types";
 // components/search/list-renderer
-import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementAlternateAccessions,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function Workflow({ item: workflow }) {
+  const isSupplementVisible = workflow.alternate_accessions?.length > 0;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -23,10 +26,12 @@ export default function Workflow({ item: workflow }) {
         <SearchListItemTitle>{workflow.name}</SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{workflow.lab.title}</div>
-          <AlternateAccessions
-            alternateAccessions={workflow.alternate_accessions}
-          />
         </SearchListItemMeta>
+        {isSupplementVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions item={workflow} />
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={workflow} />
     </SearchListItemContent>

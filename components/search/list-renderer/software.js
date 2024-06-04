@@ -21,7 +21,7 @@ export default function Software({ item: software }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{software.title}</SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{software.lab.title}</div>
+          <span key="lab">{software.lab.title}</span>
         </SearchListItemMeta>
       </SearchListItemMain>
       <SearchListItemQuality item={software} />

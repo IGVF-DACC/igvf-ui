@@ -10,6 +10,8 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// lib
+import { pathToId } from "../../../lib/general";
 
 export default function Source({ item: source }) {
   const description = source.description;
@@ -18,12 +20,12 @@ export default function Source({ item: source }) {
       <SearchListItemMain>
         <SearchListItemUniqueId>
           <SearchListItemType item={source} />
-          {source.title}
+          {pathToId(source["@id"])}
         </SearchListItemUniqueId>
         <SearchListItemTitle>{source.title}</SearchListItemTitle>
         {description && (
           <SearchListItemMeta>
-            <div key="description">{description}</div>
+            <span key="description">{description}</span>
           </SearchListItemMeta>
         )}
       </SearchListItemMain>

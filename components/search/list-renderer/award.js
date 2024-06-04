@@ -23,8 +23,8 @@ export default function Award({ item: award, accessoryData = null }) {
         <SearchListItemTitle>{award.title}</SearchListItemTitle>
         {(award.component || contactPi) && (
           <SearchListItemMeta>
-            {contactPi && <div key="contactPi">{contactPi.title}</div>}
-            {award.component && <div key="component">{award.component}</div>}
+            {contactPi && <span key="contactPi">{contactPi.title}</span>}
+            {award.component && <span key="component">{award.component}</span>}
           </SearchListItemMeta>
         )}
       </SearchListItemMain>
