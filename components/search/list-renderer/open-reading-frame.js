@@ -42,7 +42,7 @@ export default function OpenReadingFrame({ item: openReadingFrame }) {
                     key={gene["@id"]}
                     className="whitespace-nowrap"
                   >
-                    {gene.symbol}:{gene.geneid}
+                    {gene.geneid} ({gene.symbol})
                   </Link>
                 ))}
               </SeparatedList>
