@@ -257,11 +257,15 @@ export function SampleDataItems({
       {item.protocols?.length > 0 && (
         <>
           <DataItemLabel>Protocols</DataItemLabel>
-          <SeparatedList>
-            {item.protocols.map((protocol) => (
-              <Link href={protocol}>{protocol}</Link>
-            ))}
-          </SeparatedList>
+          <DataItemValue>
+            <SeparatedList>
+              {item.protocols.map((protocol) => (
+                <Link href={protocol} key={protocol}>
+                  {protocol}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
         </>
       )}
     </>
