@@ -260,9 +260,9 @@ export function SampleDataItems({
           <DataItemValue>
             <SeparatedList>
               {item.protocols.map((protocol) => (
-                <Link href={protocol} key={protocol}>
+                <a href={protocol} key={protocol}>
                   {protocol}
-                </Link>
+                </a>
               ))}
             </SeparatedList>
           </DataItemValue>
