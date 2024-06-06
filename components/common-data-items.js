@@ -257,18 +257,11 @@ export function SampleDataItems({
       {item.protocols?.length > 0 && (
         <>
           <DataItemLabel>Protocols</DataItemLabel>
-          <DataItemList isCollapsible isUrlList>
+          <SeparatedList>
             {item.protocols.map((protocol) => (
-              <a
-                href={protocol}
-                key={protocol}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {protocol}
-              </a>
+              <Link href={protocol}>{protocol}</Link>
             ))}
-          </DataItemList>
+          </SeparatedList>
         </>
       )}
     </>
@@ -336,7 +329,7 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
-      {classifications.length > 0 && (
+      {classifications?.length > 0 && (
         <>
           <DataItemLabel>Classification</DataItemLabel>
           <DataItemValue>{classifications.join(", ")}</DataItemValue>
@@ -427,7 +420,7 @@ export function BiosampleDataItems({
 BiosampleDataItems.propTypes = {
   // Object derived from the biosample.json schema
   item: PropTypes.object.isRequired,
-  // Classifications if this biosample has one
+  // Classifications if this biosample has at least one
   classifications: PropTypes.string,
   // Construct library sets for this biosample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
