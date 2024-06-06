@@ -260,7 +260,12 @@ export function SampleDataItems({
           <DataItemValue>
             <SeparatedList>
               {item.protocols.map((protocol) => (
-                <a href={protocol} key={protocol}>
+                <a
+                  href={protocol}
+                  key={protocol}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {protocol}
                 </a>
               ))}
