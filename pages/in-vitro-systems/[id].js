@@ -45,6 +45,8 @@ export default function InVitroSystem({
   inVitroSystem,
   cellFateProtocol,
   constructLibrarySets,
+  demultiplexedFrom,
+  demultiplexedTo,
   diseaseTerms,
   documents,
   donors,
@@ -78,7 +80,7 @@ export default function InVitroSystem({
             <DataArea>
               <BiosampleDataItems
                 item={inVitroSystem}
-                classification={inVitroSystem.classification}
+                classifications={inVitroSystem.classifications}
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 parts={parts}
@@ -89,16 +91,6 @@ export default function InVitroSystem({
                   dateObtainedTitle: "Date Collected",
                 }}
               >
-                {inVitroSystem.originated_from && (
-                  <>
-                    <DataItemLabel>Originated From Sample</DataItemLabel>
-                    <DataItemValue>
-                      <Link href={inVitroSystem.originated_from["@id"]}>
-                        {inVitroSystem.originated_from.accession}
-                      </Link>
-                    </DataItemValue>
-                  </>
-                )}
                 {targetedSampleTerm && (
                   <>
                     <DataItemLabel>Targeted Sample Term</DataItemLabel>
@@ -127,6 +119,22 @@ export default function InVitroSystem({
                       ) : (
                         ""
                       )}
+                    </DataItemValue>
+                  </>
+                )}
+                {truthyOrZero(inVitroSystem.growth_medium) && (
+                  <>
+                    <DataItemLabel>Growth Medium</DataItemLabel>
+                    <DataItemValue>{inVitroSystem.growth_medium}</DataItemValue>
+                  </>
+                )}
+                {demultiplexedFrom && (
+                  <>
+                    <DataItemLabel>Demultiplexed From Sample</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={demultiplexedFrom["@id"]}>
+                        {demultiplexedFrom.accession}
+                      </Link>
                     </DataItemValue>
                   </>
                 )}
@@ -161,6 +169,16 @@ export default function InVitroSystem({
               title="Multiplexed In Samples"
             />
           )}
+          {inVitroSystem.originated_from && (
+            <>
+              <DataItemLabel>Originated From Sample</DataItemLabel>
+              <DataItemValue>
+                <Link href={inVitroSystem.originated_from["@id"]}>
+                  {inVitroSystem.originated_from.accession}
+                </Link>
+              </DataItemValue>
+            </>
+          )}
           {pooledFrom.length > 0 && (
             <SampleTable
               samples={pooledFrom}
@@ -173,6 +191,13 @@ export default function InVitroSystem({
               samples={pooledIn}
               reportLink={`/multireport/?type=Biosample&pooled_from=${inVitroSystem["@id"]}`}
               title="Pooled In"
+            />
+          )}
+          {demultiplexedTo.length > 0 && (
+            <SampleTable
+              samples={demultiplexedTo}
+              reportLink={`/multireport/?type=Biosample&demultiplexed_from=${inVitroSystem["@id"]}`}
+              title="Demultiplexed To Sample"
             />
           )}
           {parts.length > 0 && (
@@ -224,6 +249,10 @@ InVitroSystem.propTypes = {
   cellFateProtocol: PropTypes.object,
   // Construct libraries that link to this object
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Demultiplexed from sample
+  demultiplexedFrom: PropTypes.object,
+  // Demultiplexed to sample
+  demultiplexedTo: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
@@ -275,6 +304,13 @@ export async function getServerSideProps({ params, req, query }) {
         await request.getObject(inVitroSystem.cell_fate_change_protocol)
       ).optional();
     }
+    const demultiplexedFrom = inVitroSystem.demultiplexed_from
+      ? (await request.getObject(inVitroSystem.demultiplexed_from)).optional()
+      : null;
+    const demultiplexedTo =
+      inVitroSystem.demultiplexed_to?.length > 0
+        ? await requestBiosamples(inVitroSystem.demultiplexed_to, request)
+        : [];
     let diseaseTerms = [];
     if (inVitroSystem.disease_terms) {
       const diseaseTermPaths = inVitroSystem.disease_terms.map(
@@ -369,6 +405,8 @@ export async function getServerSideProps({ params, req, query }) {
         biomarkers,
         cellFateProtocol,
         constructLibrarySets,
+        demultiplexedFrom,
+        demultiplexedTo,
         diseaseTerms,
         documents,
         donors,
