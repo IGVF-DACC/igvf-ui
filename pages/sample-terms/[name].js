@@ -16,11 +16,16 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function SampleOntologyTerm({ sampleOntologyTerm, isJson }) {
+export default function SampleOntologyTerm({
+  sampleOntologyTerm,
+  isA,
+  isJson,
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -41,7 +46,7 @@ export default function SampleOntologyTerm({ sampleOntologyTerm, isJson }) {
                   </DataItemValue>
                 </>
               )}
-              <OntologyTermDataItems item={sampleOntologyTerm}>
+              <OntologyTermDataItems item={sampleOntologyTerm} isA={isA}>
                 {sampleOntologyTerm.organ_slims.length > 0 && (
                   <>
                     <DataItemLabel>Organs</DataItemLabel>
@@ -86,6 +91,8 @@ export default function SampleOntologyTerm({ sampleOntologyTerm, isJson }) {
 SampleOntologyTerm.propTypes = {
   // Sample ontology term object to display
   sampleOntologyTerm: PropTypes.object.isRequired,
+  // List of term names
+  isA: PropTypes.arrayOf(PropTypes.object),
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
@@ -97,6 +104,9 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/sample-terms//${params.name}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(sampleOntologyTerm)) {
+    const isA = sampleOntologyTerm.is_a
+      ? await requestOntologyTerms(sampleOntologyTerm.is_a, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       sampleOntologyTerm,
       sampleOntologyTerm.term_id,
@@ -105,6 +115,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         sampleOntologyTerm,
+        isA,
         pageContext: { title: sampleOntologyTerm.term_id },
         breadcrumbs,
         isJson,

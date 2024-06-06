@@ -16,11 +16,16 @@ import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildBreadcrumbs from "../../lib/breadcrumbs";
+import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function PlatformOntologyTerm({ platformOntologyTerm, isJson }) {
+export default function PlatformOntologyTerm({
+  platformOntologyTerm,
+  isA,
+  isJson,
+}) {
   return (
     <>
       <Breadcrumbs />
@@ -30,7 +35,7 @@ export default function PlatformOntologyTerm({ platformOntologyTerm, isJson }) {
         <JsonDisplay item={platformOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <OntologyTermDataItems item={platformOntologyTerm} />
+              <OntologyTermDataItems item={platformOntologyTerm} isA={isA} />
               {platformOntologyTerm.sequencing_kits?.length > 0 && (
                 <>
                   <DataItemLabel>Sequencing Kits</DataItemLabel>
@@ -52,6 +57,8 @@ export default function PlatformOntologyTerm({ platformOntologyTerm, isJson }) {
 PlatformOntologyTerm.propTypes = {
   // Platform ontology term to display
   platformOntologyTerm: PropTypes.object.isRequired,
+  // List of the nearest ancestors to this ontology term
+  isA: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
@@ -63,6 +70,9 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/platform-terms/${params.name}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(platformOntologyTerm)) {
+    const isA = platformOntologyTerm.is_a
+      ? await requestOntologyTerms(platformOntologyTerm.is_a, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       platformOntologyTerm,
       platformOntologyTerm.term_id,
@@ -71,6 +81,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         platformOntologyTerm,
+        isA,
         pageContext: { title: platformOntologyTerm.term_id },
         breadcrumbs,
         isJson,
