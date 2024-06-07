@@ -162,3 +162,42 @@ describe("Test FileAccessionAndDownload component", () => {
     );
   });
 });
+
+describe("Test controlled access/Anvil file download disabling", () => {
+  it("disables download link for controlled access files with Anvil URL", () => {
+    const file = {
+      "@id": "/files/ENCFF000VZB/",
+      "@type": ["File", "Item"],
+      accession: "ENCFF000VZB",
+      controlled_access: true,
+      anvil_url: "https://anvil.terra.bio/",
+      href: "/files/ENCFF000VZB/@@download/ENCFF000VZB.txt.gz",
+      status: "released",
+      upload_status: "validated",
+    };
+
+    render(<FileDownload file={file} />);
+
+    const downloadLink = screen.getByLabelText("Download file ENCFF000VZB");
+    expect(downloadLink).not.toHaveAttribute("href");
+  });
+
+  it("enables download link for the same file but without controlled access nor Anvil URL", () => {
+    const file = {
+      "@id": "/files/ENCFF000VZB/",
+      "@type": ["File", "Item"],
+      accession: "ENCFF000VZB",
+      href: "/files/ENCFF000VZB/@@download/ENCFF000VZB.txt.gz",
+      status: "released",
+      upload_status: "validated",
+    };
+
+    render(<FileDownload file={file} />);
+
+    const downloadLink = screen.getByLabelText("Download file ENCFF000VZB");
+    expect(downloadLink).toHaveAttribute(
+      "href",
+      "/files/ENCFF000VZB/@@download/ENCFF000VZB.txt.gz"
+    );
+  });
+});

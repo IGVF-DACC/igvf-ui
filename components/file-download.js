@@ -12,19 +12,24 @@ const PENDING = "pending";
 
 /**
  * Display a file-download link and download icon. Files without an `upload_status` of `file not
- * found` or `pending` have a disabled download link.
+ * found` or `pending` have a disabled download link, as do files with controlled access and an
+ * Anvil URL.
  */
 export function FileDownload({ file, className = "" }) {
-  const isDownloadDisabled = [FILE_NOT_FOUND, PENDING].includes(
+  const isDownloadDisabledByStatus = [FILE_NOT_FOUND, PENDING].includes(
     file.upload_status
   );
+  const isDownloadDisabledByAnvil = Boolean(
+    file.controlled_access && file.anvil_url
+  );
+
   return (
     <ButtonLink
       label={`Download file ${file.accession}`}
       href={`${API_URL}${file.href}`}
       type="secondary"
       size="sm"
-      isDisabled={isDownloadDisabled}
+      isDisabled={isDownloadDisabledByStatus || isDownloadDisabledByAnvil}
       hasIconOnly
       className={className}
     >
