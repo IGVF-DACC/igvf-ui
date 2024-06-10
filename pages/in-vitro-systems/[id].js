@@ -169,16 +169,6 @@ export default function InVitroSystem({
               title="Multiplexed In Samples"
             />
           )}
-          {inVitroSystem.originated_from && (
-            <>
-              <DataItemLabel>Originated From Sample</DataItemLabel>
-              <DataItemValue>
-                <Link href={inVitroSystem.originated_from["@id"]}>
-                  {inVitroSystem.originated_from.accession}
-                </Link>
-              </DataItemValue>
-            </>
-          )}
           {pooledFrom.length > 0 && (
             <SampleTable
               samples={pooledFrom}
