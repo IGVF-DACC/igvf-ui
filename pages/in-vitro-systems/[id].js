@@ -122,7 +122,7 @@ export default function InVitroSystem({
                     </DataItemValue>
                   </>
                 )}
-                {truthyOrZero(inVitroSystem.growth_medium) && (
+                {inVitroSystem.growth_medium && (
                   <>
                     <DataItemLabel>Growth Medium</DataItemLabel>
                     <DataItemValue>{inVitroSystem.growth_medium}</DataItemValue>
