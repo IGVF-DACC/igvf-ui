@@ -138,6 +138,7 @@ const auxiliarySetColumns = [
     display: ({ source, meta }) => (
       <SamplesDisplay fileSet={source} samples={meta.samples} />
     ),
+    hide: (auxiliarySets) => columnHideCondition(auxiliarySets, "samples"),
     sorter: (item, meta) => samplesSorter(item, meta.samples),
   },
 
@@ -159,7 +160,7 @@ const auxiliarySetColumns = [
 
   {
     id: "measurement-sets",
-    title: "Measurement Sets",
+    title: "Associated Measurement Sets",
     display: ({ source, meta }) => (
       <FileSetsDisplay
         fileSet={source}
