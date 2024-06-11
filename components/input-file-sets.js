@@ -205,7 +205,6 @@ const constructLibrarySetColumns = [
     id: "applied-to-samples",
     title: "Applied To Samples",
     display: ({ source, meta }) => {
-      console.log("META APPLIED TO SAMPLES", source, meta.appliedToSamples);
       return (
         <SamplesDisplay
           fileSet={source}
