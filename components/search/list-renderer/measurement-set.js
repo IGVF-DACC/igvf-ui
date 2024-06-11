@@ -11,7 +11,6 @@ import {
   SearchListItemSupplementContent,
   SearchListItemSupplementLabel,
   SearchListItemSupplementSection,
-  SearchListItemSupplementSummary,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -35,7 +34,6 @@ export default function MeasurementSet({ item: measurementSet }) {
         </SearchListItemMeta>
         <SearchListItemSupplement>
           <SearchListItemSupplementAlternateAccessions item={measurementSet} />
-          <SearchListItemSupplementSummary item={measurementSet} />
           {sampleSummary && (
             <SearchListItemSupplementSection>
               <SearchListItemSupplementLabel>
