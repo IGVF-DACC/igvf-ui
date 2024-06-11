@@ -268,9 +268,6 @@ module.exports = {
               "font-size": "1.7rem",
               "margin-top": "2rem",
               "margin-bottom": "1rem",
-              "&:first-child": {
-                "margin-top": "0",
-              },
             },
             h3: {
               "font-weight": 600,
