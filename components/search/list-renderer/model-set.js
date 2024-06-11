@@ -8,17 +8,13 @@ import {
   SearchListItemQuality,
   SearchListItemSupplement,
   SearchListItemSupplementAlternateAccessions,
-  SearchListItemSupplementContent,
-  SearchListItemSupplementLabel,
-  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function ModelSet({ item: modelSet }) {
-  const isSupplementsVisible =
-    modelSet.summary || modelSet.alternate_accessions?.length > 0;
+  const isSupplementsVisible = modelSet.alternate_accessions?.length > 0;
 
   return (
     <SearchListItemContent>
@@ -34,16 +30,6 @@ export default function ModelSet({ item: modelSet }) {
         {isSupplementsVisible && (
           <SearchListItemSupplement>
             <SearchListItemSupplementAlternateAccessions item={modelSet} />
-            {modelSet.summary && (
-              <SearchListItemSupplementSection>
-                <SearchListItemSupplementLabel>
-                  Summary
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {modelSet.summary}
-                </SearchListItemSupplementContent>
-              </SearchListItemSupplementSection>
-            )}
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>

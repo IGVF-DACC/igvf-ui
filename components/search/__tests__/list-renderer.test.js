@@ -1025,7 +1025,6 @@ describe("Test the RodentDonor component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("ENCODE");
-    expect(meta).toHaveTextContent("a special feature");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
@@ -1464,10 +1463,9 @@ describe("Test the AnalysisSet component", () => {
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-    expect(meta).toHaveTextContent("primary analysis of data");
 
     const supplement = screen.getByTestId("search-list-item-supplement");
-    expect(supplement).toHaveTextContent("IGVFDS3099XPLO");
+    expect(supplement).toHaveTextContent("primary analysis of data");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
@@ -1505,10 +1503,9 @@ describe("Test the AnalysisSet component", () => {
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent(/^J. Michael Cherry, Stanford/);
-    expect(meta).toHaveTextContent(/primary analysis of data$/);
 
     const supplement = screen.queryByTestId("search-list-item-supplement");
-    expect(supplement).toBeNull();
+    expect(supplement).toHaveTextContent("primary analysis of data");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");

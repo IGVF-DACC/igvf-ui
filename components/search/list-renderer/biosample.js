@@ -14,7 +14,7 @@ import {
 } from "./search-list-item";
 
 export default function Biosample({ item: biosample }) {
-  const isSupplementVisible = biosample.alternate_accessions?.length > 0;
+  const isSupplementsVisible = biosample.alternate_accessions?.length > 0;
 
   return (
     <SearchListItemContent>
@@ -27,7 +27,7 @@ export default function Biosample({ item: biosample }) {
         <SearchListItemMeta>
           <span key="lab">{biosample.lab.title}</span>
         </SearchListItemMeta>
-        {isSupplementVisible && (
+        {isSupplementsVisible && (
           <SearchListItemSupplement>
             <SearchListItemSupplementAlternateAccessions item={biosample} />
           </SearchListItemSupplement>

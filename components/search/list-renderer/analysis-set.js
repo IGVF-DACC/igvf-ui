@@ -8,15 +8,13 @@ import {
   SearchListItemQuality,
   SearchListItemSupplement,
   SearchListItemSupplementAlternateAccessions,
+  SearchListItemSupplementSummary,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function AnalysisSet({ item: analysisSet }) {
-  const summary = analysisSet.summary;
-  const isSupplementVisible = analysisSet.alternate_accessions?.length > 0;
-
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -27,13 +25,11 @@ export default function AnalysisSet({ item: analysisSet }) {
         <SearchListItemTitle>{analysisSet.file_set_type}</SearchListItemTitle>
         <SearchListItemMeta>
           <span key="lab">{analysisSet.lab.title}</span>
-          {summary && <span key="summary">{summary}</span>}
         </SearchListItemMeta>
-        {isSupplementVisible && (
-          <SearchListItemSupplement>
-            <SearchListItemSupplementAlternateAccessions item={analysisSet} />
-          </SearchListItemSupplement>
-        )}
+        <SearchListItemSupplement>
+          <SearchListItemSupplementAlternateAccessions item={analysisSet} />
+          <SearchListItemSupplementSummary item={analysisSet} />
+        </SearchListItemSupplement>
       </SearchListItemMain>
       <SearchListItemQuality item={analysisSet} />
     </SearchListItemContent>
