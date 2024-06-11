@@ -254,6 +254,25 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
+      {item.protocols?.length > 0 && (
+        <>
+          <DataItemLabel>Protocols</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {item.protocols.map((protocol) => (
+                <a
+                  href={protocol}
+                  key={protocol}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {protocol}
+                </a>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
     </>
   );
 }
@@ -291,7 +310,7 @@ SampleDataItems.commonProperties = [
  */
 export function BiosampleDataItems({
   item,
-  classification = null,
+  classifications = null,
   constructLibrarySets = [],
   diseaseTerms = null,
   partOf = null,
@@ -319,10 +338,10 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
-      {classification && (
+      {classifications?.length > 0 && (
         <>
           <DataItemLabel>Classification</DataItemLabel>
-          <DataItemValue>{classification}</DataItemValue>
+          <DataItemValue>{classifications.join(", ")}</DataItemValue>
         </>
       )}
       {item.embryonic && (
@@ -341,6 +360,16 @@ export function BiosampleDataItems({
         <>
           <DataItemLabel>Cellular Sub Pool</DataItemLabel>
           <DataItemValue>{item.cellular_sub_pool}</DataItemValue>
+        </>
+      )}
+      {item.originated_from && (
+        <>
+          <DataItemLabel>Originated From Sample</DataItemLabel>
+          <DataItemValue>
+            <Link href={item.originated_from["@id"]}>
+              {item.originated_from.accession}
+            </Link>
+          </DataItemValue>
         </>
       )}
       <>
@@ -400,8 +429,8 @@ export function BiosampleDataItems({
 BiosampleDataItems.propTypes = {
   // Object derived from the biosample.json schema
   item: PropTypes.object.isRequired,
-  // Classification if this biosample has one
-  classification: PropTypes.string,
+  // Classifications if this biosample has at least one
+  classifications: PropTypes.string,
   // Construct library sets for this biosample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for the biosample
