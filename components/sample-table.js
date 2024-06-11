@@ -78,6 +78,7 @@ const sampleColumns = [
       }
       return null;
     },
+    hide: (samples) => samples.every((sample) => !sample.disease_terms),
     isSortable: false,
   },
   {

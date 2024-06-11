@@ -692,7 +692,9 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         <NavigationGroupItem
           id="about"
           title="About"
-          icon={<Icon.Brand className="[&>g]:fill-black" />}
+          icon={
+            <Icon.Brand className="[&>g]:fill-black dark:[&>g]:fill-white dark:[&>path]:fill-gray-300" />
+          }
           isGroupOpened={openedParents.includes("about")}
           handleGroupClick={handleParentClick}
         >
