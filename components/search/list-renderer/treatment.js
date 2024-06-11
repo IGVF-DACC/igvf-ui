@@ -6,8 +6,6 @@ import {
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
-  SearchListItemSupplement,
-  SearchListItemSupplementSummary,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -28,9 +26,6 @@ export default function Treatment({ item: treatment }) {
           <span key="purpose">{treatment.purpose}</span>
         </SearchListItemMeta>
       </SearchListItemMain>
-      <SearchListItemSupplement>
-        <SearchListItemSupplementSummary item={treatment} />
-      </SearchListItemSupplement>
       <SearchListItemQuality item={treatment} />
     </SearchListItemContent>
   );

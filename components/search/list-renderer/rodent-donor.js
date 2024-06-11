@@ -2,12 +2,16 @@
 import _ from "lodash";
 import PropTypes from "prop-types";
 // components/search/list-renderer
-import AlternateAccessions from "../../alternate-accessions";
 import {
   SearchListItemContent,
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementAlternateAccessions,
+  SearchListItemSupplementContent,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -25,6 +29,9 @@ export default function RodentDonor({ item: rodentDonor }) {
       )
     : [];
   phenotypicFeatures = _.uniq(phenotypicFeatures);
+  const isSupplementsVisible =
+    rodentDonor.alternate_accessions?.length > 0 ||
+    phenotypicFeatures.length > 0;
 
   return (
     <SearchListItemContent>
@@ -37,17 +44,24 @@ export default function RodentDonor({ item: rodentDonor }) {
           {rodentDonor.strain} {rodentDonor.sex}
         </SearchListItemTitle>
         <SearchListItemMeta>
-          <div key="lab">{lab.title}</div>
-          {collections && <div key="collections">{collections}</div>}
-          {phenotypicFeatures.length > 0 && (
-            <div key="phenotypes">{phenotypicFeatures.join(", ")}</div>
-          )}
-          {rodentDonor.alternate_accessions?.length > 0 && (
-            <AlternateAccessions
-              alternateAccessions={rodentDonor.alternate_accessions}
-            />
-          )}
+          <span key="lab">{lab.title}</span>
+          {collections && <span key="collections">{collections}</span>}
         </SearchListItemMeta>
+        {isSupplementsVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions item={rodentDonor} />
+            {phenotypicFeatures.length > 0 && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Phenotypic Features
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  <span key="phenotypes">{phenotypicFeatures.join(", ")}</span>
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={rodentDonor} />
     </SearchListItemContent>

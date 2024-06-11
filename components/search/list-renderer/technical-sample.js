@@ -8,13 +8,14 @@ import {
   SearchListItemQuality,
   SearchListItemSupplement,
   SearchListItemSupplementAlternateAccessions,
-  SearchListItemSupplementSummary,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function TechnicalSample({ item: technicalSample }) {
+  const isSupplementVisible = technicalSample.alternate_accessions?.length > 0;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -26,10 +27,13 @@ export default function TechnicalSample({ item: technicalSample }) {
         <SearchListItemMeta>
           <span key="lab">{technicalSample.lab.title}</span>
         </SearchListItemMeta>
-        <SearchListItemSupplement>
-          <SearchListItemSupplementAlternateAccessions item={technicalSample} />
-          <SearchListItemSupplementSummary item={technicalSample} />
-        </SearchListItemSupplement>
+        {isSupplementVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions
+              item={technicalSample}
+            />
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={technicalSample} />
     </SearchListItemContent>
