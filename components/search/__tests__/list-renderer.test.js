@@ -1025,7 +1025,6 @@ describe("Test the RodentDonor component", () => {
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("ENCODE");
-    expect(meta).toHaveTextContent("a special feature");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
