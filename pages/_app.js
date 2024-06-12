@@ -1,5 +1,6 @@
 // node_modules
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
+import { XCircleIcon } from "@heroicons/react/20/solid";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Script from "next/script";
@@ -23,6 +24,49 @@ import { Session } from "../components/session-context";
 import ViewportOverlay from "../components/viewport-overlay";
 // CSS
 import "../styles/globals.css";
+
+/**
+ * List of domains for servers that contain test data and should display a warning banner to users.
+ * To confirm this banner continues to have the ability to appear, also show this banner on
+ * localhost.
+ */
+const testServerDomains = [
+  "staging.igvf.org",
+  "localhost",
+  "igvf-ui-igvf-1713-sandbox-warning.demo.igvf.org",
+];
+
+/**
+ * Display a warning banner to users when they browse the sandbox server. Allow the user to close
+ * the banner if they choose to.
+ */
+function TestServerWarning() {
+  const [isTestWarningVisible, setIsTestWarningVisible] = useState(false);
+
+  useEffect(() => {
+    const isTestingDomain = testServerDomains.includes(
+      window.location.hostname
+    );
+    setIsTestWarningVisible(isTestingDomain);
+  }, []);
+
+  if (isTestWarningVisible) {
+    return (
+      <div className="flex justify-center gap-1 border-b border-red-700 bg-red-600 p-1 text-sm text-white dark:border-red-700 dark:bg-red-800 dark:text-gray-100">
+        <div>
+          This is the IGVF Sandbox for testing submissions. All files submitted
+          here will be deleted after 30 days.
+        </div>
+        <button
+          onClick={() => setIsTestWarningVisible(false)}
+          aria-label="Close sandbox warning banner"
+        >
+          <XCircleIcon className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  }
+}
 
 function Site({ Component, pageProps, authentication }) {
   // Flag to indicate if <Link> components should cause page reload
@@ -110,6 +154,7 @@ function Site({ Component, pageProps, authentication }) {
           gtag('config', 'G-E2PEXFFGYR');
         `}
       </Script>
+      <TestServerWarning />
       <div className="md:container">
         <ScrollToTop />
         <GlobalContext.Provider value={globalContext}>
