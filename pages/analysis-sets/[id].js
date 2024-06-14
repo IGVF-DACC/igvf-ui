@@ -17,7 +17,6 @@ import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
-import FileSetTable from "../../components/file-set-table";
 import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -47,7 +46,6 @@ export default function AnalysisSet({
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
-  curatedSets,
   attribution = null,
   isJson,
 }) {
@@ -123,10 +121,6 @@ export default function AnalysisSet({
             />
           )}
 
-          {curatedSets.length > 0 && (
-            <FileSetTable fileSets={curatedSets} title="Curated Sets" />
-          )}
-
           {files.length > 0 && (
             <FileTable files={files} fileSetPath={analysisSet["@id"]} />
           )}
@@ -157,8 +151,6 @@ AnalysisSet.propTypes = {
   measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // ConstructLibrarySets to display
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // CuratedSets to display
-  curatedSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
@@ -293,38 +285,6 @@ export async function getServerSideProps({ params, req, query }) {
       }
     }
 
-    // Curated sets come from the `file_set` properties of the files in the
-    // `integrated_content_files` of the construct library sets.
-    let curatedSets = [];
-    if (constructLibrarySets.length > 0) {
-      let integratedContentFiles = [];
-      let integratedContentFilePaths = constructLibrarySets.reduce(
-        (acc, constructLibrarySet) => {
-          return constructLibrarySet.integrated_content_files?.length > 0
-            ? acc.concat(constructLibrarySet.integrated_content_files)
-            : acc;
-        },
-        []
-      );
-      if (integratedContentFilePaths.length > 0) {
-        integratedContentFilePaths = [...new Set(integratedContentFilePaths)];
-        integratedContentFiles = await requestFiles(
-          integratedContentFilePaths,
-          request
-        );
-      }
-
-      if (integratedContentFiles.length > 0) {
-        let fileSetPaths = integratedContentFiles
-          .map((file) => file.file_set)
-          .filter((fileSet) => fileSet);
-        fileSetPaths = [...new Set(fileSetPaths)];
-        if (fileSetPaths.length > 0) {
-          curatedSets = await requestFileSets(fileSetPaths, request);
-        }
-      }
-    }
-
     const breadcrumbs = await buildBreadcrumbs(
       analysisSet,
       analysisSet.accession,
@@ -343,7 +303,6 @@ export async function getServerSideProps({ params, req, query }) {
         auxiliarySets,
         measurementSets,
         constructLibrarySets,
-        curatedSets,
         pageContext: { title: analysisSet.accession },
         breadcrumbs,
         attribution,
