@@ -829,7 +829,7 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
       )}
       <NavigationHrefItem
         id="help"
-        href="/help"
+        href="/help/general-help/"
         navigationClick={navigationClick}
         isNarrowNav
       >
