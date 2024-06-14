@@ -30,11 +30,7 @@ import "../styles/globals.css";
  * To confirm this banner continues to have the ability to appear, also show this banner on
  * localhost.
  */
-const testServerDomains = [
-  "staging.igvf.org",
-  "localhost",
-  "igvf-ui-igvf-1713-sandbox-warning.demo.igvf.org",
-];
+const testServerDomains = ["staging.igvf.org", "localhost"];
 
 /**
  * Display a warning banner to users when they browse the sandbox server. Allow the user to close
