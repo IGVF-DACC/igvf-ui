@@ -134,7 +134,7 @@ TabularFile.propTypes = {
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
   // ConstructLibraryset this file was integrated in
-  integratedIn: PropTypes.arrayOf(PropTypes.object).isRequired,
+  integratedIn: PropTypes.array.isRequired,
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -176,14 +176,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const fileFormatSpecifications = tabularFile.file_format_specifications
       ? await requestDocuments(tabularFile.file_format_specifications, request)
       : [];
-    let integratedIn = [];
-    const integratedInPaths =
-      tabularFile.integrated_in?.length > 0
-        ? tabularFile.integrated_in.map((dataset) => dataset["@id"])
+    const integratedIn =
+      tabularFile.integrated_in.length > 0
+        ? await requestFileSets(tabularFile.integrated_in, request)
         : [];
-    if (integratedInPaths.length > 0) {
-      integratedIn = await requestFileSets(integratedInPaths, request);
-    }
     const breadcrumbs = await buildBreadcrumbs(
       tabularFile,
       tabularFile.accession,
