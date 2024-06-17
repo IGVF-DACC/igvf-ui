@@ -95,6 +95,14 @@ export default function AlignmentFile({
                   <DataItemValue>True</DataItemValue>
                 </>
               )}
+              {alignmentFile.transcriptome_annotation && (
+                <>
+                  <DataItemLabel>Transcriptome Annotation</DataItemLabel>
+                  <DataItemValue>
+                    {alignmentFile.transcriptome_annotation}
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (
