@@ -376,7 +376,7 @@ function FileSetsDisplay({ fileSet, embeddedFileSets, fileSetProperty }) {
 
     if (displayedFileSets.length > 0) {
       return (
-        <LinkedIdAndStatusStack items={embeddedFileSets}>
+        <LinkedIdAndStatusStack items={displayedFileSets}>
           {(controlSet) => controlSet.accession}
         </LinkedIdAndStatusStack>
       );
