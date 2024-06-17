@@ -585,7 +585,9 @@ export function FileDataItems({ item, fileSet = null, children }) {
         <>
           <DataItemLabel>AnVIL Url</DataItemLabel>
           <DataItemValue>
-            <Link href={item.anvil_url}>{item.anvil_url}</Link>
+            <a href={item.anvil_url} target="_blank" rel="noopener noreferrer">
+              {item.anvil_url}
+            </a>
           </DataItemValue>
         </>
       )}
