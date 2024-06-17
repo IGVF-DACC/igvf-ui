@@ -1,5 +1,6 @@
 // node_modules
 import { Html, Head, Main, NextScript } from "next/document";
+// components
 import { DropdownPortalRoot } from "../components/dropdown";
 import { TooltipPortalRoot } from "../components/tooltip";
 
