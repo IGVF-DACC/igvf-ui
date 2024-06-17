@@ -151,7 +151,7 @@ ReferenceFile.propTypes = {
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
   // ConstructLibraryset this file was integrated in
-  integratedIn: PropTypes.array.isRequired,
+  integratedIn: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
