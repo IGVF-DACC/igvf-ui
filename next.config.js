@@ -1,7 +1,7 @@
 /**
  * Change the UI version number for each igvf-ui release.
  */
-const UI_VERSION = "8.8.2";
+const UI_VERSION = "8.9.0";
 
 module.exports = {
   trailingSlash: true,
