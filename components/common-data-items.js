@@ -581,6 +581,22 @@ export function FileDataItems({ item, fileSet = null, children }) {
           <DataItemValue>{dataSize(item.file_size)}</DataItemValue>
         </>
       )}
+      {item.anvil_url && (
+        <>
+          <DataItemLabel>AnVIL Url</DataItemLabel>
+          <DataItemValue>
+            <a href={item.anvil_url} target="_blank" rel="noopener noreferrer">
+              {item.anvil_url}
+            </a>
+          </DataItemValue>
+        </>
+      )}
+      {item.controlled_access && (
+        <>
+          <DataItemLabel>Controlled Access</DataItemLabel>
+          <DataItemValue>{item.controlled_access ? "Yes" : "No"}</DataItemValue>
+        </>
+      )}
       {item.submitted_file_name && (
         <>
           <DataItemLabel>Submitted File Name</DataItemLabel>

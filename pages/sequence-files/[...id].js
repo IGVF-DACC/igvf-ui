@@ -96,6 +96,12 @@ export default function SequenceFile({
                   <DataItemValue>{sequenceFile.lane}</DataItemValue>
                 </>
               )}
+              {sequenceFile.sequencing_kit && (
+                <>
+                  <DataItemLabel>Sequencing Kit</DataItemLabel>
+                  <DataItemValue>{sequenceFile.sequencing_kit}</DataItemValue>
+                </>
+              )}
               {sequenceFile.illumina_read_type && (
                 <>
                   <DataItemLabel>Illumina Read Type</DataItemLabel>

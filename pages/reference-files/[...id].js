@@ -17,6 +17,7 @@ import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -43,6 +44,7 @@ export default function ReferenceFile({
   derivedFrom,
   derivedFromFileSets,
   fileFormatSpecifications,
+  integratedIn,
   attribution = null,
   isJson,
 }) {
@@ -116,6 +118,17 @@ export default function ReferenceFile({
               title="File Format Specifications"
             />
           )}
+          {integratedIn.length > 0 && (
+            <FileSetTable
+              fileSets={integratedIn}
+              title="Integrated In"
+              reportLinkSpecs={{
+                fileSetType: "ConstructLibrarySet",
+                identifierProp: "reference_files.accession",
+                itemIdentifier: referenceFile.accession,
+              }}
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -137,6 +150,8 @@ ReferenceFile.propTypes = {
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
+  // ConstructLibraryset this file was integrated in
+  integratedIn: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -183,6 +198,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
           request
         )
       : [];
+    const integratedIn =
+      referenceFile.integrated_in.length > 0
+        ? await requestFileSets(referenceFile.integrated_in, request)
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       referenceFile,
       referenceFile.accession,
@@ -200,6 +219,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         fileFormatSpecifications,
+        integratedIn,
         pageContext: { title: referenceFile.accession },
         breadcrumbs,
         attribution,

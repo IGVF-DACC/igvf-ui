@@ -16,6 +16,7 @@ import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -42,6 +43,7 @@ export default function TabularFile({
   derivedFrom,
   derivedFromFileSets,
   fileFormatSpecifications,
+  integratedIn,
   attribution = null,
   isJson,
 }) {
@@ -93,6 +95,17 @@ export default function TabularFile({
               title={`Files ${tabularFile.accession} Derives From`}
             />
           )}
+          {integratedIn.length > 0 && (
+            <FileSetTable
+              fileSets={integratedIn}
+              title="Integrated In"
+              reportLinkSpecs={{
+                fileSetType: "ConstructLibrarySet",
+                identifierProp: "tabular_files.accession",
+                itemIdentifier: tabularFile.accession,
+              }}
+            />
+          )}
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
@@ -120,6 +133,8 @@ TabularFile.propTypes = {
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
+  // ConstructLibraryset this file was integrated in
+  integratedIn: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -161,6 +176,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const fileFormatSpecifications = tabularFile.file_format_specifications
       ? await requestDocuments(tabularFile.file_format_specifications, request)
       : [];
+    const integratedIn =
+      tabularFile.integrated_in.length > 0
+        ? await requestFileSets(tabularFile.integrated_in, request)
+        : [];
     const breadcrumbs = await buildBreadcrumbs(
       tabularFile,
       tabularFile.accession,
@@ -175,6 +194,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         fileFormatSpecifications,
+        integratedIn,
         pageContext: { title: tabularFile.accession },
         breadcrumbs,
         attribution,
