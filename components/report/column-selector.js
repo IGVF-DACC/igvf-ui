@@ -11,6 +11,13 @@ import VerticalScrollIndicators from "../vertical-scroll-indicators";
 import HiddenColumnsIndicator from "./hidden-columns-indicator";
 
 /**
+ * Maximum number of columns that can be selected at once. Base this on a maximum URL length of
+ * (3700 - 40 for the protocol and domain - 500 for a long facet query) / 30 for a typical column
+ * specifier length.
+ */
+const MAXIMUM_SELECTED_COLUMNS = 100;
+
+/**
  * Displays the buttons to hide or show all columns at once.
  */
 function ChangeAllControls({ onChangeAll }) {
@@ -100,11 +107,18 @@ export default function ColumnSelector({
     const isAnyColumnHidden = allColumnSpecs.length > visibleColumnSpecs.length;
 
     // Disable column selector if the config didn't match any type.
-    const isDisabled = allColumnSpecs.length === 0;
+    const isColumnSelectorDisabled = allColumnSpecs.length === 0;
+
+    // If the user has selected the maximum allowed number of columns, disable any unchecked checkboxes.
+    const isAtMaximumColumns =
+      visibleColumnSpecs.length >= MAXIMUM_SELECTED_COLUMNS;
 
     return (
       <>
-        <Button onClick={() => setIsOpen(true)} isDisabled={isDisabled}>
+        <Button
+          onClick={() => setIsOpen(true)}
+          isDisabled={isColumnSelectorDisabled}
+        >
           Columns
           <HiddenColumnsIndicator isAnyColumnHidden={isAnyColumnHidden} />
         </Button>
@@ -127,16 +141,25 @@ export default function ColumnSelector({
               {allColumnSpecs.map((columnSpec) => {
                 if (columnSpec.id !== "@id") {
                   const isVisible = visibleColumnIds.includes(columnSpec.id);
+                  const isColumnCheckboxesDisabled =
+                    !isVisible && isAtMaximumColumns;
                   return (
                     <Checkbox
                       key={columnSpec.id}
                       id={columnSpec.id}
                       name={columnSpec.id}
                       checked={isVisible}
+                      isDisabled={isColumnCheckboxesDisabled}
                       onClick={() => onChange(columnSpec.id, isVisible)}
                       className="my-0.5 block items-center leading-tight md:basis-1/2 lg:basis-1/3"
                     >
-                      {columnSpec.title || columnSpec.id}
+                      <div
+                        className={`${
+                          isColumnCheckboxesDisabled ? "text-gray-500" : ""
+                        }`}
+                      >
+                        {columnSpec.title || columnSpec.id}
+                      </div>
                     </Checkbox>
                   );
                 }

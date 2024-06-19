@@ -11,11 +11,14 @@ export default function Checkbox({
   id,
   checked,
   name,
+  isDisabled = false,
   onClick,
   onLongClick = null,
   className = "",
   children,
 }) {
+  const pointerEventsClass = isDisabled ? " pointer-events-none" : "";
+
   // If no long click handler is supplied, use the normal click handler to handle long clicks.
   const longClickHandler = onLongClick || onClick;
   useLongClick(id, onClick, longClickHandler);
@@ -24,11 +27,12 @@ export default function Checkbox({
     <label
       id={id}
       data-testid="checkbox-label"
-      className={`flex cursor-pointer ${className}`}
+      className={`flex cursor-pointer${pointerEventsClass} ${className}`}
     >
       <input
-        className="mr-1 cursor-pointer"
+        className={`mr-1 cursor-pointer${pointerEventsClass}`}
         type="checkbox"
+        disabled={isDisabled}
         aria-label={name}
         checked={checked}
         onChange={() => {}}
@@ -45,6 +49,8 @@ Checkbox.propTypes = {
   checked: PropTypes.bool.isRequired,
   // HTML name attribute of the checkbox
   name: PropTypes.string.isRequired,
+  // True if the checkbox is disabled
+  isDisabled: PropTypes.bool,
   // Called when the checkbox is checked or unchecked
   onClick: PropTypes.func.isRequired,
   // Called when the checkbox is long-pressed
