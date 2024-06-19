@@ -6,6 +6,16 @@ module.exports = {
       center: true,
     },
     extend: {
+      animation: {
+        "scroll-fade": "scrollFade 3s linear",
+      },
+      // that is actual animation
+      keyframes: () => ({
+        scrollFade: {
+          "0%": { opacity: 1 },
+          "100%": { opacity: 0 },
+        },
+      }),
       aspectRatio: {
         hd: "16 / 9",
         cinema: "21 / 9",
@@ -249,6 +259,9 @@ module.exports = {
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
         "data-item": "fit-content(200px) 1fr",
+      },
+      maxHeight: {
+        "column-select-modal": "calc(100vh - 300px)",
       },
       stroke: {
         "nav-collapse": "var(--color-nav-collapse)",

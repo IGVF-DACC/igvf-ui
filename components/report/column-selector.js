@@ -1,11 +1,12 @@
 // node_modules
 import PropTypes from "prop-types";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 // components
 import { Button } from "../form-elements";
 import Checkbox from "../checkbox";
 import Modal from "../modal";
 import SessionContext from "../session-context";
+import VerticalScrollIndicators from "../vertical-scroll-indicators";
 // components/report
 import HiddenColumnsIndicator from "./hidden-columns-indicator";
 
@@ -36,10 +37,20 @@ ChangeAllControls.propTypes = {
  * to hide.
  */
 function CheckboxArea({ className = "", children }) {
+  const scrollAreaRef = useRef(null);
+
   return (
-    <fieldset className={`md:flex md:flex-wrap ${className}`}>
-      {children}
-    </fieldset>
+    <div className="relative">
+      <div
+        ref={scrollAreaRef}
+        className="scroll-area max-h-column-select-modal min-h-36 overflow-y-auto p-2"
+      >
+        <VerticalScrollIndicators scrollAreaRef={scrollAreaRef} />
+        <fieldset className={`md:flex md:flex-wrap ${className}`}>
+          {children}
+        </fieldset>
+      </div>
+    </div>
   );
 }
 
@@ -105,8 +116,8 @@ export default function ColumnSelector({
             </div>
           </Modal.Header>
 
-          <Modal.Body>
-            <div className="mb-3 md:flex md:items-center">
+          <Modal.Body className="[&>div]:p-0">
+            <div className="border-b border-modal-border p-1 md:flex md:items-center">
               <ChangeAllControls onChangeAll={onChangeAll} />
               <Note className="md:ml-2">
                 The <i>ID</i> column cannot be hidden

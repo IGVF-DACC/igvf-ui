@@ -121,9 +121,18 @@ Header.propTypes = {
  * Wraps the contents of a modal to provide a standard padding. You can skip using this if you
  * don't want padding, or non-standard padding.
  */
-function Body({ children }) {
-  return <div className="p-2">{children}</div>;
+function Body({ className = null, children }) {
+  return (
+    <div className={className}>
+      <div className="p-2">{children}</div>
+    </div>
+  );
 }
+
+Body.propTypes = {
+  // Tailwind CSS classes to add to the body wrapper div
+  className: PropTypes.string,
+};
 
 /**
  * Footer for the modal. This is typically used to provide an action button, or a close button.
