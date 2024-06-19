@@ -46,4 +46,23 @@ describe("Test the <Checkbox> component", () => {
     expect(label).toBeInTheDocument();
     expect(label).toHaveClass("my-5");
   });
+
+  it("renders a disabled checkbox", () => {
+    const onClick = jest.fn();
+
+    render(
+      <Checkbox
+        id="checkbox-text"
+        checked={false}
+        name="checkbox-test"
+        onClick={onClick}
+        isDisabled
+      >
+        Label for testing
+      </Checkbox>
+    );
+
+    const checkbox = screen.getByRole("checkbox");
+    expect(checkbox).toBeDisabled();
+  });
 });

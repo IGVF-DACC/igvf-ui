@@ -30,95 +30,15 @@ import {
   getSchemasForReportTypes,
   getSelectedTypes,
   getSortColumn,
+  MAXIMUM_VISIBLE_COLUMNS,
+  mergeColumnSpecs,
+  updateAllColumnsVisibilityQuery,
+  updateColumnVisibilityQuery,
 } from "../lib/report";
 import {
   generateSearchResultsTypes,
   stripLimitQueryIfNeeded,
 } from "../lib/search-results";
-
-/**
- * Update the given query string to show or hide a column.
- * @param {string} queryString Current search query string
- * @param {string} columnId Column ID to add or remove from the query string
- * @param {boolean} isVisible True if the column for `columnId` is now visible
- * @param {array} defaultColumnSpecs Column specs for the default columns of the report's schema
- * @returns {string} `queryString` with the `columnId` column added or removed
- */
-function updateColumnVisibilityQuery(
-  queryString,
-  columnId,
-  isVisible,
-  defaultColumnSpecs
-) {
-  const query = new QueryString(queryString);
-  const hasSpecificFields = query.getKeyValues("field").length > 0;
-  const defaultColumnIds = defaultColumnSpecs.map(
-    (columnSpec) => columnSpec.id
-  );
-
-  // To prepare the query string for adding or removing a "field=" parameter, convert any query
-  // string that doesn't have any "field=" parameters into one that has all the default columns as
-  // "field=" parameters.
-  if (!hasSpecificFields) {
-    defaultColumnIds.forEach((columnId) => {
-      query.addKeyValue("field", columnId);
-    });
-  }
-
-  if (isVisible) {
-    query.deleteKeyValue("field", columnId);
-  } else {
-    query.addKeyValue("field", columnId);
-  }
-
-  // In case the user manually entered a query string with no "field=@id" parameter, add it.
-  if (!query.getKeyValues("field").includes("@id")) {
-    query.addKeyValue("field", "@id");
-  }
-
-  // Get all the resulting "field=" parameters and compare them to the default columns. If they
-  // match, remove the "field=" parameters from the query string to display only the default
-  // columns.
-  const fieldValues = query.getKeyValues("field");
-  const isFieldsMatchDefaultColumns = _.isEqual(
-    _.sortBy(fieldValues),
-    _.sortBy(defaultColumnIds)
-  );
-  if (isFieldsMatchDefaultColumns) {
-    query.deleteKeyValue("field");
-  }
-
-  return query.format();
-}
-
-/**
- * Update the given query string to show or hide all columns. When hiding all columns, the `@id`
- * column remains visible.
- * @param {string} queryString MultiReport query string to update
- * @param {boolean} isAllVisible True to make all possible columns visible, false to hide all
- * @param {array} allColumnSpecs All possible columns for the current report type
- * @returns
- */
-function updateAllColumnsVisibilityQuery(
-  queryString,
-  isAllVisible,
-  allColumnSpecs
-) {
-  const query = new QueryString(queryString);
-  if (isAllVisible) {
-    // Set fields for all possible report columns for the current type
-    const columnIds = allColumnSpecs.map((column) => column.id);
-    query.deleteKeyValue("field");
-    columnIds.forEach((columnId) => {
-      query.addKeyValue("field", columnId);
-    });
-  } else {
-    // Remove all fields except the `@id` column
-    query.deleteKeyValue("field");
-    query.addKeyValue("field", "@id");
-  }
-  return query.format();
-}
 
 export default function MultiReport({ searchResults }) {
   const router = useRouter();
@@ -139,7 +59,10 @@ export default function MultiReport({ searchResults }) {
   // selected report types.
   const defaultColumnSpecs = columnsToColumnSpecs(searchResults.columns);
   const visibleColumnSpecs = columnsToColumnSpecs(searchResults.result_columns);
-  const allColumnSpecs = getReportTypeColumnSpecs(selectedTypes, profiles);
+  let allColumnSpecs = getReportTypeColumnSpecs(selectedTypes, profiles);
+  allColumnSpecs = mergeColumnSpecs(allColumnSpecs, visibleColumnSpecs);
+  const isNonVisibleDisabled =
+    visibleColumnSpecs.length >= MAXIMUM_VISIBLE_COLUMNS;
 
   /**
    * Navigate to the same page but with the "sort=" query parameter set to the column that was
@@ -181,7 +104,8 @@ export default function MultiReport({ searchResults }) {
     const updatedQueryString = updateAllColumnsVisibilityQuery(
       queryString,
       isAllVisible,
-      allColumnSpecs
+      allColumnSpecs,
+      visibleColumnSpecs
     );
     router.push(`${path}?${updatedQueryString}`);
   }
@@ -223,6 +147,7 @@ export default function MultiReport({ searchResults }) {
                   visibleColumnSpecs,
                   onColumnVisibilityChange,
                   onAllColumnsVisibilityChange,
+                  isNonVisibleDisabled,
                 }}
               />
               <TableCount count={searchResults.total} />

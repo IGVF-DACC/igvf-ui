@@ -47,6 +47,7 @@ export default function SearchResultsHeader({
                     visibleColumnSpecs={reportViewExtras.visibleColumnSpecs}
                     onChange={reportViewExtras.onColumnVisibilityChange}
                     onChangeAll={reportViewExtras.onAllColumnsVisibilityChange}
+                    isNonVisibleDisabled={reportViewExtras.isNonVisibleDisabled}
                   />
                   <DownloadTSV searchUri={searchResults["@id"]} />
                 </>
@@ -82,5 +83,7 @@ SearchResultsHeader.propTypes = {
     onColumnVisibilityChange: PropTypes.func.isRequired,
     // Callback when the user changes the visibility of all columns
     onAllColumnsVisibilityChange: PropTypes.func.isRequired,
+    // True to disable non-visible columns because of the maximum number of visible columns
+    isNonVisibleDisabled: PropTypes.bool.isRequired,
   }),
 };
