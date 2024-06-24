@@ -28,7 +28,7 @@ function ControlShape({ onClick }) {
       >
         <path
           d="M45.6,14.8H0L9,1.7c.6-1.1,1.7-1.7,2.9-1.7h21.7c1.2,0,2.3.7,2.9,1.7l9,13Z"
-          className="fill-brand stroke-none opacity-70"
+          className="fill-brand opacity-70"
         />
         <g className="fill-white stroke-none opacity-70">
           <polygon points="26.9 8.1 22.8 3.7 18.7 8.1 19.5 8.8 22.3 5.7 22.3 12.3 23.3 12.3 23.3 5.7 26.2 8.8 26.9 8.1" />
@@ -38,9 +38,8 @@ function ControlShape({ onClick }) {
           d="M45.6,14.8H0L9,1.7c.6-1.1,1.7-1.7,2.9-1.7h21.7c1.2,0,2.3.7,2.9,1.7l9,13Z"
           onClick={onClick}
           role="button"
-          tabIndex="0"
           aria-label="Scroll to top of page"
-          className="cursor-pointer stroke-none opacity-0"
+          className="cursor-pointer opacity-0 outline-none"
         />
       </svg>
     </div>

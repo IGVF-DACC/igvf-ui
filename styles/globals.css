@@ -452,11 +452,13 @@ a {
 
 /* Scroll-to-top button opacity animation */
 #scroll-to-top {
+  padding: 0;
   opacity: 1;
   animation: fadeIn 200ms linear;
 }
 
 #scroll-to-top.fade-out {
+  padding: 0;
   opacity: 0;
   animation: fadeOut 200ms linear;
 }
