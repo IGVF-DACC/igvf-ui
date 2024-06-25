@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
@@ -153,28 +154,14 @@ export default function MeasurementSet({
       : [];
   const uniqueSampleSummaries = [...new Set(sampleSummaries)];
 
-  // Collect all measurement set protocols
-  let measurementSetProtocols = [];
-  if (measurementSet.protocols && measurementSet.protocols.length > 0) {
-    measurementSetProtocols = measurementSet.protocols;
-  }
-
   // Collect all sample protocols.
-  const sampleProtocols = [];
-  if (samples.length > 0) {
-    samples.forEach((sample) => {
-      if (sample.protocols && sample.protocols.length > 0) {
-        sampleProtocols.push(...sample.protocols);
-      }
-    });
-  }
-  const uniqueSampleProtocols = [...new Set(sampleProtocols)];
+  const sampleProtocols = samples.flatMap((sample) => sample.protocols || []);
 
   // Combine measurement set and sample protocols.
-  const combinedProtocols = [].concat(
-    measurementSetProtocols,
-    uniqueSampleProtocols
+  const combinedProtocols = sampleProtocols.concat(
+    measurementSet.protocols || []
   );
+  const uniqueCombinedProtocols = _.uniq(combinedProtocols);
 
   return (
     <>
@@ -233,11 +220,11 @@ export default function MeasurementSet({
                     </DataItemList>
                   </>
                 )}
-                {combinedProtocols.length > 0 && (
+                {uniqueCombinedProtocols.length > 0 && (
                   <>
                     <DataItemLabel>Protocols</DataItemLabel>
                     <DataItemList isCollapsible isUrlList>
-                      {combinedProtocols.map((protocol) => (
+                      {uniqueCombinedProtocols.map((protocol) => (
                         <a
                           href={protocol}
                           key={protocol}
