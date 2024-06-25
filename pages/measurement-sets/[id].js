@@ -34,6 +34,7 @@ import {
   requestFiles,
   requestFileSets,
   requestOntologyTerms,
+  requestSamples,
   requestSeqspecFiles,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -73,8 +74,7 @@ function composeRelatedDatasetReportLink(measurementSet) {
 function AssayDetails({ measurementSet }) {
   if (
     measurementSet.library_construction_platform ||
-    measurementSet.sequencing_library_types?.length > 0 ||
-    measurementSet.protocols?.length > 0
+    measurementSet.sequencing_library_types?.length > 0
   ) {
     return (
       <>
@@ -101,23 +101,6 @@ function AssayDetails({ measurementSet }) {
                 </DataItemValue>
               </>
             )}
-            {measurementSet.protocols?.length > 0 && (
-              <>
-                <DataItemLabel>Protocols</DataItemLabel>
-                <DataItemList isCollapsible isUrlList>
-                  {measurementSet.protocols.map((protocol) => (
-                    <a
-                      href={protocol}
-                      key={protocol}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {protocol}
-                    </a>
-                  ))}
-                </DataItemList>
-              </>
-            )}
           </DataArea>
         </DataPanel>
       </>
@@ -139,6 +122,7 @@ export default function MeasurementSet({
   files,
   relatedMultiomeSets,
   auxiliarySets,
+  samples,
   seqspecFiles,
   sequencingPlatforms,
   attribution = null,
@@ -168,6 +152,29 @@ export default function MeasurementSet({
       ? measurementSet.samples.map((sample) => sample.summary)
       : [];
   const uniqueSampleSummaries = [...new Set(sampleSummaries)];
+
+  // Collect all measurement set protocols
+  let measurementSetProtocols = [];
+  if (measurementSet.protocols && measurementSet.protocols.length > 0) {
+    measurementSetProtocols = measurementSet.protocols;
+  }
+
+  // Collect all sample protocols.
+  const sampleProtocols = [];
+  if (samples.length > 0) {
+    samples.forEach((sample) => {
+      if (sample.protocols && samples.protocols.length > 0) {
+        sampleProtocols.push(...sample.protocols);
+      }
+    });
+  }
+  const uniqueSampleProtocols = [...new Set(sampleProtocols)];
+
+  // Combine measurement set and sample protocols.
+  const combinedProtocols = [].concat(
+    measurementSetProtocols,
+    uniqueSampleProtocols
+  );
 
   return (
     <>
@@ -222,6 +229,23 @@ export default function MeasurementSet({
                             {fileSet.summary}
                           </span>
                         </Fragment>
+                      ))}
+                    </DataItemList>
+                  </>
+                )}
+                {combinedProtocols.length > 0 && (
+                  <>
+                    <DataItemLabel>Protocols</DataItemLabel>
+                    <DataItemList isCollapsible isUrlList>
+                      {combinedProtocols.map((protocol) => (
+                        <a
+                          href={protocol}
+                          key={protocol}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {protocol}
+                        </a>
                       ))}
                     </DataItemList>
                   </>
@@ -317,6 +341,8 @@ MeasurementSet.propTypes = {
   relatedMultiomeSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Auxiliary datasets
   auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // samples
+  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform objects associated with `files`
@@ -378,6 +404,15 @@ export async function getServerSideProps({ params, req, query }) {
       auxiliarySets = await requestFileSets(auxiliarySetPaths, request);
     }
 
+    let samples = [];
+    const samplesPaths =
+      measurementSet.samples?.length > 0
+        ? measurementSet.samples.map((sample) => sample["@id"])
+        : [];
+    if (samplesPaths.length > 0) {
+      samples = await requestSamples(samplesPaths, request);
+    }
+
     // Use the files to retrieve all the seqspec files they might link to.
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
@@ -410,6 +445,7 @@ export async function getServerSideProps({ params, req, query }) {
         files,
         relatedMultiomeSets,
         auxiliarySets,
+        samples,
         seqspecFiles,
         sequencingPlatforms,
         pageContext: { title: measurementSet.accession },
