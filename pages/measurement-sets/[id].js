@@ -163,7 +163,7 @@ export default function MeasurementSet({
   const sampleProtocols = [];
   if (samples.length > 0) {
     samples.forEach((sample) => {
-      if (sample.protocols && samples.protocols.length > 0) {
+      if (sample.protocols && sample.protocols.length > 0) {
         sampleProtocols.push(...sample.protocols);
       }
     });
