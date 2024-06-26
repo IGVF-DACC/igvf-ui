@@ -1,22 +1,77 @@
 // lib
-import FetchRequest from "../lib/fetch-request";
+import FetchRequest from "./fetch-request";
+// type
+import { ErrorObject } from "./fetch-request.d";
+import {
+  DatabaseObject,
+  DatabaseWriteResponse,
+  DataProviderObject,
+  SessionObject,
+} from "../globals.d";
+
+/**
+ * Tracks the parts of a page object that the user can modify when editing a page.
+ */
+type PageMeta = {
+  award: string;
+  lab: string;
+  name: string;
+  parent: string;
+  status: string;
+  title: string;
+};
+
+/**
+ * Contents of the blocks array within the layout property of a page object.
+ */
+type PageLayoutComponent = {
+  "@id": string;
+  "@type": string;
+  body: string;
+  direction: string;
+};
+
+/**
+ * Extend DatabaseObject for Page objects that include a title property.
+ */
+interface PageObject extends DatabaseObject {
+  award?: string;
+  lab?: string;
+  layout: {
+    blocks: PageLayoutComponent[];
+  };
+  name: string;
+  parent?: string;
+  submitted_by?: {
+    "@id": string;
+    title: string;
+  };
+  summary?: string;
+  title: string;
+}
 
 /**
  * Page titles can have embedded codes to control some aspect of the page's display. These codes
  * are enclosed in square brackets and are removed from the title before displaying it. This
  * function takes the page and returns the page title without the codes. It also returns the codes
  * themselves as an array of strings. If the title contains no codes, the `codes` array is empty.
- * @param {object} page Page object
- * @returns {object} Page title and codes
- * @returns {string} Object.title Page title without ordering number
- * @returns {string[]} Object.codes Array of strings representing the codes in the title
+ * @param page Page object
+ * @returns Page title and codes
+ * @returns Object.title Page title without ordering number
+ * @returns Object.codes Array of strings representing the codes in the title
  */
-export function getPageTitleAndCodes(page) {
+export function getPageTitleAndCodes(item: DataProviderObject): {
+  title: string;
+  codes: string[];
+} {
+  const page = item as PageObject;
+
   // Match the page title with a regex that captures the displayable title and one or more square-
   // bracket-delimited codes. The displayable title gets captured in the first group, and all the
   // square-bracket-delimited codes get captured in the second group.
   const match = page.title.match(/^(.*?) *((?:\[.+?\])*)$/);
   const combinedCodes = match?.[2] || "";
+  const title = match?.[1] || "";
   if (combinedCodes) {
     // Extract the codes from the combined codes string and return them as an array without the
     // square brackets.
@@ -28,7 +83,7 @@ export function getPageTitleAndCodes(page) {
         codes.push(codeMatch[1]);
       }
     }
-    return { title: match[1], codes };
+    return { title, codes };
   }
 
   // No codes found in the title. Return the title as is.
@@ -37,24 +92,33 @@ export function getPageTitleAndCodes(page) {
 
 /**
  * Returns true if the given name conflicts with another page's name.
- * @param {string} name The name to check against existing pages
- * @param {array} pages The page objects to check against
+ * @param name The name to check against existing pages
+ * @param pages The page objects to check against
  */
-export function detectConflictingName(name, pages) {
+export function detectConflictingName(
+  name: string,
+  pages: PageObject[]
+): boolean {
   return !!pages.find((page) => page.name === name);
 }
 
 /**
  * Save the new page contents to the database.
- * @param {object} page Page object to save
- * @param {array} blocks New markdown content for the page
- * @param {object} pageMeta New metadata for the page
- * @param {object} session System session object
- * @param {boolean} isNewPage True if the page is being added
- * @returns {object} The updated page object
+ * @param page Page object to save
+ * @param blocks New markdown content for the page
+ * @param pageMeta New metadata for the page
+ * @param session System session object
+ * @param isNewPage True if the page is being added
+ * @returns The updated page object, or error object if the save failed
  */
-export async function savePage(page, blocks, pageMeta, session, isNewPage) {
-  let writeablePage;
+export async function savePage(
+  page: PageObject,
+  blocks: PageLayoutComponent[],
+  pageMeta: PageMeta,
+  session: SessionObject,
+  isNewPage: boolean
+): Promise<PageObject | ErrorObject> {
+  let writeablePage: PageObject;
 
   /**
    * Utility to set a property in the writeable page object if it exists in the page metadata. If
@@ -62,7 +126,7 @@ export async function savePage(page, blocks, pageMeta, session, isNewPage) {
    * This mutates the writeable page object.
    * @param {string} property The property to update or delete
    */
-  function setOrDeleteProperty(property) {
+  function setOrDeleteProperty(property: keyof PageMeta) {
     if (pageMeta[property]) {
       writeablePage[property] = pageMeta[property];
     } else {
@@ -76,7 +140,7 @@ export async function savePage(page, blocks, pageMeta, session, isNewPage) {
   if (!isNewPage) {
     writeablePage = (
       await request.getObject(`${page["@id"]}?frame=edit`)
-    ).union();
+    ).union() as PageObject;
     if (writeablePage["@type"]?.includes("Error")) {
       return writeablePage;
     }
@@ -101,14 +165,18 @@ export async function savePage(page, blocks, pageMeta, session, isNewPage) {
   } else {
     result = await request.postObject("/pages", writeablePage);
   }
-  return result.status === "success" ? result["@graph"][0] : result;
+  const updatedResults = result as unknown as DatabaseWriteResponse;
+  if (updatedResults.status === "success") {
+    return updatedResults["@graph"][0] as PageObject;
+  }
+  return updatedResults as unknown as ErrorObject;
 }
 
 /**
  * Set new block IDs for every block in the page. This mutates the given array of blocks.
- * @param {array} blocks Blocks to update
+ * @param blocks Blocks to update
  */
-export function rewriteBlockIds(blocks) {
+export function rewriteBlockIds(blocks: PageLayoutComponent[]): void {
   blocks.forEach((block, index) => {
     block["@id"] = `#block${index + 1}`;
   });
@@ -125,7 +193,11 @@ export function rewriteBlockIds(blocks) {
  * @param {number} end The index of the last block to copy
  * @returns {array} Copy of a segment of the `blocks` array
  */
-export function sliceBlocks(blocks, start = 0, end = blocks.length) {
+export function sliceBlocks(
+  blocks: PageLayoutComponent[],
+  start = 0,
+  end = blocks.length
+): PageLayoutComponent[] {
   const blocksSegment = blocks.slice(start, end);
   return blocksSegment.map((block) => ({ ...block }));
 }

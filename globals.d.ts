@@ -55,6 +55,16 @@ export interface DatabaseObject {
 }
 
 /**
+ * Return value for `getServerSideProps` functions in NextJS.
+ */
+export interface ServerSideProps {
+  // Normal NextJS props to pass to the UI
+  props?: object;
+  // To trigger a 404 page
+  notFound?: boolean;
+}
+
+/**
  * Search result object; similar to `DatabaseObject` but without some properties.
  */
 export type SearchResultsObject = SearchResultsObjectProps &
@@ -189,6 +199,15 @@ export interface SearchResultsSort {
     order: "asc" | "desc";
     unmapped_type: string;
   };
+}
+
+/**
+ * Result from PUT or POST requests to the data provider.
+ */
+export interface DatabaseWriteResponse {
+  "@graph": DatabaseObject[];
+  "@type": ["result"];
+  status: string;
 }
 
 /**

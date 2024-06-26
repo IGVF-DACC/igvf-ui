@@ -1,3 +1,4 @@
+import { ErrorObject } from "../fetch-request.d";
 import { logError, errorObjectToProps } from "../errors";
 
 describe("Test logError", () => {
@@ -17,8 +18,14 @@ describe("Test logError", () => {
 
 describe("Test errorObjectToProps", () => {
   it("should return notFound for 404", () => {
-    const errorObject = {
+    const errorObject: ErrorObject = {
+      isError: true,
+      "@type": ["Error"],
       code: 404,
+      description: "Not Found",
+      detail: "The requested resource could not be found.",
+      status: "404",
+      title: "Not Found",
     };
     const expected = {
       notFound: true,
@@ -28,13 +35,25 @@ describe("Test errorObjectToProps", () => {
   });
 
   it("should return props for all other errors", () => {
-    const errorObject = {
+    const errorObject: ErrorObject = {
+      isError: true,
+      "@type": ["Error"],
       code: 403,
+      description: "Forbidden",
+      detail: "You do not have permission to access this resource.",
+      status: "403",
+      title: "Forbidden",
     };
     const expected = {
       props: {
         serverSideError: {
+          isError: true,
+          "@type": ["Error"],
           code: 403,
+          description: "Forbidden",
+          detail: "You do not have permission to access this resource.",
+          status: "403",
+          title: "Forbidden",
         },
       },
     };
