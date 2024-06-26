@@ -30,7 +30,7 @@ function Versions({ serverVersion = "" }) {
 
   if (versions.length > 0) {
     return (
-      <div className="flex gap-2 text-xs font-semibold text-brand">
+      <div className="flex justify-end gap-2 text-xs font-semibold text-brand">
         {versions}
       </div>
     );
@@ -48,7 +48,7 @@ Versions.propTypes = {
  */
 function Social() {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex justify-end gap-2">
       <a
         className="block"
         href="mailto:igvf-portal-help@lists.stanford.edu"
