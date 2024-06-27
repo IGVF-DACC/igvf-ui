@@ -13,7 +13,7 @@ import { useState } from "react";
  * Renders a single left- or right-pointing scroll indicator that fades out after appearing. Don't
  * attempt to compose the left-5 and right-5 Tailwind CSS classes or they'll get tree shaken.
  */
-function ScrollIndicator({ direction, children }) {
+function GridScrollIndicator({ direction, children }) {
   return (
     <motion.div
       initial="visible"
@@ -30,7 +30,7 @@ function ScrollIndicator({ direction, children }) {
   );
 }
 
-ScrollIndicator.propTypes = {
+GridScrollIndicator.propTypes = {
   // Direction of the scroll indicator
   direction: PropTypes.oneOf(["left", "right"]).isRequired,
 };
@@ -39,7 +39,7 @@ ScrollIndicator.propTypes = {
  * Wrapper around the data grid to show scroll indicators when the table is horizontally scrollable.
  */
 // coverage:ignore-line to ignore one line.
-export default function ScrollIndicators({ gridRef, children }) {
+export default function GridScrollIndicators({ gridRef, children }) {
   // True if the table can be scrolled to the right
   const [isScrollableRight, setIsScrollableRight] = useState(false);
   // True if the table can be scrolled to the left
@@ -76,21 +76,21 @@ export default function ScrollIndicators({ gridRef, children }) {
       onPointerLeave={onPointerLeave}
     >
       {isScrollableLeft && (
-        <ScrollIndicator direction="left">
+        <GridScrollIndicator direction="left">
           <ChevronLeftIcon className="fill-white" />
-        </ScrollIndicator>
+        </GridScrollIndicator>
       )}
       {isScrollableRight && (
-        <ScrollIndicator direction="right">
+        <GridScrollIndicator direction="right">
           <ChevronRightIcon className="fill-white" />
-        </ScrollIndicator>
+        </GridScrollIndicator>
       )}
       {children}
     </div>
   );
 }
 
-ScrollIndicators.propTypes = {
+GridScrollIndicators.propTypes = {
   // Ref to the table DOM element
   gridRef: PropTypes.object.isRequired,
 };

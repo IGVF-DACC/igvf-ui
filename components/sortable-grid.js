@@ -13,7 +13,7 @@ import { Children, cloneElement, useRef, useState } from "react";
 // components
 import DataGrid, { DataGridContainer } from "./data-grid";
 import Pager from "./pager";
-import ScrollIndicators from "./scroll-indicators";
+import GridScrollIndicators from "./grid-scroll-indicators";
 import TableCount from "./table-count";
 
 /**
@@ -97,7 +97,7 @@ function HeaderSortIcon({ columnConfiguration, sortBy, sortDirection }) {
   return (
     <SortIcon
       className={`h-5 w-5${
-        sortBy === columnConfiguration.id ? "" : " invisible"
+        sortBy === columnConfiguration.id ? "" : "invisible"
       }`}
     />
   );
@@ -389,7 +389,7 @@ export default function SortableGrid({
           maxItemsPerPage={maxItemsPerPage}
         />
       )}
-      <ScrollIndicators gridRef={gridRef}>
+      <GridScrollIndicators gridRef={gridRef}>
         <DataGridContainer ref={gridRef}>
           <DataGrid
             data={headerRow.concat(dataRows)}
@@ -403,7 +403,7 @@ export default function SortableGrid({
             }}
           />
         </DataGridContainer>
-      </ScrollIndicators>
+      </GridScrollIndicators>
     </div>
   );
 }
