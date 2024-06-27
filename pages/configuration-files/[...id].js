@@ -75,6 +75,8 @@ export default function ConfigurationFile({
             <DerivedFromTable
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
+              reportLink={`/multireport/?type=File&input_file_for=${configurationFile["@id"]}`}
+              reportLabel={`Report of files ${configurationFile.accession} derives from`}
               title={`Files ${configurationFile.accession} Derives From`}
             />
           )}

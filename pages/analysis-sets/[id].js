@@ -111,6 +111,7 @@ export default function AnalysisSet({
 
           {inputFileSets.length > 0 && (
             <InputFileSets
+              thisFileSet={analysisSet}
               fileSets={inputFileSets}
               samples={inputFileSetSamples}
               controlFileSets={controlFileSets}
