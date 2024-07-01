@@ -21,7 +21,7 @@
 // node_modules
 import { Dialog } from "@headlessui/react";
 import PropTypes from "prop-types";
-import { Children, useEffect } from "react";
+import { Children } from "react";
 // components
 import CloseButton from "./close-button";
 
