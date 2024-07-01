@@ -1,4 +1,11 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { act } from "react-dom/test-utils";
 import AttachmentThumbnail from "../attachment-thumbnail";
 import "../__mocks__/intersectionObserverMock";
 import "../__mocks__/resize-observer-mock";
@@ -17,14 +24,17 @@ describe("Test AttachmentThumbnail component for non-previewable attachments", (
     };
   });
 
-  it("properly renders a non-previewable attachment with the default size", () => {
-    render(
-      <AttachmentThumbnail
-        attachment={attachment}
-        ownerPath={ownerPath}
-        alt="Basic non-previewable image attachment"
-      />
-    );
+  it("properly renders a non-previewable attachment with the default size", async () => {
+    await act(async () => {
+      render(
+        <AttachmentThumbnail
+          attachment={attachment}
+          ownerPath={ownerPath}
+          alt="Basic non-previewable image attachment"
+        />
+      );
+    });
+
     const link = screen.getByRole("link");
     const downloadUrl = `http://localhost${ownerPath}${attachment.href}`;
     expect(link.href).toEqual(downloadUrl);
@@ -32,15 +42,18 @@ describe("Test AttachmentThumbnail component for non-previewable attachments", (
     expect(link).toHaveStyle("height: 100px");
   });
 
-  it("properly renders an unknown attachment type", () => {
+  it("properly renders an unknown attachment type", async () => {
     attachment.type = "application/octet-stream";
-    render(
-      <AttachmentThumbnail
-        attachment={attachment}
-        ownerPath={ownerPath}
-        alt="Basic non-previewable image attachment"
-      />
-    );
+    await act(async () => {
+      render(
+        <AttachmentThumbnail
+          attachment={attachment}
+          ownerPath={ownerPath}
+          alt="Basic non-previewable image attachment"
+        />
+      );
+    });
+
     const link = screen.getByRole("link");
     const downloadUrl = `http://localhost${ownerPath}${attachment.href}`;
     expect(link.href).toEqual(downloadUrl);
@@ -48,15 +61,18 @@ describe("Test AttachmentThumbnail component for non-previewable attachments", (
     expect(link).toHaveStyle("height: 100px");
   });
 
-  it("properly renders a non-previewable attachment with a custom size", () => {
-    render(
-      <AttachmentThumbnail
-        attachment={attachment}
-        ownerPath={ownerPath}
-        alt="Basic non-previewable image attachment"
-        size={50}
-      />
-    );
+  it("properly renders a non-previewable attachment with a custom size", async () => {
+    await act(async () => {
+      render(
+        <AttachmentThumbnail
+          attachment={attachment}
+          ownerPath={ownerPath}
+          alt="Basic non-previewable image attachment"
+          size={50}
+        />
+      );
+    });
+
     const link = screen.getByRole("link");
     const downloadUrl = `http://localhost${ownerPath}${attachment.href}`;
     expect(link.href).toEqual(downloadUrl);
@@ -79,7 +95,8 @@ describe("Test AttachmentThumbnail with previewable attachments", () => {
     };
   });
 
-  it("properly renders a previewable attachment with the default size", () => {
+  it("properly renders a previewable attachment with the default size", async () => {
+    // await act(async () => {
     render(
       <AttachmentThumbnail
         attachment={attachment}
@@ -87,6 +104,7 @@ describe("Test AttachmentThumbnail with previewable attachments", () => {
         alt="Basic previewable image attachment"
       />
     );
+    // });
 
     // Make sure it generates an img tag with the correct image src.
     const thumbnailImage = document.querySelector("img");
@@ -94,19 +112,26 @@ describe("Test AttachmentThumbnail with previewable attachments", () => {
 
     // Click the button to make the preview appear.
     const thumbnailButton = screen.getByRole("button");
-    fireEvent.click(thumbnailButton);
-    let previewDialog = screen.getByRole("dialog");
-    expect(previewDialog).toBeInTheDocument();
-    const previewImage = within(previewDialog).getByRole("img");
+    await act(async () => {
+      fireEvent.click(thumbnailButton);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+    });
+
+    const previewImage = within(screen.getByRole("dialog")).getByRole("img");
     expect(previewImage.src).toContain("transparent.gif");
 
     // Type ESC to close the preview.
-    previewDialog = screen.getByRole("dialog");
-    fireEvent.keyDown(previewDialog, {
-      key: "Escape",
-      code: "Escape",
-      keyCode: 27,
-      charCode: 27,
+    let previewDialog = screen.getByRole("dialog");
+    await act(async () => {
+      fireEvent.keyDown(previewDialog, {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        charCode: 27,
+      });
     });
 
     // Make sure the preview is gone.
@@ -114,15 +139,17 @@ describe("Test AttachmentThumbnail with previewable attachments", () => {
     expect(previewDialog).toBeNull();
   });
 
-  it("properly renders a previewable attachment with a custom size", () => {
-    render(
-      <AttachmentThumbnail
-        attachment={attachment}
-        ownerPath={ownerPath}
-        alt="Basic previewable image attachment"
-        size={200}
-      />
-    );
+  it("properly renders a previewable attachment with a custom size", async () => {
+    await act(async () => {
+      render(
+        <AttachmentThumbnail
+          attachment={attachment}
+          ownerPath={ownerPath}
+          alt="Basic previewable image attachment"
+          size={200}
+        />
+      );
+    });
 
     // Make sure it generates an img tag with the correct image src.
     const thumbnailImage = document.querySelector("img");
@@ -130,7 +157,9 @@ describe("Test AttachmentThumbnail with previewable attachments", () => {
 
     // Click the button to make the preview appear.
     const thumbnailButton = screen.getByRole("button");
-    fireEvent.click(thumbnailButton);
+    await act(async () => {
+      fireEvent.click(thumbnailButton);
+    });
     let previewDialog = screen.getByRole("dialog");
     expect(previewDialog).toBeInTheDocument();
 
@@ -138,7 +167,9 @@ describe("Test AttachmentThumbnail with previewable attachments", () => {
     const previewCloseBox = screen.getByLabelText(
       "Close the full-size preview image"
     );
-    fireEvent.click(previewCloseBox);
+    await act(async () => {
+      fireEvent.click(previewCloseBox);
+    });
 
     // Make sure the preview is gone.
     previewDialog = screen.queryByRole("dialog");

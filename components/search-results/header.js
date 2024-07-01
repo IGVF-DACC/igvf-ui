@@ -1,10 +1,18 @@
 // node_modules
 import PropTypes from "prop-types";
+import { useContext } from "react";
 // components
+import { BatchDownloadActuator } from "../batch-download";
+import SessionContext from "../session-context";
+// components/search-results
 import DownloadTSV from "./download-tsv";
 import ItemsPerPageSelector from "./items-per-page-selector";
 import { ColumnSelector } from "../report";
 import ViewSwitch from "./view-switch";
+// lib
+import { SearchController } from "../../lib/batch-download";
+import QueryString from "../../lib/query-string";
+import { splitPathAndQueryString } from "../../lib/query-utils";
 
 /**
  * Displays controls for the search-result list and report views, including the controls to switch
@@ -14,6 +22,15 @@ export default function SearchResultsHeader({
   searchResults,
   reportViewExtras = null,
 }) {
+  const { profiles } = useContext(SessionContext);
+
+  // Generate a query based on the current URL for the batch-download controller.
+  const { queryString } = splitPathAndQueryString(searchResults["@id"]);
+  const query = new QueryString(queryString);
+
+  // Create a batch-download controller in case the search query qualifies for batch download.
+  const controller = new SearchController(query, profiles);
+
   return (
     <div className="relative z-10 w-full @container">
       <div className="@md:flex @md:items-center @md:justify-between">
@@ -21,15 +38,25 @@ export default function SearchResultsHeader({
           <div className="mb-1 flex gap-1">
             <ViewSwitch searchResults={searchResults} />
           </div>
-          {reportViewExtras && (
+          {(reportViewExtras || controller.offerDownload) && (
             <div className="mb-1 flex gap-1">
-              <ColumnSelector
-                allColumnSpecs={reportViewExtras.allColumnSpecs}
-                visibleColumnSpecs={reportViewExtras.visibleColumnSpecs}
-                onChange={reportViewExtras.onColumnVisibilityChange}
-                onChangeAll={reportViewExtras.onAllColumnsVisibilityChange}
-              />
-              <DownloadTSV searchUri={searchResults["@id"]} />
+              {reportViewExtras && (
+                <>
+                  <ColumnSelector
+                    allColumnSpecs={reportViewExtras.allColumnSpecs}
+                    visibleColumnSpecs={reportViewExtras.visibleColumnSpecs}
+                    onChange={reportViewExtras.onColumnVisibilityChange}
+                    onChangeAll={reportViewExtras.onAllColumnsVisibilityChange}
+                  />
+                  <DownloadTSV searchUri={searchResults["@id"]} />
+                </>
+              )}
+              {controller.offerDownload && (
+                <BatchDownloadActuator
+                  controller={controller}
+                  label="Download files associated with the selected file sets"
+                />
+              )}
             </div>
           )}
         </div>

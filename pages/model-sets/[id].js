@@ -118,7 +118,7 @@ export default function ModelSet({
             />
           )}
           {files.length > 0 && (
-            <FileTable files={files} fileSetPath={modelSet["@id"]} />
+            <FileTable files={files} fileSet={modelSet} isDownloadable />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />

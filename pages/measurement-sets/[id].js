@@ -274,8 +274,8 @@ export default function MeasurementSet({
           {imageFileType.length > 0 && (
             <FileTable
               files={imageFileType}
+              fileSet={measurementSet}
               title="Imaging Results"
-              fileSetPath={measurementSet["@id"]}
             />
           )}
           {controlFileSets.length > 0 && (

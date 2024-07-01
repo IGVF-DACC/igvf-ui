@@ -95,7 +95,7 @@ export default function CuratedSet({
             <DonorTable donors={curatedSet.donors} />
           )}
           {files.length > 0 && (
-            <FileTable files={files} fileSetPath={curatedSet["@id"]} />
+            <FileTable files={files} fileSet={curatedSet} isDownloadable />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />

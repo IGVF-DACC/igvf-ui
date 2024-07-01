@@ -123,7 +123,7 @@ export default function AnalysisSet({
           )}
 
           {files.length > 0 && (
-            <FileTable files={files} fileSetPath={analysisSet["@id"]} />
+            <FileTable files={files} fileSet={analysisSet} isDownloadable />
           )}
 
           {documents.length > 0 && <DocumentTable documents={documents} />}
