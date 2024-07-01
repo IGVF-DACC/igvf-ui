@@ -4,14 +4,16 @@
 
 // lib
 import { HTTP_STATUS_CODE } from "./fetch-request";
+// types
+import { ErrorObject } from "./fetch-request.d";
+import { ServerSideProps } from "../globals.d";
 
 /**
  * Log the error to the console with a timestamp.
- * @param {string|number} statusCode Error status code, e.g. 403
- * @param {string} title Narrative string corresponding to error code
- * @returns {void}
+ * @param statusCode Error status code, e.g. 403
+ * @param title Narrative string corresponding to error code
  */
-export function logError(statusCode, title) {
+export function logError(statusCode: string | number, title: string): void {
   const date = new Date().toISOString();
   console.log(`ERROR [${date}] ${statusCode}:${title}`);
 }
@@ -19,10 +21,10 @@ export function logError(statusCode, title) {
 /**
  * Given an object from data-provider requests containing error information, return an error object
  * expected by the UI. This gets called at the end of most getServerSideProps functions.
- * @param {object} error Retrieved object containing data-provider error information
- * @returns {object} Error object with message and status code, or notFound for 404
+ * @param error Retrieved object containing data-provider error information
+ * @returns Error object with message and status code, or notFound for 404
  */
-export function errorObjectToProps(errorObject) {
+export function errorObjectToProps(errorObject: ErrorObject): ServerSideProps {
   // NextJS handles 404 separately.
   if (errorObject.code === HTTP_STATUS_CODE.NOT_FOUND) {
     return { notFound: true };
