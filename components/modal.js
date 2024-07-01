@@ -28,22 +28,7 @@ import CloseButton from "./close-button";
 /**
  * Main component for modal dialogs.
  */
-export default function Modal({
-  isOpen,
-  onClose,
-  defaultElementId = null,
-  children,
-}) {
-  useEffect(() => {
-    // Focus the default element if it exists.
-    if (isOpen && defaultElementId) {
-      const defaultElement = document.getElementById(defaultElementId);
-      if (defaultElement) {
-        defaultElement.focus();
-      }
-    }
-  }, [isOpen, defaultElementId]);
-
+export default function Modal({ isOpen, onClose, children }) {
   return (
     <Dialog
       open={isOpen}
@@ -68,8 +53,6 @@ Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   // Called to close the modal on click outside or ESC
   onClose: PropTypes.func.isRequired,
-  // HTML ID of the element to focus when the modal opens
-  defaultElementId: PropTypes.string,
 };
 
 /**

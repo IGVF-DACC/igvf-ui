@@ -483,11 +483,7 @@ function DeleteBlockTrigger({ onDelete }) {
       >
         Delete Block
       </Button>
-      <Modal
-        isOpen={isOpen}
-        onClose={() => setOpen(false)}
-        defaultElementId="cancel-delete-block"
-      >
+      <Modal isOpen={isOpen} onClose={() => setOpen(false)}>
         <Modal.Header onClose={() => setOpen(false)}>Delete Block</Modal.Header>
         <Modal.Body>
           <div className="prose dark:prose-invert">
@@ -498,12 +494,7 @@ function DeleteBlockTrigger({ onDelete }) {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            type="secondary"
-            onClick={() => setOpen(false)}
-            id="cancel-delete-block"
-            autofocus
-          >
+          <Button type="secondary" onClick={() => setOpen(false)} autoFocus>
             Cancel
           </Button>
           <Button
