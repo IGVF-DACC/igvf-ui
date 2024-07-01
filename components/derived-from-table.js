@@ -1,8 +1,9 @@
 // node_modules
+import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import Link from "next/link";
 // components
-import { DataAreaTitle } from "./data-area";
+import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
@@ -69,11 +70,20 @@ const columns = [
 export default function DerivedFromTable({
   derivedFrom,
   derivedFromFileSets,
+  reportLink = null,
+  reportLabel = null,
   title = "Derived From",
 }) {
   return (
     <>
-      <DataAreaTitle>{title}</DataAreaTitle>
+      <DataAreaTitle>
+        {title}
+        {reportLink && reportLabel && (
+          <DataAreaTitleLink href={reportLink} label={reportLabel}>
+            <TableCellsIcon className="h-4 w-4" />
+          </DataAreaTitleLink>
+        )}
+      </DataAreaTitle>
       <SortableGrid
         data={derivedFrom}
         columns={columns}
@@ -90,6 +100,10 @@ DerivedFromTable.propTypes = {
   derivedFrom: PropTypes.array.isRequired,
   // File sets of the files
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Optional link to a report of the files
+  reportLink: PropTypes.string,
+  // Optional label for the report link
+  reportLabel: PropTypes.string,
   // Optional title to display if not "Derived From"
   title: PropTypes.string,
 };

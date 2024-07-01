@@ -1,11 +1,12 @@
 // node_modules
+import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import { useContext, useState } from "react";
 // components
 import AliasList from "./alias-list";
 import Checkbox from "./checkbox";
-import { DataAreaTitle } from "./data-area";
+import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import LinkedIdAndStatusStack from "./linked-id-and-status-stack";
 import SessionContext from "./session-context";
@@ -265,6 +266,7 @@ const basicColumns = [
  */
 const fileSetSortOrder = [
   "MeasurementSet",
+  "AnalysisSet",
   "AuxiliarySet",
   "ConstructLibrarySet",
   "PredictionSet",
@@ -442,6 +444,7 @@ function InputFileSetTable({
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
+  reportLink,
 }) {
   const { collectionTitles } = useContext(SessionContext);
   const title = collectionTitles?.[fileSetType] || fileSetType;
@@ -453,15 +456,23 @@ function InputFileSetTable({
     <>
       <DataAreaTitle>
         {title} Input File Sets
-        <Checkbox
-          id={`show-aliases-${fileSetType}`}
-          checked={isAliasesVisible}
-          name={`Show aliases columns for ${title}`}
-          onClick={() => setIsAliasesVisible(!isAliasesVisible)}
-          className="items-center [&>input]:mr-0"
-        >
-          <div className="order-first mr-1 text-sm">Show aliases columns</div>
-        </Checkbox>
+        <div className="flex gap-1">
+          <Checkbox
+            id={`show-aliases-${fileSetType}`}
+            checked={isAliasesVisible}
+            name={`Show aliases columns for ${title}`}
+            onClick={() => setIsAliasesVisible(!isAliasesVisible)}
+            className="items-center [&>input]:mr-0"
+          >
+            <div className="order-first mr-1 text-sm">Show aliases columns</div>
+          </Checkbox>
+          <DataAreaTitleLink
+            href={reportLink}
+            label={`Report of ${fileSetType} input file sets`}
+          >
+            <TableCellsIcon className="h-4 w-4" />
+          </DataAreaTitleLink>
+        </div>
       </DataAreaTitle>
       <SortableGrid
         data={fileSets}
@@ -499,12 +510,15 @@ InputFileSetTable.propTypes = {
   measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Construct library sets belonging to the file sets
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Link to the report page containing the same file sets as this table
+  reportLink: PropTypes.string,
 };
 
 /**
  * Display each of the types of input file sets in separate tables.
  */
 export default function InputFileSets({
+  thisFileSet,
   fileSets,
   samples,
   controlFileSets,
@@ -534,6 +548,7 @@ export default function InputFileSets({
             auxiliarySets={auxiliarySets}
             measurementSets={measurementSets}
             constructLibrarySets={constructLibrarySets}
+            reportLink={`/multireport/?type=${fileSetType}&input_file_set_for=${thisFileSet["@id"]}`}
           />
         );
       })}
@@ -542,6 +557,8 @@ export default function InputFileSets({
 }
 
 InputFileSets.propTypes = {
+  // The file set this page displays
+  thisFileSet: PropTypes.object.isRequired,
   // File sets to display
   fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples belonging to the file sets

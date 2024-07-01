@@ -109,6 +109,8 @@ export default function AlignmentFile({
             <DerivedFromTable
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
+              reportLink={`/multireport/?type=File&input_file_for=${alignmentFile["@id"]}`}
+              reportLabel={`Report of files ${alignmentFile.accession} derives from`}
               title={`Files ${alignmentFile.accession} Derives From`}
             />
           )}

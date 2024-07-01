@@ -134,6 +134,8 @@ export default function SequenceFile({
             <DerivedFromTable
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
+              reportLink={`/multireport/?type=File&input_file_for=${sequenceFile["@id"]}`}
+              reportLabel={`Report of files ${sequenceFile.accession} derives from`}
               title={`Files ${sequenceFile.accession} Derives From`}
             />
           )}

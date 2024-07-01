@@ -98,6 +98,8 @@ export default function SignalFile({
             <DerivedFromTable
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
+              reportLink={`/multireport/?type=File&input_file_for=${signalFile["@id"]}`}
+              reportLabel={`Report of files ${signalFile.accession} derives from`}
               title={`Files ${signalFile.accession} Derives From`}
             />
           )}

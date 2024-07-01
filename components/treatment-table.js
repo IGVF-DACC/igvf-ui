@@ -1,7 +1,8 @@
 // node_modules
+import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
-import { DataAreaTitle } from "./data-area";
+import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
 
@@ -36,10 +37,22 @@ const treatmentColumns = [
 /**
  * Display a sortable table of the given treatments.
  */
-export default function TreatmentTable({ treatments, title = "Treatments" }) {
+export default function TreatmentTable({
+  treatments,
+  reportLink = null,
+  reportLabel = null,
+  title = "Treatments",
+}) {
   return (
     <>
-      <DataAreaTitle>{title}</DataAreaTitle>
+      <DataAreaTitle>
+        {title}
+        {reportLink && reportLabel && (
+          <DataAreaTitleLink href={reportLink} label={reportLabel}>
+            <TableCellsIcon className="h-4 w-4" />
+          </DataAreaTitleLink>
+        )}
+      </DataAreaTitle>
       <SortableGrid
         data={treatments}
         columns={treatmentColumns}
@@ -53,6 +66,10 @@ export default function TreatmentTable({ treatments, title = "Treatments" }) {
 TreatmentTable.propTypes = {
   // Treatments to display
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Link to report of treatments; use with `reportLabel`
+  reportLink: PropTypes.string,
+  // Label for report link; use with `reportLink`
+  reportLabel: PropTypes.string,
   // Optional title to display if not "Treatments"
   title: PropTypes.string,
 };

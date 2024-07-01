@@ -109,6 +109,8 @@ export default function ReferenceFile({
             <DerivedFromTable
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
+              reportLink={`/multireport/?type=File&input_file_for=${referenceFile["@id"]}`}
+              reportLabel={`Report of files ${referenceFile.accession} derives from`}
               title={`Files ${referenceFile.accession} Derives From`}
             />
           )}
