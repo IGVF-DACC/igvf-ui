@@ -1,5 +1,6 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
+import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bars2Icon,
@@ -28,6 +29,7 @@ import GlobalContext from "./global-context";
 import Icon from "./icon";
 import IdSearchTrigger from "./id-search-trigger";
 import IndexerState from "./indexer-state";
+import { Social } from "./site-info";
 import SiteLogo from "./logo";
 import Modal from "./modal";
 import SessionContext from "./session-context";
@@ -781,6 +783,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         )}
         <NavigationItem>
           <IndexerState />
+          <Social />
         </NavigationItem>
       </NavigationList>
     </>

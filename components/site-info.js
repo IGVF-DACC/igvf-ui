@@ -30,7 +30,7 @@ function Versions({ serverVersion = "" }) {
 
   if (versions.length > 0) {
     return (
-      <div className="flex justify-end gap-2 text-xs font-semibold text-brand">
+      <div className="flex gap-2 text-xs font-semibold text-brand">
         {versions}
       </div>
     );
@@ -46,9 +46,9 @@ Versions.propTypes = {
 /**
  * Display email and Twitter links.
  */
-function Social() {
+export function Social() {
   return (
-    <div className="flex justify-end gap-2">
+    <div className="flex justify-center gap-2">
       <a
         className="block"
         href="mailto:igvf-portal-help@lists.stanford.edu"
@@ -94,7 +94,6 @@ export default function SiteInfo() {
   return (
     <section>
       <Versions serverVersion={serverVersion} />
-      <Social />
     </section>
   );
 }
