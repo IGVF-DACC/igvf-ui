@@ -131,7 +131,11 @@ export default function PrimaryCell({
             />
           )}
           {primaryCell.modifications?.length > 0 && (
-            <ModificationTable modifications={primaryCell.modifications} />
+            <ModificationTable
+              modifications={primaryCell.modifications}
+              reportLink={`/multireport/?type=Modification&biosamples_modified=${primaryCell["@id"]}`}
+              reportLabel={`Report of genetic modifications for ${primaryCell.accession}`}
+            />
           )}
           {sortedFractions.length > 0 && (
             <SampleTable
@@ -140,8 +144,20 @@ export default function PrimaryCell({
               title="Sorted Fractions of Sample"
             />
           )}
-          {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
-          {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
+          {biomarkers.length > 0 && (
+            <BiomarkerTable
+              biomarkers={biomarkers}
+              reportLink={`/multireport/?type=Biomarker&biomarker_for=${primaryCell["@id"]}`}
+              reportLabel={`Report of biological markers that are associated with biosample ${primaryCell.accession}`}
+            />
+          )}
+          {treatments.length > 0 && (
+            <TreatmentTable
+              treatments={treatments}
+              reportLink={`/multireport/?type=Treatment&biosamples_treated=${primaryCell["@id"]}`}
+              reportLabel={`Report of treatments applied to the biosample ${primaryCell.accession}`}
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>

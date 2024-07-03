@@ -160,7 +160,11 @@ export default function Tissue({
             />
           )}
           {tissue.modifications?.length > 0 && (
-            <ModificationTable modifications={tissue.modifications} />
+            <ModificationTable
+              modifications={tissue.modifications}
+              reportLink={`/multireport/?type=Modification&biosamples_modified=${tissue["@id"]}`}
+              reportLabel={`Report of genetic modifications for ${tissue.accession}`}
+            />
           )}
           {sortedFractions.length > 0 && (
             <SampleTable
@@ -169,8 +173,20 @@ export default function Tissue({
               title="Sorted Fractions of Sample"
             />
           )}
-          {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
-          {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
+          {biomarkers.length > 0 && (
+            <BiomarkerTable
+              biomarkers={biomarkers}
+              reportLink={`/multireport/?type=Biomarker&biomarker_for=${tissue["@id"]}`}
+              reportLabel={`Report of biological markers that are associated with biosample ${tissue.accession}`}
+            />
+          )}
+          {treatments.length > 0 && (
+            <TreatmentTable
+              treatments={treatments}
+              reportLink={`/multireport/?type=Treatment&biosamples_treated=${tissue["@id"]}`}
+              reportLabel={`Report of treatments applied to the biosample ${tissue.accession}`}
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>

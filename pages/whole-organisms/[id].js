@@ -109,7 +109,11 @@ export default function WholeOrganism({
             />
           )}
           {sample.modifications?.length > 0 && (
-            <ModificationTable modifications={sample.modifications} />
+            <ModificationTable
+              modifications={sample.modifications}
+              reportLink={`/multireport/?type=Modification&biosamples_modified=${sample["@id"]}`}
+              reportLabel={`Report of genetic modifications for ${sample.accession}`}
+            />
           )}
           {sortedFractions.length > 0 && (
             <SampleTable
@@ -118,8 +122,20 @@ export default function WholeOrganism({
               title="Sorted Fractions of Sample"
             />
           )}
-          {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
-          {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
+          {biomarkers.length > 0 && (
+            <BiomarkerTable
+              biomarkers={biomarkers}
+              reportLink={`/multireport/?type=Biomarker&biomarker_for=${sample["@id"]}`}
+              reportLabel={`Report of biological markers that are associated with biosample ${sample.accession}`}
+            />
+          )}
+          {treatments.length > 0 && (
+            <TreatmentTable
+              treatments={treatments}
+              reportLink={`/multireport/?type=Treatment&biosamples_treated=${sample["@id"]}`}
+              reportLabel={`Report of treatments applied to the biosample ${sample.accession}`}
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>

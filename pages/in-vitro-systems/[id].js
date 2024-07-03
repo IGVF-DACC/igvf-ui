@@ -205,7 +205,11 @@ export default function InVitroSystem({
             />
           )}
           {inVitroSystem.modifications?.length > 0 && (
-            <ModificationTable modifications={inVitroSystem.modifications} />
+            <ModificationTable
+              modifications={inVitroSystem.modifications}
+              reportLink={`/multireport/?type=Modification&biosamples_modified=${inVitroSystem["@id"]}`}
+              reportLabel={`Report of genetic modifications for ${inVitroSystem.accession}`}
+            />
           )}
           {sortedFractions.length > 0 && (
             <SampleTable
@@ -214,8 +218,20 @@ export default function InVitroSystem({
               title="Sorted Fractions of Sample"
             />
           )}
-          {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
-          {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
+          {biomarkers.length > 0 && (
+            <BiomarkerTable
+              biomarkers={biomarkers}
+              reportLink={`/multireport/?type=Biomarker&biomarker_for=${inVitroSystem["@id"]}`}
+              reportLabel={`Report of biological markers that are associated with biosample ${inVitroSystem.accession}`}
+            />
+          )}
+          {treatments.length > 0 && (
+            <TreatmentTable
+              treatments={treatments}
+              reportLink={`/multireport/?type=Treatment&biosamples_treated=${inVitroSystem["@id"]}`}
+              reportLabel={`Report of treatments applied to the biosample ${inVitroSystem.accession}`}
+            />
+          )}
           {cellFateChangeTreatments.length > 0 && (
             <TreatmentTable
               treatments={cellFateChangeTreatments}

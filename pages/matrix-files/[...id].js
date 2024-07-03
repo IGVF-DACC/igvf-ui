@@ -81,6 +81,8 @@ export default function MatrixFile({
             <DerivedFromTable
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
+              reportLink={`/multireport/?type=File&input_file_for=${matrixFile["@id"]}`}
+              reportLabel={`Report of files ${matrixFile.accession} derives from`}
               title={`Files ${matrixFile.accession} Derives From`}
             />
           )}

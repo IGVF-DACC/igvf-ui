@@ -107,7 +107,15 @@ export default function ModelSet({
           </DataPanel>
 
           {inputFileSets.length > 0 && (
-            <FileSetTable fileSets={inputFileSets} title="Input File Sets" />
+            <FileSetTable
+              fileSets={inputFileSets}
+              title="Input File Sets"
+              reportLinkSpecs={{
+                fileSetType: "FileSet",
+                identifierProp: "input_file_set_for",
+                itemIdentifier: modelSet["@id"],
+              }}
+            />
           )}
           {files.length > 0 && (
             <FileTable files={files} fileSetPath={modelSet["@id"]} />

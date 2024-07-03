@@ -61,6 +61,8 @@ export default function ImageFile({
             <DerivedFromTable
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
+              reportLink={`/multireport/?type=File&input_file_for=${imageFile["@id"]}`}
+              reportLabel={`Report of files ${imageFile.accession} derives from`}
               title={`Files ${imageFile.accession} Derives From`}
             />
           )}
