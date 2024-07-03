@@ -13,7 +13,7 @@ describe("Test schema name search", () => {
     cy.get("#schema-search").type("analysis");
 
     // We should see exactly two highlighted schema names.
-    cy.get(".bg-schema-name-highlight").should("have.length", 2);
+    cy.get(".bg-schema-name-highlight").should("have.length", 3);
 
     // Click the first highlighted element and make sure the resulting URL does not have a hash tag.
     cy.get(".bg-schema-name-highlight").first().click();

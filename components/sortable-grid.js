@@ -96,7 +96,7 @@ function HeaderSortIcon({ columnConfiguration, sortBy, sortDirection }) {
 
   return (
     <SortIcon
-      className={`h-5 w-5${
+      className={`h-5 w-5 ${
         sortBy === columnConfiguration.id ? "" : "invisible"
       }`}
     />
