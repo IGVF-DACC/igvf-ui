@@ -92,6 +92,8 @@ export default function TabularFile({
             <DerivedFromTable
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
+              reportLink={`/multireport/?type=File&input_file_for=${tabularFile["@id"]}`}
+              reportLabel="Report of files that this file derives from"
               title={`Files ${tabularFile.accession} Derives From`}
             />
           )}
