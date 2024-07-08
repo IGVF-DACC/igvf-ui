@@ -848,7 +848,7 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
         <IndexerState isCollapsed />
       </NavigationItem>
       <NavigationItem>
-        <Email isCollapsed />
+        <Email />
       </NavigationItem>
     </NavigationList>
   );
