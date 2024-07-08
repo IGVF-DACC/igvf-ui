@@ -103,8 +103,8 @@ export default function TabularFile({
               title="Integrated In"
               reportLinkSpecs={{
                 fileSetType: "ConstructLibrarySet",
-                identifierProp: "tabular_files.accession",
-                itemIdentifier: tabularFile.accession,
+                identifierProp: "integrated_content_files",
+                itemIdentifier: tabularFile["@id"],
               }}
             />
           )}
