@@ -1,6 +1,5 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
-import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bars2Icon,
@@ -29,7 +28,7 @@ import GlobalContext from "./global-context";
 import Icon from "./icon";
 import IdSearchTrigger from "./id-search-trigger";
 import IndexerState from "./indexer-state";
-import { Social } from "./site-info";
+import { Email, Twitter } from "./site-info";
 import SiteLogo from "./logo";
 import Modal from "./modal";
 import SessionContext from "./session-context";
@@ -783,7 +782,12 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         )}
         <NavigationItem>
           <IndexerState />
-          <Social />
+        </NavigationItem>
+        <NavigationItem>
+          <div className="flex justify-center gap-2">
+            <Email />
+            <Twitter />
+          </div>
         </NavigationItem>
       </NavigationList>
     </>
@@ -842,6 +846,12 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
       </NavigationHrefItem>
       <NavigationItem>
         <IndexerState isCollapsed />
+      </NavigationItem>
+      <NavigationItem>
+        <Email isCollapsed />
+      </NavigationItem>
+      <NavigationItem>
+        <Twitter isCollapse />
       </NavigationItem>
     </NavigationList>
   );
