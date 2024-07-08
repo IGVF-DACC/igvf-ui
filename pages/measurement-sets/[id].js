@@ -244,6 +244,7 @@ export default function MeasurementSet({
             <SampleTable
               samples={measurementSet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${measurementSet["@id"]}`}
+              reportLabel="Report of samples in this file set"
             />
           )}
           {measurementSet.donors?.length > 0 && (

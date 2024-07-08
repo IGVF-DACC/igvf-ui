@@ -94,6 +94,7 @@ const sampleColumns = [
 export default function SampleTable({
   samples,
   reportLink = null,
+  reportLabel = null,
   title = "Samples",
 }) {
   const { collectionTitles } = useContext(SessionContext);
@@ -102,11 +103,8 @@ export default function SampleTable({
     <>
       <DataAreaTitle>
         {title}
-        {reportLink && (
-          <DataAreaTitleLink
-            href={reportLink}
-            label="Report of multiplexed samples that have this item as their multiplexed sample"
-          >
+        {reportLink && reportLabel && (
+          <DataAreaTitleLink href={reportLink} label={reportLabel}>
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
@@ -127,6 +125,8 @@ SampleTable.propTypes = {
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Link to the report page containing the same samples as this table
   reportLink: PropTypes.string,
+  // Label for the report link
+  reportLabel: PropTypes.string,
   // Title of the table if not "Samples"
   title: PropTypes.string,
 };

@@ -89,6 +89,7 @@ export default function CuratedSet({
             <SampleTable
               samples={curatedSet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${curatedSet["@id"]}`}
+              reportLabel="Report of samples in this curated set"
             />
           )}
           {curatedSet.donors?.length > 0 && (

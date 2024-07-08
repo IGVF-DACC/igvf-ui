@@ -166,6 +166,7 @@ export default function InVitroSystem({
             <SampleTable
               samples={multiplexedInSamples}
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${inVitroSystem["@id"]}`}
+              reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
             />
           )}
@@ -173,6 +174,7 @@ export default function InVitroSystem({
             <SampleTable
               samples={pooledFrom}
               reportLink={`/multireport/?type=Sample&pooled_in=${inVitroSystem["@id"]}`}
+              reportLabel="Report of samples this biosample is pooled from"
               title="Biosamples Pooled From"
             />
           )}
@@ -180,6 +182,7 @@ export default function InVitroSystem({
             <SampleTable
               samples={pooledIn}
               reportLink={`/multireport/?type=Biosample&pooled_from=${inVitroSystem["@id"]}`}
+              reportLabel="Report of pooled biosamples in which this sample is included"
               title="Pooled In"
             />
           )}
@@ -187,6 +190,7 @@ export default function InVitroSystem({
             <SampleTable
               samples={demultiplexedTo}
               reportLink={`/multireport/?type=Biosample&demultiplexed_from=${inVitroSystem["@id"]}`}
+              reportLabel="Report of parts into which this sample has been demultiplexed"
               title="Demultiplexed To Sample"
             />
           )}
@@ -194,6 +198,7 @@ export default function InVitroSystem({
             <SampleTable
               samples={parts}
               reportLink={`/multireport/?type=Biosample&part_of=${inVitroSystem["@id"]}`}
+              reportLabel="Report of parts into which this sample has been divided"
               title="Sample Parts"
             />
           )}
@@ -201,6 +206,7 @@ export default function InVitroSystem({
             <SampleTable
               samples={originOf}
               reportLink={`/multireport/?type=Biosample&originated_from.@id=${inVitroSystem["@id"]}`}
+              reportLabel="Report of samples which originate from this sample"
               title="Origin Sample Of"
             />
           )}
@@ -215,6 +221,7 @@ export default function InVitroSystem({
             <SampleTable
               samples={sortedFractions}
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${inVitroSystem["@id"]}`}
+              reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
             />
           )}

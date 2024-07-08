@@ -8,7 +8,7 @@ import {
 } from "./search-list-item";
 import { PropTypes } from "prop-types";
 
-export default function Modification({ item: modification }) {
+export default function CrisprModification({ item: modification }) {
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -19,12 +19,14 @@ export default function Modification({ item: modification }) {
         <SearchListItemTitle>{modification.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <span key="lab">{modification.lab.title}</span>
+          <span key="species">{modification.cas_species}</span>
+          <span key="cas">{modification.cas}</span>
         </SearchListItemMeta>
       </SearchListItemMain>
     </SearchListItemContent>
   );
 }
 
-Modification.propTypes = {
+CrisprModification.propTypes = {
   item: PropTypes.object.isRequired,
 };

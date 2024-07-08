@@ -430,7 +430,7 @@ BiosampleDataItems.propTypes = {
   // Object derived from the biosample.json schema
   item: PropTypes.object.isRequired,
   // Classifications if this biosample has at least one
-  classifications: PropTypes.string,
+  classifications: PropTypes.arrayOf(PropTypes.string),
   // Construct library sets for this biosample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for the biosample

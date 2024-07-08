@@ -135,6 +135,7 @@ export default function Tissue({
             <SampleTable
               samples={multiplexedInSamples}
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${tissue["@id"]}`}
+              reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
             />
           )}
@@ -142,6 +143,7 @@ export default function Tissue({
             <SampleTable
               samples={pooledFrom}
               reportLink={`/multireport/?type=Sample&pooled_in=${tissue["@id"]}`}
+              reportLabel="Report of biosamples this biosample is pooled from"
               title="Biosamples Pooled From"
             />
           )}
@@ -149,6 +151,7 @@ export default function Tissue({
             <SampleTable
               samples={pooledIn}
               reportLink={`/multireport/?type=Biosample&pooled_from=${tissue["@id"]}`}
+              reportLabel="Report of pooled samples in which this sample is included"
               title="Pooled In"
             />
           )}
@@ -156,6 +159,7 @@ export default function Tissue({
             <SampleTable
               samples={parts}
               reportLink={`/multireport/?type=Biosample&part_of=${tissue["@id"]}`}
+              reportLabel="Report of parts into which this sample has been divided"
               title="Sample Parts"
             />
           )}
@@ -170,6 +174,7 @@ export default function Tissue({
             <SampleTable
               samples={sortedFractions}
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${tissue["@id"]}`}
+              reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
             />
           )}

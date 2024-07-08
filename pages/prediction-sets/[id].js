@@ -148,6 +148,7 @@ export default function PredictionSet({
             <SampleTable
               samples={predictionSet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${predictionSet["@id"]}`}
+              reportLabel="Report of samples in this prediction set"
             />
           )}
           {predictionSet.donors?.length > 0 && (

@@ -329,6 +329,7 @@ export default function ConstructLibrarySet({
             <SampleTable
               samples={constructLibrarySet.applied_to_samples}
               reportLink={`/multireport/?type=Sample&construct_library_sets=${constructLibrarySet["@id"]}`}
+              reportLabel="Report of samples that link to this construct library set"
               title="Applied to Samples"
             />
           )}

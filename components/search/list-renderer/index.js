@@ -54,6 +54,8 @@ import AuxiliarySet from "./auxiliary-set";
 import Biomarker from "./biomarker";
 import Biosample from "./biosample";
 import ConstructLibrarySet from "./construct-library-set";
+import CrisprModification from "./crispr-modification";
+import DegronModification from "./degron-modification";
 import CuratedSet from "./curated-set";
 import Document from "./document";
 import Gene from "./gene";
@@ -76,7 +78,6 @@ import Treatment from "./treatment";
 import User from "./user";
 import File from "./file";
 import Source from "./source";
-import Modification from "./modification";
 import Workflow from "./workflow";
 
 const renderers = {
@@ -89,6 +90,8 @@ const renderers = {
   Biomarker,
   ConfigurationFile: File,
   ConstructLibrarySet,
+  CrisprModification,
+  DegronModification,
   CuratedSet,
   Document,
   Gene,
@@ -99,7 +102,6 @@ const renderers = {
   MatrixFile: File,
   MeasurementSet,
   ModelSet,
-  Modification,
   MultiplexedSample,
   OpenReadingFrame,
   Page,

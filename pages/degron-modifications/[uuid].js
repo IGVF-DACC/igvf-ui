@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AliasList from "../../components/alias-list";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -16,18 +17,25 @@ import ProductInfo from "../../components/product-info";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import buildBreadcrumbs from "../../lib/breadcrumbs";
-import { requestDocuments } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestGenes,
+  requestSamples,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 import { Ok } from "../../lib/result";
 
-export default function Modification({
+export default function DegronModification({
   modification,
-  gene,
+  taggedProteins,
+  biosamplesModified,
   sources,
   documents,
   isJson,
@@ -42,25 +50,19 @@ export default function Modification({
         <JsonDisplay item={modification} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Modality</DataItemLabel>
-              <DataItemValue>{modification.modality}</DataItemValue>
-              <DataItemLabel>Cas</DataItemLabel>
-              <DataItemValue>{modification.cas}</DataItemValue>
-              <DataItemLabel>Cas Species</DataItemLabel>
-              <DataItemValue>{modification.cas_species}</DataItemValue>
-              {modification.fused_domain && (
+              <DataItemLabel>Degron System</DataItemLabel>
+              <DataItemValue>{modification.degron_system}</DataItemValue>
+              {taggedProteins.length > 0 && (
                 <>
-                  <DataItemLabel>Fused Domain</DataItemLabel>
-                  <DataItemValue>{modification.fused_domain}</DataItemValue>
-                </>
-              )}
-              {modification.tagged_protein && (
-                <>
-                  <DataItemLabel>Tagged Protein</DataItemLabel>
+                  <DataItemLabel>Tagged Proteins</DataItemLabel>
                   <DataItemValue>
-                    <Link href={modification.tagged_protein}>
-                      {gene.symbol}
-                    </Link>
+                    <SeparatedList>
+                      {taggedProteins.map((protein) => (
+                        <Link key={protein["@id"]} href={protein["@id"]}>
+                          {protein.geneid}
+                        </Link>
+                      ))}
+                    </SeparatedList>
                   </DataItemValue>
                 </>
               )}
@@ -98,8 +100,26 @@ export default function Modification({
                   </DataItemValue>
                 </>
               )}
+              {modification.aliases?.length > 0 && (
+                <>
+                  <DataItemLabel>Aliases</DataItemLabel>
+                  <DataItemValue>
+                    <AliasList aliases={modification.aliases} />
+                  </DataItemValue>
+                </>
+              )}
+              <DataItemLabel>Summary</DataItemLabel>
+              <DataItemValue>{modification.summary}</DataItemValue>
             </DataArea>
           </DataPanel>
+          {biosamplesModified.length > 0 && (
+            <SampleTable
+              samples={biosamplesModified}
+              reportLink={`/multireport/?type=Biosample&modifications.@id=${modification["@id"]}`}
+              reportLabel="Report of biosamples that have this item as their modification"
+              title="Biosamples Modified by this Modification"
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -108,13 +128,15 @@ export default function Modification({
   );
 }
 
-Modification.propTypes = {
+DegronModification.propTypes = {
   // Modification to display
   modification: PropTypes.object.isRequired,
+  // Biosamples modified by the modification
+  biosamplesModified: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents treatment
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // The gene referenced by the Modification
-  gene: PropTypes.object,
+  // The tagged proteins referenced by the modification
+  taggedProteins: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for the modification
   attribution: PropTypes.object,
   // Source lab or source for this sample
@@ -127,9 +149,30 @@ export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const modification = (
-    await request.getObject(`/modifications/${params.uuid}/`)
+    await request.getObject(`/degron-modifications/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(modification)) {
+    const taggedProteins = modification.tagged_proteins
+      ? await requestGenes(modification.tagged_proteins, request)
+      : [];
+
+    let sources = [];
+    if (modification.sources?.length > 0) {
+      sources = Ok.all(
+        await request.getMultipleObjects(modification.sources, {
+          filterErrors: true,
+        })
+      );
+    }
+
+    const biosamplesModified =
+      modification.biosamples_modified.length > 0
+        ? await requestSamples(modification.biosamples_modified, request)
+        : [];
+
+    const documents = modification.documents
+      ? await requestDocuments(modification.documents, request)
+      : [];
     const breadcrumbs = await buildBreadcrumbs(
       modification,
       modification.summary,
@@ -139,29 +182,16 @@ export async function getServerSideProps({ params, req, query }) {
       modification,
       req.headers.cookie
     );
-    const gene = (
-      await request.getObject(modification.tagged_protein)
-    ).optional();
-    let sources = [];
-    if (modification.sources?.length > 0) {
-      sources = Ok.all(
-        await request.getMultipleObjects(modification.sources, {
-          filterErrors: true,
-        })
-      );
-    }
-    const documents = modification.documents
-      ? await requestDocuments(modification.documents, request)
-      : [];
     return {
       props: {
         modification,
+        taggedProteins,
+        biosamplesModified,
+        documents,
         pageContext: {
           title: modification.summary,
         },
         breadcrumbs,
-        documents,
-        gene,
         attribution,
         sources,
         isJson,
