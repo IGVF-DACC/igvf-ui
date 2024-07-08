@@ -44,11 +44,11 @@ Versions.propTypes = {
 };
 
 /**
- * Display email and Twitter links.
+ * Display email link.
  */
-function Social() {
+export function Email() {
   return (
-    <div className="flex items-center gap-2">
+    <div>
       <a
         className="block"
         href="mailto:igvf-portal-help@lists.stanford.edu"
@@ -58,6 +58,16 @@ function Social() {
       >
         <EnvelopeIcon className="h-6 w-6 fill-brand" />
       </a>
+    </div>
+  );
+}
+
+/**
+ * Display eTwitter links.
+ */
+export function Twitter() {
+  return (
+    <div>
       <a
         className="block"
         href="https://twitter.com/IGVFConsortium"
@@ -94,7 +104,6 @@ export default function SiteInfo() {
   return (
     <section>
       <Versions serverVersion={serverVersion} />
-      <Social />
     </section>
   );
 }

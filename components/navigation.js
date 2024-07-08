@@ -28,6 +28,7 @@ import GlobalContext from "./global-context";
 import Icon from "./icon";
 import IdSearchTrigger from "./id-search-trigger";
 import IndexerState from "./indexer-state";
+import { Email, Twitter } from "./site-info";
 import SiteLogo from "./logo";
 import Modal from "./modal";
 import SessionContext from "./session-context";
@@ -782,6 +783,12 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         <NavigationItem>
           <IndexerState />
         </NavigationItem>
+        <NavigationItem>
+          <div className="flex justify-center gap-2">
+            <Email />
+            <Twitter />
+          </div>
+        </NavigationItem>
       </NavigationList>
     </>
   );
@@ -839,6 +846,9 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
       </NavigationHrefItem>
       <NavigationItem>
         <IndexerState isCollapsed />
+      </NavigationItem>
+      <NavigationItem>
+        <Email />
       </NavigationItem>
     </NavigationList>
   );
