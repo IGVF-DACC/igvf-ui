@@ -101,11 +101,7 @@ export default function TabularFile({
             <FileSetTable
               fileSets={integratedIn}
               title="Integrated In"
-              reportLinkSpecs={{
-                fileSetType: "ConstructLibrarySet",
-                identifierProp: "integrated_content_files",
-                itemIdentifier: tabularFile["@id"],
-              }}
+              reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files=${tabularFile["@id"]}`}
             />
           )}
           {fileFormatSpecifications.length > 0 && (
