@@ -850,9 +850,6 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
       <NavigationItem>
         <Email isCollapsed />
       </NavigationItem>
-      <NavigationItem>
-        <Twitter isCollapse />
-      </NavigationItem>
     </NavigationList>
   );
 }
