@@ -168,6 +168,14 @@ const auxiliarySetColumns = [
   },
 
   {
+    id: "sample-aliases",
+    title: "Sample Aliases",
+    display: ({ source }) => <SampleAliasesDisplay samples={source.samples} />,
+    isSortable: false,
+    hide: (data, columns, meta) => !meta.isAliasesVisible,
+  },
+
+  {
     id: "measurement-sets",
     title: "Associated Measurement Sets",
     display: ({ source, meta }) => (
