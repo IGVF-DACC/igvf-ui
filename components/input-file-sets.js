@@ -17,23 +17,6 @@ import SortableGrid from "./sortable-grid";
  */
 const measurementSetColumns = [
   {
-    id: "samples",
-    title: "Measured Samples",
-    display: ({ source, meta }) => (
-      <SamplesDisplay fileSet={source} samples={meta.samples} />
-    ),
-    sorter: (item, meta) => samplesSorter(item, meta.samples),
-  },
-
-  {
-    id: "sample-aliases",
-    title: "Sample Aliases",
-    display: ({ source }) => <SampleAliasesDisplay samples={source.samples} />,
-    isSortable: false,
-    hide: (data, columns, meta) => !meta.isAliasesVisible,
-  },
-
-  {
     id: "measurement-sets",
     title: "Measurement Sets",
     display: ({ source }) => {
@@ -53,6 +36,23 @@ const measurementSetColumns = [
     id: "aliases",
     title: "Measurement Set Aliases",
     display: ({ source }) => <AliasesDisplay fileSet={source} />,
+    isSortable: false,
+    hide: (data, columns, meta) => !meta.isAliasesVisible,
+  },
+
+  {
+    id: "samples",
+    title: "Measured Samples",
+    display: ({ source, meta }) => (
+      <SamplesDisplay fileSet={source} samples={meta.samples} />
+    ),
+    sorter: (item, meta) => samplesSorter(item, meta.samples),
+  },
+
+  {
+    id: "sample-aliases",
+    title: "Sample Aliases",
+    display: ({ source }) => <SampleAliasesDisplay samples={source.samples} />,
     isSortable: false,
     hide: (data, columns, meta) => !meta.isAliasesVisible,
   },
@@ -134,16 +134,6 @@ const measurementSetColumns = [
  */
 const auxiliarySetColumns = [
   {
-    id: "samples",
-    title: "Measured Samples",
-    display: ({ source, meta }) => (
-      <SamplesDisplay fileSet={source} samples={meta.samples} />
-    ),
-    hide: (auxiliarySets) => columnHideCondition(auxiliarySets, "samples"),
-    sorter: (item, meta) => samplesSorter(item, meta.samples),
-  },
-
-  {
     id: "auxiliary-sets",
     title: "Auxiliary Sets",
     display: ({ source }) => {
@@ -157,6 +147,32 @@ const auxiliarySetColumns = [
       );
     },
     sorter: (item) => item.summary.toLowerCase(),
+  },
+
+  {
+    id: "aliases",
+    title: "Aliases",
+    display: ({ source }) => <AliasesDisplay fileSet={source} />,
+    isSortable: false,
+    hide: (data, columns, meta) => !meta.isAliasesVisible,
+  },
+
+  {
+    id: "samples",
+    title: "Measured Samples",
+    display: ({ source, meta }) => (
+      <SamplesDisplay fileSet={source} samples={meta.samples} />
+    ),
+    hide: (auxiliarySets) => columnHideCondition(auxiliarySets, "samples"),
+    sorter: (item, meta) => samplesSorter(item, meta.samples),
+  },
+
+  {
+    id: "sample-aliases",
+    title: "Sample Aliases",
+    display: ({ source }) => <SampleAliasesDisplay samples={source.samples} />,
+    isSortable: false,
+    hide: (data, columns, meta) => !meta.isAliasesVisible,
   },
 
   {
@@ -175,11 +191,44 @@ const auxiliarySetColumns = [
   },
 
   {
-    id: "aliases",
-    title: "Aliases",
-    display: ({ source }) => <AliasesDisplay fileSet={source} />,
+    id: "construct-library-sets",
+    title: "Associated Construct Library Sets",
+    display: ({ source, meta }) => {
+      if (source.samples?.length > 0) {
+        // Get the embedded construct library sets in all file set samples. These construct library
+        // sets don't have enough properties to display in the table, so find the corresponding
+        // construct library sets in the meta.constructLibrarySets array which have all the
+        // properties we need for the table.
+        const embeddedConstructLibrarySets = source.samples.reduce(
+          (acc, sample) => {
+            return sample.construct_library_sets?.length > 0
+              ? acc.concat(sample.construct_library_sets)
+              : acc;
+          },
+          []
+        );
+
+        const constructLibrarySets = meta.constructLibrarySets.filter(
+          (fileSet) => embeddedConstructLibrarySets.includes(fileSet["@id"])
+        );
+
+        return (
+          <LinkedIdAndStatusStack items={constructLibrarySets}>
+            {(constructLibrarySets) => constructLibrarySets.accession}
+          </LinkedIdAndStatusStack>
+        );
+      }
+      return null;
+    },
+    hide: (auxiliarySets) => {
+      const samples = auxiliarySets.reduce((acc, auxiliarySets) => {
+        return auxiliarySets.samples?.length > 0
+          ? acc.concat(auxiliarySets.samples)
+          : acc;
+      }, []);
+      return columnHideCondition(samples, "construct_library_sets");
+    },
     isSortable: false,
-    hide: (data, columns, meta) => !meta.isAliasesVisible,
   },
 ];
 
