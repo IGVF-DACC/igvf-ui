@@ -199,11 +199,9 @@ const auxiliarySetColumns = [
           },
           []
         );
-        const constructLibrarySetPaths = embeddedConstructLibrarySets.map(
-          (fileSet) => fileSet["@id"]
-        );
+
         const constructLibrarySets = meta.constructLibrarySets.filter(
-          (fileSet) => constructLibrarySetPaths.includes(fileSet["@id"])
+          (fileSet) => embeddedConstructLibrarySets.includes(fileSet["@id"])
         );
 
         return (
@@ -214,9 +212,9 @@ const auxiliarySetColumns = [
       }
       return null;
     },
-    hide: (auxiliarySets) => {
-      const samples = auxiliarySets.reduce((acc, auxiliarySet) => {
-        return acc.concat(auxiliarySet.samples);
+    hide: (measurementSets) => {
+      const samples = measurementSets.reduce((acc, measurementSet) => {
+        return acc.concat(measurementSet.samples);
       }, []);
       return columnHideCondition(samples, "construct_library_sets");
     },
