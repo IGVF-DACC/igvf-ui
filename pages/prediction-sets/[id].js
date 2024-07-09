@@ -154,7 +154,7 @@ export default function PredictionSet({
             <DonorTable donors={predictionSet.donors} />
           )}
           {files.length > 0 && (
-            <FileTable files={files} fileSetPath={predictionSet["@id"]} />
+            <FileTable files={files} fileSet={predictionSet} isDownloadable />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />

@@ -132,7 +132,7 @@ export function Button({
   hasIconCircleOnly = false,
   role = "button",
   isInline = false,
-  isSelected = false,
+  isSelected = null,
   isDisabled = false,
   className = "",
   children,
@@ -148,6 +148,7 @@ export function Button({
       type="button"
       role={role}
       id={id}
+      data-testid={id}
       onClick={onClick}
       className={`${inlineClasses(
         isInline

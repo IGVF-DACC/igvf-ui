@@ -2,7 +2,7 @@
 import { Dialog } from "@headlessui/react";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 // components
 import { useSessionStorage } from "./browser-storage";
 // lib
@@ -66,14 +66,6 @@ export default function SearchModal({
   const { recentTerms, saveRecentTerm } = useRecentSearches(recentSearchId);
   const inputRef = useRef(null);
 
-  // Once the search input modal opens, focus the input field so the user can start typing.
-  useEffect(() => {
-    if (isInputOpen) {
-      setSearchTerm("");
-      inputRef.current.focus();
-    }
-  }, [isInputOpen]);
-
   // Called to change the search text input value.
   function onChange(event) {
     setSearchTerm(event.target.value);
@@ -136,6 +128,7 @@ export default function SearchModal({
               onChange={onChange}
               onKeyDown={onKeyDown}
               className="block w-full border-none bg-transparent py-3 text-black outline-none dark:text-white"
+              data-autofocus
             />
             <button
               onClick={closeModal}

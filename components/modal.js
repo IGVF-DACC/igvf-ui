@@ -21,34 +21,20 @@
 // node_modules
 import { Dialog } from "@headlessui/react";
 import PropTypes from "prop-types";
-import { Children, useEffect } from "react";
+import { Children } from "react";
 // components
 import CloseButton from "./close-button";
 
 /**
  * Main component for modal dialogs.
  */
-export default function Modal({
-  isOpen,
-  onClose,
-  defaultElementId = null,
-  children,
-}) {
-  useEffect(() => {
-    // Focus the default element if it exists.
-    if (isOpen && defaultElementId) {
-      const defaultElement = document.getElementById(defaultElementId);
-      if (defaultElement) {
-        defaultElement.focus();
-      }
-    }
-  }, [isOpen, defaultElementId]);
-
+export default function Modal({ isOpen, onClose, testid = null, children }) {
   return (
     <Dialog
       open={isOpen}
       onClose={onClose}
       className="relative z-50 text-black dark:text-white"
+      data-testid={testid}
     >
       <div
         className="fixed inset-0 bg-black/30 dark:bg-black/60"
@@ -68,8 +54,8 @@ Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   // Called to close the modal on click outside or ESC
   onClose: PropTypes.func.isRequired,
-  // HTML ID of the element to focus when the modal opens
-  defaultElementId: PropTypes.string,
+  // Data-testid attribute for testing
+  testid: PropTypes.string,
 };
 
 /**
