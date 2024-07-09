@@ -214,7 +214,9 @@ const auxiliarySetColumns = [
     },
     hide: (auxiliarySets) => {
       const samples = auxiliarySets.reduce((acc, auxiliarySets) => {
-        return acc.concat(auxiliarySets.samples);
+        return auxiliarySets.samples?.length > 0
+          ? acc.concat(auxiliarySets.samples)
+          : acc;
       }, []);
       return columnHideCondition(samples, "construct_library_sets");
     },
