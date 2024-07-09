@@ -92,6 +92,8 @@ export default function TabularFile({
             <DerivedFromTable
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
+              reportLink={`/multireport/?type=File&input_file_for=${tabularFile["@id"]}`}
+              reportLabel="Report of files that this file derives from"
               title={`Files ${tabularFile.accession} Derives From`}
             />
           )}
@@ -99,11 +101,7 @@ export default function TabularFile({
             <FileSetTable
               fileSets={integratedIn}
               title="Integrated In"
-              reportLinkSpecs={{
-                fileSetType: "ConstructLibrarySet",
-                identifierProp: "tabular_files.accession",
-                itemIdentifier: tabularFile.accession,
-              }}
+              reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files=${tabularFile["@id"]}`}
             />
           )}
           {fileFormatSpecifications.length > 0 && (
