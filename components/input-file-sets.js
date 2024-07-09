@@ -212,9 +212,9 @@ const auxiliarySetColumns = [
       }
       return null;
     },
-    hide: (measurementSets) => {
-      const samples = measurementSets.reduce((acc, measurementSet) => {
-        return acc.concat(measurementSet.samples);
+    hide: (auxiliarySets) => {
+      const samples = auxiliarySets.reduce((acc, auxiliarySets) => {
+        return acc.concat(auxiliarySets.samples);
       }, []);
       return columnHideCondition(samples, "construct_library_sets");
     },
