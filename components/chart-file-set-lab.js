@@ -154,6 +154,25 @@ CustomXTick.propTypes = {
 };
 
 /**
+ * Wraps a bar in a link to the report page with the appropriate filters. The link is only added if
+ * `shouldIncludeLinks` is true.
+ */
+function BarLink({ path, shouldIncludeLinks, children }) {
+  return shouldIncludeLinks ? (
+    <Link href={path}>{children}</Link>
+  ) : (
+    <>{children}</>
+  );
+}
+
+BarLink.propTypes = {
+  // Path to link to
+  path: PropTypes.string.isRequired,
+  // True to have each bar link to the corresponding search
+  shouldIncludeLinks: PropTypes.bool,
+};
+
+/**
  * Renders a custom segment of a bar within a bar chart. The segment represents a count of
  * MeasurementSets with a specific data-set type. This custom component does the same as the default
  * `Bar` component, but it wraps the bar in a link to the report page with the appropriate filters.
@@ -174,15 +193,16 @@ function CustomBar({ bar }) {
   const termQuery = `&${queryKey}=${encodeUriElement(term)}`;
 
   return (
-    <Link
-      href={`/multireport/?type=MeasurementSet&lab.title=${encodeUriElement(
+    <BarLink
+      path={`/multireport/?type=MeasurementSet&lab.title=${encodeUriElement(
         lab
       )}${termQuery}${queryElements}`}
+      shouldIncludeLinks={dataPoint.shouldIncludeLinks}
     >
       <g transform={`translate(${bar.x},${bar.y})`}>
         <rect width={bar.width} height={bar.height} fill={bar.color} />
       </g>
-    </Link>
+    </BarLink>
   );
 }
 
@@ -288,11 +308,34 @@ MonthSelector.propTypes = {
 };
 
 /**
+ * Display one item in the legend for the chart, with a colored box and corresponding label.
+ */
+function LegendItem({ color, label }) {
+  return (
+    <div className="flex items-center gap-1">
+      <div className="h-3 w-5" style={{ backgroundColor: color }} />
+      <div className="text-xs">{label}</div>
+    </div>
+  );
+}
+
+LegendItem.propTypes = {
+  // Color for the legend item as a hex string
+  color: PropTypes.string.isRequired,
+  // Label text for the legend item
+  label: PropTypes.string.isRequired,
+};
+
+/**
  * Display the legend for the chart, with a button for each file-set type. The button links to the
  * report page with the appropriate filters, including a date range if the user has selected a
  * month.
  */
-function Legend({ selectedMonth, fileSetTypeCounts }) {
+function Legend({
+  selectedMonth,
+  fileSetTypeCounts,
+  shouldIncludeLinks = false,
+}) {
   return (
     <div className="flex items-center gap-1">
       {legendProps.map((legend) => {
@@ -301,20 +344,23 @@ function Legend({ selectedMonth, fileSetTypeCounts }) {
             legend.id,
             selectedMonth
           );
-          return (
+          const href = `/multireport/?type=MeasurementSet${queryElement}`;
+          return shouldIncludeLinks ? (
             <ButtonLink
               key={legend.id}
               type="secondary"
               size="sm"
-              href={`/multireport/?type=MeasurementSet${queryElement}`}
+              href={href}
               className="gap-1"
             >
-              <div
-                className="h-3 w-5"
-                style={{ backgroundColor: legend.color }}
-              />
-              <div className="text-xs">{legend.label}</div>
+              <LegendItem color={legend.color} label={legend.label} />
             </ButtonLink>
+          ) : (
+            <LegendItem
+              key={legend.id}
+              color={legend.color}
+              label={legend.label}
+            />
           );
         }
       })}
@@ -331,6 +377,8 @@ Legend.propTypes = {
     withFiles: PropTypes.number,
     released: PropTypes.number,
   }),
+  // True to have legend link to the production portal instead of the local site
+  shouldIncludeLinks: PropTypes.bool,
 };
 
 /**
@@ -338,7 +386,11 @@ Legend.propTypes = {
  * file-set type. The title comes from the `preferred_assay_title` of the MeasurementSet if it
  * exists, or the `assay_term.term_name` if not.
  */
-export default function ChartFileSetLab({ fileSets, title }) {
+export default function ChartFileSetLab({
+  fileSets,
+  title,
+  shouldIncludeLinks = false,
+}) {
   // Currently selected month to filter the chart by
   const [selectedMonth, setSelectedMonth] = useState("All");
 
@@ -360,14 +412,12 @@ export default function ChartFileSetLab({ fileSets, title }) {
   );
   const { fileSetData, counts, maxCount } = convertFileSetsToLabData(
     selectedFileSets,
-    selectedMonth
+    selectedMonth,
+    shouldIncludeLinks
   );
 
   return (
-    <div
-      className="relative pb-1"
-      style={{ height: 30 * fileSetData.length + 60 }}
-    >
+    <div className="relative" style={{ height: 30 * fileSetData.length + 60 }}>
       <ResponsiveBar
         data={fileSetData}
         animate={false}
@@ -415,8 +465,12 @@ export default function ChartFileSetLab({ fileSets, title }) {
         valueScale={{ type: "linear" }}
         valueFormat={() => null}
       />
-      <div className="right=0 absolute bottom-0 left-0 flex w-full justify-between">
-        <Legend selectedMonth={selectedMonth} fileSetTypeCounts={counts} />
+      <div className="absolute bottom-0 left-4 right-4 flex justify-between">
+        <Legend
+          selectedMonth={selectedMonth}
+          fileSetTypeCounts={counts}
+          shouldIncludeLinks={shouldIncludeLinks}
+        />
         <MonthSelector
           fileSetMonths={fileSetMonths}
           selectedMonth={selectedMonth}
@@ -432,4 +486,6 @@ ChartFileSetLab.propTypes = {
   fileSets: PropTypes.arrayOf(PropTypes.object),
   // Title for the chart; used for the chart's aria label
   title: PropTypes.string.isRequired,
+  // True to have the chart and legend link to corresponding pages on the local site
+  shouldIncludeLinks: PropTypes.bool,
 };

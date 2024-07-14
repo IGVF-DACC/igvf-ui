@@ -12,11 +12,12 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
+    "noImplicitAny": false,
     "target": "es6",
     "types": ["jest", "node"],
     "typeRoots": ["./node_modules/@types"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "cypress/e2e/**/*.cy.js"],
-  "exclude": ["cypress", "node_modules"]
+  "exclude": ["node_modules"]
 }

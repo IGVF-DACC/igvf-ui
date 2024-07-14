@@ -211,6 +211,11 @@ export default function App(props) {
     setAuthTransitionPath(appState?.returnTo || "");
   }
 
+  // Handle stand-alone pages. They need no navigation nor authentication.
+  if (props.pageProps.isStandalonePage) {
+    return <props.Component {...props.pageProps} />;
+  }
+
   return (
     <Auth0Provider
       domain={AUTH0_ISSUER_BASE_DOMAIN}
@@ -231,3 +236,10 @@ export default function App(props) {
     </Auth0Provider>
   );
 }
+
+App.propTypes = {
+  // Component to render for the page, as determined by nextjs router
+  Component: PropTypes.elementType.isRequired,
+  // Properties associated with the page to pass to `Component`
+  pageProps: PropTypes.object.isRequired,
+};
