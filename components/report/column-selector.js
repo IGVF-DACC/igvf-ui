@@ -9,6 +9,8 @@ import SessionContext from "../session-context";
 import VerticalScrollIndicators from "../vertical-scroll-indicators";
 // components/report
 import HiddenColumnsIndicator from "./hidden-columns-indicator";
+// lib
+import { MAXIMUM_VISIBLE_COLUMNS } from "../../lib/report";
 
 /**
  * Displays the buttons to hide or show all columns at once.
@@ -46,7 +48,10 @@ function CheckboxArea({ className = "", children }) {
         className="scroll-area max-h-column-select-modal min-h-36 overflow-y-auto p-2"
       >
         <VerticalScrollIndicators scrollAreaRef={scrollAreaRef} />
-        <fieldset className={`md:flex md:flex-wrap ${className}`}>
+        <fieldset
+          className={`md:flex md:flex-wrap ${className}`}
+          data-testid="column-checkboxes"
+        >
           {children}
         </fieldset>
       </div>
@@ -86,6 +91,7 @@ export default function ColumnSelector({
   visibleColumnSpecs,
   onChange,
   onChangeAll,
+  isNonVisibleDisabled,
 }) {
   // True if the column-selection modal is open.
   const [isOpen, setIsOpen] = useState(false);
@@ -100,11 +106,14 @@ export default function ColumnSelector({
     const isAnyColumnHidden = allColumnSpecs.length > visibleColumnSpecs.length;
 
     // Disable column selector if the config didn't match any type.
-    const isDisabled = allColumnSpecs.length === 0;
+    const isColumnSelectorDisabled = allColumnSpecs.length === 0;
 
     return (
       <>
-        <Button onClick={() => setIsOpen(true)} isDisabled={isDisabled}>
+        <Button
+          onClick={() => setIsOpen(true)}
+          isDisabled={isColumnSelectorDisabled}
+        >
           Columns
           <HiddenColumnsIndicator isAnyColumnHidden={isAnyColumnHidden} />
         </Button>
@@ -125,32 +134,46 @@ export default function ColumnSelector({
             </div>
             <CheckboxArea>
               {allColumnSpecs.map((columnSpec) => {
-                if (columnSpec.id !== "@id") {
-                  const isVisible = visibleColumnIds.includes(columnSpec.id);
-                  return (
-                    <Checkbox
-                      key={columnSpec.id}
-                      id={columnSpec.id}
-                      name={columnSpec.id}
-                      checked={isVisible}
-                      onClick={() => onChange(columnSpec.id, isVisible)}
-                      className="my-0.5 block items-center leading-tight md:basis-1/2 lg:basis-1/3"
+                const isVisible = visibleColumnIds.includes(columnSpec.id);
+                const isColumnCheckboxDisabled =
+                  !isVisible && isNonVisibleDisabled;
+                return (
+                  <Checkbox
+                    key={columnSpec.id}
+                    id={columnSpec.id}
+                    name={columnSpec.id}
+                    checked={isVisible}
+                    isDisabled={
+                      isColumnCheckboxDisabled || columnSpec.id === "@id"
+                    }
+                    onClick={() => onChange(columnSpec.id, isVisible)}
+                    className="my-0.5 block items-center leading-tight md:basis-1/2 lg:basis-1/3"
+                  >
+                    <div
+                      className={`${
+                        isColumnCheckboxDisabled ? "text-gray-500" : ""
+                      }`}
                     >
                       {columnSpec.title || columnSpec.id}
-                    </Checkbox>
-                  );
-                }
-
-                // Don't include @id property; @id is always visible.
-                return null;
+                    </div>
+                  </Checkbox>
+                );
               })}
             </CheckboxArea>
           </Modal.Body>
 
           <Modal.Footer>
-            <Button type="secondary" onClick={() => setIsOpen(false)}>
-              Close
-            </Button>
+            <div className="flex w-full items-center justify-between">
+              <div className="text-sm" data-testid="visible-column-count">
+                {visibleColumnIds.length}{" "}
+                {visibleColumnIds.length === 1 ? "column" : "columns"} shown
+                {allColumnSpecs.length > MAXIMUM_VISIBLE_COLUMNS &&
+                  ` of ${MAXIMUM_VISIBLE_COLUMNS} maximum`}
+              </div>
+              <Button type="secondary" onClick={() => setIsOpen(false)}>
+                Close
+              </Button>
+            </div>
           </Modal.Footer>
         </Modal>
       </>
@@ -170,4 +193,6 @@ ColumnSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   // Called when the user wants to show or hide all columns at once
   onChangeAll: PropTypes.func.isRequired,
+  // True to disable non-visible columns because of the maximum number of visible columns
+  isNonVisibleDisabled: PropTypes.bool.isRequired,
 };

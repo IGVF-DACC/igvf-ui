@@ -266,7 +266,8 @@ function PathArray({ id, source }) {
     DEFAULT_MAX_COLLAPSE_ITEMS_VERTICAL
   );
 
-  if (paths.length > 0) {
+  // The second if condition is only necessary for crash avoidance until IGVF-1791.
+  if (paths.length > 0 && Array.isArray(collapser.items)) {
     return (
       <div>
         <ul data-testid="cell-type-path-array">

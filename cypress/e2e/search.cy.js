@@ -52,15 +52,9 @@ describe("search view tests", () => {
     cy.contains("Hide All").click();
     cy.get("[role=columnheader]").should("have.length", 1);
     cy.get("[role=columnheader]").contains("ID").should("exist");
-    cy.get("fieldset input[type=checkbox]").each((checkbox) => {
-      expect(checkbox[0].checked).to.equal(false);
-    });
 
     cy.contains("Show All").click();
     cy.get("[role=columnheader]").should("have.length.greaterThan", 1);
-    cy.get("fieldset input[type=checkbox]").each((checkbox) => {
-      expect(checkbox[0].checked).to.equal(true);
-    });
 
     cy.contains("Close").click();
     cy.get("[id^=headlessui-dialog-panel-]").should("not.exist");

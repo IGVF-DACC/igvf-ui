@@ -15,10 +15,17 @@ import type {
 } from "../globals.d";
 
 /**
+ * Maximum number of columns that can be selected at once. Base this on a maximum URL length of
+ * (3700 - 40 for the protocol and domain - 500 for a long facet query) / 30 for a typical column
+ * specifier length.
+ */
+export const MAXIMUM_VISIBLE_COLUMNS = 120;
+
+/**
  * The report code often references the `ColumnSpec` object that specifies the columns of a
  * report and only gets used internally to this file.
  */
-interface ColumnSpec {
+export interface ColumnSpec {
   // Column ID, which is the property name of the column in the report data; e.g. `@id`
   id: string;
   // Column title, which is the human-readable name of the column; e.g. "ID"
@@ -174,13 +181,17 @@ export function getSortColumn(searchResults: SearchResults): string {
  * @param {ColumnSpec[]} columnSpecs Array of table columns to sort in columnSpec format
  * @returns {ColumnSpec[]} Copy of `columns` sorted by title, but with @id always first
  */
-function sortColumnSpecs(columnSpecs: ColumnSpec[]): ColumnSpec[] {
+export function sortColumnSpecs(columnSpecs: ColumnSpec[]): ColumnSpec[] {
   return _.sortBy(columnSpecs, [
     (columnSpec) => columnSpec.id !== "@id",
     (columnSpec) => {
-      return columnSpec.id === "@id" || !columnSpec.title
-        ? 0
-        : columnSpec.title.toLowerCase();
+      if (columnSpec.id === "@id") {
+        return 0;
+      }
+      if (!columnSpec.title) {
+        return columnSpec.id;
+      }
+      return columnSpec.title.toLowerCase();
     },
   ]);
 }
@@ -205,6 +216,25 @@ export function columnsToColumnSpecs(
     }
   );
   return sortColumnSpecs(columnSpecs);
+}
+
+/**
+ * Merge two arrays of ColumnSpec objects into one array. The resulting array contains only unique
+ * ColumnSpec objects, and the columns get sorted by title, except for the column for the `@id`
+ * property that always sorts first.
+ * @param columnSpecs1 The first array of ColumnSpec objects
+ * @param columnSpecs2 The array of ColumnSpec objects to merge with `columnSpecs1`
+ * @returns Array of ColumnSpec objects that's the union of `columnSpecs1` and `columnSpecs2`
+ */
+export function mergeColumnSpecs(
+  columnSpecs1: ColumnSpec[],
+  columnSpecs2: ColumnSpec[]
+): ColumnSpec[] {
+  const mergedColumnSpecs = _.uniqBy(
+    columnSpecs1.concat(columnSpecs2),
+    (columnSpec) => columnSpec.id
+  );
+  return sortColumnSpecs(mergedColumnSpecs);
 }
 
 /**
@@ -249,4 +279,101 @@ export function getUnknownProperty(
   }
 
   return embeddedPropArray.length > 0 ? embeddedPropArray.flat() : embeddedProp;
+}
+
+/**
+ * Update the given query string to show or hide a column.
+ * @param queryString Current search query string
+ * @param columnId Column ID to add or remove from the query string
+ * @param isVisible True if the column for `columnId` is now visible
+ * @param defaultColumnSpecs Column specs for the default columns of the report's schema
+ * @returns `queryString` with the `columnId` column added or removed
+ */
+export function updateColumnVisibilityQuery(
+  queryString: string,
+  columnId: string,
+  isVisible: boolean,
+  defaultColumnSpecs: ColumnSpec[]
+): string {
+  const query = new QueryString(queryString);
+  const hasSpecificFields = query.getKeyValues("field").length > 0;
+  const defaultColumnIds = defaultColumnSpecs.map(
+    (columnSpec) => columnSpec.id
+  );
+
+  // To prepare the query string for adding or removing a "field=" parameter, convert any query
+  // string that doesn't have any "field=" parameters into one that has all the default columns as
+  // "field=" parameters.
+  if (!hasSpecificFields) {
+    defaultColumnIds.forEach((columnId) => {
+      query.addKeyValue("field", columnId);
+    });
+  }
+
+  if (isVisible) {
+    query.deleteKeyValue("field", columnId);
+  } else {
+    query.addKeyValue("field", columnId);
+  }
+
+  // In case the user manually entered a query string with no "field=@id" parameter, add it.
+  if (!query.getKeyValues("field").includes("@id")) {
+    query.addKeyValue("field", "@id");
+  }
+
+  // Get all the resulting "field=" parameters and compare them to the default columns. If they
+  // match, remove the "field=" parameters from the query string to display only the default
+  // columns.
+  const fieldValues = query.getKeyValues("field");
+  const isFieldsMatchDefaultColumns = _.isEqual(
+    _.sortBy(fieldValues),
+    _.sortBy(defaultColumnIds)
+  );
+  if (isFieldsMatchDefaultColumns) {
+    query.deleteKeyValue("field");
+  }
+
+  return query.format();
+}
+
+/**
+ * Update the given query string to show or hide all columns. When hiding all columns, the `@id`
+ * column remains visible.
+ * @param queryString MultiReport query string to update
+ * @param isAllVisible True to make all possible columns visible, false to hide all
+ * @param allColumnSpecs All possible columns for the current report type
+ * @param visibleColumnSpecs Currently visible columns
+ * @param maxVisibleColumns Override for MAXIMUM_VISIBLE_COLUMNS; just for Jest tests
+ * @returns `queryString` with all columns added or removed
+ */
+export function updateAllColumnsVisibilityQuery(
+  queryString: string,
+  isAllVisible: boolean,
+  allColumnSpecs: ColumnSpec[],
+  visibleColumnSpecs: ColumnSpec[],
+  maxVisibleColumns = MAXIMUM_VISIBLE_COLUMNS
+): string {
+  const query = new QueryString(queryString);
+  if (isAllVisible) {
+    const allColumnIds = allColumnSpecs.map((column) => column.id);
+    const visibleColumnIds = visibleColumnSpecs.map((column) => column.id);
+
+    // Make `newColumnIds` the same as `visibleColumnIds` plus `allColumnIds` until
+    // MAXIMUM_VISIBLE_COLUMNS columns are visible.
+    const newColumnIds = _.uniq(visibleColumnIds.concat(allColumnIds)).slice(
+      0,
+      maxVisibleColumns
+    );
+
+    // Rebuild the "field=" parameter to include all columns up to the maximum number.
+    query.deleteKeyValue("field");
+    newColumnIds.forEach((columnId) => {
+      query.addKeyValue("field", columnId);
+    });
+  } else {
+    // Remove all fields except the `@id` column
+    query.deleteKeyValue("field");
+    query.addKeyValue("field", "@id");
+  }
+  return query.format();
 }

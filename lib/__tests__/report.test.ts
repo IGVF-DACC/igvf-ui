@@ -13,7 +13,12 @@ import {
   getSelectedTypes,
   getSortColumn,
   getUnknownProperty,
+  mergeColumnSpecs,
+  sortColumnSpecs,
+  updateAllColumnsVisibilityQuery,
+  updateColumnVisibilityQuery,
 } from "../report";
+import type { ColumnSpec } from "../report";
 
 const profiles: Profiles = {
   "@type": ["JSONschemas"],
@@ -628,6 +633,23 @@ describe("Test `getSortColumn()`", () => {
   });
 });
 
+describe("Test `sortColumnSpecs()`", () => {
+  it("should return sorted columnSpecs for schema", () => {
+    const columnSpecs: ColumnSpec[] = [
+      { id: "accession", title: "Accession" },
+      { id: "modification", title: "" },
+      { id: "@id", title: "ID" },
+    ];
+
+    const sortedColumnSpecs = sortColumnSpecs(columnSpecs);
+    expect(sortedColumnSpecs).toEqual([
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+      { id: "modification", title: "" },
+    ]);
+  });
+});
+
 describe("Test `columnsToColumnSpecs()`", () => {
   it("should return sorted columnSpecs for schema", () => {
     const columns: SearchResultsColumns = {
@@ -644,6 +666,29 @@ describe("Test `columnsToColumnSpecs()`", () => {
       { id: "@id", title: "ID" },
       { id: "accession", title: "Accession" },
     ]);
+  });
+});
+
+describe("Test `mergeColumnSpecs()`", () => {
+  it("should return merged columnSpecs for multiple schemas", () => {
+    const columnSpecs1: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+    ];
+
+    const columnSpecs2: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "uuid", title: "UUID" },
+    ];
+
+    const mergedColumnSpecs = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+      { id: "uuid", title: "UUID" },
+    ];
+
+    const merged = mergeColumnSpecs(columnSpecs1, columnSpecs2);
+    expect(merged).toEqual(mergedColumnSpecs);
   });
 });
 
@@ -797,5 +842,152 @@ describe("Test `getUnknownProperty()`", () => {
 
     const unknownProperty = getUnknownProperty("embedded.max", result);
     expect(unknownProperty).toBeUndefined();
+  });
+});
+
+describe("Test updateColumnVisibilityQuery()", () => {
+  it("adds and removes a field from the query string with existing field=", () => {
+    const defaultColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+    ];
+
+    // Add `alternate_accessions` field to query string with a field= in it already.
+    let updatedQuery = updateColumnVisibilityQuery(
+      "type=InVitroSystem&field=%40id",
+      "alternate_accessions",
+      false,
+      defaultColumnSpecs
+    );
+    expect(updatedQuery).toEqual(
+      "type=InVitroSystem&field=%40id&field=alternate_accessions"
+    );
+
+    // Remove `alternate_accessions` field from query string with a field= in it already.
+    updatedQuery = updateColumnVisibilityQuery(
+      updatedQuery,
+      "alternate_accessions",
+      true,
+      defaultColumnSpecs
+    );
+    expect(updatedQuery).toEqual("type=InVitroSystem&field=%40id");
+  });
+
+  it("adds and removes a field from the query string with no existing field=", () => {
+    const defaultColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+    ];
+
+    // Add `alternate_accessions` field to query string without a field= in it already.
+    let updatedQuery = updateColumnVisibilityQuery(
+      "type=InVitroSystem",
+      "alternate_accessions",
+      false,
+      defaultColumnSpecs
+    );
+    expect(updatedQuery).toEqual(
+      "type=InVitroSystem&field=%40id&field=accession&field=alternate_accessions"
+    );
+
+    // Remove `alternate_accessions` field from query string without a field= in it already.
+    updatedQuery = updateColumnVisibilityQuery(
+      updatedQuery,
+      "alternate_accessions",
+      true,
+      defaultColumnSpecs
+    );
+    expect(updatedQuery).toEqual("type=InVitroSystem");
+  });
+
+  it("adds and removes a field from the query string with an existing field= but no @id field", () => {
+    const defaultColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+    ];
+
+    // Add `alternate_accessions` field to query string without a field= in it already.
+    let updatedQuery = updateColumnVisibilityQuery(
+      "type=InVitroSystem&field=accession",
+      "alternate_accessions",
+      false,
+      defaultColumnSpecs
+    );
+    expect(updatedQuery).toEqual(
+      "type=InVitroSystem&field=accession&field=alternate_accessions&field=%40id"
+    );
+
+    // Remove `alternate_accessions` field from query string without a field= in it already.
+    updatedQuery = updateColumnVisibilityQuery(
+      updatedQuery,
+      "alternate_accessions",
+      true,
+      defaultColumnSpecs
+    );
+    expect(updatedQuery).toEqual("type=InVitroSystem");
+  });
+});
+
+describe("Test updateAllColumnsVisibilityQuery()", () => {
+  it("adds all columns to the query string", () => {
+    const allColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+      { id: "alternate_accessions", title: "Alternate Accessions" },
+      { id: "summary", title: "Summary" },
+      { id: "uuid", title: "UUID" },
+    ];
+    const visibleColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "alternate_accessions", title: "Alternate Accessions" },
+      { id: "summary", title: "Summary" },
+    ];
+
+    // Add all columns to the query string.
+    let updatedQuery = updateAllColumnsVisibilityQuery(
+      "type=InVitroSystem",
+      true,
+      allColumnSpecs,
+      visibleColumnSpecs
+    );
+    expect(updatedQuery).toEqual(
+      "type=InVitroSystem&field=%40id&field=alternate_accessions&field=summary&field=accession&field=uuid"
+    );
+
+    // Remove all columns from the query string.
+    updatedQuery = updateAllColumnsVisibilityQuery(
+      updatedQuery,
+      false,
+      allColumnSpecs,
+      visibleColumnSpecs
+    );
+    expect(updatedQuery).toEqual("type=InVitroSystem&field=%40id");
+  });
+
+  it("adds all columns except those that overflow the limit to the query string", () => {
+    const allColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+      { id: "alternate_accessions", title: "Alternate Accessions" },
+      { id: "summary", title: "Summary" },
+      { id: "uuid", title: "UUID" },
+    ];
+    const visibleColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "alternate_accessions", title: "Alternate Accessions" },
+      { id: "summary", title: "Summary" },
+    ];
+
+    // Add all columns to the query string.
+    const updatedQuery = updateAllColumnsVisibilityQuery(
+      "type=InVitroSystem",
+      true,
+      allColumnSpecs,
+      visibleColumnSpecs,
+      3
+    );
+    expect(updatedQuery).toEqual(
+      "type=InVitroSystem&field=%40id&field=alternate_accessions&field=summary"
+    );
   });
 });
