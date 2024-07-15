@@ -109,6 +109,7 @@ export default function MultiplexedSample({
             <SampleTable
               samples={multiplexedSample.multiplexed_samples}
               reportLink={reportLink}
+              reportLabel="Report of samples multiplexed together to produce this sample"
               title="Multiplexed Samples"
             />
           )}
@@ -116,6 +117,7 @@ export default function MultiplexedSample({
             <SampleTable
               samples={multiplexedInSamples}
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${multiplexedSample["@id"]}`}
+              reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
             />
           )}
@@ -128,6 +130,7 @@ export default function MultiplexedSample({
             <SampleTable
               samples={sortedFractions}
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${multiplexedSample["@id"]}`}
+              reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
             />
           )}

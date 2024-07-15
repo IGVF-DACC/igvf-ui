@@ -289,6 +289,7 @@ export async function requestSamples(
       "accession",
       "construct_library_sets",
       "protocols",
+      "sample_terms",
       "status",
       "summary",
     ])

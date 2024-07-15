@@ -106,6 +106,7 @@ export default function PrimaryCell({
             <SampleTable
               samples={multiplexedInSamples}
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${primaryCell["@id"]}`}
+              reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
             />
           )}
@@ -113,6 +114,7 @@ export default function PrimaryCell({
             <SampleTable
               samples={pooledFrom}
               reportLink={`/multireport/?type=Sample&pooled_in=${primaryCell["@id"]}`}
+              reportLabel="Report of biosamples this sample is pooled from"
               title="Biosamples Pooled From"
             />
           )}
@@ -120,6 +122,7 @@ export default function PrimaryCell({
             <SampleTable
               samples={pooledIn}
               reportLink={`/multireport/?type=Biosample&pooled_from=${primaryCell["@id"]}`}
+              reportLabel="Report of pooled samples in which this sample is included"
               title="Pooled In"
             />
           )}
@@ -127,6 +130,7 @@ export default function PrimaryCell({
             <SampleTable
               samples={parts}
               reportLink={`/multireport/?type=Biosample&part_of=${primaryCell["@id"]}`}
+              reportLabel="Report of parts into which this sample has been divided"
               title="Sample Parts"
             />
           )}
@@ -141,6 +145,7 @@ export default function PrimaryCell({
             <SampleTable
               samples={sortedFractions}
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${primaryCell["@id"]}`}
+              reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
             />
           )}

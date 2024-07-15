@@ -85,6 +85,7 @@ export default function TechnicalSample({
             <SampleTable
               samples={multiplexedInSamples}
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${sample["@id"]}`}
+              reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
             />
           )}
@@ -92,6 +93,7 @@ export default function TechnicalSample({
             <SampleTable
               samples={sortedFractions}
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${sample["@id"]}`}
+              reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
             />
           )}

@@ -102,6 +102,7 @@ export default function AnalysisSet({
             <SampleTable
               samples={analysisSet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${analysisSet["@id"]}`}
+              reportLabel="Report of samples in this analysis set"
             />
           )}
 

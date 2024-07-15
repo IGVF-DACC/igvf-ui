@@ -82,6 +82,7 @@ export default function AuxiliarySet({
             <SampleTable
               samples={auxiliarySet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${auxiliarySet["@id"]}`}
+              reportLabel="Report of samples in this auxiliary set"
             />
           )}
           {auxiliarySet.donors?.length > 0 && (
