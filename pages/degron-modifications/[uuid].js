@@ -72,20 +72,6 @@ export default function DegronModification({
                   <DataItemValue>{modification.description}</DataItemValue>
                 </>
               )}
-              {modification.product_id && (
-                <>
-                  <DataItemLabel>Product ID</DataItemLabel>
-                  <DataItemValue>
-                    <Link
-                      href={`https://www.addgene.org/${
-                        modification.product_id.split(":")[1]
-                      }/`}
-                    >
-                      {modification.product_id}
-                    </Link>
-                  </DataItemValue>
-                </>
-              )}
               {(modification.lot_id ||
                 modification.product_id ||
                 sources.length > 0) && (
