@@ -12,12 +12,15 @@ import {
   requestOntologyTerms,
   requestPages,
   requestPhenotypicFeatures,
+  requestPublications,
   requestSamples,
   requestSeqspecFiles,
+  requestSoftware,
   requestSoftwareVersions,
   requestSources,
   requestTreatments,
   requestUsers,
+  requestWorkflows,
 } from "../common-requests";
 import FetchRequest from "../fetch-request";
 
@@ -1021,6 +1024,52 @@ describe("Test all the common requests", () => {
     expect(result[1]).toEqual(mockResult["@graph"][1]);
   });
 
+  test("requestSoftware function", async () => {
+    const mockResult = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/software/bowtie2/",
+          "@type": ["Software", "Item"],
+          aliases: ["igvf:bowtie2"],
+          description:
+            "Bowtie 2 is an ultrafast and memory-efficient tool aligning sequencing reads to long reference sequences.",
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
+          },
+          name: "bowtie2",
+          source_url: "https://bowtie-bio.sourceforge.net/bowtie2/index.shtml",
+          status: "released",
+        },
+      ],
+      "@id":
+        "/search/?type=SoftwareVersion&field=aliases&field=description&field=lab&field=name&field=source_url&field=status&field=title",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=Software",
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockResult),
+      })
+    );
+
+    const request = new FetchRequest();
+    const result = await requestSoftware(["/software/bowtie2/"], request);
+    expect(mockFunction).toBeCalledWith(
+      "/search/?field=aliases&field=description&field=lab&field=name&field=source_url&field=status&field=title&@id=/software/bowtie2/&limit=1",
+      expect.anything()
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockResult["@graph"][0]);
+  });
+
   test("requestSoftwareVersions function", async () => {
     const mockResult = {
       "@context": "/terms/",
@@ -1317,5 +1366,115 @@ describe("Test all the common requests", () => {
     const request = new FetchRequest();
     const result = await requestDatasetSummary(request);
     expect(result["@graph"]).toEqual(mockResult["@graph"]);
+  });
+
+  test("requestWorkflows function", async () => {
+    const mockResult = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/workflows/IGVFWF0000WORK/",
+          "@type": ["Workflow", "Item"],
+          accession: "IGVFWF0000WORK",
+          aliases: ["igvf:perturb_seq_workflow"],
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
+          },
+          name: "Perturb-seq Pipeline",
+          source_url: "https://github.com/perturbseq_pipeline",
+          status: "released",
+        },
+      ],
+      "@id":
+        "/search/?type=Workflow&field=accession&field=aliases&field=lab&field=name&field=source_url&field=status&limit=1",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=Workflow",
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockResult),
+      })
+    );
+
+    const request = new FetchRequest();
+    const result = await requestWorkflows(
+      ["/workflows/IGVFWF0000WORK/"],
+      request
+    );
+    expect(mockFunction).toBeCalledWith(
+      "/search/?field=accession&field=aliases&field=lab&field=name&field=source_url&field=status&@id=/workflows/IGVFWF0000WORK/&limit=1",
+      expect.anything()
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockResult["@graph"][0]);
+  });
+
+  test("requestPublications function", async () => {
+    const mockResult = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/",
+          "@type": ["Publication", "Item"],
+          authors:
+            "ENCODE Project Consortium, Bernstein BE, Birney E, Dunham I, Green ED, Gunter C, Snyder M.",
+          date_published: "2012-09-06",
+          issue: "7414",
+          journal: "Nature",
+          page: "57-74",
+          publication_identifiers: ["PMID:22955616", "PMCID:PMC3439153"],
+          title:
+            "An integrated encyclopedia of DNA elements in the human genome",
+          volume: "489",
+        },
+        {
+          "@id": "/publications/244ec9fc-ddda-4f38-b72d-3430929111e4/",
+          "@type": ["Publication", "Item"],
+          authors: "Alireza Karbalayghareh, Merve Sahin, Christina S. Leslie",
+          date_published: "2021-04-02",
+          publication_identifiers: ["doi:10.1101/2021.03.31.437978"],
+          title:
+            "Chromatin interaction aware gene regulatory modeling with graph attention networks",
+        },
+      ],
+      "@id":
+        "/search/?type=Publication&field=aliases&field=authors&field=date_published&field=issue&field=journal&field=page&field=publication_identifiers&field=title&field=volume&limit=2",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=Publication",
+      notification: "Success",
+      title: "Search",
+      total: 2,
+    };
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockResult),
+      })
+    );
+
+    const request = new FetchRequest();
+    const result = await requestPublications(
+      [
+        "/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/",
+        "/publications/244ec9fc-ddda-4f38-b72d-3430929111e4/",
+      ],
+      request
+    );
+    expect(mockFunction).toBeCalledWith(
+      "/search/?field=aliases&field=authors&field=date_published&field=issue&field=journal&field=page&field=publication_identifiers&field=title&field=volume&@id=/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/&@id=/publications/244ec9fc-ddda-4f38-b72d-3430929111e4/&limit=2",
+      expect.anything()
+    );
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual(mockResult["@graph"][0]);
+    expect(result[1]).toEqual(mockResult["@graph"][1]);
   });
 });

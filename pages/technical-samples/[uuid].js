@@ -25,6 +25,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestFileSets,
+  requestPublications,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -34,6 +35,7 @@ import { Ok } from "../../lib/result";
 export default function TechnicalSample({
   sample,
   constructLibrarySets,
+  publications,
   documents,
   attribution = null,
   sortedFractions,
@@ -58,6 +60,7 @@ export default function TechnicalSample({
                 item={sample}
                 constructLibrarySets={constructLibrarySets}
                 sources={sources}
+                publications={publications}
               >
                 <DataItemLabel>Sample Material</DataItemLabel>
                 <DataItemValue>{sample.sample_material}</DataItemValue>
@@ -109,6 +112,8 @@ TechnicalSample.propTypes = {
   sample: PropTypes.object.isRequired,
   // Construct library sets associated with this technical sample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
+  // Publications associated with this technical sample
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this technical sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sorted fractions sample
@@ -130,6 +135,14 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/technical-samples/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(sample)) {
+    let publications = [];
+    if (sample.publications?.length > 0) {
+      const publicationPaths = sample.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const documents = sample.documents
       ? await requestDocuments(sample.documents, request)
       : [];
@@ -164,6 +177,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         sample,
         constructLibrarySets,
+        publications,
         documents,
         sortedFractions,
         sources,

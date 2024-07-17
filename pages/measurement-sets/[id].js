@@ -34,6 +34,7 @@ import {
   requestFiles,
   requestFileSets,
   requestOntologyTerms,
+  requestPublications,
   requestSamples,
   requestSeqspecFiles,
 } from "../../lib/common-requests";
@@ -119,6 +120,7 @@ export default function MeasurementSet({
   assayTerm = null,
   controlFileSets,
   documents,
+  publications,
   files,
   relatedMultiomeSets,
   auxiliarySets,
@@ -175,7 +177,10 @@ export default function MeasurementSet({
         <JsonDisplay item={measurementSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileSetDataItems item={measurementSet}>
+              <FileSetDataItems
+                item={measurementSet}
+                publications={publications}
+              >
                 {assayTerm && (
                   <>
                     <DataItemLabel>Assay Term</DataItemLabel>
@@ -345,6 +350,8 @@ MeasurementSet.propTypes = {
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with this measurement set
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this measurement set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -425,6 +432,14 @@ export async function getServerSideProps({ params, req, query }) {
         ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
         : [];
 
+    let publications = [];
+    if (measurementSet.publications?.length > 0) {
+      const publicationPaths = measurementSet.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const attribution = await buildAttribution(
       measurementSet,
       req.headers.cookie
@@ -435,6 +450,7 @@ export async function getServerSideProps({ params, req, query }) {
         assayTerm,
         controlFileSets,
         documents,
+        publications,
         files,
         relatedMultiomeSets,
         auxiliarySets,

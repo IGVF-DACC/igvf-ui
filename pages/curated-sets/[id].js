@@ -22,7 +22,11 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFiles,
+  requestPublications,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -30,6 +34,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function CuratedSet({
   curatedSet,
   documents,
+  publications,
   files,
   attribution = null,
   isJson,
@@ -47,7 +52,7 @@ export default function CuratedSet({
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileSetDataItems item={curatedSet}>
+              <FileSetDataItems item={curatedSet} publications={publications}>
                 {curatedSet.taxa && (
                   <>
                     <DataItemLabel>Taxa</DataItemLabel>
@@ -111,6 +116,8 @@ CuratedSet.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this curated set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with this curated set
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this curated set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -130,11 +137,19 @@ export async function getServerSideProps({ params, req, query }) {
     const filePaths = curatedSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
+    let publications = [];
+    if (curatedSet.publications?.length > 0) {
+      const publicationPaths = curatedSet.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
     const attribution = await buildAttribution(curatedSet, req.headers.cookie);
     return {
       props: {
         curatedSet,
         documents,
+        publications,
         files,
         pageContext: { title: curatedSet.accession },
         attribution,

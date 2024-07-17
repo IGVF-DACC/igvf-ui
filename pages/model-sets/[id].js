@@ -26,6 +26,7 @@ import {
   requestDocuments,
   requestFiles,
   requestFileSets,
+  requestPublications,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -35,6 +36,7 @@ export default function ModelSet({
   modelSet,
   softwareVersion = null,
   documents,
+  publications,
   files,
   inputFileSets,
   attribution = null,
@@ -53,7 +55,7 @@ export default function ModelSet({
         <JsonDisplay item={modelSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileSetDataItems item={modelSet}>
+              <FileSetDataItems item={modelSet} publications={publications}>
                 <DataItemLabel>Accession</DataItemLabel>
                 <DataItemValue>{modelSet.accession}</DataItemValue>
                 <DataItemLabel>Model Version</DataItemLabel>
@@ -138,6 +140,8 @@ ModelSet.propTypes = {
   inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with this model set
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this measurement set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -170,6 +174,14 @@ export async function getServerSideProps({ params, req, query }) {
       inputFileSets = await requestFileSets(inputFileSetPaths, request);
     }
 
+    let publications = [];
+    if (modelSet.publications?.length > 0) {
+      const publicationPaths = modelSet.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const attribution = await buildAttribution(modelSet, req.headers.cookie);
 
     return {
@@ -177,6 +189,7 @@ export async function getServerSideProps({ params, req, query }) {
         modelSet,
         softwareVersion,
         documents,
+        publications,
         files,
         inputFileSets,
         pageContext: { title: modelSet.model_name },

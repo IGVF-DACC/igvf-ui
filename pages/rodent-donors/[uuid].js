@@ -21,6 +21,7 @@ import PagePreamble from "../../components/page-preamble";
 import {
   requestDocuments,
   requestPhenotypicFeatures,
+  requestPublications,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -33,6 +34,7 @@ import { Ok } from "../../lib/result";
 export default function RodentDonor({
   donor,
   phenotypicFeatures,
+  publications,
   documents,
   attribution = null,
   sources = null,
@@ -51,7 +53,7 @@ export default function RodentDonor({
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DonorDataItems item={donor}>
+              <DonorDataItems item={donor} publications={publications}>
                 <DataItemLabel>Strain</DataItemLabel>
                 <DataItemValue>{donor.strain}</DataItemValue>
                 {donor.strain_background && (
@@ -105,6 +107,8 @@ RodentDonor.propTypes = {
   donor: PropTypes.object.isRequired,
   // Phenotypic features associated with rodent donor
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with rodent donor
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the rodent donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this donor
@@ -133,6 +137,14 @@ export async function getServerSideProps({ params, req, query }) {
       );
     }
 
+    let publications = [];
+    if (donor.publications?.length > 0) {
+      const publicationPaths = donor.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const documents = donor.documents
       ? await requestDocuments(donor.documents, request)
       : [];
@@ -150,6 +162,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         donor,
         phenotypicFeatures,
+        publications,
         documents,
         sources,
         pageContext: { title: donor.accession },

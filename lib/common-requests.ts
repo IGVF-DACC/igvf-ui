@@ -297,6 +297,29 @@ export async function requestSamples(
 }
 
 /**
+ * Retrieve the software objects for the given paths from the data provider.
+ * @param paths Paths to the software objects to request
+ * @param request The request object to use to make the request
+ * @returns The software version objects requested
+ */
+export async function requestSoftware(
+  paths: string[],
+  request: FetchRequest
+): Promise<DataProviderObject[]> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "aliases",
+      "description",
+      "lab",
+      "name",
+      "source_url",
+      "status",
+      "title",
+    ])
+  ).unwrap_or([]);
+}
+
+/**
  * Retrieve the software-version objects for the given software-version paths from the data
  * provider.
  * @param {Array<string>} paths Paths to the software-version objects to request
@@ -377,6 +400,53 @@ export async function requestDatasetSummary(
   return (await request.getObject("/dataset-summary")).unwrap_or(
     {}
   ) as unknown as SearchResults;
+}
+
+/**
+ * Retrieve the workflow objects for the given paths from the data provider.
+ * @param paths Paths to the workflow objects to request
+ * @param request The request object to use to make the request
+ * @returns The workflow objects requested, or an empty array if none found
+ */
+export async function requestWorkflows(
+  paths: string[],
+  request: FetchRequest
+): Promise<DataProviderObject[]> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "accession",
+      "aliases",
+      "lab",
+      "name",
+      "source_url",
+      "status",
+    ])
+  ).unwrap_or([]);
+}
+
+/**
+ * Retrieve the publication objects for the given paths from the data provider.
+ * @param paths Paths to the publication objects to request
+ * @param request The request object to use to make the request
+ * @returns The publication objects requested, or an empty array if none found
+ */
+export async function requestPublications(
+  paths: string[],
+  request: FetchRequest
+): Promise<DataProviderObject[]> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "aliases",
+      "authors",
+      "date_published",
+      "issue",
+      "journal",
+      "page",
+      "publication_identifiers",
+      "title",
+      "volume",
+    ])
+  ).unwrap_or([]);
 }
 
 /**

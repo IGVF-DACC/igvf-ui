@@ -9,12 +9,15 @@ import { AliasesCell } from "./table-cells";
 
 const columns = [
   {
-    id: "accession",
-    title: "Accession",
+    id: "name",
+    title: "Name",
     display: ({ source }) => (
-      <LinkedIdAndStatus item={source}>{source.accession}</LinkedIdAndStatus>
+      <LinkedIdAndStatus item={source}>{source.name}</LinkedIdAndStatus>
     ),
-    sorter: (item) => item.accession,
+  },
+  {
+    id: "title",
+    title: "Title",
   },
   {
     id: "aliases",
@@ -23,23 +26,35 @@ const columns = [
     isSortable: false,
   },
   {
-    id: "sex",
-    title: "Sex",
+    id: "source_url",
+    title: "Source URL",
+    display: ({ source }) => (
+      <a href={source.source_url} target="_blank" rel="noopener noreferrer">
+        {source.source_url}
+      </a>
+    ),
   },
   {
-    id: "taxa",
-    title: "Taxa",
+    id: "lab",
+    title: "Lab",
+    display: ({ source }) => source.lab?.title || null,
+    sorter: (item) => (item.lab?.title ? item.lab.title.toLowerCase() : ""),
+  },
+  {
+    id: "description",
+    title: "Description",
+    isSortable: false,
   },
 ];
 
 /**
- * Display the given donors in a table.
+ * Display the given software objects in a table.
  */
-export default function DonorTable({
-  donors,
+export default function SoftwareTable({
+  software,
   reportLink = null,
   reportLabel = null,
-  title = "Donors",
+  title = "Software",
 }) {
   return (
     <>
@@ -51,18 +66,23 @@ export default function DonorTable({
           </DataAreaTitleLink>
         )}
       </DataAreaTitle>
-      <SortableGrid data={donors} columns={columns} pager={{}} keyProp="@id" />
+      <SortableGrid
+        data={software}
+        columns={columns}
+        pager={{}}
+        keyProp="@id"
+      />
     </>
   );
 }
 
-DonorTable.propTypes = {
-  // Donors to display in the table
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+SoftwareTable.propTypes = {
+  // Software to display in the table
+  software: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Optional link to a report
   reportLink: PropTypes.string,
   // Optional label for the report link
   reportLabel: PropTypes.string,
-  // Optional title to display if not "Donors"
+  // Optional title to display if not "Software"
   title: PropTypes.string,
 };

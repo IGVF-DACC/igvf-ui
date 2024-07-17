@@ -31,6 +31,7 @@ import {
   requestFiles,
   requestOntologyTerms,
   requestFileSets,
+  requestPublications,
   requestSeqspecFiles,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
@@ -243,6 +244,7 @@ export default function ConstructLibrarySet({
   constructLibrarySet,
   controlForSets,
   documents,
+  publications,
   files,
   seqspecFiles,
   integratedContentFiles,
@@ -263,7 +265,10 @@ export default function ConstructLibrarySet({
         <JsonDisplay item={constructLibrarySet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileSetDataItems item={constructLibrarySet}>
+              <FileSetDataItems
+                item={constructLibrarySet}
+                publications={publications}
+              >
                 {constructLibrarySet.product_id && (
                   <>
                     <DataItemLabel>Product ID</DataItemLabel>
@@ -353,6 +358,8 @@ ConstructLibrarySet.propTypes = {
   integratedContentFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this construct library
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with this construct library
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sequencing platform objects
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
@@ -400,6 +407,14 @@ export async function getServerSideProps({ params, req, query }) {
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
+    let publications = [];
+    if (constructLibrarySet.publications?.length > 0) {
+      const publicationPaths = constructLibrarySet.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const attribution = await buildAttribution(
       constructLibrarySet,
       req.headers.cookie
@@ -413,6 +428,7 @@ export async function getServerSideProps({ params, req, query }) {
         seqspecFiles,
         integratedContentFiles,
         sequencingPlatforms,
+        publications,
         pageContext: { title: constructLibrarySet.accession },
         attribution,
         isJson,

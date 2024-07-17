@@ -29,6 +29,7 @@ import {
   requestFiles,
   requestFileSets,
   requestOntologyTerms,
+  requestPublications,
   requestSeqspecFiles,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -38,6 +39,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function AuxiliarySet({
   auxiliarySet,
+  publications,
   documents,
   libraryConstructionPlatform = null,
   files,
@@ -64,7 +66,7 @@ export default function AuxiliarySet({
         <JsonDisplay item={auxiliarySet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileSetDataItems item={auxiliarySet}>
+              <FileSetDataItems item={auxiliarySet} publications={publications}>
                 {libraryConstructionPlatform && (
                   <>
                     <DataItemLabel>Library Construction Platform</DataItemLabel>
@@ -165,6 +167,8 @@ AuxiliarySet.propTypes = {
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets controlled by this file set
   controlForSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with this file set
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this measurement set
@@ -224,6 +228,14 @@ export async function getServerSideProps({ params, req, query }) {
       controlForSets = await requestFileSets(controlForPaths, request);
     }
 
+    let publications = [];
+    if (auxiliarySet.publications?.length > 0) {
+      const publicationPaths = auxiliarySet.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const attribution = await buildAttribution(
       auxiliarySet,
       req.headers.cookie
@@ -231,6 +243,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         auxiliarySet,
+        publications,
         documents,
         libraryConstructionPlatform,
         files,
