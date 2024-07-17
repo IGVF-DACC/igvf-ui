@@ -103,7 +103,7 @@ export function nullOnError<T, E extends IsError>(x: T | E | null): T | null {
   if (x && typeof x === "object" && "isError" in x) {
     return null;
   }
-  return x;
+  return x as T;
 }
 
 /**

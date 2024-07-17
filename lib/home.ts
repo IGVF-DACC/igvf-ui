@@ -270,11 +270,13 @@ export function composeFileSetQueryElements(
  * which is a combination of lab and title. The output array is sorted by lab and then title.
  * @param fileSets FileSet objects to convert to Nivo data
  * @param selectedMonth Month to filter the file sets as yyyy-MM, or "All" to not filter
+ * @param shouldIncludeLinks True to add the `shouldIncludeLinks` property to the data
  * @returns Nivo data for a bar chart and maximum count of file sets in a single bar
  */
 export function convertFileSetsToLabData(
   fileSets: DatabaseObject[],
-  selectedMonth: string
+  selectedMonth: string,
+  shouldIncludeLinks: boolean
 ): FileSetLabChartData {
   // Group all the file sets by keys that concatenate each lab and title -- {lab}|{title}.
   const labSummaryGroups = _.groupBy(fileSets, (fileSet: DatabaseObject) => {
@@ -332,6 +334,7 @@ export function convertFileSetsToLabData(
       withFiles,
       released,
       selectedMonth,
+      shouldIncludeLinks,
     } as FileSetTypeData;
   });
 

@@ -11,6 +11,7 @@ import Icon from "../components/icon";
 // lib
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
+import { requestDatasetSummary } from "../lib/common-requests";
 import { abbreviateNumber } from "../lib/general";
 import { convertFileSetsToReleaseData } from "../lib/home";
 
@@ -63,7 +64,7 @@ function FileSetChartSection({ title = "", children }) {
   return (
     <section className="relative my-8 hidden @xl/home:block">
       {title && <DataAreaTitle className="text-center">{title}</DataAreaTitle>}
-      <DataPanel>{children}</DataPanel>
+      <DataPanel className="px-0 py-4">{children}</DataPanel>
     </section>
   );
 }
@@ -128,7 +129,11 @@ export default function Home({ fileSets, fileCount, sampleCount }) {
       )}
       {fileSets.length > 0 && (
         <FileSetChartSection title={FILESET_STATUS_TITLE}>
-          <ChartFileSetLab fileSets={fileSets} title={FILESET_STATUS_TITLE} />
+          <ChartFileSetLab
+            fileSets={fileSets}
+            title={FILESET_STATUS_TITLE}
+            shouldIncludeLinks
+          />
         </FileSetChartSection>
       )}
     </div>
@@ -148,11 +153,7 @@ export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
 
   // We might need to paginate this request in the future, but for now just get all the results.
-  const results = (
-    await request.getObject(
-      "/report/?type=MeasurementSet&field=%40id&field=preferred_assay_title&field=assay_term.term_name&field=files.@id&field=lab.title&field=status&field=creation_timestamp&field=release_timestamp&field=submitted_files_timestamp&status=released&status=archived&status=revoked&status=in+progress&limit=all"
-    )
-  ).union();
+  const results = await requestDatasetSummary(request);
 
   if (FetchRequest.isResponseSuccess(results)) {
     const fileResults = (
@@ -164,7 +165,7 @@ export async function getServerSideProps({ req }) {
 
     return {
       props: {
-        fileSets: results["@graph"],
+        fileSets: results["@graph"] || [],
         fileCount: fileResults?.total || 0,
         sampleCount: sampleResults?.total || 0,
       },

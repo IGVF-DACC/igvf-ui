@@ -1,4 +1,4 @@
-import { DatabaseObject, DataProviderObject } from "../globals";
+import { DatabaseObject, DataProviderObject, SearchResults } from "../globals";
 import FetchRequest from "./fetch-request";
 
 /**
@@ -364,4 +364,17 @@ export async function requestSources(
   return (
     await request.getMultipleObjectsBulk(paths, ["name", "url", "lab.title"])
   ).unwrap_or([]);
+}
+
+/**
+ * Retrieve the search results from the `/dataset-summary` endpoint.
+ * @param request The request object to use to make the request
+ * @returns The dataset summary object requested
+ */
+export async function requestDatasetSummary(
+  request: FetchRequest
+): Promise<SearchResults> {
+  return (await request.getObject("/dataset-summary")).unwrap_or(
+    {}
+  ) as unknown as SearchResults;
 }
