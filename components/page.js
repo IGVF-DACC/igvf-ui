@@ -14,6 +14,7 @@ import {
   Bars3BottomRightIcon,
   EyeIcon,
 } from "@heroicons/react/20/solid";
+import _ from "lodash";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import {
@@ -151,6 +152,17 @@ const PageMetaEditor = memo(function PageMetaEditor({
   labs,
   pages,
 }) {
+  // Filter text for the parent page list
+  const [parentFilter, setParentFilter] = useState("");
+  // Filter text for the award list
+  const [awardFilter, setAwardFilter] = useState("");
+  // Filter text for the lab list
+  const [labFilter, setLabFilter] = useState("");
+
+  function onFilterChange(setFilter, event) {
+    setFilter(event.target.value.toLowerCase());
+  }
+
   // True if the live page name conflicts with an existing one
   const [isNameConflicting, setNameConflicting] = useState(
     detectConflictingName(livePageMeta.name, pages)
@@ -162,7 +174,7 @@ const PageMetaEditor = memo(function PageMetaEditor({
 
   const { isDirty, setDirty } = useContext(PageCondition);
   const { setValidationError } = useContext(EditorValidation);
-  const className = "md:grow md:basis-[calc(50%-1rem)]";
+  const className = "my-4 md:grow md:basis-[calc(50%-1rem)]";
 
   /**
    * Called whenever the user changes anything about the page metadata. Individual keystrokes in
@@ -231,6 +243,17 @@ const PageMetaEditor = memo(function PageMetaEditor({
   }
   const titleFieldMessage = isTitleEmpty ? "Field is required" : "";
 
+  // Sort the page array by @id.
+  const filteredPages = _.sortBy(pages, (page) => page["@id"]).filter((page) =>
+    page["@id"].includes(parentFilter)
+  );
+  const filteredAwards = _.sortBy(awards, (award) => award.name).filter(
+    (award) => award.name.toLowerCase().includes(awardFilter)
+  );
+  const filteredLabs = _.sortBy(labs, (lab) => lab.title).filter((lab) =>
+    lab.title.toLowerCase().includes(labFilter)
+  );
+
   return (
     <>
       <div className="md:flex md:flex-wrap md:gap-4">
@@ -272,19 +295,27 @@ const PageMetaEditor = memo(function PageMetaEditor({
             label="Parent"
             value={livePageMeta.parent}
             onChange={setPageMetaParent}
-            className="my-2 self-stretch [&>div]:h-56 [&>div]:max-h-56"
+            className="[&>div]:max-h-56"
+            filter={parentFilter}
+            onFilterChange={(event) => onFilterChange(setParentFilter, event)}
           >
-            {pages.map((page) => {
-              return (
-                <ListSelect.Option
-                  key={page["@id"]}
-                  id={page["@id"]}
-                  label={page.name}
-                >
-                  <div className="text-left">{page["@id"]}</div>
-                </ListSelect.Option>
-              );
-            })}
+            {filteredPages.length > 0 ? (
+              filteredPages.map((page) => {
+                return (
+                  <ListSelect.Option
+                    key={page["@id"]}
+                    id={page["@id"]}
+                    label={page.name}
+                  >
+                    <div className="text-left">{page["@id"]}</div>
+                  </ListSelect.Option>
+                );
+              })
+            ) : (
+              <ListSelect.Message>
+                No parent pages match the filter
+              </ListSelect.Message>
+            )}
           </ListSelect>
         </div>
       </div>
@@ -295,18 +326,26 @@ const PageMetaEditor = memo(function PageMetaEditor({
             value={livePageMeta.award}
             onChange={setPageMetaAward}
             className="[&>div]:max-h-52"
+            filter={awardFilter}
+            onFilterChange={(event) => onFilterChange(setAwardFilter, event)}
           >
-            {awards.map((award) => {
-              return (
-                <ListSelect.Option
-                  key={award["@id"]}
-                  id={award["@id"]}
-                  label={award.name}
-                >
-                  <div className="text-left">{award.name}</div>
-                </ListSelect.Option>
-              );
-            })}
+            {filteredAwards.length > 0 ? (
+              filteredAwards.map((award) => {
+                return (
+                  <ListSelect.Option
+                    key={award["@id"]}
+                    id={award["@id"]}
+                    label={award.name}
+                  >
+                    <div className="text-left">{award.name}</div>
+                  </ListSelect.Option>
+                );
+              })
+            ) : (
+              <ListSelect.Message>
+                No awards match the filter
+              </ListSelect.Message>
+            )}
           </ListSelect>
         </div>
         <div className={className}>
@@ -315,18 +354,24 @@ const PageMetaEditor = memo(function PageMetaEditor({
             value={livePageMeta.lab}
             onChange={setPageMetaLab}
             className="[&>div]:max-h-52"
+            filter={labFilter}
+            onFilterChange={(event) => onFilterChange(setLabFilter, event)}
           >
-            {labs.map((lab) => {
-              return (
-                <ListSelect.Option
-                  key={lab["@id"]}
-                  id={lab["@id"]}
-                  label={lab.title}
-                >
-                  <div className="text-left">{lab.title}</div>
-                </ListSelect.Option>
-              );
-            })}
+            {filteredLabs.length > 0 ? (
+              filteredLabs.map((lab) => {
+                return (
+                  <ListSelect.Option
+                    key={lab["@id"]}
+                    id={lab["@id"]}
+                    label={lab.title}
+                  >
+                    <div className="text-left">{lab.title}</div>
+                  </ListSelect.Option>
+                );
+              })
+            ) : (
+              <ListSelect.Message>No labs match the filter</ListSelect.Message>
+            )}
           </ListSelect>
         </div>
       </div>
