@@ -23,7 +23,6 @@ import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFileSets,
@@ -50,7 +49,7 @@ export default function AlignmentFile({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={alignmentFile} />
       <EditableItem item={alignmentFile}>
         <PagePreamble>
           <AlternateAccessions
@@ -193,11 +192,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = alignmentFile.reference_files
       ? await requestFiles(alignmentFile.reference_files, request)
       : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      alignmentFile,
-      alignmentFile.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       alignmentFile,
       req.headers.cookie
@@ -211,7 +205,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFromFileSets,
         fileFormatSpecifications,
         pageContext: { title: alignmentFile.accession },
-        breadcrumbs,
         attribution,
         referenceFiles,
         isJson,

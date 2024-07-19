@@ -1,9 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import profiles from "../__mocks__/profile";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import Breadcrumbs from "../breadcrumbs";
 import SessionContext from "../session-context";
-import GlobalContext from "../global-context";
 
 describe("Test the Breadcrumbs React component", () => {
   it("should render item breadcrumbs", async () => {
@@ -26,28 +23,22 @@ describe("Test the Breadcrumbs React component", () => {
       uuid: "cfb789b8-46f3-4d59-a2b3-adc39e7df93a",
       title: "J. Michael Cherry, Stanford",
     };
-    const breadcrumbs = await buildBreadcrumbs(labItemData, labItemData.title);
-    const context = {
-      breadcrumbs,
-    };
     render(
-      <GlobalContext.Provider value={context}>
-        <Breadcrumbs />
-      </GlobalContext.Provider>
+      <Breadcrumbs item={labItemData} title="J. Michael Cherry, Stanford" />
     );
 
     const breadcrumbElement = screen.getByLabelText("breadcrumbs");
     expect(breadcrumbElement).toBeInTheDocument();
 
-    const homeBreadcrumb = screen.getByTestId("/");
+    const homeBreadcrumb = screen.getByTestId("breadcrumb-0");
     expect(homeBreadcrumb).toBeInTheDocument();
     expect(homeBreadcrumb).toHaveTextContent("Home");
 
-    const labsBreadcrumb = screen.getByTestId("/search?type=Lab");
+    const labsBreadcrumb = screen.getByTestId("breadcrumb-1");
     expect(labsBreadcrumb).toBeInTheDocument();
     expect(labsBreadcrumb).toHaveTextContent("Lab");
 
-    const labBreadcrumb = screen.getByTestId("/labs/j-michael-cherry/");
+    const labBreadcrumb = screen.getByTestId("breadcrumb-2");
     expect(labBreadcrumb).toBeInTheDocument();
     expect(labBreadcrumb).toHaveTextContent("J. Michael Cherry, Stanford");
   });
@@ -70,7 +61,7 @@ describe("Test the Breadcrumbs React component", () => {
           uuid: "ee99221f-a11a-4f8b-baf3-9919db92f2f9",
         },
       ],
-      "@id": "/search?type=HumanDonor",
+      "@id": "/search/?type=HumanDonor",
       "@type": ["Search"],
       filters: [
         {
@@ -84,26 +75,22 @@ describe("Test the Breadcrumbs React component", () => {
       total: 1,
     };
 
-    const breadcrumbs = await buildBreadcrumbs(searchData);
-    const context = {
-      breadcrumbs,
-    };
     render(
-      <GlobalContext.Provider value={context}>
-        <SessionContext.Provider value={{ profiles }}>
-          <Breadcrumbs />
-        </SessionContext.Provider>
-      </GlobalContext.Provider>
+      <SessionContext.Provider
+        value={{ collectionTitles: { HumanDonor: "Human Donor" } }}
+      >
+        <Breadcrumbs item={searchData} title="IGVFDO748LVM" />
+      </SessionContext.Provider>
     );
 
     const breadcrumbElement = screen.getByLabelText("breadcrumbs");
     expect(breadcrumbElement).toBeInTheDocument();
 
-    const homeBreadcrumb = screen.getByTestId("/");
+    const homeBreadcrumb = screen.getByTestId("breadcrumb-0");
     expect(homeBreadcrumb).toBeInTheDocument();
     expect(homeBreadcrumb).toHaveTextContent("Home");
 
-    const labsBreadcrumb = screen.getByTestId("/search?type=HumanDonor");
+    const labsBreadcrumb = screen.getByTestId("breadcrumb-1");
     expect(labsBreadcrumb).toBeInTheDocument();
     expect(labsBreadcrumb).toHaveTextContent("Human Donor");
   });
@@ -143,26 +130,20 @@ describe("Test the Breadcrumbs React component", () => {
       total: 1,
     };
 
-    const breadcrumbs = await buildBreadcrumbs(searchData);
-    const context = {
-      breadcrumbs,
-    };
     render(
-      <GlobalContext.Provider value={context}>
-        <SessionContext.Provider value={{ profiles }}>
-          <Breadcrumbs />
-        </SessionContext.Provider>
-      </GlobalContext.Provider>
+      <SessionContext.Provider value={{ collectionTitles: {} }}>
+        <Breadcrumbs item={searchData} title="IGVFDO931YJL" />
+      </SessionContext.Provider>
     );
 
     const breadcrumbElement = screen.getByLabelText("breadcrumbs");
     expect(breadcrumbElement).toBeInTheDocument();
 
-    const homeBreadcrumb = screen.getByTestId("/");
+    const homeBreadcrumb = screen.getByTestId("breadcrumb-0");
     expect(homeBreadcrumb).toBeInTheDocument();
     expect(homeBreadcrumb).toHaveTextContent("Home");
 
-    const labsBreadcrumb = screen.getByTestId("/search?type=RodentDonor");
+    const labsBreadcrumb = screen.getByTestId("breadcrumb-1");
     expect(labsBreadcrumb).toBeInTheDocument();
     expect(labsBreadcrumb).toHaveTextContent("RodentDonor");
   });
@@ -195,24 +176,16 @@ describe("Test the Breadcrumbs React component", () => {
       total: 1,
     };
 
-    const breadcrumbs = await buildBreadcrumbs(searchData);
-    const context = {
-      breadcrumbs,
-    };
-    render(
-      <GlobalContext.Provider value={context}>
-        <Breadcrumbs />
-      </GlobalContext.Provider>
-    );
+    render(<Breadcrumbs item={searchData} />);
 
     const breadcrumbElement = screen.getByLabelText("breadcrumbs");
     expect(breadcrumbElement).toBeInTheDocument();
 
-    const homeBreadcrumb = screen.getByTestId("/");
+    const homeBreadcrumb = screen.getByTestId("breadcrumb-0");
     expect(homeBreadcrumb).toBeInTheDocument();
     expect(homeBreadcrumb).toHaveTextContent("Home");
 
-    const labsBreadcrumb = screen.getByTestId("/search?type=AssayTerm");
+    const labsBreadcrumb = screen.getByTestId("breadcrumb-1");
     expect(labsBreadcrumb).toBeInTheDocument();
     expect(labsBreadcrumb).toHaveTextContent("AssayTerm");
   });

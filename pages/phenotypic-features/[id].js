@@ -16,7 +16,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
@@ -28,12 +27,14 @@ export default function PhenotypicFeature({
   isJson,
   attribution = null,
 }) {
+  const title = getPhenotypicFeatureTitle(phenotypicFeature);
   const feature = `${phenotypicFeature.feature.term_name} (${phenotypicFeature.feature.term_id})`;
+
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={phenotypicFeature} title={title} />
       <EditableItem item={phenotypicFeature}>
-        <PagePreamble />
+        <PagePreamble title={title} />
         <ObjectPageHeader item={phenotypicFeature} isJsonFormat={isJson} />
         <JsonDisplay item={phenotypicFeature} isJsonFormat={isJson}>
           <DataPanel>
@@ -89,16 +90,10 @@ export async function getServerSideProps({ params, req, query }) {
       req.headers.cookie
     );
     const title = getPhenotypicFeatureTitle(phenotypicFeature);
-    const breadcrumbs = await buildBreadcrumbs(
-      phenotypicFeature,
-      phenotypicFeature.uuid,
-      req.headers.cookie
-    );
     return {
       props: {
         phenotypicFeature,
         pageContext: { title },
-        breadcrumbs,
         isJson,
         attribution,
       },

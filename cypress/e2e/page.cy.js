@@ -9,7 +9,7 @@ describe("Content-Change Tests", () => {
     // Go to the page titled `Samples`.
     cy.get("[data-testid=navigation-data-model]").click();
     cy.get("[data-testid=navigation-schemas]").click();
-    cy.get(`[href="/search/?type=Page"]`).click();
+    cy.get(`[href="/search/?type=Page&status!=deleted"]`).click();
     cy.get("#items-per-page").select("300 Items");
     cy.get(`[aria-label="View details for /test-section/subpage/"]`).click();
     cy.contains("Edit Page").click();

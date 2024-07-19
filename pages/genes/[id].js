@@ -16,7 +16,6 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -25,7 +24,7 @@ import SeparatedList from "../../components/separated-list";
 export default function Gene({ gene, isJson }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={gene} />
       <EditableItem item={gene}>
         <PagePreamble />
         <ObjectPageHeader item={gene} isJsonFormat={isJson} />
@@ -107,16 +106,10 @@ export async function getServerSideProps({ params, req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const gene = (await request.getObject(`/genes/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(gene)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      gene,
-      gene.title,
-      req.headers.cookie
-    );
     return {
       props: {
         gene,
         pageContext: { title: gene.title },
-        breadcrumbs,
         isJson,
       },
     };

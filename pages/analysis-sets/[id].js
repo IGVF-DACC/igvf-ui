@@ -23,7 +23,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFileSets,
@@ -51,7 +50,7 @@ export default function AnalysisSet({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={analysisSet} />
       <EditableItem item={analysisSet}>
         <PagePreamble>
           <AlternateAccessions
@@ -287,11 +286,6 @@ export async function getServerSideProps({ params, req, query }) {
       }
     }
 
-    const breadcrumbs = await buildBreadcrumbs(
-      analysisSet,
-      analysisSet.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(analysisSet, req.headers.cookie);
     return {
       props: {
@@ -306,7 +300,6 @@ export async function getServerSideProps({ params, req, query }) {
         measurementSets,
         constructLibrarySets,
         pageContext: { title: analysisSet.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

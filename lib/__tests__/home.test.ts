@@ -339,12 +339,13 @@ describe("Test convertFileSetsToLabData function", () => {
       },
     ];
 
-    const nivoData = convertFileSetsToLabData(fileSets, "All");
+    const nivoData = convertFileSetsToLabData(fileSets, "All", true);
     expect(nivoData).toEqual({
       fileSetData: [
         {
           title: "J. Michael Cherry, Stanford|prf^yN2H",
           selectedMonth: "All",
+          shouldIncludeLinks: true,
           initiated: 0,
           released: 0,
           withFiles: 1,
@@ -352,6 +353,7 @@ describe("Test convertFileSetsToLabData function", () => {
         {
           title: "J. Michael Cherry, Stanford|prf^snMCT-seq",
           selectedMonth: "All",
+          shouldIncludeLinks: true,
           released: 0,
           initiated: 1,
           withFiles: 0,
@@ -359,6 +361,7 @@ describe("Test convertFileSetsToLabData function", () => {
         {
           title: "J. Michael Cherry, Stanford|prf^10x multiome",
           selectedMonth: "All",
+          shouldIncludeLinks: true,
           released: 1,
           initiated: 0,
           withFiles: 0,
@@ -366,6 +369,7 @@ describe("Test convertFileSetsToLabData function", () => {
         {
           title: "J. Michael Cherry, Stanford|atn^imaging assay",
           selectedMonth: "All",
+          shouldIncludeLinks: true,
           released: 0,
           initiated: 1,
           withFiles: 0,

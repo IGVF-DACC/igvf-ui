@@ -950,9 +950,10 @@ function copyPageMeta(page) {
  */
 export default function Page({
   page = initialPage,
-  awards,
-  labs,
-  pages,
+  awards = null,
+  labs = null,
+  pages = null,
+  breadcrumbMeta = null,
   isNewPage = false,
   titleDecoration = "",
 }) {
@@ -1050,8 +1051,8 @@ export default function Page({
 
   return (
     <PageCondition.Provider value={{ isDirty, setDirty, isNewPage }}>
-      <Breadcrumbs />
-      <PagePreamble pageTitle={title}>{titleDecoration}</PagePreamble>
+      <Breadcrumbs item={page} meta={breadcrumbMeta} />
+      <PagePreamble title={title}>{titleDecoration}</PagePreamble>
       {activeError && (
         <FlashMessage
           message={activeError}
@@ -1105,6 +1106,8 @@ Page.propTypes = {
   labs: PropTypes.arrayOf(PropTypes.object),
   // Collection of all pages
   pages: PropTypes.arrayOf(PropTypes.object),
+  // Metadata for breadcrumbs
+  breadcrumbMeta: PropTypes.object,
   // True if adding a page instead of updating an existing page
   isNewPage: PropTypes.bool,
   // String or component to display after the page title

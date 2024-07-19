@@ -26,7 +26,6 @@ import SeparatedList from "../../components/separated-list";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFiles,
@@ -253,7 +252,7 @@ export default function ConstructLibrarySet({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={constructLibrarySet} />
       <EditableItem item={constructLibrarySet}>
         <PagePreamble>
           <AlternateAccessions
@@ -401,11 +400,6 @@ export async function getServerSideProps({ params, req, query }) {
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
-    const breadcrumbs = await buildBreadcrumbs(
-      constructLibrarySet,
-      constructLibrarySet.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       constructLibrarySet,
       req.headers.cookie
@@ -420,7 +414,6 @@ export async function getServerSideProps({ params, req, query }) {
         integratedContentFiles,
         sequencingPlatforms,
         pageContext: { title: constructLibrarySet.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

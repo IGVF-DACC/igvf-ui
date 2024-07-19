@@ -7,6 +7,7 @@ import {
 import PropTypes from "prop-types";
 // components
 import { AttachedButtons, ButtonLink, TextField } from "./form-elements";
+import { useBrowserStateQuery } from "./presentation-status";
 // lib
 import { SEARCH_MODE_TITLE } from "../lib/profiles";
 
@@ -60,10 +61,13 @@ SchemaSearchField.propTypes = {
  * Displays links to the search-list and report pages for the given schema object type.
  */
 export function SearchAndReportType({ type, title }) {
+  // Extra query-string parameters for list/report pages
+  const extraQueries = useBrowserStateQuery({ addAmpersand: true });
+
   return (
     <AttachedButtons>
       <ButtonLink
-        href={`/search?type=${type}`}
+        href={`/search/?type=${type}${extraQueries}`}
         label={`List view of all ${title} objects`}
         type="secondary"
         size="sm"
@@ -72,7 +76,7 @@ export function SearchAndReportType({ type, title }) {
         <Bars4Icon />
       </ButtonLink>
       <ButtonLink
-        href={`/multireport?type=${type}`}
+        href={`/multireport/?type=${type}${extraQueries}`}
         label={`Report view of all ${title} objects`}
         type="secondary"
         size="sm"

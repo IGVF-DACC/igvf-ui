@@ -45,6 +45,27 @@ describe("Test improper authentications get detected", () => {
       }).toThrow(/Server-side requests/);
     });
   });
+
+  describe("Test successful server-side authentication", () => {
+    // FetchRequest detects the server-side environment by testing for the `window` global, so delete
+    // it to simulate running on the server.
+    const { window } = global;
+
+    beforeEach(() => {
+      delete global.window;
+    });
+
+    afterAll(() => {
+      global.window = window;
+    });
+
+    it("successfully authenticates with a cookie on the server", () => {
+      const request = new FetchRequest({
+        cookie: "mockcookie",
+      });
+      expect(request).toBeTruthy();
+    });
+  });
 });
 
 describe("Test GET requests to the data provider", () => {

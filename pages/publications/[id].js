@@ -19,9 +19,9 @@ import PagePreamble from "../../components/page-preamble";
 import { PublicationCitation } from "../../components/publication";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { truncateText } from "../../lib/general";
 import { checkPublicationCitationVisible } from "../../lib/publication";
 import { isJsonFormat } from "../../lib/query-utils";
 
@@ -32,7 +32,10 @@ export default function Publication({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs
+        item={publication}
+        title={truncateText(publication.title, 40)}
+      />
       <EditableItem item={publication}>
         <PagePreamble />
         <ObjectPageHeader item={publication} isJsonFormat={isJson} />
@@ -108,17 +111,11 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/publications/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(publication)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      publication,
-      publication.title,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(publication, req.headers.cookie);
     return {
       props: {
         publication,
         pageContext: { title: publication.title },
-        breadcrumbs,
         attribution,
         isJson,
       },

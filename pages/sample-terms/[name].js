@@ -15,7 +15,6 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -28,7 +27,7 @@ export default function SampleOntologyTerm({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={sampleOntologyTerm} />
       <EditableItem item={sampleOntologyTerm}>
         <PagePreamble />
         <ObjectPageHeader item={sampleOntologyTerm} isJsonFormat={isJson} />
@@ -107,17 +106,11 @@ export async function getServerSideProps({ params, req, query }) {
     const isA = sampleOntologyTerm.is_a
       ? await requestOntologyTerms(sampleOntologyTerm.is_a, request)
       : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      sampleOntologyTerm,
-      sampleOntologyTerm.term_id,
-      req.headers.cookie
-    );
     return {
       props: {
         sampleOntologyTerm,
         isA,
         pageContext: { title: sampleOntologyTerm.term_id },
-        breadcrumbs,
         isJson,
       },
     };

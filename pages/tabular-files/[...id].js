@@ -22,7 +22,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFileSets,
@@ -49,7 +48,7 @@ export default function TabularFile({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={tabularFile} />
       <EditableItem item={tabularFile}>
         <PagePreamble>
           <AlternateAccessions
@@ -178,11 +177,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       tabularFile.integrated_in.length > 0
         ? await requestFileSets(tabularFile.integrated_in, request)
         : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      tabularFile,
-      tabularFile.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(tabularFile, req.headers.cookie);
     return {
       props: {
@@ -194,7 +188,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         fileFormatSpecifications,
         integratedIn,
         pageContext: { title: tabularFile.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

@@ -24,7 +24,6 @@ import SampleTable from "../../components/sample-table";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFiles,
@@ -54,7 +53,7 @@ export default function AuxiliarySet({
 
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={auxiliarySet} />
       <EditableItem item={auxiliarySet}>
         <PagePreamble>
           <AlternateAccessions
@@ -225,11 +224,6 @@ export async function getServerSideProps({ params, req, query }) {
       controlForSets = await requestFileSets(controlForPaths, request);
     }
 
-    const breadcrumbs = await buildBreadcrumbs(
-      auxiliarySet,
-      auxiliarySet.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       auxiliarySet,
       req.headers.cookie
@@ -245,7 +239,6 @@ export async function getServerSideProps({ params, req, query }) {
         sequencingPlatforms,
         controlForSets,
         pageContext: { title: auxiliarySet.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

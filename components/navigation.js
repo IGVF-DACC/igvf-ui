@@ -31,6 +31,7 @@ import IndexerState from "./indexer-state";
 import { Email, Twitter } from "./site-info";
 import SiteLogo from "./logo";
 import Modal from "./modal";
+import { useBrowserStateQuery } from "./presentation-status";
 import SessionContext from "./session-context";
 import SiteSearchTrigger from "./site-search-trigger";
 // lib
@@ -574,6 +575,8 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
   const { isAuthenticated } = useAuth0();
   // Logged-in session-properties object
   const { sessionProperties } = useContext(SessionContext);
+  // Extra query-string parameters for list/report pages
+  const extraQueries = useBrowserStateQuery({ addAmpersand: true });
 
   /**
    * Called when the user clicks a group navigation item to open or close it.
@@ -608,7 +611,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         >
           <NavigationHrefItem
             id="raw-datasets"
-            href="/search/?type=MeasurementSet"
+            href={`/search/?type=MeasurementSet${extraQueries}`}
             navigationClick={navigationClick}
             isChildItem
           >
@@ -616,7 +619,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="processed-datasets"
-            href="/search/?type=AnalysisSet"
+            href={`/search/?type=AnalysisSet${extraQueries}`}
             navigationClick={navigationClick}
             isChildItem
           >
@@ -624,7 +627,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="files"
-            href="/search/?type=File"
+            href={`/search/?type=File${extraQueries}`}
             navigationClick={navigationClick}
             isChildItem
           >
@@ -657,7 +660,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="genome-references"
-            href="/search?type=CuratedSet&file_set_type=genome"
+            href={`/search?type=CuratedSet&file_set_type=genome${extraQueries}`}
             navigationClick={navigationClick}
             isChildItem
           >

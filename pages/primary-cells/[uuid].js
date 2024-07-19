@@ -24,7 +24,6 @@ import SampleTable from "../../components/sample-table";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestBiomarkers,
   requestBiosamples,
@@ -60,7 +59,7 @@ export default function PrimaryCell({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={primaryCell} />
       <EditableItem item={primaryCell}>
         <PagePreamble>
           <AlternateAccessions
@@ -278,11 +277,6 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
-    const breadcrumbs = await buildBreadcrumbs(
-      primaryCell,
-      primaryCell.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(primaryCell, req.headers.cookie);
     return {
       props: {
@@ -303,7 +297,6 @@ export async function getServerSideProps({ params, req, query }) {
         pageContext: {
           title: `${primaryCell.sample_terms[0].term_name} — ${primaryCell.accession}`,
         },
-        breadcrumbs,
         attribution,
         isJson,
       },

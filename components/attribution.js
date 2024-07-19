@@ -17,7 +17,12 @@ import SeparatedList from "./separated-list";
  * object with a defined schema.
  */
 export default function Attribution({ attribution = null }) {
-  if (attribution && Object.keys(attribution).length > 0) {
+  // Get an array of keys within the attribution object that have a truthy value
+  const attributionsWithValues = attribution
+    ? Object.keys(attribution).filter((key) => attribution[key])
+    : [];
+
+  if (attributionsWithValues.length > 1) {
     return (
       <>
         <DataAreaTitle>Attribution</DataAreaTitle>

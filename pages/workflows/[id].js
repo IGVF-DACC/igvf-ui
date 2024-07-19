@@ -21,7 +21,6 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestAnalysisSteps,
   requestDocuments,
@@ -41,7 +40,7 @@ export default function Workflow({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={workflow} />
       <EditableItem item={workflow}>
         <PagePreamble>
           <AlternateAccessions
@@ -171,11 +170,6 @@ export async function getServerSideProps({ params, req, query }) {
     const analysisSteps = workflow.analysis_steps
       ? await requestAnalysisSteps(workflow.analysis_steps, request)
       : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      workflow,
-      workflow.name,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(workflow, req.headers.cookie);
     return {
       props: {
@@ -185,7 +179,6 @@ export async function getServerSideProps({ params, req, query }) {
         analysisSteps,
         documents,
         pageContext: { title: workflow.name },
-        breadcrumbs,
         attribution,
         isJson,
       },

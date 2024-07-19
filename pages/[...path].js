@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 // lib
 import buildAttribution from "../lib/attribution";
-import buildBreadcrumbs from "../lib/breadcrumbs";
+import { getBreadcrumbMeta } from "../lib/breadcrumbs";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { isJsonFormat } from "../lib/query-utils";
@@ -38,12 +38,23 @@ export default function FallbackObject({
   labs = null,
   pages = null,
   attribution = null,
+  breadcrumbMeta = null,
   isJson = false,
 }) {
+  const title = extractTitle(generic);
+
   if (generic) {
     // Pages get displayed as markdown.
     if (generic["@type"].includes("Page")) {
-      return <Page page={generic} awards={awards} labs={labs} pages={pages} />;
+      return (
+        <Page
+          page={generic}
+          awards={awards}
+          labs={labs}
+          pages={pages}
+          breadcrumbMeta={breadcrumbMeta}
+        />
+      );
     }
 
     // Display collection and search pages as JSON. This case also covers adding new objects.
@@ -53,7 +64,7 @@ export default function FallbackObject({
     ) {
       return (
         <>
-          <PagePreamble />
+          <PagePreamble title={title} />
           <AddableItem collection={generic}>
             <JsonPanel>{JSON.stringify(generic, null, 4)}</JsonPanel>
           </AddableItem>
@@ -64,9 +75,9 @@ export default function FallbackObject({
     // Render an individual object as a generated formatted page.
     return (
       <>
-        <Breadcrumbs />
+        <Breadcrumbs item={generic} title={title} />
         <EditableItem item={generic}>
-          <PagePreamble />
+          <PagePreamble title={title} />
           <ObjectPageHeader item={generic} isJsonFormat={isJson} />
           <JsonDisplay item={generic} isJsonFormat={isJson}>
             <UnknownTypePanel item={generic} attribution={attribution} />
@@ -89,6 +100,8 @@ FallbackObject.propTypes = {
   pages: PropTypes.arrayOf(PropTypes.object),
   // Attribution objects for the generic object
   attribution: PropTypes.object,
+  // Breadcrumb metadata for the generic object
+  breadcrumbMeta: PropTypes.object,
   // True if the page should render as JSON
   isJson: PropTypes.bool,
 };
@@ -101,7 +114,7 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
     let awards = null;
     let labs = null;
     let pages = null;
-    let breadcrumbs = null;
+    let breadcrumbMeta = null;
     if (generic["@type"].includes("Page")) {
       // For objects with type 'Page', also get extra data needed for editing the page.
       awards = (await request.getCollection("awards"))
@@ -113,11 +126,7 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
       pages = (await request.getCollection("pages"))
         .map((c) => c["@graph"])
         .optional();
-      breadcrumbs = await buildBreadcrumbs(
-        generic,
-        "title",
-        req.headers.cookie
-      );
+      breadcrumbMeta = await getBreadcrumbMeta(generic, request);
     }
     const attribution = await buildAttribution(generic, req.headers.cookie);
     return {
@@ -127,8 +136,7 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
         labs,
         pages,
         attribution,
-        pageContext: { title: extractTitle(generic) },
-        breadcrumbs,
+        breadcrumbMeta,
         isJson,
       },
     };

@@ -9,7 +9,7 @@ describe("Must sign in to see current document objects", () => {
     cy.visit("/");
     cy.get("[data-testid=navigation-data-model]").click();
     cy.get("[data-testid=navigation-schemas]").click();
-    cy.get(`[href="/search/?type=Document"]`).click();
+    cy.get(`[href="/search/?type=Document&status!=deleted"]`).click();
 
     // Go to the first document in the list and go to its document object page.
     cy.get(`[data-testid^="search-list-item-"]`)

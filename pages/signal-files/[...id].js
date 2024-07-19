@@ -22,7 +22,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFileSets,
@@ -49,7 +48,7 @@ export default function SignalFile({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={signalFile} />
       <EditableItem item={signalFile}>
         <PagePreamble>
           <AlternateAccessions
@@ -180,11 +179,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = signalFile.reference_files
       ? await requestFiles(signalFile.reference_files, request)
       : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      signalFile,
-      signalFile.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(signalFile, req.headers.cookie);
     return {
       props: {
@@ -195,7 +189,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFromFileSets,
         fileFormatSpecifications,
         pageContext: { title: signalFile.accession },
-        breadcrumbs,
         attribution,
         referenceFiles,
         isJson,

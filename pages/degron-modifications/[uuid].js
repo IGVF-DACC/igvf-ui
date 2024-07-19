@@ -21,7 +21,6 @@ import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestGenes,
@@ -43,7 +42,7 @@ export default function DegronModification({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={modification} />
       <EditableItem item={modification}>
         <PagePreamble />
         <ObjectPageHeader item={modification} isJsonFormat={isJson} />
@@ -159,11 +158,6 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = modification.documents
       ? await requestDocuments(modification.documents, request)
       : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      modification,
-      modification.summary,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       modification,
       req.headers.cookie
@@ -177,7 +171,6 @@ export async function getServerSideProps({ params, req, query }) {
         pageContext: {
           title: modification.summary,
         },
-        breadcrumbs,
         attribution,
         sources,
         isJson,

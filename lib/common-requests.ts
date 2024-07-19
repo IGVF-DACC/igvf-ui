@@ -378,3 +378,19 @@ export async function requestDatasetSummary(
     {}
   ) as unknown as SearchResults;
 }
+
+/**
+ * Retrieve the page objects for the given page paths from the data provider. Typically used to
+ * retrieve the parent page objects for a given page.
+ * @param paths Path to each Page object to request
+ * @param request The request object to use to make the request
+ * @returns Requested Page objects
+ */
+export async function requestPages(
+  paths: string[],
+  request: FetchRequest
+): Promise<DataProviderObject[]> {
+  return (
+    await request.getMultipleObjectsBulk(paths, ["name", "title", "status"])
+  ).unwrap_or([]);
+}

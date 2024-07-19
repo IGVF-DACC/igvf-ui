@@ -104,9 +104,7 @@ function Site({ Component, pageProps, authentication }) {
       },
       page: {
         title: pageProps.pageContext?.title || "",
-        type: pageProps.pageContext?.type || "",
       },
-      breadcrumbs: pageProps.breadcrumbs || [],
       linkReload: {
         isEnabled: isLinkReloadEnabled,
         setIsEnabled: setIsLinkReloadEnabled,
@@ -115,13 +113,7 @@ function Site({ Component, pageProps, authentication }) {
         enabled: isDarkMode,
       },
     };
-  }, [
-    pageProps.breadcrumbs,
-    pageProps.pageContext?.title,
-    pageProps.pageContext?.type,
-    isLinkReloadEnabled,
-    isDarkMode,
-  ]);
+  }, [pageProps.pageContext?.title, isLinkReloadEnabled, isDarkMode]);
 
   return (
     <ViewportOverlay isEnabled={isLoading}>

@@ -17,7 +17,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SoftwareVersionTable from "../../components/software-version-table";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestSoftwareVersions } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -33,7 +32,7 @@ export default function Software({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={software} />
       <EditableItem item={software}>
         <PagePreamble />
         <ObjectPageHeader item={software} isJsonFormat={isJson} />
@@ -106,11 +105,6 @@ export async function getServerSideProps({ params, req, query }) {
       software.versions.length > 0
         ? await requestSoftwareVersions(software.versions, request)
         : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      software,
-      software.name,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(software, req.headers.cookie);
     return {
       props: {
@@ -119,7 +113,6 @@ export async function getServerSideProps({ params, req, query }) {
         lab,
         versions,
         pageContext: { title: software.name },
-        breadcrumbs,
         attribution,
         isJson,
       },

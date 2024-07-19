@@ -22,7 +22,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFileSets,
@@ -49,7 +48,7 @@ export default function MatrixFile({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={matrixFile} />
       <EditableItem item={matrixFile}>
         <PagePreamble>
           <AlternateAccessions
@@ -160,11 +159,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = matrixFile.reference_files
       ? await requestFiles(matrixFile.reference_files, request)
       : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      matrixFile,
-      matrixFile.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(matrixFile, req.headers.cookie);
     return {
       props: {
@@ -175,7 +169,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFromFileSets,
         fileFormatSpecifications,
         pageContext: { title: matrixFile.accession },
-        breadcrumbs,
         attribution,
         referenceFiles,
         isJson,

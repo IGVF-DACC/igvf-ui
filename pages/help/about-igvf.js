@@ -2,7 +2,6 @@
 import PropTypes from "prop-types";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -45,7 +44,6 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
     let awards = null;
     let labs = null;
     let pages = null;
-    let breadcrumbs = null;
     if (page["@type"].includes("Page")) {
       // For objects with type 'Page', also get extra data needed for editing the page.
       awards = (await request.getCollection("awards"))
@@ -57,7 +55,6 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
       pages = (await request.getCollection("pages"))
         .map((c) => c["@graph"])
         .optional();
-      breadcrumbs = await buildBreadcrumbs(page, "title", req.headers.cookie);
     }
     const attribution = await buildAttribution(page, req.headers.cookie);
     return {
@@ -68,7 +65,6 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
         pages,
         attribution,
         pageContext: { title: page.title },
-        breadcrumbs,
         isJson,
       },
     };

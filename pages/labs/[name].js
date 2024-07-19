@@ -16,7 +16,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestAwards } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -25,7 +24,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function Lab({ lab, awards = null, pi = null, isJson }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={lab} />
       <EditableItem item={lab}>
         <PagePreamble />
         <ObjectPageHeader item={lab} isJsonFormat={isJson} />
@@ -102,18 +101,12 @@ export async function getServerSideProps({ params, req, query }) {
       awards = await requestAwards(awardPaths, request);
     }
     const pi = (await request.getObject(lab.pi)).optional();
-    const breadcrumbs = await buildBreadcrumbs(
-      lab,
-      lab.title,
-      req.headers.cookie
-    );
     return {
       props: {
         lab,
         awards,
         pi,
         pageContext: { title: lab.title },
-        breadcrumbs,
         isJson,
       },
     };

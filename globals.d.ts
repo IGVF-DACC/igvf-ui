@@ -42,15 +42,15 @@ export interface ObjectActions {
  * Standard properties for all objects in the database.
  */
 export interface DatabaseObject {
-  "@context": string;
-  "@id": string;
+  "@context"?: string;
+  "@id"?: string;
   "@type": Array<string>;
   actions?: Array<ObjectActions>;
   audit?: Audits;
-  creation_timestamp: string;
+  creation_timestamp?: string;
   release_timestamp?: string;
-  status: string;
-  uuid: string;
+  status?: string;
+  uuid?: string;
   [key: string]: unknown;
 }
 
@@ -229,7 +229,7 @@ export interface NextJsServerQuery {
 /**
  * Response from /collection-titles.
  */
-type CollectionTitles = {
+export type CollectionTitles = {
   "@type": string[];
   [key: string]: string;
 };

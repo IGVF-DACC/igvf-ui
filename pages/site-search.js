@@ -29,6 +29,12 @@ import FetchRequest from "../lib/fetch-request";
 import { toShishkebabCase } from "../lib/general";
 import QueryString from "../lib/query-string";
 
+/**
+ * Get the human-readable title for a top-hits search result type.
+ * @param {object} searchResult Top-hits search result
+ * @param {object} collectionTitles Collection titles for the search results
+ * @returns {string} Human-readable title for the search result type
+ */
 function getTypeTitle(searchResult, collectionTitles) {
   return collectionTitles?.[searchResult.key] || searchResult.key;
 }
@@ -48,8 +54,8 @@ function TypeSectionHeader({
 
   return (
     <div
-      className={`flex justify-between border-data-border bg-site-search-header py-1 px-2${
-        isSectionOpen ? " border-b" : ""
+      className={`flex justify-between border-data-border bg-site-search-header px-2 py-1 ${
+        isSectionOpen ? "border-b" : ""
       }`}
     >
       <div className="flex items-center gap-2">

@@ -25,7 +25,6 @@ import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -52,7 +51,7 @@ export default function PredictionSet({
 
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={predictionSet} />
       <EditableItem item={predictionSet}>
         <PagePreamble>
           <AlternateAccessions
@@ -195,11 +194,6 @@ export async function getServerSideProps({ params, req, query }) {
       files = await requestFiles(filePaths, request);
     }
 
-    const breadcrumbs = await buildBreadcrumbs(
-      predictionSet,
-      predictionSet.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       predictionSet,
       req.headers.cookie
@@ -210,7 +204,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         files,
         pageContext: { title: predictionSet.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

@@ -21,7 +21,6 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestBiosamples,
   requestDocuments,
@@ -44,7 +43,7 @@ export default function TechnicalSample({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={sample} />
       <EditableItem item={sample}>
         <PagePreamble>
           <AlternateAccessions
@@ -160,11 +159,6 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
-    const breadcrumbs = await buildBreadcrumbs(
-      sample,
-      sample.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(sample, req.headers.cookie);
     return {
       props: {
@@ -177,7 +171,6 @@ export async function getServerSideProps({ params, req, query }) {
         pageContext: {
           title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,
         },
-        breadcrumbs,
         attribution,
         isJson,
       },
