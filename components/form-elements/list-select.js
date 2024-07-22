@@ -51,6 +51,12 @@
  *   </ListSelect>
  *
  * With each click, the `currentSelection` state gets updated with the ID of the selected item.
+ *
+ * You can include a text field at the top of the list that filters the list items. To do this, set
+ * the `filter` property to the value of the filter text field, and set the `onFilterChange`
+ * property to a function that updates the filter text field. The list will update to show only the
+ * items that match the filter text. The actual filtering of items must happen in the client code,
+ * as does the storage of the filter text value.
  */
 
 // node_modules
@@ -58,7 +64,7 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { Children, cloneElement, isValidElement } from "react";
 // components
-import { FormLabel } from ".";
+import { FormLabel, TextField } from ".";
 
 /**
  * This is the parent component that wraps the list of options.
@@ -71,6 +77,8 @@ export default function ListSelect({
   className = "",
   scrollId = null,
   isBorderHidden = false,
+  filter = "",
+  onFilterChange = null,
   children,
 }) {
   /**
@@ -114,10 +122,23 @@ export default function ListSelect({
 
   return (
     <div className={className}>
-      {label && <FormLabel>{label}</FormLabel>}
+      <div className="flex items-center justify-between gap-2">
+        {label && <FormLabel>{label}</FormLabel>}
+        {onFilterChange && (
+          <TextField
+            name={`filter-${label}`}
+            value={filter}
+            onChange={onFilterChange}
+            size="sm"
+            isMessageAllowed={false}
+            placeholder="filter"
+            className="w-full max-w-72"
+          />
+        )}
+      </div>
       <div
-        className={`flex rounded bg-panel${
-          isBorderHidden ? "" : " border border-panel"
+        className={`flex rounded bg-panel ${
+          isBorderHidden ? "" : "border border-panel"
         }`}
       >
         <div id={scrollId} className="w-full overflow-y-scroll p-2">
@@ -149,6 +170,10 @@ ListSelect.propTypes = {
   scrollId: PropTypes.string,
   // True to hide the border around the list
   isBorderHidden: PropTypes.bool,
+  // Filter text value
+  filter: PropTypes.string,
+  // Function to call when the filter text changes; don't include to prevent filter from rendering
+  onFilterChange: PropTypes.func,
 };
 
 /**
@@ -204,4 +229,23 @@ Option.propTypes = {
   onClick: PropTypes.func,
 };
 
+/**
+ * Displays a message within a <ListSelect>. Use this to display a non-selectable message within
+ * the list of options. You could use this to display a message when the list has no selectable
+ * options, for example.
+ */
+function Message({ id = null, children }) {
+  return (
+    <div id={id} className="w-full">
+      {children}
+    </div>
+  );
+}
+
+Message.propTypes = {
+  // ID of this option; this is the only property the client passes; others passed by <ListSelect>
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+ListSelect.Message = Message;
 ListSelect.Option = Option;

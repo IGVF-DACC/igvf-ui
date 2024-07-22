@@ -21,8 +21,9 @@ describe("Test ListSelect", () => {
     // Make sure the `<div>` immediately following the `<label>` that has the "form-label"
     // data-testid has both "border" and "border-panel" Tailwind classes.
     const label = screen.getByTestId("form-label");
-    const nextDiv = label.nextSibling;
-    expect(nextDiv).toHaveClass("border border-panel");
+    expect(label).toHaveTextContent("Test");
+    const parentNextSibling = label.parentElement.nextSibling;
+    expect(parentNextSibling).toHaveClass("border border-panel");
 
     // Get all option elements starting with the "Option" label
     const options = screen.queryAllByLabelText(/^Test Option \d list item$/, {
@@ -60,8 +61,9 @@ describe("Test ListSelect", () => {
     // Make sure the `<div>` immediately following the `<label>` that has the "form-label"
     // data-testid has neither "border" nor "border-panel" Tailwind classes.
     const label = screen.getByTestId("form-label");
-    const nextDiv = label.nextSibling;
-    expect(nextDiv).not.toHaveClass("border border-panel");
+    expect(label).toHaveTextContent("Test");
+    const parentNextSibling = label.parentElement.nextSibling;
+    expect(parentNextSibling).not.toHaveClass("border border-panel");
 
     // Get all option elements starting with the "Option" label
     const options = screen.queryAllByLabelText(/^Test Option/);
@@ -140,5 +142,29 @@ describe("Test ListSelect", () => {
     fireEvent.click(options[1]);
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith([1]);
+  });
+
+  test("ListSelect.Message with an ID", () => {
+    const onChange = jest.fn((option) => option);
+    const { container } = render(
+      <ListSelect label="Test" value={[1, 2]} onChange={onChange}>
+        <ListSelect.Message id="message-test">Notification</ListSelect.Message>
+      </ListSelect>
+    );
+
+    const elementById = container.querySelector("#message-test");
+    expect(elementById).toHaveTextContent("Notification");
+  });
+
+  test("ListSelect.Message with an ID", () => {
+    const onChange = jest.fn((option) => option);
+    const { container } = render(
+      <ListSelect label="Test" value={[1, 2]} onChange={onChange}>
+        <ListSelect.Message>Notification</ListSelect.Message>
+      </ListSelect>
+    );
+
+    const elementById = container.querySelector("#message-test");
+    expect(elementById).toBeNull();
   });
 });
