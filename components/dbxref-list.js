@@ -114,6 +114,9 @@ export const dbxrefPrefixMap = {
     pattern:
       "http://www.imgt.org/IMGT_GENE-DB/GENElect?species=Homo+sapiens&query=2+{0}",
   },
+  IMSR_JAX: {
+    pattern: "https://www.jax.org/strain/{0}",
+  },
   MGI: {
     pattern: "http://www.informatics.jax.org/marker/MGI:{0}",
   },
