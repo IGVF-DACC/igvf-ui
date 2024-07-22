@@ -115,7 +115,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
     expect(withIlluminaIds).toEqual(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
     expect(withoutIlluminaIds).toEqual(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
     expect(withImageFiles).toEqual(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
-    expect(withTabularFiles).toEqual(["IGVFFI0001ILRO", "IGVFFI0001ILRJ"]);
+    expect(withTabularFiles).toEqual(["IGVFFI0001ILRJ", "IGVFFI0001ILRO"]);
   });
 
   it("returns an empty array for filesWithReadType, tabularFileType and imageFileType when given an array of sequence files without illumina_read_type", () => {
