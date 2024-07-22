@@ -112,10 +112,10 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
 
-    expect(withIlluminaIds).equal(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
-    expect(withoutIlluminaIds).equal(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
-    expect(withImageFiles).equal(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
-    expect(withTabularFiles).equal(["IGVFFI0001ILRO", "IGVFFI0001ILRJ"]);
+    expect(withIlluminaIds).toEqual(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
+    expect(withoutIlluminaIds).toEqual(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
+    expect(withImageFiles).toEqual(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
+    expect(withTabularFiles).toEqual(["IGVFFI0001ILRO", "IGVFFI0001ILRJ"]);
   });
 
   it("returns an empty array for filesWithReadType, tabularFileType and imageFileType when given an array of sequence files without illumina_read_type", () => {
@@ -156,10 +156,10 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
 
-    expect(withIlluminaIds).equal([]);
-    expect(withImageFiles).equal([]);
-    expect(withTabularFiles).equal([]);
-    expect(withoutIlluminaIds).equal(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
+    expect(withIlluminaIds).toEqual([]);
+    expect(withImageFiles).toEqual([]);
+    expect(withTabularFiles).toEqual([]);
+    expect(withoutIlluminaIds).toEqual(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
   });
 
   it("returns an empty array for filesWithoutReadType, tabularFileType and imageFileType when given an array of sequence files with illumina_read_type", () => {
@@ -202,10 +202,10 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
 
-    expect(withIlluminaIds).equal(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
-    expect(withoutIlluminaIds).equal([]);
-    expect(withImageFiles).equal([]);
-    expect(withTabularFiles).equal([]);
+    expect(withIlluminaIds).toEqual(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
+    expect(withoutIlluminaIds).toEqual([]);
+    expect(withImageFiles).toEqual([]);
+    expect(withTabularFiles).toEqual([]);
   });
 
   it("returns an empty array for filesWithoutReadType, tabularFileType and filesWithReadType when given an array of image files", () => {
@@ -246,10 +246,10 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
 
-    expect(withIlluminaIds).equal([]);
-    expect(withoutIlluminaIds).equal([]);
-    expect(withTabularFiles).equal([]);
-    expect(withImageFiles).equal(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
+    expect(withIlluminaIds).toEqual([]);
+    expect(withoutIlluminaIds).toEqual([]);
+    expect(withTabularFiles).toEqual([]);
+    expect(withImageFiles).toEqual(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
   });
 
   it("returns an empty array for filesWithoutReadType, imageFileType and filesWithReadType when given an array of tabular files", () => {
@@ -290,10 +290,10 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
 
-    expect(withIlluminaIds).equal([]);
-    expect(withoutIlluminaIds).equal([]);
-    expect(withTabularFiles).equal(["IGVFFI0001ILRJ", "IGVFFI0001ILRO"]);
-    expect(withImageFiles).equal([]);
+    expect(withIlluminaIds).toEqual([]);
+    expect(withoutIlluminaIds).toEqual([]);
+    expect(withTabularFiles).toEqual(["IGVFFI0001ILRJ", "IGVFFI0001ILRO"]);
+    expect(withImageFiles).toEqual([]);
   });
 
   it("returns an empty array for both filesWithReadType, imageFileType, tabularFileType and filesWithoutReadType when given an empty array", () => {
@@ -311,10 +311,10 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
 
-    expect(withIlluminaIds).equal([]);
-    expect(withoutIlluminaIds).equal([]);
-    expect(withImageFiles).equal([]);
-    expect(withTabularFiles).equal([]);
+    expect(withIlluminaIds).toEqual([]);
+    expect(withoutIlluminaIds).toEqual([]);
+    expect(withImageFiles).toEqual([]);
+    expect(withTabularFiles).toEqual([]);
   });
 });
 
@@ -323,19 +323,19 @@ describe("Test the checkForFileDownloadPath function", () => {
     const path =
       "/sequence-files/IGVFFI0001FSTQ/@@download/IGVFFI0001FSTQ.fastq.gz";
     const result = checkForFileDownloadPath(path);
-    expect(result).equal(true);
+    expect(result).toEqual(true);
   });
 
   it("returns false when given a file object path", () => {
     const path = "/sequence-files/IGVFFI0001FSTQ/";
     const result = checkForFileDownloadPath(path);
-    expect(result).equal(false);
+    expect(result).toEqual(false);
   });
 
   it("returns false when given an empty string", () => {
     const path = "";
     const result = checkForFileDownloadPath(path);
-    expect(result).equal(false);
+    expect(result).toEqual(false);
   });
 });
 
@@ -344,12 +344,12 @@ describe("Test the convertFileDownloadPathToFilePagePath function", () => {
     const path =
       "/sequence-files/IGVFFI0001FSTQ/@@download/IGVFFI0001FSTQ.fastq.gz";
     const result = convertFileDownloadPathToFilePagePath(path);
-    expect(result).equal("/sequence-files/IGVFFI0001FSTQ/");
+    expect(result).toEqual("/sequence-files/IGVFFI0001FSTQ/");
   });
 
   it("returns an empty string when given a file object path", () => {
     const path = "/sequence-files/IGVFFI0001FSTQ/";
     const result = convertFileDownloadPathToFilePagePath(path);
-    expect(result).equal("");
+    expect(result).toEqual("");
   });
 });
