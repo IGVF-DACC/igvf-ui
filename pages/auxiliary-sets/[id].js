@@ -48,7 +48,7 @@ export default function AuxiliarySet({
   attribution = null,
   isJson,
 }) {
-  const { filesWithReadType, filesWithoutReadType } =
+  const { filesWithReadType, filesWithoutReadType, tabularFileType } =
     splitIlluminaSequenceFiles(files);
 
   return (
@@ -97,6 +97,16 @@ export default function AuxiliarySet({
               seqspecFiles={seqspecFiles}
               sequencingPlatforms={sequencingPlatforms}
               hasReadType
+            />
+          )}
+          {TabularFileType.length > 0 && (
+            <FileTable
+              files={tabularFileType}
+              title="Tabular Files"
+              isIlluminaReadType={false}
+              itemPath={measurementSet["@id"]}
+              seqspecFiles={seqspecFiles}
+              sequencingPlatforms={sequencingPlatforms}
             />
           )}
           {filesWithoutReadType.length > 0 && (

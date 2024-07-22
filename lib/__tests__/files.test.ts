@@ -18,6 +18,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         illumina_read_type: "R1",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
       {
         "@context": "/terms/",
@@ -28,6 +29,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "fastq",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
       {
         "@context": "/terms/",
@@ -38,6 +40,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "jpg",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
       {
         "@context": "/terms/",
@@ -49,6 +52,18 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         illumina_read_type: "R1",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+      },
+      {
+        "@context": "/terms/",
+        "@id": "/tabular-files/IGVFFI0001ILRJ/",
+        "@type": ["TabularFile", "File", "Item"],
+        accession: "IGVFFI0001ILRJ",
+        content_type: "peaks",
+        file_format: "bed",
+        status: "in progress",
+        uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
       {
         "@context": "/terms/",
@@ -59,6 +74,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "fastq",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
       {
         "@context": "/terms/",
@@ -69,6 +85,18 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "png",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+      },
+      {
+        "@context": "/terms/",
+        "@id": "/tabular-files/IGVFFI0001ILRO/",
+        "@type": ["TabularFile", "File", "Item"],
+        accession: "IGVFFI0001ILRO",
+        content_type: "sample sort parameters",
+        file_format: "bed",
+        status: "in progress",
+        uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
     ];
 
@@ -80,13 +108,17 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
     const withImageFiles = results.imageFileType.map((file) => file.accession);
+    const withTabularFiles = results.tabularFileType.map(
+      (file) => file.accession
+    );
 
-    expect(withIlluminaIds).toEqual(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
-    expect(withoutIlluminaIds).toEqual(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
-    expect(withImageFiles).toEqual(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
+    expect(withIlluminaIds).equal(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
+    expect(withoutIlluminaIds).equal(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
+    expect(withImageFiles).equal(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
+    expect(withTabularFiles).equal(["IGVFFI0001ILRO", "IGVFFI0001ILRJ"]);
   });
 
-  it("returns an empty array for filesWithReadType and imageFileType when given an array of sequence files without illumina_read_type", () => {
+  it("returns an empty array for filesWithReadType, tabularFileType and imageFileType when given an array of sequence files without illumina_read_type", () => {
     const files: Array<DatabaseObject> = [
       {
         "@context": "/terms/",
@@ -97,6 +129,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "fastq",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
       {
         "@context": "/terms/",
@@ -107,6 +140,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "fastq",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
     ];
 
@@ -118,13 +152,17 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
     const withImageFiles = results.imageFileType.map((file) => file.accession);
+    const withTabularFiles = results.tabularFileType.map(
+      (file) => file.accession
+    );
 
-    expect(withIlluminaIds).toEqual([]);
-    expect(withImageFiles).toEqual([]);
-    expect(withoutIlluminaIds).toEqual(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
+    expect(withIlluminaIds).equal([]);
+    expect(withImageFiles).equal([]);
+    expect(withTabularFiles).equal([]);
+    expect(withoutIlluminaIds).equal(["IGVFFI0000ILRF", "IGVFFI0001ILRF"]);
   });
 
-  it("returns an empty array for filesWithoutReadType and imageFileType when given an array of sequence files with illumina_read_type", () => {
+  it("returns an empty array for filesWithoutReadType, tabularFileType and imageFileType when given an array of sequence files with illumina_read_type", () => {
     const files: Array<DatabaseObject> = [
       {
         "@context": "/terms/",
@@ -136,6 +174,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         illumina_read_type: "R1",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
       {
         "@context": "/terms/",
@@ -147,6 +186,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         illumina_read_type: "R1",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
     ];
 
@@ -158,13 +198,17 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
     const withImageFiles = results.imageFileType.map((file) => file.accession);
+    const withTabularFiles = results.tabularFileType.map(
+      (file) => file.accession
+    );
 
-    expect(withIlluminaIds).toEqual(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
-    expect(withoutIlluminaIds).toEqual([]);
-    expect(withImageFiles).toEqual([]);
+    expect(withIlluminaIds).equal(["IGVFFI0000ILRT", "IGVFFI0001ILRT"]);
+    expect(withoutIlluminaIds).equal([]);
+    expect(withImageFiles).equal([]);
+    expect(withTabularFiles).equal([]);
   });
 
-  it("returns an empty array for filesWithoutReadType and filesWithReadType when given an array of image files", () => {
+  it("returns an empty array for filesWithoutReadType, tabularFileType and filesWithReadType when given an array of image files", () => {
     const files: Array<DatabaseObject> = [
       {
         "@context": "/terms/",
@@ -175,6 +219,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "jpg",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
       {
         "@context": "/terms/",
@@ -185,6 +230,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "png",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
       },
     ];
 
@@ -196,13 +242,61 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
     const withImageFiles = results.imageFileType.map((file) => file.accession);
+    const withTabularFiles = results.tabularFileType.map(
+      (file) => file.accession
+    );
 
-    expect(withIlluminaIds).toEqual([]);
-    expect(withoutIlluminaIds).toEqual([]);
-    expect(withImageFiles).toEqual(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
+    expect(withIlluminaIds).equal([]);
+    expect(withoutIlluminaIds).equal([]);
+    expect(withTabularFiles).equal([]);
+    expect(withImageFiles).equal(["IGVFFI0000ILRI", "IGVFFI0001ILRI"]);
   });
 
-  it("returns an empty array for both filesWithReadType, withImageFiles and filesWithoutReadType when given an empty array", () => {
+  it("returns an empty array for filesWithoutReadType, imageFileType and filesWithReadType when given an array of tabular files", () => {
+    const files: Array<DatabaseObject> = [
+      {
+        "@context": "/terms/",
+        "@id": "/tabular-files/IGVFFI0001ILRJ/",
+        "@type": ["TabularFile", "File", "Item"],
+        accession: "IGVFFI0001ILRJ",
+        content_type: "peaks",
+        file_format: "bed",
+        status: "in progress",
+        uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+      },
+      {
+        "@context": "/terms/",
+        "@id": "/tabular-files/IGVFFI0001ILRO/",
+        "@type": ["TabularFile", "File", "Item"],
+        accession: "IGVFFI0001ILRO",
+        content_type: "sample sort parameters",
+        file_format: "bed",
+        status: "in progress",
+        uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+      },
+    ];
+
+    const results = splitIlluminaSequenceFiles(files);
+    const withIlluminaIds = results.filesWithReadType.map(
+      (file) => file.accession
+    );
+    const withoutIlluminaIds = results.filesWithoutReadType.map(
+      (file) => file.accession
+    );
+    const withImageFiles = results.imageFileType.map((file) => file.accession);
+    const withTabularFiles = results.tabularFileType.map(
+      (file) => file.accession
+    );
+
+    expect(withIlluminaIds).equal([]);
+    expect(withoutIlluminaIds).equal([]);
+    expect(withTabularFiles).equal(["IGVFFI0001ILRJ", "IGVFFI0001ILRO"]);
+    expect(withImageFiles).equal([]);
+  });
+
+  it("returns an empty array for both filesWithReadType, imageFileType, tabularFileType and filesWithoutReadType when given an empty array", () => {
     const files: Array<DatabaseObject> = [];
 
     const results = splitIlluminaSequenceFiles(files);
@@ -213,10 +307,14 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
       (file) => file.accession
     );
     const withImageFiles = results.imageFileType.map((file) => file.accession);
+    const withTabularFiles = results.tabularFileType.map(
+      (file) => file.accession
+    );
 
-    expect(withIlluminaIds).toEqual([]);
-    expect(withoutIlluminaIds).toEqual([]);
-    expect(withImageFiles).toEqual([]);
+    expect(withIlluminaIds).equal([]);
+    expect(withoutIlluminaIds).equal([]);
+    expect(withImageFiles).equal([]);
+    expect(withTabularFiles).equal([]);
   });
 });
 
@@ -225,19 +323,19 @@ describe("Test the checkForFileDownloadPath function", () => {
     const path =
       "/sequence-files/IGVFFI0001FSTQ/@@download/IGVFFI0001FSTQ.fastq.gz";
     const result = checkForFileDownloadPath(path);
-    expect(result).toEqual(true);
+    expect(result).equal(true);
   });
 
   it("returns false when given a file object path", () => {
     const path = "/sequence-files/IGVFFI0001FSTQ/";
     const result = checkForFileDownloadPath(path);
-    expect(result).toEqual(false);
+    expect(result).equal(false);
   });
 
   it("returns false when given an empty string", () => {
     const path = "";
     const result = checkForFileDownloadPath(path);
-    expect(result).toEqual(false);
+    expect(result).equal(false);
   });
 });
 
@@ -246,12 +344,12 @@ describe("Test the convertFileDownloadPathToFilePagePath function", () => {
     const path =
       "/sequence-files/IGVFFI0001FSTQ/@@download/IGVFFI0001FSTQ.fastq.gz";
     const result = convertFileDownloadPathToFilePagePath(path);
-    expect(result).toEqual("/sequence-files/IGVFFI0001FSTQ/");
+    expect(result).equal("/sequence-files/IGVFFI0001FSTQ/");
   });
 
   it("returns an empty string when given a file object path", () => {
     const path = "/sequence-files/IGVFFI0001FSTQ/";
     const result = convertFileDownloadPathToFilePagePath(path);
-    expect(result).toEqual("");
+    expect(result).equal("");
   });
 });
