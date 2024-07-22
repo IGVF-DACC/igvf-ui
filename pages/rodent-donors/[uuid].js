@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import DbxrefList from "../../components/dbxref-list";
 import { DonorDataItems } from "../../components/common-data-items";
 import {
   DataArea,
@@ -75,6 +76,14 @@ export default function RodentDonor({
                         lotId={donor.lot_id}
                         productId={donor.product_id}
                       />
+                    </DataItemValue>
+                  </>
+                )}
+                {donor.dbxrefs?.length > 0 && (
+                  <>
+                    <DataItemLabel>External Resources</DataItemLabel>
+                    <DataItemValue>
+                      <DbxrefList dbxrefs={donor.dbxrefs} isCollapsible />
                     </DataItemValue>
                   </>
                 )}

@@ -86,6 +86,9 @@ export const dbxrefPrefixMap = {
   doi: {
     pattern: "https://doi.org/doi:{0}",
   },
+  ENCODE: {
+    pattern: "https://www.encodeproject.org/{0}",
+  },
   ENTREZ: {
     pattern: "https://www.ncbi.nlm.nih.gov/gene/{0}",
   },
