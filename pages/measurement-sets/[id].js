@@ -306,6 +306,15 @@ export default function MeasurementSet({
                 identifierProp: "measurement_sets.accession",
                 itemIdentifier: measurementSet.accession,
               }}
+              fileSetMeta={{
+                showFileSetFiles: true,
+                fileFilter: (files) => {
+                  // Only show non-seqspec files in the auxiliary datasets.
+                  return files.filter(
+                    (file) => file.content_type !== "seqspec"
+                  );
+                },
+              }}
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
@@ -329,7 +338,7 @@ MeasurementSet.propTypes = {
   relatedMultiomeSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Auxiliary datasets
   auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // samples
+  // Sample objects associated with the measurement set
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -389,7 +398,9 @@ export async function getServerSideProps({ params, req, query }) {
         ? measurementSet.auxiliary_sets.map((dataset) => dataset["@id"])
         : [];
     if (auxiliarySetPaths.length > 0) {
-      auxiliarySets = await requestFileSets(auxiliarySetPaths, request);
+      auxiliarySets = await requestFileSets(auxiliarySetPaths, request, [
+        "files",
+      ]);
     }
 
     let samples = [];
