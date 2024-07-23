@@ -16,6 +16,7 @@ import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
+import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -48,7 +49,7 @@ export default function AuxiliarySet({
   attribution = null,
   isJson,
 }) {
-  const { filesWithReadType, filesWithoutReadType } =
+  const { filesWithReadType, filesWithoutReadType, tabularFileType } =
     splitIlluminaSequenceFiles(files);
 
   return (
@@ -97,6 +98,16 @@ export default function AuxiliarySet({
               seqspecFiles={seqspecFiles}
               sequencingPlatforms={sequencingPlatforms}
               hasReadType
+            />
+          )}
+          {tabularFileType.length > 0 && (
+            <FileTable
+              files={tabularFileType}
+              title="Tabular Files"
+              isIlluminaReadType={false}
+              itemPath={auxiliarySet["@id"]}
+              seqspecFiles={seqspecFiles}
+              sequencingPlatforms={sequencingPlatforms}
             />
           )}
           {filesWithoutReadType.length > 0 && (

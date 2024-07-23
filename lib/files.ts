@@ -13,6 +13,7 @@ export type IlluminaSequenceFiles = {
   filesWithReadType: Array<DatabaseObject>;
   filesWithoutReadType: Array<DatabaseObject>;
   imageFileType: Array<DatabaseObject>;
+  tabularFileType: Array<DatabaseObject>;
 };
 
 /**
@@ -28,6 +29,8 @@ export function splitIlluminaSequenceFiles(
     (acc: IlluminaSequenceFiles, file) => {
       if (file["@type"][0] === "ImageFile") {
         acc.imageFileType.push(file);
+      } else if (file["@type"][0] === "TabularFile") {
+        acc.tabularFileType.push(file);
       } else if (file.illumina_read_type) {
         acc.filesWithReadType.push(file);
       } else {
@@ -35,7 +38,12 @@ export function splitIlluminaSequenceFiles(
       }
       return acc;
     },
-    { filesWithReadType: [], filesWithoutReadType: [], imageFileType: [] }
+    {
+      filesWithReadType: [],
+      filesWithoutReadType: [],
+      imageFileType: [],
+      tabularFileType: [],
+    }
   );
 }
 
