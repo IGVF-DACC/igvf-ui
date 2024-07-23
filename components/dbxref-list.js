@@ -86,6 +86,9 @@ export const dbxrefPrefixMap = {
   doi: {
     pattern: "https://doi.org/doi:{0}",
   },
+  ENCODE: {
+    pattern: "https://www.encodeproject.org/{0}",
+  },
   ENTREZ: {
     pattern: "https://www.ncbi.nlm.nih.gov/gene/{0}",
   },
@@ -110,6 +113,9 @@ export const dbxrefPrefixMap = {
   "IMGT/GENE-DB": {
     pattern:
       "http://www.imgt.org/IMGT_GENE-DB/GENElect?species=Homo+sapiens&query=2+{0}",
+  },
+  IMSR_JAX: {
+    pattern: "https://www.jax.org/strain/{0}",
   },
   MGI: {
     pattern: "http://www.informatics.jax.org/marker/MGI:{0}",

@@ -5,6 +5,7 @@ import { Fragment } from "react";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import DbxrefList from "../../components/dbxref-list";
 import { DonorDataItems } from "../../components/common-data-items";
 import {
   DataArea,
@@ -63,6 +64,14 @@ export default function HumanDonor({
                         <Fragment key={identifier}>{identifier}</Fragment>
                       ))}
                     </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              {donor.dbxrefs?.length > 0 && (
+                <>
+                  <DataItemLabel>External Resources</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList dbxrefs={donor.dbxrefs} isCollapsible />
                   </DataItemValue>
                 </>
               )}
