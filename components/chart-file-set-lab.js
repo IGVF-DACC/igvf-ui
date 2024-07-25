@@ -229,7 +229,7 @@ CustomBar.propTypes = {
 function MonthSelector({
   fileSetMonths,
   selectedMonth,
-  setSelectedMonth,
+  setDynamicSelectedMonth,
   className = "",
 }) {
   const dropdownAttr = useDropdown("month-selector", DROPDOWN_ALIGN_RIGHT);
@@ -242,7 +242,7 @@ function MonthSelector({
   // Called when the user selects a month from the dropdown. Update the chart to show only data for
   // the selected month, then close the month-selection dropdown.
   function monthSelection(month) {
-    setSelectedMonth(month);
+    setDynamicSelectedMonth(month);
     dropdownAttr.isVisible = false;
   }
 
@@ -302,7 +302,7 @@ MonthSelector.propTypes = {
   // Currently selected month
   selectedMonth: PropTypes.string.isRequired,
   // Called when the user selects a month
-  setSelectedMonth: PropTypes.func.isRequired,
+  setDynamicSelectedMonth: PropTypes.func.isRequired,
   // Tailwind CSS classes to apply to the selector
   className: PropTypes.string,
 };
@@ -389,10 +389,12 @@ Legend.propTypes = {
 export default function ChartFileSetLab({
   fileSets,
   title,
+  staticSelectedMonth = "",
   shouldIncludeLinks = false,
 }) {
   // Currently selected month to filter the chart by
-  const [selectedMonth, setSelectedMonth] = useState("All");
+  const [dynamicSelectedMonth, setDynamicSelectedMonth] = useState("All");
+  const selectedMonth = staticSelectedMonth || dynamicSelectedMonth;
 
   // Generate the array of colors for the bars based on the legend colors and sorted by
   // `fileSetTypeOrder`. Sort because the order of colors in the bars differs from the order they
@@ -410,75 +412,88 @@ export default function ChartFileSetLab({
     fileSetMonths,
     selectedMonth
   );
-  const { fileSetData, counts, maxCount } = convertFileSetsToLabData(
-    selectedFileSets,
-    selectedMonth,
-    shouldIncludeLinks
-  );
 
-  return (
-    <div className="relative" style={{ height: 30 * fileSetData.length + 60 }}>
-      <ResponsiveBar
-        data={fileSetData}
-        animate={false}
-        ariaLabel={title}
-        axisBottom={{
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          truncateTickAt: 0,
-          tickValues: generateNumberArray(maxCount, CHART_TICK_COUNT),
-          renderTick: CustomXTick,
-        }}
-        axisLeft={{ renderTick: CustomYTick }}
-        axisRight={null}
-        axisTop={null}
-        barAriaLabel={(datum) => {
-          const [lab, title] = datum.indexValue.split("|");
-          return `${datum.formattedValue} ${datum.id} ${title} from ${lab}`;
-        }}
-        barComponent={CustomBar}
-        borderColor={{
-          from: "color",
-          modifiers: [["darker", 1.6]],
-        }}
-        colors={barColors}
-        enableGridX={true}
-        enableGridY={false}
-        indexBy="title"
-        indexScale={{ type: "band", round: true }}
-        keys={fileSetTypeOrder}
-        labelSkipWidth={12}
-        labelSkipHeight={12}
-        labelTextColor={{
-          from: "color",
-          modifiers: [["darker", 1.6]],
-        }}
-        layout="horizontal"
-        margin={{ top: 0, right: 50, bottom: 50, left: AXIS_LEFT_WIDTH + 10 }}
-        padding={0.2}
-        role="application"
-        theme={{
-          grid: { line: { className: "stroke-gray-300 dark:stroke-gray-700" } },
-        }}
-        tooltip={() => null}
-        valueScale={{ type: "linear" }}
-        valueFormat={() => null}
-      />
-      <div className="absolute bottom-0 left-4 right-4 flex justify-between">
-        <Legend
-          selectedMonth={selectedMonth}
-          fileSetTypeCounts={counts}
-          shouldIncludeLinks={shouldIncludeLinks}
+  if (selectedFileSets.length > 0) {
+    const { fileSetData, counts, maxCount } = convertFileSetsToLabData(
+      selectedFileSets,
+      selectedMonth,
+      shouldIncludeLinks
+    );
+    return (
+      <div
+        className="relative"
+        style={{ height: 30 * fileSetData.length + 60 }}
+      >
+        <ResponsiveBar
+          data={fileSetData}
+          animate={false}
+          ariaLabel={title}
+          axisBottom={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            truncateTickAt: 0,
+            tickValues: generateNumberArray(maxCount, CHART_TICK_COUNT),
+            renderTick: CustomXTick,
+          }}
+          axisLeft={{ renderTick: CustomYTick }}
+          axisRight={null}
+          axisTop={null}
+          barAriaLabel={(datum) => {
+            const [lab, title] = datum.indexValue.split("|");
+            return `${datum.formattedValue} ${datum.id} ${title} from ${lab}`;
+          }}
+          barComponent={CustomBar}
+          borderColor={{
+            from: "color",
+            modifiers: [["darker", 1.6]],
+          }}
+          colors={barColors}
+          enableGridX={true}
+          enableGridY={false}
+          indexBy="title"
+          indexScale={{ type: "band", round: true }}
+          keys={fileSetTypeOrder}
+          labelSkipWidth={12}
+          labelSkipHeight={12}
+          labelTextColor={{
+            from: "color",
+            modifiers: [["darker", 1.6]],
+          }}
+          layout="horizontal"
+          margin={{ top: 0, right: 50, bottom: 50, left: AXIS_LEFT_WIDTH + 10 }}
+          padding={0.2}
+          role="application"
+          theme={{
+            grid: {
+              line: { className: "stroke-gray-300 dark:stroke-gray-700" },
+            },
+          }}
+          tooltip={() => null}
+          valueScale={{ type: "linear" }}
+          valueFormat={() => null}
         />
-        <MonthSelector
-          fileSetMonths={fileSetMonths}
-          selectedMonth={selectedMonth}
-          setSelectedMonth={(month) => setSelectedMonth(month || "All")}
-        />
+        <div className="absolute bottom-0 left-4 right-4 flex justify-between">
+          <Legend
+            selectedMonth={selectedMonth}
+            fileSetTypeCounts={counts}
+            shouldIncludeLinks={shouldIncludeLinks}
+          />
+          {!staticSelectedMonth && (
+            <MonthSelector
+              fileSetMonths={fileSetMonths}
+              selectedMonth={selectedMonth}
+              setDynamicSelectedMonth={(month) =>
+                setDynamicSelectedMonth(month || "All")
+              }
+            />
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <div>No data for the selected month</div>;
 }
 
 ChartFileSetLab.propTypes = {
@@ -486,6 +501,8 @@ ChartFileSetLab.propTypes = {
   fileSets: PropTypes.arrayOf(PropTypes.object),
   // Title for the chart; used for the chart's aria label
   title: PropTypes.string.isRequired,
+  // Selected month to filter the chart by in yyyy-MM format if specified in the query string
+  staticSelectedMonth: PropTypes.string,
   // True to have the chart and legend link to corresponding pages on the local site
   shouldIncludeLinks: PropTypes.bool,
 };
