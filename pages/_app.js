@@ -26,36 +26,56 @@ import ViewportOverlay from "../components/viewport-overlay";
 import "../styles/globals.css";
 
 /**
- * List of domains for servers that contain test data and should display a warning banner to users.
- * To confirm this banner continues to have the ability to appear, also show this banner on
- * localhost.
+ * List of domains for servers that contain test data and should display a warning banner to users,
+ * as well as the corresponding server title to display in the banner.
  */
-const testServerDomains = ["staging.igvf.org", "localhost"];
+const testServerDomains = [
+  {
+    domain: "staging.igvf.org",
+    title: "Staging",
+  },
+  {
+    domain: "sandbox.igvf.org",
+    title: "Sandbox",
+  },
+  {
+    domain: "localhost",
+    title: "local",
+  },
+  // DELETEME: Demo server for testing the warning banner before merging to dev
+  {
+    domain: "igvf-ui-igvf-1841-warning-sandbox-staging.demo.igvf.org",
+    title: "Demo",
+  },
+];
 
 /**
- * Display a warning banner to users when they browse the sandbox server. Allow the user to close
- * the banner if they choose to.
+ * Display a warning banner to users when they browse a test server that could have its files
+ * automatically deleted after a short time. Allow the user to close the banner if they choose to.
  */
 function TestServerWarning() {
-  const [isTestWarningVisible, setIsTestWarningVisible] = useState(false);
+  // Title of the test server to display in the warning banner; empty string to hide banner
+  const [testDomainTitle, setTestDomainTitle] = useState("");
 
   useEffect(() => {
-    const isTestingDomain = testServerDomains.includes(
-      window.location.hostname
-    );
-    setIsTestWarningVisible(isTestingDomain);
+    const matchingTestDomain = testServerDomains.find((testDomain) => {
+      return window.location.hostname === testDomain.domain;
+    });
+    if (matchingTestDomain) {
+      setTestDomainTitle(matchingTestDomain.title);
+    }
   }, []);
 
-  if (isTestWarningVisible) {
+  if (testDomainTitle) {
     return (
       <div className="flex justify-center gap-1 border-b border-red-700 bg-red-600 p-1 text-sm text-white dark:border-red-700 dark:bg-red-800 dark:text-gray-100">
         <div>
-          This is the IGVF Sandbox for testing submissions. All files submitted
-          here will be deleted after 30 days.
+          This is the IGVF {testDomainTitle} server for testing submissions. All
+          files submitted here will be deleted after 30 days.
         </div>
         <button
-          onClick={() => setIsTestWarningVisible(false)}
-          aria-label="Close sandbox warning banner"
+          onClick={() => setTestDomainTitle("")}
+          aria-label="Close test-server warning banner"
         >
           <XCircleIcon className="h-4 w-4" />
         </button>
