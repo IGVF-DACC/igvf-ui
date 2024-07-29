@@ -42,11 +42,6 @@ const testServerDomains = [
     domain: "localhost",
     title: "local",
   },
-  // DELETEME: Demo server for testing the warning banner before merging to dev
-  {
-    domain: "igvf-ui-igvf-1841-warning-sandbox-staging.demo.igvf.org",
-    title: "Demo",
-  },
 ];
 
 /**
