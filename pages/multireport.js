@@ -135,40 +135,44 @@ export default function MultiReport({ searchResults }) {
             }
           />
         )}
-        {items.length > 0 ? (
-          <div className="lg:flex lg:items-start lg:gap-1">
-            <FacetSection searchResults={searchResults} />
-            <div className="min-w-0 grow">
-              <FacetTags searchResults={searchResults} />
-              <SearchResultsHeader
-                searchResults={searchResults}
-                reportViewExtras={{
-                  allColumnSpecs,
-                  visibleColumnSpecs,
-                  onColumnVisibilityChange,
-                  onAllColumnsVisibilityChange,
-                  isNonVisibleDisabled,
-                }}
-              />
-              <TableCount count={searchResults.total} />
-              {totalPages > 1 && <SearchPager searchResults={searchResults} />}
-              <SortableGrid
-                data={items}
-                columns={columns}
-                initialSort={{ isSortingSuppressed: true }}
-                meta={{
-                  onHeaderCellClick,
-                  sortedColumnId,
-                  nonSortableColumnIds,
-                }}
-                isTotalCountHidden
-                CustomHeaderCell={ReportHeaderCell}
-              />
-            </div>
+        <div className="lg:flex lg:items-start lg:gap-1">
+          <FacetSection searchResults={searchResults} />
+          <div className="min-w-0 grow">
+            {items.length > 0 ? (
+              <>
+                <FacetTags searchResults={searchResults} />
+                <SearchResultsHeader
+                  searchResults={searchResults}
+                  reportViewExtras={{
+                    allColumnSpecs,
+                    visibleColumnSpecs,
+                    onColumnVisibilityChange,
+                    onAllColumnsVisibilityChange,
+                    isNonVisibleDisabled,
+                  }}
+                />
+                <TableCount count={searchResults.total} />
+                {totalPages > 1 && (
+                  <SearchPager searchResults={searchResults} />
+                )}
+                <SortableGrid
+                  data={items}
+                  columns={columns}
+                  initialSort={{ isSortingSuppressed: true }}
+                  meta={{
+                    onHeaderCellClick,
+                    sortedColumnId,
+                    nonSortableColumnIds,
+                  }}
+                  isTotalCountHidden
+                  CustomHeaderCell={ReportHeaderCell}
+                />
+              </>
+            ) : (
+              <NoCollectionData pageTitle="report items" />
+            )}
           </div>
-        ) : (
-          <NoCollectionData pageTitle="report items" />
-        )}
+        </div>
       </>
     );
   }

@@ -52,38 +52,41 @@ export default function Search({ searchResults, accessoryData = null }) {
           }
         />
       )}
-      {searchResults.total > 0 ? (
-        <div className="lg:flex lg:items-start lg:gap-1">
-          <FacetSection searchResults={searchResults} />
-          <div className="grow">
-            <FacetTags searchResults={searchResults} />
-            <SearchResultsHeader searchResults={searchResults} />
-            <TableCount count={searchResults.total} />
-            {totalPages > 1 && <SearchPager searchResults={searchResults} />}
-            <ul data-testid="search-list">
-              {searchResults["@graph"].map((item) => {
-                // For each item, get the appropriate search-list item renderer for it, or the
-                // fallback render if the item type doesn't have one.
-                const SearchListItemRenderer = getSearchListItemRenderer(item);
-                return (
-                  <SearchListItem
-                    key={item["@id"]}
-                    testid={item["@id"]}
-                    href={item["@id"]}
-                  >
-                    <SearchListItemRenderer
-                      item={item}
-                      accessoryData={accessoryData}
-                    />
-                  </SearchListItem>
-                );
-              })}
-            </ul>
-          </div>
+      <div className="lg:flex lg:items-start lg:gap-1">
+        <FacetSection searchResults={searchResults} />
+        <div className="grow">
+          {searchResults.total > 0 ? (
+            <>
+              <FacetTags searchResults={searchResults} />
+              <SearchResultsHeader searchResults={searchResults} />
+              <TableCount count={searchResults.total} />
+              {totalPages > 1 && <SearchPager searchResults={searchResults} />}
+              <ul data-testid="search-list">
+                {searchResults["@graph"].map((item) => {
+                  // For each item, get the appropriate search-list item renderer for it, or the
+                  // fallback render if the item type doesn't have one.
+                  const SearchListItemRenderer =
+                    getSearchListItemRenderer(item);
+                  return (
+                    <SearchListItem
+                      key={item["@id"]}
+                      testid={item["@id"]}
+                      href={item["@id"]}
+                    >
+                      <SearchListItemRenderer
+                        item={item}
+                        accessoryData={accessoryData}
+                      />
+                    </SearchListItem>
+                  );
+                })}
+              </ul>
+            </>
+          ) : (
+            <NoCollectionData pageTitle="list items" />
+          )}
         </div>
-      ) : (
-        <NoCollectionData pageTitle="list items" />
-      )}
+      </div>
     </>
   );
 }
