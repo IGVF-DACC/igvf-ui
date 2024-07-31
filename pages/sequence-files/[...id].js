@@ -118,7 +118,7 @@ export default function SequenceFile({
               )}
               {truthyOrZero(sequenceFile.mean_read_length) && (
                 <>
-                  <DataItemLabel>Read Length</DataItemLabel>
+                  <DataItemLabel>Average Read Length</DataItemLabel>
                   <DataItemValue>{sequenceFile.mean_read_length}</DataItemValue>
                 </>
               )}
