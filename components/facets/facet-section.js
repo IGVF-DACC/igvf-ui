@@ -23,7 +23,7 @@ function ClearAll({ searchResults }) {
   const uniqueSelectedFields = [...new Set(selectedFields)];
 
   function onClearAll() {
-    router.push(searchResults.clear_filters);
+    router.push(searchResults.clear_filters, "", { scroll: false });
   }
 
   const isDisabled = uniqueSelectedFields.length === 0;
