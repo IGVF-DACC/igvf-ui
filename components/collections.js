@@ -12,9 +12,13 @@ const collectionMap = {
   ClinGen: "clingen.svg",
   ENCODE: "encode.svg",
   GREGoR: "gregor.svg",
-  "IGVF_catalog_beta_v0.1": "igvf-catalog.svg",
+  "IGVF_catalog_beta_v0.1": "igvf-catalog-0.1.svg",
+  "IGVF_catalog_beta_v0.2": "igvf-catalog-0.2.svg",
+  "IGVF_catalog_beta_v0.3": "igvf-catalog-0.3.svg",
+  "IGVF_catalog_beta_v0.4": "igvf-catalog-0.4.svg",
   MaveDB: "mave-db.svg",
   MPRAbase: "mpra-base.svg",
+  Vista: "vista.svg",
 };
 
 /**
