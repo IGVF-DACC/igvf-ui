@@ -32,6 +32,7 @@ import {
   requestDonors,
   requestFileSets,
   requestOntologyTerms,
+  requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -50,6 +51,7 @@ export default function Tissue({
   partOf,
   pooledFrom,
   pooledIn,
+  publications,
   sortedFractions,
   sources,
   treatments,
@@ -75,6 +77,7 @@ export default function Tissue({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 partOf={partOf}
+                publications={publications}
                 sampleTerms={tissue.sample_terms}
                 sources={sources}
                 options={{
@@ -220,6 +223,8 @@ Tissue.propTypes = {
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Pooled in sample
   pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Publications associated with the sample
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sorted fractions sample
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
@@ -302,6 +307,13 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    let publications = [];
+    if (tissue.publications?.length > 0) {
+      const publicationPaths = tissue.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
     const attribution = await buildAttribution(tissue, req.headers.cookie);
     return {
       props: {
@@ -315,6 +327,7 @@ export async function getServerSideProps({ params, req, query }) {
         partOf,
         pooledFrom,
         pooledIn,
+        publications,
         sortedFractions,
         sources,
         treatments,

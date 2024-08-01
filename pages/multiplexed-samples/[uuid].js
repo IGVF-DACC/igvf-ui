@@ -31,6 +31,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestFileSets,
+  requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -42,6 +43,7 @@ export default function MultiplexedSample({
   multiplexedSample,
   constructLibrarySets,
   biomarkers,
+  publications,
   documents,
   attribution = null,
   sortedFractions,
@@ -68,6 +70,7 @@ export default function MultiplexedSample({
               <SampleDataItems
                 item={multiplexedSample}
                 constructLibrarySets={constructLibrarySets}
+                publications={publications}
               >
                 {sources?.length > 0 && (
                   <>
@@ -148,6 +151,8 @@ MultiplexedSample.propTypes = {
   multiplexedSample: PropTypes.object.isRequired,
   // Construct libraries that link to this MultiplexedSample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with the sample
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sorted fractions sample
@@ -194,6 +199,13 @@ export async function getServerSideProps({ params, req, query }) {
       multiplexedSample.biomarkers?.length > 0
         ? await requestBiomarkers(multiplexedSample.biomarkers, request)
         : [];
+    let publications = [];
+    if (multiplexedSample.publications?.length > 0) {
+      const publicationPaths = multiplexedSample.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
     const documents = multiplexedSample.documents
       ? await requestDocuments(multiplexedSample.documents, request)
       : [];
@@ -241,6 +253,7 @@ export async function getServerSideProps({ params, req, query }) {
         multiplexedSample,
         constructLibrarySets,
         biomarkers,
+        publications,
         documents,
         sortedFractions,
         sources,

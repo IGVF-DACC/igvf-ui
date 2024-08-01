@@ -31,6 +31,7 @@ import {
   requestDonors,
   requestFileSets,
   requestOntologyTerms,
+  requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -50,6 +51,7 @@ export default function PrimaryCell({
   parts,
   pooledFrom,
   pooledIn,
+  publications,
   sortedFractions,
   sources,
   treatments,
@@ -75,6 +77,7 @@ export default function PrimaryCell({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 partOf={partOf}
+                publications={publications}
                 sampleTerms={primaryCell.sample_terms}
                 sources={sources}
                 options={{
@@ -191,6 +194,8 @@ PrimaryCell.propTypes = {
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Pooled in sample
   pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Publications associated with the sample
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sorted fractions sample
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
@@ -277,6 +282,13 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    let publications = [];
+    if (primaryCell.publications?.length > 0) {
+      const publicationPaths = primaryCell.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
     const attribution = await buildAttribution(primaryCell, req.headers.cookie);
     return {
       props: {
@@ -290,6 +302,7 @@ export async function getServerSideProps({ params, req, query }) {
         parts,
         pooledFrom,
         pooledIn,
+        publications,
         sortedFractions,
         sources,
         treatments,

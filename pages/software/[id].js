@@ -1,4 +1,5 @@
 // node_modules
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
@@ -6,18 +7,21 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
   DataItemLabel,
+  DataItemList,
   DataItemValue,
   DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
-import DbxrefList from "../../components/dbxref-list";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SoftwareVersionTable from "../../components/software-version-table";
 // lib
-import { requestSoftwareVersions } from "../../lib/common-requests";
+import {
+  requestPublications,
+  requestSoftwareVersions,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
@@ -26,6 +30,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Software({
   software,
+  publications,
   versions,
   attribution = null,
   isJson,
@@ -61,15 +66,16 @@ export default function Software({
                   </DataItemValue>
                 </>
               )}
-              {software.publication_identifiers?.length > 0 && (
+              {publications.length > 0 && (
                 <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList
-                      dbxrefs={software.publication_identifiers}
-                      isCollapsible
-                    />
-                  </DataItemValue>
+                  <DataItemLabel>Publications</DataItemLabel>
+                  <DataItemList isCollapsible>
+                    {publications.map((publication) => (
+                      <Link key={publication["@id"]} href={publication["@id"]}>
+                        {publication.title}
+                      </Link>
+                    ))}
+                  </DataItemList>
                 </>
               )}
             </DataArea>
@@ -86,6 +92,8 @@ export default function Software({
 Software.propTypes = {
   // Software object to display
   software: PropTypes.object.isRequired,
+  // Publications associated with this software
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Software versions associated with this software
   versions: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this software
@@ -101,14 +109,25 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(software)) {
     const award = (await request.getObject(software.award["@id"])).optional();
     const lab = (await request.getObject(software.lab["@id"])).optional();
+
     const versions =
       software.versions.length > 0
         ? await requestSoftwareVersions(software.versions, request)
         : [];
+
+    let publications = [];
+    if (software.publications?.length > 0) {
+      const publicationPaths = software.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const attribution = await buildAttribution(software, req.headers.cookie);
     return {
       props: {
         software,
+        publications,
         award,
         lab,
         versions,

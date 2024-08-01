@@ -32,6 +32,7 @@ import {
   requestDonors,
   requestFileSets,
   requestOntologyTerms,
+  requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -54,6 +55,7 @@ export default function InVitroSystem({
   parts,
   pooledFrom,
   pooledIn,
+  publications,
   sortedFractions,
   sources,
   treatments,
@@ -84,6 +86,7 @@ export default function InVitroSystem({
                 diseaseTerms={diseaseTerms}
                 parts={parts}
                 partOf={partOf}
+                publications={publications}
                 sampleTerms={inVitroSystem.sample_terms}
                 sources={sources}
                 options={{
@@ -281,6 +284,8 @@ InVitroSystem.propTypes = {
   pooledFrom: PropTypes.arrayOf(PropTypes.object),
   // Pooled in sample
   pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Publications associated with the sample
+  publications: PropTypes.arrayOf(PropTypes.object),
   // Sorted fractions sample
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
@@ -402,6 +407,13 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    let publications = [];
+    if (inVitroSystem.publications?.length > 0) {
+      const publicationPaths = inVitroSystem.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
     const attribution = await buildAttribution(
       inVitroSystem,
       req.headers.cookie
@@ -422,6 +434,7 @@ export async function getServerSideProps({ params, req, query }) {
         parts,
         partOf,
         pooledIn,
+        publications,
         sortedFractions,
         sources,
         treatments,

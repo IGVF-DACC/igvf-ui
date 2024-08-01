@@ -14,7 +14,6 @@ import {
   DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
-import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
@@ -24,6 +23,7 @@ import PagePreamble from "../../components/page-preamble";
 import {
   requestAnalysisSteps,
   requestDocuments,
+  requestPublications,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -35,6 +35,7 @@ export default function Workflow({
   workflow,
   analysisSteps,
   documents,
+  publications,
   attribution = null,
   isJson,
 }) {
@@ -104,15 +105,16 @@ export default function Workflow({
                   </DataItemList>
                 </>
               )}
-              {workflow.publication_identifiers?.length > 0 && (
+              {publications.length > 0 && (
                 <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList
-                      dbxrefs={workflow.publication_identifiers}
-                      isCollapsible
-                    />
-                  </DataItemValue>
+                  <DataItemLabel>Publications</DataItemLabel>
+                  <DataItemList isCollapsible>
+                    {publications.map((publication) => (
+                      <Link key={publication["@id"]} href={publication["@id"]}>
+                        {publication.title}
+                      </Link>
+                    ))}
+                  </DataItemList>
                 </>
               )}
               {workflow.submitter_comment && (
@@ -153,6 +155,8 @@ Workflow.propTypes = {
   analysisSteps: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this workflow
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with this workflow
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };
@@ -164,12 +168,23 @@ export async function getServerSideProps({ params, req, query }) {
   if (FetchRequest.isResponseSuccess(workflow)) {
     const award = (await request.getObject(workflow.award["@id"])).optional();
     const lab = (await request.getObject(workflow.lab["@id"])).optional();
+
     const documents = workflow.documents
       ? await requestDocuments(workflow.documents, request)
       : [];
+
     const analysisSteps = workflow.analysis_steps
       ? await requestAnalysisSteps(workflow.analysis_steps, request)
       : [];
+
+    let publications = [];
+    if (workflow.publications?.length > 0) {
+      const publicationPaths = workflow.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const attribution = await buildAttribution(workflow, req.headers.cookie);
     return {
       props: {
@@ -178,6 +193,7 @@ export async function getServerSideProps({ params, req, query }) {
         lab,
         analysisSteps,
         documents,
+        publications,
         pageContext: { title: workflow.name },
         attribution,
         isJson,

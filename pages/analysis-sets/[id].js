@@ -1,5 +1,6 @@
 // node_modules
 import _ from "lodash";
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AliasList from "../../components/alias-list";
@@ -9,6 +10,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
   DataItemLabel,
+  DataItemList,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
@@ -27,6 +29,7 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
+  requestPublications,
   requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -36,6 +39,7 @@ import SampleTable from "../../components/sample-table";
 
 export default function AnalysisSet({
   analysisSet,
+  publications,
   documents,
   files,
   inputFileSets,
@@ -92,6 +96,18 @@ export default function AnalysisSet({
                 <>
                   <DataItemLabel>Summary</DataItemLabel>
                   <DataItemValue>{analysisSet.summary}</DataItemValue>
+                </>
+              )}
+              {publications.length > 0 && (
+                <>
+                  <DataItemLabel>Publications</DataItemLabel>
+                  <DataItemList isCollapsible>
+                    {publications.map((publication) => (
+                      <Link key={publication["@id"]} href={publication["@id"]}>
+                        {publication.title}
+                      </Link>
+                    ))}
+                  </DataItemList>
                 </>
               )}
             </DataArea>
@@ -152,6 +168,8 @@ AnalysisSet.propTypes = {
   measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // ConstructLibrarySets to display
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with this analysis set
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
@@ -286,10 +304,19 @@ export async function getServerSideProps({ params, req, query }) {
       }
     }
 
+    let publications = [];
+    if (analysisSet.publications?.length > 0) {
+      const publicationPaths = analysisSet.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const attribution = await buildAttribution(analysisSet, req.headers.cookie);
     return {
       props: {
         analysisSet,
+        publications,
         documents,
         files,
         inputFileSets,

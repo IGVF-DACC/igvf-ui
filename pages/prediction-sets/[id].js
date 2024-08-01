@@ -25,7 +25,11 @@ import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFiles,
+  requestPublications,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -34,6 +38,7 @@ import DonorTable from "../../components/donor-table";
 export default function PredictionSet({
   predictionSet,
   documents,
+  publications,
   files,
   attribution = null,
   isJson,
@@ -62,7 +67,10 @@ export default function PredictionSet({
         <JsonDisplay item={predictionSet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileSetDataItems item={predictionSet}>
+              <FileSetDataItems
+                item={predictionSet}
+                publications={publications}
+              >
                 {constructLibrarySets.length > 0 && (
                   <>
                     <DataItemLabel>Construct Library Sets</DataItemLabel>
@@ -171,6 +179,8 @@ PredictionSet.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this prediction set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with this prediction set
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this prediction set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -194,6 +204,14 @@ export async function getServerSideProps({ params, req, query }) {
       files = await requestFiles(filePaths, request);
     }
 
+    let publications = [];
+    if (predictionSet.publications?.length > 0) {
+      const publicationPaths = predictionSet.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const attribution = await buildAttribution(
       predictionSet,
       req.headers.cookie
@@ -202,6 +220,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         predictionSet,
         documents,
+        publications,
         files,
         pageContext: { title: predictionSet.accession },
         attribution,

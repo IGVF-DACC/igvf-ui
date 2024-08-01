@@ -32,7 +32,7 @@ import { dataSize, truthyOrZero } from "../lib/general";
 /**
  * Display the data items common to all donor-derived objects.
  */
-export function DonorDataItems({ item, children }) {
+export function DonorDataItems({ item, publications = [], children }) {
   return (
     <>
       {item.taxa && (
@@ -80,12 +80,16 @@ export function DonorDataItems({ item, children }) {
           </DataItemValue>
         </>
       )}
-      {item.publication_identifiers?.length > 0 && (
+      {publications.length > 0 && (
         <>
-          <DataItemLabel>Publication Identifiers</DataItemLabel>
-          <DataItemValue>
-            <DbxrefList dbxrefs={item.publication_identifiers} isCollapsible />
-          </DataItemValue>
+          <DataItemLabel>Publications</DataItemLabel>
+          <DataItemList isCollapsible>
+            {publications.map((publication) => (
+              <Link key={publication["@id"]} href={publication["@id"]}>
+                {publication.title}
+              </Link>
+            ))}
+          </DataItemList>
         </>
       )}
       {item.url && (
@@ -105,12 +109,14 @@ export function DonorDataItems({ item, children }) {
 DonorDataItems.propTypes = {
   // Object derived from donor.json schema
   item: PropTypes.object.isRequired,
+  // Publications associated with this donor
+  publications: PropTypes.arrayOf(PropTypes.object),
 };
 
 DonorDataItems.commonProperties = [
   "aliases",
   "ethnicities",
-  "publication_identifiers",
+  "publications",
   "revoke_detail",
   "sex",
   "submitter_comment",
@@ -125,6 +131,7 @@ export function SampleDataItems({
   item,
   sources = null,
   constructLibrarySets = [],
+  publications = [],
   children,
 }) {
   return (
@@ -246,12 +253,16 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
-      {item.publication_identifiers && (
+      {publications.length > 0 && (
         <>
-          <DataItemLabel>Publication Identifiers</DataItemLabel>
-          <DataItemValue>
-            <DbxrefList dbxrefs={item.publication_identifiers} isCollapsible />
-          </DataItemValue>
+          <DataItemLabel>Publications</DataItemLabel>
+          <DataItemList isCollapsible>
+            {publications.map((publication) => (
+              <Link key={publication["@id"]} href={publication["@id"]}>
+                {publication.title}
+              </Link>
+            ))}
+          </DataItemList>
         </>
       )}
       {item.protocols?.length > 0 && (
@@ -284,6 +295,8 @@ SampleDataItems.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Construct library sets for this sample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
+  // Publications associated with this sample
+  publications: PropTypes.arrayOf(PropTypes.object),
 };
 
 SampleDataItems.commonProperties = [
@@ -292,7 +305,7 @@ SampleDataItems.commonProperties = [
   "dbxrefs",
   "description",
   "lot_id",
-  "publication_identifiers",
+  "publications",
   "revoke_detail",
   "sorted_from",
   "sorted_from_detail",
@@ -316,6 +329,7 @@ export function BiosampleDataItems({
   partOf = null,
   sampleTerms = null,
   sources = null,
+  publications = [],
   children,
 }) {
   return (
@@ -323,6 +337,7 @@ export function BiosampleDataItems({
       item={item}
       constructLibrarySets={constructLibrarySets}
       sources={sources}
+      publications={publications}
     >
       {sampleTerms?.length > 0 && (
         <>
@@ -439,6 +454,8 @@ BiosampleDataItems.propTypes = {
   partOf: PropTypes.object,
   // Sample ontology for the biosample
   sampleTerms: PropTypes.arrayOf(PropTypes.object),
+  // Publications associated with this biosample
+  publications: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this biosample
   sources: PropTypes.arrayOf(PropTypes.object),
 };
@@ -639,7 +656,7 @@ FileDataItems.commonProperties = [
 /**
  * Display data items common to all FileSet objects.
  */
-export function FileSetDataItems({ item, children }) {
+export function FileSetDataItems({ item, publications = [], children }) {
   return (
     <>
       {item.file_set_type && (
@@ -699,12 +716,16 @@ export function FileSetDataItems({ item, children }) {
           </DataItemValue>
         </>
       )}
-      {item.publication_identifiers?.length > 0 && (
+      {publications.length > 0 && (
         <>
-          <DataItemLabel>Publication Identifiers</DataItemLabel>
-          <DataItemValue>
-            <DbxrefList dbxrefs={item.publication_identifiers} isCollapsible />
-          </DataItemValue>
+          <DataItemLabel>Publications</DataItemLabel>
+          <DataItemList isCollapsible>
+            {publications.map((publication) => (
+              <Link key={publication["@id"]} href={publication["@id"]}>
+                {publication.title}
+              </Link>
+            ))}
+          </DataItemList>
         </>
       )}
     </>
@@ -714,18 +735,20 @@ export function FileSetDataItems({ item, children }) {
 FileSetDataItems.propTypes = {
   // file object common for all file types
   item: PropTypes.object.isRequired,
+  // Publications associated with this file set
+  publications: PropTypes.arrayOf(PropTypes.object),
 };
 
 FileSetDataItems.commonProperties = [
-  "file_set_type",
-  "summary",
-  "description",
   "aliases",
-  "url",
-  "submitter_comment",
-  "revoke_detail",
   "dbxrefs",
-  "publication_identifiers",
+  "description",
+  "file_set_type",
+  "publications",
+  "revoke_detail",
+  "submitter_comment",
+  "summary",
+  "url",
 ];
 
 /**

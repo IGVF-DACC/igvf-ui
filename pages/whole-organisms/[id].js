@@ -26,6 +26,7 @@ import {
   requestDonors,
   requestFileSets,
   requestOntologyTerms,
+  requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -42,6 +43,7 @@ export default function WholeOrganism({
   donors,
   parts,
   pooledIn,
+  publications,
   sortedFractions,
   treatments,
   sources,
@@ -67,6 +69,7 @@ export default function WholeOrganism({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 donors={donors}
+                publications={publications}
                 sampleTerms={sample.sample_terms}
                 sources={sources}
                 options={{
@@ -164,6 +167,8 @@ WholeOrganism.propTypes = {
   parts: PropTypes.arrayOf(PropTypes.object),
   // Pooled in sample
   pooledIn: PropTypes.arrayOf(PropTypes.object),
+  // Publications associated with the sample
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sorted fractions sample
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this sample
@@ -243,6 +248,13 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    let publications = [];
+    if (sample.publications?.length > 0) {
+      const publicationPaths = sample.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
     const attribution = await buildAttribution(sample, req.headers.cookie);
     return {
       props: {
@@ -254,6 +266,7 @@ export async function getServerSideProps({ params, req, query }) {
         donors,
         parts,
         pooledIn,
+        publications,
         sortedFractions,
         treatments,
         sources,

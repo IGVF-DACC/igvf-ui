@@ -27,6 +27,7 @@ import {
   requestDocuments,
   requestDonors,
   requestPhenotypicFeatures,
+  requestPublications,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -36,6 +37,7 @@ export default function HumanDonor({
   donor,
   phenotypicFeatures,
   relatedDonors,
+  publications,
   documents,
   attribution = null,
   isJson,
@@ -53,7 +55,7 @@ export default function HumanDonor({
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <DonorDataItems item={donor} />
+              <DonorDataItems item={donor} publications={publications} />
               {donor.human_donor_identifiers?.length > 0 && (
                 <>
                   <DataItemLabel>Identifiers</DataItemLabel>
@@ -100,6 +102,8 @@ HumanDonor.propTypes = {
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Related donors associated with human donor
   relatedDonors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Publications associated with human donor
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with human donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // HumanDonor attribution
@@ -134,6 +138,14 @@ export async function getServerSideProps({ params, req, query }) {
       relatedDonors = await requestDonors(relatedDonorPaths, request);
     }
 
+    let publications = [];
+    if (donor.publications?.length > 0) {
+      const publicationPaths = donor.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
     const documents = donor.documents
       ? await requestDocuments(donor.documents, request)
       : [];
@@ -144,6 +156,7 @@ export async function getServerSideProps({ params, req, query }) {
         donor,
         phenotypicFeatures,
         relatedDonors,
+        publications,
         documents,
         pageContext: { title: donor.accession },
         attribution,

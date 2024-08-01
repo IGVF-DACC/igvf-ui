@@ -17,29 +17,40 @@ const columns = [
     sorter: (item) => item.accession,
   },
   {
+    id: "name",
+    title: "Name",
+  },
+  {
     id: "aliases",
     title: "Aliases",
     display: ({ source }) => <AliasesCell source={source} />,
     isSortable: false,
   },
   {
-    id: "sex",
-    title: "Sex",
+    id: "source_url",
+    title: "Source URL",
+    display: ({ source }) => (
+      <a href={source.source_url} target="_blank" rel="noopener noreferrer">
+        {source.source_url}
+      </a>
+    ),
   },
   {
-    id: "taxa",
-    title: "Taxa",
+    id: "lab",
+    title: "Lab",
+    display: ({ source }) => source.lab?.title || null,
+    sorter: (item) => (item.lab?.title ? item.lab.title.toLowerCase() : ""),
   },
 ];
 
 /**
- * Display the given donors in a table.
+ * Display the given workflows in a table.
  */
-export default function DonorTable({
-  donors,
+export default function WorkflowTable({
+  workflows,
   reportLink = null,
   reportLabel = null,
-  title = "Donors",
+  title = "Workflows",
 }) {
   return (
     <>
@@ -51,18 +62,23 @@ export default function DonorTable({
           </DataAreaTitleLink>
         )}
       </DataAreaTitle>
-      <SortableGrid data={donors} columns={columns} pager={{}} keyProp="@id" />
+      <SortableGrid
+        data={workflows}
+        columns={columns}
+        pager={{}}
+        keyProp="@id"
+      />
     </>
   );
 }
 
-DonorTable.propTypes = {
-  // Donors to display in the table
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+WorkflowTable.propTypes = {
+  // Workflows to display in the table
+  workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Optional link to a report
   reportLink: PropTypes.string,
   // Optional label for the report link
   reportLabel: PropTypes.string,
-  // Optional title to display if not "Donors"
+  // Optional title to display if not "Workflows"
   title: PropTypes.string,
 };
