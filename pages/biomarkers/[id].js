@@ -15,11 +15,9 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { getBiomarkerTitle } from "../../lib/biomarker";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -32,7 +30,7 @@ export default function Biomarker({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={biomarker} />
       <EditableItem item={biomarker}>
         <PagePreamble />
         <ObjectPageHeader item={biomarker} isJsonFormat={isJson} />
@@ -66,11 +64,7 @@ export default function Biomarker({
               {biomarker.synonyms?.length > 0 && (
                 <>
                   <DataItemLabel>Synonyms</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
-                      {biomarker.synonyms}
-                    </SeparatedList>
-                  </DataItemValue>
+                  <DataItemValue>{biomarker.synonyms.join(", ")}</DataItemValue>
                 </>
               )}
               {biomarker.aliases?.length > 0 && (
@@ -108,12 +102,9 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/biomarkers/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(biomarker)) {
-    const gene = (await request.getObject(biomarker.gene)).optional();
-    const breadcrumbs = await buildBreadcrumbs(
-      biomarker,
-      biomarker.name,
-      req.headers.cookie
-    );
+    const gene = biomarker.gene
+      ? (await request.getObject(biomarker.gene)).optional()
+      : null;
     const attribution = await buildAttribution(biomarker, req.headers.cookie);
     const title = getBiomarkerTitle(biomarker);
     return {
@@ -121,7 +112,6 @@ export async function getServerSideProps({ params, req, query }) {
         biomarker,
         gene,
         pageContext: { title },
-        breadcrumbs,
         attribution,
         isJson,
       },

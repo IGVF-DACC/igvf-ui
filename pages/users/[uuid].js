@@ -15,7 +15,6 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -23,7 +22,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function User({ user, lab = null, isJson }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={user} />
       <EditableItem item={user}>
         <PagePreamble />
         <ObjectPageHeader item={user} isJsonFormat={isJson} />
@@ -85,17 +84,11 @@ export async function getServerSideProps({ params, req, query }) {
   const user = (await request.getObject(`/users/${params.uuid}/`)).union();
   if (FetchRequest.isResponseSuccess(user)) {
     const lab = (await request.getObject(user.lab)).optional();
-    const breadcrumbs = await buildBreadcrumbs(
-      user,
-      user.title,
-      req.headers.cookie
-    );
     return {
       props: {
         user,
         lab,
         pageContext: { title: user.title },
-        breadcrumbs,
         isJson,
       },
     };

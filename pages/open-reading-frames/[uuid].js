@@ -17,7 +17,6 @@ import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
 import AliasList from "../../components/alias-list";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -25,7 +24,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function OpenReadingFrame({ orf, isJson }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={orf} />
       <EditableItem item={orf}>
         <PagePreamble />
         <ObjectPageHeader item={orf} isJsonFormat={isJson} />
@@ -130,16 +129,10 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/open-reading-frames/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(orf)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      orf,
-      orf.orf_id,
-      req.headers.cookie
-    );
     return {
       props: {
         orf,
         pageContext: { title: orf.orf_id },
-        breadcrumbs,
         isJson,
       },
     };

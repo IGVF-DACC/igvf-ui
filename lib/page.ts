@@ -1,8 +1,10 @@
 // lib
 import FetchRequest from "./fetch-request";
+import { requestPages } from "./common-requests";
 // type
-import { ErrorObject } from "./fetch-request.d";
-import {
+import type { BreadcrumbMeta } from "./breadcrumbs";
+import type { ErrorObject } from "./fetch-request.d";
+import type {
   DatabaseObject,
   DatabaseWriteResponse,
   DataProviderObject,
@@ -34,7 +36,7 @@ type PageLayoutComponent = {
 /**
  * Extend DatabaseObject for Page objects that include a title property.
  */
-interface PageObject extends DatabaseObject {
+export interface PageObject extends DatabaseObject {
   award?: string;
   lab?: string;
   layout: {
@@ -200,4 +202,45 @@ export function sliceBlocks(
 ): PageLayoutComponent[] {
   const blocksSegment = blocks.slice(start, end);
   return blocksSegment.map((block) => ({ ...block }));
+}
+
+/**
+ * From a Page path, generate a list of paths to the path's parents, e.g. /help/abc/123 generates
+ * ["/help/abc", "/help"].
+ * @param {string} path Path for a page
+ * @returns {array} Array of paths that are parents of the given path
+ */
+export function generatePageParentPaths(path: string): string[] {
+  // For non-help pages, generate paths for every parent of the current page's path.
+  const pathElements = path.split("/").filter((path) => path !== "");
+  const pathHierarchy = pathElements.reduce((acc: string[], element, index) => {
+    if (index === 0) {
+      return [`/${element}/`];
+    }
+    return acc.concat([`${acc[index - 1]}${element}/`]);
+  }, []);
+
+  // If the first element is "/help/", remove it
+  if (pathHierarchy[0] === "/help/") {
+    pathHierarchy.shift();
+  }
+
+  return pathHierarchy.length > 1 ? pathHierarchy.slice(0, -1) : [];
+}
+
+/**
+ * Fetch the parent pages of the given page and return them in the breadcrumb metadata object.
+ * @param page Page object to get the breadcrumb metadata for
+ * @param request FetchRequest object to use for the request
+ * @returns Breadcrumb metadata for the given page
+ */
+export async function getPageBreadcrumbMeta(
+  page: PageObject,
+  request: FetchRequest
+): Promise<BreadcrumbMeta> {
+  const parentPaths = generatePageParentPaths(page["@id"]);
+  const parentPages = await requestPages(parentPaths, request);
+  return {
+    parentPages,
+  };
 }

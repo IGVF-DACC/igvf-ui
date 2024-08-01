@@ -25,7 +25,6 @@ import SampleTable from "../../components/sample-table";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestBiomarkers,
   requestBiosamples,
@@ -60,7 +59,7 @@ export default function Tissue({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={tissue} />
       <EditableItem item={tissue}>
         <PagePreamble>
           <AlternateAccessions
@@ -303,11 +302,6 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
-    const breadcrumbs = await buildBreadcrumbs(
-      tissue,
-      tissue.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(tissue, req.headers.cookie);
     return {
       props: {
@@ -328,7 +322,6 @@ export async function getServerSideProps({ params, req, query }) {
         pageContext: {
           title: `${tissue.sample_terms[0].term_name} — ${tissue.accession}`,
         },
-        breadcrumbs,
         attribution,
         isJson,
       },

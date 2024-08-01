@@ -19,5 +19,5 @@
     "typeRoots": ["./node_modules/@types"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "cypress/e2e/**/*.cy.js"],
-  "exclude": ["node_modules"]
+  "exclude": ["cypress.config.js", "cypress/e2e/*.cy.js", "node_modules"]
 }

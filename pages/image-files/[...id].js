@@ -15,7 +15,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFileSets,
@@ -41,7 +40,7 @@ export default function ImageFile({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={imageFile} />
       <EditableItem item={imageFile}>
         <PagePreamble>
           <AlternateAccessions
@@ -138,11 +137,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = imageFile.reference_files
       ? await requestFiles(imageFile.reference_files, request)
       : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      imageFile,
-      imageFile.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(imageFile, req.headers.cookie);
     return {
       props: {
@@ -153,7 +147,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFromFileSets,
         fileFormatSpecifications,
         pageContext: { title: imageFile.accession },
-        breadcrumbs,
         attribution,
         referenceFiles,
         isJson,

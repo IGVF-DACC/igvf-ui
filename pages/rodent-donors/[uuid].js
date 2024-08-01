@@ -18,7 +18,6 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestPhenotypicFeatures,
@@ -41,7 +40,7 @@ export default function RodentDonor({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={donor} />
       <EditableItem item={donor}>
         <PagePreamble>
           <AlternateAccessions
@@ -146,11 +145,6 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
-    const breadcrumbs = await buildBreadcrumbs(
-      donor,
-      donor.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(donor, req.headers.cookie);
     return {
       props: {
@@ -159,7 +153,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         sources,
         pageContext: { title: donor.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

@@ -23,7 +23,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFileSets,
@@ -53,7 +52,7 @@ export default function SequenceFile({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={sequenceFile} />
       <EditableItem item={sequenceFile}>
         <PagePreamble>
           <AlternateAccessions
@@ -225,11 +224,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const sequencingPlatform = sequenceFile.sequencing_platform
       ? (await request.getObject(sequenceFile.sequencing_platform)).optional()
       : null;
-    const breadcrumbs = await buildBreadcrumbs(
-      sequenceFile,
-      sequenceFile.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       sequenceFile,
       req.headers.cookie
@@ -243,7 +237,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFromFileSets,
         fileFormatSpecifications,
         pageContext: { title: sequenceFile.accession },
-        breadcrumbs,
         attribution,
         isJson,
         seqspecs,

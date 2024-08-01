@@ -45,7 +45,6 @@ import {
 } from "../../components/tabs";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { toShishkebabCase } from "../../lib/general";
@@ -459,8 +458,8 @@ function SchemaProperty({
             <PlusIcon className="mr-1 h-4 w-4" />
           )}
           <div
-            className={`scroll-mt-40 break-all text-left @2xl:scroll-mt-32${
-              isHighlighted ? " bg-schema-name-highlight" : ""
+            className={`scroll-mt-40 break-all text-left @2xl:scroll-mt-32 ${
+              isHighlighted ? "bg-schema-name-highlight" : ""
             }`}
           >
             {propertyId}
@@ -821,7 +820,7 @@ export default function Schema({
 
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={schema} />
       <PagePreamble pageTitle={pageTitle} />
       <div className="mb-1 flex justify-between">
         <div className="flex gap-1">
@@ -921,11 +920,6 @@ export async function getServerSideProps({ params, req, query }) {
         : [query.property];
     }
 
-    const breadcrumbs = await buildBreadcrumbs(
-      schema,
-      profile,
-      req.headers.cookie
-    );
     return {
       props: {
         schema,
@@ -935,7 +929,6 @@ export async function getServerSideProps({ params, req, query }) {
         subTab: subTab || "",
         openedProperties,
         pageContext: { title: schema.title },
-        breadcrumbs,
       },
     };
   }

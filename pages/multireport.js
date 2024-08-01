@@ -15,7 +15,6 @@ import SessionContext from "../components/session-context";
 import SortableGrid from "../components/sortable-grid";
 import TableCount from "../components/table-count";
 // lib
-import buildBreadcrumbs from "../lib/breadcrumbs";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import QueryString from "../lib/query-string";
@@ -125,7 +124,7 @@ export default function MultiReport({ searchResults }) {
 
     return (
       <>
-        <Breadcrumbs />
+        <Breadcrumbs item={searchResults} />
         {resultTypes.length > 0 && (
           <PagePreamble
             pageTitle={
@@ -204,16 +203,9 @@ export async function getServerSideProps({ req, query }) {
   ).union();
 
   if (FetchRequest.isResponseSuccess(searchResults)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      searchResults,
-      "title",
-      req.headers.cookie
-    );
     return {
       props: {
         searchResults,
-        pageContext: { title: "title" },
-        breadcrumbs,
       },
     };
   }

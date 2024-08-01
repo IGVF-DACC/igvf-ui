@@ -23,7 +23,6 @@ import RelatedDonorsTable from "../../components/related-donors-table";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestDonors,
@@ -43,7 +42,7 @@ export default function HumanDonor({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={donor} />
       <EditableItem item={donor}>
         <PagePreamble>
           <AlternateAccessions
@@ -139,11 +138,6 @@ export async function getServerSideProps({ params, req, query }) {
       ? await requestDocuments(donor.documents, request)
       : [];
 
-    const breadcrumbs = await buildBreadcrumbs(
-      donor,
-      donor.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(donor, req.headers.cookie);
     return {
       props: {
@@ -152,7 +146,6 @@ export async function getServerSideProps({ params, req, query }) {
         relatedDonors,
         documents,
         pageContext: { title: donor.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

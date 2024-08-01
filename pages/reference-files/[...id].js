@@ -23,7 +23,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFileSets,
@@ -50,7 +49,7 @@ export default function ReferenceFile({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={referenceFile} />
       <EditableItem item={referenceFile}>
         <PagePreamble>
           <AlternateAccessions
@@ -204,11 +203,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       referenceFile.integrated_in.length > 0
         ? await requestFileSets(referenceFile.integrated_in, request)
         : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      referenceFile,
-      referenceFile.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       referenceFile,
       req.headers.cookie
@@ -223,7 +217,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         fileFormatSpecifications,
         integratedIn,
         pageContext: { title: referenceFile.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

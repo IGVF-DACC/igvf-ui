@@ -17,7 +17,6 @@ import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
 import TableCount from "../components/table-count";
 // lib
-import buildBreadcrumbs from "../lib/breadcrumbs";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { getQueryStringFromServerQuery } from "../lib/query-utils";
@@ -42,7 +41,7 @@ export default function Search({ searchResults, accessoryData = null }) {
 
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={searchResults} />
       {resultTypes.length > 0 && (
         <PagePreamble
           pageTitle={
@@ -123,17 +122,10 @@ export async function getServerSideProps({ req, query }) {
       itemListsByType,
       req.headers.cookie
     );
-    const breadcrumbs = await buildBreadcrumbs(
-      searchResults,
-      "",
-      req.headers.cookie
-    );
     return {
       props: {
         searchResults,
         accessoryData,
-        pageContext: { title: "title" },
-        breadcrumbs,
       },
     };
   }

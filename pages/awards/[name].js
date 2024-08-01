@@ -15,7 +15,6 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestUsers } from "../../lib/common-requests";
 import { formatDateRange } from "../../lib/dates";
 import { errorObjectToProps } from "../../lib/errors";
@@ -26,7 +25,7 @@ import SeparatedList from "../../components/separated-list";
 export default function Award({ award, pis, contactPi, isJson }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={award} />
       <EditableItem item={award}>
         <PagePreamble />
         <ObjectPageHeader item={award} isJsonFormat={isJson} />
@@ -130,11 +129,6 @@ export async function getServerSideProps({ params, req, query }) {
     const contactPi = award.contact_pi
       ? (await request.getObject(award.contact_pi)).optional()
       : null;
-    const breadcrumbs = await buildBreadcrumbs(
-      award,
-      award.name,
-      req.headers.cookie
-    );
     return {
       props: {
         award,
@@ -142,7 +136,6 @@ export async function getServerSideProps({ params, req, query }) {
         contactPi,
         isJson,
         pageContext: { title: award.name },
-        breadcrumbs,
       },
     };
   }

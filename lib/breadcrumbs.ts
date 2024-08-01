@@ -2,100 +2,91 @@
  * This module refers to "breadcrumb data." This constitutes an array of objects, with each object
  * representing an element within the breadcrumb trail. Each object has a title that gets displayed
  * as an element in the breadcrumb trail, and an `href` property that links to the page
- * that the breadcrumb element links to.
+ * that the breadcrumb element links to. A missing `href` causes a disabled link to appear, which
+ * is common for the last element in the breadcrumb trail.
  */
 
 // lib
 import type {
+  CollectionTitles,
   DatabaseObject,
-  DataProviderObject,
   Schema,
   SearchResults,
 } from "../globals.d";
-import type { ErrorObject } from "./fetch-request.d";
 import FetchRequest from "./fetch-request";
-import { getPageTitleAndCodes } from "./page";
-import { Ok } from "./result";
+import {
+  getPageBreadcrumbMeta,
+  getPageTitleAndCodes,
+  type PageObject,
+} from "./page";
 
+/**
+ * Each element of the breadcrumb trail is represented by an object with a title and an optional
+ * href. The title is the text that gets displayed in the breadcrumb trail, and the href is the URL
+ * that the breadcrumb element links to. If the href is missing, the breadcrumb element is disabled.
+ */
 type Breadcrumb = {
   title: string;
-  href: string;
-  operation?: string;
-};
-
-type ProfilesTitles = {
-  "@type": string[];
-} & {
-  [key: string]: string;
+  href?: string;
 };
 
 /**
- * Codes for special actions for the front end to perform when rendering breadcrumbs.
+ * Additional metadata that can be used to determine how to render the breadcrumbs. The exact
+ * format depends on the type of page that displays breadcrumbs. Both the NextJS server and the
+ * client-side code can pass this data to the breadcrumb rendering code.
  */
-// Replace object type with the corresponding profile title
-export const REPLACE_TYPE = "REPLACE_TYPE";
+export interface BreadcrumbMeta {
+  [key: string]: unknown;
+}
+
+/**
+ * Meta for the breadcrumbs on an object summary page indicates whether the logged-in user has
+ * admin privileges or not.
+ */
+
+export interface ItemBreadcrumbMeta extends BreadcrumbMeta {
+  isAdmin: boolean;
+}
+
+/**
+ * Meta for the breadcrumbs on a page indicates the parent pages that the current page is nested
+ * under. We need these just for the parent-page titles, so this array contains partial page
+ * objects.
+ */
+export interface PageBreadcrumbMeta extends BreadcrumbMeta {
+  parentPages: PageObject[];
+}
 
 /**
  * Given an item object from the server, return breadcrumb data for this item.
- * @param {object} item Item data from the server
- * @param {string} title Name of the item to use as the breadcrumb title
- * @param {string} cookie Server cookie to authenticate the request
- * @returns {array} Breadcrumb data for the given item
+ * @param item Item data from the server
+ * @param title Name of the item to use as the breadcrumb title
+ * @param meta Contains current user's admin status
+ * @param collectionTitles Maps collection names to their human-readable titles
+ * @returns Breadcrumb data for the given item
  */
-async function buildItemBreadcrumbs(
+function buildItemBreadcrumbs(
   item: DatabaseObject,
   title: string,
-  cookie?: string
-): Promise<Breadcrumb[]> {
+  meta: BreadcrumbMeta,
+  collectionTitles?: CollectionTitles
+): Breadcrumb[] {
+  const itemMeta = meta as ItemBreadcrumbMeta;
   const itemType = item["@type"][0];
-
-  // Retrieve the mapping to map the item's `@type` to the corresponding title.
-  const request = new FetchRequest({ cookie });
-  const result: DataProviderObject | ErrorObject = (
-    await request.getObject("/profiles-titles/")
-  ).union();
-  const maybeError = result as ErrorObject;
-  const profilesTitles = result as ProfilesTitles;
-  const parentTitle = maybeError?.["@type"].includes("Error")
-    ? itemType
-    : profilesTitles?.[itemType] || itemType;
+  const parentTitle = collectionTitles?.[itemType] || itemType;
+  const statusQuery = itemMeta.isAdmin ? "&status!=deleted" : "";
 
   // Build the breadcrumb data from the collection and item.
   const breadcrumbs = [
     {
       title: parentTitle,
-      href: `/search?type=${item["@type"][0]}`,
+      href: `/search/?type=${item["@type"][0]}${statusQuery}`,
     },
     {
       title,
-      href: item["@id"],
     },
   ];
   return breadcrumbs;
-}
-
-/**
- * From a Page path, generate a list of paths to the path's parents, e.g. /help/abc/123 generates
- * ["/help/abc", "/help"]. Export for Jest testing.
- * @param {string} path Path for a page
- * @returns {array} Array of paths that are parents of the given path
- */
-export function generatePageParentPaths(path: string): string[] {
-  // For non-help pages, generate paths for every parent of the current page's path.
-  const pathElements = path.split("/").filter((path) => path !== "");
-  const pathHierarchy = pathElements.reduce((acc: string[], element, index) => {
-    if (index === 0) {
-      return [`/${element}/`];
-    }
-    return acc.concat([`${acc[index - 1]}${element}/`]);
-  }, []);
-
-  // If the first element is "/help/", remove it
-  if (pathHierarchy[0] === "/help/") {
-    pathHierarchy.shift();
-  }
-
-  return pathHierarchy.length > 1 ? pathHierarchy.slice(0, -1) : [];
 }
 
 /**
@@ -105,22 +96,14 @@ export function generatePageParentPaths(path: string): string[] {
  * @param {string} cookie Server cookie to authenticate the request
  * @returns {array} Breadcrumb data for the given page
  */
-async function buildPageBreadcrumbs(
-  page: DatabaseObject,
-  cookie?: string
-): Promise<Breadcrumb[]> {
-  const pagePaths = generatePageParentPaths(page["@id"]);
-
-  // Retrieve the page objects for the given page's parents so we can get their titles.
-  const request = new FetchRequest({ cookie });
-  const pathObjects = Ok.all(
-    await request.getMultipleObjects(pagePaths, {
-      filterErrors: true,
-    })
-  );
+function buildPageBreadcrumbs(
+  page: PageObject,
+  meta: BreadcrumbMeta
+): Breadcrumb[] {
+  const pageObjects = (meta.parentPages as PageObject[]) || [];
 
   // Build the breadcrumb data from the collection and item.
-  const breadcrumbs = pathObjects.map((pathObject) => {
+  const breadcrumbs = pageObjects.map((pathObject) => {
     const { title } = getPageTitleAndCodes(pathObject) as {
       title: string;
       codes?: string[];
@@ -128,37 +111,29 @@ async function buildPageBreadcrumbs(
     return { title, href: pathObject["@id"] } as Breadcrumb;
   });
 
-  // Removed the current page path to avoid requesting it from the server when we already have
-  // it. Add it back here.
-  const { title } = getPageTitleAndCodes(page) as {
-    title: string;
-    codes?: string[];
-  };
-  return breadcrumbs.concat({ title, href: page["@id"] } as Breadcrumb);
+  return breadcrumbs.concat({ title: page.title } as Breadcrumb);
 }
 
 /**
  * Generate the breadcrumb data for a search-result page -- both the list and report.
- * @param {object} data Search results data from the server
- * @returns {array} Breadcrumb data for the given search results
+ * @param data Search results data from the servers
+ * @param collectionTitles Maps collection names to their human-readable titles
+ * @returns Breadcrumb data for the given search results
  */
-function buildSearchResultBreadcrumbs(data: SearchResults): Breadcrumb[] {
+function buildSearchResultBreadcrumbs(
+  data: SearchResults,
+  collectionTitles?: CollectionTitles
+): Breadcrumb[] {
   // Get all the type filters from the search results to determine what to display in the
   // breadcrumb.
   const types = data.filters
     .filter((filter) => filter.field === "type")
     .map((filter) => filter.term);
   if (types.length > 0) {
-    return [
-      {
-        title: types.length > 1 ? "Multiple" : types[0],
-        href: data["@id"],
-        operation: REPLACE_TYPE,
-      },
-    ];
+    const title =
+      types.length > 1 ? "Multiple" : collectionTitles?.[types[0]] || types[0];
+    return [{ title }];
   }
-
-  // No types; maybe a query= search.
   return [];
 }
 
@@ -169,11 +144,10 @@ function buildSearchResultBreadcrumbs(data: SearchResults): Breadcrumb[] {
  * @returns {Breadcrumb[]} Breadcrumb data for the given schema
  */
 function buildSchemaBreadcrumbs(schema: Schema, title: string): Breadcrumb[] {
-  if (!title) {
+  if (!schema.title) {
     return [
       {
-        title: "Schema Directory",
-        href: "/profiles",
+        title,
       },
     ];
   }
@@ -184,7 +158,6 @@ function buildSchemaBreadcrumbs(schema: Schema, title: string): Breadcrumb[] {
     },
     {
       title: schema.title,
-      href: `/profiles/${title}`,
     },
   ];
 }
@@ -192,36 +165,60 @@ function buildSchemaBreadcrumbs(schema: Schema, title: string): Breadcrumb[] {
 /**
  * Given data from the server, return breadcrumb data appropriate for that data. In some cases we
  * have to retrieve additional data from the server to build the breadcrumb data.
- * @param {object} data Object from the server
- * @param {string} title Name of the item to use as the breadcrumb title, or in the case of
- * schema breadcrumb, this is the URL path of the schema page
- * @param {string} cookie Server cookie to authenticate the request
- * @returns {array} Breadcrumb data for the given item or collection
+ * @param data Object from the server
+ * @param title Name of the item to use as the breadcrumb title
+ * @param cookie Server cookie to authenticate the request
+ * @returns Breadcrumb data for the given item or collection
  */
-export default async function buildBreadcrumbs(
-  data: DataProviderObject,
+export default function buildBreadcrumbs(
+  data: DatabaseObject,
   title: string,
-  cookie?: string
-): Promise<Breadcrumb[]> {
-  const databaseObject = data as DatabaseObject;
+  meta: BreadcrumbMeta = {},
+  collectionTitles?: CollectionTitles
+): Breadcrumb[] {
   let breadcrumbs: Breadcrumb[] = [];
-  if (databaseObject["@type"].includes("Page")) {
-    breadcrumbs = await buildPageBreadcrumbs(databaseObject, cookie);
-  } else if (
-    databaseObject["@type"].includes("Search") ||
-    databaseObject["@type"].includes("Report")
-  ) {
-    breadcrumbs = buildSearchResultBreadcrumbs(
-      data as unknown as SearchResults
-    );
-  } else if (databaseObject["@type"].includes("Item")) {
-    breadcrumbs = await buildItemBreadcrumbs(databaseObject, title, cookie);
-  } else if (
-    databaseObject["@type"].includes("JSONSchemas") ||
-    databaseObject["@type"].includes("JSONSchema")
-  ) {
-    // To handle the schema pages...
-    breadcrumbs = buildSchemaBreadcrumbs(data as unknown as Schema, title);
+  if (data["@type"]) {
+    if (data["@type"].includes("Page")) {
+      breadcrumbs = buildPageBreadcrumbs(data as PageObject, meta);
+    } else if (
+      data["@type"].includes("Search") ||
+      data["@type"].includes("Report")
+    ) {
+      breadcrumbs = buildSearchResultBreadcrumbs(
+        data as unknown as SearchResults,
+        collectionTitles
+      );
+    } else if (data["@type"].includes("Item")) {
+      breadcrumbs = buildItemBreadcrumbs(
+        data,
+        title,
+        meta as { isAdmin: boolean },
+        collectionTitles
+      );
+    } else if (
+      data["@type"].includes("JSONSchemas") ||
+      data["@type"].includes("JSONSchema")
+    ) {
+      // To handle the schema pages...
+      breadcrumbs = buildSchemaBreadcrumbs(data as unknown as Schema, title);
+    }
   }
   return breadcrumbs;
+}
+
+/**
+ * Get the breadcrumb meta for a given data object. This is used to provide additional information
+ * to the front end about how to render the breadcrumbs.
+ * @param data Object from the data provider to retrieve meta for
+ * @param request FetchRequest object to use for fetching data
+ * @returns BreadcrumbMeta object for the given data
+ */
+export async function getBreadcrumbMeta(
+  data: DatabaseObject,
+  request: FetchRequest
+): Promise<BreadcrumbMeta> {
+  if (data["@type"].includes("Page")) {
+    return getPageBreadcrumbMeta(data as PageObject, request);
+  }
+  return {};
 }

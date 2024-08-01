@@ -25,7 +25,6 @@ import SampleTable from "../../components/sample-table";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestBiomarkers,
   requestBiosamples,
@@ -67,7 +66,7 @@ export default function InVitroSystem({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={inVitroSystem} />
       <EditableItem item={inVitroSystem}>
         <PagePreamble>
           <AlternateAccessions
@@ -403,11 +402,6 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
-    const breadcrumbs = await buildBreadcrumbs(
-      inVitroSystem,
-      inVitroSystem.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       inVitroSystem,
       req.headers.cookie
@@ -437,7 +431,6 @@ export async function getServerSideProps({ params, req, query }) {
         pageContext: {
           title: `${inVitroSystem.sample_terms[0].term_name} — ${inVitroSystem.accession}`,
         },
-        breadcrumbs,
         attribution,
         isJson,
       },

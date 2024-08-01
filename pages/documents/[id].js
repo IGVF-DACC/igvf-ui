@@ -18,16 +18,19 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
+import buildAttribution from "../../lib/attribution";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import buildAttribution from "../../lib/attribution";
+import { truncateText } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Document({ document, attribution = null, isJson }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs
+        item={document}
+        title={truncateText(document.description, 40)}
+      />
       <EditableItem item={document}>
         <PagePreamble />
         <ObjectPageHeader item={document} isJsonFormat={isJson} />
@@ -113,17 +116,11 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/documents/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(document)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      document,
-      document.attachment.download,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(document, req.headers.cookie);
     return {
       props: {
         document,
         pageContext: { title: document.description },
-        breadcrumbs,
         attribution,
         isJson,
       },

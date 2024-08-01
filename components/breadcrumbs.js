@@ -7,7 +7,7 @@ import GlobalContext from "./global-context";
 import SeparatedList from "./separated-list";
 import SessionContext from "./session-context";
 // lib
-import { REPLACE_TYPE } from "../lib/breadcrumbs";
+import buildBreadcrumbs from "../lib/breadcrumbs";
 
 /**
  * Render a single breadcrumb element. If no `href` provided, the element only displays its title
@@ -48,28 +48,6 @@ BreadcrumbElement.propTypes = {
 };
 
 /**
- * Handle special cases with breadcrumbs. Currently this only handles the `REPLACE_TYPE` operation
- * to replace a breadcrumb title with a schema profile title so that breadcrumbs appear as "Human
- * Donor" instead of "HumanDonor." Server code has no access to schema profiles so it can't do that
- * mapping itself.
- * @param {array} breadcrumbs Breadcrumb object from server
- * @param {object} profiles All schema profiles
- * @returns {array} Copy of breadcrumb array altered with any special
- */
-function processBreadcrumbs(breadcrumbs, profiles) {
-  return breadcrumbs.map((breadcrumb) => {
-    if (breadcrumb.operation === REPLACE_TYPE) {
-      const mappedTitle = profiles ? profiles[breadcrumb.title]?.title : "";
-      return {
-        title: mappedTitle || breadcrumb.title,
-        href: breadcrumb.href,
-      };
-    }
-    return breadcrumb;
-  });
-}
-
-/**
  * Static breadcrumb for the home page.
  */
 const homeBreadcrumb = [
@@ -82,11 +60,21 @@ const homeBreadcrumb = [
 /**
  * Render a breadcrumb trail for the current page.
  */
-export default function Breadcrumbs() {
-  const { breadcrumbs } = useContext(GlobalContext);
-  const { profiles } = useContext(SessionContext);
+export default function Breadcrumbs({ item, title = "", meta = {} }) {
+  const { page } = useContext(GlobalContext);
+  const { collectionTitles, sessionProperties } = useContext(SessionContext);
 
-  const processedBreadcrumbs = processBreadcrumbs(breadcrumbs, profiles);
+  // Merge the authenticated state and admin status into the metadata.
+  const metaWithAdmin = {
+    ...meta,
+    isAdmin: Boolean(sessionProperties?.admin),
+  };
+  const breadcrumbs = buildBreadcrumbs(
+    item,
+    title || page.title,
+    metaWithAdmin,
+    collectionTitles
+  );
 
   return (
     <nav aria-label="breadcrumbs">
@@ -98,21 +86,28 @@ export default function Breadcrumbs() {
           </div>
         }
       >
-        {homeBreadcrumb
-          .concat(processedBreadcrumbs)
-          .map((breadcrumb, index) => {
-            return (
-              <BreadcrumbElement
-                key={breadcrumb.href}
-                id={breadcrumb.href}
-                href={index < breadcrumbs.length ? breadcrumb.href : undefined}
-                className="block font-bold uppercase no-underline"
-              >
-                {breadcrumb.title}
-              </BreadcrumbElement>
-            );
-          })}
+        {homeBreadcrumb.concat(breadcrumbs).map((breadcrumb, index) => {
+          return (
+            <BreadcrumbElement
+              key={index}
+              id={`breadcrumb-${index}`}
+              href={breadcrumb.href}
+              className="block font-bold uppercase no-underline"
+            >
+              {breadcrumb.title}
+            </BreadcrumbElement>
+          );
+        })}
       </SeparatedList>
     </nav>
   );
 }
+
+Breadcrumbs.propTypes = {
+  // Item to display breadcrumbs for
+  item: PropTypes.object.isRequired,
+  // Title of the item if not from pageProps.title
+  title: PropTypes.string,
+  // Metadata about the item
+  meta: PropTypes.object,
+};

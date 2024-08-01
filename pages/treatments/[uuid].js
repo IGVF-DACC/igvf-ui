@@ -18,7 +18,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
@@ -36,7 +35,7 @@ export default function Treatment({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={treatment} />
       <EditableItem item={treatment}>
         <PagePreamble />
         <ObjectPageHeader item={treatment} isJsonFormat={isJson} />
@@ -171,11 +170,6 @@ export async function getServerSideProps({ params, req, query }) {
       treatment.treatment_type === "environmental"
         ? treatment.summary
         : treatment.treatment_term_id;
-    const breadcrumbs = await buildBreadcrumbs(
-      treatment,
-      treatmentId,
-      req.headers.cookie
-    );
     let sources = [];
     if (treatment.sources?.length > 0) {
       const sourcePaths = treatment.sources.map((source) => source["@id"]);
@@ -194,7 +188,6 @@ export async function getServerSideProps({ params, req, query }) {
         pageContext: {
           title: treatmentId,
         },
-        breadcrumbs,
         attribution,
         isJson,
       },

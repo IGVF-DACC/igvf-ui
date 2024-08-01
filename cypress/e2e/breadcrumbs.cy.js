@@ -7,8 +7,8 @@ describe("Breadcrumb tests", () => {
     cy.get("[data-testid=navigation-files").click();
 
     cy.get("[aria-label='breadcrumbs']").should("exist");
-    cy.get("[data-testid='/']").should("have.text", "Home");
-    cy.get("[data-testid='/search/?type=File']").should("have.text", "File");
+    cy.get("[data-testid='breadcrumb-0']").should("have.text", "Home");
+    cy.get("[data-testid='breadcrumb-1']").should("have.text", "Files");
   });
 
   it("shows a three-element breadcrumb on an object page", () => {
@@ -18,10 +18,10 @@ describe("Breadcrumb tests", () => {
     cy.get(`[aria-label^="View details for"]`).eq(0).click();
 
     cy.get("[aria-label='breadcrumbs']").should("exist");
-    cy.get("[data-testid='/']").should("have.text", "Home");
-    cy.get("[data-testid='/search/?type=MeasurementSet']").should(
+    cy.get("[data-testid='breadcrumb-0']").should("have.text", "Home");
+    cy.get("[data-testid='breadcrumb-1']").should(
       "have.text",
-      "Measurement Set"
+      "Measurement Sets"
     );
   });
 
@@ -31,8 +31,11 @@ describe("Breadcrumb tests", () => {
     cy.get("[data-testid=navigation-schemas]").click();
 
     cy.get("[aria-label='breadcrumbs']").should("exist");
-    cy.get("[data-testid='/']").should("have.text", "Home");
-    cy.get("[data-testid='/profiles']").should("have.text", "Schema Directory");
+    cy.get("[data-testid='breadcrumb-0']").should("have.text", "Home");
+    cy.get("[data-testid='breadcrumb-1']").should(
+      "have.text",
+      "Schema Directory"
+    );
   });
 
   it("shows a three-element breadcrumb on an individual schema page", () => {
@@ -46,8 +49,11 @@ describe("Breadcrumb tests", () => {
     cy.contains("h1", "Grant");
 
     cy.get("[aria-label='breadcrumbs']").should("exist");
-    cy.get("[data-testid='/']").should("have.text", "Home");
-    cy.get("[data-testid='/profiles']").should("have.text", "Schema Directory");
-    cy.get("[data-testid='/profiles/award']").should("have.text", "Grant");
+    cy.get("[data-testid='breadcrumb-0']").should("have.text", "Home");
+    cy.get("[data-testid='breadcrumb-1']").should(
+      "have.text",
+      "Schema Directory"
+    );
+    cy.get("[data-testid='breadcrumb-2']").should("have.text", "Grant");
   });
 });

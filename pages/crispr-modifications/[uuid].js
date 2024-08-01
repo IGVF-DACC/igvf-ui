@@ -20,7 +20,6 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments, requestSamples } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -38,7 +37,7 @@ export default function CrisprModification({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={modification} />
       <EditableItem item={modification}>
         <PagePreamble />
         <ObjectPageHeader item={modification} isJsonFormat={isJson} />
@@ -160,11 +159,7 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = modification.documents
       ? await requestDocuments(modification.documents, request)
       : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      modification,
-      modification.summary,
-      req.headers.cookie
-    );
+
     const attribution = await buildAttribution(
       modification,
       req.headers.cookie
@@ -175,7 +170,6 @@ export async function getServerSideProps({ params, req, query }) {
         biosamplesModified,
         documents,
         gene,
-        breadcrumbs,
         sources,
         pageContext: {
           title: modification.summary,

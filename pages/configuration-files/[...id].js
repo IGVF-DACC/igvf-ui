@@ -16,7 +16,6 @@ import PagePreamble from "../../components/page-preamble";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFileSets,
@@ -45,7 +44,7 @@ export default function ConfigurationFile({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={configurationFile} />
       <EditableItem item={configurationFile}>
         <PagePreamble>
           <AlternateAccessions
@@ -171,11 +170,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
         : [];
 
-    const breadcrumbs = await buildBreadcrumbs(
-      configurationFile,
-      "accession",
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       configurationFile,
       req.headers.cookie
@@ -191,7 +185,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFromFileSets,
         fileFormatSpecifications,
         pageContext: { title: configurationFile.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

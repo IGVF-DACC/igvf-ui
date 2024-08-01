@@ -24,7 +24,6 @@ import {
 import SchemaIcon from "../../components/schema-icon";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { deprecatedSchemas } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -240,8 +239,8 @@ function SubTree({
               aria-label={`View schema for ${title}${
                 isTitleHighlighted ? " (highlighted)" : ""
               }`}
-              className={`block scroll-mt-28 @xl:scroll-mt-24${
-                isTitleHighlighted ? " bg-schema-name-highlight" : ""
+              className={`block scroll-mt-28 @xl:scroll-mt-24 ${
+                isTitleHighlighted ? "bg-schema-name-highlight" : ""
               }`}
             >
               {title}
@@ -330,7 +329,7 @@ export default function Profiles({ schemas, collectionTitles = null }) {
 
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={schemas} />
       <PagePreamble />
       <ProfilesHeader />
       <DataPanel className="p-0">
@@ -380,13 +379,11 @@ export async function getServerSideProps({ req }) {
       await request.getObject("/collection-titles/")
     ).optional();
     const schemasWithoutDeprecated = deleteDeprecatedSchemas(schemas);
-    const breadcrumbs = await buildBreadcrumbs(schemas, "", req.headers.cookie);
     return {
       props: {
         schemas: schemasWithoutDeprecated,
         collectionTitles,
         pageContext: { title: "Schema Directory" },
-        breadcrumbs,
       },
     };
   }

@@ -29,7 +29,6 @@ import SampleTable from "../../components/sample-table";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFiles,
@@ -165,7 +164,7 @@ export default function MeasurementSet({
 
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={measurementSet} />
       <EditableItem item={measurementSet}>
         <PagePreamble>
           <AlternateAccessions
@@ -426,11 +425,6 @@ export async function getServerSideProps({ params, req, query }) {
         ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
         : [];
 
-    const breadcrumbs = await buildBreadcrumbs(
-      measurementSet,
-      measurementSet.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       measurementSet,
       req.headers.cookie
@@ -448,7 +442,6 @@ export async function getServerSideProps({ params, req, query }) {
         seqspecFiles,
         sequencingPlatforms,
         pageContext: { title: measurementSet.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },

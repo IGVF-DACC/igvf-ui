@@ -93,7 +93,7 @@ export default function ScrollToTop() {
     if (isVisible) {
       resetScrollTimeout();
       if (!isScrollToTopVisible.current) {
-        scrollToTopRef.current.showPopover();
+        scrollToTopRef.current?.showPopover();
         isScrollToTopVisible.current = true;
       }
     } else {

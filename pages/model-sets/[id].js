@@ -22,7 +22,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import {
   requestDocuments,
   requestFiles,
@@ -43,7 +42,7 @@ export default function ModelSet({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={modelSet} />
       <EditableItem item={modelSet}>
         <PagePreamble>
           <AlternateAccessions
@@ -171,11 +170,6 @@ export async function getServerSideProps({ params, req, query }) {
       inputFileSets = await requestFileSets(inputFileSetPaths, request);
     }
 
-    const breadcrumbs = await buildBreadcrumbs(
-      modelSet,
-      modelSet.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(modelSet, req.headers.cookie);
 
     return {
@@ -186,7 +180,6 @@ export async function getServerSideProps({ params, req, query }) {
         files,
         inputFileSets,
         pageContext: { title: modelSet.model_name },
-        breadcrumbs,
         attribution,
         isJson,
       },

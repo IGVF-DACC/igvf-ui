@@ -17,7 +17,6 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
@@ -31,7 +30,7 @@ export default function AnalysisStep({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={analysisStep} />
       <EditableItem item={analysisStep}>
         <PagePreamble />
         <ObjectPageHeader item={analysisStep} isJsonFormat={isJson} />
@@ -133,11 +132,6 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/analysis-steps/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(analysisStep)) {
-    const breadcrumbs = await buildBreadcrumbs(
-      analysisStep,
-      analysisStep.title,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(
       analysisStep,
       req.headers.cookie
@@ -146,7 +140,6 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         analysisStep,
         pageContext: { title: analysisStep.title },
-        breadcrumbs,
         attribution,
         isJson,
       },

@@ -22,7 +22,6 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import buildBreadcrumbs from "../../lib/breadcrumbs";
 import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -37,7 +36,7 @@ export default function CuratedSet({
 }) {
   return (
     <>
-      <Breadcrumbs />
+      <Breadcrumbs item={curatedSet} />
       <EditableItem item={curatedSet}>
         <PagePreamble>
           <AlternateAccessions
@@ -131,11 +130,6 @@ export async function getServerSideProps({ params, req, query }) {
     const filePaths = curatedSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
-    const breadcrumbs = await buildBreadcrumbs(
-      curatedSet,
-      curatedSet.accession,
-      req.headers.cookie
-    );
     const attribution = await buildAttribution(curatedSet, req.headers.cookie);
     return {
       props: {
@@ -143,7 +137,6 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         files,
         pageContext: { title: curatedSet.accession },
-        breadcrumbs,
         attribution,
         isJson,
       },
