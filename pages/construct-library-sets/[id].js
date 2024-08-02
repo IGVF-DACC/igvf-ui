@@ -16,14 +16,14 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
-import FileTable from "../../components/file-table";
+import FileSetFilesTables from "../../components/file-set-files-tables";
 import FileSetTable from "../../components/file-set-table";
+import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
-import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -301,15 +301,12 @@ export default function ConstructLibrarySet({
             </DataArea>
           </DataPanel>
           <LibraryDetails library={constructLibrarySet} />
-          {files.length > 0 && (
-            <SequencingFileTable
-              files={files}
-              title="Sequencing Results"
-              itemPath={constructLibrarySet["@id"]}
-              seqspecFiles={seqspecFiles}
-              sequencingPlatforms={sequencingPlatforms}
-            />
-          )}
+          <FileSetFilesTables
+            files={files}
+            fileSet={constructLibrarySet}
+            seqspecFiles={seqspecFiles}
+            sequencingPlatforms={sequencingPlatforms}
+          />
           {integratedContentFiles.length > 0 && (
             <FileTable
               files={integratedContentFiles}

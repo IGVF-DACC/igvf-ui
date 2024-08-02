@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
@@ -15,13 +16,13 @@ import {
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
+import FileSetFilesTables from "../../components/file-set-files-tables";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
-import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -34,7 +35,6 @@ import {
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { splitIlluminaSequenceFiles } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function AuxiliarySet({
@@ -50,8 +50,10 @@ export default function AuxiliarySet({
   attribution = null,
   isJson,
 }) {
-  const { filesWithReadType, filesWithoutReadType, tabularFileType } =
-    splitIlluminaSequenceFiles(files);
+  // Split the files into those with an @type of TabularFile and all others.
+  const groupedFiles = _.groupBy(files, (file) =>
+    file["@type"].includes("TabularFile") ? "tabular" : "other"
+  );
 
   return (
     <>
@@ -80,6 +82,20 @@ export default function AuxiliarySet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
+          <FileSetFilesTables
+            files={groupedFiles.other}
+            fileSet={auxiliarySet}
+            seqspecFiles={seqspecFiles}
+            sequencingPlatforms={sequencingPlatforms}
+          >
+            {groupedFiles.tabular?.length > 0 && (
+              <FileTable
+                files={groupedFiles.tabular}
+                fileSet={auxiliarySet}
+                title="Tabular Files"
+              />
+            )}
+          </FileSetFilesTables>
           {auxiliarySet.samples?.length > 0 && (
             <SampleTable
               samples={auxiliarySet.samples}
@@ -89,37 +105,6 @@ export default function AuxiliarySet({
           )}
           {auxiliarySet.donors?.length > 0 && (
             <DonorTable donors={auxiliarySet.donors} />
-          )}
-          {filesWithReadType.length > 0 && (
-            <SequencingFileTable
-              files={filesWithReadType}
-              title="Sequencing Results (Illumina)"
-              isIlluminaReadType={true}
-              itemPath={auxiliarySet["@id"]}
-              seqspecFiles={seqspecFiles}
-              sequencingPlatforms={sequencingPlatforms}
-              hasReadType
-            />
-          )}
-          {tabularFileType.length > 0 && (
-            <FileTable
-              files={tabularFileType}
-              title="Tabular Files"
-              isIlluminaReadType={false}
-              itemPath={auxiliarySet["@id"]}
-              seqspecFiles={seqspecFiles}
-              sequencingPlatforms={sequencingPlatforms}
-            />
-          )}
-          {filesWithoutReadType.length > 0 && (
-            <SequencingFileTable
-              files={filesWithoutReadType}
-              title="Sequencing Results"
-              isIlluminaReadType={false}
-              itemPath={auxiliarySet["@id"]}
-              seqspecFiles={seqspecFiles}
-              sequencingPlatforms={sequencingPlatforms}
-            />
           )}
           {relatedDatasets.length > 0 && (
             <FileSetTable

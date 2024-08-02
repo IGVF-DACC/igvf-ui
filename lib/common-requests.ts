@@ -94,6 +94,7 @@ export async function requestFiles(
 ): Promise<Array<DataProviderObject>> {
   return (
     await request.getMultipleObjectsBulk(paths, [
+      "@type",
       "accession",
       "content_type",
       "creation_timestamp",
