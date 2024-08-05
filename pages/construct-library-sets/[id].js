@@ -319,11 +319,8 @@ export default function ConstructLibrarySet({
             <FileSetTable
               fileSets={controlForSets}
               title={`File Sets with ${constructLibrarySet.accession} as a Control`}
-              reportLinkSpecs={{
-                fileSetType: "FileSet",
-                identifierProp: "control_file_sets.accession",
-                itemIdentifier: constructLibrarySet.accession,
-              }}
+              reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${constructLibrarySet["@id"]}`}
+              reportLabel="Report of file sets that have this construct library set as a control"
             />
           )}
           {constructLibrarySet.applied_to_samples.length > 0 && (

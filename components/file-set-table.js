@@ -8,8 +8,6 @@ import LinkedIdAndStatus from "./linked-id-and-status";
 import SeparatedList from "./separated-list";
 import SortableGrid from "./sortable-grid";
 import { AliasesCell } from "./table-cells";
-// lib
-import { encodeUriElement } from "../lib/query-encoding";
 
 const fileSetColumns = [
   {
@@ -105,28 +103,16 @@ const fileSetColumns = [
 export default function FileSetTable({
   fileSets,
   reportLink = "",
-  reportLinkSpecs = null,
+  reportLabel = "",
   title = "File Sets",
   fileSetMeta = null,
 }) {
-  // Generate the link to the report page if requested.
-  const composedReportLink = reportLinkSpecs
-    ? `/multireport/?type=${reportLinkSpecs.fileSetType}&${
-        reportLinkSpecs.identifierProp
-      }=${encodeUriElement(
-        reportLinkSpecs.itemIdentifier
-      )}&field=%40id&field=accession&field=samples&field=lab&field=status&field=aliases`
-    : reportLink;
-
   return (
     <>
       <DataAreaTitle>
         {title}
-        {composedReportLink && (
-          <DataAreaTitleLink
-            href={composedReportLink}
-            label="Report of file sets that belong to this item"
-          >
+        {reportLink && (
+          <DataAreaTitleLink href={reportLink} label={reportLabel}>
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
@@ -147,15 +133,8 @@ FileSetTable.propTypes = {
   fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Link to the report page containing the same file sets as this table
   reportLink: PropTypes.string,
-  // Object to build a link to the report page containing the same file sets as this table
-  reportLinkSpecs: PropTypes.exact({
-    // `@type` of the file sets referring to the currently displayed item
-    fileSetType: PropTypes.string.isRequired,
-    // Property of the report items that links back to the currently displayed item
-    identifierProp: PropTypes.string.isRequired,
-    // ID of the currently displayed item that the report items link back to; often accession
-    itemIdentifier: PropTypes.string.isRequired,
-  }),
+  // Label for the report link
+  reportLabel: PropTypes.string,
   // Title of the table if not "File Sets"
   title: PropTypes.string,
   // Metadata for display options

@@ -123,11 +123,8 @@ export default function ReferenceFile({
             <FileSetTable
               fileSets={integratedIn}
               title="Integrated In"
-              reportLinkSpecs={{
-                fileSetType: "ConstructLibrarySet",
-                identifierProp: "reference_files.accession",
-                itemIdentifier: referenceFile.accession,
-              }}
+              reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files=${referenceFile["@id"]}`}
+              reportLabel={`View ConstructLibrarySets integrated with ${referenceFile.accession}`}
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}

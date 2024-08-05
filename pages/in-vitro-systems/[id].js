@@ -157,11 +157,8 @@ export default function InVitroSystem({
           {inVitroSystem.file_sets.length > 0 && (
             <FileSetTable
               fileSets={inVitroSystem.file_sets}
-              reportLinkSpecs={{
-                fileSetType: "FileSet",
-                identifierProp: "samples.accession",
-                itemIdentifier: inVitroSystem.accession,
-              }}
+              reportLink={`/multireport/?type=FileSet&samples.@id=${inVitroSystem["@id"]}`}
+              reportLabel="Report of file sets associated with this sample"
             />
           )}
           {multiplexedInSamples.length > 0 && (

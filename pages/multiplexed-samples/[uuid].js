@@ -100,11 +100,8 @@ export default function MultiplexedSample({
           {multiplexedSample.file_sets.length > 0 && (
             <FileSetTable
               fileSets={multiplexedSample.file_sets}
-              reportLinkSpecs={{
-                fileSetType: "FileSet",
-                identifierProp: "samples.accession",
-                itemIdentifier: multiplexedSample.accession,
-              }}
+              reportLink={`/multireport/?type=FileSet&samples.@id=${multiplexedSample["@id"]}`}
+              reportLabel="Report of file sets associated with this sample"
             />
           )}
           {multiplexedSample.multiplexed_samples.length > 0 && (
