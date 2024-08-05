@@ -21,12 +21,12 @@ import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
+import FileSetFilesTables from "../../components/file-set-files-tables";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
-import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -40,7 +40,6 @@ import {
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { splitIlluminaSequenceFiles } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 
 /**
@@ -130,8 +129,10 @@ export default function MeasurementSet({
   attribution = null,
   isJson,
 }) {
-  const { filesWithReadType, filesWithoutReadType, imageFileType } =
-    splitIlluminaSequenceFiles(files);
+  // Split the files into those with an @type of ImageFile and all others.
+  const groupedFiles = _.groupBy(files, (file) =>
+    file["@type"].includes("ImageFile") ? "image" : "other"
+  );
 
   // Collect all the embedded construct library sets from all the samples in the FileSet. Remove
   // those with duplicate `@id` values.
@@ -244,6 +245,20 @@ export default function MeasurementSet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
+          <FileSetFilesTables
+            files={groupedFiles.other}
+            fileSet={measurementSet}
+            seqspecFiles={seqspecFiles}
+            sequencingPlatforms={sequencingPlatforms}
+          >
+            {groupedFiles.image?.length > 0 && (
+              <FileTable
+                files={groupedFiles.image}
+                fileSet={measurementSet}
+                title="Imaging Results"
+              />
+            )}
+          </FileSetFilesTables>
           {measurementSet.samples?.length > 0 && (
             <SampleTable
               samples={measurementSet.samples}
@@ -255,34 +270,6 @@ export default function MeasurementSet({
             <DonorTable donors={measurementSet.donors} />
           )}
           <AssayDetails measurementSet={measurementSet} />
-          {filesWithReadType.length > 0 && (
-            <SequencingFileTable
-              files={filesWithReadType}
-              title="Sequencing Results (Illumina)"
-              isIlluminaReadType={true}
-              itemPath={measurementSet["@id"]}
-              seqspecFiles={seqspecFiles}
-              sequencingPlatforms={sequencingPlatforms}
-              hasReadType
-            />
-          )}
-          {filesWithoutReadType.length > 0 && (
-            <SequencingFileTable
-              files={filesWithoutReadType}
-              title="Sequencing Results"
-              isIlluminaReadType={false}
-              itemPath={measurementSet["@id"]}
-              seqspecFiles={seqspecFiles}
-              sequencingPlatforms={sequencingPlatforms}
-            />
-          )}
-          {imageFileType.length > 0 && (
-            <FileTable
-              files={imageFileType}
-              fileSet={measurementSet}
-              title="Imaging Results"
-            />
-          )}
           {controlFileSets.length > 0 && (
             <FileSetTable
               fileSets={controlFileSets}
