@@ -128,7 +128,7 @@ export function FacetGroup({ searchResults, group = null }) {
    * @param {string} queryString Updated query string from the facet terms
    */
   function updateQuery(queryString) {
-    router.push(`${path}?${queryString}`);
+    router.push(`${path}?${queryString}`, "", { scroll: false });
   }
 
   return (
