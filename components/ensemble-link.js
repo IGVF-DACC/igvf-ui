@@ -9,7 +9,11 @@ import PropTypes from "prop-types";
 export default function EnsemblLink({ geneid, taxa }) {
   const organism = taxa.replace(/ /g, "_");
   return (
-    <a href={`http://www.ensembl.org/${organism}/Gene/Summary?g=${geneid}`}>
+    <a
+      href={`https://www.ensembl.org/${organism}/Gene/Summary?g=${geneid}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       {geneid}
     </a>
   );

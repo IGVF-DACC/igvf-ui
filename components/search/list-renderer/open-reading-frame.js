@@ -36,7 +36,7 @@ export default function OpenReadingFrame({ item: openReadingFrame }) {
             <SearchListItemSupplementLabel>Genes</SearchListItemSupplementLabel>
             <SearchListItemSupplementContent>
               <SeparatedList isCollapsible>
-                {openReadingFrame.gene.map((gene) => (
+                {openReadingFrame.genes.map((gene) => (
                   <Link
                     href={gene["@id"]}
                     key={gene["@id"]}
