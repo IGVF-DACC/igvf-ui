@@ -824,7 +824,7 @@ describe("Test OpenReadingFrame component", () => {
       "@id": "/open-reading-frames/CCSBORF1234/",
       "@type": ["OpenReadingFrame", "Item"],
       dbxrefs: ["hORFeome:8945"],
-      gene: [
+      genes: [
         {
           symbol: "CXXC1",
           geneid: "ENSG00000163930",
@@ -861,7 +861,7 @@ describe("Test OpenReadingFrame component", () => {
       "@id": "/open-reading-frames/CCSBORF1234/",
       "@type": ["OpenReadingFrame", "Item"],
       dbxrefs: ["hORFeome:8945"],
-      gene: [
+      genes: [
         {
           symbol: "CXXC1",
           geneid: "ENSG00000163930",
