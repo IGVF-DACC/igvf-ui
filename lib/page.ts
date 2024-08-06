@@ -14,7 +14,7 @@ import type {
 /**
  * Tracks the parts of a page object that the user can modify when editing a page.
  */
-type PageMeta = {
+export type PageMeta = {
   award: string;
   lab: string;
   name: string;
@@ -26,7 +26,7 @@ type PageMeta = {
 /**
  * Contents of the blocks array within the layout property of a page object.
  */
-type PageLayoutComponent = {
+export type PageLayoutComponent = {
   "@id": string;
   "@type": string;
   body: string;
@@ -39,7 +39,7 @@ type PageLayoutComponent = {
 export interface PageObject extends DatabaseObject {
   award?: string;
   lab?: string;
-  layout: {
+  layout?: {
     blocks: PageLayoutComponent[];
   };
   name: string;

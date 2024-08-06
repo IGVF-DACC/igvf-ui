@@ -8,7 +8,7 @@ describe("Test the abstract CURIE base class works OK", () => {
     expect(validCurie.url).toBe("");
   });
 
-  it("creates an invalid abstract Curie object and has expected getter results", () => {
+  it("creates an invalid abstract CURIE object and has expected getter results", () => {
     const validCurie = new Curie("EFO");
     expect(validCurie.isValid).toBe(false);
     expect(validCurie.curie).toBe("EFO");

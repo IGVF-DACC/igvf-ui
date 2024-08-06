@@ -4,20 +4,20 @@
  * dark-mode setting.
  */
 export default class DarkModeManager {
-  #isHandlerInstalled = false;
-  #handleDarkModeChange;
-  #onDarkModeChange = null;
+  private isHandlerInstalled = false;
+  private handleDarkModeChange = null;
+  private onDarkModeChange = null;
 
   /**
    * onChangeCallback is an optional function that will be called whenever the current dark mode
    * settings are changed. It takes a boolean as a parameter, `true` representing when dark mode
    * has been switched on, and `false` when dark mode has been switched off.
    */
-  constructor(onChangeCallback = null) {
+  constructor(onChangeCallback?: (isDarkMode: boolean) => void) {
     // handleDarkModeChangeUnbound gets called by the browser event listener, so we must bind it to
     // `this` to provide the class context when called.
-    this.#onDarkModeChange = onChangeCallback;
-    this.#handleDarkModeChange = this.#handleDarkModeChangeUnbound.bind(this);
+    this.onDarkModeChange = onChangeCallback;
+    this.handleDarkModeChange = this.handleDarkModeChangeUnbound.bind(this);
   }
 
   /**
@@ -26,7 +26,7 @@ export default class DarkModeManager {
    * context when called, through `this.#handleDarkModeChange`.
    * @param {object} event Color scheme event
    */
-  #handleDarkModeChangeUnbound(event) {
+  private handleDarkModeChangeUnbound(event: MediaQueryListEvent): void {
     if (event.matches) {
       this.setDarkMode();
     } else {
@@ -37,23 +37,27 @@ export default class DarkModeManager {
   /**
    * Sets light mode by removing the Tailwind CSS ".dark" class from the <html> element.
    */
-  setLightMode() {
+  setLightMode(): void {
     document.documentElement.classList.remove("dark");
-    this.#onDarkModeChange && this.#onDarkModeChange(false);
+    if (this.onDarkModeChange) {
+      this.onDarkModeChange(false);
+    }
   }
 
   /**
    * Sets dark mode by adding the Tailwind CSS ".dark" class to the <html> element.
    */
-  setDarkMode() {
+  setDarkMode(): void {
     document.documentElement.classList.add("dark");
-    this.#onDarkModeChange && this.#onDarkModeChange(true);
+    if (this.onDarkModeChange) {
+      this.onDarkModeChange(true);
+    }
   }
 
   /**
    * Adds the ".dark" Tailwind CSS class to the <html> element if the current OS dark mode is on.
    */
-  setCurrentDarkMode() {
+  setCurrentDarkMode(): void {
     if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
       this.setDarkMode();
     } else {
@@ -65,12 +69,12 @@ export default class DarkModeManager {
    * Installs the dark-mode event listener. Normally, call this once when the <App> component
    * mounts.
    */
-  installDarkModeListener() {
-    if (!this.#isHandlerInstalled) {
+  installDarkModeListener(): void {
+    if (!this.isHandlerInstalled) {
       window
         .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", this.#handleDarkModeChange);
-      this.#isHandlerInstalled = true;
+        .addEventListener("change", this.handleDarkModeChange);
+      this.isHandlerInstalled = true;
     }
   }
 
@@ -78,12 +82,12 @@ export default class DarkModeManager {
    * Removes the dark-mode event listener. Normally, call this once when the <App> component
    * unmounts.
    */
-  removeDarkModeListener() {
-    if (this.#isHandlerInstalled) {
+  removeDarkModeListener(): void {
+    if (this.isHandlerInstalled) {
       window
         .matchMedia("(prefers-color-scheme: dark)")
-        .removeEventListener("change", this.#handleDarkModeChange);
-      this.#isHandlerInstalled = false;
+        .removeEventListener("change", this.handleDarkModeChange);
+      this.isHandlerInstalled = false;
     }
   }
 }

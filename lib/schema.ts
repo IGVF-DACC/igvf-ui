@@ -1,12 +1,22 @@
+import type {
+  DatabaseObject,
+  Profiles,
+  Schema,
+  SearchResults,
+} from "../globals.d";
+
 /**
  * Given a database item object, return the schema that matches its @type. The first @type that
  * matches a schema in the profiles object gets used. If no match is found or `profiles` hasn't yet
  * loaded, return null.
- * @param {object} item A database item object
- * @param {object} profiles Contains all schemas keyed by `@type`; from /profiles endpoint
- * @returns {object} The first schema that matches the item's `@type`
+ * @param item A database item object
+ * @param profiles Contains all schemas keyed by `@type`; from /profiles endpoint
+ * @returns The first schema that matches the item's `@type`
  */
-export function itemToSchema(item, profiles) {
+export function itemToSchema(
+  item: DatabaseObject,
+  profiles: Profiles
+): Schema | null {
   if (profiles && item && item["@type"]) {
     const matchingSchema = item["@type"].find((type) => profiles[type]);
     return matchingSchema ? profiles[matchingSchema] : null;
@@ -20,7 +30,10 @@ export function itemToSchema(item, profiles) {
  * @param {object} profiles Contains all schemas keyed by `@type`; from /profiles endpoint
  * @returns {object} The schema that matches the collection's `@type`; null if none
  */
-export function collectionToSchema(collection, profiles) {
+export function collectionToSchema(
+  collection: SearchResults,
+  profiles: Profiles
+): Schema | null {
   if (profiles && collection && collection["@type"]) {
     const collectionType = collection["@type"][0];
     if (collectionType) {

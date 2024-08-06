@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { UC } from "../../../lib/constants";
 import profiles from "../../__mocks__/profile";
 import SessionContext from "../../session-context";
 import Award from "../list-renderer/award";
@@ -2183,7 +2184,9 @@ describe("Test PhenotypicFeature component", () => {
     expect(uniqueId).toHaveTextContent(/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent("Body Weight Measurement - 58 kilogram");
+    expect(title).toHaveTextContent(
+      `Body Weight Measurement ${UC.mdash} 58 kilogram`
+    );
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toBeNull();

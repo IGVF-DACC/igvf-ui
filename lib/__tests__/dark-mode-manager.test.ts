@@ -3,8 +3,8 @@ import DarkModeManager from "../dark-mode-manager";
 import MatchMediaMock from "../__mocks__/media-query-mock";
 
 describe("Test proper DOM manipulation for Tailwind CSS dark mode", () => {
-  let darkModeManager;
-  let callback;
+  let darkModeManager: DarkModeManager;
+  let callback: jest.Mock;
 
   beforeEach(() => {
     callback = jest.fn();
