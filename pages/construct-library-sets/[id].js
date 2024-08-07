@@ -392,12 +392,15 @@ export async function getServerSideProps({ params, req, query }) {
       uniqueSequencingPlatformPaths.length > 0
         ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
         : [];
-    const integratedContentFiles = constructLibrarySet.integrated_content_files
-      ? await requestFiles(
-          constructLibrarySet.integrated_content_files,
-          request
-        )
-      : [];
+
+    let integratedContentFiles = [];
+    if (constructLibrarySet.integrated_content_files?.length > 0) {
+      const filePaths = constructLibrarySet.integrated_content_files.map(
+        (file) => file["@id"]
+      );
+      integratedContentFiles = await requestFiles(filePaths, request);
+    }
+
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
