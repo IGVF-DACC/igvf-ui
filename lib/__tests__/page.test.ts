@@ -1,7 +1,11 @@
+import { DataProviderObject, SessionObject } from "../../globals.d";
 import {
   detectConflictingName,
   generatePageParentPaths,
   getPageTitleAndCodes,
+  PageLayoutComponent,
+  PageMeta,
+  PageObject,
   rewriteBlockIds,
   savePage,
   sliceBlocks,
@@ -9,7 +13,7 @@ import {
 
 describe("Test getPageTitleAndCodes", () => {
   it("Returns the title and codes if present in title", () => {
-    let page = {
+    let page: DataProviderObject = {
       title: "Page Title [first][second]",
     };
     expect(getPageTitleAndCodes(page)).toEqual({
@@ -27,7 +31,7 @@ describe("Test getPageTitleAndCodes", () => {
   });
 
   it("Returns the title if codes not present in title", () => {
-    const page = {
+    const page: DataProviderObject = {
       title: "Page Title",
     };
     expect(getPageTitleAndCodes(page)).toEqual({
@@ -37,7 +41,7 @@ describe("Test getPageTitleAndCodes", () => {
   });
 
   it("Returns the entire title and codes if codes are malformed", () => {
-    const page = {
+    const page: DataProviderObject = {
       title: "Page Title [first][second",
     };
     expect(getPageTitleAndCodes(page)).toEqual({
@@ -47,7 +51,7 @@ describe("Test getPageTitleAndCodes", () => {
   });
 
   it("Returns no title nor codes if title is empty", () => {
-    const page = {
+    const page: DataProviderObject = {
       title: "",
     };
     expect(getPageTitleAndCodes(page)).toEqual({
@@ -59,18 +63,22 @@ describe("Test getPageTitleAndCodes", () => {
 
 describe("Test detectConflictingName", () => {
   it("Returns true if the name conflicts with another page's name", () => {
-    const pages = [
+    const pages: PageObject[] = [
       {
-        name: "Page Name",
+        "@type": ["Page", "Item"],
+        name: "test-page",
+        title: "Test Page",
       },
     ];
-    expect(detectConflictingName("Page Name", pages)).toBe(true);
+    expect(detectConflictingName("test-page", pages)).toBe(true);
   });
 
   it("Returns false if the name does not conflict with another page's name", () => {
-    const pages = [
+    const pages: PageObject[] = [
       {
-        name: "Page Name",
+        "@type": ["Page", "Item"],
+        name: "test-page",
+        title: "Test Page",
       },
     ];
     expect(detectConflictingName("Another Page Name", pages)).toBe(false);
@@ -79,43 +87,51 @@ describe("Test detectConflictingName", () => {
 
 describe("Test savePage()", () => {
   it("Updates a page object", async () => {
-    const page = {
-      "@id": "http://localhost:3000/page/1",
+    const page: PageObject = {
+      "@id": "/page/1",
+      "@type": ["Page", "Item"],
       award: "/awards/HG",
       lab: "/lab/j-michael-cherry",
+      name: "page-title",
       title: "Page Title",
       layout: {
         blocks: [
           {
+            "@id": "#block1",
             "@type": "markdown",
             body: "Page content",
             direction: "ltr",
-            title: "Page content",
           },
         ],
       },
     };
 
-    const blocks = [
+    const blocks: PageLayoutComponent[] = [
       {
+        "@id": "#block1",
         "@type": "markdown",
         body: "Updated page content.",
+        direction: "ltr",
       },
     ];
 
-    const pageMeta = {
+    const pageMeta: PageMeta = {
       award: "/awards/HG",
+      lab: "/lab/j-michael-cherry",
+      name: "page-title",
+      parent: "",
+      status: "released",
       title: "Updated Page Title",
     };
 
-    const session = {
+    const session: SessionObject = {
       _csrft_: "6FnqvE30k90JdOE2fr9j1jOX1IsDctBJuQex34nv",
     };
 
     const expectedResult = {
       "@graph": [
         {
-          "@id": "/help/ontologies/",
+          "@id": "/page/1",
           "@type": ["Page", "Item"],
           creation_timestamp: "2023-04-26T17:26:45.360316+00:00",
           lab: "/labs/j-michael-cherry/",
@@ -129,8 +145,8 @@ describe("Test savePage()", () => {
               },
             ],
           },
-          name: "ontologies",
-          parent: "/help/",
+          name: "page-title",
+          parent: "/page/",
           schema_version: "3",
           status: "released",
           submitted_by: "/users/627eedbc-7cb3-4de3-9743-a86266e435a6/",
@@ -176,7 +192,9 @@ describe("Test savePage()", () => {
   });
 
   it("Creates a new page object", async () => {
-    const initialPage = {
+    const initialPage: PageObject = {
+      "@id": "/help/ontologies/",
+      "@type": ["Page", "Item"],
       name: "",
       title: "",
       status: "in progress",
@@ -192,19 +210,25 @@ describe("Test savePage()", () => {
       },
     };
 
-    const blocks = [
+    const blocks: PageLayoutComponent[] = [
       {
+        "@id": "#block1",
         "@type": "markdown",
         body: "Initial page content.",
+        direction: "ltr",
       },
     ];
 
-    const pageMeta = {
+    const pageMeta: PageMeta = {
       award: "/awards/HG",
+      lab: "/lab/j-michael-cherry",
+      name: "ontologies",
+      parent: "/help/",
+      status: "released",
       title: "Initial Page Title",
     };
 
-    const session = {
+    const session: SessionObject = {
       _csrft_: "6FnqvE30k90JdOE2fr9j1jOX1IsDctBJuQex34nv",
     };
 
@@ -278,36 +302,44 @@ describe("Test savePage()", () => {
   });
 
   it("Returns an error object from getting the editable object", async () => {
-    const page = {
+    const page: PageObject = {
       "@id": "http://localhost:3000/page/1",
+      "@type": ["Page", "Item"],
       award: "/awards/HG",
       lab: "/lab/j-michael-cherry",
+      name: "page-title",
       title: "Page Title",
       layout: {
         blocks: [
           {
+            "@id": "#block1",
             "@type": "markdown",
             body: "Page content",
             direction: "ltr",
-            title: "Page content",
           },
         ],
       },
     };
 
-    const blocks = [
+    const blocks: PageLayoutComponent[] = [
       {
+        "@id": "#block1",
         "@type": "markdown",
         body: "Initial page content.",
+        direction: "ltr",
       },
     ];
 
-    const pageMeta = {
+    const pageMeta: PageMeta = {
       award: "/awards/HG",
+      lab: "/lab/j-michael-cherry",
+      name: "page-title",
+      parent: "",
+      status: "released",
       title: "Initial Page Title",
     };
 
-    const session = {
+    const session: SessionObject = {
       _csrft_: "6FnqvE30k90JdOE2fr9j1jOX1IsDctBJuQex34nv",
     };
 
@@ -368,32 +400,40 @@ describe("Test savePage()", () => {
       });
     });
 
-    const page = {
+    const page: PageObject = {
       "@id": "http://localhost:3000/page/1",
+      "@type": ["Page", "Item"],
       award: "/awards/HG",
       lab: "/lab/j-michael-cherry",
+      name: "page-title",
       title: "Page Title",
       layout: {
         blocks: [
           {
+            "@id": "#block1",
             "@type": "markdown",
             body: "Page content",
             direction: "ltr",
-            title: "Page Title",
           },
         ],
       },
     };
 
-    const blocks = [
+    const blocks: PageLayoutComponent[] = [
       {
+        "@id": "#block1",
         "@type": "markdown",
         body: "Updated page content.",
+        direction: "ltr",
       },
     ];
 
-    const pageMeta = {
+    const pageMeta: PageMeta = {
       award: "/awards/HG",
+      lab: "/lab/j-michael-cherry",
+      name: "page-title",
+      parent: "",
+      status: "released",
       title: "Updated Page Title",
     };
 
@@ -409,20 +449,18 @@ describe("Test savePage()", () => {
 
 describe("Test rewriteBlockIds()", () => {
   it("Rewrites block IDs", () => {
-    const blocks = [
+    const blocks: PageLayoutComponent[] = [
       {
         "@id": "#block14",
         "@type": "markdown",
         body: "Page content 14",
         direction: "ltr",
-        title: "Page Content 14",
       },
       {
         "@id": "#block8",
         "@type": "markdown",
         body: "Page content 8",
         direction: "ltr",
-        title: "Page Content 8",
       },
     ];
 
@@ -433,14 +471,12 @@ describe("Test rewriteBlockIds()", () => {
         "@type": "markdown",
         body: "Page content 14",
         direction: "ltr",
-        title: "Page Content 14",
       },
       {
         "@id": "#block2",
         "@type": "markdown",
         body: "Page content 8",
         direction: "ltr",
-        title: "Page Content 8",
       },
     ]);
   });
@@ -448,41 +484,36 @@ describe("Test rewriteBlockIds()", () => {
 
 describe("Test sliceBlocks()", () => {
   it("Copies a segment of blocks", () => {
-    const blocks = [
+    const blocks: PageLayoutComponent[] = [
       {
         "@id": "#block1",
         "@type": "markdown",
         body: "Page content 1",
         direction: "ltr",
-        title: "Page Content 1",
       },
       {
         "@id": "#block2",
         "@type": "markdown",
         body: "Page content 2",
         direction: "ltr",
-        title: "Page Content 2",
       },
       {
         "@id": "#block3",
         "@type": "markdown",
         body: "Page content 3",
         direction: "ltr",
-        title: "Page Content 3",
       },
       {
         "@id": "#block4",
         "@type": "markdown",
         body: "Page content 4",
         direction: "ltr",
-        title: "Page Content 4",
       },
       {
         "@id": "#block5",
         "@type": "markdown",
         body: "Page content 5",
         direction: "ltr",
-        title: "Page Content 5",
       },
     ];
 
@@ -493,40 +524,35 @@ describe("Test sliceBlocks()", () => {
         "@type": "markdown",
         body: "Page content 2",
         direction: "ltr",
-        title: "Page Content 2",
       },
       {
         "@id": "#block3",
         "@type": "markdown",
         body: "Page content 3",
         direction: "ltr",
-        title: "Page Content 3",
       },
     ]);
   });
 
   it("Copies all the blocks when passing no limits", () => {
-    const blocks = [
+    const blocks: PageLayoutComponent[] = [
       {
         "@id": "#block1",
         "@type": "markdown",
         body: "Page content 1",
         direction: "ltr",
-        title: "Page Content 1",
       },
       {
         "@id": "#block2",
         "@type": "markdown",
         body: "Page content 2",
         direction: "ltr",
-        title: "Page Content 2",
       },
       {
         "@id": "#block3",
         "@type": "markdown",
         body: "Page content 3",
         direction: "ltr",
-        title: "Page Content 3",
       },
     ];
 

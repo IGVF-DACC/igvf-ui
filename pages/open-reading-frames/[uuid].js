@@ -45,11 +45,7 @@ export default function OpenReadingFrame({ orf, isJson }) {
                   <DataItemValue>
                     <SeparatedList isCollapsible>
                       {orf.gene.map((gene) => (
-                        <EnsemblLink
-                          geneid={gene.geneid}
-                          key={gene}
-                          taxa={"Homo sapiens"}
-                        />
+                        <EnsemblLink key={gene} geneid={gene.geneid} />
                       ))}
                     </SeparatedList>
                   </DataItemValue>

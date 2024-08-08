@@ -177,6 +177,9 @@ export const dbxrefPrefixMap = {
     pattern:
       "https://ontobee.org/ontology/UBERON?iri=http://purl.obolibrary.org/obo/UBERON_{0}",
   },
+  SRA: {
+    pattern: "http://www.ncbi.nlm.nih.gov/Traces/sra/?run={0}",
+  },
 };
 
 /**

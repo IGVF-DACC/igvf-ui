@@ -8,10 +8,10 @@ const HIDDEN_FACET_FIELDS = ["type"];
  * the filter for `type=InVitroSystem`, the term is `InVitroSystem`. This function also takes
  * wildcard terms into account. For example, with the filter `type=*`, this function returns is
  * `ANY`. If instead the filter is `type!=*`, this function returns `NOT`.
- * @param {object} filter Search result filter object for a single term
- * @returns {string} Term for the filter, including wildcard terms
+ * @param filter Search result filter object for a single term
+ * @returns Term for the filter, including wildcard terms
  */
-export function getFilterTerm(filter) {
+export function getFilterTerm(filter: { field: string; term: string }): string {
   const isAnyOrNot = filter.term === "*";
 
   let term;
@@ -27,9 +27,11 @@ export function getFilterTerm(filter) {
 
 /**
  * Filter out the hidden facet fields from the given array of facets.
- * @param {array} facets Property of search results
- * @returns {array} Facets that the user can see
+ * @param facets Property of search results
+ * @returns Facets that the user can see
  */
-export function getVisibleFacets(facets) {
+export function getVisibleFacets(
+  facets: { field: string; count: number }[]
+): { field: string; count: number }[] {
   return facets.filter((facet) => !HIDDEN_FACET_FIELDS.includes(facet.field));
 }

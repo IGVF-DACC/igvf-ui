@@ -158,11 +158,11 @@ export interface SearchResults {
   clear_filters: string;
   columns: SearchResultsColumns;
   facet_groups?: SearchResultsFacetGroup[];
-  facets: SearchResultsFacet[];
-  filters: SearchResultsFilter[];
+  facets?: SearchResultsFacet[];
+  filters?: SearchResultsFilter[];
   non_sortable?: string[];
   notification: string;
-  sort: SearchResultsSort;
+  sort?: SearchResultsSort;
   title: string;
   total: number;
 }
@@ -216,7 +216,7 @@ export interface DatabaseWriteResponse {
 export interface SessionObject {
   _csrft_: string;
   "auth.userid"?: string;
-  edits: unknown[][];
+  edits?: unknown[][];
 }
 
 /**
