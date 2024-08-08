@@ -1,12 +1,12 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.6.0
+  - repo: https://github.com/hhatto/autopep8
+    rev: v2.3.1
     hooks:
       - id: autopep8
         exclude: '^(?!cdk\/)'
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.2.3
+    rev: v4.6.0
     hooks:
       - id: double-quote-string-fixer
         exclude: '^(?!cdk\/)'
