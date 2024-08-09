@@ -72,27 +72,12 @@ function composeRelatedDatasetReportLink(measurementSet) {
  * Display the assay details for the measurement set.
  */
 function AssayDetails({ measurementSet }) {
-  if (
-    measurementSet.library_construction_platform ||
-    measurementSet.sequencing_library_types?.length > 0
-  ) {
+  if (measurementSet.sequencing_library_types?.length > 0) {
     return (
       <>
         <DataAreaTitle>Assay Details</DataAreaTitle>
         <DataPanel>
           <DataArea>
-            {measurementSet.library_construction_platform && (
-              <>
-                <DataItemLabel>Library Construction Platform</DataItemLabel>
-                <DataItemValue>
-                  <Link
-                    href={measurementSet.library_construction_platform["@id"]}
-                  >
-                    {measurementSet.library_construction_platform.term_name}
-                  </Link>
-                </DataItemValue>
-              </>
-            )}
             {measurementSet.sequencing_library_types?.length > 0 && (
               <>
                 <DataItemLabel>Sequencing Library Types</DataItemLabel>
