@@ -1,18 +1,12 @@
 // node_modules
 import _ from "lodash";
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
-import {
-  DataArea,
-  DataItemLabel,
-  DataItemValue,
-  DataPanel,
-} from "../../components/data-area";
+import { DataArea, DataPanel } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
@@ -41,7 +35,6 @@ export default function AuxiliarySet({
   auxiliarySet,
   publications,
   documents,
-  libraryConstructionPlatform = null,
   files,
   relatedDatasets,
   seqspecFiles,
@@ -68,18 +61,10 @@ export default function AuxiliarySet({
         <JsonDisplay item={auxiliarySet} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileSetDataItems item={auxiliarySet} publications={publications}>
-                {libraryConstructionPlatform && (
-                  <>
-                    <DataItemLabel>Library Construction Platform</DataItemLabel>
-                    <DataItemValue>
-                      <Link href={libraryConstructionPlatform["@id"]}>
-                        {libraryConstructionPlatform.term_name}
-                      </Link>
-                    </DataItemValue>
-                  </>
-                )}
-              </FileSetDataItems>
+              <FileSetDataItems
+                item={auxiliarySet}
+                publications={publications}
+              />
             </DataArea>
           </DataPanel>
           <FileSetFilesTables
@@ -134,8 +119,6 @@ export default function AuxiliarySet({
 AuxiliarySet.propTypes = {
   // Auxiliary set to display
   auxiliarySet: PropTypes.object.isRequired,
-  // Library construction platform object
-  libraryConstructionPlatform: PropTypes.object,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Related Datasets to display
@@ -166,13 +149,6 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = auxiliarySet.documents
       ? await requestDocuments(auxiliarySet.documents, request)
       : [];
-
-    const libraryConstructionPlatform =
-      auxiliarySet.library_construction_platform
-        ? (
-            await request.getObject(auxiliarySet.library_construction_platform)
-          ).optional()
-        : null;
 
     let files = [];
     if (auxiliarySet.files.length > 0) {
@@ -224,7 +200,6 @@ export async function getServerSideProps({ params, req, query }) {
         auxiliarySet,
         publications,
         documents,
-        libraryConstructionPlatform,
         files,
         relatedDatasets,
         seqspecFiles,
