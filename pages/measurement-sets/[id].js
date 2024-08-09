@@ -274,11 +274,8 @@ export default function MeasurementSet({
             <FileSetTable
               fileSets={controlFileSets}
               title="Control File Sets"
-              reportLinkSpecs={{
-                fileSetType: "FileSet",
-                identifierProp: "control_for.accession",
-                itemIdentifier: measurementSet.accession,
-              }}
+              reportLink={`/multireport/?type=FileSet&control_for.@id=${measurementSet["@id"]}`}
+              reportLabel="Report of control file sets in this file set"
             />
           )}
           {relatedMultiomeSets.length > 0 && (
@@ -286,17 +283,14 @@ export default function MeasurementSet({
               fileSets={relatedMultiomeSets}
               title="Related Multiome Datasets"
               reportLink={composeRelatedDatasetReportLink(measurementSet)}
+              reportLabel="Report of related multiome datasets"
             />
           )}
           {auxiliarySets.length > 0 && (
             <FileSetTable
               fileSets={auxiliarySets}
               title="Auxiliary Datasets"
-              reportLinkSpecs={{
-                fileSetType: "AuxiliarySet",
-                identifierProp: "measurement_sets.accession",
-                itemIdentifier: measurementSet.accession,
-              }}
+              reportLink={`/multireport/?type=AuxiliarySet&measurement_sets.@id=${measurementSet["@id"]}`}
               fileSetMeta={{
                 showFileSetFiles: true,
                 fileFilter: (files) => {

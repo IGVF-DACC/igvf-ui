@@ -111,11 +111,8 @@ export default function ModelSet({
             <FileSetTable
               fileSets={inputFileSets}
               title="Input File Sets"
-              reportLinkSpecs={{
-                fileSetType: "FileSet",
-                identifierProp: "input_file_set_for",
-                itemIdentifier: modelSet["@id"],
-              }}
+              reportLink={`/multireport/?type=FileSet&input_file_set_for=${modelSet["@id"]}`}
+              reportLabel={`View file sets used as input file sets for ${modelSet.accession}`}
             />
           )}
           {files.length > 0 && (

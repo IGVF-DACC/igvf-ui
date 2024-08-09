@@ -76,11 +76,8 @@ export default function TechnicalSample({
           {sample.file_sets.length > 0 && (
             <FileSetTable
               fileSets={sample.file_sets}
-              reportLinkSpecs={{
-                fileSetType: "FileSet",
-                identifierProp: "samples.accession",
-                itemIdentifier: sample.accession,
-              }}
+              reportLink={`/multireport/?type=FileSet&samples.@id=${sample["@id"]}`}
+              reportLabel="Report of file sets containing this sample"
             />
           )}
           {multiplexedInSamples.length > 0 && (

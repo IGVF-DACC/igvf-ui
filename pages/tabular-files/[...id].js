@@ -101,6 +101,7 @@ export default function TabularFile({
               fileSets={integratedIn}
               title="Integrated In"
               reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files=${tabularFile["@id"]}`}
+              reportLabel={`Report of ConstructLibrarySets that integrate ${tabularFile.accession}`}
             />
           )}
           {fileFormatSpecifications.length > 0 && (

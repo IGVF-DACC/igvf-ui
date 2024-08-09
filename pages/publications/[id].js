@@ -126,6 +126,7 @@ export default function Publication({
             <FileSetTable
               fileSets={fileSets}
               reportLink={`/multireport/?type=FileSet&publications.@id=${publication["@id"]}`}
+              reportLabel="Report of file sets with this publication"
             />
           )}
           {workflows.length > 0 && (

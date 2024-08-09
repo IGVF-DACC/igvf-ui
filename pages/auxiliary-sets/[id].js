@@ -110,22 +110,16 @@ export default function AuxiliarySet({
             <FileSetTable
               fileSets={relatedDatasets}
               title="Related Measurement Sets"
-              reportLinkSpecs={{
-                fileSetType: "MeasurementSet",
-                identifierProp: "auxiliary_sets.accession",
-                itemIdentifier: auxiliarySet.accession,
-              }}
+              reportLink={`/multireport/?type=MeasurementSet&auxiliary_sets.@id=${auxiliarySet["@id"]}`}
+              reportLabel="Report of measurement sets related to this auxiliary set"
             />
           )}
           {controlForSets.length > 0 && (
             <FileSetTable
               fileSets={controlForSets}
               title="File Sets This Auxiliary Set Serves as a Control For"
-              reportLinkSpecs={{
-                fileSetType: "FileSet",
-                identifierProp: "control_file_sets.accession",
-                itemIdentifier: auxiliarySet.accession,
-              }}
+              reportLink={`/multireport/?type=MeasurementSet&control_file_sets.@id=${auxiliarySet["@id"]}`}
+              reportLabel="Report of file sets this auxiliary set serves as a control for"
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
