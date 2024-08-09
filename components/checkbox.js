@@ -27,7 +27,7 @@ export default function Checkbox({
     <label
       id={id}
       data-testid="checkbox-label"
-      className={`flex cursor-pointer${pointerEventsClass} ${className}`}
+      className={`flex items-center cursor-pointer${pointerEventsClass} ${className}`}
     >
       <input
         className={`mr-1 cursor-pointer${pointerEventsClass}`}

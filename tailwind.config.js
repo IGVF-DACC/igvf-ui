@@ -364,5 +364,22 @@ module.exports = {
   plugins: [
     require("@tailwindcss/typography"),
     require("@tailwindcss/container-queries"),
+
+    // Add .break-anywhere class until this gets built into Tailwind CSS. A PR exists for this but
+    // it hasn't been merged yet:
+    // https://github.com/tailwindlabs/tailwindcss/pull/12128
+    function ({ addUtilities }) {
+      const newUtilities = {
+        ".break-anywhere": {
+          "@supports (overflow-wrap: anywhere)": {
+            "overflow-wrap": "anywhere",
+          },
+          "@supports not (overflow-wrap: anywhere)": {
+            "word-break": "break-word",
+          },
+        },
+      };
+      addUtilities(newUtilities);
+    },
   ],
 };
