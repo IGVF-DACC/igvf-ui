@@ -41,7 +41,7 @@ export default function OpenReadingFrame({ orf, isJson }) {
               )}
               {orf.genes.length > 0 && (
                 <>
-                  <DataItemLabel>ENSEMBL GeneID</DataItemLabel>
+                  <DataItemLabel>ENSEMBL GeneIDs</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList isCollapsible>
                       {orf.genes.map((gene) => (
