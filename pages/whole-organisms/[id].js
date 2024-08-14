@@ -69,6 +69,7 @@ export default function WholeOrganism({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 donors={donors}
+                institutionalCertificates={sample.institutional_certificates}
                 publications={publications}
                 sampleTerms={sample.sample_terms}
                 sources={sources}

@@ -27,6 +27,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -108,6 +109,8 @@ export default function MeasurementSet({
   files,
   relatedMultiomeSets,
   auxiliarySets,
+  inputFileSetFor,
+  controlFor,
   samples,
   seqspecFiles,
   sequencingPlatforms,
@@ -175,6 +178,20 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
+                {measurementSet.targeted_genes?.length > 0 && (
+                  <>
+                    <DataItemLabel>Targeted Genes</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {measurementSet.targeted_genes.map((gene) => (
+                          <Link key={gene["@id"]} href={gene["@id"]}>
+                            {gene.symbol}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
                 {measurementSet.publication_identifiers?.length > 0 && (
                   <>
                     <DataItemLabel>Publication Identifiers</DataItemLabel>
@@ -227,6 +244,20 @@ export default function MeasurementSet({
                     </DataItemList>
                   </>
                 )}
+                {measurementSet.external_image_url && (
+                  <>
+                    <DataItemLabel>External Image URL</DataItemLabel>
+                    <DataItemValue>
+                      <a
+                        href={measurementSet.external_image_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {measurementSet.external_image_url}
+                      </a>
+                    </DataItemValue>
+                  </>
+                )}
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
@@ -259,8 +290,24 @@ export default function MeasurementSet({
             <FileSetTable
               fileSets={controlFileSets}
               title="Control File Sets"
-              reportLink={`/multireport/?type=FileSet&control_for.@id=${measurementSet["@id"]}`}
+              reportLink={`/multireport/?type=FileSet&control_for=${measurementSet["@id"]}`}
               reportLabel="Report of control file sets in this file set"
+            />
+          )}
+          {inputFileSetFor.length > 0 && (
+            <FileSetTable
+              fileSets={inputFileSetFor}
+              reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${measurementSet["@id"]}`}
+              reportLabel="Report of file sets that this measurement set is an input for"
+              title="File Sets Using This Measurement Set as an Input"
+            />
+          )}
+          {controlFor.length > 0 && (
+            <FileSetTable
+              fileSets={controlFor}
+              reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${measurementSet["@id"]}`}
+              reportLabel="Report of file sets that have this measurement set as a control"
+              title="File Sets Controlled by This Measurement Set"
             />
           )}
           {relatedMultiomeSets.length > 0 && (
@@ -308,6 +355,10 @@ MeasurementSet.propTypes = {
   relatedMultiomeSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Auxiliary datasets
   auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this measurement set is an input for
+  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that have this measurement set as a control
+  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sample objects associated with the measurement set
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
@@ -348,6 +399,19 @@ export async function getServerSideProps({ params, req, query }) {
         (control) => control["@id"]
       );
       controlFileSets = await requestFileSets(controlPaths, request);
+    }
+
+    const inputFileSetFor =
+      measurementSet.input_file_set_for.length > 0
+        ? await requestFileSets(measurementSet.input_file_set_for, request)
+        : [];
+
+    let controlFor = [];
+    if (measurementSet.control_for.length > 0) {
+      const controlForPaths = measurementSet.control_for.map(
+        (controlFor) => controlFor["@id"]
+      );
+      controlFor = await requestFileSets(controlForPaths, request);
     }
 
     let relatedMultiomeSets = [];
@@ -420,6 +484,8 @@ export async function getServerSideProps({ params, req, query }) {
         files,
         relatedMultiomeSets,
         auxiliarySets,
+        inputFileSetFor,
+        controlFor,
         samples,
         seqspecFiles,
         sequencingPlatforms,

@@ -17,6 +17,7 @@ import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
+import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -43,6 +44,7 @@ export default function AlignmentFile({
   documents,
   derivedFrom,
   derivedFromFileSets,
+  inputFileFor,
   fileFormatSpecifications,
   referenceFiles,
   isJson,
@@ -110,7 +112,15 @@ export default function AlignmentFile({
               derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${alignmentFile["@id"]}`}
               reportLabel={`Report of files ${alignmentFile.accession} derives from`}
-              title={`Files ${alignmentFile.accession} Derives From`}
+              title="Files This File Derives From"
+            />
+          )}
+          {inputFileFor.length > 0 && (
+            <FileTable
+              files={inputFileFor}
+              reportLink={`/multireport/?type=File&derived_from=${alignmentFile["@id"]}`}
+              reportLabel="Report of files derived from this file"
+              title="Files Derived From This File"
             />
           )}
           {fileFormatSpecifications.length > 0 && (
@@ -138,6 +148,8 @@ AlignmentFile.propTypes = {
   derivedFrom: PropTypes.array.isRequired,
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files that derive from this file
+  inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
@@ -183,6 +195,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       uniqueDerivedFromFileSetPaths.length > 0
         ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
         : [];
+    const inputFileFor =
+      alignmentFile.input_file_for.length > 0
+        ? await requestFiles(alignmentFile.input_file_for, request)
+        : [];
     const fileFormatSpecifications = alignmentFile.file_format_specifications
       ? await requestDocuments(
           alignmentFile.file_format_specifications,
@@ -203,6 +219,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         documents,
         derivedFrom,
         derivedFromFileSets,
+        inputFileFor,
         fileFormatSpecifications,
         pageContext: { title: alignmentFile.accession },
         attribution,

@@ -16,9 +16,10 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestDocuments } from "../../lib/common-requests";
+import { requestDocuments, requestBiosamples } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -28,6 +29,7 @@ import { Ok } from "../../lib/result";
 
 export default function Treatment({
   treatment,
+  biosamplesTreated,
   documents,
   attribution,
   sources,
@@ -135,6 +137,12 @@ export default function Treatment({
               )}
             </DataArea>
           </DataPanel>
+          {biosamplesTreated.length > 0 && (
+            <SampleTable
+              samples={biosamplesTreated}
+              title="Treated Biosamples"
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -146,6 +154,8 @@ export default function Treatment({
 Treatment.propTypes = {
   // Technical treatment to display
   treatment: PropTypes.object.isRequired,
+  // Biosamples treated by this treatment
+  biosamplesTreated: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents treatment
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this treatment
@@ -163,6 +173,9 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/treatments/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(treatment)) {
+    const biosamplesTreated = treatment.biosamples_treated
+      ? await requestBiosamples(treatment.biosamples_treated, request)
+      : [];
     const documents = treatment.documents
       ? await requestDocuments(treatment.documents, request)
       : [];
@@ -183,6 +196,7 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         treatment,
+        biosamplesTreated,
         documents,
         sources,
         pageContext: {

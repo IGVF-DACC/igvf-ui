@@ -229,6 +229,12 @@ function LibraryDetails({ library }) {
               </DataItemValue>
             </>
           )}
+          {library.targeton && (
+            <>
+              <DataItemLabel>Targeton</DataItemLabel>
+              <DataItemValue>{library.targeton}</DataItemValue>
+            </>
+          )}
         </DataArea>
       </DataPanel>
     </>
@@ -242,7 +248,8 @@ LibraryDetails.propTypes = {
 
 export default function ConstructLibrarySet({
   constructLibrarySet,
-  controlForSets,
+  controlFor,
+  inputFileSetFor,
   documents,
   publications,
   files,
@@ -315,12 +322,20 @@ export default function ConstructLibrarySet({
               reportLabel="Report of files that have integrated in this construct library set"
             />
           )}
-          {controlForSets.length > 0 && (
+          {inputFileSetFor.length > 0 && (
             <FileSetTable
-              fileSets={controlForSets}
-              title={`File Sets with ${constructLibrarySet.accession} as a Control`}
+              fileSets={inputFileSetFor}
+              reportLink={`/multireport/?type=FileSet&input_file_sets=${constructLibrarySet["@id"]}`}
+              reportLabel="Report of file sets that this construct library set is an input for"
+              title="File Sets Using This Construct Library Set as an Input"
+            />
+          )}
+          {controlFor.length > 0 && (
+            <FileSetTable
+              fileSets={controlFor}
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of file sets that have this construct library set as a control"
+              title="File Sets Controlled by This Construct Library Set"
             />
           )}
           {constructLibrarySet.applied_to_samples.length > 0 && (
@@ -343,7 +358,9 @@ ConstructLibrarySet.propTypes = {
   // Construct library object this page displays
   constructLibrarySet: PropTypes.object.isRequired,
   // File sets controlled by this file set
-  controlForSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this file set is an input for
+  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
@@ -372,12 +389,18 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = constructLibrarySet.documents
       ? await requestDocuments(constructLibrarySet.documents, request)
       : [];
-    let controlForSets = [];
+
+    const inputFileSetFor =
+      constructLibrarySet.input_file_set_for.length > 0
+        ? await requestFileSets(constructLibrarySet.input_file_set_for, request)
+        : [];
+
+    let controlFor = [];
     if (constructLibrarySet.control_for.length > 0) {
       const controlForPaths = constructLibrarySet.control_for.map(
         (controlFor) => controlFor["@id"]
       );
-      controlForSets = await requestFileSets(controlForPaths, request);
+      controlFor = await requestFileSets(controlForPaths, request);
     }
 
     // Request files and their sequencing platforms.
@@ -419,7 +442,8 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         constructLibrarySet,
-        controlForSets,
+        controlFor,
+        inputFileSetFor,
         documents,
         files,
         seqspecFiles,

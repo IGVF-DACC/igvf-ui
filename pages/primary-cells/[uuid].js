@@ -77,6 +77,9 @@ export default function PrimaryCell({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 partOf={partOf}
+                institutionalCertificates={
+                  primaryCell.institutional_certificates
+                }
                 publications={publications}
                 sampleTerms={primaryCell.sample_terms}
                 sources={sources}

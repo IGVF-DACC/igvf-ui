@@ -9,6 +9,7 @@ import {
   requestFiles,
   requestFileSets,
   requestGenes,
+  requestInstitutionalCertificates,
   requestOntologyTerms,
   requestPages,
   requestPhenotypicFeatures,
@@ -839,12 +840,54 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toBeCalledWith(
-      "/search/?field=geneid&@id=/genes/ENSG00000163930/&@id=/genes/ENSG00000207705/&limit=2",
+      "/search/?field=geneid&field=symbol&@id=/genes/ENSG00000163930/&@id=/genes/ENSG00000207705/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual(mockResult["@graph"][0]);
     expect(result[1]).toEqual(mockResult["@graph"][1]);
+  });
+
+  test("requestInstitutionalCertificates function", async () => {
+    const mockResult = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id":
+            "/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/",
+          "@type": ["InstitutionalCertificate", "Item"],
+          certificate_identifier: "IP100-00",
+          status: "released",
+        },
+      ],
+      "@id":
+        "/search/?field=certificate_identifier&field=status&@id=/institutional-certificates//search/?field=certificate_identifier&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
+      "@type": ["Search"],
+      clear_filters: "/search/",
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockResult),
+      })
+    );
+
+    const request = new FetchRequest();
+    const result = await requestInstitutionalCertificates(
+      ["/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/"],
+      request
+    );
+    expect(mockFunction).toBeCalledWith(
+      "/search/?field=certificate_identifier&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
+      expect.anything()
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockResult["@graph"][0]);
   });
 
   test("requestOntologyTerms function", async () => {

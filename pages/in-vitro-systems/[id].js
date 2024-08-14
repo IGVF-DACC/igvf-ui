@@ -86,6 +86,9 @@ export default function InVitroSystem({
                 diseaseTerms={diseaseTerms}
                 parts={parts}
                 partOf={partOf}
+                institutionalCertificates={
+                  inVitroSystem.institutional_certificates
+                }
                 publications={publications}
                 sampleTerms={inVitroSystem.sample_terms}
                 sources={sources}

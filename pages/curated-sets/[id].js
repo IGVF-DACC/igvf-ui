@@ -16,6 +16,7 @@ import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
+import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -25,6 +26,7 @@ import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
+  requestFileSets,
   requestPublications,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -36,6 +38,8 @@ export default function CuratedSet({
   documents,
   publications,
   files,
+  inputFileSetFor,
+  controlFor,
   attribution = null,
   isJson,
 }) {
@@ -102,6 +106,22 @@ export default function CuratedSet({
           {files.length > 0 && (
             <FileTable files={files} fileSet={curatedSet} isDownloadable />
           )}
+          {inputFileSetFor.length > 0 && (
+            <FileSetTable
+              fileSets={inputFileSetFor}
+              reportLink={`/multireport/?type=FileSet&input_file_sets=${curatedSet["@id"]}`}
+              reportLabel="Report of file sets that this curated set is an input for"
+              title="File Sets Using This Curated Set as an Input"
+            />
+          )}
+          {controlFor.length > 0 && (
+            <FileSetTable
+              fileSets={controlFor}
+              reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${curatedSet["@id"]}`}
+              reportLabel="Report of file sets that have this curated set as a control"
+              title="File Sets Controlled by This Curated Set"
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -118,6 +138,10 @@ CuratedSet.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this curated set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this curated set is an input for
+  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this curated set is a control for
+  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this curated set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -134,9 +158,24 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = curatedSet.documents
       ? await requestDocuments(curatedSet.documents, request)
       : [];
+
     const filePaths = curatedSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
+
+    const inputFileSetFor =
+      curatedSet.input_file_set_for.length > 0
+        ? await requestFileSets(curatedSet.input_file_set_for, request)
+        : [];
+
+    let controlFor = [];
+    if (curatedSet.control_for.length > 0) {
+      const controlForPaths = curatedSet.control_for.map(
+        (controlFor) => controlFor["@id"]
+      );
+      controlFor = await requestFileSets(controlForPaths, request);
+    }
+
     let publications = [];
     if (curatedSet.publications?.length > 0) {
       const publicationPaths = curatedSet.publications.map(
@@ -151,6 +190,8 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         publications,
         files,
+        inputFileSetFor,
+        controlFor,
         pageContext: { title: curatedSet.accession },
         attribution,
         isJson,

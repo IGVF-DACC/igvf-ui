@@ -11,6 +11,7 @@
  */
 
 // node_modules
+import _ from "lodash";
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
@@ -131,9 +132,15 @@ export function SampleDataItems({
   item,
   sources = null,
   constructLibrarySets = [],
+  institutionalCertificates = [],
   publications = [],
   children,
 }) {
+  // Get a list of institutional certificates for this sample sorted by certificate identifier.
+  const sortedInstitutionalCertificates = _.sortBy(institutionalCertificates, [
+    "certificate_identifier",
+  ]);
+
   return (
     <>
       <DataItemLabel>Summary</DataItemLabel>
@@ -284,6 +291,20 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
+      {sortedInstitutionalCertificates.length > 0 && (
+        <>
+          <DataItemLabel>Institutional Certificates</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList>
+              {sortedInstitutionalCertificates.map((certificate) => (
+                <Link key={certificate["@id"]} href={certificate["@id"]}>
+                  {certificate.certificate_identifier}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
+        </>
+      )}
     </>
   );
 }
@@ -295,6 +316,8 @@ SampleDataItems.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Construct library sets for this sample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
+  // Institutional certificates for this sample
+  institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
   // Publications associated with this sample
   publications: PropTypes.arrayOf(PropTypes.object),
 };
@@ -305,6 +328,7 @@ SampleDataItems.commonProperties = [
   "dbxrefs",
   "description",
   "lot_id",
+  "institutional_certificates",
   "publications",
   "revoke_detail",
   "sorted_from",
@@ -329,6 +353,7 @@ export function BiosampleDataItems({
   partOf = null,
   sampleTerms = null,
   sources = null,
+  institutionalCertificates = [],
   publications = [],
   children,
 }) {
@@ -336,6 +361,7 @@ export function BiosampleDataItems({
     <SampleDataItems
       item={item}
       constructLibrarySets={constructLibrarySets}
+      institutionalCertificates={institutionalCertificates}
       sources={sources}
       publications={publications}
     >
@@ -430,12 +456,6 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
-      {item.nih_institutional_certification && (
-        <>
-          <DataItemLabel>NIH Institutional Certification</DataItemLabel>
-          <DataItemValue>{item.nih_institutional_certification}</DataItemValue>
-        </>
-      )}
       {children}
     </SampleDataItems>
   );
@@ -454,6 +474,8 @@ BiosampleDataItems.propTypes = {
   partOf: PropTypes.object,
   // Sample ontology for the biosample
   sampleTerms: PropTypes.arrayOf(PropTypes.object),
+  // Institutional certificates for this biosample
+  institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
   // Publications associated with this biosample
   publications: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this biosample
@@ -464,8 +486,8 @@ BiosampleDataItems.commonProperties = [
   "age",
   "age_units",
   "cellular_sub_pool",
+  "institutional_certificates",
   "embryonic",
-  "nih_institutional_certification",
   "sex",
 ];
 
@@ -558,6 +580,16 @@ export function FileDataItems({ item, fileSet = null, children }) {
           </DataItemValue>
         </>
       )}
+      {item.analysis_step_version && (
+        <>
+          <DataItemLabel>Analysis Step Version</DataItemLabel>
+          <DataItemValueUrl>
+            <Link href={item.analysis_step_version}>
+              {item.analysis_step_version}
+            </Link>
+          </DataItemValueUrl>
+        </>
+      )}
       <DataItemLabel>File Format</DataItemLabel>
       <DataItemValue>{item.file_format}</DataItemValue>
       <DataItemLabel>Content Type</DataItemLabel>
@@ -611,7 +643,7 @@ export function FileDataItems({ item, fileSet = null, children }) {
       {item.controlled_access && (
         <>
           <DataItemLabel>Controlled Access</DataItemLabel>
-          <DataItemValue>{item.controlled_access ? "Yes" : "No"}</DataItemValue>
+          <DataItemValue>Yes</DataItemValue>
         </>
       )}
       {item.submitted_file_name && (

@@ -12,12 +12,14 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
+  DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
@@ -44,7 +46,9 @@ export default function AnalysisSet({
   files,
   inputFileSets,
   inputFileSetSamples,
+  inputFileSetFor,
   controlFileSets,
+  controlFor,
   appliedToSamples,
   auxiliarySets,
   measurementSets,
@@ -84,6 +88,20 @@ export default function AnalysisSet({
                       isCollapsible
                     />
                   </DataItemValue>
+                </>
+              )}
+              {analysisSet.external_image_data_url && (
+                <>
+                  <DataItemLabel>External Image Data URL</DataItemLabel>
+                  <DataItemValueUrl>
+                    <a
+                      href={analysisSet.external_image_data_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {analysisSet.external_image_data_url}
+                    </a>
+                  </DataItemValueUrl>
                 </>
               )}
               {analysisSet.submitter_comment && (
@@ -138,6 +156,24 @@ export default function AnalysisSet({
             />
           )}
 
+          {inputFileSetFor.length > 0 && (
+            <FileSetTable
+              fileSets={inputFileSetFor}
+              reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${analysisSet["@id"]}`}
+              reportLabel="Report of file sets that this analysis set is an input for"
+              title="File Sets Using This Analysis Set as an Input"
+            />
+          )}
+
+          {controlFor.length > 0 && (
+            <FileSetTable
+              fileSets={controlFor}
+              reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${analysisSet["@id"]}`}
+              reportLabel="Report of file sets that this analysis set serves as a control for"
+              title="File Sets Controlled by This Analysis Set"
+            />
+          )}
+
           {files.length > 0 && (
             <FileTable files={files} fileSet={analysisSet} isDownloadable />
           )}
@@ -158,8 +194,12 @@ AnalysisSet.propTypes = {
   inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Input file set samples
   inputFileSetSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this analysis set is input for
+  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Control file sets to display
   controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets controlled by this analysis set
+  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Applied-to samples to display
   appliedToSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // AuxiliarySets to display
@@ -206,6 +246,19 @@ export async function getServerSideProps({ params, req, query }) {
         "control_file_sets",
         "measurement_sets",
       ]);
+    }
+
+    const inputFileSetFor =
+      analysisSet.input_file_set_for.length > 0
+        ? await requestFileSets(analysisSet.input_file_set_for, request)
+        : [];
+
+    let controlFor = [];
+    if (analysisSet.control_for.length > 0) {
+      const controlForPaths = analysisSet.control_for.map(
+        (control) => control["@id"]
+      );
+      controlFor = await requestFileSets(controlForPaths, request);
     }
 
     let appliedToSamples = [];
@@ -321,7 +374,9 @@ export async function getServerSideProps({ params, req, query }) {
         files,
         inputFileSets,
         inputFileSetSamples,
+        inputFileSetFor,
         controlFileSets,
+        controlFor,
         appliedToSamples,
         auxiliarySets,
         measurementSets,

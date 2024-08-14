@@ -17,6 +17,7 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -28,6 +29,8 @@ import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
+  requestFileSets,
+  requestGenes,
   requestPublications,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -37,9 +40,13 @@ import DonorTable from "../../components/donor-table";
 
 export default function PredictionSet({
   predictionSet,
+  inputFileSets,
+  inputFileSetFor,
+  controlFor,
   documents,
   publications,
   files,
+  assessedGenes,
   attribution = null,
   isJson,
 }) {
@@ -148,6 +155,20 @@ export default function PredictionSet({
                     </DataItemValue>
                   </>
                 )}
+                {assessedGenes.length > 0 && (
+                  <>
+                    <DataItemLabel>Assessed Genes</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {assessedGenes.map((gene) => (
+                          <Link href={gene["@id"]} key={gene["@id"]}>
+                            {gene.symbol}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
@@ -160,6 +181,30 @@ export default function PredictionSet({
           )}
           {predictionSet.donors?.length > 0 && (
             <DonorTable donors={predictionSet.donors} />
+          )}
+          {inputFileSets.length > 0 && (
+            <FileSetTable
+              fileSets={inputFileSets}
+              reportLink={`/multireport/?type=FileSet&input_file_set_for=${predictionSet["@id"]}`}
+              reportLabel="Report of file sets that are inputs for this prediction set"
+              title="Input File Sets"
+            />
+          )}
+          {inputFileSetFor.length > 0 && (
+            <FileSetTable
+              fileSets={inputFileSetFor}
+              reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${predictionSet["@id"]}`}
+              reportLabel="Report of file sets that this prediction set is an input for"
+              title="File Sets Using This Prediction Set as an Input"
+            />
+          )}
+          {controlFor.length > 0 && (
+            <FileSetTable
+              fileSets={controlFor}
+              reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${predictionSet["@id"]}`}
+              reportLabel="Report of file sets that have this prediction set as a control"
+              title="File Sets Controlled by This Prediction Set"
+            />
           )}
           {files.length > 0 && (
             <FileTable files={files} fileSet={predictionSet} isDownloadable />
@@ -175,8 +220,16 @@ export default function PredictionSet({
 PredictionSet.propTypes = {
   // Prediction set to display
   predictionSet: PropTypes.object.isRequired,
+  // Input file sets that this prediction set is an input for
+  inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Input file sets for this prediction set
+  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Control file sets for this prediction set
+  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Genes that are assessed in this prediction set
+  assessedGenes: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this prediction set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this prediction set
@@ -198,11 +251,34 @@ export async function getServerSideProps({ params, req, query }) {
       ? await requestDocuments(predictionSet.documents, request)
       : [];
 
+    const inputFileSets =
+      predictionSet.input_file_sets?.length > 0
+        ? await requestFileSets(predictionSet.input_file_sets, request)
+        : [];
+
+    const inputFileSetFor =
+      predictionSet.input_file_set_for.length > 0
+        ? await requestFileSets(predictionSet.input_file_set_for, request)
+        : [];
+
+    let controlFor = [];
+    if (predictionSet.control_for.length > 0) {
+      const controlForPaths = predictionSet.control_for.map(
+        (controlFor) => controlFor["@id"]
+      );
+      controlFor = await requestFileSets(controlForPaths, request);
+    }
+
     let files = [];
     if (predictionSet.files.length > 0) {
       const filePaths = predictionSet.files.map((file) => file["@id"]) || [];
       files = await requestFiles(filePaths, request);
     }
+
+    const assessedGenes =
+      predictionSet.assessed_genes?.length > 0
+        ? await requestGenes(predictionSet.assessed_genes, request)
+        : [];
 
     let publications = [];
     if (predictionSet.publications?.length > 0) {
@@ -219,6 +295,10 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         predictionSet,
+        inputFileSets,
+        inputFileSetFor,
+        controlFor,
+        assessedGenes,
         documents,
         publications,
         files,

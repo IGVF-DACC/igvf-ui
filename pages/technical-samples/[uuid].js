@@ -25,6 +25,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestFileSets,
+  requestInstitutionalCertificates,
   requestPublications,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -35,6 +36,7 @@ import { Ok } from "../../lib/result";
 export default function TechnicalSample({
   sample,
   constructLibrarySets,
+  institutionalCertificates,
   publications,
   documents,
   attribution = null,
@@ -59,6 +61,7 @@ export default function TechnicalSample({
               <SampleDataItems
                 item={sample}
                 constructLibrarySets={constructLibrarySets}
+                institutionalCertificates={institutionalCertificates}
                 sources={sources}
                 publications={publications}
               >
@@ -109,6 +112,8 @@ TechnicalSample.propTypes = {
   sample: PropTypes.object.isRequired,
   // Construct library sets associated with this technical sample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
+  // Institutional certificates associated with this technical sample
+  institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
   // Publications associated with this technical sample
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this technical sample
@@ -147,6 +152,13 @@ export async function getServerSideProps({ params, req, query }) {
       sample.sorted_fractions?.length > 0
         ? await requestBiosamples(sample.sorted_fractions, request)
         : [];
+    const institutionalCertificates =
+      sample.institutional_certificates.length > 0
+        ? await requestInstitutionalCertificates(
+            sample.institutional_certificates,
+            request
+          )
+        : [];
     let sources = [];
     if (sample.sources?.length > 0) {
       const sourcePaths = sample.sources.map((source) => source["@id"]);
@@ -174,6 +186,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         sample,
         constructLibrarySets,
+        institutionalCertificates,
         publications,
         documents,
         sortedFractions,

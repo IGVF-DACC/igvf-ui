@@ -42,6 +42,7 @@ export default function SignalFile({
   documents,
   derivedFrom,
   derivedFromFileSets,
+  inputFileFor,
   fileFormatSpecifications,
   referenceFiles,
   isJson,
@@ -102,6 +103,14 @@ export default function SignalFile({
               title={`Files ${signalFile.accession} Derives From`}
             />
           )}
+          {inputFileFor.length > 0 && (
+            <FileTable
+              files={inputFileFor}
+              reportLink={`/multireport/?type=File&derived_from=${signalFile["@id"]}`}
+              reportLabel="Report of files derived from this file"
+              title="Files Derived From This File"
+            />
+          )}
           {referenceFiles.length > 0 && (
             <FileTable files={referenceFiles} title="Reference Files" />
           )}
@@ -130,6 +139,8 @@ SignalFile.propTypes = {
   derivedFrom: PropTypes.array.isRequired,
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files that derive from this file
+  inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
@@ -173,6 +184,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       uniqueDerivedFromFileSetPaths.length > 0
         ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
         : [];
+    const inputFileFor =
+      signalFile.input_file_for.length > 0
+        ? await requestFiles(signalFile.input_file_for, request)
+        : [];
     const fileFormatSpecifications = signalFile.file_format_specifications
       ? await requestDocuments(signalFile.file_format_specifications, request)
       : [];
@@ -187,6 +202,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         documents,
         derivedFrom,
         derivedFromFileSets,
+        inputFileFor,
         fileFormatSpecifications,
         pageContext: { title: signalFile.accession },
         attribution,

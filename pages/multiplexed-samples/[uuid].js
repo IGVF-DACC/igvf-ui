@@ -31,6 +31,7 @@ import {
   requestBiosamples,
   requestDocuments,
   requestFileSets,
+  requestInstitutionalCertificates,
   requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
@@ -43,6 +44,7 @@ export default function MultiplexedSample({
   multiplexedSample,
   constructLibrarySets,
   biomarkers,
+  institutionalCertificates,
   publications,
   documents,
   attribution = null,
@@ -50,6 +52,7 @@ export default function MultiplexedSample({
   sources,
   treatments,
   multiplexedInSamples,
+  barcodeSampleMap,
   isJson,
 }) {
   const reportLink = `/multireport/?type=Sample&field=%40id&field=multiplexed_in&field=taxa&field=sample_terms.term_name&field=donors&field=disease_terms&field=status&field=summary&field=%40type&multiplexed_in.accession=${multiplexedSample.accession}&field=construct_library_sets`;
@@ -70,6 +73,7 @@ export default function MultiplexedSample({
               <SampleDataItems
                 item={multiplexedSample}
                 constructLibrarySets={constructLibrarySets}
+                institutionalCertificates={institutionalCertificates}
                 publications={publications}
               >
                 {sources?.length > 0 && (
@@ -91,6 +95,16 @@ export default function MultiplexedSample({
                     <DataItemLabel>Cellular Sub Pool</DataItemLabel>
                     <DataItemValue>
                       {multiplexedSample.cellular_sub_pool}
+                    </DataItemValue>
+                  </>
+                )}
+                {barcodeSampleMap && (
+                  <>
+                    <DataItemLabel>Barcode Sample Map</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={barcodeSampleMap["@id"]}>
+                        {barcodeSampleMap.accession}
+                      </Link>
                     </DataItemValue>
                   </>
                 )}
@@ -148,6 +162,8 @@ MultiplexedSample.propTypes = {
   multiplexedSample: PropTypes.object.isRequired,
   // Construct libraries that link to this MultiplexedSample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Institutional certificates associated with the sample
+  institutionalCertificates: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with the sample
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
@@ -162,6 +178,8 @@ MultiplexedSample.propTypes = {
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Barcode sample map file
+  barcodeSampleMap: PropTypes.object,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -195,6 +213,13 @@ export async function getServerSideProps({ params, req, query }) {
     const biomarkers =
       multiplexedSample.biomarkers?.length > 0
         ? await requestBiomarkers(multiplexedSample.biomarkers, request)
+        : [];
+    const institutionalCertificates =
+      multiplexedSample.institutional_certificates.length > 0
+        ? await requestInstitutionalCertificates(
+            multiplexedSample.institutional_certificates,
+            request
+          )
         : [];
     let publications = [];
     if (multiplexedSample.publications?.length > 0) {
@@ -241,6 +266,11 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    const barcodeSampleMap = multiplexedSample.barcode_sample_map
+      ? (
+          await request.getObject(multiplexedSample.barcode_sample_map)
+        ).unwrap_or({})
+      : null;
     const attribution = await buildAttribution(
       multiplexedSample,
       req.headers.cookie
@@ -250,12 +280,14 @@ export async function getServerSideProps({ params, req, query }) {
         multiplexedSample,
         constructLibrarySets,
         biomarkers,
+        institutionalCertificates,
         publications,
         documents,
         sortedFractions,
         sources,
         treatments,
         multiplexedInSamples,
+        barcodeSampleMap,
         pageContext: {
           title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,
         },

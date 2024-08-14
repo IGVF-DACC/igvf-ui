@@ -69,7 +69,7 @@ const columns = [
  */
 export default function DerivedFromTable({
   derivedFrom,
-  derivedFromFileSets,
+  derivedFromFileSets = [],
   reportLink = null,
   reportLabel = null,
   title = "Derived From",
@@ -99,7 +99,7 @@ DerivedFromTable.propTypes = {
   // Files to display in the table
   derivedFrom: PropTypes.array.isRequired,
   // File sets of the files
-  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object),
   // Optional link to a report of the files
   reportLink: PropTypes.string,
   // Optional label for the report link

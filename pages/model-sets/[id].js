@@ -39,6 +39,8 @@ export default function ModelSet({
   publications,
   files,
   inputFileSets,
+  inputFileSetFor,
+  controlFor,
   attribution = null,
   isJson,
 }) {
@@ -115,6 +117,25 @@ export default function ModelSet({
               reportLabel={`View file sets used as input file sets for ${modelSet.accession}`}
             />
           )}
+
+          {inputFileSetFor.length > 0 && (
+            <FileSetTable
+              fileSets={inputFileSetFor}
+              reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${modelSet["@id"]}`}
+              reportLabel="Report of file sets that this model set is an input for"
+              title="File Sets Using This Model Set as an Input"
+            />
+          )}
+
+          {controlFor.length > 0 && (
+            <FileSetTable
+              fileSets={controlFor}
+              reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${modelSet["@id"]}`}
+              reportLabel="Report of file sets that have this model set as a control"
+              title="File Sets Controlled by This Model Set"
+            />
+          )}
+
           {files.length > 0 && (
             <FileTable files={files} fileSet={modelSet} isDownloadable />
           )}
@@ -135,6 +156,10 @@ ModelSet.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Input file sets to display
   inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Input file sets for this model set
+  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Control for file sets
+  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this model set
@@ -171,6 +196,19 @@ export async function getServerSideProps({ params, req, query }) {
       inputFileSets = await requestFileSets(inputFileSetPaths, request);
     }
 
+    const inputFileSetFor =
+      modelSet.input_file_set_for.length > 0
+        ? await requestFileSets(modelSet.input_file_set_for, request)
+        : [];
+
+    let controlFor = [];
+    if (modelSet.control_for.length > 0) {
+      const controlForPaths = modelSet.control_for.map(
+        (controlFor) => controlFor["@id"]
+      );
+      controlFor = await requestFileSets(controlForPaths, request);
+    }
+
     let publications = [];
     if (modelSet.publications?.length > 0) {
       const publicationPaths = modelSet.publications.map(
@@ -189,6 +227,8 @@ export async function getServerSideProps({ params, req, query }) {
         publications,
         files,
         inputFileSets,
+        inputFileSetFor,
+        controlFor,
         pageContext: { title: modelSet.model_name },
         attribution,
         isJson,

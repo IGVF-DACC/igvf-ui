@@ -46,7 +46,7 @@ export function isValidPath(input: string): boolean {
 export function isValidUrl(url: string): boolean {
   try {
     new URL(url);
-  } catch (e) {
+  } catch (_e) {
     return false;
   }
   return true;
