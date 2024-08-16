@@ -109,7 +109,7 @@ export default function CuratedSet({
           {inputFileSetFor.length > 0 && (
             <FileSetTable
               fileSets={inputFileSetFor}
-              reportLink={`/multireport/?type=FileSet&input_file_sets=${curatedSet["@id"]}`}
+              reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${curatedSet["@id"]}`}
               reportLabel="Report of file sets that this curated set is an input for"
               title="File Sets Using This Curated Set as an Input"
             />

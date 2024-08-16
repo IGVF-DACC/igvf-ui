@@ -325,7 +325,7 @@ export default function ConstructLibrarySet({
           {inputFileSetFor.length > 0 && (
             <FileSetTable
               fileSets={inputFileSetFor}
-              reportLink={`/multireport/?type=FileSet&input_file_sets=${constructLibrarySet["@id"]}`}
+              reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of file sets that this construct library set is an input for"
               title="File Sets Using This Construct Library Set as an Input"
             />
