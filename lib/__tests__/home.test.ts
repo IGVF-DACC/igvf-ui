@@ -140,9 +140,9 @@ describe("Test generateFileSetMonthList", () => {
     };
 
     expect(generateFileSetMonthList(fileSetMonths)).toEqual([
-      "2022-07",
-      "2023-06",
       "2023-09",
+      "2023-06",
+      "2022-07",
     ]);
   });
 });
