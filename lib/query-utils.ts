@@ -1,3 +1,5 @@
+// lib
+import { encodeUriElement } from "./query-encoding";
 // types
 import { NextJsServerQuery } from "../globals";
 
@@ -32,12 +34,13 @@ export function getQueryStringFromServerQuery(
       if (Array.isArray(value)) {
         // A query key appears multiple times, so its value is an array of values. Deduplicate the
         // values and flatten for the query string.
-        const uniqueValues = [...new Set(value)];
+        const encodedValues = value.map((val) => encodeUriElement(val));
+        const uniqueValues = [...new Set(encodedValues)];
         return uniqueValues.map((val) => `${queryKey}=${val}`).join("&");
       }
 
       // A query key appears only once, so its value is a string.
-      return `${queryKey}=${value}`;
+      return `${queryKey}=${encodeUriElement(value)}`;
     })
     .join("&");
 }
