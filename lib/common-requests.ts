@@ -231,9 +231,27 @@ export async function requestGenes(
   paths: Array<string>,
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["geneid"])).unwrap_or(
-    []
-  );
+  return (
+    await request.getMultipleObjectsBulk(paths, ["geneid", "symbol"])
+  ).unwrap_or([]);
+}
+
+/**
+ * Retrieves the institutional-certificate objects for the given paths from the data provider.
+ * @param {string[]} paths Paths to the institutional-certificate objects to request
+ * @param {FetchRequest} request The request object to use to make the request
+ * @returns {DataProviderObject[]} The institutional-certificate objects requested
+ */
+export async function requestInstitutionalCertificates(
+  paths: string[],
+  request: FetchRequest
+): Promise<DataProviderObject[]> {
+  return (
+    await request.getMultipleObjectsBulk(paths, [
+      "certificate_identifier",
+      "status",
+    ])
+  ).unwrap_or([]);
 }
 
 /**

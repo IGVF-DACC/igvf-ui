@@ -2,10 +2,12 @@
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { useContext } from "react";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SeparatedList from "./separated-list";
+import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
 import { AliasesCell } from "./table-cells";
 
@@ -16,6 +18,19 @@ const fileSetColumns = [
     display: ({ source }) => (
       <LinkedIdAndStatus item={source}>{source.accession}</LinkedIdAndStatus>
     ),
+  },
+  {
+    id: "@type",
+    title: "Type",
+    display: ({ source, meta }) => {
+      // Unlikely we'll have no @type after passing `hide()`, but not impossible.
+      const type = source["@type"]?.[0] || "";
+      if (type) {
+        return meta.collectionTitles?.[type] || type;
+      }
+    },
+    sorter: (item) => item["@type"]?.[0].toLowerCase(),
+    hide: (data) => !data.some((item) => Boolean(item["@type"])),
   },
   {
     id: "summary",
@@ -107,6 +122,7 @@ export default function FileSetTable({
   title = "File Sets",
   fileSetMeta = null,
 }) {
+  const { collectionTitles } = useContext(SessionContext);
   return (
     <>
       <DataAreaTitle>
@@ -121,7 +137,7 @@ export default function FileSetTable({
         data={fileSets}
         columns={fileSetColumns}
         keyProp="@id"
-        meta={{ fileSetMeta }}
+        meta={{ fileSetMeta, collectionTitles }}
         pager={{}}
       />
     </>

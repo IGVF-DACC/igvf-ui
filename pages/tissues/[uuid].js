@@ -77,6 +77,7 @@ export default function Tissue({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 partOf={partOf}
+                institutionalCertificates={tissue.institutional_certificates}
                 publications={publications}
                 sampleTerms={tissue.sample_terms}
                 sources={sources}

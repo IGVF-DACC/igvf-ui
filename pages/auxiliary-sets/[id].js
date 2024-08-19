@@ -39,7 +39,8 @@ export default function AuxiliarySet({
   relatedDatasets,
   seqspecFiles,
   sequencingPlatforms,
-  controlForSets,
+  inputFileSetFor,
+  controlFor,
   attribution = null,
   isJson,
 }) {
@@ -99,12 +100,20 @@ export default function AuxiliarySet({
               reportLabel="Report of measurement sets related to this auxiliary set"
             />
           )}
-          {controlForSets.length > 0 && (
+          {inputFileSetFor.length > 0 && (
             <FileSetTable
-              fileSets={controlForSets}
-              title="File Sets This Auxiliary Set Serves as a Control For"
+              fileSets={inputFileSetFor}
+              reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${auxiliarySet["@id"]}`}
+              reportLabel="Report of file sets that this auxiliary set is an input for"
+              title="File Sets Using This Auxiliary Set as an Input"
+            />
+          )}
+          {controlFor.length > 0 && (
+            <FileSetTable
+              fileSets={controlFor}
               reportLink={`/multireport/?type=MeasurementSet&control_file_sets.@id=${auxiliarySet["@id"]}`}
               reportLabel="Report of file sets this auxiliary set serves as a control for"
+              title="File Sets Controlled by This Auxiliary Set"
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
@@ -127,8 +136,10 @@ AuxiliarySet.propTypes = {
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sequencing platform objects associated with `files`
   sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this file set is input for
+  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets controlled by this file set
-  controlForSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this file set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
@@ -175,12 +186,17 @@ export async function getServerSideProps({ params, req, query }) {
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
-    let controlForSets = [];
+    const inputFileSetFor =
+      auxiliarySet.input_file_set_for.length > 0
+        ? await requestFileSets(auxiliarySet.input_file_set_for, request)
+        : [];
+
+    let controlFor = [];
     if (auxiliarySet.control_for.length > 0) {
       const controlForPaths = auxiliarySet.control_for.map(
         (controlFor) => controlFor["@id"]
       );
-      controlForSets = await requestFileSets(controlForPaths, request);
+      controlFor = await requestFileSets(controlForPaths, request);
     }
 
     let publications = [];
@@ -204,7 +220,8 @@ export async function getServerSideProps({ params, req, query }) {
         relatedDatasets,
         seqspecFiles,
         sequencingPlatforms,
-        controlForSets,
+        inputFileSetFor,
+        controlFor,
         pageContext: { title: auxiliarySet.accession },
         attribution,
         isJson,

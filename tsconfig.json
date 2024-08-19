@@ -18,6 +18,11 @@
     "types": ["jest", "node"],
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "cypress/e2e/**/*.cy.js"],
-  "exclude": ["cypress.config.js", "cypress/e2e/*.cy.js", "node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": [
+    "cypress.config.js",
+    "cypress/e2e/*.cy.js",
+    "node_modules",
+    "components/**/*.js"
+  ]
 }

@@ -3866,14 +3866,6 @@ const profiles = {
           linkTo: "PhenotypeTerm",
         },
       },
-      nih_institutional_certification: {
-        type: "string",
-        title: "NIH Institutional Certification",
-        description:
-          "Institutional certification given by the NIH for human biosamples.",
-        comment: "Required for IGVF human biosamples.",
-        pattern: "^NIC[A-Z0-9]+$",
-      },
       pooled_from: {
         title: "Biosample(s) Pooled From",
         description: "The biosample(s) this biosample is pooled from.",

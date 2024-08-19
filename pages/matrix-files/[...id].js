@@ -42,6 +42,7 @@ export default function MatrixFile({
   documents,
   derivedFrom,
   derivedFromFileSets,
+  inputFileFor,
   fileFormatSpecifications,
   referenceFiles,
   isJson,
@@ -85,6 +86,14 @@ export default function MatrixFile({
               title={`Files ${matrixFile.accession} Derives From`}
             />
           )}
+          {inputFileFor.length > 0 && (
+            <FileTable
+              files={inputFileFor}
+              reportLink={`/multireport/?type=File&derived_from=${matrixFile["@id"]}`}
+              reportLabel="Report of files derived from this file"
+              title="Files Derived From This File"
+            />
+          )}
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
@@ -110,6 +119,8 @@ MatrixFile.propTypes = {
   derivedFrom: PropTypes.array.isRequired,
   // FileSets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files that derive from this file
+  inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
@@ -153,6 +164,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       uniqueDerivedFromFileSetPaths.length > 0
         ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
         : [];
+    const inputFileFor =
+      matrixFile.input_file_for.length > 0
+        ? await requestFiles(matrixFile.input_file_for, request)
+        : [];
     const fileFormatSpecifications = matrixFile.file_format_specifications
       ? await requestDocuments(matrixFile.file_format_specifications, request)
       : [];
@@ -167,6 +182,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         documents,
         derivedFrom,
         derivedFromFileSets,
+        inputFileFor,
         fileFormatSpecifications,
         pageContext: { title: matrixFile.accession },
         attribution,

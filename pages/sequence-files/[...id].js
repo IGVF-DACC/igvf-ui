@@ -44,6 +44,7 @@ export default function SequenceFile({
   documents,
   derivedFrom,
   derivedFromFileSets,
+  inputFileFor,
   fileFormatSpecifications,
   attribution = null,
   isJson,
@@ -127,6 +128,14 @@ export default function SequenceFile({
                   <DataItemValue>{sequenceFile.read_count}</DataItemValue>
                 </>
               )}
+              {sequenceFile.base_modifications?.length > 0 && (
+                <>
+                  <DataItemLabel>Base Modifications</DataItemLabel>
+                  <DataItemValue>
+                    {sequenceFile.base_modifications.join(", ")}
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (
@@ -136,6 +145,14 @@ export default function SequenceFile({
               reportLink={`/multireport/?type=File&input_file_for=${sequenceFile["@id"]}`}
               reportLabel={`Report of files ${sequenceFile.accession} derives from`}
               title={`Files ${sequenceFile.accession} Derives From`}
+            />
+          )}
+          {inputFileFor.length > 0 && (
+            <FileTable
+              files={inputFileFor}
+              reportLink={`/multireport/?type=File&derived_from=${sequenceFile["@id"]}`}
+              reportLabel="Report of files derived from this file"
+              title="Files Derived From This File"
             />
           )}
           {seqspecs.length > 0 && (
@@ -170,6 +187,8 @@ SequenceFile.propTypes = {
   derivedFrom: PropTypes.array,
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files that derive from this file
+  inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
@@ -214,6 +233,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       uniqueDerivedFromFileSetPaths.length > 0
         ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
         : [];
+    const inputFileFor =
+      sequenceFile.input_file_for.length > 0
+        ? await requestFiles(sequenceFile.input_file_for, request)
+        : [];
     const fileFormatSpecifications = sequenceFile.file_format_specifications
       ? await requestDocuments(sequenceFile.file_format_specifications, request)
       : [];
@@ -235,6 +258,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         documents,
         derivedFrom,
         derivedFromFileSets,
+        inputFileFor,
         fileFormatSpecifications,
         pageContext: { title: sequenceFile.accession },
         attribution,
