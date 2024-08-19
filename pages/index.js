@@ -8,6 +8,7 @@ import ChartFileSetRelease from "../components/chart-file-set-release";
 import { DataAreaTitle, DataPanel } from "../components/data-area";
 import HomeTitle from "../components/home-title";
 import Icon from "../components/icon";
+import { useBrowserStateQuery } from "../components/presentation-status";
 // lib
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
@@ -20,12 +21,15 @@ import { convertFileSetsToReleaseData } from "../lib/home";
  * database.
  */
 function Statistic({ graphic, label, value, query, colorClass }) {
+  // Extra query-string parameters for list pages
+  const extraQueries = useBrowserStateQuery({ addAmpersand: true });
+
   return (
     <div
       className={`my-4 grow basis-1/3 rounded border @xl/home:my-0 ${colorClass}`}
     >
       <Link
-        href={`/search/?${query}`}
+        href={`/search/?${query}${extraQueries}`}
         className={`flex h-full items-center gap-4 p-2 no-underline`}
       >
         <div className="h-10 w-10 min-w-10 basis-10 rounded-full border border-gray-400 p-2 dark:border-gray-500">

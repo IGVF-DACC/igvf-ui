@@ -151,7 +151,7 @@ export function generateFileSetMonthList(
   fileSetMonths: FileSetMonths
 ): string[] {
   const uniqueMonths = [...new Set(Object.values(fileSetMonths))];
-  return uniqueMonths.sort();
+  return uniqueMonths.toSorted().toReversed();
 }
 
 /**
