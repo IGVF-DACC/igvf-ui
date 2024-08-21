@@ -6,6 +6,7 @@ import Checkbox from "../checkbox";
 import facetRegistry from "./facet-registry";
 // lib
 import { toShishkebabCase } from "../../lib/general";
+import { encodeUriElement } from "../../lib/query-encoding";
 
 /**
  * Display a single term in a facet with a checkbox.
@@ -18,7 +19,9 @@ export default function FacetTerm({
   onClick,
 }) {
   const TermLabel = facetRegistry.termLabel.lookup(field);
-  const id = `${field}-${toShishkebabCase(term.key_as_string || term.key)}`;
+  const id = `${field}-${toShishkebabCase(
+    encodeUriElement(term.key_as_string || term.key)
+  )}`;
 
   return (
     <li data-testid={`facetterm-${id}`}>
@@ -30,8 +33,8 @@ export default function FacetTerm({
         }`}
         onClick={() => onClick(field, term, false)}
         onLongClick={() => onClick(field, term, true)}
-        className={`cursor-pointer rounded border border-transparent px-2 py-1 hover:border-data-border${
-          isNegative ? " line-through" : ""
+        className={`cursor-pointer rounded border border-transparent px-2 py-1 hover:border-data-border ${
+          isNegative ? "line-through" : ""
         }`}
       >
         <TermLabel term={term} isNegative={isNegative} />
