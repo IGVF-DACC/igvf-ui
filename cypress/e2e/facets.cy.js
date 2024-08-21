@@ -44,7 +44,7 @@ describe("Facet tests", () => {
 
     // Click a facet term and make sure it has an effect.
     cy.get(
-      `label[id="facet-checkbox-sources.title-danwei-huangfu-mskcc"]`
+      `label[id="facet-checkbox-sources.title-danwei-huangfu-2c-mskcc"]`
     ).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
     cy.get(
@@ -62,7 +62,7 @@ describe("Facet tests", () => {
 
     // Check we can transition to the report view with the facets.
     cy.get(
-      `label[id="facet-checkbox-lab.title-j-michael-cherry-stanford"]`
+      `label[id="facet-checkbox-lab.title-j-michael-cherry-2c-stanford"]`
     ).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 4);
 
@@ -73,7 +73,7 @@ describe("Facet tests", () => {
     );
     cy.get(`[aria-label="Provenance filter group"]`).click();
     cy.get(
-      `label[id="facet-checkbox-lab.title-j-michael-cherry-stanford"]`
+      `label[id="facet-checkbox-lab.title-j-michael-cherry-2c-stanford"]`
     ).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
