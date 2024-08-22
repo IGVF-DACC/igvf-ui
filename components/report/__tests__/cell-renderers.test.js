@@ -189,7 +189,7 @@ describe("Test cell renderers in search results", () => {
 
       // Check unknown object array has JSON string.
       const objectArrayList = cells[COLUMN_OBJECT_ARRAY];
-      expect(objectArrayList).toHaveTextContent('[{"object":"object1"}]');
+      expect(objectArrayList).toHaveTextContent('{"object":"object1"}');
 
       // Check PI column has two linked paths with the correct text.
       const piLinks = within(cells[COLUMN_PI]).getAllByRole("link");
@@ -1533,7 +1533,7 @@ describe("Unknown-field cell-rendering tests", () => {
 
     // Test that the unknown field has the correct contents.
     expect(cells[COLUMN_UNKNOWN]).toHaveTextContent(
-      `[{"assembly":"GRCh38","chromosome":"chr1","end":10,"start":1}]`
+      `{"assembly":"GRCh38","chromosome":"chr1","end":10,"start":1}`
     );
   });
 

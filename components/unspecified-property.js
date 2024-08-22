@@ -1,10 +1,10 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { Fragment } from "react";
 // components
 import SeparatedList from "./separated-list";
 // lib
-import { stringsToStringsWithCounts } from "../lib/arrays";
 import { truncateJson } from "../lib/general";
 
 /**
@@ -28,63 +28,44 @@ JsonDisplay.propTypes = {
  * of simple types display as a comma-separated list of the values. In more complex cases, the
  * property gets displayed as a JSON string, truncated to 200 characters.
  */
-export default function UnspecifiedProperty({ property }) {
-  if (typeof property === "string" || typeof property === "number") {
-    return <div>{property}</div>;
-  }
-  if (typeof property === "boolean") {
-    return <div>{property ? "true" : "false"}</div>;
-  }
+export default function UnspecifiedProperty({ properties }) {
+  return (
+    <div>
+      <SeparatedList>
+        {properties.map((property, index) => {
+          // If the property looks like a URL, display it as an external link
+          if (property.match(/^https?:\/\//)) {
+            return (
+              <a
+                key={index}
+                href={property}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="break-all"
+              >
+                {property}
+              </a>
+            );
+          }
 
-  // Else the property is an object or an array, after PropTypes gatekeeping.
-  if (Array.isArray(property)) {
-    if (property.length > 0) {
-      if (typeof property[0] === "object") {
-        if (property[0]["@id"]) {
-          // Array of objects with @ids. Filter out objects with duplicate @ids.
-          const itemIds = property.map((item) => item["@id"]);
-          const uniqueItemIds = [...new Set(itemIds)];
-          const uniqueProperties = uniqueItemIds.map((itemId) =>
-            property.find((item) => item["@id"] === itemId)
-          );
+          // If the property looks like path, display it as an internal link
+          if (property.match(/^\//)) {
+            return (
+              <Link key={index} href={property} className="break-all">
+                {property}
+              </Link>
+            );
+          }
 
-          return (
-            <SeparatedList>
-              {uniqueProperties.map((item) => (
-                <Link key={item["@id"]} href={item["@id"]}>
-                  {item["@id"]}
-                </Link>
-              ))}
-            </SeparatedList>
-          );
-        }
-
-        // Array of objects without @ids; display it as JSON.
-        return <JsonDisplay property={property} />;
-      }
-
-      // Array of simple types; join them with commas.
-      const uniqueStrings = stringsToStringsWithCounts(property);
-      return <div>{uniqueStrings.join(", ")}</div>;
-    }
-  }
-
-  // For embedded object properties with an @id, display the linked @id.
-  if (property["@id"]) {
-    return <Link href={property["@id"]}>{property["@id"]}</Link>;
-  }
-
-  // The embedded property is an object without an @id. Display it as JSON.
-  return <JsonDisplay property={property} />;
+          // Otherwise, just display the property as a string
+          return <Fragment key={index}>{property}</Fragment>;
+        })}
+      </SeparatedList>
+    </div>
+  );
 }
 
 UnspecifiedProperty.propTypes = {
   // Property to display in as good a form as possible
-  property: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-    PropTypes.bool,
-    PropTypes.object,
-    PropTypes.array,
-  ]).isRequired,
+  properties: PropTypes.arrayOf(PropTypes.string),
 };

@@ -5,6 +5,7 @@ import QueryString from "./query-string";
 import { splitPathAndQueryString } from "./query-utils";
 // types
 import type {
+  DatabaseObject,
   Profiles,
   ProfilesGeneric,
   ProfilesProps,
@@ -238,47 +239,48 @@ export function mergeColumnSpecs(
 }
 
 /**
- * Extract a property from an object using a dotted-notation path to the property. For example,
- * `getUnknownProperty("term.name", { term: { name: "brain" } })` returns "brain". If the property
- * doesn't exist, undefined gets returned. If the property is an array, the array gets flattened and
- * returned.
- * @param {string} id Dotted-notation path to the desired property
- * @param {{[key:string]:unknown}} source Object to search for the property
- * @returns {string|number|boolean|object|undefined} Value of the embedded property; undefined if
- *   not found
+ * Get the property specified by a field from the item a row of the report displays and return a
+ * string from that. This includes dotted-notation properties and can descend arrays of properties.
+ * @param {DatabaseObject} item Item displayed on a row of the report
+ * @param {string} propertyName Dotted-notation property name in `item` to get the value of
+ * @returns {string[]} Values of the extracted property in `item`
  */
 export function getUnknownProperty(
-  id: string,
-  source: { [key: string]: unknown }
-): string | number | boolean | object | undefined {
-  const idSegments = id ? id.split(".") : [];
+  propertyName: string,
+  item: DatabaseObject
+): string[] {
+  let output: string[] = [];
+  let nodes = [item];
+  const nameElements = propertyName.split(".");
 
-  let embeddedProp = source as { [key: string]: unknown };
-  let embeddedPropArray = [] as { [key: string]: unknown }[];
-  for (let i = 0; i < idSegments.length; i += 1) {
-    embeddedProp = embeddedProp[idSegments[i]] as { [key: string]: unknown };
+  // Extract the objects at each level of the dotted-notation property name. The outer loop
+  // iterates over the elements of the dotted-notation property name. If `propertyName` specifies
+  // a property within an array of objects, `nodes` contains all the specified objects from each
+  // array element.
+  nodes = nameElements.reduce((currentNodes, nameElement) => {
+    // Extract the value of the property at the current level of the dotted-notation property name.
+    const nodeValues = currentNodes.map((node) => node[nameElement]);
 
-    // Bail if the specified property doesn't exist within the object.
-    if (embeddedProp === undefined) {
-      return undefined;
-    }
+    // Flatten the array of values, removing any undefined values.
+    return nodeValues.reduce<unknown[]>((acc, value) => {
+      return value !== undefined ? acc.concat(value) : acc;
+    }, []) as DatabaseObject[];
+  }, nodes);
 
-    // If we come across an array as we descend through the object along the id, recursively
-    // descend into each element of the array and then return the resulting array of values.
-    // This handles the rest of the dotted-notation id, so break out of the loop after this.
-    if (Array.isArray(embeddedProp)) {
-      embeddedPropArray = embeddedProp.map((element) => {
-        if (typeof element === "object") {
-          const nextIdSegments = idSegments.slice(i + 1).join(".");
-          return getUnknownProperty(nextIdSegments, element);
-        }
-        return element;
-      });
-      break;
+  if (nodes.length > 0) {
+    if (nodes[0]["@id"]) {
+      // The property is an array of objects with an `@id` property, display that.
+      output = nodes.map((node) => node["@id"]);
+    } else {
+      // The property is a simple value, so display that value; or an object without @ids, so
+      // display the JSON representation of the object.
+      output = nodes.map((item) =>
+        typeof item === "object" ? JSON.stringify(item) : String(item)
+      );
     }
   }
 
-  return embeddedPropArray.length > 0 ? embeddedPropArray.flat() : embeddedProp;
+  return [...new Set(output)];
 }
 
 /**
