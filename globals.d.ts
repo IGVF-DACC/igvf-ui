@@ -44,8 +44,9 @@ export interface ObjectActions {
 export interface DatabaseObject {
   "@context"?: string;
   "@id"?: string;
-  "@type": Array<string>;
-  actions?: Array<ObjectActions>;
+  "@type": string[];
+  actions?: ObjectActions[];
+  alternate_accessions?: string[];
   audit?: Audits;
   creation_timestamp?: string;
   release_timestamp?: string;
