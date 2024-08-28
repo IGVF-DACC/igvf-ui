@@ -33,10 +33,7 @@ function getColumnRenderer(types, property, schemaProperties) {
 
   // No custom renderer based on property name, so detect the property type and use a generic
   // renderer appropriate for that type.
-  let detectedType;
-  if (schemaProperties) {
-    detectedType = detectPropertyTypes(property, schemaProperties);
-  }
+  const detectedType = detectPropertyTypes(property, schemaProperties);
   return typeRenderers[detectedType];
 }
 

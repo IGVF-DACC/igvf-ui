@@ -1,8 +1,8 @@
 import type {
+  DatabaseObject,
   Profiles,
   Schema,
   SearchResults,
-  SearchResultsObject,
   SearchResultsColumns,
 } from "../../globals.d";
 import {
@@ -17,8 +17,8 @@ import {
   sortColumnSpecs,
   updateAllColumnsVisibilityQuery,
   updateColumnVisibilityQuery,
+  type ColumnSpec,
 } from "../report";
-import type { ColumnSpec } from "../report";
 
 const profiles: Profiles = {
   "@type": ["JSONschemas"],
@@ -693,37 +693,25 @@ describe("Test `mergeColumnSpecs()`", () => {
 });
 
 describe("Test `getUnknownProperty()`", () => {
-  it("handles simple types in embedded objects", () => {
-    const result: SearchResultsObject = {
+  it("returns the correct property values for top-level simple properties", () => {
+    const item: DatabaseObject = {
       "@id": "/primary-cells/IGVFSM0000EEEE/",
       "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       accession: "IGVFSM0000EEEE",
-      min: 1,
-      virtual: false,
       uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
-      embedded: {
-        accession: "IGVFSM0000EEEE",
-        min: 1,
-        virtual: false,
-        uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
-      },
     };
 
-    let unknownProperty = getUnknownProperty("embedded.accession", result);
-    expect(unknownProperty).toEqual("IGVFSM0000EEEE");
+    let propertyValue = getUnknownProperty("accession", item);
+    expect(propertyValue).toEqual(["IGVFSM0000EEEE"]);
 
-    unknownProperty = getUnknownProperty("embedded.min", result);
-    expect(unknownProperty).toEqual(1);
-
-    unknownProperty = getUnknownProperty("embedded.virtual", result);
-    expect(unknownProperty).toEqual(false);
+    propertyValue = getUnknownProperty("uuid", item);
+    expect(propertyValue).toEqual(["578c72a2-4f84-2c8f-96b0-ec8715e18185"]);
   });
 
-  it("handles an embedded objects with @ids", () => {
-    const result: SearchResultsObject = {
-      "@id": "/auxiliary-sets/IGVFDS0001AUXI/",
-      "@type": ["AuxiliarySet", "FileSet", "Item"],
-      accession: "IGVFDS0001AUXI",
+  it("returns the correct property values for top-level complex properties", () => {
+    const item: DatabaseObject = {
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       award: {
         "@id": "/awards/1UM1HG012077-01/",
         component: "mapping",
@@ -733,6 +721,21 @@ describe("Test `getUnknownProperty()`", () => {
         },
         title: "Center for Mouse Genomic Variation at Single Cell Resolution",
       },
+    };
+
+    let propertyValue = getUnknownProperty("award.title", item);
+    expect(propertyValue).toEqual([
+      "Center for Mouse Genomic Variation at Single Cell Resolution",
+    ]);
+
+    propertyValue = getUnknownProperty("award.contact_pi.title", item);
+    expect(propertyValue).toEqual(["Ali Mortazavi"]);
+  });
+
+  it("returns the correct property values for arrays within embedded objects", () => {
+    const item: DatabaseObject = {
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       donors: [
         {
           "@id": "/rodent-donors/IGVFDO1561YBFS/",
@@ -750,98 +753,123 @@ describe("Test `getUnknownProperty()`", () => {
           taxa: "Mus musculus",
         },
       ],
-      samples: [
-        {
-          "@id": "/tissues/IGVFSM0001DDDD/",
-          accession: "IGVFSM0001DDDD",
-          aliases: ["igvf:treated_tissue"],
-          classification: "tissue",
-          sample_terms: [
-            {
-              "@id": "/sample-terms/UBERON_0002048/",
-              summary: "eea050cd-9e8c-4420-967f-3581b20536ab",
-              term_name: "lung",
-            },
-          ],
-          summary:
-            "lung tissue, mixed sex, Mus musculus some name (10-20 weeks) treated with 10 μg/mL resorcinol for 30 minutes, 100 μg/kg new compound for 30 minutes",
-          taxa: "Mus musculus",
-          treatments: [
-            "/treatments/2d57c810-c729-11ec-9d64-0242ac120002/",
-            "/treatments/4fbb0dc2-c72e-11ec-9d64-0242ac120002/",
-          ],
-        },
-      ],
-      status: "released",
-      uuid: "f0c5cba2-ed42-4dae-91dc-4bfd55a11c5b",
     };
 
-    let unknownProperty = getUnknownProperty("award.contact_pi", result);
-    expect(unknownProperty).toEqual({
-      "@id": "/users/e4cadd5e-0e61-4a99-abc8-84734232e271/",
-      title: "Ali Mortazavi",
-    });
+    let propertyValue = getUnknownProperty("donors.accession", item);
+    expect(propertyValue).toEqual(["IGVFDO1561YBFS", "IGVFDO9654BNIB"]);
 
-    unknownProperty = getUnknownProperty("donors", result);
-    expect(unknownProperty).toEqual([
-      {
-        "@id": "/rodent-donors/IGVFDO1561YBFS/",
-        accession: "IGVFDO1561YBFS",
-        aliases: ["igvf:alias_rodent_donor_2"],
-        taxa: "Mus musculus",
-      },
-      {
-        "@id": "/rodent-donors/IGVFDO9654BNIB/",
-        accession: "IGVFDO9654BNIB",
-        aliases: [
-          "igvf:alias_rodent_donor_1",
-          "igvf:rodent_donor_with_arterial_blood_pressure_trait",
-        ],
-        taxa: "Mus musculus",
-      },
-    ]);
-
-    unknownProperty = getUnknownProperty("donors.aliases", result);
-    expect(unknownProperty).toEqual([
+    propertyValue = getUnknownProperty("donors.aliases", item);
+    expect(propertyValue).toEqual([
       "igvf:alias_rodent_donor_2",
       "igvf:alias_rodent_donor_1",
       "igvf:rodent_donor_with_arterial_blood_pressure_trait",
     ]);
-
-    unknownProperty = getUnknownProperty("samples.sample_terms", result);
-    expect(unknownProperty).toEqual([
-      {
-        "@id": "/sample-terms/UBERON_0002048/",
-        summary: "eea050cd-9e8c-4420-967f-3581b20536ab",
-        term_name: "lung",
-      },
-    ]);
-
-    unknownProperty = getUnknownProperty(
-      "samples.sample_terms.summary",
-      result
-    );
-    expect(unknownProperty).toEqual(["eea050cd-9e8c-4420-967f-3581b20536ab"]);
   });
 
-  it("handles a non-existent property", () => {
-    const result: SearchResultsObject = {
+  it("returns the @ids of embedded objects", () => {
+    const item: DatabaseObject = {
       "@id": "/primary-cells/IGVFSM0000EEEE/",
       "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
-      accession: "IGVFSM0000EEEE",
-      min: 1,
-      virtual: false,
-      uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
-      embedded: {
-        accession: "IGVFSM0000EEEE",
-        min: 1,
-        virtual: false,
-        uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
+      award: {
+        "@id": "/awards/1UM1HG012077-01/",
+        component: "mapping",
+        contact_pi: {
+          "@id": "/users/e4cadd5e-0e61-4a99-abc8-84734232e271/",
+          title: "Ali Mortazavi",
+        },
+        title: "Center for Mouse Genomic Variation at Single Cell Resolution",
       },
     };
 
-    const unknownProperty = getUnknownProperty("embedded.max", result);
-    expect(unknownProperty).toBeUndefined();
+    let propertyValue = getUnknownProperty("award", item);
+    expect(propertyValue).toEqual(["/awards/1UM1HG012077-01/"]);
+
+    propertyValue = getUnknownProperty("award.contact_pi", item);
+    expect(propertyValue).toEqual([
+      "/users/e4cadd5e-0e61-4a99-abc8-84734232e271/",
+    ]);
+  });
+
+  it("returns the @ids of embedded arrays of objects", () => {
+    const item: DatabaseObject = {
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      donors: [
+        {
+          "@id": "/rodent-donors/IGVFDO1561YBFS/",
+          accession: "IGVFDO1561YBFS",
+          aliases: ["igvf:alias_rodent_donor_2"],
+          taxa: "Mus musculus",
+        },
+        {
+          "@id": "/rodent-donors/IGVFDO9654BNIB/",
+          accession: "IGVFDO9654BNIB",
+          aliases: [
+            "igvf:alias_rodent_donor_1",
+            "igvf:rodent_donor_with_arterial_blood_pressure_trait",
+          ],
+          taxa: "Mus musculus",
+        },
+      ],
+    };
+
+    const propertyValue = getUnknownProperty("donors", item);
+    expect(propertyValue).toEqual([
+      "/rodent-donors/IGVFDO1561YBFS/",
+      "/rodent-donors/IGVFDO9654BNIB/",
+    ]);
+  });
+
+  it("returns JSON strings for complex objects", () => {
+    const item: DatabaseObject = {
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      award: {
+        "@id": "/awards/1UM1HG012077-01/",
+        component: "mapping",
+        contact_pi: {
+          name: "ali-mortazavi",
+          title: "Ali Mortazavi",
+        },
+        title: "Center for Mouse Genomic Variation at Single Cell Resolution",
+      },
+    };
+
+    const propertyValue = getUnknownProperty("award.contact_pi", item);
+    expect(propertyValue).toEqual([
+      '{"name":"ali-mortazavi","title":"Ali Mortazavi"}',
+    ]);
+  });
+
+  it("returns an empty string for a non-existent top-level property", () => {
+    const item: DatabaseObject = {
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      accession: "IGVFSM0000EEEE",
+      uuid: "578c72a2-4f84-2c8f-96b0-ec8715e18185",
+    };
+
+    const propertyValue = getUnknownProperty("alternate_accessions", item);
+    expect(propertyValue).toEqual([]);
+  });
+
+  it("returns an empty string for a non-existent embedded property", () => {
+    const item: DatabaseObject = {
+      "@id": "/primary-cells/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
+      award: {
+        "@id": "/awards/1UM1HG012077-01/",
+        component: "mapping",
+        contact_pi: {
+          "@id": "/users/e4cadd5e-0e61-4a99-abc8-84734232e271/",
+          title: "Ali Mortazavi",
+        },
+        title: "Center for Mouse Genomic Variation at Single Cell Resolution",
+      },
+    };
+
+    const propertyValue = getUnknownProperty("award.contact_pi.name", item);
+    expect(propertyValue).toEqual([]);
   });
 });
 

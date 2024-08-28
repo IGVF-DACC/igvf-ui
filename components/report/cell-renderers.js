@@ -337,12 +337,12 @@ SimpleArray.propTypes = {
  * properties.
  */
 function UnknownObject({ id, source }) {
-  const property = getUnknownProperty(id, source);
+  const properties = getUnknownProperty(id, source);
 
-  if (property) {
+  if (properties.length > 0) {
     return (
       <div data-testid="cell-type-unknown-object">
-        <UnspecifiedProperty property={property} />
+        <UnspecifiedProperty properties={properties} />
       </div>
     );
   }
@@ -529,7 +529,7 @@ export const typeRenderers = {
  * @returns {string} The type of the property; see `typeRenderers`
  */
 export function detectPropertyTypes(property, profile) {
-  const propertyDefinition = profile[property];
+  const propertyDefinition = profile?.[property];
   let propertyType = "unknown";
   if (propertyDefinition) {
     if (propertyDefinition.type === "array" && propertyDefinition.items) {
