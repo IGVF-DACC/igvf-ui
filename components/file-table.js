@@ -28,6 +28,10 @@ const filesColumns = [
     sorter: (item) => item.content_type.toLowerCase(),
   },
   {
+    id: "summary",
+    title: "Summary",
+  },
+  {
     id: "lab",
     title: "Lab",
     display: ({ source }) => source.lab?.title,

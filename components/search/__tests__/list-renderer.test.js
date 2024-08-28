@@ -1429,13 +1429,13 @@ describe("Test the AnalysisSet component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDS3099XPLN$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^primary analysis$/);
+    expect(title).toHaveTextContent(/^primary analysis of data$/);
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const supplement = screen.getByTestId("search-list-item-supplement");
-    expect(supplement).toHaveTextContent("primary analysis of data");
+    expect(supplement).toHaveTextContent("Alternate Accessions");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
@@ -1469,13 +1469,10 @@ describe("Test the AnalysisSet component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDS0390NOLS$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^primary analysis$/);
+    expect(title).toHaveTextContent(/^primary analysis of data$/);
 
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent(/^J. Michael Cherry, Stanford/);
-
-    const supplement = screen.queryByTestId("search-list-item-supplement");
-    expect(supplement).toHaveTextContent("primary analysis of data");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
