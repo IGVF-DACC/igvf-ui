@@ -4,21 +4,17 @@ import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
 import SeparatedList from "./separated-list";
-// lib
-import { truncateJson } from "../lib/general";
 
 /**
- * Display a property of an item as a JSON string, truncated to a certain number of characters.
+ * Display a property of an item as a JSON string.
  */
 function JsonDisplay({ property }) {
-  return (
-    <div className="break-all font-mono text-sm">{truncateJson(property)}</div>
-  );
+  return <div className="break-all font-mono text-sm">{property}</div>;
 }
 
 JsonDisplay.propTypes = {
-  // Property to display as a truncated JSON value
-  property: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
+  // Property to display as JSON value
+  property: PropTypes.string,
 };
 
 /**
@@ -33,6 +29,11 @@ export default function UnspecifiedProperty({ properties }) {
     <div>
       <SeparatedList>
         {properties.map((property, index) => {
+          // If the string property starts and ends with curly braces, display it as a JSON string that breaks on any character
+          if (property.match(/^\{.*\}$/)) {
+            return <JsonDisplay key={index} property={property} />;
+          }
+
           // If the property looks like a URL, display it as an external link
           if (property.match(/^https?:\/\//)) {
             return (
