@@ -101,6 +101,7 @@ const renderers = {
   Lab,
   MatrixFile: File,
   MeasurementSet,
+  ModelFile: File,
   ModelSet,
   MultiplexedSample,
   OpenReadingFrame,
