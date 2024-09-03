@@ -661,6 +661,8 @@ export function FileDataItems({ item, fileSet = null, children }) {
         </>
       )}
       {children}
+      <DataItemLabel>Summary</DataItemLabel>
+      <DataItemValue>{item.summary}</DataItemValue>
     </>
   );
 }
