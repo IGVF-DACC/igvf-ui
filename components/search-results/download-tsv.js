@@ -22,11 +22,18 @@ export default function DownloadTSV({ searchUri }) {
         <div>
           <ButtonLink
             href={link}
-            hasIconOnly={true}
             label="Download report as TSV"
-            className="h-full"
+            className="hidden h-full @lg:flex"
           >
-            <DocumentArrowDownIcon strokeWidth={2} />
+            Download TSV
+          </ButtonLink>
+          <ButtonLink
+            href={link}
+            hasIconOnly
+            label="Download report as TSV"
+            className="h-full @lg:hidden"
+          >
+            <DocumentArrowDownIcon />
           </ButtonLink>
         </div>
       </TooltipRef>
