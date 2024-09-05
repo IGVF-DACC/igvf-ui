@@ -20,7 +20,7 @@ const SCROLLTOTOP_MARGIN = 100;
  */
 function ControlShape({ onClick }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0">
+    <div className="pointer-events-none fixed bottom-0 left-0 right-0">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 45.6 14.8"
@@ -39,7 +39,7 @@ function ControlShape({ onClick }) {
           onClick={onClick}
           role="button"
           aria-label="Scroll to top of page"
-          className="cursor-pointer opacity-0 outline-none"
+          className="pointer-events-auto cursor-pointer opacity-0 outline-none"
         />
       </svg>
     </div>
