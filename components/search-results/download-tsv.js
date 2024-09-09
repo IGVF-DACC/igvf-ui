@@ -6,6 +6,7 @@ import { ButtonLink } from "../form-elements";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { API_URL } from "../../lib/constants";
+import QueryString from "../../lib/query-string";
 import { splitPathAndQueryString } from "../../lib/query-utils";
 
 /**
@@ -13,7 +14,13 @@ import { splitPathAndQueryString } from "../../lib/query-utils";
  */
 export default function DownloadTSV({ searchUri }) {
   const { queryString } = splitPathAndQueryString(searchUri);
-  const link = `${API_URL}/multireport.tsv?${queryString}`;
+  const queryStringElements = new QueryString(queryString);
+  queryStringElements.deleteKeyValue("from");
+  queryStringElements.deleteKeyValue("limit");
+  const queryStringFormatted = queryStringElements.format();
+  const link = `${API_URL}/multireport.tsv${
+    queryStringFormatted ? `?${queryStringFormatted}` : ""
+  }`;
   const tooltipAttr = useTooltip("download-tsv");
 
   return (
