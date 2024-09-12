@@ -60,6 +60,7 @@ import CuratedSet from "./curated-set";
 import Document from "./document";
 import Gene from "./gene";
 import HumanDonor from "./human-donor";
+import ImageItem from "./image";
 import Lab from "./lab";
 import MeasurementSet from "./measurement-set";
 import MultiplexedSample from "./multiplexed-sample";
@@ -96,6 +97,7 @@ const renderers = {
   Document,
   Gene,
   HumanDonor,
+  Image: ImageItem,
   ImageFile: File,
   InVitroSystem: Biosample,
   Lab,

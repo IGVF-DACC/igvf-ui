@@ -66,6 +66,7 @@ export const UC = {
   rdquo: "\u201d", // Right double quote
   hellip: "\u2026", // Horizontal ellipsis
   shift: "\u21E7", // Shift key
+  times: "\u00D7", // multiplication sign
   ctrl: "\u2303", // Control key
   cmd: "\u2318", // Place of interest, command key
 };

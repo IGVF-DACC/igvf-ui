@@ -492,7 +492,7 @@ function ImageThumbnailAndPreview({ attachment, ownerPath, alt, size }) {
       >
         <div
           data-testid="dialog-background"
-          className="fixed inset-0 bg-white/80 dark:bg-white/40"
+          className="fixed inset-0 bg-white/90"
         />
         <div className="fixed inset-0 overflow-y-auto px-3 py-8 text-center">
           <CloseButton
@@ -505,7 +505,7 @@ function ImageThumbnailAndPreview({ attachment, ownerPath, alt, size }) {
           <Dialog.Panel className="mx-auto inline-block max-w-3xl">
             <picture className="block border border-gray-200">
               <img
-                className="block"
+                className="block border border-data-border"
                 src={attachmentToServerHref(attachment, ownerPath)}
                 alt={alt}
               />
