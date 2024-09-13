@@ -39,7 +39,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function ReferenceFile({
   referenceFile,
-  fileSet,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -64,7 +63,7 @@ export default function ReferenceFile({
         <JsonDisplay item={referenceFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={referenceFile} fileSet={fileSet} />
+              <FileDataItems item={referenceFile} />
             </DataArea>
           </DataPanel>
           {(referenceFile.assembly ||
@@ -133,7 +132,7 @@ export default function ReferenceFile({
             <FileSetTable
               fileSets={integratedIn}
               title="Integrated In"
-              reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files=${referenceFile["@id"]}`}
+              reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files.@id=${referenceFile["@id"]}`}
               reportLabel={`View ConstructLibrarySets integrated with ${referenceFile.accession}`}
             />
           )}
@@ -148,8 +147,6 @@ export default function ReferenceFile({
 ReferenceFile.propTypes = {
   // ReferenceFile object to display
   referenceFile: PropTypes.object.isRequired,
-  // File set that contains this file
-  fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array,
   // The file is derived from
@@ -185,9 +182,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/reference-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(referenceFile)) {
-    const fileSet = (
-      await request.getObject(referenceFile.file_set)
-    ).optional();
     const documents = referenceFile.documents
       ? await requestDocuments(referenceFile.documents, request)
       : [];
@@ -212,10 +206,14 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
           request
         )
       : [];
-    const integratedIn =
-      referenceFile.integrated_in.length > 0
-        ? await requestFileSets(referenceFile.integrated_in, request)
-        : [];
+    let integratedIn = [];
+    if (referenceFile.integrated_in.length > 0) {
+      const integratedInPaths = referenceFile.integrated_in.map(
+        (fileSet) => fileSet["@id"]
+      );
+      integratedIn = await requestFileSets(integratedInPaths, request);
+    }
+
     const attribution = await buildAttribution(
       referenceFile,
       req.headers.cookie
@@ -223,7 +221,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         referenceFile,
-        fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,

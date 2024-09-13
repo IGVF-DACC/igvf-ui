@@ -24,18 +24,11 @@ const columns = [
   {
     id: "file_set",
     title: "File Set",
-    display: ({ source, meta }) => {
-      const fileSet = meta.derivedFromFileSets.find(
-        (fileSet) => fileSet["@id"] === source.file_set
-      );
-      return fileSet && <Link href={fileSet["@id"]}>{fileSet.accession}</Link>;
+    display: ({ source }) => {
+      const fileSet = source.file_set;
+      return <Link href={fileSet["@id"]}>{fileSet.accession}</Link>;
     },
-    sorter: (item, meta) => {
-      const fileSet = meta.derivedFromFileSets.find(
-        (fileSet) => fileSet["@id"] === item.file_set
-      );
-      return fileSet?.accession || "";
-    },
+    sorter: (item) => item.file_set.accession,
   },
   {
     id: "file_format",

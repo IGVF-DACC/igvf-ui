@@ -34,7 +34,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function ConfigurationFile({
   attribution,
   configurationFile,
-  fileSet = null,
   seqspecOf,
   sequencingPlatforms,
   documents,
@@ -59,7 +58,7 @@ export default function ConfigurationFile({
         <JsonDisplay item={configurationFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={configurationFile} fileSet={fileSet} />
+              <FileDataItems item={configurationFile} />
             </DataArea>
           </DataPanel>
           {seqspecOf.length > 0 && (
@@ -106,8 +105,6 @@ export default function ConfigurationFile({
 ConfigurationFile.propTypes = {
   // ConfigurationFile object to display
   configurationFile: PropTypes.object.isRequired,
-  // File set that contains this file
-  fileSet: PropTypes.object,
   // The file is a seqspec of
   seqspecOf: PropTypes.array.isRequired,
   // Sequencing platform objects associated with the files it is a seqspec of
@@ -146,9 +143,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/configuration-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(configurationFile)) {
-    const fileSet = (
-      await request.getObject(configurationFile.file_set)
-    ).optional();
     const seqspecOf = configurationFile.seqspec_of
       ? await requestFiles(configurationFile.seqspec_of, request)
       : [];
@@ -193,7 +187,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         configurationFile,
-        fileSet,
         seqspecOf,
         sequencingPlatforms,
         documents,

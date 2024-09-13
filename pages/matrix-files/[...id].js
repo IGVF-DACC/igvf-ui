@@ -38,7 +38,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function MatrixFile({
   matrixFile,
   attribution,
-  fileSet,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -62,7 +61,7 @@ export default function MatrixFile({
         <JsonDisplay item={matrixFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={matrixFile} fileSet={fileSet} />
+              <FileDataItems item={matrixFile} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle>Matrix Details</DataAreaTitle>
@@ -111,8 +110,6 @@ export default function MatrixFile({
 MatrixFile.propTypes = {
   // MatrixFile object to display
   matrixFile: PropTypes.object.isRequired,
-  // File set that contains this file
-  fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array.isRequired,
   // The file is derived from
@@ -149,7 +146,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/matrix-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(matrixFile)) {
-    const fileSet = (await request.getObject(matrixFile.file_set)).optional();
     const documents = matrixFile.documents
       ? await requestDocuments(matrixFile.documents, request)
       : [];
@@ -178,7 +174,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         matrixFile,
-        fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,

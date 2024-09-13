@@ -40,7 +40,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function SequenceFile({
   sequenceFile,
-  fileSet,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -66,7 +65,7 @@ export default function SequenceFile({
         <JsonDisplay item={sequenceFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={sequenceFile} fileSet={fileSet} />
+              <FileDataItems item={sequenceFile} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle>Sequencing Details</DataAreaTitle>
@@ -179,8 +178,6 @@ export default function SequenceFile({
 SequenceFile.propTypes = {
   // SequenceFile object to display
   sequenceFile: PropTypes.object.isRequired,
-  // File set that contains this file
-  fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array,
   // The file is derived from
@@ -218,7 +215,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/sequence-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(sequenceFile)) {
-    const fileSet = (await request.getObject(sequenceFile.file_set)).optional();
     const documents = sequenceFile.documents
       ? await requestDocuments(sequenceFile.documents, request)
       : [];
@@ -254,7 +250,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         sequenceFile,
-        fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,

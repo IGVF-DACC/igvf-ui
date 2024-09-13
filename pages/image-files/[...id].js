@@ -32,7 +32,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function ImageFile({
   imageFile,
   attribution,
-  fileSet,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -55,7 +54,7 @@ export default function ImageFile({
         <JsonDisplay item={imageFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={imageFile} fileSet={fileSet} />
+              <FileDataItems item={imageFile} />
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (
@@ -92,8 +91,6 @@ export default function ImageFile({
 ImageFile.propTypes = {
   // ImageFile object to display
   imageFile: PropTypes.object.isRequired,
-  // File set that contains this file
-  fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array.isRequired,
   // The file is derived from
@@ -128,7 +125,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/image-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(imageFile)) {
-    const fileSet = (await request.getObject(imageFile.file_set)).optional();
     const documents = imageFile.documents
       ? await requestDocuments(imageFile.documents, request)
       : [];
@@ -157,7 +153,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         imageFile,
-        fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,

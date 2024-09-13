@@ -123,7 +123,7 @@ export default function SequencingFileTable({
   files,
   title = "Files",
   itemPath = "",
-  itemPathProp = "file_set",
+  itemPathProp = "file_set.@id",
   isIlluminaReadType = undefined,
   sequencingPlatforms,
   seqspecFiles = [],

@@ -40,7 +40,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function AlignmentFile({
   attribution,
   alignmentFile,
-  fileSet = null,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -64,7 +63,7 @@ export default function AlignmentFile({
         <JsonDisplay item={alignmentFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={alignmentFile} fileSet={fileSet} />
+              <FileDataItems item={alignmentFile} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle>Alignment Details</DataAreaTitle>
@@ -140,8 +139,6 @@ export default function AlignmentFile({
 AlignmentFile.propTypes = {
   // AlignmentFile object to display
   alignmentFile: PropTypes.object.isRequired,
-  // File set that contains this file
-  fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array.isRequired,
   // The file is derived from
@@ -178,9 +175,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/alignment-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(alignmentFile)) {
-    const fileSet = (
-      await request.getObject(alignmentFile.file_set)
-    ).optional();
     const documents = alignmentFile.documents
       ? await requestDocuments(alignmentFile.documents, request)
       : [];
@@ -215,7 +209,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         alignmentFile,
-        fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,
