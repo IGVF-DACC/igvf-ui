@@ -38,7 +38,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function SignalFile({
   attribution,
   signalFile,
-  fileSet = null,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -62,7 +61,7 @@ export default function SignalFile({
         <JsonDisplay item={signalFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={signalFile} fileSet={fileSet} />
+              <FileDataItems item={signalFile} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle>Signal Details</DataAreaTitle>
@@ -131,8 +130,6 @@ export default function SignalFile({
 SignalFile.propTypes = {
   // SignalFile object to display
   signalFile: PropTypes.object.isRequired,
-  // File set that contains this file
-  fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array.isRequired,
   // The file is derived from
@@ -169,7 +166,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/signal-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(signalFile)) {
-    const fileSet = (await request.getObject(signalFile.file_set)).optional();
     const documents = signalFile.documents
       ? await requestDocuments(signalFile.documents, request)
       : [];
@@ -198,7 +194,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         signalFile,
-        fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,

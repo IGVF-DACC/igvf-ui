@@ -318,7 +318,7 @@ export default function ConstructLibrarySet({
             <FileTable
               files={integratedContentFiles}
               title="Integrated Content Files"
-              reportLink={`/multireport/?type=File&integrated_in=${constructLibrarySet["@id"]}`}
+              reportLink={`/multireport/?type=File&integrated_in.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of files that have integrated in this construct library set"
             />
           )}

@@ -60,7 +60,9 @@ export default function FileTable({
 }) {
   // Compose the report link, either from the file set or the given link and label.
   const finalReportLink = fileSet
-    ? `/multireport/?type=File&file_set=${encodeURIComponent(fileSet["@id"])}`
+    ? `/multireport/?type=File&file_set.@id=${encodeURIComponent(
+        fileSet["@id"]
+      )}`
     : reportLink;
   const label = fileSet
     ? "Report of files that have this item as their file set"

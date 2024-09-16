@@ -290,7 +290,7 @@ export default function MeasurementSet({
             <FileSetTable
               fileSets={controlFileSets}
               title="Control File Sets"
-              reportLink={`/multireport/?type=FileSet&control_for=${measurementSet["@id"]}`}
+              reportLink={`/multireport/?type=FileSet&control_for.@id=${measurementSet["@id"]}`}
               reportLabel="Report of control file sets in this file set"
             />
           )}

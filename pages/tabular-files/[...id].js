@@ -38,7 +38,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function TabularFile({
   tabularFile,
-  fileSet,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -63,7 +62,7 @@ export default function TabularFile({
         <JsonDisplay item={tabularFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={tabularFile} fileSet={fileSet} />
+              <FileDataItems item={tabularFile} />
             </DataArea>
           </DataPanel>
           {(tabularFile.assembly || tabularFile.transcriptome_annotation) && (
@@ -110,7 +109,7 @@ export default function TabularFile({
             <FileSetTable
               fileSets={integratedIn}
               title="Integrated In"
-              reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files=${tabularFile["@id"]}`}
+              reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files.@id=${tabularFile["@id"]}`}
               reportLabel={`Report of ConstructLibrarySets that integrate ${tabularFile.accession}`}
             />
           )}
@@ -131,8 +130,6 @@ export default function TabularFile({
 TabularFile.propTypes = {
   // TabularFile object to display
   tabularFile: PropTypes.object.isRequired,
-  // File set that contains this file
-  fileSet: PropTypes.object,
   // Documents set associate with this file
   documents: PropTypes.array,
   // The file is derived from
@@ -168,7 +165,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/tabular-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(tabularFile)) {
-    const fileSet = (await request.getObject(tabularFile.file_set)).optional();
     const documents = tabularFile.documents
       ? await requestDocuments(tabularFile.documents, request)
       : [];
@@ -190,15 +186,18 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const fileFormatSpecifications = tabularFile.file_format_specifications
       ? await requestDocuments(tabularFile.file_format_specifications, request)
       : [];
-    const integratedIn =
-      tabularFile.integrated_in.length > 0
-        ? await requestFileSets(tabularFile.integrated_in, request)
-        : [];
+    let integratedIn = [];
+    if (tabularFile.integrated_in.length > 0) {
+      const integratedInPaths = tabularFile.integrated_in.map(
+        (fileSet) => fileSet["@id"]
+      );
+      integratedIn = await requestFileSets(integratedInPaths, request);
+    }
+
     const attribution = await buildAttribution(tabularFile, req.headers.cookie);
     return {
       props: {
         tabularFile,
-        fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,

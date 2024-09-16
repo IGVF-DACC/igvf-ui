@@ -560,26 +560,22 @@ OntologyTermDataItems.commonProperties = [
 /**
  * Display data items common to all file-derived objects.
  */
-export function FileDataItems({ item, fileSet = null, children }) {
+export function FileDataItems({ item, children }) {
   return (
     <>
-      {fileSet && (
-        <>
-          <DataItemLabel>File Set</DataItemLabel>
-          <DataItemValue>
-            <div className="flex gap-1">
-              <Link
-                href={fileSet["@id"]}
-                aria-label={`FileSet ${fileSet.accession}`}
-                key={fileSet.uuid}
-              >
-                {fileSet.accession}
-              </Link>
-              ({fileSet.summary})
-            </div>
-          </DataItemValue>
-        </>
-      )}
+      <DataItemLabel>File Set</DataItemLabel>
+      <DataItemValue>
+        <div className="flex gap-1">
+          <Link
+            href={item.file_set["@id"]}
+            aria-label={`FileSet ${item.file_set.accession}`}
+            key={item.file_set["@id"]}
+          >
+            {item.file_set.accession}
+          </Link>
+          ({item.file_set.summary})
+        </div>
+      </DataItemValue>
       {item.analysis_step_version && (
         <>
           <DataItemLabel>Analysis Step Version</DataItemLabel>
@@ -670,8 +666,6 @@ export function FileDataItems({ item, fileSet = null, children }) {
 FileDataItems.propTypes = {
   // file object common for all file types
   item: PropTypes.object.isRequired,
-  // file set for this file
-  fileSet: PropTypes.object,
 };
 
 FileDataItems.commonProperties = [

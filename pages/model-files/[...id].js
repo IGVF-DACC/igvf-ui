@@ -32,7 +32,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function ModelFile({
   attribution,
   modelFile,
-  fileSet = null,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -55,7 +54,7 @@ export default function ModelFile({
         <JsonDisplay item={modelFile} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
-              <FileDataItems item={modelFile} fileSet={fileSet} />
+              <FileDataItems item={modelFile} />
             </DataArea>
           </DataPanel>
           {derivedFrom.length > 0 && (
@@ -92,8 +91,6 @@ export default function ModelFile({
 ModelFile.propTypes = {
   // ModelFile object to display
   modelFile: PropTypes.object.isRequired,
-  // File set that contains this file
-  fileSet: PropTypes.object,
   // Documents associated with this file
   documents: PropTypes.array.isRequired,
   // Files this file derives from
@@ -128,8 +125,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/model-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(modelFile)) {
-    const fileSet = (await request.getObject(modelFile.file_set)).optional();
-
     const documents = modelFile.documents
       ? await requestDocuments(modelFile.documents, request)
       : [];
@@ -160,7 +155,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         modelFile,
-        fileSet,
         documents,
         derivedFrom,
         derivedFromFileSets,
