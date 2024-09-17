@@ -217,6 +217,7 @@ export function Session({ authentication, children }) {
         sessionProperties,
         profiles,
         collectionTitles,
+        dataProviderUrl,
         setAuthStageLogin: () => setAuthStage(AUTH_STAGE_LOGIN),
         setAuthStageLogout: () => setAuthStage(AUTH_STAGE_LOGOUT),
       }}

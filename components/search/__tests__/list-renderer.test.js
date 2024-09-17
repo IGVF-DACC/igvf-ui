@@ -14,6 +14,7 @@ import Document from "../list-renderer/document";
 import File from "../list-renderer/file";
 import Gene from "../list-renderer/gene";
 import HumanDonor from "../list-renderer/human-donor";
+import ImageItem from "../list-renderer/image";
 import Lab from "../list-renderer/lab";
 import MeasurementSet from "../list-renderer/measurement-set";
 import ModelSet from "../list-renderer/model-set";
@@ -2535,5 +2536,139 @@ describe("Test Analysis Step component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Image component", () => {
+  it("renders an image item", () => {
+    const item = {
+      "@id": "/images/8a91ae78-731a-4a92-ae7c-273214be408a/",
+      "@type": ["Image", "Item"],
+      aliases: ["j-michael-cherry:aliases01"],
+    };
+
+    const accessoryData = {
+      "/images/8a91ae78-731a-4a92-ae7c-273214be408a/": {
+        "@id": "/images/498ce836-3050-47b6-b4cf-b0ac911a7d38/",
+        "@type": ["Image", "Item"],
+        attachment: {
+          href: "@@download/attachment/h3k4me3_millipore_07-473_lot_DAM1651667_WB.png",
+          type: "image/png",
+          width: 960,
+          height: 720,
+          md5sum: "fa78cd0cd7d94a627d4e86b55d95d6f5",
+          download: "h3k4me3_millipore_07-473_lot_DAM1651667_WB.png",
+        },
+        download_url:
+          "/images/498ce836-3050-47b6-b4cf-b0ac911a7d38/@@download/attachment/h3k4me3_millipore_07-473_lot_DAM1651667_WB.png",
+        status: "released",
+        summary: "H3K4me3 Millipore",
+        uuid: "498ce836-3050-47b6-b4cf-b0ac911a7d38",
+      },
+    };
+
+    render(
+      <SessionContext.Provider
+        value={{ profiles, dataProviderUrl: "http://localhost:8000" }}
+      >
+        <ImageItem item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Image/);
+    expect(uniqueId).toHaveTextContent(/498ce836-3050-47b6-b4cf-b0ac911a7d38/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      "h3k4me3_millipore_07-473_lot_DAM1651667_WB.png"
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("image/png");
+    expect(meta).toHaveTextContent("960 × 720");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+
+    const paths = ImageItem.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      {
+        type: "Image",
+        paths: ["/images/8a91ae78-731a-4a92-ae7c-273214be408a/"],
+        fields: ["attachment", "download_url", "status", "summary", "uuid"],
+      },
+    ]);
+  });
+
+  it("renders an image item with no accessory data", () => {
+    const item = {
+      "@id": "/images/8a91ae78-731a-4a92-ae7c-273214be408a/",
+      "@type": ["Image", "Item"],
+      aliases: ["j-michael-cherry:aliases01"],
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <ImageItem item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Image/);
+    expect(uniqueId).toHaveTextContent(
+      /\/images\/8a91ae78-731a-4a92-ae7c-273214be408a\//
+    );
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      "/images/8a91ae78-731a-4a92-ae7c-273214be408a/"
+    );
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeNull();
+
+    const status = screen.queryByTestId("search-list-item-quality");
+    expect(status).toBeNull();
+  });
+
+  it("renders an image with no dataProviderUrl in the session", () => {
+    const item = {
+      "@id": "/images/8a91ae78-731a-4a92-ae7c-273214be408a/",
+      "@type": ["Image", "Item"],
+      aliases: ["j-michael-cherry:aliases01"],
+    };
+
+    const accessoryData = {
+      "/images/8a91ae78-731a-4a92-ae7c-273214be408a/": {
+        "@id": "/images/498ce836-3050-47b6-b4cf-b0ac911a7d38/",
+        "@type": ["Image", "Item"],
+        attachment: {
+          href: "@@download/attachment/h3k4me3_millipore_07-473_lot_DAM1651667_WB.png",
+          type: "image/png",
+          width: 960,
+          height: 720,
+          md5sum: "fa78cd0cd7d94a627d4e86b55d95d6f5",
+          download: "h3k4me3_millipore_07-473_lot_DAM1651667_WB.png",
+        },
+        download_url:
+          "/images/498ce836-3050-47b6-b4cf-b0ac911a7d38/@@download/attachment/h3k4me3_millipore_07-473_lot_DAM1651667_WB.png",
+        status: "released",
+        uuid: "498ce836-3050-47b6-b4cf-b0ac911a7d38",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles: {} }}>
+        <ImageItem item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Image/);
+    expect(uniqueId).toHaveTextContent(/498ce836-3050-47b6-b4cf-b0ac911a7d38/);
+
+    const supplement = screen.queryByTestId("search-list-item-supplement");
+    expect(supplement).toBeNull();
   });
 });
