@@ -563,19 +563,23 @@ OntologyTermDataItems.commonProperties = [
 export function FileDataItems({ item, children }) {
   return (
     <>
-      <DataItemLabel>File Set</DataItemLabel>
-      <DataItemValue>
-        <div className="flex gap-1">
-          <Link
-            href={item.file_set["@id"]}
-            aria-label={`FileSet ${item.file_set.accession}`}
-            key={item.file_set["@id"]}
-          >
-            {item.file_set.accession}
-          </Link>
-          ({item.file_set.summary})
-        </div>
-      </DataItemValue>
+      {typeof item.file_set === "object" && (
+        <>
+          <DataItemLabel>File Set</DataItemLabel>
+          <DataItemValue>
+            <div className="flex gap-1">
+              <Link
+                href={item.file_set["@id"]}
+                aria-label={`FileSet ${item.file_set.accession}`}
+                key={item.file_set["@id"]}
+              >
+                {item.file_set.accession}
+              </Link>
+              ({item.file_set.summary})
+            </div>
+          </DataItemValue>
+        </>
+      )}
       {item.analysis_step_version && (
         <>
           <DataItemLabel>Analysis Step Version</DataItemLabel>
