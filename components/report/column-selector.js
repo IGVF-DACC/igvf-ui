@@ -10,7 +10,11 @@ import VerticalScrollIndicators from "../vertical-scroll-indicators";
 // components/report
 import HiddenColumnsIndicator from "./hidden-columns-indicator";
 // lib
-import { MAXIMUM_VISIBLE_COLUMNS } from "../../lib/report";
+import {
+  auditProperties,
+  MAXIMUM_VISIBLE_COLUMNS,
+  visibleAuditColumnSpecsToSelectorColumnSpecs,
+} from "../../lib/report";
 
 /**
  * Displays the buttons to hide or show all columns at once.
@@ -42,18 +46,15 @@ function CheckboxArea({ className = "", children }) {
   const scrollAreaRef = useRef(null);
 
   return (
-    <div className="relative">
-      <div
-        ref={scrollAreaRef}
-        className="scroll-area max-h-column-select-modal min-h-36 overflow-y-auto p-2"
-      >
-        <VerticalScrollIndicators scrollAreaRef={scrollAreaRef} />
-        <fieldset
-          className={`md:flex md:flex-wrap ${className}`}
-          data-testid="column-checkboxes"
+    <div className={className}>
+      <div className="relative">
+        <div
+          ref={scrollAreaRef}
+          className="max-h-column-select-modal min-h-36 overflow-y-auto"
         >
+          <VerticalScrollIndicators scrollAreaRef={scrollAreaRef} />
           {children}
-        </fieldset>
+        </div>
       </div>
     </div>
   );
@@ -62,6 +63,80 @@ function CheckboxArea({ className = "", children }) {
 CheckboxArea.propTypes = {
   // Tailwind CSS classes to add to the checkbox area wrapper
   className: PropTypes.string,
+};
+
+/**
+ * Wrap each section of checkboxes within the checkbox area.
+ */
+function CheckboxSection({ className = "", children }) {
+  return (
+    <div className={className}>
+      <fieldset
+        className="p-2 md:flex md:flex-wrap"
+        data-testid="column-checkboxes"
+      >
+        {children}
+      </fieldset>
+    </div>
+  );
+}
+
+CheckboxSection.propTypes = {
+  // Tailwind CSS classes to add to the checkbox section wrapper
+  className: PropTypes.string,
+};
+
+/**
+ * Display the checkboxes for one checkbox section, i.e. the regular columns or the audit columns.
+ */
+function ColumnCheckboxes({
+  columnSpecs,
+  visibleColumnIds,
+  totalVisibleColumnCount,
+  columnsPerColumnSpec = 1,
+  onChange,
+}) {
+  return (
+    <>
+      {columnSpecs.map((columnSpec) => {
+        const isVisible = visibleColumnIds.includes(columnSpec.id);
+        const isColumnCheckboxDisabled =
+          !isVisible &&
+          totalVisibleColumnCount + columnsPerColumnSpec >
+            MAXIMUM_VISIBLE_COLUMNS;
+        return (
+          <Checkbox
+            key={columnSpec.id}
+            id={columnSpec.id}
+            name={columnSpec.id}
+            checked={isVisible}
+            isDisabled={isColumnCheckboxDisabled || columnSpec.id === "@id"}
+            onClick={() => onChange(columnSpec.id, isVisible)}
+            className="my-0.5 block items-center leading-tight md:basis-1/2 lg:basis-1/3"
+          >
+            <div
+              className={`${isColumnCheckboxDisabled ? "text-gray-500" : ""}`}
+            >
+              {columnSpec.title || columnSpec.id}
+            </div>
+          </Checkbox>
+        );
+      })}
+    </>
+  );
+}
+
+ColumnCheckboxes.propTypes = {
+  // Column specs for the current section
+  columnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // IDs of the currently visible columns
+  visibleColumnIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  // Total number of visible columns across all sections
+  totalVisibleColumnCount: PropTypes.number.isRequired,
+  // Number of columns per column spec; normally 1, but not for audit columns
+  columnsPerColumnSpec: PropTypes.number,
+  // Called when the user changes individual columns to show or hide
+  onChange: PropTypes.func.isRequired,
 };
 
 /**
@@ -88,10 +163,11 @@ Note.propTypes = {
  */
 export default function ColumnSelector({
   allColumnSpecs,
+  auditColumnSpecs,
   visibleColumnSpecs,
+  visibleAuditColumnSpecs,
   onChange,
   onChangeAll,
-  isNonVisibleDisabled,
 }) {
   // True if the column-selection modal is open.
   const [isOpen, setIsOpen] = useState(false);
@@ -105,8 +181,26 @@ export default function ColumnSelector({
     );
     const isAnyColumnHidden = allColumnSpecs.length > visibleColumnSpecs.length;
 
+    // `auditColumnSpecs` are "real" in that they specify real audit properties and generate real
+    // columns in the report view, e.g. `audit.ERROR.path`, `audit.WARNING.category`. The column
+    // selector modal combines audit properties for a level (e.g. ERROR, NOT_COMPLIANT) into one
+    // checkbox, so convert these to audit-selector column specs, like `audit.ERROR`, like we have
+    // in `auditColumnSpecs`.
+    const auditSelectorColumnSpecs =
+      visibleAuditColumnSpecsToSelectorColumnSpecs(
+        visibleAuditColumnSpecs,
+        auditColumnSpecs
+      );
+    const auditSelectorColumnIds = auditSelectorColumnSpecs.map(
+      (columnSpec) => columnSpec.id
+    );
+
     // Disable column selector if the config didn't match any type.
     const isColumnSelectorDisabled = allColumnSpecs.length === 0;
+
+    // Count the number of selected columns, both regular and audit.
+    const totalVisibleColumnCount =
+      visibleColumnSpecs.length + visibleAuditColumnSpecs.length;
 
     return (
       <>
@@ -133,40 +227,32 @@ export default function ColumnSelector({
               </Note>
             </div>
             <CheckboxArea>
-              {allColumnSpecs.map((columnSpec) => {
-                const isVisible = visibleColumnIds.includes(columnSpec.id);
-                const isColumnCheckboxDisabled =
-                  !isVisible && isNonVisibleDisabled;
-                return (
-                  <Checkbox
-                    key={columnSpec.id}
-                    id={columnSpec.id}
-                    name={columnSpec.id}
-                    checked={isVisible}
-                    isDisabled={
-                      isColumnCheckboxDisabled || columnSpec.id === "@id"
-                    }
-                    onClick={() => onChange(columnSpec.id, isVisible)}
-                    className="my-0.5 block items-center leading-tight md:basis-1/2 lg:basis-1/3"
-                  >
-                    <div
-                      className={`${
-                        isColumnCheckboxDisabled ? "text-gray-500" : ""
-                      }`}
-                    >
-                      {columnSpec.title || columnSpec.id}
-                    </div>
-                  </Checkbox>
-                );
-              })}
+              <CheckboxSection className="border-b border-modal-border">
+                <ColumnCheckboxes
+                  columnSpecs={allColumnSpecs}
+                  visibleColumnIds={visibleColumnIds}
+                  totalVisibleColumnCount={totalVisibleColumnCount}
+                  onChange={onChange}
+                />
+              </CheckboxSection>
+              <h2 className="px-2 pb-0 pt-1 font-bold">Audit Columns</h2>
+              <CheckboxSection className="[&>fieldset]:pt-0">
+                <ColumnCheckboxes
+                  columnSpecs={auditColumnSpecs}
+                  visibleColumnIds={auditSelectorColumnIds}
+                  totalVisibleColumnCount={totalVisibleColumnCount}
+                  columnsPerColumnSpec={auditProperties.length}
+                  onChange={onChange}
+                />
+              </CheckboxSection>
             </CheckboxArea>
           </Modal.Body>
 
           <Modal.Footer>
             <div className="flex w-full items-center justify-between">
               <div className="text-sm" data-testid="visible-column-count">
-                {visibleColumnIds.length}{" "}
-                {visibleColumnIds.length === 1 ? "column" : "columns"} shown
+                {totalVisibleColumnCount}{" "}
+                {totalVisibleColumnCount === 1 ? "column" : "columns"} shown
                 {allColumnSpecs.length > MAXIMUM_VISIBLE_COLUMNS &&
                   ` of ${MAXIMUM_VISIBLE_COLUMNS} maximum`}
               </div>
@@ -185,14 +271,16 @@ export default function ColumnSelector({
 }
 
 ColumnSelector.propTypes = {
-  // All column specs for the current report page
+  // All regular column specs for the current report page
   allColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Visible column specs for the current report page
+  // Audit column specs for the current report page
+  auditColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Visible normal column specs for the current report page
   visibleColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Visible audit column specs for the current report page
+  visibleAuditColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Called when the user changes individual columns to show or hide
   onChange: PropTypes.func.isRequired,
   // Called when the user wants to show or hide all columns at once
   onChangeAll: PropTypes.func.isRequired,
-  // True to disable non-visible columns because of the maximum number of visible columns
-  isNonVisibleDisabled: PropTypes.bool.isRequired,
 };

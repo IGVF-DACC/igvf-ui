@@ -45,16 +45,21 @@ function getColumnRenderer(types, property, schemaProperties) {
  * property that contains a React component to render the column's cells.
  * @param {Array<string>} selectedTypes Types of the items in the report
  * @param {Array<object>} visibleColumnSpecs ColumnSpecs for the columns to display in the report
+ * @param {Array<object>} visibleAuditColumnSpecs ColumnSpecs for the audit columns to display in
+ *     the report
  * @param {object} schemaProperties Merged schema profile for the report's types
  * @returns {object} Sortable grid columns
  */
 export default function generateColumns(
   selectedTypes,
   visibleColumnSpecs,
+  visibleAuditColumnSpecs,
   schemaProperties
 ) {
+  const mergedColumnSpecs = visibleColumnSpecs.concat(visibleAuditColumnSpecs);
+
   // Add a custom cell renderer to each columnSpec in which one exists.
-  visibleColumnSpecs.forEach((column) => {
+  mergedColumnSpecs.forEach((column) => {
     const DisplayComponent = getColumnRenderer(
       selectedTypes,
       column.id,
@@ -63,5 +68,5 @@ export default function generateColumns(
     column.display = DisplayComponent;
   });
 
-  return visibleColumnSpecs;
+  return mergedColumnSpecs;
 }

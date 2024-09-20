@@ -7,6 +7,9 @@ import type {
 } from "../../globals.d";
 import {
   columnsToColumnSpecs,
+  columnsToNormalAndAuditColumns,
+  getAllAuditColumnIds,
+  getAuditColumnSpecs,
   getMergedSchemaProperties,
   getReportTypeColumnSpecs,
   getSchemasForReportTypes,
@@ -17,6 +20,7 @@ import {
   sortColumnSpecs,
   updateAllColumnsVisibilityQuery,
   updateColumnVisibilityQuery,
+  visibleAuditColumnSpecsToSelectorColumnSpecs,
   type ColumnSpec,
 } from "../report";
 
@@ -954,6 +958,37 @@ describe("Test updateColumnVisibilityQuery()", () => {
     );
     expect(updatedQuery).toEqual("type=InVitroSystem");
   });
+
+  it("adds and removes audit properties from the query string", () => {
+    const defaultColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+      { id: "audit.ERROR.path", title: "audit.ERROR.path" },
+      { id: "audit.ERROR.detail", title: "audit.ERROR.detail" },
+    ];
+
+    // Add audit properties to query string.
+    let updatedQuery = updateColumnVisibilityQuery(
+      "type=InVitroSystem",
+      "audit.ERROR",
+      false,
+      defaultColumnSpecs
+    );
+    expect(updatedQuery).toEqual(
+      "type=InVitroSystem&field=%40id&field=accession&field=audit.ERROR.path&field=audit.ERROR.detail&field=audit.ERROR.category"
+    );
+
+    // Remove audit properties from query string.
+    updatedQuery = updateColumnVisibilityQuery(
+      updatedQuery,
+      "audit.ERROR",
+      true,
+      defaultColumnSpecs
+    );
+    expect(updatedQuery).toEqual(
+      "type=InVitroSystem&field=%40id&field=accession"
+    );
+  });
 });
 
 describe("Test updateAllColumnsVisibilityQuery()", () => {
@@ -1017,5 +1052,141 @@ describe("Test updateAllColumnsVisibilityQuery()", () => {
     expect(updatedQuery).toEqual(
       "type=InVitroSystem&field=%40id&field=alternate_accessions&field=summary"
     );
+  });
+});
+
+describe("Test audit-specific functions", () => {
+  test("getAuditColumnSpecs() returns the correct audit columns specs", () => {
+    const loggedOutColumnSpecs = getAuditColumnSpecs(false);
+    expect(loggedOutColumnSpecs).toEqual([
+      {
+        id: "audit.ERROR",
+        title: "Error",
+      },
+      {
+        id: "audit.WARNING",
+        title: "Warning",
+      },
+      {
+        id: "audit.NOT_COMPLIANT",
+        title: "Not Compliant",
+      },
+    ]);
+
+    const loggedInColumnSpecs = getAuditColumnSpecs(true);
+    expect(loggedInColumnSpecs).toEqual([
+      {
+        id: "audit.ERROR",
+        title: "Error",
+      },
+      {
+        id: "audit.WARNING",
+        title: "Warning",
+      },
+      {
+        id: "audit.NOT_COMPLIANT",
+        title: "Not Compliant",
+      },
+      {
+        id: "audit.INTERNAL_ACTION",
+        title: "Internal Action",
+      },
+    ]);
+  });
+
+  test("getAllAuditColumnIds() returns the correct audit column IDs", () => {
+    const auditColumnSpecs = getAuditColumnSpecs(false);
+    const columnIds = getAllAuditColumnIds(auditColumnSpecs);
+    expect(columnIds).toEqual([
+      "audit.ERROR.path",
+      "audit.ERROR.detail",
+      "audit.ERROR.category",
+      "audit.WARNING.path",
+      "audit.WARNING.detail",
+      "audit.WARNING.category",
+      "audit.NOT_COMPLIANT.path",
+      "audit.NOT_COMPLIANT.detail",
+      "audit.NOT_COMPLIANT.category",
+    ]);
+  });
+
+  test("columnsToNormalAndAuditColumnSpecs() returns the correct column specs", () => {
+    const searchResultColumns: SearchResultsColumns = {
+      "@id": { title: "ID" },
+      accession: { title: "Accession" },
+      "audit.ERROR.path": { title: "audit.ERROR.path" },
+      "audit.ERROR.detail": { title: "audit.ERROR.detail" },
+      "audit.ERROR.category": { title: "audit.ERROR.category" },
+    };
+    const results = columnsToNormalAndAuditColumns(searchResultColumns);
+    expect(Object.keys(results)).toHaveLength(2);
+    expect(results.visibleColumns).toEqual({
+      "@id": { title: "ID" },
+      accession: { title: "Accession" },
+    });
+    expect(results.visibleAuditColumns).toEqual({
+      "audit.ERROR.path": { title: "audit.ERROR.path" },
+      "audit.ERROR.detail": { title: "audit.ERROR.detail" },
+      "audit.ERROR.category": { title: "audit.ERROR.category" },
+    });
+  });
+
+  describe("visibleAuditColumnSpecsToSelectorColumnSpecs() returns correct column specs", () => {
+    it("returns correct column specs for a complete set of audit specs for ERROR", () => {
+      const visibleAuditColumnSpecs = [
+        { id: "audit.ERROR.category", title: "audit.ERROR.category" },
+        { id: "audit.ERROR.detail", title: "audit.ERROR.detail" },
+        { id: "audit.ERROR.path", title: "audit.ERROR.path" },
+      ];
+      const auditColumnSpecs = getAuditColumnSpecs(false);
+
+      const selectorColumnSpecs = visibleAuditColumnSpecsToSelectorColumnSpecs(
+        visibleAuditColumnSpecs,
+        auditColumnSpecs
+      );
+
+      expect(selectorColumnSpecs).toEqual([
+        { id: "audit.ERROR", title: "Error" },
+      ]);
+    });
+
+    it("returns correct column specs with one complete and one partial set of audit specs", () => {
+      const visibleAuditColumnSpecs = [
+        { id: "audit.ERROR.category", title: "audit.ERROR.category" },
+        { id: "audit.ERROR.detail", title: "audit.ERROR.detail" },
+        { id: "audit.WARNING.category", title: "audit.WARNING.category" },
+        { id: "audit.WARNING.detail", title: "audit.WARNING.detail" },
+        { id: "audit.WARNING.path", title: "audit.WARNING.path" },
+      ];
+      const auditColumnSpecs = getAuditColumnSpecs(false);
+
+      const selectorColumnSpecs = visibleAuditColumnSpecsToSelectorColumnSpecs(
+        visibleAuditColumnSpecs,
+        auditColumnSpecs
+      );
+
+      expect(selectorColumnSpecs).toEqual([
+        { id: "audit.WARNING", title: "Warning" },
+      ]);
+    });
+
+    it("returns correct column specs with a complete set of audit specs including a duplicate", () => {
+      const visibleAuditColumnSpecs = [
+        { id: "audit.ERROR.category", title: "audit.ERROR.category" },
+        { id: "audit.ERROR.detail", title: "audit.ERROR.detail" },
+        { id: "audit.ERROR.path", title: "audit.ERROR.path" },
+        { id: "audit.ERROR.category", title: "audit.ERROR.category" },
+      ];
+      const auditColumnSpecs = getAuditColumnSpecs(false);
+
+      const selectorColumnSpecs = visibleAuditColumnSpecsToSelectorColumnSpecs(
+        visibleAuditColumnSpecs,
+        auditColumnSpecs
+      );
+
+      expect(selectorColumnSpecs).toEqual([
+        { id: "audit.ERROR", title: "Error" },
+      ]);
+    });
   });
 });

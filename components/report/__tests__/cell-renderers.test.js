@@ -157,6 +157,7 @@ describe("Test cell renderers in search results", () => {
       const columns = generateColumns(
         selectedTypes,
         visibleColumnSpecs,
+        [],
         profiles.Award.properties
       );
       render(
@@ -316,6 +317,7 @@ describe("Boolean cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.WholeOrganism.properties
     );
     render(
@@ -402,6 +404,7 @@ describe("`attachment` cell rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Document.properties
     );
     render(
@@ -465,6 +468,7 @@ describe("`attachment` cell rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Document.properties
     );
     render(
@@ -531,6 +535,7 @@ describe("`aliases` cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.HumanDonor.properties
     );
     render(
@@ -594,6 +599,7 @@ describe("`aliases` cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.HumanDonor.properties
     );
     render(
@@ -658,6 +664,7 @@ describe("`aliases` cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.HumanDonor.properties
     );
     render(
@@ -719,6 +726,7 @@ describe("`aliases` cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.HumanDonor.properties
     );
     render(
@@ -801,6 +809,7 @@ describe("Gene `locations` cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Gene.properties
     );
     render(
@@ -877,6 +886,7 @@ describe("Gene `locations` cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Gene.properties
     );
     render(
@@ -959,6 +969,7 @@ describe("Page cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Page.properties
     );
     render(
@@ -1032,6 +1043,7 @@ describe("Page cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Page.properties
     );
     render(
@@ -1155,6 +1167,7 @@ describe("Unknown-field cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       properties
     );
     render(
@@ -1228,6 +1241,7 @@ describe("Unknown-field cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.InVitroSystem.properties
     );
     render(
@@ -1295,6 +1309,7 @@ describe("Unknown-field cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.HumanDonor.properties
     );
     render(
@@ -1362,6 +1377,7 @@ describe("Unknown-field cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.HumanDonor.properties
     );
     render(
@@ -1437,6 +1453,7 @@ describe("Unknown-field cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.HumanDonor.properties
     );
     render(
@@ -1510,6 +1527,7 @@ describe("Unknown-field cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.InVitroSystem.properties
     );
     render(
@@ -1650,6 +1668,7 @@ describe("Unknown-field cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.InVitroSystem.properties
     );
     render(
@@ -1754,6 +1773,7 @@ describe("Unknown-field cell-rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.InVitroSystem.properties
     );
     render(
@@ -1825,6 +1845,7 @@ describe("`attachment.href` cell rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Document.properties
     );
     render(
@@ -1888,6 +1909,7 @@ describe("`attachment.href` cell rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Document.properties
     );
     render(
@@ -1960,6 +1982,7 @@ describe("`files.href` cell rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Document.properties
     );
     render(
@@ -2023,6 +2046,7 @@ describe("`files.href` cell rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Document.properties
     );
     render(
@@ -2087,6 +2111,7 @@ describe("file_size cell rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Document.properties
     );
     render(
@@ -2148,6 +2173,7 @@ describe("file_size cell rendering tests", () => {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      [],
       profiles.Document.properties
     );
     render(
