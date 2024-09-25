@@ -63,6 +63,7 @@ export default function FileSetFilesTables({
         <SequencingFileTable
           files={groupedFiles.sequencingOther}
           title="Sequencing Results"
+          isIlluminaReadType={false}
           itemPath={fileSet["@id"]}
           seqspecFiles={seqspecFiles}
           sequencingPlatforms={sequencingPlatforms}
@@ -72,8 +73,16 @@ export default function FileSetFilesTables({
       {groupedFiles.other?.length > 0 && (
         <FileTable
           files={groupedFiles.other}
-          fileSet={fileSet}
+          reportLink={`/multireport/?type=File&file_set.@id=${encodeURIComponent(
+            fileSet["@id"]
+          )}&@type!=ConfigurationFile`}
+          reportLabel="Report of other raw data files; includes these files but possibly others"
           title="Other Raw Data Files"
+          controllerContent={
+            <div className="text-sm italic text-gray-500">
+              Report includes this table’s files and possibly others
+            </div>
+          }
         />
       )}
     </>

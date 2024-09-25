@@ -140,7 +140,7 @@ export default function SequencingFileTable({
   }
 
   const reportLink = itemPath
-    ? `/multireport/?type=File&${itemPathProp}=${encodeURIComponent(
+    ? `/multireport/?type=SequenceFile&${itemPathProp}=${encodeURIComponent(
         itemPath
       )}${illuminaSelector}`
     : "";
