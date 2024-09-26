@@ -94,7 +94,7 @@ export default function ModelSet({
                     </DataItemValue>
                   </>
                 )}
-                {modelSet.publication_identifiers.length > 0 && (
+                {modelSet.publication_identifiers?.length > 0 && (
                   <>
                     <DataItemLabel>Publication Identifiers</DataItemLabel>
                     <DataItemValue>
