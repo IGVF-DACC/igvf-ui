@@ -29,7 +29,6 @@ import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
-  requestOntologyTerms,
   requestFileSets,
   requestPublications,
   requestSeqspecFiles,
@@ -255,7 +254,6 @@ export default function ConstructLibrarySet({
   files,
   seqspecFiles,
   integratedContentFiles,
-  sequencingPlatforms,
   attribution = null,
   isJson,
 }) {
@@ -312,7 +310,6 @@ export default function ConstructLibrarySet({
             files={files}
             fileSet={constructLibrarySet}
             seqspecFiles={seqspecFiles}
-            sequencingPlatforms={sequencingPlatforms}
           />
           {integratedContentFiles.length > 0 && (
             <FileTable
@@ -371,8 +368,6 @@ ConstructLibrarySet.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this construct library
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sequencing platform objects
-  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -407,14 +402,6 @@ export async function getServerSideProps({ params, req, query }) {
     const filePaths = constructLibrarySet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
-    const sequencingPlatformPaths = files
-      .map((file) => file.sequencing_platform)
-      .filter((sequencingPlatform) => sequencingPlatform);
-    const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
-    const sequencingPlatforms =
-      uniqueSequencingPlatformPaths.length > 0
-        ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
-        : [];
 
     let integratedContentFiles = [];
     if (constructLibrarySet.integrated_content_files?.length > 0) {
@@ -448,7 +435,6 @@ export async function getServerSideProps({ params, req, query }) {
         files,
         seqspecFiles,
         integratedContentFiles,
-        sequencingPlatforms,
         publications,
         pageContext: { title: constructLibrarySet.accession },
         attribution,

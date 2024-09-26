@@ -13,7 +13,6 @@ export default function FileSetFilesTables({
   files = [],
   fileSet,
   seqspecFiles,
-  sequencingPlatforms,
   children,
 }) {
   // Extract sequencing files from `files` and group them by characteristics to determine which
@@ -55,7 +54,6 @@ export default function FileSetFilesTables({
           isIlluminaReadType
           itemPath={fileSet["@id"]}
           seqspecFiles={seqspecFiles}
-          sequencingPlatforms={sequencingPlatforms}
           hasReadType
         />
       )}
@@ -65,7 +63,6 @@ export default function FileSetFilesTables({
           title="Sequencing Results"
           itemPath={fileSet["@id"]}
           seqspecFiles={seqspecFiles}
-          sequencingPlatforms={sequencingPlatforms}
         />
       )}
       {children}
@@ -87,6 +84,4 @@ FileSetFilesTables.propTypes = {
   fileSet: PropTypes.object.isRequired,
   // seqspec files associated with the files
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Sequencing platform objects associated with `files`
-  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

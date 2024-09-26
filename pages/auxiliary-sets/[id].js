@@ -23,7 +23,6 @@ import {
   requestDocuments,
   requestFiles,
   requestFileSets,
-  requestOntologyTerms,
   requestPublications,
   requestSeqspecFiles,
 } from "../../lib/common-requests";
@@ -38,7 +37,6 @@ export default function AuxiliarySet({
   files,
   relatedDatasets,
   seqspecFiles,
-  sequencingPlatforms,
   inputFileSetFor,
   controlFor,
   attribution = null,
@@ -72,7 +70,6 @@ export default function AuxiliarySet({
             files={groupedFiles.other}
             fileSet={auxiliarySet}
             seqspecFiles={seqspecFiles}
-            sequencingPlatforms={sequencingPlatforms}
           >
             {groupedFiles.tabular?.length > 0 && (
               <FileTable
@@ -134,8 +131,6 @@ AuxiliarySet.propTypes = {
   relatedDatasets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Sequencing platform objects associated with `files`
-  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets that this file set is input for
   inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets controlled by this file set
@@ -174,15 +169,6 @@ export async function getServerSideProps({ params, req, query }) {
       relatedDatasets = await requestFileSets(datasetPaths, request);
     }
 
-    const sequencingPlatformPaths = files
-      .map((file) => file.sequencing_platform)
-      .filter((sequencingPlatform) => sequencingPlatform);
-    const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
-    const sequencingPlatforms =
-      uniqueSequencingPlatformPaths.length > 0
-        ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
-        : [];
-
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
@@ -219,7 +205,6 @@ export async function getServerSideProps({ params, req, query }) {
         files,
         relatedDatasets,
         seqspecFiles,
-        sequencingPlatforms,
         inputFileSetFor,
         controlFor,
         pageContext: { title: auxiliarySet.accession },

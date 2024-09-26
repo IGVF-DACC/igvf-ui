@@ -48,7 +48,6 @@ export default function SequenceFile({
   attribution = null,
   isJson,
   seqspecs,
-  sequencingPlatform = null,
 }) {
   return (
     <>
@@ -71,12 +70,12 @@ export default function SequenceFile({
           <DataAreaTitle>Sequencing Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              {sequencingPlatform && (
+              {sequenceFile.sequencing_platform && (
                 <>
                   <DataItemLabel>Sequencing Platform</DataItemLabel>
                   <DataItemValue>
-                    <Link href={sequencingPlatform["@id"]}>
-                      {sequencingPlatform.term_name}
+                    <Link href={sequenceFile.sequencing_platform["@id"]}>
+                      {sequenceFile.sequencing_platform.term_name}
                     </Link>
                   </DataItemValue>
                 </>
@@ -194,8 +193,6 @@ SequenceFile.propTypes = {
   isJson: PropTypes.bool.isRequired,
   // Linked seqspec configuration files
   seqspecs: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Sequencing platform ontology term object
-  sequencingPlatform: PropTypes.object,
 };
 
 export async function getServerSideProps({ params, req, query, resolvedUrl }) {
@@ -240,9 +237,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       sequenceFile.seqspecs?.length > 0
         ? await requestSeqspecFiles([sequenceFile], request)
         : [];
-    const sequencingPlatform = sequenceFile.sequencing_platform
-      ? (await request.getObject(sequenceFile.sequencing_platform)).optional()
-      : null;
     const attribution = await buildAttribution(
       sequenceFile,
       req.headers.cookie
@@ -259,7 +253,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         attribution,
         isJson,
         seqspecs,
-        sequencingPlatform,
       },
     };
   }

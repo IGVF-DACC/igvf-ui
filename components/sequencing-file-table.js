@@ -1,6 +1,7 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
@@ -72,18 +73,14 @@ const filesColumns = [
   {
     id: "sequencing_platform",
     title: "Sequencing Platform",
-    display: ({ source, meta }) => {
-      const matchingPlatform = meta.sequencingPlatforms.find(
-        (platform) => platform["@id"] === source.sequencing_platform
+    display: ({ source }) => {
+      return (
+        <Link href={source.sequencing_platform["@id"]}>
+          {source.sequencing_platform.term_name}
+        </Link>
       );
-      return matchingPlatform?.term_name || null;
     },
-    sorter: (item, meta) => {
-      const matchingPlatform = meta.sequencingPlatforms.find(
-        (platform) => platform["@id"] === item.sequencing_platform
-      );
-      return matchingPlatform?.term_name || "";
-    },
+    sorter: (item) => item.sequencing_platform.term_name.toLowerCase(),
   },
   {
     id: "flowcell_id",
@@ -125,7 +122,6 @@ export default function SequencingFileTable({
   itemPath = "",
   itemPathProp = "file_set.@id",
   isIlluminaReadType = undefined,
-  sequencingPlatforms,
   seqspecFiles = [],
   hasReadType = false,
   isSeqspecHidden = false,
@@ -164,7 +160,6 @@ export default function SequencingFileTable({
         pager={{}}
         meta={{
           seqspecFiles,
-          sequencingPlatforms,
           hasReadType,
           isSeqspecHidden,
         }}
@@ -185,8 +180,6 @@ SequencingFileTable.propTypes = {
   itemPathProp: PropTypes.string,
   // True to show only files with illumina_read_type, false to show only files without
   isIlluminaReadType: PropTypes.bool,
-  // Sequencing platform objects associated with `files`
-  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object),
   // True if files have illumina_read_type
