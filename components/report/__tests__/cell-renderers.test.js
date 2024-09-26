@@ -2198,3 +2198,102 @@ describe("file_size cell rendering tests", () => {
     expect(filesHref).toHaveTextContent("");
   });
 });
+
+describe("audit category and detail cell rendering tests", () => {
+  it("renders different cases of audits", () => {
+    const COLUMN_AUDIT = 1;
+    const searchResults = {
+      "@id": "/multireport?type=File",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/files/IGVFFI0001SQBR/",
+          "@type": ["File", "Item"],
+        },
+        {
+          "@id": "/files/IGVFFI0002SQBR/",
+          "@type": ["File", "Item"],
+          audit: {
+            WARNING: [
+              {
+                path: "/files/IGVFFI0001SQBR/",
+                detail: "File has no file_format specified",
+                category: "MISSING FILE FORMAT",
+              },
+            ],
+          },
+        },
+        {
+          "@id": "/files/IGVFFI0003SQBR/",
+          "@type": ["File", "Item"],
+          audit: {
+            ERROR: [
+              {
+                path: "/files/IGVFFI0001SQBR/",
+                detail: "File has no file_format specified",
+                category: "MISSING FILE FORMAT",
+              },
+            ],
+          },
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        "audit.ERROR.path": {
+          title: "audit.ERROR.path",
+        },
+        "audit.ERROR.detail": {
+          title: "audit.ERROR.detail",
+        },
+        "audit.ERROR.category": {
+          title: "audit.ERROR.category",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "File",
+          remove: "/multireport",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      [],
+      profiles.Document.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{
+              isSortingSuppressed: true,
+            }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+
+    const cells = screen.getAllByRole("cell");
+    const auditCell = cells[COLUMN_AUDIT];
+    expect(auditCell).toHaveTextContent("");
+  });
+});
