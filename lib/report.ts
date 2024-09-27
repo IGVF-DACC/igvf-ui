@@ -23,6 +23,51 @@ import type {
 export const MAXIMUM_VISIBLE_COLUMNS = 120;
 
 /**
+ * IDs of audits that the user can see while not logged in.
+ */
+const publicAuditColumnSpecIds = [
+  "audit.ERROR",
+  "audit.WARNING",
+  "audit.NOT_COMPLIANT",
+];
+
+/**
+ * Properties of the each audit level that we display the columns for. Modify this array to display
+ * different audit properties as columns when clicking one of the audit checkboxes.
+ */
+export const auditProperties: readonly string[] = [
+  "path",
+  "detail",
+  "category",
+];
+
+/**
+ * ColumnSpec objects for the audit columns of a report. These aren't "real" in that their `id`
+ * properties only specify a level of audits, not specific properties within those audits that
+ * would appear in the report table. So these audits get used in the column selector modal to
+ * select all the properties of a given audit level, while the actual audit properties get used in
+ * the report table columns, and we sometimes need to convert between the two.
+ */
+const allAuditColumnSpecs: ColumnSpec[] = [
+  {
+    id: "audit.ERROR",
+    title: "Error",
+  },
+  {
+    id: "audit.WARNING",
+    title: "Warning",
+  },
+  {
+    id: "audit.NOT_COMPLIANT",
+    title: "Not Compliant",
+  },
+  {
+    id: "audit.INTERNAL_ACTION",
+    title: "Internal Action",
+  },
+];
+
+/**
  * The report code often references the `ColumnSpec` object that specifies the columns of a
  * report and only gets used internally to this file.
  */
@@ -220,6 +265,84 @@ export function columnsToColumnSpecs(
 }
 
 /**
+ * Get the columnSpecs for the audit columns of a report. If the user is authenticated, all audit
+ * columns get returned. Otherwise, only the public audit columns get returned.
+ * @param {boolean} isAuthenticated True if the user has authenticated
+ * @returns {ColumnSpec[]} Array of audit columnSpec objects
+ */
+export function getAuditColumnSpecs(isAuthenticated: boolean): ColumnSpec[] {
+  if (isAuthenticated) {
+    return allAuditColumnSpecs;
+  }
+  return allAuditColumnSpecs.filter((auditColumnSpec) =>
+    publicAuditColumnSpecIds.includes(auditColumnSpec.id)
+  );
+}
+
+/**
+ * Get all audit column IDs for the given audit columns specs, meaning the audit column spec IDs
+ * (e.g. `audit.ERROR`) and all its properties (e.g. `audit.ERROR.path`, `audit.ERROR.detail`).
+ * @param {ColumnSpec[]} columnSpecs Audit column specs at the user's authentication level
+ * @returns {string[]} All audit column IDs for the given audit column specs
+ */
+export function getAllAuditColumnIds(auditColumnSpecs: ColumnSpec[]): string[] {
+  return auditColumnSpecs.reduce((acc: string[], auditColumnSpec) => {
+    const auditColumnProperties = auditProperties.map(
+      (property) => `${auditColumnSpec.id}.${property}`
+    );
+    return [...acc, ...auditColumnProperties];
+  }, []);
+}
+
+/**
+ * From the search-results columns, separate the visible columns from the audit columns.
+ * @param {SearchResultsColumns} columns Columns from the report query string
+ * @returns {object} Has `visibleColumns` with normal columns and `visibleAuditColumns` with audit
+ *     columns
+ */
+export function columnsToNormalAndAuditColumns(columns: SearchResultsColumns): {
+  visibleColumns: SearchResultsColumns;
+  visibleAuditColumns: SearchResultsColumns;
+} {
+  const visibleColumns: SearchResultsColumns = {};
+  const visibleAuditColumns: SearchResultsColumns = {};
+  Object.entries(columns).forEach(([key, value]) => {
+    if (key.startsWith("audit.")) {
+      visibleAuditColumns[key] = value;
+    } else {
+      visibleColumns[key] = value;
+    }
+  });
+  return { visibleColumns, visibleAuditColumns };
+}
+
+/**
+ * Convert the visible audit column specs (containing things like `audit.ERROR.path`) to ones for
+ * the column-selector modal, like `audit.ERROR` so we can check this against the audit column
+ * specs.
+ * @param {ColumnSpec[]} visibleAuditColumnSpecs Column specs for the visible audit columns
+ * @param {ColumnSpec[]} auditColumnSpecs Column specs for the audit selectors
+ * @returns {ColumnSpec[]} Column specs for the selected audit selectors
+ */
+export function visibleAuditColumnSpecsToSelectorColumnSpecs(
+  visibleAuditColumnSpecs: ColumnSpec[],
+  auditColumnSpecs: ColumnSpec[]
+): ColumnSpec[] {
+  // Make an array of all the `id` of `visibleAuditColumnSpecs` with no duplicates.
+  const auditColumnKeys = new Set(
+    visibleAuditColumnSpecs.map((columnSpec) => columnSpec.id)
+  );
+
+  // Filter the audit column specs to only include ones that the query string includes all of the
+  // properties in `auditProperties` for an audit level.
+  return auditColumnSpecs.filter((auditColumnSpec) => {
+    return auditProperties.every((property) =>
+      auditColumnKeys.has(`${auditColumnSpec.id}.${property}`)
+    );
+  });
+}
+
+/**
  * Merge two arrays of ColumnSpec objects into one array. The resulting array contains only unique
  * ColumnSpec objects, and the columns get sorted by title, except for the column for the `@id`
  * property that always sorts first.
@@ -302,6 +425,7 @@ export function updateColumnVisibilityQuery(
   const defaultColumnIds = defaultColumnSpecs.map(
     (columnSpec) => columnSpec.id
   );
+  const isAuditColumn = columnId.startsWith("audit.");
 
   // To prepare the query string for adding or removing a "field=" parameter, convert any query
   // string that doesn't have any "field=" parameters into one that has all the default columns as
@@ -312,10 +436,25 @@ export function updateColumnVisibilityQuery(
     });
   }
 
-  if (isVisible) {
-    query.deleteKeyValue("field", columnId);
+  if (isAuditColumn) {
+    // The user clicked an audit column checkbox. Remove all the associated audit column fields in
+    // case the user entered a query string with an incomplete/incorrect set of audit column
+    // properties.
+    auditProperties.forEach((property) => {
+      query.deleteKeyValue("field", `${columnId}.${property}`);
+    });
+    if (!isVisible) {
+      auditProperties.forEach((property) => {
+        query.addKeyValue("field", `${columnId}.${property}`);
+      });
+    }
   } else {
-    query.addKeyValue("field", columnId);
+    // The user clicked a non-audit column checkbox. Add or remove the column from the query string.
+    if (isVisible) {
+      query.deleteKeyValue("field", columnId);
+    } else {
+      query.addKeyValue("field", columnId);
+    }
   }
 
   // In case the user manually entered a query string with no "field=@id" parameter, add it.
@@ -340,7 +479,7 @@ export function updateColumnVisibilityQuery(
 
 /**
  * Update the given query string to show or hide all columns. When hiding all columns, the `@id`
- * column remains visible.
+ * column remains visible. Do not include the audit columns.
  * @param queryString MultiReport query string to update
  * @param isAllVisible True to make all possible columns visible, false to hide all
  * @param allColumnSpecs All possible columns for the current report type

@@ -1,4 +1,5 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
@@ -24,12 +25,14 @@ import {
 } from "../lib/query-utils";
 import {
   columnsToColumnSpecs,
+  columnsToNormalAndAuditColumns,
+  getAllAuditColumnIds,
+  getAuditColumnSpecs,
   getMergedSchemaProperties,
   getReportTypeColumnSpecs,
   getSchemasForReportTypes,
   getSelectedTypes,
   getSortColumn,
-  MAXIMUM_VISIBLE_COLUMNS,
   mergeColumnSpecs,
   updateAllColumnsVisibilityQuery,
   updateColumnVisibilityQuery,
@@ -40,13 +43,18 @@ import {
 } from "../lib/search-results";
 
 export default function MultiReport({ searchResults }) {
+  const { isAuthenticated } = useAuth0();
   const router = useRouter();
   const { collectionTitles, profiles } = useContext(SessionContext);
   const { totalPages } = useSearchLimits(searchResults);
 
   const { path, queryString } = splitPathAndQueryString(searchResults["@id"]);
   const sortedColumnId = getSortColumn(searchResults);
-  const nonSortableColumnIds = searchResults.non_sortable || [];
+  const auditColumnSpecs = getAuditColumnSpecs(isAuthenticated);
+  const allAuditColumnIds = getAllAuditColumnIds(auditColumnSpecs);
+  const nonSortableColumnIds = (searchResults.non_sortable || []).concat(
+    allAuditColumnIds
+  );
   const selectedTypes = getSelectedTypes(searchResults);
 
   // Get all schemas for the selected report types and merge their properties into a single schema-
@@ -54,14 +62,18 @@ export default function MultiReport({ searchResults }) {
   const schemas = getSchemasForReportTypes(selectedTypes, profiles);
   const schemaProperties = getMergedSchemaProperties(schemas);
 
-  // Get the search result default column specs as well as all possible column specs for the
-  // selected report types.
+  // Get the search result default column specs for the schema(s) so we know when not to include
+  // any `field=` in the query string.
   const defaultColumnSpecs = columnsToColumnSpecs(searchResults.columns);
-  const visibleColumnSpecs = columnsToColumnSpecs(searchResults.result_columns);
+
+  // Split `result_columns` into visible non-audit columns and visible audit columns.
+  const { visibleColumns, visibleAuditColumns } =
+    columnsToNormalAndAuditColumns(searchResults.result_columns);
+  const visibleColumnSpecs = columnsToColumnSpecs(visibleColumns);
+  const visibleAuditColumnSpecs = columnsToColumnSpecs(visibleAuditColumns);
+
   let allColumnSpecs = getReportTypeColumnSpecs(selectedTypes, profiles);
   allColumnSpecs = mergeColumnSpecs(allColumnSpecs, visibleColumnSpecs);
-  const isNonVisibleDisabled =
-    visibleColumnSpecs.length >= MAXIMUM_VISIBLE_COLUMNS;
 
   /**
    * Navigate to the same page but with the "sort=" query parameter set to the column that was
@@ -119,6 +131,7 @@ export default function MultiReport({ searchResults }) {
     const columns = generateColumns(
       selectedTypes,
       visibleColumnSpecs,
+      visibleAuditColumnSpecs,
       schemaProperties
     );
 
@@ -144,10 +157,11 @@ export default function MultiReport({ searchResults }) {
                   searchResults={searchResults}
                   reportViewExtras={{
                     allColumnSpecs,
+                    auditColumnSpecs,
                     visibleColumnSpecs,
+                    visibleAuditColumnSpecs,
                     onColumnVisibilityChange,
                     onAllColumnsVisibilityChange,
-                    isNonVisibleDisabled,
                   }}
                 />
                 <TableCount count={searchResults.total} />

@@ -1373,6 +1373,33 @@ describe("Test File component", () => {
     ]);
   });
 
+  it("renders a file with a non-embedded file_set", () => {
+    const item = {
+      "@id": "/reference-file/IGVFFI0000SQBR/",
+      "@type": ["ReferenceFile", "File", "Item"],
+      accession: "IGVFFI0000SQBR",
+      alternate_accessions: ["IGVFFI0000SQBS"],
+      file_format: "txt",
+      file_set: "/measurement-sets/IGVFDS0000MSET/",
+      content_type: "sequence barcodes",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      summary: "IGVFFI0000SQBR",
+      uuid: "fa9feeb4-28ba-4356-8c24-50f4e6562029",
+      status: "released",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <File item={item} />
+      </SessionContext.Provider>
+    );
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).not.toHaveTextContent("File Set");
+  });
+
   it("renders a seqspec configuration File item without accessory data", () => {
     const item = {
       "@id": "/configuration-file/IGVFFI1234CONF/",

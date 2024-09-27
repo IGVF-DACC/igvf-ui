@@ -12,12 +12,29 @@ describe("Test report column selector", () => {
       /^\d+ columns shown$/
     );
 
-    // Make sure at least 10 checkboxes are selected by default.
-    cy.get(`fieldset[data-testid="column-checkboxes"]`).within(() => {
-      cy.get('input[type="checkbox"]')
-        .filter(":checked")
-        .should("have.length.at.least", 10);
-    });
+    // Make sure there are two fieldsets with a data-testid of "column-checkboxes".
+    cy.get(`fieldset[data-testid="column-checkboxes"]`).should(
+      "have.length",
+      2
+    );
+
+    // Make sure at least 10 checkboxes are selected by default in the first fieldset.
+    cy.get(`fieldset[data-testid="column-checkboxes"]`)
+      .eq(0)
+      .within(() => {
+        cy.get('input[type="checkbox"]')
+          .filter(":checked")
+          .should("have.length.at.least", 10);
+      });
+
+    // Make sure there are three unchecked checkboxes in the second fieldset.
+    cy.get(`fieldset[data-testid="column-checkboxes"]`)
+      .eq(1)
+      .within(() => {
+        cy.get('input[type="checkbox"]')
+          .filter(":not(:checked)")
+          .should("have.length", 3);
+      });
   });
 
   it("handles the column selector correctly for a report type with more than the maximum number of columns", () => {
@@ -31,11 +48,13 @@ describe("Test report column selector", () => {
     );
 
     // Make sure at least 10 checkboxes are selected by default.
-    cy.get(`fieldset[data-testid="column-checkboxes"]`).within(() => {
-      cy.get('input[type="checkbox"]')
-        .filter(":checked")
-        .should("have.length.at.least", 10);
-    });
+    cy.get(`fieldset[data-testid="column-checkboxes"]`)
+      .eq(0)
+      .within(() => {
+        cy.get('input[type="checkbox"]')
+          .filter(":checked")
+          .should("have.length.at.least", 10);
+      });
 
     // Click the Show All button and make sure only 120 checkboxes get selected.
     cy.contains("Show All").click();
@@ -44,10 +63,12 @@ describe("Test report column selector", () => {
     );
 
     // Make sure exactly 120 checkboxes are selected by default.
-    cy.get(`fieldset[data-testid="column-checkboxes"]`).within(() => {
-      cy.get('input[type="checkbox"]')
-        .filter(":checked")
-        .should("have.length", 120);
-    });
+    cy.get(`fieldset[data-testid="column-checkboxes"]`)
+      .eq(0)
+      .within(() => {
+        cy.get('input[type="checkbox"]')
+          .filter(":checked")
+          .should("have.length", 120);
+      });
   });
 });

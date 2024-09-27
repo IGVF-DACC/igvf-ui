@@ -44,10 +44,13 @@ export default function SearchResultsHeader({
                 <>
                   <ColumnSelector
                     allColumnSpecs={reportViewExtras.allColumnSpecs}
+                    auditColumnSpecs={reportViewExtras.auditColumnSpecs}
                     visibleColumnSpecs={reportViewExtras.visibleColumnSpecs}
+                    visibleAuditColumnSpecs={
+                      reportViewExtras.visibleAuditColumnSpecs
+                    }
                     onChange={reportViewExtras.onColumnVisibilityChange}
                     onChangeAll={reportViewExtras.onAllColumnsVisibilityChange}
-                    isNonVisibleDisabled={reportViewExtras.isNonVisibleDisabled}
                   />
                   <DownloadTSV searchUri={searchResults["@id"]} />
                 </>
@@ -75,15 +78,17 @@ SearchResultsHeader.propTypes = {
   searchResults: PropTypes.object.isRequired,
   // Callback functions for when the search header is for the report view; null for the list view
   reportViewExtras: PropTypes.exact({
-    // All column specs for the current report page
+    // All regular column specs for the current report page
     allColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
+    // Audit column specs for the current report page
+    auditColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
     // Visible column specs for the current report page
     visibleColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
+    // Visible audit column specs for the current report page
+    visibleAuditColumnSpecs: PropTypes.arrayOf(PropTypes.object).isRequired,
     // Callback when the user changes the visibility of a column
     onColumnVisibilityChange: PropTypes.func.isRequired,
     // Callback when the user changes the visibility of all columns
     onAllColumnsVisibilityChange: PropTypes.func.isRequired,
-    // True to disable non-visible columns because of the maximum number of visible columns
-    isNonVisibleDisabled: PropTypes.bool.isRequired,
   }),
 };

@@ -17,6 +17,7 @@ import {
   DEFAULT_MAX_COLLAPSE_ITEMS_VERTICAL,
   useCollapseControl,
 } from "../collapse-control";
+import MarkdownSection from "../markdown-section";
 import SeparatedList from "../separated-list";
 import { AliasesCell } from "../table-cells";
 import UnspecifiedProperty from "../unspecified-property";
@@ -332,6 +333,55 @@ SimpleArray.propTypes = {
 };
 
 /**
+ * Display the audit details and categories for a particular audit level.
+ */
+function AuditDetail({ id, source }) {
+  if (source.audit) {
+    // Extract the audit level from the id that's in the form `audit.ERROR.detail`.
+    const auditLevel = id.split(".")[1];
+    if (source.audit[auditLevel]) {
+      // Sort the audit level array elements by case-insensitive category, then display each
+      // category and detail.
+      const audits = _.sortBy(source.audit[auditLevel], [
+        (audit) => audit.category.toLowerCase(),
+      ]);
+      return (
+        <div>
+          {audits.map((audit, index) => {
+            return (
+              <div key={index} className="my-2 first:mt-0 last:mb-0">
+                <MarkdownSection className="prose-p:text-sm">
+                  {`**${audit.category}**: ${audit.detail}`}
+                </MarkdownSection>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+  }
+  return null;
+}
+
+AuditDetail.propTypes = {
+  // Property name of column being rendered
+  id: PropTypes.string.isRequired,
+  // Object displayed in the current row
+  source: PropTypes.shape({
+    audit: PropTypes.shape({
+      // Not really `level`, but the audit level: ERROR, WARNING, etc.
+      level: PropTypes.arrayOf(
+        PropTypes.shape({
+          path: PropTypes.string.isRequired,
+          detail: PropTypes.string.isRequired,
+          category: PropTypes.string.isRequired,
+        })
+      ),
+    }),
+  }).isRequired,
+};
+
+/**
  * Display an object for which we have no dedicated renderer. What it displays depends on the type
  * of the object in `source`, basically having a primitive version of the renderers for known cell
  * properties.
@@ -504,6 +554,10 @@ export const propertyRenderers = {
   "@id": AtId,
   aliases: Aliases,
   attachment: Attachment,
+  "audit.ERROR.detail": AuditDetail,
+  "audit.WARNING.detail": AuditDetail,
+  "audit.NOT_COMPLIANT.detail": AuditDetail,
+  "audit.INTERNAL_ACTION.detail": AuditDetail,
   href: Href,
   "attachment.href": AttachmentHref,
   "files.href": FilesHref,
