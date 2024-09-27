@@ -69,7 +69,7 @@ export default function MatrixFile({
             <DataArea>
               <DataItemLabel>Principal Dimension</DataItemLabel>
               <DataItemValue>{matrixFile.dimension_x}</DataItemValue>
-              <DataItemLabel>Other Dimension</DataItemLabel>
+              <DataItemLabel>Secondary Dimensions</DataItemLabel>
               <DataItemValue>{matrixFile.dimension_y.join(", ")}</DataItemValue>
             </DataArea>
           </DataPanel>
