@@ -57,6 +57,7 @@ export default function FileTable({
   reportLabel = "",
   downloadQuery = null,
   isDownloadable = false,
+  controllerContent = null,
 }) {
   // Compose the report link, either from the file set or the given link and label.
   const finalReportLink = fileSet
@@ -79,7 +80,7 @@ export default function FileTable({
       <DataAreaTitle>
         {title}
         {(controller || finalReportLink) && (
-          <div className="flex gap-1">
+          <div className="align-center flex gap-1">
             {controller && (
               <BatchDownloadActuator
                 controller={controller}
@@ -87,6 +88,7 @@ export default function FileTable({
                 size="sm"
               />
             )}
+            {controllerContent}
             {finalReportLink && (
               <DataAreaTitleLink href={finalReportLink} label={label}>
                 <TableCellsIcon className="h-4 w-4" />
@@ -120,4 +122,6 @@ FileTable.propTypes = {
   downloadQuery: PropTypes.object,
   // True if the user can download the files in this table
   isDownloadable: PropTypes.bool,
+  // Extra text or JSX content for the batch download controller
+  controllerContent: PropTypes.node,
 };

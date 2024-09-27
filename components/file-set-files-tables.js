@@ -63,6 +63,7 @@ export default function FileSetFilesTables({
         <SequencingFileTable
           files={groupedFiles.sequencingOther}
           title="Sequencing Results"
+          isIlluminaReadType={false}
           itemPath={fileSet["@id"]}
           seqspecFiles={seqspecFiles}
           sequencingPlatforms={sequencingPlatforms}
@@ -70,11 +71,7 @@ export default function FileSetFilesTables({
       )}
       {children}
       {groupedFiles.other?.length > 0 && (
-        <FileTable
-          files={groupedFiles.other}
-          fileSet={fileSet}
-          title="Other Raw Data Files"
-        />
+        <FileTable files={groupedFiles.other} title="Other Raw Data Files" />
       )}
     </>
   );
