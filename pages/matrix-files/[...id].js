@@ -67,10 +67,10 @@ export default function MatrixFile({
           <DataAreaTitle>Matrix Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
-              <DataItemLabel>First Dimension</DataItemLabel>
-              <DataItemValue>{matrixFile.dimension1}</DataItemValue>
-              <DataItemLabel>Second Dimension</DataItemLabel>
-              <DataItemValue>{matrixFile.dimension2}</DataItemValue>
+              <DataItemLabel>Principal Dimension</DataItemLabel>
+              <DataItemValue>{matrixFile.dimension_x}</DataItemValue>
+              <DataItemLabel>Other Dimension</DataItemLabel>
+              <DataItemValue>{matrixFile.dimension_y.join(", ")}</DataItemValue>
             </DataArea>
           </DataPanel>
           {referenceFiles.length > 0 && (
