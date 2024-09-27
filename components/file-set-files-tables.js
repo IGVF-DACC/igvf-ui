@@ -71,19 +71,7 @@ export default function FileSetFilesTables({
       )}
       {children}
       {groupedFiles.other?.length > 0 && (
-        <FileTable
-          files={groupedFiles.other}
-          reportLink={`/multireport/?type=File&file_set.@id=${encodeURIComponent(
-            fileSet["@id"]
-          )}&@type!=ConfigurationFile`}
-          reportLabel="Report of other raw data files; includes these files but possibly others"
-          title="Other Raw Data Files"
-          controllerContent={
-            <div className="text-sm italic text-gray-500">
-              Report includes this table’s files and possibly others
-            </div>
-          }
-        />
+        <FileTable files={groupedFiles.other} title="Other Raw Data Files" />
       )}
     </>
   );
