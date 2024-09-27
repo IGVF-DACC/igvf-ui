@@ -21,7 +21,6 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
-  requestOntologyTerms,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -35,7 +34,6 @@ export default function ConfigurationFile({
   attribution,
   configurationFile,
   seqspecOf,
-  sequencingPlatforms,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -65,7 +63,6 @@ export default function ConfigurationFile({
             <SequencingFileTable
               files={seqspecOf}
               title="seqspec File Of"
-              sequencingPlatforms={sequencingPlatforms}
               itemPath={configurationFile["@id"]}
               itemPathProp="seqspecs"
               isSeqspecHidden
@@ -107,8 +104,6 @@ ConfigurationFile.propTypes = {
   configurationFile: PropTypes.object.isRequired,
   // The file is a seqspec of
   seqspecOf: PropTypes.array.isRequired,
-  // Sequencing platform objects associated with the files it is a seqspec of
-  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents set associate with this file
   documents: PropTypes.array.isRequired,
   // The file is derived from
@@ -171,14 +166,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
             request
           )
         : [];
-    const sequencingPlatformPaths = seqspecOf
-      .map((file) => file.sequencing_platform)
-      .filter((sequencingPlatform) => sequencingPlatform);
-    const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
-    const sequencingPlatforms =
-      uniqueSequencingPlatformPaths.length > 0
-        ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
-        : [];
 
     const attribution = await buildAttribution(
       configurationFile,
@@ -188,7 +175,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       props: {
         configurationFile,
         seqspecOf,
-        sequencingPlatforms,
         documents,
         derivedFrom,
         derivedFromFileSets,

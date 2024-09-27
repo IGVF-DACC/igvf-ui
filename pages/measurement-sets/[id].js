@@ -34,7 +34,6 @@ import {
   requestDocuments,
   requestFiles,
   requestFileSets,
-  requestOntologyTerms,
   requestPublications,
   requestSamples,
   requestSeqspecFiles,
@@ -113,7 +112,6 @@ export default function MeasurementSet({
   controlFor,
   samples,
   seqspecFiles,
-  sequencingPlatforms,
   attribution = null,
   isJson,
 }) {
@@ -265,7 +263,6 @@ export default function MeasurementSet({
             files={groupedFiles.other}
             fileSet={measurementSet}
             seqspecFiles={seqspecFiles}
-            sequencingPlatforms={sequencingPlatforms}
           >
             {groupedFiles.image?.length > 0 && (
               <FileTable
@@ -363,8 +360,6 @@ MeasurementSet.propTypes = {
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Sequencing platform objects associated with `files`
-  sequencingPlatforms: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this measurement set
@@ -452,16 +447,6 @@ export async function getServerSideProps({ params, req, query }) {
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
-    // Use the files to retrieve all the sequencing platform objects they link to.
-    const sequencingPlatformPaths = files
-      .map((file) => file.sequencing_platform)
-      .filter((sequencingPlatform) => sequencingPlatform);
-    const uniqueSequencingPlatformPaths = [...new Set(sequencingPlatformPaths)];
-    const sequencingPlatforms =
-      uniqueSequencingPlatformPaths.length > 0
-        ? await requestOntologyTerms(uniqueSequencingPlatformPaths, request)
-        : [];
-
     let publications = [];
     if (measurementSet.publications?.length > 0) {
       const publicationPaths = measurementSet.publications.map(
@@ -488,7 +473,6 @@ export async function getServerSideProps({ params, req, query }) {
         controlFor,
         samples,
         seqspecFiles,
-        sequencingPlatforms,
         pageContext: { title: measurementSet.accession },
         attribution,
         isJson,
