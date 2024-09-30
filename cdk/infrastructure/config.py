@@ -65,7 +65,6 @@ config: Dict[str, Any] = {
                 'desired_count': 1,
                 'max_capacity': 4,
             },
-            'backend_url': 'https://igvfd-dev.demo.igvf.org',
             'tags': [
             ],
         },
