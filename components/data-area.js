@@ -20,6 +20,7 @@ import {
   useCollapseControl,
 } from "./collapse-control";
 import { ButtonLink } from "./form-elements";
+import { PagePanelButton } from "./page-panels";
 
 /**
  * Displays a panel -- typically to display data items for an object, but you can use this for
@@ -78,6 +79,40 @@ DataAreaTitle.propTypes = {
   // Additional Tailwind CSS classes to apply to the <h2> element
   className: PropTypes.string,
 };
+
+/**
+ * Embed this component (or rather its alias, DataAreaTitle.Expander) inside a DataAreaTitle to
+ * add a button to collapse or expand the data area.
+ */
+function DataAreaTitleWithExpander({
+  pagePanels,
+  pagePanelId,
+  label,
+  children,
+}) {
+  return (
+    <div className="flex items-center gap-1">
+      <PagePanelButton
+        pagePanels={pagePanels}
+        pagePanelId={pagePanelId}
+        label={label}
+      >
+        {children}
+      </PagePanelButton>
+    </div>
+  );
+}
+
+DataAreaTitleWithExpander.propTypes = {
+  // Expandable panels to determine if this title should appear collapsed or expanded
+  pagePanels: PropTypes.object.isRequired,
+  // ID of the panel that contains this title, unique on the page
+  pagePanelId: PropTypes.string.isRequired,
+  // Accessible label for the title of the table
+  label: PropTypes.string.isRequired,
+};
+
+DataAreaTitle.Expander = DataAreaTitleWithExpander;
 
 /**
  * Displays a link to the right of a data area title. This is typically used to link to a report

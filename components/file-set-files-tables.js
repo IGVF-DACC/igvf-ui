@@ -14,6 +14,7 @@ export default function FileSetFilesTables({
   fileSet,
   seqspecFiles,
   children,
+  pagePanels,
 }) {
   // Extract sequencing files from `files` and group them by characteristics to determine which
   // file table they should appear in, if any. Possible groups include:
@@ -55,6 +56,8 @@ export default function FileSetFilesTables({
           itemPath={fileSet["@id"]}
           seqspecFiles={seqspecFiles}
           hasReadType
+          pagePanels={pagePanels}
+          pagePanelId="sequencing-results-illumina"
         />
       )}
       {groupedFiles.sequencingOther?.length > 0 && (
@@ -64,11 +67,18 @@ export default function FileSetFilesTables({
           isIlluminaReadType={false}
           itemPath={fileSet["@id"]}
           seqspecFiles={seqspecFiles}
+          pagePanels={pagePanels}
+          pagePanelId="sequencing-results-non-illumina"
         />
       )}
       {children}
       {groupedFiles.other?.length > 0 && (
-        <FileTable files={groupedFiles.other} title="Other Raw Data Files" />
+        <FileTable
+          files={groupedFiles.other}
+          title="Other Raw Data Files"
+          pagePanels={pagePanels}
+          pagePanelId="other-raw-data-files"
+        />
       )}
     </>
   );
@@ -81,4 +91,6 @@ FileSetFilesTables.propTypes = {
   fileSet: PropTypes.object.isRequired,
   // seqspec files associated with the files
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Expandable panels to determine if this table should appear collapsed or expanded
+  pagePanels: PropTypes.object.isRequired,
 };

@@ -15,6 +15,7 @@ import ProductInfo from "../../components/product-info";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 // lib
@@ -35,6 +36,8 @@ export default function Treatment({
   sources,
   isJson,
 }) {
+  const pagePanels = usePagePanels(treatment["@id"]);
+
   return (
     <>
       <Breadcrumbs item={treatment} />
@@ -141,9 +144,17 @@ export default function Treatment({
             <SampleTable
               samples={biosamplesTreated}
               title="Treated Biosamples"
+              pagePanels={pagePanels}
+              pagePanelId="biosamples-treated"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

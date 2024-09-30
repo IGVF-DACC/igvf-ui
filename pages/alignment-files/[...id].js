@@ -20,6 +20,7 @@ import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
@@ -48,6 +49,8 @@ export default function AlignmentFile({
   referenceFiles,
   isJson,
 }) {
+  const pagePanels = usePagePanels(alignmentFile["@id"]);
+
   return (
     <>
       <Breadcrumbs item={alignmentFile} />
@@ -110,8 +113,10 @@ export default function AlignmentFile({
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${alignmentFile["@id"]}`}
-              reportLabel={`Report of files ${alignmentFile.accession} derives from`}
+              reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
+              pagePanels={pagePanels}
+              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -120,15 +125,25 @@ export default function AlignmentFile({
               reportLink={`/multireport/?type=File&derived_from=${alignmentFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
+              pagePanels={pagePanels}
+              pagePanelId="input-file-for"
             />
           )}
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
+              pagePanels={pagePanels}
+              pagePanelId="file-format-docs"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

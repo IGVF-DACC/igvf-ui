@@ -1,6 +1,11 @@
 // node_modules
+import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
 // components
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "./animation";
 import { DataAreaTitle } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
@@ -57,16 +62,39 @@ export default function RelatedDonorsTable({
   relatedDonors,
   embeddedDonors,
   title = "Related Donors",
+  pagePanels,
+  pagePanelId,
 }) {
   return (
     <>
-      <DataAreaTitle>{title}</DataAreaTitle>
-      <SortableGrid
-        data={relatedDonors}
-        columns={relatedDonorsColumns}
-        meta={{ embeddedDonors }}
-        pager={{}}
-      />
+      <DataAreaTitle>
+        <DataAreaTitle.Expander
+          pagePanels={pagePanels}
+          pagePanelId={pagePanelId}
+          label={`${title} table`}
+        >
+          {title}
+        </DataAreaTitle.Expander>
+      </DataAreaTitle>
+      <AnimatePresence>
+        {pagePanels.isExpanded(pagePanelId) && (
+          <motion.div
+            className="overflow-hidden"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            transition={standardAnimationTransition}
+            variants={standardAnimationVariants}
+          >
+            <SortableGrid
+              data={relatedDonors}
+              columns={relatedDonorsColumns}
+              meta={{ embeddedDonors }}
+              pager={{}}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -78,4 +106,8 @@ RelatedDonorsTable.propTypes = {
   embeddedDonors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Title of the table if not "Related Donors"
   title: PropTypes.string,
+  // Expandable panels to determine if this table should appear collapsed or expanded
+  pagePanels: PropTypes.object.isRequired,
+  // ID of the panel that contains this table, unique on the page
+  pagePanelId: PropTypes.string.isRequired,
 };

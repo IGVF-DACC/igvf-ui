@@ -1,7 +1,12 @@
 // node_modules
+import { AnimatePresence, motion } from "framer-motion";
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "./animation";
 import { BatchDownloadActuator } from "./batch-download";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
@@ -62,7 +67,11 @@ export default function FileTable({
   downloadQuery = null,
   isDownloadable = false,
   controllerContent = null,
+  pagePanels,
+  pagePanelId,
 }) {
+  const isExpanded = pagePanels.isExpanded(pagePanelId);
+
   // Compose the report link, either from the file set or the given link and label.
   const finalReportLink = fileSet
     ? `/multireport/?type=File&file_set.@id=${encodeURIComponent(
@@ -82,8 +91,14 @@ export default function FileTable({
   return (
     <>
       <DataAreaTitle>
-        {title}
-        {(controller || finalReportLink) && (
+        <DataAreaTitle.Expander
+          pagePanels={pagePanels}
+          pagePanelId={pagePanelId}
+          label={`${title} table`}
+        >
+          {title}
+        </DataAreaTitle.Expander>
+        {(controller || finalReportLink) && isExpanded && (
           <div className="align-center flex gap-1">
             {controller && (
               <BatchDownloadActuator
@@ -101,12 +116,25 @@ export default function FileTable({
           </div>
         )}
       </DataAreaTitle>
-      <SortableGrid
-        data={files}
-        columns={filesColumns}
-        keyProp="@id"
-        pager={{}}
-      />
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            className="overflow-hidden"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            transition={standardAnimationTransition}
+            variants={standardAnimationVariants}
+          >
+            <SortableGrid
+              data={files}
+              columns={filesColumns}
+              keyProp="@id"
+              pager={{}}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -128,4 +156,8 @@ FileTable.propTypes = {
   isDownloadable: PropTypes.bool,
   // Extra text or JSX content for the batch download controller
   controllerContent: PropTypes.node,
+  // Expandable panels to determine if this table should appear collapsed or expanded
+  pagePanels: PropTypes.object.isRequired,
+  // ID of the panel that contains this table, unique on the page
+  pagePanelId: PropTypes.string.isRequired,
 };

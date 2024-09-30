@@ -17,6 +17,7 @@ import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 // lib
@@ -45,6 +46,8 @@ export default function TechnicalSample({
   multiplexedInSamples,
   isJson,
 }) {
+  const pagePanels = usePagePanels(sample["@id"]);
+
   return (
     <>
       <Breadcrumbs item={sample} />
@@ -81,6 +84,8 @@ export default function TechnicalSample({
               fileSets={sample.file_sets}
               reportLink={`/multireport/?type=FileSet&samples.@id=${sample["@id"]}`}
               reportLabel="Report of file sets containing this sample"
+              pagePanels={pagePanels}
+              pagePanelId="file-sets"
             />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -89,6 +94,8 @@ export default function TechnicalSample({
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${sample["@id"]}`}
               reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
+              pagePanels={pagePanels}
+              pagePanelId="multiplexed-in-samples"
             />
           )}
           {sortedFractions.length > 0 && (
@@ -97,9 +104,17 @@ export default function TechnicalSample({
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${sample["@id"]}`}
               reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
+              pagePanels={pagePanels}
+              pagePanelId="sorted-fractions"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

@@ -21,6 +21,7 @@ import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -48,6 +49,9 @@ export default function ReferenceFile({
   attribution = null,
   isJson,
 }) {
+  const pagePanels = usePagePanels(referenceFile["@id"]);
+  console.log("REFERENCE FILE", referenceFile["@id"]);
+
   return (
     <>
       <Breadcrumbs item={referenceFile} />
@@ -110,8 +114,10 @@ export default function ReferenceFile({
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${referenceFile["@id"]}`}
-              reportLabel={`Report of files ${referenceFile.accession} derives from`}
-              title={`Files ${referenceFile.accession} Derives From`}
+              reportLabel="Report of files that this file derives from"
+              title="Files This File Derives From"
+              pagePanels={pagePanels}
+              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -120,12 +126,16 @@ export default function ReferenceFile({
               reportLink={`/multireport/?type=File&derived_from=${referenceFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
+              pagePanels={pagePanels}
+              pagePanelId="input-file-for"
             />
           )}
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
+              pagePanels={pagePanels}
+              pagePanelId="file-format-specifications"
             />
           )}
           {integratedIn.length > 0 && (
@@ -134,9 +144,17 @@ export default function ReferenceFile({
               title="Integrated In"
               reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files.@id=${referenceFile["@id"]}`}
               reportLabel={`View ConstructLibrarySets integrated with ${referenceFile.accession}`}
+              pagePanels={pagePanels}
+              pagePanelId="integrated-in"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

@@ -17,6 +17,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import RelatedDonorsTable from "../../components/related-donors-table";
@@ -42,6 +43,8 @@ export default function HumanDonor({
   attribution = null,
   isJson,
 }) {
+  const pagePanels = usePagePanels(donor["@id"]);
+
   return (
     <>
       <Breadcrumbs item={donor} />
@@ -79,15 +82,27 @@ export default function HumanDonor({
             </DataArea>
           </DataPanel>
           {phenotypicFeatures.length > 0 && (
-            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
+            <PhenotypicFeatureTable
+              phenotypicFeatures={phenotypicFeatures}
+              pagePanels={pagePanels}
+              pagePanelId="phenotypic-features"
+            />
           )}
           {relatedDonors.length > 0 && (
             <RelatedDonorsTable
               relatedDonors={relatedDonors}
               embeddedDonors={donor.related_donors}
+              pagePanels={pagePanels}
+              pagePanelId="related-donors"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

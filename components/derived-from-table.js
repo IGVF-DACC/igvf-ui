@@ -1,8 +1,13 @@
 // node_modules
+import { AnimatePresence, motion } from "framer-motion";
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import Link from "next/link";
 // components
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "./animation";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
 import SortableGrid from "./sortable-grid";
@@ -66,24 +71,47 @@ export default function DerivedFromTable({
   reportLink = null,
   reportLabel = null,
   title = "Derived From",
+  pagePanels,
+  pagePanelId,
 }) {
+  const isExpanded = pagePanels.isExpanded(pagePanelId);
+
   return (
     <>
       <DataAreaTitle>
-        {title}
-        {reportLink && reportLabel && (
+        <DataAreaTitle.Expander
+          pagePanels={pagePanels}
+          pagePanelId={pagePanelId}
+          label={`${title} table`}
+        >
+          {title}
+        </DataAreaTitle.Expander>
+        {reportLink && reportLabel && isExpanded && (
           <DataAreaTitleLink href={reportLink} label={reportLabel}>
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
       </DataAreaTitle>
-      <SortableGrid
-        data={derivedFrom}
-        columns={columns}
-        meta={{ derivedFromFileSets }}
-        pager={{}}
-        keyProp="@id"
-      />
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            className="overflow-hidden"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            transition={standardAnimationTransition}
+            variants={standardAnimationVariants}
+          >
+            <SortableGrid
+              data={derivedFrom}
+              columns={columns}
+              meta={{ derivedFromFileSets }}
+              pager={{}}
+              keyProp="@id"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -99,4 +127,8 @@ DerivedFromTable.propTypes = {
   reportLabel: PropTypes.string,
   // Optional title to display if not "Derived From"
   title: PropTypes.string,
+  // Expandable panels to determine if this table should appear collapsed or expanded
+  pagePanels: PropTypes.object.isRequired,
+  // ID of the panel that contains this table, unique on the page
+  pagePanelId: PropTypes.string.isRequired,
 };

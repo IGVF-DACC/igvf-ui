@@ -1,7 +1,12 @@
 // node_modules
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "./animation";
 import { DataAreaTitle } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
@@ -154,16 +159,39 @@ function quantitySortingCode(quantity, quantityUnits) {
 export default function PhenotypicFeatureTable({
   phenotypicFeatures,
   title = "Phenotypic Features",
+  pagePanels,
+  pagePanelId,
 }) {
   return (
     <>
-      <DataAreaTitle>{title}</DataAreaTitle>
-      <SortableGrid
-        data={phenotypicFeatures}
-        columns={phenotypicFeaturesColumns}
-        pager={{}}
-        keyProp="@id"
-      />
+      <DataAreaTitle>
+        <DataAreaTitle.Expander
+          pagePanels={pagePanels}
+          pagePanelId={pagePanelId}
+          label={`${title} table`}
+        >
+          {title}
+        </DataAreaTitle.Expander>
+      </DataAreaTitle>
+      <AnimatePresence>
+        {pagePanels.isExpanded(pagePanelId) && (
+          <motion.div
+            className="overflow-hidden"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            transition={standardAnimationTransition}
+            variants={standardAnimationVariants}
+          >
+            <SortableGrid
+              data={phenotypicFeatures}
+              columns={phenotypicFeaturesColumns}
+              pager={{}}
+              keyProp="@id"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -173,4 +201,8 @@ PhenotypicFeatureTable.propTypes = {
   phenotypicFeatures: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Title of the table if not "Phenotypic Features"
   title: PropTypes.string,
+  // Expandable panels to determine if this table should appear collapsed or expanded
+  pagePanels: PropTypes.object.isRequired,
+  // ID of the panel that contains this table, unique on the page
+  pagePanelId: PropTypes.string.isRequired,
 };
