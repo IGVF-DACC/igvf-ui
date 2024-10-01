@@ -128,8 +128,35 @@ export default function AnalysisSet({
                   </DataItemList>
                 </>
               )}
+              {analysisSet.sample_summary && (
+                <>
+                  <DataItemLabel>Samples</DataItemLabel>
+                  <DataItemValue>{analysisSet.sample_summary}</DataItemValue>
+                </>
+              )}
+              {analysisSet.protocols?.length > 0 && (
+                <>
+                  <DataItemLabel>Protocols</DataItemLabel>
+                  <DataItemList isCollapsible isUrlList>
+                    {analysisSet.protocols.map((protocol) => (
+                      <a
+                        href={protocol}
+                        key={protocol}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {protocol}
+                      </a>
+                    ))}
+                  </DataItemList>
+                </>
+              )}
             </DataArea>
           </DataPanel>
+
+          {files.length > 0 && (
+            <FileTable files={files} fileSet={analysisSet} isDownloadable />
+          )}
 
           {analysisSet.samples?.length > 0 && (
             <SampleTable
@@ -172,10 +199,6 @@ export default function AnalysisSet({
               reportLabel="Report of file sets that this analysis set serves as a control for"
               title="File Sets Controlled by This Analysis Set"
             />
-          )}
-
-          {files.length > 0 && (
-            <FileTable files={files} fileSet={analysisSet} isDownloadable />
           )}
 
           {documents.length > 0 && <DocumentTable documents={documents} />}

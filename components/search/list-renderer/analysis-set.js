@@ -8,13 +8,18 @@ import {
   SearchListItemQuality,
   SearchListItemSupplement,
   SearchListItemSupplementAlternateAccessions,
-  SearchListItemSupplementSummary,
+  SearchListItemSupplementContent,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
 
 export default function AnalysisSet({ item: analysisSet }) {
+  const isSupplementsVisible =
+    analysisSet.alternate_accessions?.length > 0 || analysisSet.sample_summary;
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -22,14 +27,25 @@ export default function AnalysisSet({ item: analysisSet }) {
           <SearchListItemType item={analysisSet} />
           {analysisSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{analysisSet.file_set_type}</SearchListItemTitle>
+        <SearchListItemTitle>{analysisSet.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <span key="lab">{analysisSet.lab.title}</span>
         </SearchListItemMeta>
-        <SearchListItemSupplement>
-          <SearchListItemSupplementAlternateAccessions item={analysisSet} />
-          <SearchListItemSupplementSummary item={analysisSet} />
-        </SearchListItemSupplement>
+        {isSupplementsVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions item={analysisSet} />
+            {analysisSet.sample_summary && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Samples
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {analysisSet.sample_summary}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={analysisSet} />
     </SearchListItemContent>
