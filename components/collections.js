@@ -18,6 +18,7 @@ const collectionMap = {
   "IGVF_catalog_beta_v0.4": "igvf-catalog-0.4.svg",
   MaveDB: "mave-db.svg",
   MPRAbase: "mpra-base.svg",
+  VarChAMP: "varchamp.svg",
   Vista: "vista.svg",
 };
 
