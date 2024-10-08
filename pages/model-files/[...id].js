@@ -40,7 +40,7 @@ export default function ModelFile({
   fileFormatSpecifications,
   isJson,
 }) {
-  const pagePanels = usePagePanels(modelFile["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

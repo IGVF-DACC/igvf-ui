@@ -42,7 +42,7 @@ export default function ConfigurationFile({
   fileFormatSpecifications,
   isJson,
 }) {
-  const pagePanels = usePagePanels(configurationFile["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

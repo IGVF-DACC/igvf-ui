@@ -60,7 +60,7 @@ export default function Tissue({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(tissue["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

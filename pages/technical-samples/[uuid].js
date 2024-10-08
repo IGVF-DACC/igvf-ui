@@ -46,7 +46,7 @@ export default function TechnicalSample({
   multiplexedInSamples,
   isJson,
 }) {
-  const pagePanels = usePagePanels(sample["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

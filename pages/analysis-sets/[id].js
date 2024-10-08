@@ -57,7 +57,7 @@ export default function AnalysisSet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(analysisSet["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>
@@ -164,6 +164,7 @@ export default function AnalysisSet({
               isDownloadable
               pagePanels={pagePanels}
               pagePanelId="file-table"
+              isDefaultExpanded
             />
           )}
 

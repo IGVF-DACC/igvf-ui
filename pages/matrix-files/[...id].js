@@ -47,7 +47,7 @@ export default function MatrixFile({
   referenceFiles,
   isJson,
 }) {
-  const pagePanels = usePagePanels(matrixFile["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

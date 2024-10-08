@@ -47,7 +47,7 @@ export default function SignalFile({
   referenceFiles,
   isJson,
 }) {
-  const pagePanels = usePagePanels(signalFile["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

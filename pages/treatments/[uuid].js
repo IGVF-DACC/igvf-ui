@@ -36,7 +36,7 @@ export default function Treatment({
   sources,
   isJson,
 }) {
-  const pagePanels = usePagePanels(treatment["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

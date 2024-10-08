@@ -45,7 +45,7 @@ export default function ModelSet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(modelSet["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>
@@ -152,6 +152,7 @@ export default function ModelSet({
               isDownloadable
               pagePanels={pagePanels}
               pagePanelId="files"
+              isDefaultExpanded
             />
           )}
 

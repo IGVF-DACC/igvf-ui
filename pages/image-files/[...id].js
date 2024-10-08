@@ -40,7 +40,7 @@ export default function ImageFile({
   fileFormatSpecifications,
   isJson,
 }) {
-  const pagePanels = usePagePanels(imageFile["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

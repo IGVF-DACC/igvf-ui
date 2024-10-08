@@ -36,7 +36,7 @@ export default function CrisprModification({
   isJson,
   attribution = null,
 }) {
-  const pagePanels = usePagePanels(modification["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

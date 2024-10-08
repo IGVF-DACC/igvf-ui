@@ -172,7 +172,7 @@ describe("Test DataItemList", () => {
 describe("Test the DataAreaTitle and collapser", () => {
   it("renders a title with a collapsible control", () => {
     function TitleWithCollapser() {
-      const pagePanels = usePagePanels("/test/page/");
+      const pagePanels = usePagePanels();
 
       return (
         <>
@@ -202,7 +202,7 @@ describe("Test the DataAreaTitle and collapser", () => {
 
   it("renders multiple tables with collapsible controls", () => {
     function TitleWithCollapser() {
-      const pagePanels = usePagePanels("/test/page/");
+      const pagePanels = usePagePanels();
 
       return (
         <>

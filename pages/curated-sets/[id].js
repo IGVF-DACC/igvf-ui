@@ -44,7 +44,7 @@ export default function CuratedSet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(curatedSet["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>
@@ -119,6 +119,7 @@ export default function CuratedSet({
               isDownloadable
               pagePanels={pagePanels}
               pagePanelId="files"
+              isDefaultExpanded
             />
           )}
           {inputFileSetFor.length > 0 && (

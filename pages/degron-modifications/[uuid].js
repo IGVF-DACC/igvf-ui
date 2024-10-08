@@ -41,7 +41,7 @@ export default function DegronModification({
   isJson,
   attribution = null,
 }) {
-  const pagePanels = usePagePanels(modification["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

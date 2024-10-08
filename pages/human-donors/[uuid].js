@@ -43,7 +43,7 @@ export default function HumanDonor({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(donor["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

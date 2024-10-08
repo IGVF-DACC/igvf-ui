@@ -56,7 +56,7 @@ export default function MultiplexedSample({
   barcodeSampleMap,
   isJson,
 }) {
-  const pagePanels = usePagePanels(multiplexedSample["@id"]);
+  const pagePanels = usePagePanels();
   const reportLink = `/multireport/?type=Sample&field=%40id&field=multiplexed_in&field=taxa&field=sample_terms.term_name&field=donors&field=disease_terms&field=status&field=summary&field=%40type&multiplexed_in.accession=${multiplexedSample.accession}&field=construct_library_sets`;
 
   return (

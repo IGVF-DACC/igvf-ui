@@ -52,7 +52,7 @@ export default function WholeOrganism({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(sample["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

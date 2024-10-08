@@ -49,7 +49,7 @@ export default function AlignmentFile({
   referenceFiles,
   isJson,
 }) {
-  const pagePanels = usePagePanels(alignmentFile["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>

@@ -43,7 +43,7 @@ export default function AuxiliarySet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(auxiliarySet["@id"]);
+  const pagePanels = usePagePanels();
 
   // Split the files into those with an @type of TabularFile and all others.
   const groupedFiles = _.groupBy(files, (file) =>
@@ -74,6 +74,7 @@ export default function AuxiliarySet({
             fileSet={auxiliarySet}
             seqspecFiles={seqspecFiles}
             pagePanels={pagePanels}
+            isDefaultExpanded
           >
             {groupedFiles.tabular?.length > 0 && (
               <FileTable

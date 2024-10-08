@@ -258,7 +258,7 @@ export default function ConstructLibrarySet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(constructLibrarySet["@id"]);
+  const pagePanels = usePagePanels();
 
   return (
     <>
@@ -314,6 +314,7 @@ export default function ConstructLibrarySet({
             fileSet={constructLibrarySet}
             seqspecFiles={seqspecFiles}
             pagePanels={pagePanels}
+            isDefaultExpanded
           />
           {integratedContentFiles.length > 0 && (
             <FileTable

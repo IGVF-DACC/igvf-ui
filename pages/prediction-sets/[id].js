@@ -51,7 +51,7 @@ export default function PredictionSet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(predictionSet["@id"]);
+  const pagePanels = usePagePanels();
   const constructLibrarySets =
     predictionSet.samples?.length > 0
       ? predictionSet.samples.reduce(
@@ -227,6 +227,7 @@ export default function PredictionSet({
               isDownloadable
               pagePanels={pagePanels}
               pagePanelId="files"
+              isDefaultExpanded
             />
           )}
           {documents.length > 0 && (
