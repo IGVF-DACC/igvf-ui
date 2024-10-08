@@ -45,12 +45,15 @@ export interface DatabaseObject {
   "@context"?: string;
   "@id"?: string;
   "@type": string[];
+  accession?: string;
   actions?: ObjectActions[];
   alternate_accessions?: string[];
   audit?: Audits;
   creation_timestamp?: string;
+  lab?: string | DatabaseObject;
   release_timestamp?: string;
   status?: string;
+  title: string;
   uuid?: string;
   [key: string]: unknown;
 }
@@ -234,3 +237,32 @@ export type CollectionTitles = {
   "@type": string[];
   [key: string]: string;
 };
+
+/**
+ * ************************************************************************************************
+ * This section defines types for specific objects in the database, and should follow the schema
+ * definitions for those types.
+ */
+
+/**
+ * Data structure common to all file object types.
+ */
+export interface FileObject extends DatabaseObject {
+  accession: string;
+  aliases: string[];
+  content_type: string;
+  derived_from?: string[];
+  file_format: string;
+  file_set: string;
+  file_size: number;
+  upload_status: string;
+}
+
+/**
+ * Data structure common to all file set object types.
+ */
+export interface FileSetObject extends DatabaseObject {
+  aliases: string[];
+  file_set_type: string;
+  files: string[];
+}

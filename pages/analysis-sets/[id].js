@@ -19,6 +19,7 @@ import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
+import { FileGraph } from "../../components/file-graph";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import InputFileSets from "../../components/input-file-sets";
@@ -38,6 +39,7 @@ import {
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { getAllDerivedFromFiles } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 import SampleTable from "../../components/sample-table";
 
@@ -46,6 +48,8 @@ export default function AnalysisSet({
   publications,
   documents,
   files,
+  fileFileSets,
+  derivedFromFiles,
   inputFileSets,
   inputFileSetSamples,
   inputFileSetFor,
@@ -177,7 +181,17 @@ export default function AnalysisSet({
           </DataPanel>
 
           {files.length > 0 && (
-            <FileTable files={files} fileSet={analysisSet} isDownloadable />
+            <>
+              <FileTable files={files} fileSet={analysisSet} isDownloadable />
+              <FileGraph
+                fileSet={analysisSet}
+                files={files}
+                fileFileSets={fileFileSets}
+                derivedFromFiles={derivedFromFiles}
+                pagePanels={pagePanels}
+                pagePanelId="file-graph"
+              />
+            </>
           )}
 
           {analysisSet.samples?.length > 0 && (
@@ -254,6 +268,10 @@ AnalysisSet.propTypes = {
   analysisSet: PropTypes.object.isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that `files` refer to in their `file_sets` property
+  fileFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // All derived_from files not included in `files`
+  derivedFromFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Input file sets to display
   inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Input file set samples
@@ -296,6 +314,23 @@ export async function getServerSideProps({ params, req, query }) {
     const filePaths = analysisSet.files.map((file) => file["@id"]);
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
+
+    // Get the paths of all files that are in `files`' `derived_from` array property. Combine and
+    // deduplicate them, and then request them from the server. Repeat this process with those
+    // files until we have no more files with `derived_from` properties.
+    const derivedFromFiles = await getAllDerivedFromFiles(files, request);
+    const combinedFiles = files.concat(derivedFromFiles);
+
+    // Get all file-set objects in every file's `file_sets` property.
+    let fileFileSets = [];
+    if (combinedFiles.length > 0) {
+      const fileSetPaths = combinedFiles.reduce((acc, file) => {
+        return acc.includes(file.file_set["@id"])
+          ? acc
+          : acc.concat(file.file_set["@id"]);
+      }, []);
+      fileFileSets = await requestFileSets(fileSetPaths, request);
+    }
 
     let inputFileSets = [];
     if (analysisSet.input_file_sets?.length > 0) {
@@ -436,6 +471,8 @@ export async function getServerSideProps({ params, req, query }) {
         publications,
         documents,
         files,
+        fileFileSets,
+        derivedFromFiles,
         inputFileSets,
         inputFileSetSamples,
         inputFileSetFor,

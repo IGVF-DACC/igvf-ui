@@ -314,7 +314,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toBeCalledWith(
-      "/search/?field=@type&field=accession&field=content_type&field=creation_timestamp&field=file_format&field=file_size&field=file_set&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=lab.title&field=lane&field=seqspecs&field=sequencing_platform&field=sequencing_run&field=status&field=summary&field=upload_status&@id=/sequence-files/IGVFFI4067OVRO/&@id=/sequence-files/IGVFFI1165AJSO/&limit=2",
+      "/search/?field=@type&field=accession&field=aliases&field=content_type&field=creation_timestamp&field=derived_from&field=file_format&field=file_size&field=file_set&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=seqspecs&field=sequencing_platform&field=sequencing_run&field=status&field=summary&field=upload_status&@id=/sequence-files/IGVFFI4067OVRO/&@id=/sequence-files/IGVFFI1165AJSO/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -671,7 +671,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toBeCalledWith(
-      "/search/?field=accession&field=aliases&field=lab.title&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
+      "/search/?field=@type&field=accession&field=aliases&field=file_set_type&field=lab.title&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);

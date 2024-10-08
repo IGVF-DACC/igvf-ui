@@ -148,20 +148,26 @@ const Icon = {
       <circle cx="4.4" cy="4" r="3.4" />
     </svg>
   ),
-  FileSet: ({ className = null, testid = "icon-fileset" }) => (
+  FileSet: ({
+    className = null,
+    testid = "icon-fileset",
+    x = undefined,
+    y = undefined,
+    width = undefined,
+    height = undefined,
+  }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
       data-testid={testid}
+      {...(x !== undefined ? { x } : {})}
+      {...(y !== undefined ? { y } : {})}
+      {...(width !== undefined ? { width } : {})}
+      {...(height !== undefined ? { height } : {})}
     >
-      <path
-        d="M17.5,4.7h-6.2V4.4c0-1.4-1.1-2.5-2.5-2.5H2.5C1.1,1.9,0,3,0,4.4v2.7c0,0,0,0,0,0.1c0,0,0,0,0,0.1v8.1
-	c0,1.4,1.1,2.5,2.5,2.5h15.1c1.4,0,2.5-1.1,2.5-2.5V7.2C20,5.8,18.9,4.7,17.5,4.7z M8.6,13.2c0,0.7-0.5,1.2-1.2,1.2H4.7
-	c-0.7,0-1.2-0.5-1.2-1.2V9.3c0-0.7,0.5-1.2,1.2-1.2h2.7c0.7,0,1.2,0.5,1.2,1.2V13.2z M16.5,13.2c0,0.7-0.5,1.2-1.2,1.2h-2.7
-	c-0.7,0-1.2-0.5-1.2-1.2V9.3c0-0.7,0.5-1.2,1.2-1.2h2.7c0.7,0,1.2,0.5,1.2,1.2V13.2z"
-      />
+      <path d="M16.2,5h-4.8c0,0-.1,0-.2,0l-1.4-1.4c-.3-.3-.8-.5-1.2-.5H3.8c-1,0-1.8.8-1.8,1.8v10.5c0,1,.8,1.8,1.8,1.8h12.5c1,0,1.8-.8,1.8-1.8V6.8c0-1-.8-1.8-1.8-1.8ZM5.3,6.5h5.3v6h-5.3v-6ZM13.8,15h-5.3v-1.7h2.9v-4.4h2.5v6Z" />
     </svg>
   ),
   Filter: ({ className = null, testid = "icon-filter" }) => (
@@ -419,6 +425,10 @@ Icon.EllipsisHorizontal.propTypes = {
 Icon.FileSet.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
+  x: PropTypes.number,
+  y: PropTypes.number,
+  width: PropTypes.number,
+  height: PropTypes.number,
 };
 Icon.Filter.propTypes = {
   className: PropTypes.string,
