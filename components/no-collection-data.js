@@ -21,7 +21,7 @@ export default function NoCollectionData({ pageTitle = "" }) {
   const { setAuthStageLogin } = useContext(SessionContext);
 
   return (
-    <DataPanel className="my-0.5 p-4">
+    <DataPanel className="my-0.5">
       <div className="italic">No {pageTitle || page.title} to display.</div>
       {!isAuthenticated && (
         <p className="mt-4 text-sm">
