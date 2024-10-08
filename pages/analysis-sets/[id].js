@@ -158,13 +158,7 @@ export default function AnalysisSet({
           </DataPanel>
 
           {files.length > 0 && (
-            <FileTable
-              files={files}
-              fileSet={analysisSet}
-              isDownloadable
-              pagePanels={pagePanels}
-              pagePanelId="file-table"
-            />
+            <FileTable files={files} fileSet={analysisSet} isDownloadable />
           )}
 
           {analysisSet.samples?.length > 0 && (

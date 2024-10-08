@@ -266,15 +266,12 @@ export default function MeasurementSet({
             files={groupedFiles.other}
             fileSet={measurementSet}
             seqspecFiles={seqspecFiles}
-            pagePanels={pagePanels}
           >
             {groupedFiles.image?.length > 0 && (
               <FileTable
                 files={groupedFiles.image}
                 fileSet={measurementSet}
                 title="Imaging Results"
-                pagePanels={pagePanels}
-                pagePanelId="imaging-results"
               />
             )}
           </FileSetFilesTables>

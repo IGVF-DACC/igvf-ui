@@ -221,13 +221,7 @@ export default function PredictionSet({
             />
           )}
           {files.length > 0 && (
-            <FileTable
-              files={files}
-              fileSet={predictionSet}
-              isDownloadable
-              pagePanels={pagePanels}
-              pagePanelId="files"
-            />
+            <FileTable files={files} fileSet={predictionSet} isDownloadable />
           )}
           {documents.length > 0 && (
             <DocumentTable

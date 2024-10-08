@@ -73,15 +73,12 @@ export default function AuxiliarySet({
             files={groupedFiles.other}
             fileSet={auxiliarySet}
             seqspecFiles={seqspecFiles}
-            pagePanels={pagePanels}
           >
             {groupedFiles.tabular?.length > 0 && (
               <FileTable
                 files={groupedFiles.tabular}
                 fileSet={auxiliarySet}
                 title="Tabular Files"
-                pagePanels={pagePanels}
-                pagePanelId="tabular-files"
               />
             )}
           </FileSetFilesTables>

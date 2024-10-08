@@ -146,13 +146,7 @@ export default function ModelSet({
           )}
 
           {files.length > 0 && (
-            <FileTable
-              files={files}
-              fileSet={modelSet}
-              isDownloadable
-              pagePanels={pagePanels}
-              pagePanelId="files"
-            />
+            <FileTable files={files} fileSet={modelSet} isDownloadable />
           )}
 
           {documents.length > 0 && (

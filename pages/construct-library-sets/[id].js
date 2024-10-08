@@ -313,7 +313,6 @@ export default function ConstructLibrarySet({
             files={files}
             fileSet={constructLibrarySet}
             seqspecFiles={seqspecFiles}
-            pagePanels={pagePanels}
           />
           {integratedContentFiles.length > 0 && (
             <FileTable

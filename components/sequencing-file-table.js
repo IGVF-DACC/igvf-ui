@@ -133,7 +133,7 @@ export default function SequencingFileTable({
   pagePanels,
   pagePanelId,
 }) {
-  const isExpanded = pagePanels.isExpanded(pagePanelId);
+  const isExpanded = pagePanels?.isExpanded(pagePanelId) ?? true;
 
   // True or false isIlluminaReadType adds a positive or negative `illumina_read_type` selector to
   // the report link. Undefined generates no `illumina_read_type` selector in the file query string.
@@ -150,16 +150,34 @@ export default function SequencingFileTable({
       )}${illuminaSelector}`
     : "";
 
+  const sortableGrid = (
+    <SortableGrid
+      data={files}
+      columns={filesColumns}
+      pager={{}}
+      meta={{
+        seqspecFiles,
+        hasReadType,
+        isSeqspecHidden,
+      }}
+      keyProp="@id"
+    />
+  );
+
   return (
     <>
       <DataAreaTitle>
-        <DataAreaTitle.Expander
-          pagePanels={pagePanels}
-          pagePanelId={pagePanelId}
-          label={`${title} table`}
-        >
-          {title}
-        </DataAreaTitle.Expander>
+        {pagePanels ? (
+          <DataAreaTitle.Expander
+            pagePanels={pagePanels}
+            pagePanelId={pagePanelId}
+            label={`${title} table`}
+          >
+            {title}
+          </DataAreaTitle.Expander>
+        ) : (
+          title
+        )}
         {reportLink && isExpanded && (
           <DataAreaTitleLink
             href={reportLink}
@@ -169,30 +187,24 @@ export default function SequencingFileTable({
           </DataAreaTitleLink>
         )}
       </DataAreaTitle>
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            className="overflow-hidden"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            transition={standardAnimationTransition}
-            variants={standardAnimationVariants}
-          >
-            <SortableGrid
-              data={files}
-              columns={filesColumns}
-              pager={{}}
-              meta={{
-                seqspecFiles,
-                hasReadType,
-                isSeqspecHidden,
-              }}
-              keyProp="@id"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {pagePanels ? (
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              className="overflow-hidden"
+              initial="collapsed"
+              animate="open"
+              exit="collapsed"
+              transition={standardAnimationTransition}
+              variants={standardAnimationVariants}
+            >
+              {sortableGrid}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      ) : (
+        <>{sortableGrid}</>
+      )}
     </>
   );
 }

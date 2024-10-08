@@ -113,13 +113,7 @@ export default function CuratedSet({
             />
           )}
           {files.length > 0 && (
-            <FileTable
-              files={files}
-              fileSet={curatedSet}
-              isDownloadable
-              pagePanels={pagePanels}
-              pagePanelId="files"
-            />
+            <FileTable files={files} fileSet={curatedSet} isDownloadable />
           )}
           {inputFileSetFor.length > 0 && (
             <FileSetTable
