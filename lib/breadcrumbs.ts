@@ -111,7 +111,8 @@ function buildPageBreadcrumbs(
     return { title, href: pathObject["@id"] } as Breadcrumb;
   });
 
-  return breadcrumbs.concat({ title: page.title } as Breadcrumb);
+  const { title } = getPageTitleAndCodes(page);
+  return breadcrumbs.concat({ title } as Breadcrumb);
 }
 
 /**
