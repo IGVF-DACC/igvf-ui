@@ -88,7 +88,6 @@ function DataAreaTitleWithExpander({
   pagePanels,
   pagePanelId,
   label,
-  isDefaultExpanded = false,
   children,
 }) {
   return (
@@ -97,7 +96,6 @@ function DataAreaTitleWithExpander({
         pagePanels={pagePanels}
         pagePanelId={pagePanelId}
         label={label}
-        isDefaultExpanded={isDefaultExpanded}
       >
         {children}
       </PagePanelButton>
@@ -112,8 +110,6 @@ DataAreaTitleWithExpander.propTypes = {
   pagePanelId: PropTypes.string.isRequired,
   // Accessible label for the title of the table
   label: PropTypes.string.isRequired,
-  // True if the data area should appear expanded by default
-  isDefaultExpanded: PropTypes.bool,
 };
 
 DataAreaTitle.Expander = DataAreaTitleWithExpander;

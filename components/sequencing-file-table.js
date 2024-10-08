@@ -132,7 +132,6 @@ export default function SequencingFileTable({
   isSeqspecHidden = false,
   pagePanels,
   pagePanelId,
-  isDefaultExpanded = false,
 }) {
   const isExpanded = pagePanels.isExpanded(pagePanelId);
 
@@ -158,7 +157,6 @@ export default function SequencingFileTable({
           pagePanels={pagePanels}
           pagePanelId={pagePanelId}
           label={`${title} table`}
-          isDefaultExpanded={isDefaultExpanded}
         >
           {title}
         </DataAreaTitle.Expander>
@@ -220,6 +218,4 @@ SequencingFileTable.propTypes = {
   pagePanels: PropTypes.object.isRequired,
   // ID of the panel that contains this table, unique on the page
   pagePanelId: PropTypes.string.isRequired,
-  // True if the table should be expanded by default
-  isDefaultExpanded: PropTypes.bool,
 };

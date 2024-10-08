@@ -59,7 +59,7 @@ describe("Test the document table", () => {
     ];
 
     function PageWithDocuments() {
-      const pagePanels = usePagePanels();
+      const pagePanels = usePagePanels("/document/parent/");
       return (
         <DocumentTable
           documents={documents}

@@ -116,7 +116,7 @@ export default function MeasurementSet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(measurementSet["@id"]);
 
   // Split the files into those with an @type of ImageFile and all others.
   const groupedFiles = _.groupBy(files, (file) =>
@@ -267,7 +267,6 @@ export default function MeasurementSet({
             fileSet={measurementSet}
             seqspecFiles={seqspecFiles}
             pagePanels={pagePanels}
-            isDefaultExpanded
           >
             {groupedFiles.image?.length > 0 && (
               <FileTable

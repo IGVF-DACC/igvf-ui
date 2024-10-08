@@ -48,7 +48,7 @@ export default function TabularFile({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(tabularFile["@id"]);
 
   return (
     <>

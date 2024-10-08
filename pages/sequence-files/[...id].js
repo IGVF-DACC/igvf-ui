@@ -50,7 +50,7 @@ export default function SequenceFile({
   isJson,
   seqspecs,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(sequenceFile["@id"]);
 
   return (
     <>

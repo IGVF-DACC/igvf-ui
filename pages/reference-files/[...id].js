@@ -49,7 +49,7 @@ export default function ReferenceFile({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(referenceFile["@id"]);
   console.log("REFERENCE FILE", referenceFile["@id"]);
 
   return (

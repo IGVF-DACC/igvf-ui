@@ -41,7 +41,7 @@ export default function RodentDonor({
   sources = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(donor["@id"]);
 
   return (
     <>

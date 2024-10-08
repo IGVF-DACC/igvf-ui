@@ -51,7 +51,7 @@ export default function Publication({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(publication["@id"]);
 
   return (
     <>

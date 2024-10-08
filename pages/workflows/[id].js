@@ -40,7 +40,7 @@ export default function Workflow({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(workflow["@id"]);
 
   return (
     <>

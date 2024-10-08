@@ -67,7 +67,7 @@ export default function InVitroSystem({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(inVitroSystem["@id"]);
 
   return (
     <>

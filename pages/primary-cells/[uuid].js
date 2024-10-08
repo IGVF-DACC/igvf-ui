@@ -60,7 +60,7 @@ export default function PrimaryCell({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(primaryCell["@id"]);
 
   return (
     <>

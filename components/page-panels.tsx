@@ -1,6 +1,8 @@
 // node_modules
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef } from "react";
+// components
+import { useSessionStorage } from "./browser-storage";
 
 /**
  * Tracks the expanded/collapsed state of a panel on a page, with the panel ID as the key and its
@@ -19,76 +21,82 @@ type ExpandedPanelStates = Record<string, boolean>;
  * @property {(panelId: string) => boolean} isExpanded Function to get the expanded state of a
  *     panel
  * @property {(panelId: string) => void} registerExpanded Function to register a panel by its ID
- *     when its page gets rendered on page load. This lets us know all the panels on a page without
- *     setting a React state during render. This also lets the user expand all of them at once if
- *     they want.
+ *     when its page gets rendered on page load. This lets us know all the panels on a page so that
+ *     the user can expand all of them at once if they want.
  */
 type PagePanelStates = {
   expandedPanels: ExpandedPanelStates;
   setExpanded: (panelId: string, expanded: boolean) => void;
   setAllExpanded: (expanded: boolean) => void;
   isExpanded: (panelId: string) => boolean;
-  registerExpanded: (panelId: string, isExpanded: boolean) => void;
+  registerExpanded: (panelId: string) => void;
 };
 
 /**
  * Custom hook to handle the expanded/collapsed states of panels on a page. Call this just once on
  * a page that has collapsible panels. This hook will manage the expanded/collapsed states of all
- * panels on the page.
- * @returns {PagePanelStates} Object with the expanded/collapsed states of all panels on the page,
- *    as well as functions to set and get the expanded state of a panel, and to register a panel
- *    when its page gets rendered on page load.
+ * panels on the page. Use session storage to store the states of all collapsible panels on each
+ * page the user visits.
+ * @param {string} pageId Unique ID of the page, often the `@id` of object the page renders
  */
-export function usePagePanels() {
+export function usePagePanels(pageId: string) {
   // Collects all the panel IDs on the page when it first gets rendered so that the expanded panel
   // states exist for every collapsible panel on the page.
-  const pagePanelIds = useRef<ExpandedPanelStates>({});
+  const pagePanelIds = useRef<string[]>([]);
 
   // Get the stored panel states from session storage for the currently viewed page.
-  const [panelStates, setPanelStates] = useState<ExpandedPanelStates>({});
+  const [storedPanelStates, setStoredPanelStates] = useSessionStorage(
+    `page-panel-expanded-${pageId}`,
+    JSON.stringify({})
+  );
+  const expandedPanelStates: ExpandedPanelStates =
+    JSON.parse(storedPanelStates);
 
   function setExpanded(panelId: string, expanded: boolean) {
-    const newPagePanelStates: ExpandedPanelStates = {
-      ...panelStates,
+    const newPagePanelStates = {
+      ...expandedPanelStates,
       [panelId]: expanded,
     };
-    setPanelStates(newPagePanelStates);
+    setStoredPanelStates(JSON.stringify(newPagePanelStates));
   }
 
   function setAllExpanded(expanded: boolean) {
-    const newPagePanelStates = { ...panelStates };
-    Object.keys(panelStates).forEach((panelId) => {
+    const newPagePanelStates = { ...expandedPanelStates };
+    pagePanelIds.current.forEach((panelId) => {
       newPagePanelStates[panelId] = expanded;
     });
-    setPanelStates(newPagePanelStates);
+    setStoredPanelStates(JSON.stringify(newPagePanelStates));
   }
 
   function isExpanded(panelId: string) {
-    return panelStates[panelId] || false;
+    return expandedPanelStates[panelId] || false;
   }
 
-  function registerExpanded(panelId: string, isExpanded = false) {
-    // Check if the panel is already registered. If not, add it to the list of
-    // panel IDs for this page.
-    if (!pagePanelIds.current[panelId]) {
-      pagePanelIds.current[panelId] = isExpanded;
+  // `PagePanelButton` calls this function to register a panel when its page gets rendered on page
+  // load. The component that renders the panel only has to call the `PagePanelButton` component
+  // for this registration to happen, instead of calling this function directly.
+  function registerExpanded(panelId: string) {
+    if (!pagePanelIds.current.includes(panelId)) {
+      pagePanelIds.current.push(panelId);
     }
   }
 
   useEffect(() => {
-    // Set the expanded panels states based on `pagePanelIds` when the page first gets rendered.
-    const newPagePanelStates = { ...panelStates };
-    Object.entries(pagePanelIds.current).forEach(([panelId, isExpanded]) => {
-      if (!newPagePanelStates[panelId]) {
-        newPagePanelStates[panelId] = isExpanded;
-      }
-    });
-    pagePanelIds.current = {};
-    setPanelStates(newPagePanelStates);
-  }, []);
+    if (Object.keys(expandedPanelStates).length !== 0) {
+      // For each page panel ID that doesn't already have a state, set it to collapsed. Then save
+      // the new state to session storage.
+      const newPagePanelStates = { ...expandedPanelStates };
+      pagePanelIds.current.forEach((panelId) => {
+        if (!newPagePanelStates[panelId]) {
+          newPagePanelStates[panelId] = false;
+        }
+      });
+      setStoredPanelStates(JSON.stringify(newPagePanelStates));
+    }
+  }, [storedPanelStates]);
 
   return {
-    expandedPanels: panelStates,
+    expandedPanels: expandedPanelStates,
     setExpanded,
     setAllExpanded,
     isExpanded,
@@ -102,27 +110,24 @@ export function usePagePanels() {
  * @param {PagePanelStates} pagePanels The page panels controller
  * @param {string} pagePanelId The ID of the panel unique on the page
  * @param {string} label The accessible label for the button used by screen readers
- * @param {boolean} [isDefaultExpanded] Whether the panel is expanded by default
  * @param {ReactNode} children The title of the panel
  */
 export function PagePanelButton({
   pagePanels,
   pagePanelId,
   label,
-  isDefaultExpanded = false,
   children,
 }: {
   pagePanels: PagePanelStates;
   pagePanelId: string;
   label: string;
-  isDefaultExpanded?: boolean;
   children?: ReactNode;
 }) {
   const isExpanded = pagePanels.isExpanded(pagePanelId);
 
   // Register the panel when the page gets rendered on page load so that the expanded panel states
   // exist for every collapsible panel on the page.
-  pagePanels.registerExpanded(pagePanelId, isDefaultExpanded);
+  pagePanels.registerExpanded(pagePanelId);
 
   // Handle a click in the button to expand/collapse the panel. If the user was holding down the
   // control or alt key, expand/collapse all panels on the page.

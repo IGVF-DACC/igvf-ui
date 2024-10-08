@@ -36,7 +36,7 @@ export default function Software({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels();
+  const pagePanels = usePagePanels(software["@id"]);
 
   return (
     <>

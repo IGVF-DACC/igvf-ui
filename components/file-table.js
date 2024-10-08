@@ -69,7 +69,6 @@ export default function FileTable({
   controllerContent = null,
   pagePanels,
   pagePanelId,
-  isDefaultExpanded = false,
 }) {
   const isExpanded = pagePanels.isExpanded(pagePanelId);
 
@@ -96,7 +95,6 @@ export default function FileTable({
           pagePanels={pagePanels}
           pagePanelId={pagePanelId}
           label={`${title} table`}
-          isDefaultExpanded={isDefaultExpanded}
         >
           {title}
         </DataAreaTitle.Expander>
@@ -162,6 +160,4 @@ FileTable.propTypes = {
   pagePanels: PropTypes.object.isRequired,
   // ID of the panel that contains this table, unique on the page
   pagePanelId: PropTypes.string.isRequired,
-  // True if the data area should appear expanded by default
-  isDefaultExpanded: PropTypes.bool,
 };
