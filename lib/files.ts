@@ -11,7 +11,7 @@ import type { DatabaseObject } from "../globals.d";
 
 export interface FileObject extends DatabaseObject {
   accession: string;
-  aliases: string[];
+  aliases?: string[];
   derived_from?: string[];
   file_format: string;
   file_set: string;
