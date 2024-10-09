@@ -15,6 +15,7 @@ import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 // lib
@@ -42,6 +43,8 @@ export default function AuxiliarySet({
   attribution = null,
   isJson,
 }) {
+  const pagePanels = usePagePanels(auxiliarySet["@id"]);
+
   // Split the files into those with an @type of TabularFile and all others.
   const groupedFiles = _.groupBy(files, (file) =>
     file["@type"].includes("TabularFile") ? "tabular" : "other"
@@ -84,10 +87,16 @@ export default function AuxiliarySet({
               samples={auxiliarySet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${auxiliarySet["@id"]}`}
               reportLabel="Report of samples in this auxiliary set"
+              pagePanels={pagePanels}
+              pagePanelId="samples"
             />
           )}
           {auxiliarySet.donors?.length > 0 && (
-            <DonorTable donors={auxiliarySet.donors} />
+            <DonorTable
+              donors={auxiliarySet.donors}
+              pagePanels={pagePanels}
+              pagePanelId="donors"
+            />
           )}
           {relatedDatasets.length > 0 && (
             <FileSetTable
@@ -95,6 +104,8 @@ export default function AuxiliarySet({
               title="Related Measurement Sets"
               reportLink={`/multireport/?type=MeasurementSet&auxiliary_sets.@id=${auxiliarySet["@id"]}`}
               reportLabel="Report of measurement sets related to this auxiliary set"
+              pagePanels={pagePanels}
+              pagePanelId="related-datasets"
             />
           )}
           {inputFileSetFor.length > 0 && (
@@ -103,6 +114,8 @@ export default function AuxiliarySet({
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${auxiliarySet["@id"]}`}
               reportLabel="Report of file sets that this auxiliary set is an input for"
               title="File Sets Using This Auxiliary Set as an Input"
+              pagePanels={pagePanels}
+              pagePanelId="input-file-sets"
             />
           )}
           {controlFor.length > 0 && (
@@ -113,7 +126,13 @@ export default function AuxiliarySet({
               title="File Sets Controlled by This Auxiliary Set"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
 
           <Attribution attribution={attribution} />
         </JsonDisplay>

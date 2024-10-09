@@ -20,6 +20,7 @@ import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
@@ -55,6 +56,7 @@ export default function MultiplexedSample({
   barcodeSampleMap,
   isJson,
 }) {
+  const pagePanels = usePagePanels(multiplexedSample["@id"]);
   const reportLink = `/multireport/?type=Sample&field=%40id&field=multiplexed_in&field=taxa&field=sample_terms.term_name&field=donors&field=disease_terms&field=status&field=summary&field=%40type&multiplexed_in.accession=${multiplexedSample.accession}&field=construct_library_sets`;
 
   return (
@@ -116,6 +118,8 @@ export default function MultiplexedSample({
               fileSets={multiplexedSample.file_sets}
               reportLink={`/multireport/?type=FileSet&samples.@id=${multiplexedSample["@id"]}`}
               reportLabel="Report of file sets associated with this sample"
+              pagePanels={pagePanels}
+              pagePanelId="file-sets"
             />
           )}
           {multiplexedSample.multiplexed_samples.length > 0 && (
@@ -124,6 +128,8 @@ export default function MultiplexedSample({
               reportLink={reportLink}
               reportLabel="Report of samples multiplexed together to produce this sample"
               title="Multiplexed Samples"
+              pagePanels={pagePanels}
+              pagePanelId="multiplexed-samples"
             />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -132,11 +138,15 @@ export default function MultiplexedSample({
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${multiplexedSample["@id"]}`}
               reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
+              pagePanels={pagePanels}
+              pagePanelId="multiplexed-in-samples"
             />
           )}
           {multiplexedSample.modifications?.length > 0 && (
             <ModificationTable
               modifications={multiplexedSample.modifications}
+              pagePanels={pagePanels}
+              pagePanelId="modifications"
             />
           )}
           {sortedFractions.length > 0 && (
@@ -145,11 +155,31 @@ export default function MultiplexedSample({
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${multiplexedSample["@id"]}`}
               reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
+              pagePanels={pagePanels}
+              pagePanelId="sorted-fractions"
             />
           )}
-          {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
-          {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {biomarkers.length > 0 && (
+            <BiomarkerTable
+              biomarkers={biomarkers}
+              pagePanels={pagePanels}
+              pagePanelId="biomarkers"
+            />
+          )}
+          {treatments.length > 0 && (
+            <TreatmentTable
+              treatments={treatments}
+              pagePanels={pagePanels}
+              pagePanelId="treatments"
+            />
+          )}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

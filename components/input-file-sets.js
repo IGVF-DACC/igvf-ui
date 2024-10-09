@@ -1,10 +1,15 @@
 // node_modules
+import { AnimatePresence, motion } from "framer-motion";
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import PropTypes from "prop-types";
 import { useContext, useState } from "react";
 // components
 import AliasList from "./alias-list";
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "./animation";
 import Checkbox from "./checkbox";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
@@ -494,7 +499,10 @@ function InputFileSetTable({
   measurementSets,
   constructLibrarySets,
   reportLink,
+  pagePanels,
+  pagePanelId,
 }) {
+  const isExpanded = pagePanels.isExpanded(pagePanelId);
   const { collectionTitles } = useContext(SessionContext);
   const title = collectionTitles?.[fileSetType] || fileSetType;
 
@@ -504,40 +512,63 @@ function InputFileSetTable({
   return (
     <>
       <DataAreaTitle>
-        {title} Input File Sets
-        <div className="flex gap-1">
-          <Checkbox
-            id={`show-aliases-${fileSetType}`}
-            checked={isAliasesVisible}
-            name={`Show aliases columns for ${title}`}
-            onClick={() => setIsAliasesVisible(!isAliasesVisible)}
-            className="items-center [&>input]:mr-0"
-          >
-            <div className="order-first mr-1 text-sm">Show aliases columns</div>
-          </Checkbox>
-          <DataAreaTitleLink
-            href={reportLink}
-            label={`Report of ${fileSetType} input file sets`}
-          >
-            <TableCellsIcon className="h-4 w-4" />
-          </DataAreaTitleLink>
-        </div>
+        <DataAreaTitle.Expander
+          pagePanels={pagePanels}
+          pagePanelId={pagePanelId}
+          label={`${title} table`}
+        >
+          {title} Input File Sets
+        </DataAreaTitle.Expander>
+        {isExpanded && (
+          <div className="flex gap-1">
+            <Checkbox
+              id={`show-aliases-${fileSetType}`}
+              checked={isAliasesVisible}
+              name={`Show aliases columns for ${title}`}
+              onClick={() => setIsAliasesVisible(!isAliasesVisible)}
+              className="items-center [&>input]:mr-0"
+            >
+              <div className="order-first mr-1 text-sm">
+                Show aliases columns
+              </div>
+            </Checkbox>
+            <DataAreaTitleLink
+              href={reportLink}
+              label={`Report of ${fileSetType} input file sets`}
+            >
+              <TableCellsIcon className="h-4 w-4" />
+            </DataAreaTitleLink>
+          </div>
+        )}
       </DataAreaTitle>
-      <SortableGrid
-        data={fileSets}
-        columns={inputFileSetDisplayConfig[fileSetType] || basicColumns}
-        keyProp="@id"
-        pager={{}}
-        meta={{
-          samples,
-          isAliasesVisible,
-          controlFileSets,
-          appliedToSamples,
-          auxiliarySets,
-          measurementSets,
-          constructLibrarySets,
-        }}
-      />
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            className="overflow-hidden"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            transition={standardAnimationTransition}
+            variants={standardAnimationVariants}
+          >
+            <SortableGrid
+              data={fileSets}
+              columns={inputFileSetDisplayConfig[fileSetType] || basicColumns}
+              keyProp="@id"
+              pager={{}}
+              meta={{
+                samples,
+                isAliasesVisible,
+                controlFileSets,
+                appliedToSamples,
+                auxiliarySets,
+                measurementSets,
+                constructLibrarySets,
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -561,6 +592,10 @@ InputFileSetTable.propTypes = {
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Link to the report page containing the same file sets as this table
   reportLink: PropTypes.string,
+  // Expandable panels to determine if this table should appear collapsed or expanded
+  pagePanels: PropTypes.object.isRequired,
+  // ID of the panel that contains this table, unique on the page
+  pagePanelId: PropTypes.string.isRequired,
 };
 
 /**
@@ -575,6 +610,8 @@ export default function InputFileSets({
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
+  pagePanels,
+  pagePanelId,
 }) {
   // Group the input file sets by their type and sort the groups by the order in `fileSetSortOrder`.
   const fileSetGroups = _.groupBy(fileSets, "@type[0]");
@@ -598,6 +635,8 @@ export default function InputFileSets({
             measurementSets={measurementSets}
             constructLibrarySets={constructLibrarySets}
             reportLink={`/multireport/?type=${fileSetType}&input_file_set_for=${thisFileSet["@id"]}`}
+            pagePanels={pagePanels}
+            pagePanelId={pagePanelId}
           />
         );
       })}
@@ -622,4 +661,8 @@ InputFileSets.propTypes = {
   measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Construct library sets belonging to the file sets
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Expandable panels to determine if this table should appear collapsed or expanded
+  pagePanels: PropTypes.object.isRequired,
+  // ID of the panel that contains this table, unique on the page
+  pagePanelId: PropTypes.string.isRequired,
 };

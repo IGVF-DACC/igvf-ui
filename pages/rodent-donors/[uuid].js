@@ -16,6 +16,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import {
@@ -40,6 +41,8 @@ export default function RodentDonor({
   sources = null,
   isJson,
 }) {
+  const pagePanels = usePagePanels(donor["@id"]);
+
   return (
     <>
       <Breadcrumbs item={donor} />
@@ -92,9 +95,19 @@ export default function RodentDonor({
             </DataArea>
           </DataPanel>
           {phenotypicFeatures.length > 0 && (
-            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
+            <PhenotypicFeatureTable
+              phenotypicFeatures={phenotypicFeatures}
+              pagePanels={pagePanels}
+              pagePanelId="phenotypic-features"
+            />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

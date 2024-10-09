@@ -24,6 +24,7 @@ import FileTable from "../../components/file-table";
 import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -56,6 +57,8 @@ export default function AnalysisSet({
   attribution = null,
   isJson,
 }) {
+  const pagePanels = usePagePanels(analysisSet["@id"]);
+
   return (
     <>
       <Breadcrumbs item={analysisSet} />
@@ -163,11 +166,17 @@ export default function AnalysisSet({
               samples={analysisSet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${analysisSet["@id"]}`}
               reportLabel="Report of samples in this analysis set"
+              pagePanels={pagePanels}
+              pagePanelId="sample-table"
             />
           )}
 
           {analysisSet.donors?.length > 0 && (
-            <DonorTable donors={analysisSet.donors} />
+            <DonorTable
+              donors={analysisSet.donors}
+              pagePanels={pagePanels}
+              pagePanelId="donors"
+            />
           )}
 
           {inputFileSets.length > 0 && (
@@ -180,6 +189,8 @@ export default function AnalysisSet({
               auxiliarySets={auxiliarySets}
               measurementSets={measurementSets}
               constructLibrarySets={constructLibrarySets}
+              pagePanels={pagePanels}
+              pagePanelId="analysis-set-input-file-sets"
             />
           )}
 
@@ -189,6 +200,8 @@ export default function AnalysisSet({
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${analysisSet["@id"]}`}
               reportLabel="Report of file sets that this analysis set is an input for"
               title="File Sets Using This Analysis Set as an Input"
+              pagePanels={pagePanels}
+              pagePanelId="input-file-set-for"
             />
           )}
 
@@ -198,10 +211,19 @@ export default function AnalysisSet({
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${analysisSet["@id"]}`}
               reportLabel="Report of file sets that this analysis set serves as a control for"
               title="File Sets Controlled by This Analysis Set"
+              pagePanels={pagePanels}
+              pagePanelId="control-for"
             />
           )}
 
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
+
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

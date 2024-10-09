@@ -1,10 +1,15 @@
 // node_modules
+import { AnimatePresence, motion } from "framer-motion";
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { useContext } from "react";
 // components
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "./animation";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SeparatedList from "./separated-list";
@@ -96,26 +101,48 @@ export default function SampleTable({
   reportLink = null,
   reportLabel = null,
   title = "Samples",
+  pagePanels,
+  pagePanelId,
 }) {
+  const isExpanded = pagePanels.isExpanded(pagePanelId);
   const { collectionTitles } = useContext(SessionContext);
 
   return (
     <>
       <DataAreaTitle>
-        {title}
-        {reportLink && reportLabel && (
+        <DataAreaTitle.Expander
+          pagePanels={pagePanels}
+          pagePanelId={pagePanelId}
+          label={`${title} table`}
+        >
+          {title}
+        </DataAreaTitle.Expander>
+        {reportLink && reportLabel && isExpanded && (
           <DataAreaTitleLink href={reportLink} label={reportLabel}>
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
       </DataAreaTitle>
-      <SortableGrid
-        data={samples}
-        columns={sampleColumns}
-        keyProp="@id"
-        meta={{ collectionTitles }}
-        pager={{}}
-      />
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            className="overflow-hidden"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            transition={standardAnimationTransition}
+            variants={standardAnimationVariants}
+          >
+            <SortableGrid
+              data={samples}
+              columns={sampleColumns}
+              keyProp="@id"
+              meta={{ collectionTitles }}
+              pager={{}}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -129,4 +156,8 @@ SampleTable.propTypes = {
   reportLabel: PropTypes.string,
   // Title of the table if not "Samples"
   title: PropTypes.string,
+  // Expandable panels to determine if this table should appear collapsed or expanded
+  pagePanels: PropTypes.object.isRequired,
+  // ID of the panel that contains this table, unique on the page
+  pagePanelId: PropTypes.string.isRequired,
 };

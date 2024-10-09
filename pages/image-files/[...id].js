@@ -13,6 +13,7 @@ import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -39,6 +40,8 @@ export default function ImageFile({
   fileFormatSpecifications,
   isJson,
 }) {
+  const pagePanels = usePagePanels(imageFile["@id"]);
+
   return (
     <>
       <Breadcrumbs item={imageFile} />
@@ -62,8 +65,10 @@ export default function ImageFile({
               derivedFrom={derivedFrom}
               derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${imageFile["@id"]}`}
-              reportLabel={`Report of files ${imageFile.accession} derives from`}
-              title={`Files ${imageFile.accession} Derives From`}
+              reportLabel="Report of files that this file derives from"
+              title="Files This File Derives From"
+              pagePanels={pagePanels}
+              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -72,15 +77,25 @@ export default function ImageFile({
               reportLink={`/multireport/?type=File&derived_from=${imageFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
+              pagePanels={pagePanels}
+              pagePanelId="input-file-for"
             />
           )}
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
+              pagePanels={pagePanels}
+              pagePanelId="file-format-specifications"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="document"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

@@ -19,6 +19,7 @@ import FileTable from "../../components/file-table";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 // lib
@@ -43,6 +44,8 @@ export default function CuratedSet({
   attribution = null,
   isJson,
 }) {
+  const pagePanels = usePagePanels(curatedSet["@id"]);
+
   return (
     <>
       <Breadcrumbs item={curatedSet} />
@@ -98,10 +101,16 @@ export default function CuratedSet({
               samples={curatedSet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${curatedSet["@id"]}`}
               reportLabel="Report of samples in this curated set"
+              pagePanels={pagePanels}
+              pagePanelId="samples"
             />
           )}
           {curatedSet.donors?.length > 0 && (
-            <DonorTable donors={curatedSet.donors} />
+            <DonorTable
+              donors={curatedSet.donors}
+              pagePanels={pagePanels}
+              pagePanelId="donors"
+            />
           )}
           {files.length > 0 && (
             <FileTable files={files} fileSet={curatedSet} isDownloadable />
@@ -112,6 +121,8 @@ export default function CuratedSet({
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${curatedSet["@id"]}`}
               reportLabel="Report of file sets that this curated set is an input for"
               title="File Sets Using This Curated Set as an Input"
+              pagePanels={pagePanels}
+              pagePanelId="input-file-set-for"
             />
           )}
           {controlFor.length > 0 && (
@@ -120,9 +131,17 @@ export default function CuratedSet({
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${curatedSet["@id"]}`}
               reportLabel="Report of file sets that have this curated set as a control"
               title="File Sets Controlled by This Curated Set"
+              pagePanels={pagePanels}
+              pagePanelId="control-for"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

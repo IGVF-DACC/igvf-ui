@@ -20,6 +20,7 @@ import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -47,6 +48,8 @@ export default function TabularFile({
   attribution = null,
   isJson,
 }) {
+  const pagePanels = usePagePanels(tabularFile["@id"]);
+
   return (
     <>
       <Breadcrumbs item={tabularFile} />
@@ -94,7 +97,9 @@ export default function TabularFile({
               derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${tabularFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
-              title={`Files ${tabularFile.accession} Derives From`}
+              title="Files This File Derives From"
+              pagePanels={pagePanels}
+              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -103,6 +108,8 @@ export default function TabularFile({
               reportLink={`/multireport/?type=File&derived_from=${tabularFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
+              pagePanels={pagePanels}
+              pagePanelId="input-file-for"
             />
           )}
           {integratedIn.length > 0 && (
@@ -111,15 +118,25 @@ export default function TabularFile({
               title="Integrated In"
               reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files.@id=${tabularFile["@id"]}`}
               reportLabel={`Report of ConstructLibrarySets that integrate ${tabularFile.accession}`}
+              pagePanels={pagePanels}
+              pagePanelId="integrated-in"
             />
           )}
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
+              pagePanels={pagePanels}
+              pagePanelId="file-format-specifications"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

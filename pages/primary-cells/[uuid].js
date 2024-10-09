@@ -19,6 +19,7 @@ import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
+import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import TreatmentTable from "../../components/treatment-table";
@@ -59,6 +60,8 @@ export default function PrimaryCell({
   attribution = null,
   isJson,
 }) {
+  const pagePanels = usePagePanels(primaryCell["@id"]);
+
   return (
     <>
       <Breadcrumbs item={primaryCell} />
@@ -96,12 +99,20 @@ export default function PrimaryCell({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
-          {donors.length > 0 && <DonorTable donors={donors} />}
+          {donors.length > 0 && (
+            <DonorTable
+              donors={donors}
+              pagePanels={pagePanels}
+              pagePanelId="donors"
+            />
+          )}
           {primaryCell.file_sets.length > 0 && (
             <FileSetTable
               fileSets={primaryCell.file_sets}
               reportLink={`/multireport/?type=FileSet&samples.@id=${primaryCell["@id"]}`}
               reportLabel="Report of file sets associated with this sample"
+              pagePanels={pagePanels}
+              pagePanelId="file-sets"
             />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -110,6 +121,8 @@ export default function PrimaryCell({
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${primaryCell["@id"]}`}
               reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
+              pagePanels={pagePanels}
+              pagePanelId="multiplexed-in-samples"
             />
           )}
           {pooledFrom.length > 0 && (
@@ -118,6 +131,8 @@ export default function PrimaryCell({
               reportLink={`/multireport/?type=Sample&pooled_in=${primaryCell["@id"]}`}
               reportLabel="Report of biosamples this sample is pooled from"
               title="Biosamples Pooled From"
+              pagePanels={pagePanels}
+              pagePanelId="pooled-from"
             />
           )}
           {pooledIn.length > 0 && (
@@ -126,6 +141,8 @@ export default function PrimaryCell({
               reportLink={`/multireport/?type=Biosample&pooled_from=${primaryCell["@id"]}`}
               reportLabel="Report of pooled samples in which this sample is included"
               title="Pooled In"
+              pagePanels={pagePanels}
+              pagePanelId="pooled-in"
             />
           )}
           {parts.length > 0 && (
@@ -134,6 +151,8 @@ export default function PrimaryCell({
               reportLink={`/multireport/?type=Biosample&part_of=${primaryCell["@id"]}`}
               reportLabel="Report of parts into which this sample has been divided"
               title="Sample Parts"
+              pagePanels={pagePanels}
+              pagePanelId="parts"
             />
           )}
           {primaryCell.modifications?.length > 0 && (
@@ -141,6 +160,8 @@ export default function PrimaryCell({
               modifications={primaryCell.modifications}
               reportLink={`/multireport/?type=Modification&biosamples_modified=${primaryCell["@id"]}`}
               reportLabel={`Report of genetic modifications for ${primaryCell.accession}`}
+              pagePanels={pagePanels}
+              pagePanelId="modifications"
             />
           )}
           {sortedFractions.length > 0 && (
@@ -149,6 +170,8 @@ export default function PrimaryCell({
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${primaryCell["@id"]}`}
               reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
+              pagePanels={pagePanels}
+              pagePanelId="sorted-fractions"
             />
           )}
           {biomarkers.length > 0 && (
@@ -156,6 +179,8 @@ export default function PrimaryCell({
               biomarkers={biomarkers}
               reportLink={`/multireport/?type=Biomarker&biomarker_for=${primaryCell["@id"]}`}
               reportLabel={`Report of biological markers that are associated with biosample ${primaryCell.accession}`}
+              pagePanels={pagePanels}
+              pagePanelId="biomarkers"
             />
           )}
           {treatments.length > 0 && (
@@ -163,9 +188,17 @@ export default function PrimaryCell({
               treatments={treatments}
               reportLink={`/multireport/?type=Treatment&biosamples_treated=${primaryCell["@id"]}`}
               reportLabel={`Report of treatments applied to the biosample ${primaryCell.accession}`}
+              pagePanels={pagePanels}
+              pagePanelId="treatments"
             />
           )}
-          {documents.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && (
+            <DocumentTable
+              documents={documents}
+              pagePanels={pagePanels}
+              pagePanelId="documents"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

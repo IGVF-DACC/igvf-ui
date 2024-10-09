@@ -14,16 +14,19 @@ import { useEffect, useState } from "react";
  * Analogous to useState, but sets new values in the browser's localStorage, and recalls them.
  * Supply a key to identify the value in localStorage.
  * @param {string} key Identifier of the given localStorage data
- * @param {*} initialValue Initial value to set for the key; including objects
+ * @param {T} initialValue Initial value to set for the key; including objects
  * @returns {array} [
  *   0: Value retrieved from localStorage
  *   1: Function to set new value in localStorage; calling component must be mounted
  * ]
  */
-export function useLocalStorage(key, initialValue) {
-  const [value, setValue] = useState(initialValue);
+export function useLocalStorage<T>(
+  key: string,
+  initialValue: T
+): [T, (value: T) => void] {
+  const [value, setValue] = useState<T>(initialValue);
 
-  function setValueMethod(valueToStore) {
+  function setValueMethod(valueToStore: T) {
     setValue(valueToStore);
     localStorage.setItem(key, JSON.stringify(valueToStore));
   }
@@ -44,16 +47,19 @@ export function useLocalStorage(key, initialValue) {
  * Analogous to useState, but sets new values in the browser's sessionStorage, and recalls them.
  * Supply a key to identify the value in sessionStorage.
  * @param {string} key Identifier of the given sessionStorage data
- * @param {*} initialValue Initial value to set for the key; including objects
+ * @param {T} initialValue Initial value to set for the key; including objects
  * @returns {array} [
  *   0: Value retrieved from sessionStorage
  *   1: Function to set new value in sessionStorage; calling component must be mounted
  * ]
  */
-export function useSessionStorage(key, initialValue) {
-  const [value, setValue] = useState(initialValue);
+export function useSessionStorage<T>(
+  key: string,
+  initialValue: T
+): [T, (value: T) => void] {
+  const [value, setValue] = useState<T>(initialValue);
 
-  function setValueMethod(valueToStore) {
+  function setValueMethod(valueToStore: T) {
     setValue(valueToStore);
     window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
   }
