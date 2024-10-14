@@ -22,6 +22,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -39,6 +40,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function TabularFile({
   tabularFile,
+  barcodeMapFor,
   documents,
   derivedFrom,
   derivedFromFileSets,
@@ -130,6 +132,16 @@ export default function TabularFile({
               pagePanelId="file-format-specifications"
             />
           )}
+          {barcodeMapFor.length > 0 && (
+            <SampleTable
+              samples={barcodeMapFor}
+              reportLink={`/multireport/?type=MultiplexedSample&barcode_map.@id=${tabularFile["@id"]}`}
+              reportLabel="Report of multiplexed samples in which this file is a barcode map for"
+              title="Barcode Map For"
+              pagePanels={pagePanels}
+              pagePanelId="barcode-map-for"
+            />
+          )}
           {documents.length > 0 && (
             <DocumentTable
               documents={documents}
@@ -147,6 +159,8 @@ export default function TabularFile({
 TabularFile.propTypes = {
   // TabularFile object to display
   tabularFile: PropTypes.object.isRequired,
+  // MultiplexedSample this file is a barcode map for
+  barcodeMapFor: PropTypes.array.isRequired,
   // Documents set associate with this file
   documents: PropTypes.array,
   // The file is derived from
@@ -196,6 +210,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       uniqueDerivedFromFileSetPaths.length > 0
         ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
         : [];
+    const barcodeMapFor =
+      tabularFile.barcode_map_for.length > 0
+        ? await requestFiles(tabularFile.barcode_map_for, request)
+        : [];
     const inputFileFor =
       tabularFile.input_file_for.length > 0
         ? await requestFiles(tabularFile.input_file_for, request)
@@ -215,6 +233,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         tabularFile,
+        barcodeMapFor,
         documents,
         derivedFrom,
         derivedFromFileSets,
