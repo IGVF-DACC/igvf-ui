@@ -195,7 +195,7 @@ ModelSet.propTypes = {
   modelSet: PropTypes.object.isRequired,
   // Software version associated with this model
   softwareVersion: PropTypes.object,
-  // External input data associated with `user`
+  // External input data associated with this model
   externalInputData: PropTypes.object,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -229,9 +229,9 @@ export async function getServerSideProps({ params, req, query }) {
       ? await requestDocuments(modelSet.documents, request)
       : [];
 
-    const externalInputData = (
-      await request.getObject(modelSet.external_input_data)
-    ).optional();
+    const externalInputData = modelSet.external_input_data
+      ? (await request.getObject(modelSet.external_input_data)).optional()
+      : null;
 
     const filePaths = modelSet.files.map((file) => file["@id"]);
     const files =

@@ -35,6 +35,7 @@ import {
   requestDocuments,
   requestFiles,
   requestFileSets,
+  requestOntologyTerms,
   requestPublications,
   requestSamples,
   requestSeqspecFiles,
@@ -107,6 +108,7 @@ export default function MeasurementSet({
   documents,
   publications,
   files,
+  functionalAssayMechanisms,
   relatedMultiomeSets,
   auxiliarySets,
   inputFileSetFor,
@@ -226,6 +228,20 @@ export default function MeasurementSet({
                         </Fragment>
                       ))}
                     </DataItemList>
+                  </>
+                )}
+                {functionalAssayMechanisms?.length > 0 && (
+                  <>
+                    <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {functionalAssayMechanisms.map((phenotype) => (
+                          <Link href={phenotype["@id"]} key={phenotype.term_id}>
+                            {phenotype.term_name}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
                   </>
                 )}
                 {uniqueCombinedProtocols.length > 0 && (
@@ -373,6 +389,8 @@ MeasurementSet.propTypes = {
   controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Functional assay mechanisms
+  functionalAssayMechanisms: PropTypes.arrayOf(PropTypes.object),
   // Related multiome datasets
   relatedMultiomeSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Auxiliary datasets
@@ -459,6 +477,13 @@ export async function getServerSideProps({ params, req, query }) {
       ]);
     }
 
+    const functionalAssayMechanisms = measurementSet.functional_assay_mechanisms
+      ? await requestOntologyTerms(
+          measurementSet.functional_assay_mechanisms,
+          request
+        )
+      : [];
+
     let samples = [];
     const samplesPaths =
       measurementSet.samples?.length > 0
@@ -492,6 +517,7 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         publications,
         files,
+        functionalAssayMechanisms,
         relatedMultiomeSets,
         auxiliarySets,
         inputFileSetFor,

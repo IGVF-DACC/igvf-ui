@@ -229,9 +229,9 @@ export async function getServerSideProps({ params, req, query }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
-    const barcodeMap = (
-      await request.getObject(auxiliarySet.barcode_map)
-    ).optional();
+    const barcodeMap = auxiliarySet.barcode_map
+      ? (await request.getObject(auxiliarySet.barcode_map)).optional()
+      : null;
 
     const attribution = await buildAttribution(
       auxiliarySet,
