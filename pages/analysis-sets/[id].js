@@ -26,6 +26,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -82,6 +83,31 @@ export default function AnalysisSet({
               )}
               <DataItemLabel>File Set Type</DataItemLabel>
               <DataItemValue>{analysisSet.file_set_type}</DataItemValue>
+              {analysisSet.summary && (
+                <>
+                  <DataItemLabel>Summary</DataItemLabel>
+                  <DataItemValue>{analysisSet.summary}</DataItemValue>
+                </>
+              )}
+              {analysisSet.functional_assay_mechanisms?.length > 0 && (
+                <>
+                  <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList isCollapsible>
+                      {analysisSet.functional_assay_mechanisms.map(
+                        (phenotypeTerm) => (
+                          <Link
+                            href={phenotypeTerm["@id"]}
+                            key={phenotypeTerm.term_id}
+                          >
+                            {phenotypeTerm.term_name}
+                          </Link>
+                        )
+                      )}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
               {analysisSet.publication_identifiers?.length > 0 && (
                 <>
                   <DataItemLabel>Publication Identifiers</DataItemLabel>
@@ -111,12 +137,6 @@ export default function AnalysisSet({
                 <>
                   <DataItemLabel>Submitter Comment</DataItemLabel>
                   <DataItemValue>{analysisSet.submitter_comment}</DataItemValue>
-                </>
-              )}
-              {analysisSet.summary && (
-                <>
-                  <DataItemLabel>Summary</DataItemLabel>
-                  <DataItemValue>{analysisSet.summary}</DataItemValue>
                 </>
               )}
               {publications.length > 0 && (
