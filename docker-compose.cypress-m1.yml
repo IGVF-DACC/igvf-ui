@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   cypress:
     image: cypress/included:13.12.0
