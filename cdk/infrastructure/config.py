@@ -53,7 +53,6 @@ config: Dict[str, Any] = {
                 'desired_count': 1,
                 'max_capacity': 4,
             },
-            'backend_url': 'https://igvfd-IGVF-2031-embed-assessed-genes.demo.igvf.org',
             'tags': [
                 ('time-to-live-hours', '60'),
                 ('turn-off-on-friday-night', 'yes'),
