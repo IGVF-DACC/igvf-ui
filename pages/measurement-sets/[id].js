@@ -228,7 +228,7 @@ export default function MeasurementSet({
                     </DataItemList>
                   </>
                 )}
-                {measurementSet.functional_assay_mechanisms.length > 0 && (
+                {measurementSet.functional_assay_mechanisms?.length > 0 && (
                   <>
                     <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
                     <DataItemValue>

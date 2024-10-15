@@ -89,7 +89,7 @@ export default function AnalysisSet({
                   <DataItemValue>{analysisSet.summary}</DataItemValue>
                 </>
               )}
-              {analysisSet.functional_assay_mechanisms.length > 0 && (
+              {analysisSet.functional_assay_mechanisms?.length > 0 && (
                 <>
                   <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
                   <DataItemValue>
