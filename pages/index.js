@@ -15,6 +15,7 @@ import FetchRequest from "../lib/fetch-request";
 import { requestDatasetSummary } from "../lib/common-requests";
 import { abbreviateNumber } from "../lib/general";
 import { convertFileSetsToReleaseData } from "../lib/home";
+import { getCacheClient } from "../lib/cache";
 
 /**
  * Display a statistic panel that shows some property and count of their occurrences in the
@@ -154,6 +155,24 @@ Home.propTypes = {
 };
 
 export async function getServerSideProps({ req }) {
+  const cache = getCacheClient();
+
+  // Return props from cache if available.
+  try {
+    const homePageProps = await cache.get("homePageProps");
+    if (homePageProps) {
+      console.log("Found homepage props in cache");
+      const { fileSets, fileCount, sampleCount } = JSON.parse(homePageProps);
+      return {
+        props: { fileSets, fileCount, sampleCount },
+      };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  // If not in cache, get from backend.
+  console.log("Getting homepage props from backend, not cache");
   const request = new FetchRequest({ cookie: req.headers.cookie });
 
   // We might need to paginate this request in the future, but for now just get all the results.
@@ -167,13 +186,21 @@ export async function getServerSideProps({ req }) {
       await request.getObject("/search/?type=Sample&limit=0")
     ).optional();
 
-    return {
-      props: {
-        fileSets: results["@graph"] || [],
-        fileCount: fileResults?.total || 0,
-        sampleCount: sampleResults?.total || 0,
-      },
+    const props = {
+      fileSets: results["@graph"] || [],
+      fileCount: fileResults?.total || 0,
+      sampleCount: sampleResults?.total || 0,
     };
+
+    try {
+      // Store props in cache (expires in 1 hour).
+      console.log("Setting homepage props in cache");
+      await cache.set("homePageProps", JSON.stringify(props), { EX: 3600 });
+    } catch (error) {
+      console.log(error);
+    }
+    return { props };
   }
+
   return errorObjectToProps(results);
 }
