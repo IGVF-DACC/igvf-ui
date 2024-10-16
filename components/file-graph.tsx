@@ -19,6 +19,7 @@ import {
   DataPanel,
 } from "./data-area";
 import Modal from "./modal";
+import NoCollectionData from "../components/no-collection-data";
 import { type PagePanelStates } from "./page-panels";
 // root
 import { type DatabaseObject } from "../globals.d";
@@ -378,36 +379,39 @@ export function FileGraph({
     derivedFromFiles as FileObject[]
   );
   const trimmedData = trimIsolatedNodes(data);
-  return (
-    <>
-      <DataAreaTitle>
-        <DataAreaTitle.Expander
-          pagePanels={pagePanels}
-          pagePanelId={pagePanelId}
-          label={`${title} table`}
-        >
-          {title}
-        </DataAreaTitle.Expander>
-      </DataAreaTitle>
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            className="overflow-hidden"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            transition={standardAnimationTransition}
-            variants={standardAnimationVariants}
+
+  if (trimmedData.length > 0) {
+    return (
+      <>
+        <DataAreaTitle>
+          <DataAreaTitle.Expander
+            pagePanels={pagePanels}
+            pagePanelId={pagePanelId}
+            label={`${title} table`}
           >
-            <DataPanel>
-              <Graph
-                fileSet={fileSet as FileSetObject}
-                graphData={trimmedData}
-              />
-            </DataPanel>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
+            {title}
+          </DataAreaTitle.Expander>
+        </DataAreaTitle>
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              className="overflow-hidden"
+              initial="collapsed"
+              animate="open"
+              exit="collapsed"
+              transition={standardAnimationTransition}
+              variants={standardAnimationVariants}
+            >
+              <DataPanel>
+                <Graph
+                  fileSet={fileSet as FileSetObject}
+                  graphData={trimmedData}
+                />
+              </DataPanel>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
+    );
+  }
 }
