@@ -249,6 +249,21 @@ const Icon = {
       />
     </svg>
   ),
+  SectionDirectory: ({
+    className = null,
+    testid = "icon-section-directory",
+  }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path d="M6.6,3.8c0-.4.3-.8.8-.8h9.9c.4,0,.8.3.8.8s-.3.8-.8.8H7.3c-.4,0-.8-.3-.8-.8ZM6.6,7.9c0-.4.3-.8.8-.8h9.9c.4,0,.8.3.8.8s-.3.8-.8.8H7.3c-.4,0-.8-.3-.8-.8ZM6.6,12.1c0-.4.3-.8.8-.8h9.9c.4,0,.8.3.8.8s-.3.8-.8.8H7.3c-.4,0-.8-.3-.8-.8ZM6.6,16.2c0-.4.3-.8.8-.8h9.9c.4,0,.8.3.8.8s-.3.8-.8.8H7.3c-.4,0-.8-.3-.8-.8Z" />
+      <polygon points="5.9 7.9 2 5.6 2 10.2 5.9 7.9" />
+    </svg>
+  ),
   Splat: ({ className = null, testid = "icon-splat" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -422,6 +437,10 @@ Icon.PencilSlash.propTypes = {
   testid: PropTypes.string,
 };
 Icon.Sample.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.SectionDirectory.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };

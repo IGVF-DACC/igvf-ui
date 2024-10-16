@@ -53,11 +53,10 @@ export default function MatrixFile({
     <>
       <Breadcrumbs item={matrixFile} />
       <EditableItem item={matrixFile}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={matrixFile.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={matrixFile.alternate_accessions}
+        />
         <ObjectPageHeader item={matrixFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={matrixFile} />
         </ObjectPageHeader>

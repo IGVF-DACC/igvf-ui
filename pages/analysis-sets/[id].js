@@ -64,11 +64,10 @@ export default function AnalysisSet({
     <>
       <Breadcrumbs item={analysisSet} />
       <EditableItem item={analysisSet}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={analysisSet.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={analysisSet.alternate_accessions}
+        />
         <ObjectPageHeader item={analysisSet} isJsonFormat={isJson} />
         <JsonDisplay item={analysisSet} isJsonFormat={isJson}>
           <DataPanel>

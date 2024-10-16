@@ -46,11 +46,10 @@ export default function ModelFile({
     <>
       <Breadcrumbs item={modelFile} />
       <EditableItem item={modelFile}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={modelFile.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={modelFile.alternate_accessions}
+        />
         <ObjectPageHeader item={modelFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={modelFile} />
         </ObjectPageHeader>

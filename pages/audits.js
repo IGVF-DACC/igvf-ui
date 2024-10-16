@@ -6,6 +6,7 @@ import { Fragment, useContext } from "react";
 import AuditKeyTable from "../components/audit-key-table";
 import AuditTable from "../components/audit-table";
 import PagePreamble from "../components/page-preamble";
+import { secDirId, useSecDir } from "../components/section-directory";
 import SessionContext from "../components/session-context";
 // lib
 import { errorObjectToProps } from "../lib/errors";
@@ -33,8 +34,71 @@ const auditKeyColor = [
   },
 ];
 
+/**
+ * Get the level of a type in the schema hierarchy, as well as whether it has child types or not.
+ * @param {string} type `@type` to find in the hierarchy
+ * @param {object} hierarchy Hierarchy tree to search from /profiles
+ * @param {number} level Current level in the hierarchy; this gets incremented as we go deeper
+ *     into the hierarchy
+ * @returns {object} Level of the type in the hierarchy and whether it has child types or not
+ */
+function getTypeLevel(type, hierarchy, currentLevel = 0) {
+  if (hierarchy) {
+    if (type in hierarchy) {
+      const isParent = Object.keys(hierarchy[type]).length > 0;
+      return { level: currentLevel, isParent };
+    }
+    for (const value of Object.values(hierarchy)) {
+      const { level, isParent } = getTypeLevel(type, value, currentLevel + 1);
+      if (level !== -1) {
+        return { level, isParent };
+      }
+    }
+  }
+  return { level: -1, isParent: false };
+}
+
+/**
+ * Custom renderer for the section directory items on the audit page. It displays the titles
+ * indented by their level in the hierarchy.
+ */
+function DirectoryItemRenderer({ section }) {
+  const { profiles } = useContext(SessionContext);
+  const hierarchy = profiles?._hierarchy.Item || null;
+
+  // Get the DOM element for the audit section and extract the `@type` it represents from the
+  // data-type attribute.
+  const element = document.querySelector(`[id="${section.id}"]`);
+  const type = element?.getAttribute("data-type") || "";
+  if (hierarchy && type) {
+    const { level, isParent } = getTypeLevel(type, hierarchy);
+    return (
+      <div
+        style={{
+          paddingLeft: `${level * 0.8}rem`,
+          fontWeight: isParent ? "bold" : "normal",
+        }}
+      >
+        {section.title}
+      </div>
+    );
+  }
+  return <div>{section.id}</div>;
+}
+
+DirectoryItemRenderer.propTypes = {
+  // Anchor and title of the section being rendered in the section directory menu
+  section: PropTypes.exact({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
 export default function AuditDoc({ auditDoc, schemas }) {
-  const { collectionTitles } = useContext(SessionContext);
+  const { collectionTitles, profiles } = useContext(SessionContext);
+  const hierarchy = profiles?._hierarchy.Item || null;
+  const sections = useSecDir(DirectoryItemRenderer);
+
   const result = _.flatMap(auditDoc, (auditGroup, key) => {
     return auditGroup.map((audit) => {
       const newKeys = snakeCaseToPascalCase(key.split(".")[2]);
@@ -43,9 +107,10 @@ export default function AuditDoc({ auditDoc, schemas }) {
   });
   const auditsGroupedByCollection = _.groupBy(result, "newKeys");
   const allSchemaNames = flattenHierarchy(schemas._hierarchy.Item, schemas);
+
   return (
     <>
-      <PagePreamble />
+      <PagePreamble sections={sections} />
       <p>
         The IGVF Data and Administration Coordinating Center has established an
         audit system, utilizing flags, to detect discrepancies in the data.
@@ -64,9 +129,16 @@ export default function AuditDoc({ auditDoc, schemas }) {
         const typeAudits = auditsGroupedByCollection[itemType];
         if (typeAudits) {
           const title = collectionTitles?.[itemType] || itemType;
+          const { isParent } = getTypeLevel(itemType, hierarchy);
           return (
             <Fragment key={itemType}>
-              <h2 className="mb-1 mt-8 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
+              <h2
+                className={`mb-1 mt-8 text-lg text-brand dark:text-[#8fb3a5] ${
+                  isParent ? "font-semibold" : ""
+                }`}
+                id={`${secDirId(itemType)}`}
+                data-type={itemType}
+              >
                 {title}
               </h2>
               <AuditTable data={typeAudits} key={itemType} />

@@ -50,17 +50,15 @@ export default function ReferenceFile({
   isJson,
 }) {
   const pagePanels = usePagePanels(referenceFile["@id"]);
-  console.log("REFERENCE FILE", referenceFile["@id"]);
 
   return (
     <>
       <Breadcrumbs item={referenceFile} />
       <EditableItem item={referenceFile}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={referenceFile.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={referenceFile.alternate_accessions}
+        />
         <ObjectPageHeader item={referenceFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={referenceFile} />
         </ObjectPageHeader>

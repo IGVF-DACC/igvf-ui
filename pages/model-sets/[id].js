@@ -53,11 +53,10 @@ export default function ModelSet({
     <>
       <Breadcrumbs item={modelSet} />
       <EditableItem item={modelSet}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={modelSet.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={modelSet.alternate_accessions}
+        />
         <ObjectPageHeader item={modelSet} isJsonFormat={isJson} />
         <JsonDisplay item={modelSet} isJsonFormat={isJson}>
           <DataPanel>
