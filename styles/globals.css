@@ -188,6 +188,15 @@
 
   --color-site-search-header-background: #c9ebe2;
 
+  --color-menu-trigger-background: transparent;
+  --color-menu-trigger-background-hover: #d1d5db;
+  --color-menu-trigger-background-open: #d1d5db;
+  --color-menu-items-background: #f3f4f6;
+  --color-menu-items-border: #d1d5db;
+  --color-menu-item-background-hover: #4b5563;
+  --color-menu-item-text: #374151;
+  --color-menu-item-text-hover: #ffffff;
+
   --color-form-element-background: #ffffff;
   --color-form-element-border: #384977;
   --color-form-element-label: #000000;
@@ -231,6 +240,9 @@
   --color-code-text: #1e1e1f;
 
   --color-button-text-info: #000000;
+
+  /** Section Directory */
+  --color-section-directory-highlight-background: #d9f99d;
 }
 
 /**
@@ -362,6 +374,15 @@
 
   --color-data-header-background: #192339;
 
+  --color-menu-trigger-background: transparent;
+  --color-menu-trigger-background-hover: #4b5563;
+  --color-menu-trigger-background-open: #4b5563;
+  --color-menu-items-background: #111827;
+  --color-menu-items-border: #374151;
+  --color-menu-item-background-hover: #9ca3af;
+  --color-menu-item-text: #d1d5db;
+  --color-menu-item-text-hover: #000000;
+
   --color-form-element-background: #000205;
   --color-form-element-border: #8facff;
   --color-form-element-label: #ffffff;
@@ -391,6 +412,9 @@
 
   /** Modal borders */
   --color-modal-border: #68799c;
+
+  /** Section Directory */
+  --color-section-directory-highlight-background: #365314;
 }
 
 a {
@@ -486,5 +510,25 @@ a {
   }
   to {
     opacity: 0;
+  }
+}
+
+/**
+ * For highlighting the a section directory anchor when the user selects it. It appears with a
+ * background color, then fading to transparent.
+ */
+.section-directory-highlight {
+  animation: highlight 2s linear;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: var(--color-section-directory-highlight-background);
+  }
+  60% {
+    background-color: var(--color-section-directory-highlight-background);
+  }
+  100% {
+    background-color: transparent;
   }
 }

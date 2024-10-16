@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
  */
 export default function AlternateAccessions({
   alternateAccessions = [],
-  className = "text-sm text-gray-500",
+  className = "mt-[-20px] mb-5 text-sm text-gray-500",
   isTitleHidden = false,
 }) {
   if (alternateAccessions.length > 0) {

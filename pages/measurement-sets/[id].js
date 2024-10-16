@@ -158,11 +158,10 @@ export default function MeasurementSet({
     <>
       <Breadcrumbs item={measurementSet} />
       <EditableItem item={measurementSet}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={measurementSet.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={measurementSet.alternate_accessions}
+        />
         <ObjectPageHeader item={measurementSet} isJsonFormat={isJson} />
         <JsonDisplay item={measurementSet} isJsonFormat={isJson}>
           <DataPanel>
