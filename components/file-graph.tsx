@@ -19,7 +19,6 @@ import {
   DataPanel,
 } from "./data-area";
 import Modal from "./modal";
-import NoCollectionData from "../components/no-collection-data";
 import { type PagePanelStates } from "./page-panels";
 // root
 import { type DatabaseObject } from "../globals.d";
@@ -164,34 +163,36 @@ function FileModal({
       </Modal.Header>
       <DataPanel className="border-none">
         <DataArea>
-          {file.aliases?.length > 0 && (
-            <>
-              <DataItemLabel>Aliases</DataItemLabel>
-              <DataItemValue>
-                <AliasList aliases={file.aliases} />
-              </DataItemValue>
-              <DataItemLabel>Content Type</DataItemLabel>
-              <DataItemValue>{file.content_type}</DataItemValue>
-              <DataItemLabel>File Format</DataItemLabel>
-              <DataItemValue>{file.file_format}</DataItemValue>
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{file.summary}</DataItemValue>
-              <DataItemLabel>File Set</DataItemLabel>
-              <DataItemValue>
-                {fileFileSet["@id"] !== pageFileSet["@id"] ? (
-                  <Link
-                    href={fileFileSet["@id"]}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {fileFileSet.accession}
-                  </Link>
-                ) : (
-                  <>{fileFileSet.accession} (this file set)</>
-                )}
-              </DataItemValue>
-            </>
-          )}
+          <>
+            {file.aliases?.length > 0 && (
+              <>
+                <DataItemLabel>Aliases</DataItemLabel>
+                <DataItemValue>
+                  <AliasList aliases={file.aliases} />
+                </DataItemValue>
+              </>
+            )}
+            <DataItemLabel>Content Type</DataItemLabel>
+            <DataItemValue>{file.content_type}</DataItemValue>
+            <DataItemLabel>File Format</DataItemLabel>
+            <DataItemValue>{file.file_format}</DataItemValue>
+            <DataItemLabel>Summary</DataItemLabel>
+            <DataItemValue>{file.summary}</DataItemValue>
+            <DataItemLabel>File Set</DataItemLabel>
+            <DataItemValue>
+              {fileFileSet["@id"] !== pageFileSet["@id"] ? (
+                <Link
+                  href={fileFileSet["@id"]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {fileFileSet.accession}
+                </Link>
+              ) : (
+                <>{fileFileSet.accession} (this file set)</>
+              )}
+            </DataItemValue>
+          </>
         </DataArea>
       </DataPanel>
     </Modal>
