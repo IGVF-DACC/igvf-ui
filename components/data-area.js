@@ -62,11 +62,13 @@ export function DataArea({ children }) {
  * Displays the title above a data panel or table.
  */
 export function DataAreaTitle({
+  id = "",
   className = "flex items-end justify-between",
   children,
 }) {
   return (
     <h2
+      id={id}
       className={`mb-1 mt-4 text-2xl font-light ${className}`}
       data-testid="dataareatitle"
     >
@@ -76,6 +78,8 @@ export function DataAreaTitle({
 }
 
 DataAreaTitle.propTypes = {
+  // HTML ID for the title element
+  id: PropTypes.string,
   // Additional Tailwind CSS classes to apply to the <h2> element
   className: PropTypes.string,
 };
@@ -92,13 +96,15 @@ function DataAreaTitleWithExpander({
 }) {
   return (
     <div className="flex items-center gap-1">
-      <PagePanelButton
-        pagePanels={pagePanels}
-        pagePanelId={pagePanelId}
-        label={label}
-      >
-        {children}
-      </PagePanelButton>
+      {pagePanels && (
+        <PagePanelButton
+          pagePanels={pagePanels}
+          pagePanelId={pagePanelId}
+          label={label}
+        >
+          {children}
+        </PagePanelButton>
+      )}
     </div>
   );
 }

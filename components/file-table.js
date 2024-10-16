@@ -10,6 +10,7 @@ import {
 import { BatchDownloadActuator } from "./batch-download";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
+import { secDirId } from "./section-directory";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
@@ -99,18 +100,8 @@ export default function FileTable({
 
   return (
     <>
-      <DataAreaTitle>
-        {pagePanels ? (
-          <DataAreaTitle.Expander
-            pagePanels={pagePanels}
-            pagePanelId={pagePanelId}
-            label={`${title} table`}
-          >
-            {title}
-          </DataAreaTitle.Expander>
-        ) : (
-          title
-        )}
+      <DataAreaTitle id={secDirId("file-table")}>
+        {title}
         {(controller || finalReportLink) && isExpanded && (
           <div className="align-center flex gap-1">
             {controller && (

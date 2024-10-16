@@ -11,6 +11,7 @@ import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
 import { AliasesCell } from "./table-cells";
+import { secDirId } from "./section-directory";
 
 const columns = [
   {
@@ -45,21 +46,15 @@ export default function DonorTable({
   reportLink = null,
   reportLabel = null,
   title = "Donors",
-  pagePanels,
-  pagePanelId,
+  pagePanels = null,
+  pagePanelId = "",
 }) {
-  const isExpanded = pagePanels.isExpanded(pagePanelId);
+  const isExpanded = pagePanels?.isExpanded(pagePanelId) || true;
 
   return (
     <>
-      <DataAreaTitle>
-        <DataAreaTitle.Expander
-          pagePanels={pagePanels}
-          pagePanelId={pagePanelId}
-          label={`${title} table`}
-        >
-          {title}
-        </DataAreaTitle.Expander>
+      <DataAreaTitle id={secDirId("donor-table")}>
+        {title}
         {reportLink && reportLabel && isExpanded && (
           <DataAreaTitleLink href={reportLink} label={reportLabel}>
             <TableCellsIcon className="h-4 w-4" />
@@ -100,7 +95,7 @@ DonorTable.propTypes = {
   // Optional title to display if not "Donors"
   title: PropTypes.string,
   // Expandable panels to determine if this table should appear collapsed or expanded
-  pagePanels: PropTypes.object.isRequired,
+  pagePanels: PropTypes.object,
   // ID of the panel that contains this table, unique on the page
-  pagePanelId: PropTypes.string.isRequired,
+  pagePanelId: PropTypes.string,
 };

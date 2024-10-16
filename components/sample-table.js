@@ -15,6 +15,7 @@ import LinkedIdAndStatus from "./linked-id-and-status";
 import SeparatedList from "./separated-list";
 import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
+import { secDirId } from "./section-directory";
 
 /**
  * Columns for samples
@@ -101,27 +102,19 @@ export default function SampleTable({
   reportLink = null,
   reportLabel = null,
   title = "Samples",
-  pagePanels,
-  pagePanelId,
+  pagePanels = null,
+  pagePanelId = "",
 }) {
-  const isExpanded = pagePanels.isExpanded(pagePanelId);
+  const isExpanded = pagePanels?.isExpanded(pagePanelId) || true;
   const { collectionTitles } = useContext(SessionContext);
 
   return (
     <>
-      <DataAreaTitle>
-        <DataAreaTitle.Expander
-          pagePanels={pagePanels}
-          pagePanelId={pagePanelId}
-          label={`${title} table`}
-        >
-          {title}
-        </DataAreaTitle.Expander>
-        {reportLink && reportLabel && isExpanded && (
-          <DataAreaTitleLink href={reportLink} label={reportLabel}>
-            <TableCellsIcon className="h-4 w-4" />
-          </DataAreaTitleLink>
-        )}
+      <DataAreaTitle label={`${title} table`} id={secDirId("sample-table")}>
+        {title}
+        <DataAreaTitleLink href={reportLink} label={reportLabel}>
+          <TableCellsIcon className="h-4 w-4" />
+        </DataAreaTitleLink>
       </DataAreaTitle>
       <AnimatePresence>
         {isExpanded && (
@@ -157,7 +150,7 @@ SampleTable.propTypes = {
   // Title of the table if not "Samples"
   title: PropTypes.string,
   // Expandable panels to determine if this table should appear collapsed or expanded
-  pagePanels: PropTypes.object.isRequired,
+  pagePanels: PropTypes.object,
   // ID of the panel that contains this table, unique on the page
-  pagePanelId: PropTypes.string.isRequired,
+  pagePanelId: PropTypes.string,
 };

@@ -136,7 +136,7 @@ export default function AuditDoc({ auditDoc, schemas }) {
                 className={`mb-1 mt-8 text-lg text-brand dark:text-[#8fb3a5] ${
                   isParent ? "font-semibold" : ""
                 }`}
-                id={`${secDirId(itemType)}`}
+                id={secDirId(itemType)}
                 data-type={itemType}
               >
                 {title}

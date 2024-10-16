@@ -123,7 +123,7 @@ export function PagePanelButton({
   label: string;
   children?: ReactNode;
 }) {
-  const isExpanded = pagePanels.isExpanded(pagePanelId);
+  const isExpanded = pagePanels?.isExpanded(pagePanelId) || true;
 
   // Register the panel when the page gets rendered on page load so that the expanded panel states
   // exist for every collapsible panel on the page.

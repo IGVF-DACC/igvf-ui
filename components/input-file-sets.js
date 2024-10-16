@@ -16,6 +16,7 @@ import LinkedIdAndStatus from "./linked-id-and-status";
 import LinkedIdAndStatusStack from "./linked-id-and-status-stack";
 import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
+import { secDirId } from "./section-directory";
 
 /**
  * Columns for the measurement sets input file sets table.
@@ -511,14 +512,8 @@ function InputFileSetTable({
 
   return (
     <>
-      <DataAreaTitle>
-        <DataAreaTitle.Expander
-          pagePanels={pagePanels}
-          pagePanelId={pagePanelId}
-          label={`${title} table`}
-        >
-          {title} Input File Sets
-        </DataAreaTitle.Expander>
+      <DataAreaTitle id={secDirId(`input-file-sets-${fileSetType}`)}>
+        {title} Input File Sets
         {isExpanded && (
           <div className="flex gap-1">
             <Checkbox
@@ -610,8 +605,8 @@ export default function InputFileSets({
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
-  pagePanels,
-  pagePanelId,
+  pagePanels = null,
+  pagePanelId = "",
 }) {
   // Group the input file sets by their type and sort the groups by the order in `fileSetSortOrder`.
   const fileSetGroups = _.groupBy(fileSets, "@type[0]");
@@ -662,7 +657,7 @@ InputFileSets.propTypes = {
   // Construct library sets belonging to the file sets
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Expandable panels to determine if this table should appear collapsed or expanded
-  pagePanels: PropTypes.object.isRequired,
+  pagePanels: PropTypes.object,
   // ID of the panel that contains this table, unique on the page
-  pagePanelId: PropTypes.string.isRequired,
+  pagePanelId: PropTypes.string,
 };

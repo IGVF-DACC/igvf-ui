@@ -15,6 +15,7 @@ import SeparatedList from "./separated-list";
 import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
 import { AliasesCell } from "./table-cells";
+import { secDirId } from "./section-directory";
 
 const fileSetColumns = [
   {
@@ -126,22 +127,16 @@ export default function FileSetTable({
   reportLabel = "",
   title = "File Sets",
   fileSetMeta = null,
-  pagePanels,
-  pagePanelId,
+  pagePanels = null,
+  pagePanelId = "",
 }) {
-  const isExpanded = pagePanels.isExpanded(pagePanelId);
+  const isExpanded = pagePanels?.isExpanded(pagePanelId) || true;
   const { collectionTitles } = useContext(SessionContext);
 
   return (
     <>
-      <DataAreaTitle>
-        <DataAreaTitle.Expander
-          pagePanels={pagePanels}
-          pagePanelId={pagePanelId}
-          label={`${title} table`}
-        >
-          {title}
-        </DataAreaTitle.Expander>
+      <DataAreaTitle id={secDirId("file-set-table")}>
+        {title}
         {reportLink && isExpanded && (
           <DataAreaTitleLink href={reportLink} label={reportLabel}>
             <TableCellsIcon className="h-4 w-4" />
@@ -189,7 +184,7 @@ FileSetTable.propTypes = {
     fileFilter: PropTypes.func,
   }),
   // Expandable panels to determine if this table should appear collapsed or expanded
-  pagePanels: PropTypes.object.isRequired,
+  pagePanels: PropTypes.object,
   // ID of the panel that contains this table, unique on the page
-  pagePanelId: PropTypes.string.isRequired,
+  pagePanelId: PropTypes.string,
 };
