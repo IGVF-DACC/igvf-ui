@@ -38,6 +38,14 @@ export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
                     </DataItemValue>
                   </>
                 )}
+                {assayOntologyTerm.preferred_assay_titles && (
+                  <>
+                    <DataItemLabel>Preferred Assay Title</DataItemLabel>
+                    <DataItemValue>
+                      {assayOntologyTerm.preferred_assay_titles.join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
               </OntologyTermDataItems>
             </DataArea>
           </DataPanel>

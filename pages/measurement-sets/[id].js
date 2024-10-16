@@ -228,6 +228,25 @@ export default function MeasurementSet({
                     </DataItemList>
                   </>
                 )}
+                {measurementSet.functional_assay_mechanisms?.length > 0 && (
+                  <>
+                    <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {measurementSet.functional_assay_mechanisms.map(
+                          (phenotypeTerm) => (
+                            <Link
+                              href={phenotypeTerm["@id"]}
+                              key={phenotypeTerm.term_id}
+                            >
+                              {phenotypeTerm.term_name}
+                            </Link>
+                          )
+                        )}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
                 {uniqueCombinedProtocols.length > 0 && (
                   <>
                     <DataItemLabel>Protocols</DataItemLabel>

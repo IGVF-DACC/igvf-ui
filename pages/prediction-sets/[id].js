@@ -80,6 +80,26 @@ export default function PredictionSet({
                 item={predictionSet}
                 publications={publications}
               >
+                {predictionSet.scope && (
+                  <>
+                    <DataItemLabel>Scope</DataItemLabel>
+                    <DataItemValue>{predictionSet.scope}</DataItemValue>
+                  </>
+                )}
+                {predictionSet.assessed_genes && (
+                  <>
+                    <DataItemLabel>Assessed Genes</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {predictionSet.assessed_genes.map((gene) => (
+                          <Link href={gene["@id"]} key={gene["@id"]}>
+                            {gene.symbol}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
                 {constructLibrarySets.length > 0 && (
                   <>
                     <DataItemLabel>Construct Library Sets</DataItemLabel>
@@ -98,12 +118,6 @@ export default function PredictionSet({
                         );
                       })}
                     </DataItemList>
-                  </>
-                )}
-                {predictionSet.scope && (
-                  <>
-                    <DataItemLabel>Scope</DataItemLabel>
-                    <DataItemValue>{predictionSet.scope}</DataItemValue>
                   </>
                 )}
                 {predictionSet.small_scale_gene_list && (

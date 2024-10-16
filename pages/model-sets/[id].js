@@ -21,6 +21,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -38,6 +39,7 @@ export default function ModelSet({
   softwareVersion = null,
   documents,
   publications,
+  externalInputData,
   files,
   inputFileSets,
   inputFileSetFor,
@@ -63,6 +65,20 @@ export default function ModelSet({
               <FileSetDataItems item={modelSet} publications={publications}>
                 <DataItemLabel>Accession</DataItemLabel>
                 <DataItemValue>{modelSet.accession}</DataItemValue>
+                {modelSet.assessed_genes && (
+                  <>
+                    <DataItemLabel>Assessed Genes</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {modelSet.assessed_genes.map((gene) => (
+                          <Link href={gene["@id"]} key={gene["@id"]}>
+                            {gene.symbol}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
                 <DataItemLabel>Model Version</DataItemLabel>
                 <DataItemValue>{modelSet.model_version}</DataItemValue>
                 {modelSet.prediction_objects.length > 0 && (
@@ -93,6 +109,16 @@ export default function ModelSet({
                     <DataItemValue>
                       <Link href={softwareVersion["@id"]}>
                         {softwareVersion.name}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
+                {externalInputData && (
+                  <>
+                    <DataItemLabel>External Input Data</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={externalInputData["@id"]}>
+                        {externalInputData.accession}
                       </Link>
                     </DataItemValue>
                   </>
@@ -169,6 +195,8 @@ ModelSet.propTypes = {
   modelSet: PropTypes.object.isRequired,
   // Software version associated with this model
   softwareVersion: PropTypes.object,
+  // External input data associated with this model
+  externalInputData: PropTypes.object,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Input file sets to display
@@ -200,6 +228,10 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = modelSet.documents
       ? await requestDocuments(modelSet.documents, request)
       : [];
+
+    const externalInputData = modelSet.external_input_data
+      ? (await request.getObject(modelSet.external_input_data)).optional()
+      : null;
 
     const filePaths = modelSet.files.map((file) => file["@id"]);
     const files =
@@ -242,6 +274,7 @@ export async function getServerSideProps({ params, req, query }) {
         softwareVersion,
         documents,
         publications,
+        externalInputData,
         files,
         inputFileSets,
         inputFileSetFor,

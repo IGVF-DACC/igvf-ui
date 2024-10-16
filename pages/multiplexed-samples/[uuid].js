@@ -53,7 +53,7 @@ export default function MultiplexedSample({
   sources,
   treatments,
   multiplexedInSamples,
-  barcodeSampleMap,
+  barcodeMap,
   isJson,
 }) {
   const pagePanels = usePagePanels(multiplexedSample["@id"]);
@@ -78,6 +78,14 @@ export default function MultiplexedSample({
                 institutionalCertificates={institutionalCertificates}
                 publications={publications}
               >
+                {multiplexedSample.multiplexing_methods.length > 0 && (
+                  <>
+                    <DataItemLabel>Multiplexing Method</DataItemLabel>
+                    <DataItemValue>
+                      {multiplexedSample.multiplexing_methods.join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
                 {sources?.length > 0 && (
                   <>
                     <DataItemLabel>Sources</DataItemLabel>
@@ -100,12 +108,12 @@ export default function MultiplexedSample({
                     </DataItemValue>
                   </>
                 )}
-                {barcodeSampleMap && (
+                {barcodeMap && (
                   <>
-                    <DataItemLabel>Barcode Sample Map</DataItemLabel>
+                    <DataItemLabel>Barcode Map</DataItemLabel>
                     <DataItemValue>
-                      <Link href={barcodeSampleMap["@id"]}>
-                        {barcodeSampleMap.accession}
+                      <Link href={barcodeMap["@id"]}>
+                        {barcodeMap.accession}
                       </Link>
                     </DataItemValue>
                   </>
@@ -208,8 +216,8 @@ MultiplexedSample.propTypes = {
   biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Barcode sample map file
-  barcodeSampleMap: PropTypes.object,
+  // Barcode map file
+  barcodeMap: PropTypes.object,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -296,10 +304,8 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
-    const barcodeSampleMap = multiplexedSample.barcode_sample_map
-      ? (
-          await request.getObject(multiplexedSample.barcode_sample_map)
-        ).unwrap_or({})
+    const barcodeMap = multiplexedSample.barcode_map
+      ? (await request.getObject(multiplexedSample.barcode_map)).unwrap_or({})
       : null;
     const attribution = await buildAttribution(
       multiplexedSample,
@@ -317,7 +323,7 @@ export async function getServerSideProps({ params, req, query }) {
         sources,
         treatments,
         multiplexedInSamples,
-        barcodeSampleMap,
+        barcodeMap,
         pageContext: {
           title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,
         },

@@ -1,12 +1,18 @@
 // node_modules
 import _ from "lodash";
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
-import { DataArea, DataPanel } from "../../components/data-area";
+import {
+  DataArea,
+  DataItemLabel,
+  DataItemValue,
+  DataPanel,
+} from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
@@ -34,6 +40,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 export default function AuxiliarySet({
   auxiliarySet,
   publications,
+  barcodeMap,
   documents,
   files,
   relatedDatasets,
@@ -67,6 +74,14 @@ export default function AuxiliarySet({
                 item={auxiliarySet}
                 publications={publications}
               />
+              {barcodeMap && (
+                <>
+                  <DataItemLabel>Barcode Map</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={barcodeMap["@id"]}>{barcodeMap.accession}</Link>
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           <FileSetFilesTables
@@ -144,6 +159,8 @@ export default function AuxiliarySet({
 AuxiliarySet.propTypes = {
   // Auxiliary set to display
   auxiliarySet: PropTypes.object.isRequired,
+  // Barcode map
+  barcodeMap: PropTypes.object,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Related Datasets to display
@@ -212,6 +229,10 @@ export async function getServerSideProps({ params, req, query }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
+    const barcodeMap = auxiliarySet.barcode_map
+      ? (await request.getObject(auxiliarySet.barcode_map)).optional()
+      : null;
+
     const attribution = await buildAttribution(
       auxiliarySet,
       req.headers.cookie
@@ -220,6 +241,7 @@ export async function getServerSideProps({ params, req, query }) {
       props: {
         auxiliarySet,
         publications,
+        barcodeMap,
         documents,
         files,
         relatedDatasets,
