@@ -12,7 +12,9 @@ export function getCacheClient() {
       redisClient = createClient({
         url: CACHE_URL,
       });
-      redisClient.on("error", (err) => console.error("Redis client erro", err));
+      redisClient.on("error", (err) =>
+        console.error("Redis client error", err)
+      );
       redisClient.connect();
     } catch (error) {
       console.log(error);
