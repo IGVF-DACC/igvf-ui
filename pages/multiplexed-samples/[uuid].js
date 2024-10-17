@@ -63,11 +63,10 @@ export default function MultiplexedSample({
     <>
       <Breadcrumbs item={multiplexedSample} />
       <EditableItem item={multiplexedSample}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={multiplexedSample.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={multiplexedSample.alternate_accessions}
+        />
         <ObjectPageHeader item={multiplexedSample} isJsonFormat={isJson} />
         <JsonDisplay item={multiplexedSample} isJsonFormat={isJson}>
           <DataPanel>

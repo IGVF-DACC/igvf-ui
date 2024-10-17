@@ -67,11 +67,10 @@ export default function PredictionSet({
     <>
       <Breadcrumbs item={predictionSet} />
       <EditableItem item={predictionSet}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={predictionSet.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={predictionSet.alternate_accessions}
+        />
         <ObjectPageHeader item={predictionSet} isJsonFormat={isJson} />
         <JsonDisplay item={predictionSet} isJsonFormat={isJson}>
           <DataPanel>

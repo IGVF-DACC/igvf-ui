@@ -46,11 +46,10 @@ export default function ImageFile({
     <>
       <Breadcrumbs item={imageFile} />
       <EditableItem item={imageFile}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={imageFile.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={imageFile.alternate_accessions}
+        />
         <ObjectPageHeader item={imageFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={imageFile} />
         </ObjectPageHeader>

@@ -7,11 +7,13 @@ import SiteTitle from "./site-title";
 /**
  * Put this at the top of any page that needs a tab title and a page title.
  */
-export default function PagePreamble({ pageTitle = "", children }) {
+export default function PagePreamble({ pageTitle = "", sections, children }) {
   return (
     <>
       <SiteTitle pageTitle={pageTitle} />
-      <PageTitle pageTitle={pageTitle}>{children}</PageTitle>
+      <PageTitle pageTitle={pageTitle} sections={sections}>
+        {children}
+      </PageTitle>
     </>
   );
 }
@@ -19,4 +21,6 @@ export default function PagePreamble({ pageTitle = "", children }) {
 PagePreamble.propTypes = {
   // Page title for pages in which the server doesn't supply one
   pageTitle: PropTypes.string,
+  // Displayed in the section directory
+  sections: PropTypes.object,
 };

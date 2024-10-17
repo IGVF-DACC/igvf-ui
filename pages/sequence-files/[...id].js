@@ -56,11 +56,10 @@ export default function SequenceFile({
     <>
       <Breadcrumbs item={sequenceFile} />
       <EditableItem item={sequenceFile}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={sequenceFile.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={sequenceFile.alternate_accessions}
+        />
         <ObjectPageHeader item={sequenceFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={sequenceFile} />
         </ObjectPageHeader>

@@ -264,11 +264,10 @@ export default function ConstructLibrarySet({
     <>
       <Breadcrumbs item={constructLibrarySet} />
       <EditableItem item={constructLibrarySet}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={constructLibrarySet.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={constructLibrarySet.alternate_accessions}
+        />
         <ObjectPageHeader item={constructLibrarySet} isJsonFormat={isJson} />
         <JsonDisplay item={constructLibrarySet} isJsonFormat={isJson}>
           <DataPanel>

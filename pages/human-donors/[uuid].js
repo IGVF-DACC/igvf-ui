@@ -49,11 +49,8 @@ export default function HumanDonor({
     <>
       <Breadcrumbs item={donor} />
       <EditableItem item={donor}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={donor.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions alternateAccessions={donor.alternate_accessions} />
         <ObjectPageHeader item={donor} isJsonFormat={isJson} />
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <DataPanel>

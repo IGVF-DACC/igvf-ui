@@ -46,11 +46,10 @@ export default function Workflow({
     <>
       <Breadcrumbs item={workflow} />
       <EditableItem item={workflow}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={workflow.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={workflow.alternate_accessions}
+        />
         <ObjectPageHeader item={workflow} isJsonFormat={isJson} />
         <JsonDisplay item={workflow} isJsonFormat={isJson}>
           <DataPanel>

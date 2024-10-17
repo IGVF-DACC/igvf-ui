@@ -55,11 +55,10 @@ export default function AlignmentFile({
     <>
       <Breadcrumbs item={alignmentFile} />
       <EditableItem item={alignmentFile}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={alignmentFile.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={alignmentFile.alternate_accessions}
+        />
         <ObjectPageHeader item={alignmentFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={alignmentFile} />
         </ObjectPageHeader>

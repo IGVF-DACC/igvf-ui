@@ -48,11 +48,10 @@ export default function ConfigurationFile({
     <>
       <Breadcrumbs item={configurationFile} />
       <EditableItem item={configurationFile}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={configurationFile.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={configurationFile.alternate_accessions}
+        />
         <ObjectPageHeader item={configurationFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={configurationFile} />
         </ObjectPageHeader>

@@ -58,11 +58,10 @@ export default function WholeOrganism({
     <>
       <Breadcrumbs item={sample} />
       <EditableItem item={sample}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={sample.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={sample.alternate_accessions}
+        />
         <ObjectPageHeader item={sample} isJsonFormat={isJson} />
         <JsonDisplay item={sample} isJsonFormat={isJson}>
           <DataPanel>

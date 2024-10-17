@@ -50,11 +50,10 @@ export default function CuratedSet({
     <>
       <Breadcrumbs item={curatedSet} />
       <EditableItem item={curatedSet}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={curatedSet.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={curatedSet.alternate_accessions}
+        />
         <ObjectPageHeader item={curatedSet} isJsonFormat={isJson} />
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <DataPanel>

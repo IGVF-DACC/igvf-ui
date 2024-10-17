@@ -53,11 +53,10 @@ export default function SignalFile({
     <>
       <Breadcrumbs item={signalFile} />
       <EditableItem item={signalFile}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={signalFile.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={signalFile.alternate_accessions}
+        />
         <ObjectPageHeader item={signalFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={signalFile} />
         </ObjectPageHeader>

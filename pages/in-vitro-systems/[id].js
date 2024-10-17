@@ -73,11 +73,10 @@ export default function InVitroSystem({
     <>
       <Breadcrumbs item={inVitroSystem} />
       <EditableItem item={inVitroSystem}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={inVitroSystem.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={inVitroSystem.alternate_accessions}
+        />
         <ObjectPageHeader item={inVitroSystem} isJsonFormat={isJson} />
         <JsonDisplay item={inVitroSystem} isJsonFormat={isJson}>
           <DataPanel>
