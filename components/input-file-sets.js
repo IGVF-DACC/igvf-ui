@@ -503,7 +503,7 @@ function InputFileSetTable({
   pagePanels,
   pagePanelId,
 }) {
-  const isExpanded = pagePanels.isExpanded(pagePanelId);
+  const isExpanded = pagePanels?.isExpanded(pagePanelId) || true;
   const { collectionTitles } = useContext(SessionContext);
   const title = collectionTitles?.[fileSetType] || fileSetType;
 
