@@ -5,14 +5,23 @@ from aws_cdk.assertions import Template
 
 def test_stacks_frontend_initialize_frontend_stack(config):
     from aws_cdk import App
+    from infrastructure.stacks.redis import RedisStack
     from infrastructure.stacks.frontend import FrontendStack
     from infrastructure.constructs.existing import igvf_dev
     app = App()
+    redis_stack = RedisStack(
+        app,
+        'TestRedisStack',
+        config=config,
+        existing_resources_class=igvf_dev.Resources,
+        env=igvf_dev.US_WEST_2,
+    )
     frontend_stack = FrontendStack(
         app,
         'TestFrontendStack',
         config=config,
         existing_resources_class=igvf_dev.Resources,
+        redis_multiplexer=redis_stack.multiplexer,
         env=igvf_dev.US_WEST_2,
     )
     template = Template.from_stack(frontend_stack)

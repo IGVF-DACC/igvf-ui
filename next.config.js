@@ -16,6 +16,7 @@ module.exports = {
   },
   serverRuntimeConfig: {
     BACKEND_URL: process.env.BACKEND_URL || "",
+    CACHE_URL: process.env.CACHE_URL || "",
   },
   publicRuntimeConfig: {
     SERVER_URL: process.env.SERVER_URL || "",

@@ -43,6 +43,7 @@
     "react-svg-pan-zoom": "^3.12.1",
     "react-svg-pan-zoom-loader": "^1.6.1",
     "react-syntax-highlighter": "^15.5.0",
+    "redis": "^4.7.0",
     "typescript": "^5.1.6"
   },
   "devDependencies": {

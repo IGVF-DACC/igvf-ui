@@ -133,11 +133,24 @@ def config():
     return Config(
         name='demo',
         branch='some-branch',
+        redis={
+            'clusters': [
+                {
+                    'construct_id': 'Redis71',
+                    'on': True,
+                    'props': {
+                        'cache_node_type': 'cache.t4g.small',
+                        'engine_version': '7.1',
+                    }
+                },
+            ],
+        },
         frontend={
             'cpu': 1024,
             'memory_limit_mib': 2048,
             'desired_count': 1,
             'max_capacity': 4,
+            'use_redis_named': 'Redis71',
         },
         backend_url='https://igvfd-some-test-backend.demo.igvf.org',
         tags=[
@@ -175,6 +188,53 @@ def production_pipeline_config():
         cross_account_keys=True,
         tags=[
             ('test', 'tag'),
+        ]
+    )
+
+
+@pytest.fixture
+def redis_props(existing_resources, config):
+    from infrastructure.constructs.redis import RedisProps
+    return RedisProps(
+        **config.redis['clusters'][0]['props'],
+        config=config,
+        existing_resources=existing_resources,
+    )
+
+
+@pytest.fixture
+def redis(stack, existing_resources, config, redis_props):
+    from infrastructure.constructs.redis import Redis
+    from infrastructure.constructs.redis import RedisProps
+    return Redis(
+        stack,
+        'Redis',
+        props=redis_props,
+    )
+
+
+@pytest.fixture
+def redis_multiplexer(stack, existing_resources, config):
+    from infrastructure.constructs.redis import Redis
+    from infrastructure.constructs.redis import RedisProps
+    from infrastructure.multiplexer import Multiplexer
+    from infrastructure.multiplexer import MultiplexerConfig
+    return Multiplexer(
+        stack,
+        configs=[
+            MultiplexerConfig(
+                construct_id='Redis71',
+                on=True,
+                construct_class=Redis,
+                kwargs={
+                    'props': RedisProps(
+                        config=config,
+                        existing_resources=existing_resources,
+                        cache_node_type='cache.t4g.small',
+                        engine_version='7.1',
+                    )
+                }
+            ),
         ]
     )
 

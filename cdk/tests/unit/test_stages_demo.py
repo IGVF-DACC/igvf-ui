@@ -15,9 +15,19 @@ def test_stages_demo_initialize_demo_stages(config):
         stack.stack_name
         for stack in cloud_assembly.stacks
     ] == [
+        'TestDemoDeployStage-RedisStack',
         'TestDemoDeployStage-FrontendStack',
     ]
     stack = cloud_assembly.get_stack_by_name(
         'TestDemoDeployStage-FrontendStack',
     )
     assert stack.tags
+    stack = cloud_assembly.get_stack_by_name(
+        'TestDemoDeployStage-RedisStack',
+    )
+    assert stack.tags == {
+        'branch': 'some-branch',
+        'environment': 'demo',
+        'project': 'igvf-ui',
+        'test': 'tag'
+    }

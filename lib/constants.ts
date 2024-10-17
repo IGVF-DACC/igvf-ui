@@ -19,6 +19,11 @@ export const API_URL = publicRuntimeConfig.PUBLIC_BACKEND_URL as string;
 export const BACKEND_URL = serverRuntimeConfig.BACKEND_URL as string;
 
 /**
+ * Redis service cache URL
+ */
+export const CACHE_URL = serverRuntimeConfig.CACHE_URL as string;
+
+/**
  * igvf-ui version number
  */
 export const UI_VERSION = publicRuntimeConfig.UI_VERSION as string;

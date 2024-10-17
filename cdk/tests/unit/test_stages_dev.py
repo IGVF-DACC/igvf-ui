@@ -15,6 +15,7 @@ def test_stages_dev_initialize_dev_stages(config):
         stack.stack_name
         for stack in cloud_assembly.stacks
     ] == [
+        'TestDevelopmentDeployStage-RedisStack',
         'TestDevelopmentDeployStage-FrontendStack',
     ]
     stack = cloud_assembly.get_stack_by_name(
@@ -26,3 +27,5 @@ def test_stages_dev_initialize_dev_stages(config):
         'project': 'igvf-ui',
         'test': 'tag'
     }
+    for stack in cloud_assembly.stacks:
+        assert stack.tags

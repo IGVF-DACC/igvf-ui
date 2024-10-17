@@ -1,4 +1,11 @@
 services:
+  cache:
+    build:
+      context: .
+      dockerfile: ./docker/redis/Dockerfile
+    image: igvf-ui-cache
+    ports:
+      - "6379:6379"
   nextjs:
     build:
       context: .
@@ -10,8 +17,11 @@ services:
       - SERVER_URL=http://localhost:3000
       - BACKEND_URL=http://nginx:8000
       - PUBLIC_BACKEND_URL=http://localhost:8000
+      - CACHE_URL=redis://cache:6379
     ports:
       - "3001:3000"
+    depends_on:
+      - cache
 
   nginxfe:
     build:
