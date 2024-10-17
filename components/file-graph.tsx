@@ -26,7 +26,7 @@ import { type DatabaseObject } from "../globals.d";
 /**
  * Width of a node in the graph in pixels.
  */
-const NODE_WIDTH = 160;
+const NODE_WIDTH = 120;
 
 /**
  * Height of a node in the graph in pixels.
@@ -235,7 +235,7 @@ function Graph({
       .layering(d3Dag.layeringLongestPath())
       .nodeSize((node) => {
         // Might have to play with the adjustment factors if you change the size of the nodes.
-        return node ? [NODE_HEIGHT * 2, NODE_WIDTH * 1.2] : [0, 0];
+        return node ? [NODE_HEIGHT * 2, NODE_WIDTH * 1.8] : [0, 0];
       });
     const { width, height } = layout(dag as any);
     setLoadedDag(dag);
@@ -262,10 +262,10 @@ function Graph({
             <marker
               id="arrow"
               viewBox="0 -5 10 10"
-              refX="12"
+              refX="20"
               refY="0"
-              markerWidth="6"
-              markerHeight="6"
+              markerWidth="10"
+              markerHeight="10"
               orient="auto"
               fill="#000000"
             >
@@ -281,7 +281,7 @@ function Graph({
                   stroke="#000000"
                   strokeWidth="1"
                   fill="none"
-                  x={(node: any) => node.y - NODE_WIDTH / 2 + 1}
+                  x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
                   markerEnd="url(#arrow)"
                 />
               );
