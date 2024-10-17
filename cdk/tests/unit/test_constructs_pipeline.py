@@ -1031,6 +1031,22 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
     template.has_resource_properties(
         'AWS::CodePipeline::Pipeline',
         {
+            'ArtifactStore': {
+                'EncryptionKey': {
+                    'Id': {
+                        'Fn::GetAtt': [
+                            'TestProductionDeploymentPipelineArtifactsBucketEncryptionKeyE13B70EA',
+                            'Arn'
+                        ]
+                    },
+                    'Type': 'KMS'
+                },
+                'Location': {
+                    'Ref': 'TestProductionDeploymentPipelineArtifactsBucketE2532ECB'
+                },
+                'Type': 'S3'
+            },
+            'RestartExecutionOnUpdate': True,
             'RoleArn': {
                 'Fn::GetAtt': [
                     'TestProductionDeploymentPipelineRole9747ED35',
@@ -1205,6 +1221,80 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                 'Version': '1'
                             },
                             'Configuration': {
+                                'StackName': 'igvf-ui-some-branch-StagingDeployStage-RedisStack',
+                                'Capabilities': 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
+                                'RoleArn': {
+                                    'Fn::Join': [
+                                        '',
+                                        [
+                                            'arn:',
+                                            {
+                                                'Ref': 'AWS::Partition'
+                                            },
+                                            ':iam::920073238245:role/cdk-hnb659fds-cfn-exec-role-920073238245-us-west-2'
+                                        ]
+                                    ]
+                                },
+                                'TemplateConfiguration': 'SynthStep_Output::assembly-Default-TestProductionDeploymentPipeline-igvf-ui-some-branch-StagingDeployStage/TestProductionDeploymentPipelineigvfuisomebranchStagingDeployStageRedisStack8B7AD51A.template.json.config.json',
+                                'ActionMode': 'CHANGE_SET_REPLACE',
+                                'ChangeSetName': 'PipelineChange',
+                                'TemplatePath': 'SynthStep_Output::assembly-Default-TestProductionDeploymentPipeline-igvf-ui-some-branch-StagingDeployStage/TestProductionDeploymentPipelineigvfuisomebranchStagingDeployStageRedisStack8B7AD51A.template.json'
+                            },
+                            'InputArtifacts': [
+                                {
+                                    'Name': 'SynthStep_Output'
+                                }
+                            ],
+                            'Name': 'RedisStack.Prepare',
+                            'RoleArn': {
+                                'Fn::Join': [
+                                    '',
+                                    [
+                                        'arn:',
+                                        {
+                                            'Ref': 'AWS::Partition'
+                                        },
+                                        ':iam::920073238245:role/cdk-hnb659fds-deploy-role-920073238245-us-west-2'
+                                    ]
+                                ]
+                            },
+                            'RunOrder': 1
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Deploy',
+                                'Owner': 'AWS',
+                                'Provider': 'CloudFormation',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'StackName': 'igvf-ui-some-branch-StagingDeployStage-RedisStack',
+                                'ActionMode': 'CHANGE_SET_EXECUTE',
+                                'ChangeSetName': 'PipelineChange'
+                            },
+                            'Name': 'RedisStack.Deploy',
+                            'RoleArn': {
+                                'Fn::Join': [
+                                    '',
+                                    [
+                                        'arn:',
+                                        {
+                                            'Ref': 'AWS::Partition'
+                                        },
+                                        ':iam::920073238245:role/cdk-hnb659fds-deploy-role-920073238245-us-west-2'
+                                    ]
+                                ]
+                            },
+                            'RunOrder': 2
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Deploy',
+                                'Owner': 'AWS',
+                                'Provider': 'CloudFormation',
+                                'Version': '1'
+                            },
+                            'Configuration': {
                                 'StackName': 'igvf-ui-some-branch-StagingDeployStage-FrontendStack',
                                 'Capabilities': 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
                                 'RoleArn': {
@@ -1229,7 +1319,7 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                     'Name': 'SynthStep_Output'
                                 }
                             ],
-                            'Name': 'Prepare',
+                            'Name': 'FrontendStack.Prepare',
                             'RoleArn': {
                                 'Fn::Join': [
                                     '',
@@ -1242,7 +1332,7 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                     ]
                                 ]
                             },
-                            'RunOrder': 1
+                            'RunOrder': 3
                         },
                         {
                             'ActionTypeId': {
@@ -1256,7 +1346,7 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                 'ActionMode': 'CHANGE_SET_EXECUTE',
                                 'ChangeSetName': 'PipelineChange'
                             },
-                            'Name': 'Deploy',
+                            'Name': 'FrontendStack.Deploy',
                             'RoleArn': {
                                 'Fn::Join': [
                                     '',
@@ -1269,7 +1359,7 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                     ]
                                 ]
                             },
-                            'RunOrder': 2
+                            'RunOrder': 4
                         }
                     ],
                     'Name': 'igvf-ui-some-branch-StagingDeployStage'
@@ -1291,6 +1381,154 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                 ]
                             },
                             'RunOrder': 1
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Deploy',
+                                'Owner': 'AWS',
+                                'Provider': 'CloudFormation',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'StackName': 'igvf-ui-some-branch-SandboxDeployStage-RedisStack',
+                                'Capabilities': 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
+                                'RoleArn': {
+                                    'Fn::Join': [
+                                        '',
+                                        [
+                                            'arn:',
+                                            {
+                                                'Ref': 'AWS::Partition'
+                                            },
+                                            ':iam::920073238245:role/cdk-hnb659fds-cfn-exec-role-920073238245-us-west-2'
+                                        ]
+                                    ]
+                                },
+                                'TemplateConfiguration': 'SynthStep_Output::assembly-Default-TestProductionDeploymentPipeline-igvf-ui-some-branch-SandboxDeployStage/TestProductionDeploymentPipelineigvfuisomebranchSandboxDeployStageRedisStack9CE955A2.template.json.config.json',
+                                'ActionMode': 'CHANGE_SET_REPLACE',
+                                'ChangeSetName': 'PipelineChange',
+                                'TemplatePath': 'SynthStep_Output::assembly-Default-TestProductionDeploymentPipeline-igvf-ui-some-branch-SandboxDeployStage/TestProductionDeploymentPipelineigvfuisomebranchSandboxDeployStageRedisStack9CE955A2.template.json'
+                            },
+                            'InputArtifacts': [
+                                {
+                                    'Name': 'SynthStep_Output'
+                                }
+                            ],
+                            'Name': 'igvf-ui-some-branch-SandboxDeployStage.RedisStack.Prepare',
+                            'RoleArn': {
+                                'Fn::Join': [
+                                    '',
+                                    [
+                                        'arn:',
+                                        {
+                                            'Ref': 'AWS::Partition'
+                                        },
+                                        ':iam::920073238245:role/cdk-hnb659fds-deploy-role-920073238245-us-west-2'
+                                    ]
+                                ]
+                            },
+                            'RunOrder': 2
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Deploy',
+                                'Owner': 'AWS',
+                                'Provider': 'CloudFormation',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'StackName': 'igvf-ui-some-branch-ProductionDeployStage-RedisStack',
+                                'Capabilities': 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
+                                'RoleArn': {
+                                    'Fn::Join': [
+                                        '',
+                                        [
+                                            'arn:',
+                                            {
+                                                'Ref': 'AWS::Partition'
+                                            },
+                                            ':iam::035226225042:role/cdk-hnb659fds-cfn-exec-role-035226225042-us-west-2'
+                                        ]
+                                    ]
+                                },
+                                'TemplateConfiguration': 'SynthStep_Output::assembly-Default-TestProductionDeploymentPipeline-igvf-ui-some-branch-ProductionDeployStage/TestProductionDeploymentPipelineigvfuisomebranchProductionDeployStageRedisStack8AEF78FE.template.json.config.json',
+                                'ActionMode': 'CHANGE_SET_REPLACE',
+                                'ChangeSetName': 'PipelineChange',
+                                'TemplatePath': 'SynthStep_Output::assembly-Default-TestProductionDeploymentPipeline-igvf-ui-some-branch-ProductionDeployStage/TestProductionDeploymentPipelineigvfuisomebranchProductionDeployStageRedisStack8AEF78FE.template.json'
+                            },
+                            'InputArtifacts': [
+                                {
+                                    'Name': 'SynthStep_Output'
+                                }
+                            ],
+                            'Name': 'igvf-ui-some-branch-ProductionDeployStage.RedisStack.Prepare',
+                            'RoleArn': {
+                                'Fn::Join': [
+                                    '',
+                                    [
+                                        'arn:',
+                                        {
+                                            'Ref': 'AWS::Partition'
+                                        },
+                                        ':iam::035226225042:role/cdk-hnb659fds-deploy-role-035226225042-us-west-2'
+                                    ]
+                                ]
+                            },
+                            'RunOrder': 2
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Deploy',
+                                'Owner': 'AWS',
+                                'Provider': 'CloudFormation',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'StackName': 'igvf-ui-some-branch-SandboxDeployStage-RedisStack',
+                                'ActionMode': 'CHANGE_SET_EXECUTE',
+                                'ChangeSetName': 'PipelineChange'
+                            },
+                            'Name': 'igvf-ui-some-branch-SandboxDeployStage.RedisStack.Deploy',
+                            'RoleArn': {
+                                'Fn::Join': [
+                                    '',
+                                    [
+                                        'arn:',
+                                        {
+                                            'Ref': 'AWS::Partition'
+                                        },
+                                        ':iam::920073238245:role/cdk-hnb659fds-deploy-role-920073238245-us-west-2'
+                                    ]
+                                ]
+                            },
+                            'RunOrder': 3
+                        },
+                        {
+                            'ActionTypeId': {
+                                'Category': 'Deploy',
+                                'Owner': 'AWS',
+                                'Provider': 'CloudFormation',
+                                'Version': '1'
+                            },
+                            'Configuration': {
+                                'StackName': 'igvf-ui-some-branch-ProductionDeployStage-RedisStack',
+                                'ActionMode': 'CHANGE_SET_EXECUTE',
+                                'ChangeSetName': 'PipelineChange'
+                            },
+                            'Name': 'igvf-ui-some-branch-ProductionDeployStage.RedisStack.Deploy',
+                            'RoleArn': {
+                                'Fn::Join': [
+                                    '',
+                                    [
+                                        'arn:',
+                                        {
+                                            'Ref': 'AWS::Partition'
+                                        },
+                                        ':iam::035226225042:role/cdk-hnb659fds-deploy-role-035226225042-us-west-2'
+                                    ]
+                                ]
+                            },
+                            'RunOrder': 3
                         },
                         {
                             'ActionTypeId': {
@@ -1337,7 +1575,7 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                     ]
                                 ]
                             },
-                            'RunOrder': 2
+                            'RunOrder': 4
                         },
                         {
                             'ActionTypeId': {
@@ -1384,7 +1622,7 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                     ]
                                 ]
                             },
-                            'RunOrder': 2
+                            'RunOrder': 4
                         },
                         {
                             'ActionTypeId': {
@@ -1411,7 +1649,7 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                     ]
                                 ]
                             },
-                            'RunOrder': 3
+                            'RunOrder': 5
                         },
                         {
                             'ActionTypeId': {
@@ -1438,27 +1676,11 @@ def test_constructs_pipeline_initialize_production_deployment_pipeline_construct
                                     ]
                                 ]
                             },
-                            'RunOrder': 3
+                            'RunOrder': 5
                         }
                     ],
                     'Name': 'ProductionAndSandboxDeployWave'
                 }
-            ],
-            'ArtifactStore': {
-                'EncryptionKey': {
-                    'Id': {
-                        'Fn::GetAtt': [
-                            'TestProductionDeploymentPipelineArtifactsBucketEncryptionKeyE13B70EA',
-                            'Arn'
-                        ]
-                    },
-                    'Type': 'KMS'
-                },
-                'Location': {
-                    'Ref': 'TestProductionDeploymentPipelineArtifactsBucketE2532ECB'
-                },
-                'Type': 'S3'
-            },
-            'RestartExecutionOnUpdate': True
+            ]
         }
     )
