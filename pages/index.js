@@ -10,12 +10,12 @@ import HomeTitle from "../components/home-title";
 import Icon from "../components/icon";
 import { useBrowserStateQuery } from "../components/presentation-status";
 // lib
+import { getCacheClient } from "../lib/cache";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { requestDatasetSummary } from "../lib/common-requests";
 import { abbreviateNumber } from "../lib/general";
 import { convertFileSetsToReleaseData } from "../lib/home";
-import { getCacheClient } from "../lib/cache";
 
 /**
  * Display a statistic panel that shows some property and count of their occurrences in the
