@@ -1,12 +1,15 @@
+import { createClient, RedisClientType } from "redis";
+
 import { CACHE_URL } from "./constants";
 
-import { createClient } from "redis";
+// Redis client singleton.
+let redisClient: RedisClientType | null = null;
 
-let redisClient = null;
-
-console.log(CACHE_URL);
-
-export function getCacheClient() {
+/**
+ * Try to get the cache client, or create it if it doesn't exist.
+ * Return null if something bad happens.
+ */
+export function getCacheClient(): RedisClientType | null {
   if (redisClient === null) {
     try {
       redisClient = createClient({
