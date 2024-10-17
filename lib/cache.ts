@@ -20,7 +20,7 @@ export function getCacheClient(): RedisClientType | null {
       );
       redisClient.connect();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       redisClient = null;
     }
   }

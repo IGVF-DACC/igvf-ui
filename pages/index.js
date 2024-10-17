@@ -156,26 +156,26 @@ Home.propTypes = {
 
 export async function getServerSideProps({ req }) {
   const cache = getCacheClient();
+  const homePagePropsKey = "home-page-props";
 
   // Return props from cache if available.
   try {
-    const homePageProps = await cache.get("homePageProps");
+    const homePageProps = await cache.get(homePagePropsKey);
     if (homePageProps) {
-      console.log("Found homepage props in cache");
       const { fileSets, fileCount, sampleCount } = JSON.parse(homePageProps);
       return {
         props: { fileSets, fileCount, sampleCount },
       };
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   // If not in cache, get from backend.
-  console.log("Getting homepage props from backend, not cache");
   const request = new FetchRequest({ cookie: req.headers.cookie });
 
   // We might need to paginate this request in the future, but for now just get all the results.
+  console.info("Getting homepage props from backend, not cache");
   const results = await requestDatasetSummary(request);
 
   if (FetchRequest.isResponseSuccess(results)) {
@@ -194,10 +194,10 @@ export async function getServerSideProps({ req }) {
 
     try {
       // Store props in cache (expires in 1 hour).
-      console.log("Setting homepage props in cache");
-      await cache.set("homePageProps", JSON.stringify(props), { EX: 3600 });
+      console.info("Setting homepage props in cache");
+      await cache.set(homePagePropsKey, JSON.stringify(props), { EX: 3600 });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
     return { props };
   }
