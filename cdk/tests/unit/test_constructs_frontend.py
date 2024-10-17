@@ -62,6 +62,29 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                         {
                             'Name': 'BACKEND_URL',
                             'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
+                        },
+                        {
+                            'Name': 'CACHE_URL',
+                            'Value': {
+                                'Fn::Join': [
+                                    '',
+                                    [
+                                        {
+                                            'Fn::GetAtt': [
+                                                'Redis71CfnCacheCluster259585FF',
+                                                'RedisEndpoint.Address'
+                                            ]
+                                        },
+                                        ':',
+                                        {
+                                            'Fn::GetAtt': [
+                                                'Redis71CfnCacheCluster259585FF',
+                                                'RedisEndpoint.Port'
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
                         }
                     ],
                     'Essential': True,

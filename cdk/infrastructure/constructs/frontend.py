@@ -151,6 +151,7 @@ class Frontend(Construct):
             environment={
                 'NODE_ENV': 'production',
                 'BACKEND_URL': self.props.config.backend_url,
+                'CACHE_URL': self.redis.url,
             },
             logging=LogDriver.aws_logs(
                 stream_prefix=container_name,
