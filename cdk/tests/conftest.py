@@ -133,6 +133,18 @@ def config():
     return Config(
         name='demo',
         branch='some-branch',
+        redis={
+            'clusters': [
+                {
+                    'construct_id': 'Redis71',
+                    'on': True,
+                    'props': {
+                        'cache_node_type': 'cache.t4g.small',
+                        'engine_version': '7.1',
+                    }
+                },
+            ],
+        },
         frontend={
             'cpu': 1024,
             'memory_limit_mib': 2048,

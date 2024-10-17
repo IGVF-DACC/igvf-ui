@@ -47,6 +47,18 @@ config: Dict[str, Any] = {
     },
     'environment': {
         'demo': {
+            'redis': {
+                'clusters': [
+                    {
+                        'construct_id': 'Redis71',
+                        'on': True,
+                        'props': {
+                            'cache_node_type': 'cache.t4g.small',
+                            'engine_version': '7.1',
+                        }
+                    },
+                ],
+            },
             'frontend': {
                 'cpu': 2048,
                 'memory_limit_mib': 4096,
@@ -59,6 +71,18 @@ config: Dict[str, Any] = {
             ],
         },
         'dev': {
+            'redis': {
+                'clusters': [
+                    {
+                        'construct_id': 'Redis71',
+                        'on': True,
+                        'props': {
+                            'cache_node_type': 'cache.t4g.small',
+                            'engine_version': '7.1',
+                        }
+                    },
+                ],
+            },
             'frontend': {
                 'cpu': 2048,
                 'memory_limit_mib': 4096,
@@ -70,6 +94,18 @@ config: Dict[str, Any] = {
             ],
         },
         'staging': {
+            'redis': {
+                'clusters': [
+                    {
+                        'construct_id': 'Redis71',
+                        'on': True,
+                        'props': {
+                            'cache_node_type': 'cache.t4g.small',
+                            'engine_version': '7.1',
+                        }
+                    },
+                ],
+            },
             'frontend': {
                 'cpu': 2048,
                 'memory_limit_mib': 4096,
@@ -82,6 +118,18 @@ config: Dict[str, Any] = {
             ],
         },
         'sandbox': {
+            'redis': {
+                'clusters': [
+                    {
+                        'construct_id': 'Redis71',
+                        'on': True,
+                        'props': {
+                            'cache_node_type': 'cache.t4g.small',
+                            'engine_version': '7.1',
+                        }
+                    },
+                ],
+            },
             'frontend': {
                 'cpu': 2048,
                 'memory_limit_mib': 4096,
@@ -94,6 +142,18 @@ config: Dict[str, Any] = {
             ],
         },
         'production': {
+            'redis': {
+                'clusters': [
+                    {
+                        'construct_id': 'Redis71',
+                        'on': True,
+                        'props': {
+                            'cache_node_type': 'cache.t4g.small',
+                            'engine_version': '7.1',
+                        }
+                    },
+                ],
+            },
             'frontend': {
                 'cpu': 2048,
                 'memory_limit_mib': 4096,
@@ -122,6 +182,7 @@ class Config:
     name: str
     branch: str
     backend_url: str
+    redis: Dict[str, Any]
     frontend: Dict[str, Any]
     tags: List[Tuple[str, str]]
     url_prefix: Optional[str] = None
