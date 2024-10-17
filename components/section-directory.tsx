@@ -146,10 +146,18 @@ export function SecDir({ sections }: { sections: SectionList }) {
  * Custom hook to include on pages that have a section directory. Extracts the sections from the
  * page and returns them as a list of section items. The first time this gets called at render, it
  * could return an empty array. This updates to the real list once the page has rendered.
+ *
+ * If the section titles can change as the page loads or any other reason, you can pass an
+ * arbitrary string in `hash` to this hook to collect the section titles again whenever the hash
+ * changes. If you don't pass a hash, this hook will only collect the sections once on page load.
  * @param renderer React component to render each item in the section directory menu
+ * @param hash Hash to use to trigger this hook to collect the sections again
  * @returns List of sections on the page to pass to SecDir
  */
-export function useSecDir(renderer?: RendererComponent): SectionList {
+export function useSecDir(
+  renderer?: RendererComponent,
+  hash = ""
+): SectionList {
   const [sections, setSections] = useState<SectionList>(null);
 
   useEffect(() => {
@@ -164,7 +172,7 @@ export function useSecDir(renderer?: RendererComponent): SectionList {
       return { id: section.id, title: section.textContent };
     }) as SectionItem[];
     setSections({ items: sectionList, renderer });
-  }, []);
+  }, [hash]);
 
   return sections;
 }

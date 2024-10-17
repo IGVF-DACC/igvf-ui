@@ -97,7 +97,10 @@ DirectoryItemRenderer.propTypes = {
 export default function AuditDoc({ auditDoc, schemas }) {
   const { collectionTitles, profiles } = useContext(SessionContext);
   const hierarchy = profiles?._hierarchy.Item || null;
-  const sections = useSecDir(DirectoryItemRenderer);
+  const sections = useSecDir(
+    DirectoryItemRenderer,
+    hierarchy ? "profiles" : ""
+  );
 
   const result = _.flatMap(auditDoc, (auditGroup, key) => {
     return auditGroup.map((audit) => {
