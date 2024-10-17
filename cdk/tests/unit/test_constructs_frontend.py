@@ -69,6 +69,7 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                                 'Fn::Join': [
                                     '',
                                     [
+                                        'redis://',
                                         {
                                             'Fn::GetAtt': [
                                                 'Redis71CfnCacheCluster259585FF',

@@ -108,7 +108,7 @@ class Redis(Construct):
         )
 
     def _define_url(self) -> None:
-        self.url = f'{self.cache_cluster.attr_redis_endpoint_address}:{self.cache_cluster.attr_redis_endpoint_port}'
+        self.url = f'redis://{self.cache_cluster.attr_redis_endpoint_address}:{self.cache_cluster.attr_redis_endpoint_port}'
 
     def _add_alarms(self) -> None:
         pass
