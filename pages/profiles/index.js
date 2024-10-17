@@ -114,7 +114,7 @@ function SearchSection({
   setSearchMode,
 }) {
   return (
-    <section className="sticky top-0 border-b border-panel bg-schema-search px-4 py-3">
+    <section className="sticky top-7 border-b border-panel bg-schema-search px-4 py-3">
       <FormLabel htmlFor="schema-search">
         {searchMode === SEARCH_MODE_TITLE
           ? "Search Schema Titles"
