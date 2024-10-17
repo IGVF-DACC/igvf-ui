@@ -15,9 +15,11 @@ def test_stages_production_initialize_production_stages(config):
         stack.stack_name
         for stack in cloud_assembly.stacks
     ] == [
+        'TestProductionDeployStage-RedisStack',
         'TestProductionDeployStage-FrontendStack',
     ]
     stack = cloud_assembly.get_stack_by_name(
         'TestProductionDeployStage-FrontendStack',
     )
-    assert stack.tags
+    for stack in cloud_assembly.stacks:
+        assert stack.tags

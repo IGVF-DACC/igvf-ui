@@ -15,9 +15,11 @@ def test_stages_staging_initialize_staging_stages(config):
         stack.stack_name
         for stack in cloud_assembly.stacks
     ] == [
+        'TestStagingDeployStage-RedisStack',
         'TestStagingDeployStage-FrontendStack',
     ]
     stack = cloud_assembly.get_stack_by_name(
         'TestStagingDeployStage-FrontendStack',
     )
-    assert stack.tags
+    for stack in cloud_assembly.stacks:
+        assert stack.tags

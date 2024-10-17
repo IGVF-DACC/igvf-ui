@@ -37,6 +37,7 @@ class ProductionDeployStage(Stage):
             'FrontendStack',
             config=config,
             existing_resources_class=igvf_prod.Resources,
+            redis_multiplexer=self.redis_stack.multiplexer,
             env=igvf_prod.US_WEST_2,
         )
         add_tags_to_stack(self.redis_stack, config)
