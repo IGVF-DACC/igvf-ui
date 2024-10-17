@@ -5,6 +5,8 @@ from aws_cdk import Tags
 
 from constructs import Construct
 
+from aws_cdk.aws_ec2 import Connections
+from aws_cdk.aws_ec2 import Port
 from aws_cdk.aws_ec2 import SecurityGroup
 from aws_cdk.aws_ec2 import SubnetSelection
 from aws_cdk.aws_ec2 import SubnetType
@@ -35,6 +37,7 @@ class Redis(Construct):
 
     security_group: SecurityGroup
     subnet_group: CfnSubnetGroup
+    connections: Connections
     props: RedisProps
     url: str
 
@@ -51,6 +54,7 @@ class Redis(Construct):
         self._define_security_group()
         self._define_subnet_group()
         self._define_cache_cluster()
+        self._define_connections()
         self._add_tags_to_cache_cluster()
         self._define_url()
         self._add_alarms()
@@ -86,6 +90,14 @@ class Redis(Construct):
             cache_subnet_group_name=self.subnet_group.ref,
             vpc_security_group_ids=[
                 self.security_group.security_group_id,
+            ]
+        )
+
+    def _define_connections(self) -> None:
+        self.connections = Connections(
+            default_port=Port.tcp(6379),
+            security_groups=[
+                self.security_group,
             ]
         )
 

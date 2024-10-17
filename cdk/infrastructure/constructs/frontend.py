@@ -22,11 +22,14 @@ from aws_cdk.aws_secretsmanager import SecretStringGenerator
 
 from infrastructure.config import Config
 
+from infrastructure.multiplexer import Multiplexer
+
+from infrastructure.constructs.redis import Redis
+
 from infrastructure.constructs.alarms.frontend import FrontendAlarmsProps
 from infrastructure.constructs.alarms.frontend import FrontendAlarms
 
 from infrastructure.constructs.existing.types import ExistingResources
-
 
 from typing import Any
 from typing import cast
@@ -44,10 +47,12 @@ def get_url_prefix(config: Config) -> str:
 class FrontendProps:
     config: Config
     existing_resources: ExistingResources
+    redis_multiplexer: Multiplexer
     cpu: int
     memory_limit_mib: int
     desired_count: int
     max_capacity: int
+    use_redis_named: str
 
 
 class Frontend(Construct):
@@ -57,6 +62,7 @@ class Frontend(Construct):
     nginx_image: ContainerImage
     domain_name: str
     fargate_service: ApplicationLoadBalancedFargateService
+    redis: Redis
 
     def __init__(
             self,
@@ -68,15 +74,25 @@ class Frontend(Construct):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
         self.props = props
+        self._define_redis()
         self._define_docker_assets()
         self._define_domain_name()
         self._define_fargate_service()
         self._add_application_container_to_task()
+        self._allow_connections_to_redis()
         self._configure_health_check()
         self._add_tags_to_fargate_service()
         self._enable_exec_command()
         self._configure_task_scaling()
         self._add_alarms()
+
+    def _define_redis(self) -> None:
+        self.redis = cast(
+            Redis,
+            self.props.redis_multiplexer.resources.get(
+                self.props.use_redis_named,
+            )
+        )
 
     def _define_docker_assets(self) -> None:
         self.application_image = ContainerImage.from_asset(
@@ -140,6 +156,12 @@ class Frontend(Construct):
                 stream_prefix=container_name,
                 mode=AwsLogDriverMode.NON_BLOCKING,
             ),
+        )
+
+    def _allow_connections_to_redis(self) -> None:
+        self.fargate_service.service.connections.allow_to_default_port(
+            self.redis.connections,
+            description='Allow connection to Redis cache',
         )
 
     def _configure_health_check(self) -> None:

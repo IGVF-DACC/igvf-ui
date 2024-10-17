@@ -192,5 +192,52 @@ def production_pipeline_config():
 
 
 @pytest.fixture
+def redis_props(existing_resources, config):
+    from infrastructure.constructs.redis import RedisProps
+    return RedisProps(
+        **config.redis['clusters'][0]['props'],
+        config=config,
+        existing_resources=existing_resources,
+    )
+
+
+@pytest.fixture
+def redis(stack, existing_resources, config, redis_props):
+    from infrastructure.constructs.redis import Redis
+    from infrastructure.constructs.redis import RedisProps
+    return Redis(
+        stack,
+        'Redis',
+        props=redis_props,
+    )
+
+
+@pytest.fixture
+def redis_multiplexer(stack, existing_resources, config):
+    from infrastructure.constructs.redis import Redis
+    from infrastructure.constructs.redis import RedisProps
+    from infrastructure.multiplexer import Multiplexer
+    from infrastructure.multiplexer import MultiplexerConfig
+    return Multiplexer(
+        stack,
+        configs=[
+            MultiplexerConfig(
+                construct_id='Redis71',
+                on=True,
+                construct_class=Redis,
+                kwargs={
+                    'props': RedisProps(
+                        config=config,
+                        existing_resources=existing_resources,
+                        cache_node_type='cache.t4g.small',
+                        engine_version='7.1',
+                    )
+                }
+            ),
+        ]
+    )
+
+
+@pytest.fixture
 def branch():
     return 'some-branch'
