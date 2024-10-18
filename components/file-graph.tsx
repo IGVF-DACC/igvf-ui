@@ -2,7 +2,7 @@
 import * as d3Dag from "d3-dag";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Group } from "@visx/group";
 import { LinkHorizontal } from "@visx/shape";
 // components
@@ -20,6 +20,7 @@ import {
 } from "./data-area";
 import Modal from "./modal";
 import { type PagePanelStates } from "./page-panels";
+import SessionContext from "./session-context";
 // root
 import { type DatabaseObject } from "../globals.d";
 
@@ -61,11 +62,11 @@ type FileSetTypeColorMap = {
 const fileSetTypeColorMap: FileSetTypeColorMap = {
   AnalysisSet: "#faafff",
   AuxiliarySet: "#60fa72",
-  ConstructLibrarySet: "#fa608f",
+  ConstructLibrarySet: "#ff84aa",
   CuratedSet: "#faac60",
-  MeasurementSet: "#60a5fa",
+  MeasurementSet: "#8bbfff",
   ModelSet: "#f5fa60",
-  ReferenceSet: "#60f5fa",
+  PredictionSet: "#60f5fa",
 } as const;
 
 /**
@@ -138,6 +139,20 @@ function trimIsolatedNodes(graphData: NodeData[]) {
 }
 
 /**
+ * Collect a deduplicated list of all file set types that appear in the graph, given the node data
+ * for the graph.
+ * @param graphData All nodes in the graph, probably after trimming
+ * @returns List of file set types that appear in the graph
+ */
+function collectRelevantFileSetTypes(graphData: NodeData[]): string[] {
+  const fileSetTypes = new Set<string>();
+  graphData.forEach((node) => {
+    fileSetTypes.add(node.fileFileSet["@type"][0]);
+  });
+  return [...fileSetTypes];
+}
+
+/**
  * Display a modal with detailed information about a file when the user clicks on a node in the
  * graph.
  * @param pageFileSet File-set object for the page the user views
@@ -196,6 +211,31 @@ function FileModal({
         </DataArea>
       </DataPanel>
     </Modal>
+  );
+}
+
+/**
+ * Draw the legend to show what colors correspond to each file set type.
+ */
+function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
+  const { collectionTitles } = useContext<any>(SessionContext);
+
+  return (
+    <div className="flex flex-wrap justify-center gap-1 border-t border-data-border py-2">
+      {Object.entries(fileSetTypeColorMap).map(([fileSetType, color]) => {
+        if (fileSetTypes.includes(fileSetType)) {
+          return (
+            <div
+              key={fileSetType}
+              className="flex items-center gap-0.5 border border-gray-800 px-1 text-sm text-black dark:border-gray-200"
+              style={{ backgroundColor: color }}
+            >
+              {collectionTitles?.[fileSetType] || fileSetType}
+            </div>
+          );
+        }
+      })}
+    </div>
   );
 }
 
@@ -267,7 +307,7 @@ function Graph({
               markerWidth="10"
               markerHeight="10"
               orient="auto"
-              fill="#000000"
+              className="fill-black dark:fill-white"
             >
               <path d="M0,-5L10,0L0,5" />
             </marker>
@@ -278,7 +318,8 @@ function Graph({
                 <LinkHorizontal
                   key={`link-${i}`}
                   data={link}
-                  stroke="#000000"
+                  // stroke="#000000"
+                  className="stroke-black dark:stroke-white"
                   strokeWidth="1"
                   fill="none"
                   x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
@@ -306,7 +347,7 @@ function Graph({
                     y={-NODE_HEIGHT / 2}
                     fill={background}
                     opacity={1}
-                    stroke="#505050"
+                    className="stroke-gray-800 dark:stroke-gray-200"
                     strokeWidth={1}
                   />
                   <text
@@ -380,6 +421,7 @@ export function FileGraph({
     derivedFromFiles as FileObject[]
   );
   const trimmedData = trimIsolatedNodes(data);
+  const relevantFileSetTypes = collectRelevantFileSetTypes(data);
 
   if (trimmedData.length > 0) {
     return (
@@ -396,7 +438,7 @@ export function FileGraph({
         <AnimatePresence>
           {isExpanded && (
             <motion.div
-              className="overflow-hidden"
+              className="overflow-hidden [&>div]:p-0"
               initial="collapsed"
               animate="open"
               exit="collapsed"
@@ -408,6 +450,7 @@ export function FileGraph({
                   fileSet={fileSet as FileSetObject}
                   graphData={trimmedData}
                 />
+                <Legend fileSetTypes={relevantFileSetTypes} />
               </DataPanel>
             </motion.div>
           )}
