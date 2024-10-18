@@ -1,6 +1,6 @@
 module.exports = {
   darkMode: "class",
-  content: ["./pages/**/*.js", "./components/**/*.js"],
+  content: ["./pages/**/*.{js,ts,tsx}", "./components/**/*.{js,ts,tsx}"],
   theme: {
     container: {
       center: true,
@@ -101,6 +101,12 @@ module.exports = {
         "schema-name-highlight":
           "var(--color-schema-name-highlight-background)",
         "schema-search": "var(--color-schema-search-background)",
+
+        "menu-trigger": "var(--color-menu-trigger-background)",
+        "menu-trigger-hover": "var(--color-menu-trigger-background-hover)",
+        "menu-trigger-open": "var(--color-menu-trigger-background-open)",
+        "menu-items": "var(--color-menu-items-background)",
+        "menu-item-hover": "var(--color-menu-item-background-hover)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
@@ -162,6 +168,8 @@ module.exports = {
 
         "indexed-state": "var(--color-indexed-state-border)",
         "indexing-state": "var(--color-indexing-state-border)",
+
+        "menu-items": "var(--color-menu-items-border)",
       },
       fontSize: {
         xxs: "0.7rem",
@@ -214,6 +222,9 @@ module.exports = {
 
         "indexed-state": "var(--color-indexed-state-content)",
         "indexing-state": "var(--color-indexing-state-content)",
+
+        "menu-item": "var(--color-menu-item-text)",
+        "menu-item-hover": "var(--color-menu-item-text-hover)",
       },
       boxShadow: {
         // Status badges

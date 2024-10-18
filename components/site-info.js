@@ -102,7 +102,7 @@ export default function SiteInfo() {
   }, [session]);
 
   return (
-    <section>
+    <section className="mb-1">
       <Versions serverVersion={serverVersion} />
     </section>
   );

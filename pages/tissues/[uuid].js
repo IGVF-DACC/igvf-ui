@@ -66,11 +66,10 @@ export default function Tissue({
     <>
       <Breadcrumbs item={tissue} />
       <EditableItem item={tissue}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={tissue.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={tissue.alternate_accessions}
+        />
         <ObjectPageHeader item={tissue} isJsonFormat={isJson} />
         <JsonDisplay item={tissue} isJsonFormat={isJson}>
           <DataPanel>

@@ -56,11 +56,10 @@ export default function TabularFile({
     <>
       <Breadcrumbs item={tabularFile} />
       <EditableItem item={tabularFile}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={tabularFile.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={tabularFile.alternate_accessions}
+        />
         <ObjectPageHeader item={tabularFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={tabularFile} />
         </ObjectPageHeader>

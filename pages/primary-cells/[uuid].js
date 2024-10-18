@@ -66,11 +66,10 @@ export default function PrimaryCell({
     <>
       <Breadcrumbs item={primaryCell} />
       <EditableItem item={primaryCell}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={primaryCell.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={primaryCell.alternate_accessions}
+        />
         <ObjectPageHeader item={primaryCell} isJsonFormat={isJson} />
         <JsonDisplay item={primaryCell} isJsonFormat={isJson}>
           <DataPanel>

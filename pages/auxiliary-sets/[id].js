@@ -61,11 +61,10 @@ export default function AuxiliarySet({
     <>
       <Breadcrumbs item={auxiliarySet} />
       <EditableItem item={auxiliarySet}>
-        <PagePreamble>
-          <AlternateAccessions
-            alternateAccessions={auxiliarySet.alternate_accessions}
-          />
-        </PagePreamble>
+        <PagePreamble />
+        <AlternateAccessions
+          alternateAccessions={auxiliarySet.alternate_accessions}
+        />
         <ObjectPageHeader item={auxiliarySet} isJsonFormat={isJson} />
         <JsonDisplay item={auxiliarySet} isJsonFormat={isJson}>
           <DataPanel>
