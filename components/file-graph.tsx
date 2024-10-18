@@ -21,18 +21,20 @@ import {
 import Modal from "./modal";
 import { type PagePanelStates } from "./page-panels";
 import SessionContext from "./session-context";
+// lib
+import { truncateText } from "../lib/general";
 // root
 import { type DatabaseObject } from "../globals.d";
 
 /**
  * Width of a node in the graph in pixels.
  */
-const NODE_WIDTH = 120;
+const NODE_WIDTH = 140;
 
 /**
  * Height of a node in the graph in pixels.
  */
-const NODE_HEIGHT = 40;
+const NODE_HEIGHT = 44;
 
 /**
  * Data structure common to all file object types.
@@ -40,6 +42,7 @@ const NODE_HEIGHT = 40;
 interface FileObject extends DatabaseObject {
   accession: string;
   aliases: string[];
+  content_type: string;
   derived_from?: string[];
   file_format: string;
   file_set: string;
@@ -351,7 +354,7 @@ function Graph({
                     strokeWidth={1}
                   />
                   <text
-                    y="-3px"
+                    y="-8px"
                     fontSize={12}
                     textAnchor="middle"
                     fontWeight="bold"
@@ -360,12 +363,20 @@ function Graph({
                     {graphNode.data.file.accession}
                   </text>
                   <text
-                    y="12px"
+                    y="6px"
                     fontSize={12}
                     textAnchor="middle"
                     fill="#000000"
                   >
                     {graphNode.data.file.file_format}
+                  </text>
+                  <text
+                    y="18px"
+                    fontSize={12}
+                    textAnchor="middle"
+                    fill="#000000"
+                  >
+                    {truncateText(graphNode.data.file.content_type, 24)}
                   </text>
                 </Group>
               );
