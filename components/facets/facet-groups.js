@@ -56,7 +56,7 @@ function FacetGroupButtonIcon({ areFacetTermsSelected }) {
     ? "[&>g>circle]:fill-black [&>g>g]:stroke-white"
     : "[&>g>circle]:fill-none [&>g>circle]:stroke-black [&>g>g]:stroke-black";
 
-  return <Icon.Filter className={`h-4 w-4 ${className}`} />;
+  return <Icon.Filter className={`ml-1 h-4 w-4 ${className}`} />;
 }
 
 FacetGroupButtonIcon.propTypes = {
@@ -90,7 +90,7 @@ export function FacetGroupButton({
   return (
     <button
       onClick={() => onClick(group)}
-      className={`${buttonClasses} flex grow basis-[calc(50%-0.125rem)] items-center justify-between self-start rounded border px-2 py-1 text-left`}
+      className={`${buttonClasses} flex grow basis-[calc(50%-0.125rem)] items-center justify-between self-start whitespace-nowrap rounded border px-2 py-1 text-left`}
       aria-label={`${group.title}${isSelected ? " selected" : ""} filter group`}
     >
       {group.title}
