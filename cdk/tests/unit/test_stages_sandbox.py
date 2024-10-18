@@ -15,9 +15,11 @@ def test_stages_sandbox_initialize_sandbox_stages(config):
         stack.stack_name
         for stack in cloud_assembly.stacks
     ] == [
+        'TestSandboxDeployStage-RedisStack',
         'TestSandboxDeployStage-FrontendStack',
     ]
     stack = cloud_assembly.get_stack_by_name(
         'TestSandboxDeployStage-FrontendStack',
     )
-    assert stack.tags
+    for stack in cloud_assembly.stacks:
+        assert stack.tags

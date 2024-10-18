@@ -19,6 +19,7 @@ def test_config_config_dataclass():
     config = Config(
         name='demo',
         branch='xyz-branch',
+        redis={},
         frontend={},
         backend_url='https://test.backend.org',
         tags=[
@@ -28,6 +29,7 @@ def test_config_config_dataclass():
     assert config.common.organization_name == 'igvf-dacc'
     assert config.common.project_name == 'igvf-ui'
     assert config.branch == 'xyz-branch'
+    assert config.redis == {}
     assert config.frontend == {}
     assert config.backend_url == 'https://test.backend.org'
     assert config.tags == [('test', 'tag')]
@@ -65,11 +67,13 @@ def test_config_build_config_from_name():
         'demo',
         branch='my-branch',
         backend_url='http://my-specific-endpoint.org',
+        redis={},
         frontend={},
     )
     assert config.common.organization_name == 'igvf-dacc'
     assert config.common.project_name == 'igvf-ui'
     assert config.branch == 'my-branch'
+    assert config.redis == {}
     assert config.frontend == {}
     assert config.name == 'demo'
     assert config.backend_url == 'http://my-specific-endpoint.org'
@@ -90,6 +94,7 @@ def test_config_build_config_from_name_demo(mocker):
     mocker.patch(
         'infrastructure.config.get_raw_config_from_name',
         return_value={
+            'redis': {},
             'frontend': {},
             'branch': 'my-branch',
             'name': 'demo',
@@ -100,7 +105,8 @@ def test_config_build_config_from_name_demo(mocker):
         'demo',
         branch='my-branch',
         # Overrides.
-        frontend={}
+        frontend={},
+        redis={},
     )
     assert config.backend_url == 'https://igvfd-my-branch.demo.igvf.org'
 
@@ -168,6 +174,7 @@ def test_config_get_raw_config_from_name_demo():
     raw_config = get_raw_config_from_name(
         'demo',
         branch='my-branch',
+        redis={},
         frontend={},
     )
     assert raw_config['branch'] == 'my-branch'
@@ -176,6 +183,7 @@ def test_config_get_raw_config_from_name_demo():
     raw_config = get_raw_config_from_name(
         'demo',
         branch='my-branch',
+        redis={},
         frontend={},
         backend_url='http://my-specific-endpoint.org',
         tags=[('abc', '123')]
@@ -208,12 +216,14 @@ def test_config_fill_in_calculated_config():
     raw_config = get_raw_config_from_name(
         'demo',
         branch='my-branch',
+        redis={},
         frontend={},
         tags=[('xyz', '123')],
     )
     raw_config.pop('backend_url', None)
     calculated_config = fill_in_calculated_config(raw_config)
     assert calculated_config == {
+        'redis': {},
         'frontend': {},
         'branch': 'my-branch',
         'name': 'demo',
@@ -230,6 +240,7 @@ def test_config_config_factory_init():
     kwargs = {
         'name': 'some-name',
         'branch': 'some-branch',
+        'redis': {},
         'frontend': {},
         'backend_url': 'some-backend-url',
         'tags': [('abc', '123')]

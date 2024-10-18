@@ -6,6 +6,7 @@ from infrastructure.constructs.existing import igvf_staging
 
 from infrastructure.config import Config
 
+from infrastructure.stacks.redis import RedisStack
 from infrastructure.stacks.frontend import FrontendStack
 
 from infrastructure.tags import add_tags_to_stack
@@ -24,11 +25,20 @@ class StagingDeployStage(Stage):
             **kwargs: Any
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        self.redis_stack = RedisStack(
+            self,
+            'RedisStack',
+            config=config,
+            existing_resources_class=igvf_staging.Resources,
+            env=igvf_staging.US_WEST_2,
+        )
         self.frontend_stack = FrontendStack(
             self,
             'FrontendStack',
             config=config,
             existing_resources_class=igvf_staging.Resources,
+            redis_multiplexer=self.redis_stack.multiplexer,
             env=igvf_staging.US_WEST_2,
         )
+        add_tags_to_stack(self.redis_stack, config)
         add_tags_to_stack(self.frontend_stack, config)

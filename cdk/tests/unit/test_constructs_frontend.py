@@ -3,7 +3,7 @@ import pytest
 from aws_cdk.assertions import Template
 
 
-def test_constructs_frontend_initialize_frontend_construct(stack, instance_type, existing_resources, vpc, config):
+def test_constructs_frontend_initialize_frontend_construct(stack, instance_type, existing_resources, vpc, config, redis_multiplexer):
     from infrastructure.constructs.frontend import Frontend
     from infrastructure.constructs.frontend import FrontendProps
     frontend = Frontend(
@@ -12,10 +12,12 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
         props=FrontendProps(
             config=config,
             existing_resources=existing_resources,
+            redis_multiplexer=redis_multiplexer,
             cpu=2048,
             memory_limit_mib=4096,
             desired_count=4,
             max_capacity=7,
+            use_redis_named='Redis71',
         )
     )
     template = Template.from_stack(stack)
@@ -60,6 +62,30 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                         {
                             'Name': 'BACKEND_URL',
                             'Value': 'https://igvfd-some-test-backend.demo.igvf.org'
+                        },
+                        {
+                            'Name': 'CACHE_URL',
+                            'Value': {
+                                'Fn::Join': [
+                                    '',
+                                    [
+                                        'redis://',
+                                        {
+                                            'Fn::GetAtt': [
+                                                'Redis71CfnCacheCluster259585FF',
+                                                'RedisEndpoint.Address'
+                                            ]
+                                        },
+                                        ':',
+                                        {
+                                            'Fn::GetAtt': [
+                                                'Redis71CfnCacheCluster259585FF',
+                                                'RedisEndpoint.Port'
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
                         }
                     ],
                     'Essential': True,
@@ -398,7 +424,7 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
     )
 
 
-def test_constructs_frontend_frontend_define_domain_name(stack, instance_type, existing_resources, vpc, config):
+def test_constructs_frontend_frontend_define_domain_name(stack, instance_type, existing_resources, vpc, config, redis_multiplexer):
     from dataclasses import asdict
     from infrastructure.config import Config
     from infrastructure.constructs.frontend import Frontend
@@ -409,10 +435,12 @@ def test_constructs_frontend_frontend_define_domain_name(stack, instance_type, e
         props=FrontendProps(
             config=config,
             existing_resources=existing_resources,
+            redis_multiplexer=redis_multiplexer,
             cpu=2048,
             memory_limit_mib=4096,
             desired_count=4,
             max_capacity=7,
+            use_redis_named='Redis71',
         )
     )
     assert frontend.domain_name == 'igvf-ui-some-branch.my.test.domain.org'
@@ -435,10 +463,12 @@ def test_constructs_frontend_frontend_define_domain_name(stack, instance_type, e
         props=FrontendProps(
             config=config_with_prefix,
             existing_resources=existing_resources,
+            redis_multiplexer=redis_multiplexer,
             cpu=2048,
             memory_limit_mib=4096,
             desired_count=4,
             max_capacity=7,
+            use_redis_named='Redis71',
         )
     )
     assert frontend.domain_name == 'some-prefix.my.test.domain.org'
@@ -451,6 +481,7 @@ def test_constructs_frontend_get_url_prefix():
         name='abc',
         branch='some-branch',
         backend_url='abc.123',
+        redis={},
         frontend={},
         tags=[],
     )
@@ -460,6 +491,7 @@ def test_constructs_frontend_get_url_prefix():
         name='abc',
         branch='some-branch',
         backend_url='abc.123',
+        redis={},
         frontend={},
         tags=[],
         url_prefix='some-prefix',

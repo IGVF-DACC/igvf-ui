@@ -9,6 +9,8 @@ from infrastructure.constructs.frontend import FrontendProps
 
 from infrastructure.constructs.existing.types import ExistingResourcesClass
 
+from infrastructure.multiplexer import Multiplexer
+
 from typing import Any
 
 
@@ -20,6 +22,7 @@ class FrontendStack(Stack):
             construct_id: str,
             *,
             config: Config,
+            redis_multiplexer: Multiplexer,
             existing_resources_class: ExistingResourcesClass,
             **kwargs: Any
     ) -> None:
@@ -34,6 +37,7 @@ class FrontendStack(Stack):
             props=FrontendProps(
                 **config.frontend,
                 config=config,
+                redis_multiplexer=redis_multiplexer,
                 existing_resources=self.existing_resources,
             )
         )

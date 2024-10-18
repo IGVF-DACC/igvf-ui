@@ -10,6 +10,7 @@ import HomeTitle from "../components/home-title";
 import Icon from "../components/icon";
 import { useBrowserStateQuery } from "../components/presentation-status";
 // lib
+import { getCacheClient } from "../lib/cache";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { requestDatasetSummary } from "../lib/common-requests";
@@ -154,9 +155,27 @@ Home.propTypes = {
 };
 
 export async function getServerSideProps({ req }) {
+  const cache = getCacheClient();
+  const homePagePropsKey = "home-page-props";
+
+  // Return props from cache if available.
+  try {
+    const homePageProps = await cache.get(homePagePropsKey);
+    if (homePageProps) {
+      const { fileSets, fileCount, sampleCount } = JSON.parse(homePageProps);
+      return {
+        props: { fileSets, fileCount, sampleCount },
+      };
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+  // If not in cache, get from backend.
   const request = new FetchRequest({ cookie: req.headers.cookie });
 
   // We might need to paginate this request in the future, but for now just get all the results.
+  console.info("Getting homepage props from backend, not cache");
   const results = await requestDatasetSummary(request);
 
   if (FetchRequest.isResponseSuccess(results)) {
@@ -167,13 +186,21 @@ export async function getServerSideProps({ req }) {
       await request.getObject("/search/?type=Sample&limit=0")
     ).optional();
 
-    return {
-      props: {
-        fileSets: results["@graph"] || [],
-        fileCount: fileResults?.total || 0,
-        sampleCount: sampleResults?.total || 0,
-      },
+    const props = {
+      fileSets: results["@graph"] || [],
+      fileCount: fileResults?.total || 0,
+      sampleCount: sampleResults?.total || 0,
     };
+
+    try {
+      // Store props in cache (expires in 1 hour).
+      console.info("Setting homepage props in cache");
+      await cache.set(homePagePropsKey, JSON.stringify(props), { EX: 3600 });
+    } catch (error) {
+      console.error(error);
+    }
+    return { props };
   }
+
   return errorObjectToProps(results);
 }
