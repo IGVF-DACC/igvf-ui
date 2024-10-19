@@ -1,8 +1,11 @@
 // node_modules
+import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import { auditMap } from "./audit";
 import SortableGrid from "./sortable-grid";
+// lib
+import { auditLevelOrder } from "../lib/audit";
 
 const auditColumns = [
   {
@@ -18,6 +21,7 @@ const auditColumns = [
         </div>
       );
     },
+    isSortable: false,
   },
   {
     id: "audit_category",
@@ -36,10 +40,23 @@ const auditColumns = [
 ];
 
 /**
- * Display a sortable table of the given audits.
+ * Display a sorted table of the given audits.
  */
 export default function AuditTable({ data }) {
-  return <SortableGrid data={data} columns={auditColumns} isTotalCountHidden />;
+  // Sort audits with `audit_level` as the primary key and `audit_category` as the secondary key.
+  const sortedData = _.sortBy(data, [
+    (audit) => auditLevelOrder.indexOf(audit.audit_level),
+    (audit) => audit.audit_category.toLowerCase(),
+  ]);
+
+  return (
+    <SortableGrid
+      data={sortedData}
+      columns={auditColumns}
+      initialSort={{ isSortingSuppressed: true }}
+      isTotalCountHidden
+    />
+  );
 }
 
 AuditTable.propTypes = {
