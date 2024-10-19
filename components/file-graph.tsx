@@ -317,6 +317,7 @@ function Graph({
           </defs>
           <Group top={0} left={0}>
             {loadedDag.links().map((link, i) => {
+              // Render the edges between nodes as lines.
               return (
                 <LinkHorizontal
                   key={`link-${i}`}
@@ -331,7 +332,9 @@ function Graph({
               );
             })}
             {loadedDag.descendants().map((node, i) => {
+              // Render the nodes as rectangles.
               const graphNode = node as d3Dag.DagNode<NodeData>;
+              const isNodeSelected = selectedNode?.id === graphNode.data.id;
               const background =
                 fileSetTypeColorMap[graphNode.data.fileFileSet["@type"][0]] ||
                 "#c0c0c0";
@@ -351,7 +354,7 @@ function Graph({
                     fill={background}
                     opacity={1}
                     className="stroke-gray-800 dark:stroke-gray-200"
-                    strokeWidth={1}
+                    strokeWidth={isNodeSelected ? 3 : 1}
                   />
                   <text
                     y="-8px"
