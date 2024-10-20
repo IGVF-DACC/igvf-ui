@@ -353,9 +353,21 @@ function Graph({
                     y={-NODE_HEIGHT / 2}
                     fill={background}
                     opacity={1}
-                    className="stroke-gray-800 dark:stroke-gray-200"
-                    strokeWidth={isNodeSelected ? 3 : 1}
+                    className="stroke-gray-800 dark:stroke-gray-100"
+                    strokeWidth={1}
                   />
+                  {isNodeSelected && (
+                    <rect
+                      height={NODE_HEIGHT + 8}
+                      width={NODE_WIDTH + 8}
+                      x={-NODE_WIDTH / 2 - 4}
+                      y={-NODE_HEIGHT / 2 - 4}
+                      fill="transparent"
+                      opacity={1}
+                      className="stroke-gray-800 dark:stroke-gray-100"
+                      strokeWidth={2}
+                    />
+                  )}
                   <text
                     y="-8px"
                     fontSize={12}
