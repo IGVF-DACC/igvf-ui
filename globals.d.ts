@@ -50,8 +50,10 @@ export interface DatabaseObject {
   alternate_accessions?: string[];
   audit?: Audits;
   creation_timestamp?: string;
+  lab?: string | DatabaseObject;
   release_timestamp?: string;
   status?: string;
+  title: string;
   uuid?: string;
   [key: string]: unknown;
 }
