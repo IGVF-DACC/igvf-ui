@@ -18,11 +18,12 @@ import {
   DataItemValue,
   DataPanel,
 } from "./data-area";
+import { FileDownload } from "./file-download";
 import Modal from "./modal";
 import { type PagePanelStates } from "./page-panels";
 import SessionContext from "./session-context";
 // lib
-import { truncateText } from "../lib/general";
+import { dataSize, truncateText, truthyOrZero } from "../lib/general";
 // root
 import { type DatabaseObject } from "../globals.d";
 
@@ -46,6 +47,7 @@ interface FileObject extends DatabaseObject {
   derived_from?: string[];
   file_format: string;
   file_set: string;
+  file_size: number;
 }
 
 /**
@@ -172,12 +174,16 @@ function FileModal({
   onClose: () => void;
 }) {
   const { file, fileFileSet } = node;
+  console.log("FILE", file);
   return (
     <Modal isOpen={true} onClose={onClose}>
       <Modal.Header onClose={onClose}>
-        <Link href={file["@id"]} target="_blank" rel="noopener noreferrer">
-          {file.accession}
-        </Link>
+        <div className="flex gap-1">
+          <Link href={file["@id"]} target="_blank" rel="noopener noreferrer">
+            {file.accession}
+          </Link>
+          <FileDownload file={file} />
+        </div>
       </Modal.Header>
       <DataPanel className="border-none">
         <DataArea>
@@ -194,8 +200,28 @@ function FileModal({
             <DataItemValue>{file.content_type}</DataItemValue>
             <DataItemLabel>File Format</DataItemLabel>
             <DataItemValue>{file.file_format}</DataItemValue>
+            {truthyOrZero(file.file_size) && (
+              <>
+                <DataItemLabel>File Size</DataItemLabel>
+                <DataItemValue>{dataSize(file.file_size)}</DataItemValue>
+              </>
+            )}
             <DataItemLabel>Summary</DataItemLabel>
             <DataItemValue>{file.summary}</DataItemValue>
+            {file.lab && (
+              <>
+                <DataItemLabel>Lab</DataItemLabel>
+                <DataItemValue>
+                  <Link
+                    href={file.lab["@id"]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {(file.lab as DatabaseObject).title}
+                  </Link>
+                </DataItemValue>
+              </>
+            )}
             <DataItemLabel>File Set</DataItemLabel>
             <DataItemValue>
               {fileFileSet["@id"] !== pageFileSet["@id"] ? (
@@ -365,7 +391,7 @@ function Graph({
                       fill="transparent"
                       opacity={1}
                       className="stroke-gray-800 dark:stroke-gray-100"
-                      strokeWidth={2}
+                      strokeWidth={3}
                     />
                   )}
                   <text
