@@ -391,6 +391,8 @@ function Graph({
                   left={node.y}
                   style={{ cursor: "pointer" }}
                   onClick={() => onNodeClick(node.data as NodeData)}
+                  tabIndex={0}
+                  aria-label={`File ${graphNode.data.file.accession}, file format ${graphNode.data.file.file_format}, content type ${graphNode.data.file.content_type}`}
                 >
                   <rect
                     height={NODE_HEIGHT}
@@ -497,14 +499,14 @@ export function FileGraph({
 
   if (trimmedData.length > 0) {
     return (
-      <>
+      <section role="region" aria-labelledby="file-graph">
         <DataAreaTitle>
           <DataAreaTitle.Expander
             pagePanels={pagePanels}
             pagePanelId={pagePanelId}
             label={`${title} table`}
           >
-            {title}
+            <div id="file-graph">{title}</div>
           </DataAreaTitle.Expander>
         </DataAreaTitle>
         <AnimatePresence>
@@ -527,7 +529,7 @@ export function FileGraph({
             </motion.div>
           )}
         </AnimatePresence>
-      </>
+      </section>
     );
   }
 }
