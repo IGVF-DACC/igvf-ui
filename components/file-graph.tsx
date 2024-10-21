@@ -71,7 +71,7 @@ const fileSetTypeColorMap: FileSetTypeColorMap = {
   AuxiliarySet: "#60fa72",
   ConstructLibrarySet: "#ff84aa",
   CuratedSet: "#faac60",
-  MeasurementSet: "#8bbfff",
+  MeasurementSet: "#7cc0ff",
   ModelSet: "#f5fa60",
   PredictionSet: "#60f5fa",
 } as const;
