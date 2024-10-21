@@ -174,7 +174,7 @@ function FileModal({
   onClose: () => void;
 }) {
   const { file, fileFileSet } = node;
-  console.log("FILE", file);
+
   return (
     <Modal isOpen={true} onClose={onClose}>
       <Modal.Header onClose={onClose}>
