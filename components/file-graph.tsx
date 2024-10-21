@@ -1,6 +1,7 @@
 // node_modules
 import * as d3Dag from "d3-dag";
 import { AnimatePresence, motion } from "framer-motion";
+import { TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { Group } from "@visx/group";
@@ -19,6 +20,7 @@ import {
   DataPanel,
 } from "./data-area";
 import { FileDownload } from "./file-download";
+import { ButtonLink } from "./form-elements";
 import Modal from "./modal";
 import { type PagePanelStates } from "./page-panels";
 import SessionContext from "./session-context";
@@ -174,6 +176,7 @@ function FileModal({
   onClose: () => void;
 }) {
   const { file, fileFileSet } = node;
+  const derivedFromReportLink = `/multireport/?type=File&input_file_for=${file["@id"]}`;
 
   return (
     <Modal isOpen={true} onClose={onClose}>
@@ -236,6 +239,23 @@ function FileModal({
                 <>{fileFileSet.accession} (this file set)</>
               )}
             </DataItemValue>
+            {file.derived_from?.length > 0 && (
+              <>
+                <DataItemLabel>
+                  Report of Files This File Derives From
+                </DataItemLabel>
+                <DataItemValue>
+                  <ButtonLink
+                    href={derivedFromReportLink}
+                    size="sm"
+                    isInline
+                    isExternal
+                  >
+                    <TableCellsIcon className="h-4 w-4" />
+                  </ButtonLink>
+                </DataItemValue>
+              </>
+            )}
           </>
         </DataArea>
       </DataPanel>
