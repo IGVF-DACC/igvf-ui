@@ -96,8 +96,10 @@ export async function requestFiles(
     await request.getMultipleObjectsBulk(paths, [
       "@type",
       "accession",
+      "aliases",
       "content_type",
       "creation_timestamp",
+      "derived_from",
       "file_format",
       "file_size",
       "file_set",
@@ -105,6 +107,7 @@ export async function requestFiles(
       "href",
       "illumina_read_type",
       "index",
+      "lab.@id",
       "lab.title",
       "lane",
       "seqspecs",
@@ -170,6 +173,7 @@ export async function requestFileSets(
     await request.getMultipleObjectsBulk(
       paths,
       [
+        "@type",
         "accession",
         "aliases",
         "lab.title",

@@ -45,12 +45,15 @@ export interface DatabaseObject {
   "@context"?: string;
   "@id"?: string;
   "@type": string[];
+  accession?: string;
   actions?: ObjectActions[];
   alternate_accessions?: string[];
   audit?: Audits;
   creation_timestamp?: string;
+  lab?: string | DatabaseObject;
   release_timestamp?: string;
   status?: string;
+  title: string;
   uuid?: string;
   [key: string]: unknown;
 }
