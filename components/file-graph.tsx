@@ -32,7 +32,7 @@ import { type DatabaseObject } from "../globals.d";
 /**
  * Width of a node in the graph in pixels.
  */
-const NODE_WIDTH = 140;
+const NODE_WIDTH = 150;
 
 /**
  * Height of a node in the graph in pixels.
