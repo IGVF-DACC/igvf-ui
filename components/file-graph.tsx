@@ -21,6 +21,7 @@ import {
 } from "./data-area";
 import { FileDownload } from "./file-download";
 import { ButtonLink } from "./form-elements";
+import GlobalContext from "./global-context";
 import Modal from "./modal";
 import { type PagePanelStates } from "./page-panels";
 import SessionContext from "./session-context";
@@ -62,18 +63,19 @@ interface FileSetObject extends DatabaseObject {
 
 // Represents a mapping of file set types to colors.
 type FileSetTypeColorMap = {
-  [key: string]: string;
+  [key: string]: { light: string; dark: string };
 };
 
 // Maps file-set types to colors of nodes on the graph.
 const fileSetTypeColorMap: FileSetTypeColorMap = {
-  AnalysisSet: "#faafff",
-  AuxiliarySet: "#60fa72",
-  ConstructLibrarySet: "#ff84aa",
-  CuratedSet: "#faac60",
-  MeasurementSet: "#7cc0ff",
-  ModelSet: "#f5fa60",
-  PredictionSet: "#60f5fa",
+  AnalysisSet: { light: "#faafff", dark: "#733c77" },
+  AuxiliarySet: { light: "#60fa72", dark: "#196021" },
+  ConstructLibrarySet: { light: "#ff84aa", dark: "#852f4a" },
+  CuratedSet: { light: "#faac60", dark: "#925112" },
+  MeasurementSet: { light: "#7cc0ff", dark: "#777b00" },
+  ModelSet: { light: "#f5fa60", dark: "#196a6d" },
+  PredictionSet: { light: "#60f5fa", dark: "#60f5fa" },
+  unknown: { light: "#c0c0c0", dark: "#606060" },
 } as const;
 
 /**
@@ -268,6 +270,7 @@ function FileModal({
  */
 function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
   const { collectionTitles } = useContext<any>(SessionContext);
+  const { darkMode } = useContext(GlobalContext);
 
   return (
     <div className="flex flex-wrap justify-center gap-1 border-t border-data-border py-2">
@@ -276,8 +279,10 @@ function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
           return (
             <div
               key={fileSetType}
-              className="flex items-center gap-0.5 border border-gray-800 px-1 text-sm text-black dark:border-gray-200"
-              style={{ backgroundColor: color }}
+              className="flex items-center gap-0.5 border border-gray-800 px-1 text-sm text-black dark:border-gray-400 dark:text-white"
+              style={{
+                backgroundColor: darkMode.enabled ? color.dark : color.light,
+              }}
             >
               {collectionTitles?.[fileSetType] || fileSetType}
             </div>
@@ -307,6 +312,7 @@ function Graph({
     { id: string; parentIds: string[] },
     undefined
   > | null>(null);
+  const { darkMode } = useContext(GlobalContext);
   // Holds the height of the layout after it has been calculated
   const [layoutHeight, setLayoutHeight] = useState(0);
   // Holds the width of the layout after it has been calculated
@@ -383,7 +389,8 @@ function Graph({
               const isNodeSelected = selectedNode?.id === graphNode.data.id;
               const background =
                 fileSetTypeColorMap[graphNode.data.fileFileSet["@type"][0]] ||
-                "#c0c0c0";
+                fileSetTypeColorMap.unknown;
+              const foreground = darkMode.enabled ? "#ffffff" : "#000000";
               return (
                 <Group
                   key={i}
@@ -399,9 +406,9 @@ function Graph({
                     width={NODE_WIDTH}
                     x={-NODE_WIDTH / 2}
                     y={-NODE_HEIGHT / 2}
-                    fill={background}
+                    fill={darkMode.enabled ? background.dark : background.light}
                     opacity={1}
-                    className="stroke-gray-800 dark:stroke-gray-100"
+                    className="stroke-gray-800 dark:stroke-gray-400"
                     strokeWidth={1}
                   />
                   {isNodeSelected && (
@@ -412,7 +419,7 @@ function Graph({
                       y={-NODE_HEIGHT / 2 - 4}
                       fill="transparent"
                       opacity={1}
-                      className="stroke-gray-800 dark:stroke-gray-100"
+                      className="stroke-gray-800 dark:stroke-white"
                       strokeWidth={3}
                     />
                   )}
@@ -421,7 +428,7 @@ function Graph({
                     fontSize={12}
                     textAnchor="middle"
                     fontWeight="bold"
-                    fill="#000000"
+                    fill={foreground}
                   >
                     {graphNode.data.file.accession}
                   </text>
@@ -429,7 +436,7 @@ function Graph({
                     y="6px"
                     fontSize={12}
                     textAnchor="middle"
-                    fill="#000000"
+                    fill={foreground}
                   >
                     {graphNode.data.file.file_format}
                   </text>
@@ -437,7 +444,7 @@ function Graph({
                     y="18px"
                     fontSize={12}
                     textAnchor="middle"
-                    fill="#000000"
+                    fill={foreground}
                   >
                     {truncateText(graphNode.data.file.content_type, 24)}
                   </text>
