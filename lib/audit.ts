@@ -8,8 +8,8 @@ import { DatabaseObject } from "../globals.d";
  */
 export type AuditLevel =
   | "ERROR"
-  | "WARNING"
   | "NOT_COMPLIANT"
+  | "WARNING"
   | "INTERNAL_ACTION";
 export type PublicAuditLevel = Exclude<AuditLevel, "INTERNAL_ACTION">;
 
@@ -18,8 +18,8 @@ export type PublicAuditLevel = Exclude<AuditLevel, "INTERNAL_ACTION">;
  */
 export const auditLevelOrder: readonly AuditLevel[] = [
   "ERROR",
-  "WARNING",
   "NOT_COMPLIANT",
+  "WARNING",
   "INTERNAL_ACTION",
 ];
 
