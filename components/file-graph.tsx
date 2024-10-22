@@ -326,7 +326,7 @@ function Graph({
     const dag = d3Dag.dagStratify()(graphData);
     const layout = d3Dag
       .sugiyama()
-      .decross(d3Dag.decrossOpt())
+      .decross(d3Dag.decrossOpt().large("medium"))
       .layering(d3Dag.layeringLongestPath())
       .nodeSize((node) => {
         // Might have to play with the adjustment factors if you change the size of the nodes.
