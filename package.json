@@ -47,7 +47,8 @@
     "react-svg-pan-zoom-loader": "^1.6.1",
     "react-syntax-highlighter": "^15.5.0",
     "redis": "^4.7.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "xxhashjs": "^0.2.2"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.4",
