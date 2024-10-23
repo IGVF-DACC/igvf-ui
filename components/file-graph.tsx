@@ -21,11 +21,13 @@ import {
   DataItemValue,
   DataPanel,
 } from "./data-area";
-import { FileDownload } from "./file-download";
+import { FileAccessionAndDownload, FileDownload } from "./file-download";
 import { ButtonLink } from "./form-elements";
 import GlobalContext from "./global-context";
 import Modal from "./modal";
 import { type PagePanelStates } from "./page-panels";
+import SortableGrid from "./sortable-grid";
+import Status from "./status";
 // lib
 import { dataSize, truncateText, truthyOrZero } from "../lib/general";
 // root
@@ -154,6 +156,29 @@ interface FileSetNodeData extends GenericNodeData {
  */
 type NodeData = FileNodeData | FileSetNodeData;
 
+const filesColumns = [
+  {
+    id: "accession",
+    title: "Accession",
+    display: ({ source }) => <FileAccessionAndDownload file={source} />,
+  },
+  {
+    id: "file_format",
+    title: "File Format",
+    sorter: (item) => item.file_format.toLowerCase(),
+  },
+  {
+    id: "content_type",
+    title: "Content Type",
+    sorter: (item) => item.content_type.toLowerCase(),
+  },
+  {
+    id: "upload_status",
+    title: "Upload Status",
+    display: ({ source }) => <Status status={source.upload_status} />,
+  },
+];
+
 /**
  * Determine if a node is a file node or not.
  * @param node Node to test whether it's a file node
@@ -276,6 +301,17 @@ function trimIsolatedNodes(graphData: NodeData[]) {
   );
 }
 
+function FileSetFileTable({ files }: { files: FileObject[] }) {
+  return (
+    <SortableGrid
+      data={files}
+      columns={filesColumns}
+      keyProp="@id"
+      pager={{} as any}
+    />
+  );
+}
+
 /**
  * Collect a deduplicated list of all file set types that appear in the graph, given the node data
  * for the graph.
@@ -376,6 +412,12 @@ function FileModal({
   );
 }
 
+/**
+ * Display a modal with detailed information about a file set when the user clicks on a node in the
+ * graph.
+ * @param node File-set node that the user clicked on
+ * @param onClose Callback to close the modal
+ */
 function FileSetModal({
   node,
   onClose,
@@ -411,6 +453,9 @@ function FileSetModal({
             </>
           )}
         </DataArea>
+        <div className="mt-4">
+          <FileSetFileTable files={node.files} />
+        </div>
       </DataPanel>
     </Modal>
   );
