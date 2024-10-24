@@ -14,13 +14,14 @@ import {
 import { DataAreaTitle, DataPanel } from "../data-area";
 import GlobalContext from "../global-context";
 import { type PagePanelStates } from "../page-panels";
-import SessionContext from "../session-context";
 // lib
 import { truncateText } from "../../lib/general";
 // local
 import { FileModal } from "./file-modal";
 import { FileSetModal } from "./file-set-modal";
+import { Legend } from "./legend";
 import {
+  fileSetTypeColorMap,
   isFileNodeData,
   isFileSetNodeData,
   type FileNodeData,
@@ -50,23 +51,6 @@ const NODE_HEIGHT = 44;
  * xxhashjs seed for hashing strings; generate randomly.
  */
 const HASH_SEED = 0xe8c0f852;
-
-// Represents a mapping of file set types to colors.
-type FileSetTypeColorMap = {
-  readonly [key: string]: { readonly light: string; readonly dark: string };
-};
-
-// Maps file-set types to colors of nodes on the graph.
-const fileSetTypeColorMap: FileSetTypeColorMap = {
-  AnalysisSet: { light: "#faafff", dark: "#733c77" },
-  AuxiliarySet: { light: "#60fa72", dark: "#196021" },
-  ConstructLibrarySet: { light: "#ff84aa", dark: "#852f4a" },
-  CuratedSet: { light: "#faac60", dark: "#925112" },
-  MeasurementSet: { light: "#7cc0ff", dark: "#777b00" },
-  ModelSet: { light: "#f5fa60", dark: "#196a6d" },
-  PredictionSet: { light: "#60f5fa", dark: "#60f5fa" },
-  unknown: { light: "#c0c0c0", dark: "#606060" },
-};
 
 /**
  * Generate d3-dag-compatible data from a list of files using their `derived_from` property.
@@ -190,35 +174,6 @@ function collectRelevantFileSetTypes(
     }
   });
   return [...fileSetTypes];
-}
-
-/**
- * Draw the legend to show what colors correspond to each file set type.
- * @param fileSetTypes List of file set types that appear in the graph
- */
-function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
-  const { collectionTitles } = useContext<any>(SessionContext);
-  const { darkMode } = useContext(GlobalContext);
-
-  return (
-    <div className="flex flex-wrap justify-center gap-1 border-t border-data-border py-2">
-      {Object.entries(fileSetTypeColorMap).map(([fileSetType, color]) => {
-        if (fileSetTypes.includes(fileSetType)) {
-          return (
-            <div
-              key={fileSetType}
-              className="flex items-center gap-0.5 border border-gray-800 px-1 text-sm text-black dark:border-gray-400 dark:text-white"
-              style={{
-                backgroundColor: darkMode.enabled ? color.dark : color.light,
-              }}
-            >
-              {collectionTitles?.[fileSetType] || fileSetType}
-            </div>
-          );
-        }
-      })}
-    </div>
-  );
 }
 
 /**
@@ -442,7 +397,8 @@ function Graph({
                       textAnchor="middle"
                       fill={foreground}
                     >
-                      {graphNode.files.length} files
+                      {graphNode.files.length}{" "}
+                      {graphNode.files.length === 1 ? "file" : "files"}
                     </text>
                   </Group>
                 );

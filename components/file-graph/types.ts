@@ -63,6 +63,27 @@ export interface FileSetNodeData extends GenericNodeData {
 export type NodeData = FileNodeData | FileSetNodeData;
 
 /**
+ * Represents a mapping of file set types to colors.
+ */
+type FileSetTypeColorMap = {
+  readonly [key: string]: { readonly light: string; readonly dark: string };
+};
+
+/**
+ * Maps file-set types to colors of nodes on the graph.
+ */
+export const fileSetTypeColorMap: FileSetTypeColorMap = {
+  AnalysisSet: { light: "#faafff", dark: "#733c77" },
+  AuxiliarySet: { light: "#60fa72", dark: "#196021" },
+  ConstructLibrarySet: { light: "#ff84aa", dark: "#852f4a" },
+  CuratedSet: { light: "#faac60", dark: "#925112" },
+  MeasurementSet: { light: "#7cc0ff", dark: "#777b00" },
+  ModelSet: { light: "#f5fa60", dark: "#196a6d" },
+  PredictionSet: { light: "#60f5fa", dark: "#60f5fa" },
+  unknown: { light: "#c0c0c0", dark: "#606060" },
+};
+
+/**
  * Determine if a node is a file node or not.
  * @param node Node to test whether it's a file node
  * @returns True if the node is a file node, false otherwise
