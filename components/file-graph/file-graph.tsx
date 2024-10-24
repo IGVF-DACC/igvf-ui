@@ -54,6 +54,7 @@ function GraphNode({
   background,
   label,
   isNodeSelected,
+  isRounded,
   children,
 }: {
   node: d3Dag.DagNode<
@@ -67,6 +68,7 @@ function GraphNode({
   background: { light: string; dark: string };
   label: string;
   isNodeSelected: boolean;
+  isRounded?: boolean;
   children: ReactNode;
 }) {
   const { darkMode } = useContext(GlobalContext);
@@ -89,6 +91,7 @@ function GraphNode({
         opacity={1}
         className="stroke-gray-800 dark:stroke-gray-400"
         strokeWidth={1}
+        {...(isRounded ? { rx: 10, ry: 10 } : {})}
       />
       {isNodeSelected && (
         <rect
@@ -100,6 +103,7 @@ function GraphNode({
           opacity={1}
           className="stroke-gray-800 dark:stroke-white"
           strokeWidth={3}
+          {...(isRounded ? { rx: 14, ry: 14 } : {})}
         />
       )}
       {children}
@@ -261,6 +265,7 @@ function Graph({
                     background={background}
                     label={`File set ${graphNode.fileSet.title}`}
                     isNodeSelected={isNodeSelected}
+                    isRounded
                   >
                     <text
                       y="-4px"
