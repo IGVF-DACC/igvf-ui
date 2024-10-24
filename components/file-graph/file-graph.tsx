@@ -71,8 +71,6 @@ function GraphNode({
   isRounded?: boolean;
   children: ReactNode;
 }) {
-  const { darkMode } = useContext(GlobalContext);
-
   return (
     <Group
       top={node.x}
