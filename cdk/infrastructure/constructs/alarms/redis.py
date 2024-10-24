@@ -27,7 +27,7 @@ MEMORY_ALARM_THRESHOLD_PERCENT = 90
 class RedisAlarmsProps:
     config: Config
     existing_resources: ExistingResources
-    cfn_cache_cluster: CfnCacheCluster
+    cache_cluster: CfnCacheCluster
 
 
 class RedisAlarms(Construct):
@@ -62,7 +62,7 @@ class RedisAlarms(Construct):
             namespace='AWS/ElastiCache',
             statistic=Stats.MAXIMUM,
             dimensions_map={
-                'CacheClusterId': self.props.cfn_cache_cluster.ref,
+                'CacheClusterId': self.props.cache_cluster.ref,
             },
         )
         redis_engine_cpu_metric.attach_to(self)
@@ -85,7 +85,7 @@ class RedisAlarms(Construct):
             namespace='AWS/ElastiCache',
             statistic=Stats.MAXIMUM,
             dimensions_map={
-                'CacheClusterId': self.props.cfn_cache_cluster.ref,
+                'CacheClusterId': self.props.cache_cluster.ref,
             },
         )
         redis_cpu_metric.attach_to(self)
@@ -108,7 +108,7 @@ class RedisAlarms(Construct):
             namespace='AWS/ElastiCache',
             statistic=Stats.MAXIMUM,
             dimensions_map={
-                'CacheClusterId': self.props.cfn_cache_cluster.ref,
+                'CacheClusterId': self.props.cache_cluster.ref,
             },
         )
         redis_used_memory_metric.attach_to(self)
