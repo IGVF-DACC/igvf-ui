@@ -2,35 +2,24 @@
 import * as d3Dag from "d3-dag";
 import { AnimatePresence, motion } from "framer-motion";
 import _ from "lodash";
-import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { Group } from "@visx/group";
 import { LinkHorizontal } from "@visx/shape";
 import XXH from "xxhashjs";
 // components
-import AliasList from "../alias-list";
 import {
   standardAnimationTransition,
   standardAnimationVariants,
 } from "../animation";
-import {
-  DataArea,
-  DataAreaTitle,
-  DataItemLabel,
-  DataItemValue,
-  DataPanel,
-} from "../data-area";
-import { FileAccessionAndDownload } from "../file-download";
+import { DataAreaTitle, DataPanel } from "../data-area";
 import GlobalContext from "../global-context";
-import Modal from "../modal";
 import { type PagePanelStates } from "../page-panels";
 import SessionContext from "../session-context";
-import SortableGrid from "../sortable-grid";
-import Status from "../status";
 // lib
 import { truncateText } from "../../lib/general";
 // local
 import { FileModal } from "./file-modal";
+import { FileSetModal } from "./file-set-modal";
 import {
   isFileNodeData,
   isFileSetNodeData,
@@ -78,29 +67,6 @@ const fileSetTypeColorMap: FileSetTypeColorMap = {
   PredictionSet: { light: "#60f5fa", dark: "#60f5fa" },
   unknown: { light: "#c0c0c0", dark: "#606060" },
 };
-
-const filesColumns = [
-  {
-    id: "accession",
-    title: "Accession",
-    display: ({ source }) => <FileAccessionAndDownload file={source} />,
-  },
-  {
-    id: "file_format",
-    title: "File Format",
-    sorter: (item) => item.file_format.toLowerCase(),
-  },
-  {
-    id: "content_type",
-    title: "Content Type",
-    sorter: (item) => item.content_type.toLowerCase(),
-  },
-  {
-    id: "upload_status",
-    title: "Upload Status",
-    display: ({ source }) => <Status status={source.upload_status} />,
-  },
-];
 
 /**
  * Generate d3-dag-compatible data from a list of files using their `derived_from` property.
@@ -207,21 +173,6 @@ function trimIsolatedNodes(graphData: NodeData[]) {
 }
 
 /**
- * File table for a file set modal.
- * @param files List of files to display in the table
- */
-function FileSetFileTable({ files }: { files: FileObject[] }) {
-  return (
-    <SortableGrid
-      data={files}
-      columns={filesColumns}
-      keyProp="@id"
-      pager={{} as any}
-    />
-  );
-}
-
-/**
  * Collect a deduplicated list of all file set types that appear in the graph, given the node data
  * for the graph.
  * @param graphData All nodes in the graph, probably after trimming
@@ -242,56 +193,8 @@ function collectRelevantFileSetTypes(
 }
 
 /**
- * Display a modal with detailed information about a file set when the user clicks on a node in the
- * graph.
- * @param node File-set node that the user clicked on
- * @param onClose Callback to close the modal
- */
-function FileSetModal({
-  node,
-  onClose,
-}: {
-  node: FileSetNodeData;
-  onClose: () => void;
-}) {
-  const { fileSet } = node;
-
-  return (
-    <Modal isOpen={true} onClose={onClose}>
-      <Modal.Header onClose={onClose}>
-        <div className="flex gap-1">
-          <Link href={fileSet["@id"]} target="_blank" rel="noopener noreferrer">
-            {fileSet.accession}
-          </Link>
-        </div>
-      </Modal.Header>
-      <DataPanel className="border-none">
-        <DataArea>
-          {fileSet.aliases?.length > 0 && (
-            <>
-              <DataItemLabel>Aliases</DataItemLabel>
-              <DataItemValue>
-                <AliasList aliases={fileSet.aliases} />
-              </DataItemValue>
-            </>
-          )}
-          {fileSet.summary && (
-            <>
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{fileSet.summary}</DataItemValue>
-            </>
-          )}
-        </DataArea>
-        <div className="mt-4">
-          <FileSetFileTable files={node.files} />
-        </div>
-      </DataPanel>
-    </Modal>
-  );
-}
-
-/**
  * Draw the legend to show what colors correspond to each file set type.
+ * @param fileSetTypes List of file set types that appear in the graph
  */
 function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
   const { collectionTitles } = useContext<any>(SessionContext);
