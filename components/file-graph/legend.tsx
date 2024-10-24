@@ -1,7 +1,6 @@
 // node_modules
 import { useContext } from "react";
 // components
-import GlobalContext from "../global-context";
 import SessionContext from "../session-context";
 // local
 import { fileSetTypeColorMap } from "./types";
@@ -12,7 +11,6 @@ import { fileSetTypeColorMap } from "./types";
  */
 export function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
   const { collectionTitles } = useContext<any>(SessionContext);
-  const { darkMode } = useContext(GlobalContext);
 
   return (
     <div className="flex flex-wrap justify-center gap-1 border-t border-data-border py-2">
@@ -21,10 +19,7 @@ export function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
           return (
             <div
               key={fileSetType}
-              className="flex items-center gap-0.5 border border-gray-800 px-2 py-0.5 text-xs font-semibold text-black dark:border-gray-400 dark:text-white"
-              style={{
-                backgroundColor: darkMode.enabled ? color.dark : color.light,
-              }}
+              className={`${color.bg} flex items-center gap-0.5 border border-gray-800 px-2 py-0.5 text-xs font-semibold text-black dark:border-gray-400 dark:text-white`}
             >
               {collectionTitles?.[fileSetType] || fileSetType}
             </div>

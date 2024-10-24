@@ -65,7 +65,7 @@ function GraphNode({
     undefined
   >;
   onNodeClick: (nodeData: NodeData) => void;
-  background: { light: string; dark: string };
+  background: { fill: string; bg: string };
   label: string;
   isNodeSelected: boolean;
   isRounded?: boolean;
@@ -87,9 +87,8 @@ function GraphNode({
         width={NODE_WIDTH}
         x={-NODE_WIDTH / 2}
         y={-NODE_HEIGHT / 2}
-        fill={darkMode.enabled ? background.dark : background.light}
         opacity={1}
-        className="stroke-gray-800 dark:stroke-gray-400"
+        className={`stroke-gray-800 dark:stroke-gray-400 ${background.fill}`}
         strokeWidth={1}
         {...(isRounded ? { rx: 10, ry: 10 } : {})}
       />
@@ -196,7 +195,6 @@ function Graph({
                 <LinkHorizontal
                   key={`link-${i}`}
                   data={link}
-                  // stroke="#000000"
                   className="stroke-black dark:stroke-white"
                   strokeWidth="1"
                   fill="none"

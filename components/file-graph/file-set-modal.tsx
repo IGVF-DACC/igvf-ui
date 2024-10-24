@@ -80,21 +80,6 @@ const filesColumns = [
 ];
 
 /**
- * File table for a file set modal.
- * @param files List of files to display in the table
- */
-function FileSetFileTable({ files }: { files: FileObject[] }) {
-  return (
-    <SortableGrid
-      data={files}
-      columns={filesColumns}
-      keyProp="@id"
-      pager={{} as any}
-    />
-  );
-}
-
-/**
  * Display a modal with detailed information about a file set when the user clicks on a node in the
  * graph.
  * @param node File-set node that the user clicked on
