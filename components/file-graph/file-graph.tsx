@@ -1,7 +1,6 @@
 // node_modules
 import * as d3Dag from "d3-dag";
 import { AnimatePresence, motion } from "framer-motion";
-import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
@@ -9,37 +8,44 @@ import { Group } from "@visx/group";
 import { LinkHorizontal } from "@visx/shape";
 import XXH from "xxhashjs";
 // components
-import AliasList from "./alias-list";
+import AliasList from "../alias-list";
 import {
   standardAnimationTransition,
   standardAnimationVariants,
-} from "./animation";
+} from "../animation";
 import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
   DataItemValue,
   DataPanel,
-} from "./data-area";
-import { FileAccessionAndDownload, FileDownload } from "./file-download";
-import { ButtonLink } from "./form-elements";
-import GlobalContext from "./global-context";
-import Modal from "./modal";
-import { type PagePanelStates } from "./page-panels";
-import SortableGrid from "./sortable-grid";
-import Status from "./status";
+} from "../data-area";
+import { FileAccessionAndDownload } from "../file-download";
+import GlobalContext from "../global-context";
+import Modal from "../modal";
+import { type PagePanelStates } from "../page-panels";
+import SessionContext from "../session-context";
+import SortableGrid from "../sortable-grid";
+import Status from "../status";
 // lib
-import { dataSize, truncateText, truthyOrZero } from "../lib/general";
+import { truncateText } from "../../lib/general";
+// local
+import { FileModal } from "./file-modal";
+import {
+  isFileNodeData,
+  isFileSetNodeData,
+  type FileNodeData,
+  type FileNodeType,
+  type FileSetNodeData,
+  type FileSetNodeType,
+  type NodeData,
+} from "./types";
 // root
-import { type DatabaseObject } from "../globals.d";
-
-/**
- * Extra notes:
- *
- * Discussion of "Error: size of dag to decrossOpt is too large and will likely crash instead of
- * complete, enable "large" graphs to run anyway"
- * https://github.com/erikbrinkman/d3-dag/issues/98
- */
+import type {
+  DatabaseObject,
+  FileObject,
+  FileSetObject,
+} from "../../globals.d";
 
 /**
  * Width of a node in the graph in pixels.
@@ -52,31 +58,9 @@ const NODE_WIDTH = 150;
 const NODE_HEIGHT = 44;
 
 /**
- * xxhashjs seed for hashing strings.
+ * xxhashjs seed for hashing strings; generate randomly.
  */
 const HASH_SEED = 0xe8c0f852;
-
-/**
- * Data structure common to all file object types.
- */
-interface FileObject extends DatabaseObject {
-  accession: string;
-  aliases: string[];
-  content_type: string;
-  derived_from?: string[];
-  file_format: string;
-  file_set: string;
-  file_size: number;
-}
-
-/**
- * Data structure common to all file set object types.
- */
-interface FileSetObject extends DatabaseObject {
-  aliases: string[];
-  file_set_type: string;
-  files: string[];
-}
 
 // Represents a mapping of file set types to colors.
 type FileSetTypeColorMap = {
@@ -94,67 +78,6 @@ const fileSetTypeColorMap: FileSetTypeColorMap = {
   PredictionSet: { light: "#60f5fa", dark: "#60f5fa" },
   unknown: { light: "#c0c0c0", dark: "#606060" },
 };
-
-/**
- * Code that indicates an element of `NodeData` is a file node.
- */
-const FILE_NODE_TYPE = "file";
-
-/**
- * Code that indicates an element of `NodeData` is a file-set node.
- */
-const FILE_SET_NODE_TYPE = "file-set";
-
-/**
- * Indicates that a node in the graph represents a file.
- */
-type FileNodeType = typeof FILE_NODE_TYPE;
-
-/**
- * Indicates that a node in the graph represents a file set.
- */
-type FileSetNodeType = typeof FILE_SET_NODE_TYPE;
-
-/**
- * Represents a node in the graph. This matches the built-in d3-dag node data structure.
- * @property {string} id Unique identifier for the node
- * @property {string[]} parentIds List of unique identifiers for the parent nodes
- */
-interface GenericNodeData {
-  id: string;
-  parentIds: string[];
-}
-
-/**
- * Represents a node in the graph for a native file -- a file belonging to the file set the user is
- * viewing.
- * @property {FileNodeType} type Code indicating this node represents a file in the graph
- * @property {FileObject} file File object that this node represents
- * @property {FileObject[]} externalFiles Files in other file sets that this file derives from
- */
-interface FileNodeData extends GenericNodeData {
-  type: FileNodeType;
-  file: FileObject;
-  externalFiles: FileObject[];
-}
-
-/**
- * Represents a node in the graph for an external file set -- a file set outside the one the user
- * is viewing that contains files that native files derive from.
- * @property {FileSetNodeType} type Code indicating this node represents a file set in the graph
- * @property {FileSetObject} fileSet File set object that this node represents
- * @property {FileObject[]} files Files in the file set that a native file derives from
- */
-interface FileSetNodeData extends GenericNodeData {
-  type: FileSetNodeType;
-  fileSet: FileSetObject;
-  files: FileObject[];
-}
-
-/**
- * A node in the graph that could represent a file or a file set.
- */
-type NodeData = FileNodeData | FileSetNodeData;
 
 const filesColumns = [
   {
@@ -178,24 +101,6 @@ const filesColumns = [
     display: ({ source }) => <Status status={source.upload_status} />,
   },
 ];
-
-/**
- * Determine if a node is a file node or not.
- * @param node Node to test whether it's a file node
- * @returns True if the node is a file node, false otherwise
- */
-function isFileNodeData(node: NodeData): node is FileNodeData {
-  return node.type === FILE_NODE_TYPE;
-}
-
-/**
- * Determine if a node is a file-set node or not.
- * @param node Node to test whether it's a file-set node
- * @returns True if the node is a file-set node, false otherwise
- */
-function isFileSetNodeData(node: NodeData): node is FileSetNodeData {
-  return node.type === FILE_SET_NODE_TYPE;
-}
 
 /**
  * Generate d3-dag-compatible data from a list of files using their `derived_from` property.
@@ -301,6 +206,10 @@ function trimIsolatedNodes(graphData: NodeData[]) {
   );
 }
 
+/**
+ * File table for a file set modal.
+ * @param files List of files to display in the table
+ */
 function FileSetFileTable({ files }: { files: FileObject[] }) {
   return (
     <SortableGrid
@@ -316,100 +225,20 @@ function FileSetFileTable({ files }: { files: FileObject[] }) {
  * Collect a deduplicated list of all file set types that appear in the graph, given the node data
  * for the graph.
  * @param graphData All nodes in the graph, probably after trimming
+ * @param fileSet File set object for the page the user is viewing
  * @returns List of file set types that appear in the graph
  */
-// function collectRelevantFileSetTypes(graphData: NodeData[]): string[] {
-//   const fileSetTypes = new Set<string>();
-//   graphData.forEach((node) => {
-//     fileSetTypes.add(node.fileFileSet["@type"][0]);
-//   });
-//   return [...fileSetTypes];
-// }
-
-/**
- * Display a modal with detailed information about a file when the user clicks on a node in the
- * graph.
- * @param pageFileSet File-set object for the page the user views
- * @param node Node that the user clicked on
- * @param onClose Callback to close the modal
- */
-function FileModal({
-  node,
-  onClose,
-}: {
-  node: FileNodeData;
-  onClose: () => void;
-}) {
-  const { file } = node;
-  const derivedFromReportLink = `/multireport/?type=File&input_file_for=${file["@id"]}`;
-
-  return (
-    <Modal isOpen={true} onClose={onClose}>
-      <Modal.Header onClose={onClose}>
-        <div className="flex gap-1">
-          <Link href={file["@id"]} target="_blank" rel="noopener noreferrer">
-            {file.accession}
-          </Link>
-          <FileDownload file={file} />
-        </div>
-      </Modal.Header>
-      <DataPanel className="border-none">
-        <DataArea>
-          {file.aliases?.length > 0 && (
-            <>
-              <DataItemLabel>Aliases</DataItemLabel>
-              <DataItemValue>
-                <AliasList aliases={file.aliases} />
-              </DataItemValue>
-            </>
-          )}
-          <DataItemLabel>Content Type</DataItemLabel>
-          <DataItemValue>{file.content_type}</DataItemValue>
-          <DataItemLabel>File Format</DataItemLabel>
-          <DataItemValue>{file.file_format}</DataItemValue>
-          {truthyOrZero(file.file_size) && (
-            <>
-              <DataItemLabel>File Size</DataItemLabel>
-              <DataItemValue>{dataSize(file.file_size)}</DataItemValue>
-            </>
-          )}
-          <DataItemLabel>Summary</DataItemLabel>
-          <DataItemValue>{file.summary}</DataItemValue>
-          {file.lab && (
-            <>
-              <DataItemLabel>Lab</DataItemLabel>
-              <DataItemValue>
-                <Link
-                  href={file.lab["@id"]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {(file.lab as DatabaseObject).title}
-                </Link>
-              </DataItemValue>
-            </>
-          )}
-          {file.derived_from?.length > 0 && (
-            <>
-              <DataItemLabel>
-                Report of Files This File Derives From
-              </DataItemLabel>
-              <DataItemValue>
-                <ButtonLink
-                  href={derivedFromReportLink}
-                  size="sm"
-                  isInline
-                  isExternal
-                >
-                  <TableCellsIcon className="h-4 w-4" />
-                </ButtonLink>
-              </DataItemValue>
-            </>
-          )}
-        </DataArea>
-      </DataPanel>
-    </Modal>
-  );
+function collectRelevantFileSetTypes(
+  graphData: NodeData[],
+  fileSet: FileSetObject
+): string[] {
+  const fileSetTypes = new Set<string>([fileSet["@type"][0]]);
+  graphData.forEach((node) => {
+    if (isFileSetNodeData(node)) {
+      fileSetTypes.add(node.fileSet["@type"][0]);
+    }
+  });
+  return [...fileSetTypes];
 }
 
 /**
@@ -464,30 +293,30 @@ function FileSetModal({
 /**
  * Draw the legend to show what colors correspond to each file set type.
  */
-// function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
-//   const { collectionTitles } = useContext<any>(SessionContext);
-//   const { darkMode } = useContext(GlobalContext);
+function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
+  const { collectionTitles } = useContext<any>(SessionContext);
+  const { darkMode } = useContext(GlobalContext);
 
-//   return (
-//     <div className="flex flex-wrap justify-center gap-1 border-t border-data-border py-2">
-//       {Object.entries(fileSetTypeColorMap).map(([fileSetType, color]) => {
-//         if (fileSetTypes.includes(fileSetType)) {
-//           return (
-//             <div
-//               key={fileSetType}
-//               className="flex items-center gap-0.5 border border-gray-800 px-1 text-sm text-black dark:border-gray-400 dark:text-white"
-//               style={{
-//                 backgroundColor: darkMode.enabled ? color.dark : color.light,
-//               }}
-//             >
-//               {collectionTitles?.[fileSetType] || fileSetType}
-//             </div>
-//           );
-//         }
-//       })}
-//     </div>
-//   );
-// }
+  return (
+    <div className="flex flex-wrap justify-center gap-1 border-t border-data-border py-2">
+      {Object.entries(fileSetTypeColorMap).map(([fileSetType, color]) => {
+        if (fileSetTypes.includes(fileSetType)) {
+          return (
+            <div
+              key={fileSetType}
+              className="flex items-center gap-0.5 border border-gray-800 px-1 text-sm text-black dark:border-gray-400 dark:text-white"
+              style={{
+                backgroundColor: darkMode.enabled ? color.dark : color.light,
+              }}
+            >
+              {collectionTitles?.[fileSetType] || fileSetType}
+            </div>
+          );
+        }
+      })}
+    </div>
+  );
+}
 
 /**
  * Display a graph of file associations for a file set. The graph is a directed acyclic graph (DAG)
@@ -773,6 +602,10 @@ export function FileGraph({
     derivedFromFiles as FileObject[]
   );
   const trimmedData = trimIsolatedNodes(data);
+  const relevantFileSetTypes = collectRelevantFileSetTypes(
+    trimmedData,
+    fileSet as FileSetObject
+  );
 
   if (trimmedData.length > 0) {
     return (
@@ -801,7 +634,7 @@ export function FileGraph({
                   fileSet={fileSet as FileSetObject}
                   graphData={trimmedData}
                 />
-                {/* <Legend fileSetTypes={relevantFileSetTypes} /> */}
+                <Legend fileSetTypes={relevantFileSetTypes} />
               </DataPanel>
             </motion.div>
           )}
