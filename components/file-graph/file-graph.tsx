@@ -2,7 +2,7 @@
 import * as d3Dag from "d3-dag";
 import { AnimatePresence, motion } from "framer-motion";
 import _ from "lodash";
-import { useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { Group } from "@visx/group";
 import { LinkHorizontal } from "@visx/shape";
 // components
@@ -38,6 +38,74 @@ import type {
   FileObject,
   FileSetObject,
 } from "../../globals.d";
+
+/**
+ * Display a selectable node in the graph, for either a file or a file set node. Put the contents
+ * of the node as the children of this component.
+ * @param node The node to display from d3-dag
+ * @param onNodeClick Function to call when the user clicks on the node
+ * @param background Background color of the node
+ * @param label Aria label for the node
+ * @param isNodeSelected Whether the node is selected
+ */
+function GraphNode({
+  node,
+  onNodeClick,
+  background,
+  label,
+  isNodeSelected,
+  children,
+}: {
+  node: d3Dag.DagNode<
+    {
+      id: string;
+      parentIds: string[];
+    },
+    undefined
+  >;
+  onNodeClick: (nodeData: NodeData) => void;
+  background: { light: string; dark: string };
+  label: string;
+  isNodeSelected: boolean;
+  children: ReactNode;
+}) {
+  const { darkMode } = useContext(GlobalContext);
+
+  return (
+    <Group
+      top={node.x}
+      left={node.y}
+      style={{ cursor: "pointer" }}
+      onClick={() => onNodeClick(node.data as NodeData)}
+      tabIndex={0}
+      aria-label={label}
+    >
+      <rect
+        height={NODE_HEIGHT}
+        width={NODE_WIDTH}
+        x={-NODE_WIDTH / 2}
+        y={-NODE_HEIGHT / 2}
+        fill={darkMode.enabled ? background.dark : background.light}
+        opacity={1}
+        className="stroke-gray-800 dark:stroke-gray-400"
+        strokeWidth={1}
+      />
+      {isNodeSelected && (
+        <rect
+          height={NODE_HEIGHT + 8}
+          width={NODE_WIDTH + 8}
+          x={-NODE_WIDTH / 2 - 4}
+          y={-NODE_HEIGHT / 2 - 4}
+          fill="transparent"
+          opacity={1}
+          className="stroke-gray-800 dark:stroke-white"
+          strokeWidth={3}
+        />
+      )}
+      {children}
+    </Group>
+  );
+}
 
 /**
  * Display a graph of file associations for a file set. The graph is a directed acyclic graph (DAG)
@@ -140,39 +208,14 @@ function Graph({
                   fileSetTypeColorMap.unknown;
                 const foreground = darkMode.enabled ? "#ffffff" : "#000000";
                 return (
-                  <Group
+                  <GraphNode
                     key={i}
-                    top={node.x}
-                    left={node.y}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => onNodeClick(node.data as NodeData)}
-                    tabIndex={0}
-                    aria-label={`File ${graphNode.file.accession}, file format ${graphNode.file.file_format}, content type ${graphNode.file.content_type}`}
+                    node={node}
+                    onNodeClick={onNodeClick}
+                    background={background}
+                    label={`File ${graphNode.file.accession}, file format ${graphNode.file.file_format}, content type ${graphNode.file.content_type}`}
+                    isNodeSelected={isNodeSelected}
                   >
-                    <rect
-                      height={NODE_HEIGHT}
-                      width={NODE_WIDTH}
-                      x={-NODE_WIDTH / 2}
-                      y={-NODE_HEIGHT / 2}
-                      fill={
-                        darkMode.enabled ? background.dark : background.light
-                      }
-                      opacity={1}
-                      className="stroke-gray-800 dark:stroke-gray-400"
-                      strokeWidth={1}
-                    />
-                    {isNodeSelected && (
-                      <rect
-                        height={NODE_HEIGHT + 8}
-                        width={NODE_WIDTH + 8}
-                        x={-NODE_WIDTH / 2 - 4}
-                        y={-NODE_HEIGHT / 2 - 4}
-                        fill="transparent"
-                        opacity={1}
-                        className="stroke-gray-800 dark:stroke-white"
-                        strokeWidth={3}
-                      />
-                    )}
                     <text
                       y="-8px"
                       fontSize={12}
@@ -198,7 +241,7 @@ function Graph({
                     >
                       {truncateText(graphNode.file.content_type, 24)}
                     </text>
-                  </Group>
+                  </GraphNode>
                 );
               }
               if (isFileSetNodeData(graphNode)) {
@@ -208,43 +251,14 @@ function Graph({
                   fileSetTypeColorMap.unknown;
                 const foreground = darkMode.enabled ? "#ffffff" : "#000000";
                 return (
-                  <Group
+                  <GraphNode
                     key={i}
-                    top={node.x}
-                    left={node.y}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => onNodeClick(node.data as NodeData)}
-                    tabIndex={0}
-                    aria-label={`File set ${graphNode.fileSet.title}`}
+                    node={node}
+                    onNodeClick={onNodeClick}
+                    background={background}
+                    label={`File set ${graphNode.fileSet.title}`}
+                    isNodeSelected={isNodeSelected}
                   >
-                    <rect
-                      height={NODE_HEIGHT}
-                      width={NODE_WIDTH}
-                      x={-NODE_WIDTH / 2}
-                      y={-NODE_HEIGHT / 2}
-                      rx={10}
-                      ry={10}
-                      fill={
-                        darkMode.enabled ? background.dark : background.light
-                      }
-                      opacity={1}
-                      className="stroke-gray-800 dark:stroke-gray-400"
-                      strokeWidth={1}
-                    />
-                    {isNodeSelected && (
-                      <rect
-                        height={NODE_HEIGHT + 8}
-                        width={NODE_WIDTH + 8}
-                        x={-NODE_WIDTH / 2 - 4}
-                        y={-NODE_HEIGHT / 2 - 4}
-                        rx={10}
-                        ry={10}
-                        fill="transparent"
-                        opacity={1}
-                        className="stroke-gray-800 dark:stroke-white"
-                        strokeWidth={3}
-                      />
-                    )}
                     <text
                       y="-4px"
                       fontSize={12}
@@ -263,7 +277,7 @@ function Graph({
                       {graphNode.files.length}{" "}
                       {graphNode.files.length === 1 ? "file" : "files"}
                     </text>
-                  </Group>
+                  </GraphNode>
                 );
               }
               return null;
