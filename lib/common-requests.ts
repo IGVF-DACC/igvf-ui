@@ -107,6 +107,7 @@ export async function requestFiles(
       "href",
       "illumina_read_type",
       "index",
+      "input_file_for",
       "lab.@id",
       "lab.title",
       "lane",

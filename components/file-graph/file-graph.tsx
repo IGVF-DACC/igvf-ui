@@ -112,13 +112,16 @@ function GraphNode({
  * where each node represents a file and each edge represents a `derived_from` relationship between
  * files.
  * @param fileSet The file set object for the page the user views
+ * @param nativeFiles Files belonging to the file set the user views
  * @param graphData List of nodes to include in the graph
  */
 function Graph({
   fileSet,
+  nativeFiles,
   graphData,
 }: {
   fileSet: FileSetObject;
+  nativeFiles: FileObject[];
   graphData: NodeData[];
 }) {
   // Holds the DAG to render after it has been loaded in the browser
@@ -293,6 +296,7 @@ function Graph({
         {selectedNode && isFileSetNodeData(selectedNode) && (
           <FileSetModal
             node={selectedNode}
+            nativeFiles={nativeFiles}
             onClose={() => setSelectedNode(null)}
           />
         )}
@@ -368,6 +372,7 @@ export function FileGraph({
               <DataPanel>
                 <Graph
                   fileSet={fileSet as FileSetObject}
+                  nativeFiles={files as FileObject[]}
                   graphData={trimmedData}
                 />
                 <Legend fileSetTypes={relevantFileSetTypes} />

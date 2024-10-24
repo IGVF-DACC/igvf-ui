@@ -10,6 +10,7 @@ import {
 } from "../data-area";
 import { FileAccessionAndDownload } from "../file-download";
 import Modal from "../modal";
+import SeparatedList from "../separated-list";
 import SortableGrid from "../sortable-grid";
 import Status from "../status";
 // local
@@ -37,6 +38,39 @@ const filesColumns = [
     id: "content_type",
     title: "Content Type",
     sorter: (item) => item.content_type.toLowerCase(),
+  },
+  {
+    id: "input_file_for",
+    title: "Input File For",
+    display: ({ source, meta }) => {
+      const { nativeFiles } = meta;
+      const inputFileFor = source.input_file_for;
+      if (inputFileFor.length > 0) {
+        // Find the child files that are in the list of native file paths.
+        const childFiles = inputFileFor
+          .map((inputFileId) =>
+            nativeFiles.find((file) => file["@id"] === inputFileId)
+          )
+          .filter((file) => file);
+        if (childFiles.length > 0) {
+          return (
+            <SeparatedList isCollapsible>
+              {childFiles.map((file) => (
+                <Link
+                  key={file["@id"]}
+                  href={file["@id"]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {file.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          );
+        }
+      }
+      return null;
+    },
   },
   {
     id: "upload_status",
@@ -68,9 +102,11 @@ function FileSetFileTable({ files }: { files: FileObject[] }) {
  */
 export function FileSetModal({
   node,
+  nativeFiles,
   onClose,
 }: {
   node: FileSetNodeData;
+  nativeFiles: FileObject[];
   onClose: () => void;
 }) {
   const { fileSet } = node;
@@ -102,7 +138,13 @@ export function FileSetModal({
           )}
         </DataArea>
         <div className="mt-4">
-          <FileSetFileTable files={node.files} />
+          <SortableGrid
+            data={node.files}
+            columns={filesColumns}
+            keyProp="@id"
+            meta={{ nativeFiles }}
+            pager={{} as any}
+          />
         </div>
       </DataPanel>
     </Modal>
