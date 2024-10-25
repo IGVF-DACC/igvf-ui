@@ -17,6 +17,7 @@ import {
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import { FileGraph } from "../../components/file-graph";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
@@ -36,6 +37,7 @@ import {
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { getAllDerivedFromFiles } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
 import DonorTable from "../../components/donor-table";
 
@@ -47,6 +49,8 @@ export default function PredictionSet({
   documents,
   publications,
   files,
+  fileFileSets,
+  derivedFromFiles,
   assessedGenes,
   attribution = null,
   isJson,
@@ -187,6 +191,19 @@ export default function PredictionSet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
+          {files.length > 0 && (
+            <>
+              <FileTable files={files} fileSet={predictionSet} isDownloadable />
+              <FileGraph
+                fileSet={predictionSet}
+                files={files}
+                fileFileSets={fileFileSets}
+                derivedFromFiles={derivedFromFiles}
+                pagePanels={pagePanels}
+                pagePanelId="file-graph"
+              />
+            </>
+          )}
           {predictionSet.samples?.length > 0 && (
             <SampleTable
               samples={predictionSet.samples}
@@ -233,9 +250,6 @@ export default function PredictionSet({
               pagePanelId="control-for"
             />
           )}
-          {files.length > 0 && (
-            <FileTable files={files} fileSet={predictionSet} isDownloadable />
-          )}
           {documents.length > 0 && (
             <DocumentTable
               documents={documents}
@@ -261,6 +275,10 @@ PredictionSet.propTypes = {
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that `files` refer to in their `file_sets` property
+  fileFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // All derived_from files not included in `files`
+  derivedFromFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Genes that are assessed in this prediction set
   assessedGenes: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this prediction set
@@ -308,6 +326,18 @@ export async function getServerSideProps({ params, req, query }) {
       files = await requestFiles(filePaths, request);
     }
 
+    const derivedFromFiles = await getAllDerivedFromFiles(files, request);
+    const combinedFiles = files.concat(derivedFromFiles);
+    let fileFileSets = [];
+    if (combinedFiles.length > 0) {
+      const fileSetPaths = combinedFiles.reduce((acc, file) => {
+        return acc.includes(file.file_set["@id"])
+          ? acc
+          : acc.concat(file.file_set["@id"]);
+      }, []);
+      fileFileSets = await requestFileSets(fileSetPaths, request);
+    }
+
     const assessedGenes =
       predictionSet.assessed_genes?.length > 0
         ? await requestGenes(predictionSet.assessed_genes, request)
@@ -335,6 +365,8 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         publications,
         files,
+        fileFileSets,
+        derivedFromFiles,
         pageContext: { title: predictionSet.accession },
         attribution,
         isJson,

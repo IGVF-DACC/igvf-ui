@@ -25,7 +25,10 @@
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "@typescript-eslint/parser": "^8.1.0",
+    "@visx/visx": "^3.11.0",
     "ace-builds": "^1.5.0",
+    "d3": "^7.9.0",
+    "d3-dag": "0.11.5",
     "date-fns": "^4.1.0",
     "empty-schema": "^0.1.5",
     "find-duplicated-property-keys": "^1.2.9",
@@ -44,7 +47,8 @@
     "react-svg-pan-zoom-loader": "^1.6.1",
     "react-syntax-highlighter": "^15.5.0",
     "redis": "^4.7.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "xxhashjs": "^0.2.2"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.4",
