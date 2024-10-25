@@ -93,7 +93,7 @@ class RedisAlarms(Construct):
             self,
             'RedisCPUAlarm',
             evaluation_periods=1,
-            threshold=ENGINE_CPU_ALARM_THRESHOLD_PERCENT,
+            threshold=CPU_ALARM_THRESHOLD_PERCENT,
         )
         redis_cpu_alarm.add_alarm_action(
             self.alarm_action
@@ -116,7 +116,7 @@ class RedisAlarms(Construct):
             self,
             'RedisUsedMemoryAlarm',
             evaluation_periods=1,
-            threshold=90,
+            threshold=MEMORY_ALARM_THRESHOLD_PERCENT,
         )
         redis_used_memory_alarm.add_alarm_action(
             self.alarm_action
