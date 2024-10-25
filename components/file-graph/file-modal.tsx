@@ -1,6 +1,7 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import { useContext } from "react";
 // components
 import AliasList from "../alias-list";
 import {
@@ -12,6 +13,7 @@ import {
 import { FileDownload } from "../file-download";
 import { ButtonLink } from "../form-elements";
 import Modal from "../modal";
+import SessionContext from "../session-context";
 import Status from "../status";
 // local
 import { type FileNodeData } from "./types";
@@ -33,17 +35,24 @@ export function FileModal({
   node: FileNodeData;
   onClose: () => void;
 }) {
+  const { collectionTitles } = useContext<any>(SessionContext);
   const { file } = node;
+  const fileType = file["@type"][0];
   const derivedFromReportLink = `/multireport/?type=File&input_file_for=${file["@id"]}`;
 
   return (
     <Modal isOpen={true} onClose={onClose}>
       <Modal.Header onClose={onClose}>
-        <div className="flex items-center gap-1">
-          <Link href={file["@id"]} target="_blank" rel="noopener noreferrer">
-            {file.accession}
-          </Link>
-          <FileDownload file={file} />
+        <div>
+          <div className="flex items-center gap-1">
+            <Link href={file["@id"]} target="_blank" rel="noopener noreferrer">
+              {file.accession}
+            </Link>
+            <FileDownload file={file} />
+          </div>
+          <div className="text-sm">
+            {collectionTitles?.[fileType] || fileType}
+          </div>
         </div>
       </Modal.Header>
       <DataPanel className="border-none">

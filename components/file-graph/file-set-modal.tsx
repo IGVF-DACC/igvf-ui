@@ -1,5 +1,6 @@
 // node_modules
 import Link from "next/link";
+import { useContext } from "react";
 // components
 import AliasList from "../alias-list";
 import {
@@ -11,6 +12,7 @@ import {
 import { FileAccessionAndDownload } from "../file-download";
 import Modal from "../modal";
 import SeparatedList from "../separated-list";
+import SessionContext from "../session-context";
 import SortableGrid from "../sortable-grid";
 import Status from "../status";
 // local
@@ -99,15 +101,26 @@ export function FileSetModal({
   nativeFiles: FileObject[];
   onClose: () => void;
 }) {
+  const { collectionTitles } = useContext<any>(SessionContext);
   const { fileSet } = node;
+  const fileSetType = fileSet["@type"][0];
 
   return (
     <Modal isOpen={true} onClose={onClose}>
       <Modal.Header onClose={onClose}>
-        <div className="flex gap-1">
-          <Link href={fileSet["@id"]} target="_blank" rel="noopener noreferrer">
-            {fileSet.accession}
-          </Link>
+        <div>
+          <div className="flex gap-1">
+            <Link
+              href={fileSet["@id"]}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {fileSet.accession}
+            </Link>
+          </div>
+          <div className="text-sm">
+            {collectionTitles?.[fileSetType] || fileSetType}
+          </div>
         </div>
       </Modal.Header>
       <DataPanel className="border-none">
