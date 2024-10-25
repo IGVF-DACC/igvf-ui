@@ -16,6 +16,9 @@ from aws_cdk.aws_elasticache import CfnSubnetGroup
 
 from infrastructure.config import Config
 
+from infrastructure.constructs.alarms.redis import RedisAlarmsProps
+from infrastructure.constructs.alarms.redis import RedisAlarms
+
 from infrastructure.constructs.existing.types import ExistingResources
 
 from typing import Any
@@ -111,7 +114,15 @@ class Redis(Construct):
         self.url = f'redis://{self.cache_cluster.attr_redis_endpoint_address}:{self.cache_cluster.attr_redis_endpoint_port}'
 
     def _add_alarms(self) -> None:
-        pass
+        RedisAlarms(
+            self,
+            'RedisAlarms',
+            props=RedisAlarmsProps(
+                config=self.props.config,
+                existing_resources=self.props.existing_resources,
+                cache_cluster=self.cache_cluster,
+            )
+        )
 
     def _export_values(self) -> None:
         export_default_explicit_values(self)
