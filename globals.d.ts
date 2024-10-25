@@ -255,6 +255,7 @@ export interface FileObject extends DatabaseObject {
   file_format: string;
   file_set: string;
   file_size: number;
+  upload_status: string;
 }
 
 /**

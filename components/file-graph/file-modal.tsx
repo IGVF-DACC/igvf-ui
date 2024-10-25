@@ -12,6 +12,7 @@ import {
 import { FileDownload } from "../file-download";
 import { ButtonLink } from "../form-elements";
 import Modal from "../modal";
+import Status from "../status";
 // local
 import { type FileNodeData } from "./types";
 // lib
@@ -38,7 +39,7 @@ export function FileModal({
   return (
     <Modal isOpen={true} onClose={onClose}>
       <Modal.Header onClose={onClose}>
-        <div className="flex gap-1">
+        <div className="flex items-center gap-1">
           <Link href={file["@id"]} target="_blank" rel="noopener noreferrer">
             {file.accession}
           </Link>
@@ -98,6 +99,11 @@ export function FileModal({
               </DataItemValue>
             </>
           )}
+          <DataItemLabel>Statuses</DataItemLabel>
+          <DataItemValue className="flex items-center gap-1">
+            <Status status={file.status} />
+            <Status status={file.upload_status} />
+          </DataItemValue>
         </DataArea>
       </DataPanel>
     </Modal>
