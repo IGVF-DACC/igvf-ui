@@ -381,7 +381,6 @@ export function FileGraph({
     fileFileSets as FileSetObject[],
     derivedFromFiles as FileObject[]
   );
-  console.log("GRAPH DATA", data);
   const trimmedData = trimIsolatedNodes(data);
   const relevantFileSetTypes = collectRelevantFileSetTypes(
     trimmedData,
