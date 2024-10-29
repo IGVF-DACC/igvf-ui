@@ -1,16 +1,11 @@
 // node_modules
 import * as d3Dag from "d3-dag";
-import { AnimatePresence, motion } from "framer-motion";
 import { DocumentTextIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { Group } from "@visx/group";
 import { LinkHorizontal } from "@visx/shape";
 // components
-import {
-  standardAnimationTransition,
-  standardAnimationVariants,
-} from "../animation";
 import { DataAreaTitle, DataPanel } from "../data-area";
 import GlobalContext from "../global-context";
 import Icon from "../icon";
@@ -400,35 +395,26 @@ export function FileGraph({
             <div id="file-graph">{title}</div>
           </DataAreaTitle.Expander>
         </DataAreaTitle>
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              className="overflow-hidden [&>div]:p-0"
-              initial="collapsed"
-              animate="open"
-              exit="collapsed"
-              transition={standardAnimationTransition}
-              variants={standardAnimationVariants}
-            >
-              <DataPanel>
-                {!isGraphTooLarge ? (
-                  <>
-                    <Graph
-                      fileSet={fileSet as FileSetObject}
-                      nativeFiles={files as FileObject[]}
-                      graphData={trimmedData}
-                    />
-                    <Legend fileSetTypes={relevantFileSetTypes} />
-                  </>
-                ) : (
-                  <div className="p-4 text-center italic">
-                    Graph too large to display
-                  </div>
-                )}
-              </DataPanel>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isExpanded && (
+          <div className="overflow-hidden [&>div]:p-0">
+            <DataPanel>
+              {!isGraphTooLarge ? (
+                <>
+                  <Graph
+                    fileSet={fileSet as FileSetObject}
+                    nativeFiles={files as FileObject[]}
+                    graphData={trimmedData}
+                  />
+                  <Legend fileSetTypes={relevantFileSetTypes} />
+                </>
+              ) : (
+                <div className="p-4 text-center italic">
+                  Graph too large to display
+                </div>
+              )}
+            </DataPanel>
+          </div>
+        )}
       </section>
     );
   }
