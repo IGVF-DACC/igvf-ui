@@ -32,6 +32,7 @@ import {
   fileSetTypeColorMap,
   isFileNodeData,
   isFileSetNodeData,
+  MAX_NODES_TO_DISPLAY,
   type NodeData,
 } from "./types";
 // root
@@ -382,10 +383,10 @@ export function FileGraph({
     derivedFromFiles as FileObject[]
   );
   const trimmedData = trimIsolatedNodes(data);
-  const relevantFileSetTypes = collectRelevantFileSetTypes(
-    trimmedData,
-    fileSet as FileSetObject
-  );
+  const isGraphTooLarge = trimmedData.length > MAX_NODES_TO_DISPLAY;
+  const relevantFileSetTypes = !isGraphTooLarge
+    ? collectRelevantFileSetTypes(trimmedData, fileSet as FileSetObject)
+    : [];
 
   if (trimmedData.length > 0) {
     return (
@@ -410,12 +411,20 @@ export function FileGraph({
               variants={standardAnimationVariants}
             >
               <DataPanel>
-                <Graph
-                  fileSet={fileSet as FileSetObject}
-                  nativeFiles={files as FileObject[]}
-                  graphData={trimmedData}
-                />
-                <Legend fileSetTypes={relevantFileSetTypes} />
+                {!isGraphTooLarge ? (
+                  <>
+                    <Graph
+                      fileSet={fileSet as FileSetObject}
+                      nativeFiles={files as FileObject[]}
+                      graphData={trimmedData}
+                    />
+                    <Legend fileSetTypes={relevantFileSetTypes} />
+                  </>
+                ) : (
+                  <div className="p-4 text-center italic">
+                    Graph too large to display
+                  </div>
+                )}
               </DataPanel>
             </motion.div>
           )}

@@ -2,6 +2,11 @@
 import type { FileObject, FileSetObject } from "../../globals.d";
 
 /**
+ * Largest number of nodes to display in the graph. Beyond this, display an error message.
+ */
+export const MAX_NODES_TO_DISPLAY = 70;
+
+/**
  * Code that indicates an element of `NodeData` is a file node.
  */
 const FILE_NODE_TYPE = "file";
