@@ -141,24 +141,29 @@ function Graph({
 
   useEffect(() => {
     // useEffect hides the d3-dag code from the NextJS server because d3-dag requires the browser's
-    // DOM to run.
-    const dag = d3Dag.dagStratify()(graphData);
-    const layout = d3Dag
-      .sugiyama()
-      .coord(d3Dag.coordGreedy())
-      .decross(d3Dag.decrossOpt().large("large"))
-      .layering(d3Dag.layeringLongestPath())
-      .nodeSize((node) => {
-        // Might have to play with the adjustment factors if you change the size of the nodes.
-        return node ? [NODE_HEIGHT * 2, NODE_WIDTH * 1.8] : [0, 0];
-      });
-    const { width, height } = layout(dag as any);
-    setLoadedDag(dag);
+    // DOM to run. Use a timer to give React a cycle to render the "Loading..." message before
+    // running the d3-dag code.
+    const timer = setTimeout(() => {
+      const dag = d3Dag.dagStratify()(graphData);
+      const layout = d3Dag
+        .sugiyama()
+        .coord(d3Dag.coordGreedy())
+        .decross(d3Dag.decrossOpt().large("large"))
+        .layering(d3Dag.layeringLongestPath())
+        .nodeSize((node) => {
+          // Might have to play with the adjustment factors if you change the size of the nodes.
+          return node ? [NODE_HEIGHT * 2, NODE_WIDTH * 1.8] : [0, 0];
+        });
+      const { width, height } = layout(dag as any);
+      setLoadedDag(dag);
 
-    // d3-dag sugiyama lays out the graph vertically, so swap the width and height to fit a
-    // horizontal display.
-    setLayoutHeight(width);
-    setLayoutWidth(height);
+      // d3-dag sugiyama lays out the graph vertically, so swap the width and height to fit a
+      // horizontal display.
+      setLayoutHeight(width);
+      setLayoutWidth(height);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, []);
 
   /**
@@ -169,175 +174,174 @@ function Graph({
     setSelectedNode(nodeData);
   }
 
-  return (
-    loadedDag && (
-      <div className="overflow-x-auto">
-        <svg className="mx-auto" width={layoutWidth} height={layoutHeight}>
-          <defs>
-            <marker
-              id="arrow"
-              viewBox="0 -5 10 10"
-              refX="20"
-              refY="0"
-              markerWidth="10"
-              markerHeight="10"
-              orient="auto"
-              className="fill-black dark:fill-white"
-            >
-              <path d="M0,-5L10,0L0,5" />
-            </marker>
-          </defs>
-          <Group top={0} left={0}>
-            {loadedDag.links().map((link, i) => {
-              // Render the edges between nodes as lines.
+  return loadedDag ? (
+    <div className="overflow-x-auto">
+      <svg className="mx-auto" width={layoutWidth} height={layoutHeight}>
+        <defs>
+          <marker
+            id="arrow"
+            viewBox="0 -5 10 10"
+            refX="20"
+            refY="0"
+            markerWidth="10"
+            markerHeight="10"
+            orient="auto"
+            className="fill-black dark:fill-white"
+          >
+            <path d="M0,-5L10,0L0,5" />
+          </marker>
+        </defs>
+        <Group top={0} left={0}>
+          {loadedDag.links().map((link, i) => {
+            // Render the edges between nodes as lines.
+            return (
+              <LinkHorizontal
+                key={`link-${i}`}
+                data={link}
+                className="stroke-black dark:stroke-white"
+                strokeWidth="1"
+                fill="none"
+                x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
+                markerEnd="url(#arrow)"
+              />
+            );
+          })}
+          {loadedDag.descendants().map((node, i) => {
+            // Render the nodes as rectangles.
+            const graphNode = node.data as NodeData;
+            if (isFileNodeData(graphNode)) {
+              const isNodeSelected = selectedNode?.id === graphNode.id;
+              const background =
+                fileSetTypeColorMap[fileSet["@type"][0]] ||
+                fileSetTypeColorMap.unknown;
+              const foreground = darkMode.enabled ? "#ffffff" : "#000000";
               return (
-                <LinkHorizontal
-                  key={`link-${i}`}
-                  data={link}
-                  className="stroke-black dark:stroke-white"
-                  strokeWidth="1"
-                  fill="none"
-                  x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
-                  markerEnd="url(#arrow)"
-                />
-              );
-            })}
-            {loadedDag.descendants().map((node, i) => {
-              // Render the nodes as rectangles.
-              const graphNode = node.data as NodeData;
-              if (isFileNodeData(graphNode)) {
-                const isNodeSelected = selectedNode?.id === graphNode.id;
-                const background =
-                  fileSetTypeColorMap[fileSet["@type"][0]] ||
-                  fileSetTypeColorMap.unknown;
-                const foreground = darkMode.enabled ? "#ffffff" : "#000000";
-                return (
-                  <GraphNode
-                    key={i}
-                    node={node}
-                    onNodeClick={onNodeClick}
-                    background={background}
-                    label={`File ${graphNode.file.accession}, file format ${graphNode.file.file_format}, content type ${graphNode.file.content_type}`}
-                    isNodeSelected={isNodeSelected}
-                    className="relative"
+                <GraphNode
+                  key={i}
+                  node={node}
+                  onNodeClick={onNodeClick}
+                  background={background}
+                  label={`File ${graphNode.file.accession}, file format ${graphNode.file.file_format}, content type ${graphNode.file.content_type}`}
+                  isNodeSelected={isNodeSelected}
+                  className="relative"
+                >
+                  <DocumentTextIcon
+                    className="absolute"
+                    x={NODE_WIDTH / 2 - 18}
+                    y={-NODE_HEIGHT / 2 + 2}
+                    width={16}
+                    height={16}
+                  />
+                  <text
+                    y="-8px"
+                    fontSize={12}
+                    textAnchor="middle"
+                    fontWeight="bold"
+                    fill={foreground}
                   >
-                    <DocumentTextIcon
-                      className="absolute"
-                      x={NODE_WIDTH / 2 - 18}
-                      y={-NODE_HEIGHT / 2 + 2}
-                      width={16}
-                      height={16}
-                    />
-                    <text
-                      y="-8px"
-                      fontSize={12}
-                      textAnchor="middle"
-                      fontWeight="bold"
-                      fill={foreground}
-                    >
-                      {graphNode.file.accession}
-                    </text>
-                    <text
-                      y="6px"
-                      fontSize={12}
-                      textAnchor="middle"
-                      fill={foreground}
-                    >
-                      {graphNode.file.file_format}
-                    </text>
+                    {graphNode.file.accession}
+                  </text>
+                  <text
+                    y="6px"
+                    fontSize={12}
+                    textAnchor="middle"
+                    fill={foreground}
+                  >
+                    {graphNode.file.file_format}
+                  </text>
+                  <text
+                    y="18px"
+                    fontSize={12}
+                    textAnchor="middle"
+                    fill={foreground}
+                  >
+                    {truncateText(graphNode.file.content_type, 24)}
+                  </text>
+                </GraphNode>
+              );
+            }
+            if (isFileSetNodeData(graphNode)) {
+              const isNodeSelected = selectedNode?.id === graphNode.id;
+              const background =
+                fileSetTypeColorMap[graphNode.fileSet["@type"][0]] ||
+                fileSetTypeColorMap.unknown;
+              const foreground = darkMode.enabled ? "#ffffff" : "#000000";
+              return (
+                <GraphNode
+                  key={i}
+                  node={node}
+                  onNodeClick={onNodeClick}
+                  background={background}
+                  label={`File set ${graphNode.fileSet.title}`}
+                  isNodeSelected={isNodeSelected}
+                  isRounded
+                >
+                  <Icon.FileSet
+                    className="absolute"
+                    x={NODE_WIDTH / 2 - 18}
+                    y={-NODE_HEIGHT / 2 + 1}
+                    width={16}
+                    height={16}
+                  />
+                  <text
+                    y="-8px"
+                    fontSize={12}
+                    textAnchor="middle"
+                    fontWeight="bold"
+                    fill={foreground}
+                  >
+                    {graphNode.fileSet.accession}
+                  </text>
+                  <text
+                    y="6px"
+                    fontSize={12}
+                    textAnchor="middle"
+                    fill={foreground}
+                  >
+                    {graphNode.files.length}{" "}
+                    {graphNode.files.length === 1 ? "file" : "files"}
+                  </text>
+                  {graphNode.fileSet.file_set_type && (
                     <text
                       y="18px"
                       fontSize={12}
                       textAnchor="middle"
                       fill={foreground}
                     >
-                      {truncateText(graphNode.file.content_type, 24)}
+                      {truncateText(graphNode.fileSet.file_set_type, 24)}
                     </text>
-                  </GraphNode>
-                );
-              }
-              if (isFileSetNodeData(graphNode)) {
-                const isNodeSelected = selectedNode?.id === graphNode.id;
-                const background =
-                  fileSetTypeColorMap[graphNode.fileSet["@type"][0]] ||
-                  fileSetTypeColorMap.unknown;
-                const foreground = darkMode.enabled ? "#ffffff" : "#000000";
-                return (
-                  <GraphNode
-                    key={i}
-                    node={node}
-                    onNodeClick={onNodeClick}
-                    background={background}
-                    label={`File set ${graphNode.fileSet.title}`}
-                    isNodeSelected={isNodeSelected}
-                    isRounded
+                  )}
+                  <text
+                    y="6px"
+                    fontSize={12}
+                    textAnchor="middle"
+                    fill={foreground}
                   >
-                    <Icon.FileSet
-                      className="absolute"
-                      x={NODE_WIDTH / 2 - 18}
-                      y={-NODE_HEIGHT / 2 + 1}
-                      width={16}
-                      height={16}
-                    />
-                    <text
-                      y="-8px"
-                      fontSize={12}
-                      textAnchor="middle"
-                      fontWeight="bold"
-                      fill={foreground}
-                    >
-                      {graphNode.fileSet.accession}
-                    </text>
-                    <text
-                      y="6px"
-                      fontSize={12}
-                      textAnchor="middle"
-                      fill={foreground}
-                    >
-                      {graphNode.files.length}{" "}
-                      {graphNode.files.length === 1 ? "file" : "files"}
-                    </text>
-                    {graphNode.fileSet.file_set_type && (
-                      <text
-                        y="18px"
-                        fontSize={12}
-                        textAnchor="middle"
-                        fill={foreground}
-                      >
-                        {truncateText(graphNode.fileSet.file_set_type, 24)}
-                      </text>
-                    )}
-                    <text
-                      y="6px"
-                      fontSize={12}
-                      textAnchor="middle"
-                      fill={foreground}
-                    >
-                      {graphNode.files.length}{" "}
-                      {graphNode.files.length === 1 ? "file" : "files"}
-                    </text>
-                  </GraphNode>
-                );
-              }
-              return null;
-            })}
-          </Group>
-        </svg>
-        {selectedNode && isFileNodeData(selectedNode) && (
-          <FileModal
-            node={selectedNode}
-            onClose={() => setSelectedNode(null)}
-          />
-        )}
-        {selectedNode && isFileSetNodeData(selectedNode) && (
-          <FileSetModal
-            node={selectedNode}
-            nativeFiles={nativeFiles}
-            onClose={() => setSelectedNode(null)}
-          />
-        )}
-      </div>
-    )
+                    {graphNode.files.length}{" "}
+                    {graphNode.files.length === 1 ? "file" : "files"}
+                  </text>
+                </GraphNode>
+              );
+            }
+            return null;
+          })}
+        </Group>
+      </svg>
+      {selectedNode && isFileNodeData(selectedNode) && (
+        <FileModal node={selectedNode} onClose={() => setSelectedNode(null)} />
+      )}
+      {selectedNode && isFileSetNodeData(selectedNode) && (
+        <FileSetModal
+          node={selectedNode}
+          nativeFiles={nativeFiles}
+          onClose={() => setSelectedNode(null)}
+        />
+      )}
+    </div>
+  ) : (
+    <div className="flex h-16 items-center justify-center italic">
+      Loading&hellip;
+    </div>
   );
 }
 
