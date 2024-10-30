@@ -107,6 +107,16 @@ module.exports = {
         "menu-trigger-open": "var(--color-menu-trigger-background-open)",
         "menu-items": "var(--color-menu-items-background)",
         "menu-item-hover": "var(--color-menu-item-background-hover)",
+
+        "file-graph-analysis": "var(--color-file-graph-analysis)",
+        "file-graph-auxiliary": "var(--color-file-graph-auxiliary)",
+        "file-graph-construct-library":
+          "var(--color-file-graph-construct-library)",
+        "file-graph-curated": "var(--color-file-graph-curated)",
+        "file-graph-measurement": "var(--color-file-graph-measurement)",
+        "file-graph-model": "var(--color-file-graph-model)",
+        "file-graph-prediction": "var(--color-file-graph-prediction)",
+        "file-graph-unknown": "var(--color-file-graph-unknown)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
@@ -266,6 +276,16 @@ module.exports = {
         "audit-not-compliant": "var(--color-audit-not-compliant-fill)",
         "audit-internal-action": "var(--color-audit-internal-action-fill)",
         "audit-facet": "var(--color-audit-facet-fill)",
+
+        "file-graph-analysis": "var(--color-file-graph-analysis)",
+        "file-graph-auxiliary": "var(--color-file-graph-auxiliary)",
+        "file-graph-construct-library":
+          "var(--color-file-graph-construct-library)",
+        "file-graph-curated": "var(--color-file-graph-curated)",
+        "file-graph-measurement": "var(--color-file-graph-measurement)",
+        "file-graph-model": "var(--color-file-graph-model)",
+        "file-graph-prediction": "var(--color-file-graph-prediction)",
+        "file-graph-unknown": "var(--color-file-graph-unknown)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",

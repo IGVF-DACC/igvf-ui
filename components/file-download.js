@@ -67,11 +67,13 @@ FileHeaderDownload.propTypes = {
 /**
  * Display a file's accession and download link on one row.
  */
-export function FileAccessionAndDownload({ file }) {
+export function FileAccessionAndDownload({ file, isTargetBlank = false }) {
   return (
     <div>
       <div className="flex items-center gap-1">
-        <LinkedIdAndStatus item={file}>{file.accession}</LinkedIdAndStatus>
+        <LinkedIdAndStatus item={file} isTargetBlank={isTargetBlank}>
+          {file.accession}
+        </LinkedIdAndStatus>
         <FileDownload file={file} />
       </div>
     </div>
@@ -81,4 +83,6 @@ export function FileAccessionAndDownload({ file }) {
 FileAccessionAndDownload.propTypes = {
   // File to link to and download
   file: PropTypes.object.isRequired,
+  // Open the download link in a new tab
+  isTargetBlank: PropTypes.bool,
 };

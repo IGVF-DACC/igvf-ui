@@ -232,6 +232,16 @@
   --color-document-tiff: #dd6e42;
   --color-document-tsv: #a50104;
 
+  /** File graph node colors */
+  --color-file-graph-analysis: #faafff;
+  --color-file-graph-auxiliary: #60fa72;
+  --color-file-graph-construct-library: #ff84aa;
+  --color-file-graph-curated: #faac60;
+  --color-file-graph-measurement: #7cc0ff;
+  --color-file-graph-model: #f5fa60;
+  --color-file-graph-prediction: #60f5fa;
+  --color-file-graph-unknown: #c0c0c0;
+
   /** Modal borders */
   --color-modal-border: #cecfd3;
 
@@ -409,6 +419,16 @@
   /** Typography */
   --color-code-background: #334155;
   --color-code-text: #e5e7eb;
+
+  /** File graph node colors */
+  --color-file-graph-analysis: #733c77;
+  --color-file-graph-auxiliary: #196021;
+  --color-file-graph-construct-library: #852f4a;
+  --color-file-graph-curated: #925112;
+  --color-file-graph-measurement: #285b8a;
+  --color-file-graph-model: #777b00;
+  --color-file-graph-prediction: #196a6d;
+  --color-file-graph-unknown: #606060;
 
   /** Modal borders */
   --color-modal-border: #68799c;

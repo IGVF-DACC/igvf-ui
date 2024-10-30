@@ -24,7 +24,7 @@ type ExpandedPanelStates = Record<string, boolean>;
  *     when its page gets rendered on page load. This lets us know all the panels on a page so that
  *     the user can expand all of them at once if they want.
  */
-type PagePanelStates = {
+export type PagePanelStates = {
   expandedPanels: ExpandedPanelStates;
   setExpanded: (panelId: string, expanded: boolean) => void;
   setAllExpanded: (expanded: boolean) => void;

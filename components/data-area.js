@@ -26,10 +26,10 @@ import { PagePanelButton } from "./page-panels";
  * Displays a panel -- typically to display data items for an object, but you can use this for
  * anything that should appear in a panel on the page.
  */
-export function DataPanel({ className = "p-4", children }) {
+export function DataPanel({ className = "", children }) {
   return (
     <div
-      className={`border border-panel bg-panel @container ${className}`}
+      className={`border border-panel bg-panel p-4 @container ${className}`}
       data-testid="datapanel"
     >
       {children}

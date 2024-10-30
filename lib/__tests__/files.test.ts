@@ -1,9 +1,12 @@
 import {
   checkForFileDownloadPath,
   convertFileDownloadPathToFilePagePath,
+  getAllDerivedFromFiles,
   splitIlluminaSequenceFiles,
+  type FileObject,
 } from "../files";
-import type { DatabaseObject } from "../../globals.d";
+import FetchRequest from "../fetch-request";
+import type { DatabaseObject, SearchResults } from "../../globals.d";
 
 describe("Test the splitIlluminaSequenceFiles function", () => {
   it("returns all arrays when given an array of each types of files", () => {
@@ -351,5 +354,154 @@ describe("Test the convertFileDownloadPathToFilePagePath function", () => {
     const path = "/sequence-files/IGVFFI0001FSTQ/";
     const result = convertFileDownloadPathToFilePagePath(path);
     expect(result).toEqual("");
+  });
+});
+
+describe("Test the generateGraphData function", () => {
+  it("returns a list of files that derive from each other", async () => {
+    const files: FileObject[] = [
+      {
+        "@id": "file1",
+        "@type": ["File"],
+        accession: "file1",
+        derived_from: ["file2"],
+        file_set: "file-set-1",
+        file_format: "fastq",
+      },
+      {
+        "@id": "file2",
+        "@type": ["File"],
+        accession: "file2",
+        file_set: "file-set-1",
+        file_format: "bam",
+      },
+    ];
+    const request = new FetchRequest();
+    const derivedFromList = await getAllDerivedFromFiles(files, request);
+    expect(derivedFromList).toEqual([]);
+  });
+
+  it("returns a list of files where one derived_from belongs to another file set", async () => {
+    const mockResult: SearchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "file3",
+          "@type": ["File"],
+          accession: "file3",
+          file_set: "file-set-2",
+          file_format: "bam",
+        },
+      ],
+      "@id": "/search/?type=File",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=File",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    const files: FileObject[] = [
+      {
+        "@id": "file1",
+        "@type": ["File"],
+        accession: "file1",
+        derived_from: ["file2"],
+        file_set: "file-set-1",
+        file_format: "fastq",
+      },
+      {
+        "@id": "file2",
+        "@type": ["File"],
+        accession: "file2",
+        derived_from: ["file3"],
+        file_set: "file-set-1",
+        file_format: "bam",
+      },
+    ];
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockResult),
+      })
+    );
+
+    const request = new FetchRequest();
+    const derivedFromList = await getAllDerivedFromFiles(files, request);
+    expect(derivedFromList).toEqual([
+      {
+        "@id": "file3",
+        "@type": ["File"],
+        accession: "file3",
+        file_set: "file-set-2",
+        file_format: "bam",
+      },
+    ]);
+  });
+
+  it("crashes if a loop exists in the data", async () => {
+    const mockResult: SearchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "file3",
+          "@type": ["File"],
+          accession: "file3",
+          derived_from: ["file2"],
+          file_set: "file-set-2",
+          file_format: "bam",
+        },
+      ],
+      "@id": "/search/?type=File",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=File",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    const files: FileObject[] = [
+      {
+        "@id": "file1",
+        "@type": ["File"],
+        accession: "file1",
+        derived_from: ["file2"],
+        file_set: "file-set-1",
+        file_format: "fastq",
+      },
+      {
+        "@id": "file2",
+        "@type": ["File"],
+        accession: "file2",
+        derived_from: ["file3"],
+        file_set: "file-set-1",
+        file_format: "bam",
+      },
+    ];
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockResult),
+      })
+    );
+
+    const request = new FetchRequest();
+    await expect(getAllDerivedFromFiles(files, request)).rejects.toThrow(
+      "Detected a derived_from loop with file ID: file3"
+    );
   });
 });
