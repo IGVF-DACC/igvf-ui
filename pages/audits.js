@@ -12,6 +12,7 @@ import SessionContext from "../components/session-context";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { snakeCaseToPascalCase } from "../lib/general";
+import { retrieveProfiles } from "../lib/server-objects";
 
 const auditKeyColor = [
   {
@@ -206,7 +207,7 @@ export async function getServerSideProps({ req }) {
   const auditDoc = (
     await request.getObject("/static/doc/auditdoc.json")
   ).union();
-  const schemas = (await request.getObject("/profiles")).union();
+  const schemas = await retrieveProfiles(req.headers.cookie);
   if (
     FetchRequest.isResponseSuccess(auditDoc) &&
     FetchRequest.isResponseSuccess(schemas)
