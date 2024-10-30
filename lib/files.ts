@@ -7,15 +7,15 @@ import _ from "lodash";
 import { requestFiles } from "./common-requests";
 import type FetchRequest from "./fetch-request";
 // root
-import type { DatabaseObject } from "../globals.d";
+import type { DatabaseObject, FileObject, UploadStatus } from "../globals.d";
 
-export interface FileObject extends DatabaseObject {
-  accession: string;
-  aliases?: string[];
-  derived_from?: string[];
-  file_format: string;
-  file_set: string;
-}
+/**
+ * Set of file statuses that are not downloadable.
+ */
+const nonDownloadableStatuses = new Set<UploadStatus>([
+  "file not found",
+  "pending",
+]);
 
 /**
  * Array of files with and without the `illumina_read_type` property.
@@ -181,5 +181,25 @@ export async function getAllDerivedFromFiles(
   derivedFromFiles = _.uniqBy(derivedFromFiles, "@id");
   return derivedFromFiles.filter(
     (file) => !files.some((f) => f["@id"] === file["@id"])
+  );
+}
+
+/**
+ * Check if a file is downloadable based on its upload status and its anvil status, as well as
+ * having an `href` property.
+ * @param file File object to check
+ * @returns True if the file is downloadable
+ */
+export function checkFileDownloadable(file: FileObject): boolean {
+  const isDownloadDisabledByStatus = nonDownloadableStatuses.has(
+    file.upload_status
+  );
+  const isDownloadDisabledByAnvil = Boolean(
+    file.controlled_access && file.anvil_url
+  );
+  return (
+    !isDownloadDisabledByAnvil &&
+    !isDownloadDisabledByStatus &&
+    Boolean(file.href)
   );
 }

@@ -2,13 +2,11 @@
 import { ArrowDownTrayIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
+import { ButtonLink } from "./form-elements";
 import LinkedIdAndStatus from "./linked-id-and-status";
 // lib
 import { API_URL } from "../lib/constants";
-import { ButtonLink } from "./form-elements";
-
-const FILE_NOT_FOUND = "file not found";
-const PENDING = "pending";
+import { checkFileDownloadable } from "../lib/files";
 
 /**
  * Display a file-download link and download icon. Files without an `upload_status` of `file not
@@ -16,12 +14,7 @@ const PENDING = "pending";
  * Anvil URL.
  */
 export function FileDownload({ file, className = "" }) {
-  const isDownloadDisabledByStatus = [FILE_NOT_FOUND, PENDING].includes(
-    file.upload_status
-  );
-  const isDownloadDisabledByAnvil = Boolean(
-    file.controlled_access && file.anvil_url
-  );
+  const isFileDownloadable = checkFileDownloadable(file);
 
   return (
     <ButtonLink
@@ -29,7 +22,7 @@ export function FileDownload({ file, className = "" }) {
       href={`${API_URL}${file.href}`}
       type="secondary"
       size="sm"
-      isDisabled={isDownloadDisabledByStatus || isDownloadDisabledByAnvil}
+      isDisabled={!isFileDownloadable}
       hasIconOnly
       className={className}
     >
@@ -48,13 +41,14 @@ FileDownload.propTypes = {
 /**
  * File download link for the file object page headers.
  */
-export function FileHeaderDownload({ file }) {
+export function FileHeaderDownload({ file, children }) {
   return (
     <div
-      className="flex grow items-center px-1"
+      className="flex grow items-center gap-1 px-1"
       data-testid="file-header-download"
     >
       <FileDownload file={file} />
+      {children}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
+import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
@@ -51,7 +52,9 @@ export default function ModelFile({
           alternateAccessions={modelFile.alternate_accessions}
         />
         <ObjectPageHeader item={modelFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={modelFile} />
+          <FileHeaderDownload file={modelFile}>
+            <HostedFilePreview file={modelFile} buttonSize="sm" />
+          </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={modelFile} isJsonFormat={isJson}>
           <DataPanel>

@@ -18,6 +18,7 @@ import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
+import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
@@ -61,7 +62,9 @@ export default function TabularFile({
           alternateAccessions={tabularFile.alternate_accessions}
         />
         <ObjectPageHeader item={tabularFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={tabularFile} />
+          <FileHeaderDownload file={tabularFile}>
+            <HostedFilePreview file={tabularFile} buttonSize="sm" />
+          </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={tabularFile} isJsonFormat={isJson}>
           <DataPanel>

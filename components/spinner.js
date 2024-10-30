@@ -5,17 +5,16 @@ import PropTypes from "prop-types";
  * Loading spinnner by Sam Herbert (@sherb)
  * http://samherbert.net/svg-loaders/
  */
-export default function Spinner({ className = "" }) {
+export default function Spinner({ className = "", svgClassName = "" }) {
   return (
     <div
       className={`flex items-center justify-center stroke-gray-600 dark:stroke-gray-400 ${className}`}
     >
       <svg
-        width="44"
-        height="44"
         viewBox="0 0 44 44"
         xmlns="http://www.w3.org/2000/svg"
         style={{ fill: "none" }}
+        className={svgClassName}
       >
         <g fillRule="evenodd" strokeWidth="2">
           <circle cx="22" cy="22" r="1">
@@ -69,6 +68,8 @@ export default function Spinner({ className = "" }) {
 }
 
 Spinner.propTypes = {
-  // Extra Tailwind CSS classes
+  // Extra Tailwind CSS classes for the wrapper div
   className: PropTypes.string,
+  // Extra Tailwind CSS classes for the SVG element
+  svgClassName: PropTypes.string,
 };

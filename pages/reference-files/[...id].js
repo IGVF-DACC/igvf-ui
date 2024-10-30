@@ -19,6 +19,7 @@ import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
+import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
@@ -60,7 +61,9 @@ export default function ReferenceFile({
           alternateAccessions={referenceFile.alternate_accessions}
         />
         <ObjectPageHeader item={referenceFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={referenceFile} />
+          <FileHeaderDownload file={referenceFile}>
+            <HostedFilePreview file={referenceFile} buttonSize="sm" />
+          </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={referenceFile} isJsonFormat={isJson}>
           <DataPanel>

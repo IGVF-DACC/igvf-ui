@@ -27,6 +27,7 @@
     "object-curly-spacing": ["error", "always"],
     "object-shorthand": ["error"],
     "prefer-const": ["error"],
+    "prefer-template": "error",
     "react/no-unused-prop-types": ["error", { "skipShapeProps": true }],
     "react/prop-types": ["error", { "ignore": ["children"] }],
     "react/self-closing-comp": [
