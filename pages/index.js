@@ -166,18 +166,9 @@ const HOME_PAGE_PROPS_KEY = "home-page-props";
  */
 async function fetchHomePageData(request) {
   const datasetSummary = await requestDatasetSummary(request);
-  console.log(
-    "***************** RAW SUMMARY",
-    datasetSummary?.["@graph"].length
-  );
   const props = {
     fileSets: datasetSummary?.["@graph"] || [],
   };
-  // log props to the console, stringified and truncated to 100 characters
-  console.log(
-    "***************** PROPS SUMMARY",
-    JSON.stringify(props).substring(0, 100)
-  );
   return JSON.stringify(props);
 }
 
@@ -186,7 +177,6 @@ export async function getServerSideProps({ req }) {
   const cacheRef = new ServerCache(HOME_PAGE_PROPS_KEY);
   cacheRef.setFetchConfig(fetchHomePageData, request);
   const { fileSets } = await cacheRef.getData();
-  console.log("***************** FILESETS", fileSets.length);
 
   const fileResults = (
     await request.getObject("/search/?type=File&limit=0")
