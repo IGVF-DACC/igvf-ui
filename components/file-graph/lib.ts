@@ -139,6 +139,7 @@ export function generateGraphData(
             type: "file-set" as FileSetNodeType,
             fileSet,
             files,
+            childFile: fileNode.file,
           } as FileSetNodeData;
           fileNode.parentIds.push(newFileSetNode.id);
           return fileSetNodeAcc.concat(newFileSetNode);

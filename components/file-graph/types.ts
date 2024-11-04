@@ -55,11 +55,13 @@ export interface FileNodeData extends GenericNodeData {
  * @property {FileSetNodeType} type Code indicating this node represents a file set in the graph
  * @property {FileSetObject} fileSet File set object that this node represents
  * @property {FileObject[]} files Files in the file set that a native file derives from
+ * @property {FileObject} childFile File that these files are input file sets for in the graph
  */
 export interface FileSetNodeData extends GenericNodeData {
   type: FileSetNodeType;
   fileSet: FileSetObject;
   files: FileObject[];
+  childFile: FileObject;
 }
 
 /**
