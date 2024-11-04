@@ -1,10 +1,12 @@
 // node_modules
+import { TableCellsIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 // components
 import AliasList from "../alias-list";
 import {
   DataPanel,
   DataArea,
+  DataAreaTitleLink,
   DataItemLabel,
   DataItemValue,
 } from "../data-area";
@@ -101,6 +103,8 @@ export function FileSetModal({
   onClose: () => void;
 }) {
   const { fileSet } = node;
+  const childFile = node.childFile;
+  const reportLink = `/multireport/?type=File&file_set.@id=${fileSet["@id"]}&input_file_for=${childFile["@id"]}`;
 
   return (
     <Modal isOpen={true} onClose={onClose}>
@@ -139,6 +143,15 @@ export function FileSetModal({
           </DataItemValue>
         </DataArea>
         <div className="mt-4">
+          <div className="mb-1 flex justify-end">
+            <DataAreaTitleLink
+              href={reportLink}
+              label="Files that something derives from"
+              isExternal
+            >
+              <TableCellsIcon className="h-4 w-4" />
+            </DataAreaTitleLink>
+          </div>
           <SortableGrid
             data={node.files}
             columns={filesColumns}

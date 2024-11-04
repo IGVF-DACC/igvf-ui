@@ -118,9 +118,9 @@ DataAreaTitle.Expander = DataAreaTitleWithExpander;
  * Displays a link to the right of a data area title. This is typically used to link to a report
  * page for the data area.
  */
-export function DataAreaTitleLink({ href, label, children }) {
+export function DataAreaTitleLink({ href, label, isExternal, children }) {
   return (
-    <ButtonLink href={href} size="sm" label={label}>
+    <ButtonLink href={href} size="sm" label={label} isExternal={isExternal}>
       {children}
     </ButtonLink>
   );
@@ -131,8 +131,8 @@ DataAreaTitleLink.propTypes = {
   href: PropTypes.string.isRequired,
   // Label for the link
   label: PropTypes.string.isRequired,
-  // Text to display in the link
-  children: PropTypes.node.isRequired,
+  // True if the link is external
+  isExternal: PropTypes.bool,
 };
 
 /**
