@@ -402,8 +402,8 @@ export async function getServerSideProps({ params, req, query }) {
       : [];
 
     const inputFileSetFor =
-      constructLibrarySet.input_file_set_for.length > 0
-        ? await requestFileSets(constructLibrarySet.input_file_set_for, request)
+      constructLibrarySet.input_for.length > 0
+        ? await requestFileSets(constructLibrarySet.input_for, request)
         : [];
 
     let controlFor = [];

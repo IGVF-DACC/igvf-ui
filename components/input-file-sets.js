@@ -634,7 +634,7 @@ export default function InputFileSets({
             auxiliarySets={auxiliarySets}
             measurementSets={measurementSets}
             constructLibrarySets={constructLibrarySets}
-            reportLink={`/multireport/?type=${fileSetType}&input_file_set_for=${thisFileSet["@id"]}`}
+            reportLink={`/multireport/?type=${fileSetType}&input_for=${thisFileSet["@id"]}`}
             pagePanels={pagePanels}
             pagePanelId={pagePanelId}
           />

@@ -208,8 +208,8 @@ export async function getServerSideProps({ params, req, query }) {
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
     const inputFileSetFor =
-      auxiliarySet.input_file_set_for.length > 0
-        ? await requestFileSets(auxiliarySet.input_file_set_for, request)
+      auxiliarySet.input_for.length > 0
+        ? await requestFileSets(auxiliarySet.input_for, request)
         : [];
 
     let controlFor = [];
