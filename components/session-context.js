@@ -114,22 +114,22 @@ export function Session({ authentication, children }) {
   // Get all the schemas so that the several other places in the code that need schemas can get
   // them from this context instead of doing a request to /profiles.
   useEffect(() => {
-    if (!profiles && dataProviderUrl) {
-      getProfiles(dataProviderUrl).then((response) => {
+    if (!profiles) {
+      getProfiles().then((response) => {
         setProfiles(response);
       });
     }
-  }, [profiles, dataProviderUrl]);
+  }, [profiles]);
 
   // Get the mapping of @type, collection name, and schema name to corresponding human-readable
   // names.
   useEffect(() => {
-    if (!collectionTitles && dataProviderUrl) {
-      getCollectionTitles(dataProviderUrl).then((response) => {
+    if (!collectionTitles) {
+      getCollectionTitles().then((response) => {
         setCollectionTitles(response);
       });
     }
-  }, [collectionTitles, dataProviderUrl]);
+  }, [collectionTitles]);
 
   // If we detect a transition from Auth0's logged-out state to logged-in state, log the user into
   // igvfd. The callback that auth0-react calls after a successful Auth0 login exists outside the

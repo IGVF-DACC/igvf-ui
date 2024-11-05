@@ -23,13 +23,9 @@ export const SEARCH_MODE_PROPERTIES = "SEARCH_MODE_PROPERTIES";
  * @param dataProviderUrl URL of the data provider instance
  * @returns Promise that resolves to the /profiles object
  */
-export async function getProfiles(
-  dataProviderUrl: string
-): Promise<DataProviderObject | null> {
-  const request = new FetchRequest();
-  return (
-    await request.getObjectByUrl(`${dataProviderUrl}/profiles`)
-  ).optional();
+export async function getProfiles(): Promise<DataProviderObject | null> {
+  const request = new FetchRequest({ backend: true });
+  return (await request.getObject("/api/profiles")).optional();
 }
 
 /**

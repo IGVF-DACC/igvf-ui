@@ -25,8 +25,6 @@ import SchemaIcon from "../../components/schema-icon";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
 import { deprecatedSchemas } from "../../lib/constants";
-import { errorObjectToProps } from "../../lib/errors";
-import FetchRequest from "../../lib/fetch-request";
 import { toShishkebabCase } from "../../lib/general";
 import {
   checkSearchTermSchema,
@@ -35,6 +33,10 @@ import {
   SEARCH_MODE_TITLE,
 } from "../../lib/profiles";
 import { decodeUriElement, encodeUriElement } from "../../lib/query-encoding";
+import {
+  retrieveCollectionTitles,
+  retrieveProfiles,
+} from "../../lib/server-objects";
 
 /**
  * Copy the given schema object and delete deprecated schemas from it.
@@ -372,20 +374,24 @@ Profiles.propTypes = {
 };
 
 export async function getServerSideProps({ req }) {
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const schemas = (await request.getObject("/profiles")).union();
-  if (FetchRequest.isResponseSuccess(schemas)) {
-    const collectionTitles = (
-      await request.getObject("/collection-titles/")
-    ).optional();
-    const schemasWithoutDeprecated = deleteDeprecatedSchemas(schemas);
-    return {
-      props: {
-        schemas: schemasWithoutDeprecated,
-        collectionTitles,
-        pageContext: { title: "Schema Directory" },
-      },
-    };
+  const schemas = await retrieveProfiles(req.headers.cookie);
+  if (!schemas) {
+    // 404 page
+    return { notFound: true };
   }
-  return errorObjectToProps(schemas);
+
+  const collectionTitles = await retrieveCollectionTitles(req.headers.cookie);
+  if (!collectionTitles) {
+    // 404 page
+    return { notFound: true };
+  }
+
+  const schemasWithoutDeprecated = deleteDeprecatedSchemas(schemas);
+  return {
+    props: {
+      schemas: schemasWithoutDeprecated,
+      collectionTitles,
+      pageContext: { title: "Schema Directory" },
+    },
+  };
 }

@@ -10,10 +10,9 @@ import HomeTitle from "../components/home-title";
 import Icon from "../components/icon";
 import { useBrowserStateQuery } from "../components/presentation-status";
 // lib
-import { getCacheClient } from "../lib/cache";
-import { errorObjectToProps } from "../lib/errors";
-import FetchRequest from "../lib/fetch-request";
+import { ServerCache } from "../lib/cache";
 import { requestDatasetSummary } from "../lib/common-requests";
+import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
 import { convertFileSetsToReleaseData } from "../lib/home";
 
@@ -154,53 +153,43 @@ Home.propTypes = {
   sampleCount: PropTypes.number,
 };
 
+/**
+ * Server cache key for the home page props.
+ */
+const HOME_PAGE_PROPS_KEY = "home-page-props";
+
+/**
+ * Callback to pass to `new ServerCache(..)` to fetch the home-page data when we don't have it in
+ * the Redis cache.
+ * @param {FetchRequest} request Result of `new FetchRequest(..)`
+ * @returns {string} JSON stringified props for the home page.
+ */
+async function fetchHomePageData(request) {
+  const datasetSummary = await requestDatasetSummary(request);
+  const props = {
+    fileSets: datasetSummary?.["@graph"] || [],
+  };
+  return JSON.stringify(props);
+}
+
 export async function getServerSideProps({ req }) {
-  const cache = getCacheClient();
-  const homePagePropsKey = "home-page-props";
-
-  // Return props from cache if available.
-  try {
-    const homePageProps = await cache.get(homePagePropsKey);
-    if (homePageProps) {
-      const { fileSets, fileCount, sampleCount } = JSON.parse(homePageProps);
-      return {
-        props: { fileSets, fileCount, sampleCount },
-      };
-    }
-  } catch (error) {
-    console.error(error);
-  }
-
-  // If not in cache, get from backend.
   const request = new FetchRequest({ cookie: req.headers.cookie });
+  const cacheRef = new ServerCache(HOME_PAGE_PROPS_KEY);
+  cacheRef.setFetchConfig(fetchHomePageData, request);
+  const { fileSets } = await cacheRef.getData();
 
-  // We might need to paginate this request in the future, but for now just get all the results.
-  console.info("Getting homepage props from backend, not cache");
-  const results = await requestDatasetSummary(request);
+  const fileResults = (
+    await request.getObject("/search/?type=File&limit=0")
+  ).optional();
+  const sampleResults = (
+    await request.getObject("/search/?type=Sample&limit=0")
+  ).optional();
 
-  if (FetchRequest.isResponseSuccess(results)) {
-    const fileResults = (
-      await request.getObject("/search/?type=File&limit=0")
-    ).optional();
-    const sampleResults = (
-      await request.getObject("/search/?type=Sample&limit=0")
-    ).optional();
-
-    const props = {
-      fileSets: results["@graph"] || [],
+  return {
+    props: {
+      fileSets: fileSets || [],
       fileCount: fileResults?.total || 0,
       sampleCount: sampleResults?.total || 0,
-    };
-
-    try {
-      // Store props in cache (expires in 1 hour).
-      console.info("Setting homepage props in cache");
-      await cache.set(homePagePropsKey, JSON.stringify(props), { EX: 3600 });
-    } catch (error) {
-      console.error(error);
-    }
-    return { props };
-  }
-
-  return errorObjectToProps(results);
+    },
+  };
 }
