@@ -1452,8 +1452,7 @@ describe("Test the AnalysisSet component", () => {
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Analysis Set/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS3099XPLN$/);
+    expect(uniqueId).toHaveTextContent(/^primary Analysis Set IGVFDS3099XPLN$/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^primary analysis of data$/);
@@ -1485,15 +1484,29 @@ describe("Test the AnalysisSet component", () => {
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
     };
 
+    const accessoryData = {
+      "/analysis-sets/IGVFDS0390NOLS/": {
+        "@id": "/analysis-sets/IGVFDS9006PQTA/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+        workflows: [
+          {
+            "@id": "/workflows/IGVFWF0000WORK/",
+            accession: "IGVFWF0000WORK",
+            name: "Perturb-seq Pipeline",
+            uniform_pipeline: true,
+          },
+        ],
+      },
+    };
+
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <AnalysisSet item={item} />
+        <AnalysisSet item={item} accessoryData={accessoryData} />
       </SessionContext.Provider>
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Analysis Set/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS0390NOLS$/);
+    expect(uniqueId).toHaveTextContent(/^primary Analysis Set IGVFDS0390NOLS$/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(/^primary analysis of data$/);

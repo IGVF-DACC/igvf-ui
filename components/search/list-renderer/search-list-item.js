@@ -214,14 +214,20 @@ export function SearchListItemContent({ children }) {
 /**
  * Wrapper for the status and audit information of a search-list item.
  */
-export function SearchListItemQuality({ item }) {
+export function SearchListItemQuality({ item, children }) {
   const auditState = useAudit();
 
   return (
-    <div className="mt-2" data-testid="search-list-item-quality">
-      <QualitySection item={item} auditState={auditState} />
+    <>
+      <div
+        className="mt-2 flex flex-wrap gap-1"
+        data-testid="search-list-item-quality"
+      >
+        <QualitySection item={item} auditState={auditState} />
+        {children}
+      </div>
       <AuditDetail item={item} auditState={auditState} />
-    </div>
+    </>
   );
 }
 
