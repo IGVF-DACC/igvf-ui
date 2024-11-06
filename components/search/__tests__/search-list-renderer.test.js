@@ -148,6 +148,10 @@ describe("Test accessory data-path functions", () => {
     // results, and deduplicates them.
     const expectedAccessoryDataPaths = {
       Lab: { fields: ["title"], paths: ["/labs/j-michael-cherry/"] },
+      AnalysisSet: {
+        paths: ["/analysis-sets/IGVFDS9588HSLV/"],
+        fields: ["workflows"],
+      },
     };
     const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
     expect(accessoryDataPaths).toEqual(expectedAccessoryDataPaths);
