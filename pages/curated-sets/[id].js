@@ -182,8 +182,8 @@ export async function getServerSideProps({ params, req, query }) {
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
 
     const inputFileSetFor =
-      curatedSet.input_file_set_for.length > 0
-        ? await requestFileSets(curatedSet.input_file_set_for, request)
+      curatedSet.input_for.length > 0
+        ? await requestFileSets(curatedSet.input_for, request)
         : [];
 
     let controlFor = [];

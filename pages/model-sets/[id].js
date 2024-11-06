@@ -141,7 +141,7 @@ export default function ModelSet({
             <FileSetTable
               fileSets={inputFileSets}
               title="Input File Sets"
-              reportLink={`/multireport/?type=FileSet&input_file_set_for=${modelSet["@id"]}`}
+              reportLink={`/multireport/?type=FileSet&input_for=${modelSet["@id"]}`}
               reportLabel={`View file sets used as input file sets for ${modelSet.accession}`}
               pagePanels={pagePanels}
               pagePanelId="input-file-sets"
@@ -245,8 +245,8 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     const inputFileSetFor =
-      modelSet.input_file_set_for.length > 0
-        ? await requestFileSets(modelSet.input_file_set_for, request)
+      modelSet.input_for.length > 0
+        ? await requestFileSets(modelSet.input_for, request)
         : [];
 
     let controlFor = [];

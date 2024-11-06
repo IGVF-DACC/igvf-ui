@@ -223,7 +223,7 @@ export default function PredictionSet({
           {inputFileSets.length > 0 && (
             <FileSetTable
               fileSets={inputFileSets}
-              reportLink={`/multireport/?type=FileSet&input_file_set_for=${predictionSet["@id"]}`}
+              reportLink={`/multireport/?type=FileSet&input_for=${predictionSet["@id"]}`}
               reportLabel="Report of file sets that are inputs for this prediction set"
               title="Input File Sets"
               pagePanels={pagePanels}
@@ -308,8 +308,8 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
 
     const inputFileSetFor =
-      predictionSet.input_file_set_for.length > 0
-        ? await requestFileSets(predictionSet.input_file_set_for, request)
+      predictionSet.input_for.length > 0
+        ? await requestFileSets(predictionSet.input_for, request)
         : [];
 
     let controlFor = [];

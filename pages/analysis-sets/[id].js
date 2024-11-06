@@ -348,8 +348,8 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     const inputFileSetFor =
-      analysisSet.input_file_set_for.length > 0
-        ? await requestFileSets(analysisSet.input_file_set_for, request)
+      analysisSet.input_for.length > 0
+        ? await requestFileSets(analysisSet.input_for, request)
         : [];
 
     let controlFor = [];
