@@ -137,6 +137,10 @@ export default function ModelSet({
             </DataArea>
           </DataPanel>
 
+          {files.length > 0 && (
+            <FileTable files={files} fileSet={modelSet} isDownloadable />
+          )}
+
           {inputFileSets.length > 0 && (
             <FileSetTable
               fileSets={inputFileSets}
@@ -168,10 +172,6 @@ export default function ModelSet({
               pagePanels={pagePanels}
               pagePanelId="control-for"
             />
-          )}
-
-          {files.length > 0 && (
-            <FileTable files={files} fileSet={modelSet} isDownloadable />
           )}
 
           {documents.length > 0 && (
