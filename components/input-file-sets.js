@@ -16,6 +16,8 @@ import LinkedIdAndStatus from "./linked-id-and-status";
 import LinkedIdAndStatusStack from "./linked-id-and-status-stack";
 import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
+// lib
+import { toShishkebabCase } from "../lib/general";
 
 /**
  * Columns for the measurement sets input file sets table.
@@ -636,7 +638,7 @@ export default function InputFileSets({
             constructLibrarySets={constructLibrarySets}
             reportLink={`/multireport/?type=${fileSetType}&input_for=${thisFileSet["@id"]}`}
             pagePanels={pagePanels}
-            pagePanelId={pagePanelId}
+            pagePanelId={`${pagePanelId}-${toShishkebabCase(fileSetType)}`}
           />
         );
       })}
