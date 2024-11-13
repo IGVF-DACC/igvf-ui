@@ -8,7 +8,7 @@ describe("Facet tests", () => {
     cy.get(`[data-testid="facetgroup-buttons"]`).should("exist");
     cy.get(`[data-testid="facetgroup-buttons"]`)
       .find("button")
-      .should("have.length", 3);
+      .should("have.length", 7);
     cy.get(`[data-testid="facetgroup-buttons"]`)
       .find("button")
       .first()
@@ -24,9 +24,7 @@ describe("Facet tests", () => {
     // Make sure clicking a facet term has an effect.
     cy.get(`label[id="facet-checkbox-sample_terms.term_name-hues8"]`).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
-    cy.get(`[aria-label="Clear Sample Terms filter for HUES8"]`).should(
-      "exist"
-    );
+    cy.get(`[aria-label="Clear Sample filter for HUES8"]`).should("exist");
     cy.get(`label[id="facet-checkbox-sample_terms.term_name-hues8"]`).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 5);
     cy.get(`[aria-label="Clear Sample Terms filter for HUES8"]`).should(
@@ -44,20 +42,18 @@ describe("Facet tests", () => {
 
     // Click a facet term and make sure it has an effect.
     cy.get(
-      `label[id="facet-checkbox-sources.title-danwei-huangfu-2c-mskcc"]`
+      `label[id="facet-checkbox-lab.title-danwei-huangfu-2c-mskcc"]`
     ).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
-    cy.get(
-      `[aria-label="Clear Source filter for Danwei Huangfu, MSKCC"]`
-    ).should("exist");
+    cy.get(`[aria-label="Clear Lab filter for Danwei Huangfu, MSKCC"]`).should(
+      "exist"
+    );
 
     // Click a facet tag to clear that term.
-    cy.get(
-      `[aria-label="Clear Source filter for Danwei Huangfu, MSKCC"]`
-    ).click();
-    cy.get(
-      `[aria-label="Clear Source filter for Danwei Huangfu, MSKCC"]`
-    ).should("not.exist");
+    cy.get(`[aria-label="Clear Lab filter for Danwei Huangfu, MSKCC"]`).click();
+    cy.get(`[aria-label="Clear Lab filter for Danwei Huangfu, MSKCC"]`).should(
+      "not.exist"
+    );
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 5);
 
     // Check we can transition to the report view with the facets.

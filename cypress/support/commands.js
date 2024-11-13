@@ -64,8 +64,28 @@ Cypress.Commands.add("logoutAuth0", () => {
  * process the request. This command lets you insert these delays when needed.
  * @param {string} delay Optional time to delay in ms
  */
-Cypress.Commands.add("delayForIndexing", (delay = 5000) => {
-  cy.wait(delay);
+// Add a custom command called "delayForIndexing"
+Cypress.Commands.add("delayForIndexing", () => {
+  function checkAndClick() {
+    cy.get("#indexer-outline").click(); // Click the button
+    cy.wait(1000); // Wait for a second to allow changes
+
+    cy.get("#indexer-outline")
+      .invoke("text")
+      .then((text) => {
+        if (text.includes("INDEXING")) {
+          // Log and recursively call the function if "INDEXING" is present
+          cy.log('Button still says "INDEXING", clicking again...');
+          cy.wait(5000);
+          checkAndClick(); // Repeat the process
+        } else {
+          cy.log('Button text no longer contains "INDEXING". Stopping.');
+        }
+      });
+  }
+
+  // Initial call to start the process
+  checkAndClick();
 });
 
 /**
