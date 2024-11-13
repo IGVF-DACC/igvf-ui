@@ -22,7 +22,7 @@ describe("Exercise access keys", () => {
 
     // Reset access key
     cy.get(`[aria-label^="Reset access key"]`).click();
-    cy.delayForIndexing();
+    cy.wait(2000);
     cy.contains("Access Key ID").should("exist");
     cy.contains("Access Key Secret").should("exist");
     cy.contains("button", "Close").click();
@@ -42,7 +42,7 @@ describe("Exercise access keys", () => {
 
     // Delete the first access key.
     cy.get(`[aria-label^="Delete access key"]`).first().click();
-    cy.delayForIndexing();
+    cy.wait(2000);
     cy.contains("button", /^Delete$/).click();
 
     // Should contain one access key on the display.
@@ -50,7 +50,7 @@ describe("Exercise access keys", () => {
 
     // Delete the remaining access key.
     cy.get(`[aria-label^="Delete access key"]`).first().click();
-    cy.delayForIndexing();
+    cy.wait(2000);
     cy.contains("button", /^Delete$/).click();
 
     // Should contain no access keys on the display.
