@@ -128,6 +128,8 @@ export function HostedFilePreview({
   const [previewText, setPreviewText] = useState("");
   // True if the file is currently being downloaded for preview
   const [isLoading, setIsLoading] = useState(false);
+  // True if an error occurred while downloading the file
+  const [isError, setIsError] = useState(false);
   // Tooltip attributes for the file preview button
   const tooltipAttr = useTooltip("indexer-state");
 
@@ -139,6 +141,10 @@ export function HostedFilePreview({
     setIsLoading(true);
     loadHostedFile(file).then((data) => {
       if (data) {
+        // If error occurred while downloading the file, set the error state.
+        if (data.startsWith("ERROR:")) {
+          setIsError(true);
+        }
         setPreviewText(data);
       }
       setIsLoading(false);
@@ -147,6 +153,9 @@ export function HostedFilePreview({
 
   // Handle clicks to close the preview modal.
   function handleClosePreview() {
+    if (isError) {
+      setIsError(false);
+    }
     setPreviewText("");
   }
 
@@ -189,7 +198,11 @@ export function HostedFilePreview({
           </Modal.Header>
           <Modal.Body>
             <div className="max-h-[50vh] overflow-y-auto">
-              <TypePreview text={previewText} />
+              {isError ? (
+                <div className="py-2 text-center">{previewText}</div>
+              ) : (
+                <TypePreview text={previewText} />
+              )}
             </div>
           </Modal.Body>
           <Modal.Footer>

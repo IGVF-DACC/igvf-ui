@@ -603,7 +603,8 @@ export default class FetchRequest {
     }
 
     if (inflator.err) {
-      throw new Error(`Decompression error: ${inflator.msg}`);
+      console.error(inflator.err);
+      return `ERROR: ${inflator.err}`;
     }
 
     // Now `decompressedText` contains up to `maxLines` lines
