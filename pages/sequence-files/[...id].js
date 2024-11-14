@@ -21,9 +21,9 @@ import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -55,13 +55,13 @@ export default function SequenceFile({
   isJson,
   seqspecs,
 }) {
-  const pagePanels = usePagePanels(sequenceFile["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={sequenceFile} />
       <EditableItem item={sequenceFile}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={sequenceFile.alternate_accessions}
         />
@@ -76,7 +76,9 @@ export default function SequenceFile({
               <FileDataItems item={sequenceFile} />
             </DataArea>
           </DataPanel>
-          <DataAreaTitle>Sequencing Details</DataAreaTitle>
+          <DataAreaTitle id="sequencing-details">
+            Sequencing Details
+          </DataAreaTitle>
           <DataPanel>
             <DataArea>
               {sequenceFile.sequencing_platform && (
@@ -149,16 +151,11 @@ export default function SequenceFile({
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
-              pagePanels={pagePanels}
-              pagePanelId="file-format-specifications"
+              panelId="file-format-specifications"
             />
           )}
           {fileSetSamples.length > 0 && (
-            <SampleTable
-              samples={fileSetSamples}
-              pagePanels={pagePanels}
-              pagePanelId="file-set-samples"
-            />
+            <SampleTable samples={fileSetSamples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -167,8 +164,6 @@ export default function SequenceFile({
               reportLink={`/multireport/?type=File&input_file_for=${sequenceFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
-              pagePanels={pagePanels}
-              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -177,8 +172,7 @@ export default function SequenceFile({
               reportLink={`/multireport/?type=File&derived_from=${sequenceFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-for"
+              panelId="input-file-for"
             />
           )}
           {seqspecs.length > 0 && (
@@ -186,17 +180,10 @@ export default function SequenceFile({
               files={seqspecs}
               title="Associated seqspec Files"
               reportLink={`/multireport/?type=ConfigurationFile&seqspec_of=${sequenceFile["@id"]}`}
-              pagePanels={pagePanels}
-              pagePanelId="associated-seqspec-files"
+              panelId="seqspec"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

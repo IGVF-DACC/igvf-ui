@@ -17,10 +17,10 @@ import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import { PublicationCitation } from "../../components/publication";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 import SoftwareTable from "../../components/software-table";
 import SoftwareVersionTable from "../../components/software-version-table";
 import WorkflowTable from "../../components/workflow-table";
@@ -51,7 +51,7 @@ export default function Publication({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(publication["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
@@ -60,7 +60,7 @@ export default function Publication({
         title={truncateText(publication.title, 40)}
       />
       <EditableItem item={publication}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <ObjectPageHeader item={publication} isJsonFormat={isJson} />
         <JsonDisplay item={publication} isJsonFormat={isJson}>
           <DataPanel>
@@ -122,8 +122,6 @@ export default function Publication({
               samples={samples}
               reportLink={`/multireport/?type=Sample&publications.@id=${publication["@id"]}`}
               reportLabel="Report of samples in this publication"
-              pagePanels={pagePanels}
-              pagePanelId="samples"
             />
           )}
           {donors.length > 0 && (
@@ -131,8 +129,6 @@ export default function Publication({
               reportLink={`/multireport/?type=Donor&publications.@id=${publication["@id"]}`}
               reportLabel="Report of donors with this publication"
               donors={donors}
-              pagePanels={pagePanels}
-              pagePanelId="donors"
             />
           )}
           {fileSets.length > 0 && (
@@ -140,8 +136,6 @@ export default function Publication({
               fileSets={fileSets}
               reportLink={`/multireport/?type=FileSet&publications.@id=${publication["@id"]}`}
               reportLabel="Report of file sets with this publication"
-              pagePanels={pagePanels}
-              pagePanelId="file-sets"
             />
           )}
           {workflows.length > 0 && (
@@ -149,8 +143,6 @@ export default function Publication({
               workflows={workflows}
               reportLink={`/multireport/?type=Workflow&publications.@id=${publication["@id"]}`}
               reportLabel="Report of workflows with this publication"
-              pagePanels={pagePanels}
-              pagePanelId="workflows"
             />
           )}
           {software.length > 0 && (
@@ -158,8 +150,6 @@ export default function Publication({
               software={software}
               reportLink={`/multireport/?type=Software&publications.@id=${publication["@id"]}`}
               reportLabel="Report of software with this publication"
-              pagePanels={pagePanels}
-              pagePanelId="software"
             />
           )}
           {softwareVersions.length > 0 && (
@@ -167,8 +157,6 @@ export default function Publication({
               versions={softwareVersions}
               reportLink={`/multireport/?type=SoftwareVersion&publications.@id=${publication["@id"]}`}
               reportLabel="Report of software versions with this publication"
-              pagePanels={pagePanels}
-              pagePanelId="software-versions"
             />
           )}
           <Attribution attribution={attribution} />

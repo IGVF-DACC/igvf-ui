@@ -252,7 +252,8 @@
   --color-button-text-info: #000000;
 
   /** Section Directory */
-  --color-section-directory-highlight-background: #d9f99d;
+  --color-section-directory-highlight: #d9f99d;
+  --color-section-directory: #365314;
 }
 
 /**
@@ -413,14 +414,11 @@
   --color-tooltip-code-background: #6b7280;
   --color-tooltip-code-text: #ffffff;
 
-  /** Navigation collapse button */
   --color-nav-collapse: #4b627a;
 
-  /** Typography */
   --color-code-background: #334155;
   --color-code-text: #e5e7eb;
 
-  /** File graph node colors */
   --color-file-graph-analysis: #733c77;
   --color-file-graph-auxiliary: #196021;
   --color-file-graph-construct-library: #852f4a;
@@ -430,11 +428,10 @@
   --color-file-graph-prediction: #196a6d;
   --color-file-graph-unknown: #606060;
 
-  /** Modal borders */
   --color-modal-border: #68799c;
 
-  /** Section Directory */
-  --color-section-directory-highlight-background: #365314;
+  --color-section-directory-highlight: #365314;
+  --color-section-directory: #d9f99d;
 }
 
 a {
@@ -537,16 +534,16 @@ a {
  * For highlighting the a section directory anchor when the user selects it. It appears with a
  * background color, then fading to transparent.
  */
-.section-directory-highlight {
+.bg-section-directory {
   animation: highlight 2s linear;
 }
 
 @keyframes highlight {
   0% {
-    background-color: var(--color-section-directory-highlight-background);
+    background-color: var(--color-section-directory-highlight);
   }
   60% {
-    background-color: var(--color-section-directory-highlight-background);
+    background-color: var(--color-section-directory-highlight);
   }
   100% {
     background-color: transparent;

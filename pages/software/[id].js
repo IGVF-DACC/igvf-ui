@@ -15,8 +15,8 @@ import {
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
+import { useSecDir } from "../../components/section-directory";
 import SoftwareVersionTable from "../../components/software-version-table";
 // lib
 import {
@@ -36,13 +36,13 @@ export default function Software({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(software["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={software} />
       <EditableItem item={software}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <ObjectPageHeader item={software} isJsonFormat={isJson} />
         <JsonDisplay item={software} isJsonFormat={isJson}>
           <DataPanel>
@@ -90,13 +90,7 @@ export default function Software({
             </DataArea>
           </DataPanel>
 
-          {versions?.length > 0 && (
-            <SoftwareVersionTable
-              versions={versions}
-              pagePanels={pagePanels}
-              pagePanelId="software-versions"
-            />
-          )}
+          {versions?.length > 0 && <SoftwareVersionTable versions={versions} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

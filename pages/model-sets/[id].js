@@ -19,8 +19,8 @@ import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
+import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -47,13 +47,13 @@ export default function ModelSet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(modelSet["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={modelSet} />
       <EditableItem item={modelSet}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={modelSet.alternate_accessions}
         />
@@ -147,8 +147,7 @@ export default function ModelSet({
               title="Input File Sets"
               reportLink={`/multireport/?type=FileSet&input_for=${modelSet["@id"]}`}
               reportLabel={`View file sets used as input file sets for ${modelSet.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="input-file-sets"
+              panelId="input-file-sets"
             />
           )}
 
@@ -158,8 +157,7 @@ export default function ModelSet({
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${modelSet["@id"]}`}
               reportLabel="Report of file sets that this model set is an input for"
               title="File Sets Using This Model Set as an Input"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-set-for"
+              panelId="input-file-set-for"
             />
           )}
 
@@ -169,18 +167,11 @@ export default function ModelSet({
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${modelSet["@id"]}`}
               reportLabel="Report of file sets that have this model set as a control"
               title="File Sets Controlled by This Model Set"
-              pagePanels={pagePanels}
-              pagePanelId="control-for"
+              panelId="control-for"
             />
           )}
 
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
 
           <Attribution attribution={attribution} />
         </JsonDisplay>

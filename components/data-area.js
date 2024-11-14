@@ -20,17 +20,18 @@ import {
   useCollapseControl,
 } from "./collapse-control";
 import { ButtonLink } from "./form-elements";
-import { PagePanelButton } from "./page-panels";
+import { secDirId } from "./section-directory";
 
 /**
  * Displays a panel -- typically to display data items for an object, but you can use this for
  * anything that should appear in a panel on the page.
  */
-export function DataPanel({ className = "", children }) {
+export function DataPanel({ className = "", id = "", children }) {
   return (
     <div
       className={`border border-panel bg-panel p-4 @container ${className}`}
       data-testid="datapanel"
+      id={id}
     >
       {children}
     </div>
@@ -40,6 +41,8 @@ export function DataPanel({ className = "", children }) {
 DataPanel.propTypes = {
   // Additional Tailwind CSS classes to add to the panel
   className: PropTypes.string,
+  // HTML id attribute for the section directory
+  id: PropTypes.string,
 };
 
 /**
@@ -62,13 +65,19 @@ export function DataArea({ children }) {
  * Displays the title above a data panel or table.
  */
 export function DataAreaTitle({
+  id = "",
+  secDirTitle = "",
   className = "flex items-end justify-between",
   children,
 }) {
+  // add a data-sec-dir attribute only if `secDirTitle` is provided. Don't include the attribute if
+  // secDirTitle is an empty string.
   return (
     <h2
+      id={`${id ? secDirId(id) : ""}`}
       className={`mb-1 mt-4 text-2xl font-light ${className}`}
       data-testid="dataareatitle"
+      {...(secDirTitle ? { "data-sec-dir": secDirTitle } : {})}
     >
       {children}
     </h2>
@@ -76,43 +85,13 @@ export function DataAreaTitle({
 }
 
 DataAreaTitle.propTypes = {
+  // <h2> element HTML id attribute for the section directory
+  id: PropTypes.string,
+  // Title for the section directory menu if we don't want to use the <h2> text
+  secDirTitle: PropTypes.string,
   // Additional Tailwind CSS classes to apply to the <h2> element
   className: PropTypes.string,
 };
-
-/**
- * Embed this component (or rather its alias, DataAreaTitle.Expander) inside a DataAreaTitle to
- * add a button to collapse or expand the data area.
- */
-function DataAreaTitleWithExpander({
-  pagePanels,
-  pagePanelId,
-  label,
-  children,
-}) {
-  return (
-    <div className="flex items-center gap-1">
-      <PagePanelButton
-        pagePanels={pagePanels}
-        pagePanelId={pagePanelId}
-        label={label}
-      >
-        {children}
-      </PagePanelButton>
-    </div>
-  );
-}
-
-DataAreaTitleWithExpander.propTypes = {
-  // Expandable panels to determine if this title should appear collapsed or expanded
-  pagePanels: PropTypes.object.isRequired,
-  // ID of the panel that contains this title, unique on the page
-  pagePanelId: PropTypes.string.isRequired,
-  // Accessible label for the title of the table
-  label: PropTypes.string.isRequired,
-};
-
-DataAreaTitle.Expander = DataAreaTitleWithExpander;
 
 /**
  * Displays a link to the right of a data area title. This is typically used to link to a report

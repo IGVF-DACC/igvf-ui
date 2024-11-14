@@ -1,11 +1,6 @@
 // node_modules
-import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
 // components
-import {
-  standardAnimationTransition,
-  standardAnimationVariants,
-} from "./animation";
 import { DataAreaTitle } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
@@ -62,39 +57,19 @@ export default function RelatedDonorsTable({
   relatedDonors,
   embeddedDonors,
   title = "Related Donors",
-  pagePanels,
-  pagePanelId,
+  panelId = "related-donors",
 }) {
   return (
     <>
-      <DataAreaTitle>
-        <DataAreaTitle.Expander
-          pagePanels={pagePanels}
-          pagePanelId={pagePanelId}
-          label={`${title} table`}
-        >
-          {title}
-        </DataAreaTitle.Expander>
-      </DataAreaTitle>
-      <AnimatePresence>
-        {pagePanels.isExpanded(pagePanelId) && (
-          <motion.div
-            className="overflow-hidden"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            transition={standardAnimationTransition}
-            variants={standardAnimationVariants}
-          >
-            <SortableGrid
-              data={relatedDonors}
-              columns={relatedDonorsColumns}
-              meta={{ embeddedDonors }}
-              pager={{}}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <DataAreaTitle id={panelId}>{title}</DataAreaTitle>
+      <div className="overflow-hidden">
+        <SortableGrid
+          data={relatedDonors}
+          columns={relatedDonorsColumns}
+          meta={{ embeddedDonors }}
+          pager={{}}
+        />
+      </div>
     </>
   );
 }
@@ -106,8 +81,6 @@ RelatedDonorsTable.propTypes = {
   embeddedDonors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Title of the table if not "Related Donors"
   title: PropTypes.string,
-  // Expandable panels to determine if this table should appear collapsed or expanded
-  pagePanels: PropTypes.object.isRequired,
-  // ID of the panel that contains this table, unique on the page
-  pagePanelId: PropTypes.string.isRequired,
+  // Unique ID of the table for the section directory
+  panelId: PropTypes.string,
 };

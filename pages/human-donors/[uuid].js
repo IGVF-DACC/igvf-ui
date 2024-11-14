@@ -17,10 +17,10 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import RelatedDonorsTable from "../../components/related-donors-table";
+import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -43,13 +43,13 @@ export default function HumanDonor({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(donor["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={donor} />
       <EditableItem item={donor}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions alternateAccessions={donor.alternate_accessions} />
         <ObjectPageHeader item={donor} isJsonFormat={isJson} />
         <JsonDisplay item={donor} isJsonFormat={isJson}>
@@ -79,27 +79,15 @@ export default function HumanDonor({
             </DataArea>
           </DataPanel>
           {phenotypicFeatures.length > 0 && (
-            <PhenotypicFeatureTable
-              phenotypicFeatures={phenotypicFeatures}
-              pagePanels={pagePanels}
-              pagePanelId="phenotypic-features"
-            />
+            <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
           )}
           {relatedDonors.length > 0 && (
             <RelatedDonorsTable
               relatedDonors={relatedDonors}
               embeddedDonors={donor.related_donors}
-              pagePanels={pagePanels}
-              pagePanelId="related-donors"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

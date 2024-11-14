@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import DocumentTable from "../document-table";
-import { usePagePanels } from "../page-panels";
 
 describe("Test the document table", () => {
   beforeAll(() => {
@@ -59,27 +58,10 @@ describe("Test the document table", () => {
     ];
 
     function PageWithDocuments() {
-      const pagePanels = usePagePanels("/document/parent/");
-      return (
-        <DocumentTable
-          documents={documents}
-          pagePanels={pagePanels}
-          pagePanelId="documents"
-        />
-      );
+      return <DocumentTable documents={documents} />;
     }
 
     render(<PageWithDocuments />);
-
-    // Initially it should render no table.
-    expect(screen.queryByRole("table")).not.toBeInTheDocument();
-
-    // Find the button to expand the table and click it.
-    const expandButton = screen.getByRole("button", {
-      name: "Documents table",
-    });
-    expect(expandButton).toBeInTheDocument();
-    fireEvent.click(expandButton);
 
     // Check the size of the table.
     const columnHeaders = screen.getAllByRole("columnheader");
