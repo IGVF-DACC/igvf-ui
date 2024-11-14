@@ -40,7 +40,7 @@ const typePreviewMap: TypePreviewMap = {
   csv: PreviewCsv,
   txt: PreviewText,
   tsv: PreviewTsv,
-  vcf: PreviewTsv,
+  vcf: PreviewText,
   yaml: PreviewText,
 };
 
