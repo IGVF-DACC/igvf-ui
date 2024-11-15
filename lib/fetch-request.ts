@@ -575,12 +575,6 @@ export default class FetchRequest {
     let lineCount = 0;
     while (!done && decompressedText.length < MAX_READ_SIZE) {
       const { value, done: readerDone } = await reader.read();
-      console.log(
-        "************** READ:%s-%s--%s",
-        lineCount,
-        value?.length || "NO READ",
-        readerDone
-      );
       if (value) {
         // Unzip the chunk of text into the pako buffer and add it to our text accumulator. In some
         // cases pako can return `undefined`, so ignore those.
@@ -588,11 +582,6 @@ export default class FetchRequest {
         if (inflator.err) {
           done = true;
         } else if (inflator.result) {
-          console.log(
-            "************** INFLATOR:%s--%s",
-            inflator.result?.length || "NO INFLATOR",
-            decompressedText.length
-          );
           decompressedText += inflator.result;
           if (decompressedText) {
             // If lineCount exceeds maxLines, stop after the `maxLines` line.
