@@ -142,10 +142,10 @@ Object.freeze(NETWORK_ERROR_RESPONSE);
 const MAX_PATH_QUERY_LENGTH_ESTIMATE = 50;
 
 /**
- * Maximum number of lines to read from a gzipped text file. This must have a value enough for
+ * Maximum number of bytes to read from a gzipped text file. This must have a value enough for
  * successful decompression.
  */
-const MAX_READ_LINES = 400;
+const MAX_READ_SIZE = 150_000;
 
 /**
  * Default maximum number of lines to return from the text file preview methods. Make sure this has
@@ -573,7 +573,7 @@ export default class FetchRequest {
     let done = false;
     let decompressedText = "";
     let lineCount = 0;
-    while (!done && lineCount < MAX_READ_LINES) {
+    while (!done && decompressedText.length < MAX_READ_SIZE) {
       const { value, done: readerDone } = await reader.read();
       console.log(
         "************** READ:%s-%s--%s",
@@ -619,7 +619,7 @@ export default class FetchRequest {
 
     // Now `decompressedText` contains up to `maxLines` lines
     const lines = decompressedText.split("\n");
-    const linesToKeep = lines.slice(0, DEFAULT_MAX_TEXT_LINES);
+    const linesToKeep = lines.slice(0, maxLines);
     return linesToKeep.join("\n");
   }
 
