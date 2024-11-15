@@ -140,7 +140,6 @@ export function HostedFilePreview({
   function handlePreviewClick() {
     setIsLoading(true);
     loadHostedFile(file).then((data) => {
-      console.log("******** DATA", data?.length ?? "NO DATA");
       if (data) {
         // If error occurred while downloading the file, set the error state.
         if (data.startsWith("ERROR:")) {
@@ -149,6 +148,7 @@ export function HostedFilePreview({
         setPreviewText(data);
       } else {
         setPreviewText("Could not load file preview.");
+        setIsError(true);
       }
       setIsLoading(false);
     });
