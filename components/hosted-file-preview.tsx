@@ -199,7 +199,7 @@ export function HostedFilePreview({
           <Modal.Body>
             <div className="max-h-[50vh] overflow-y-auto">
               {isError ? (
-                <div className="py-2 text-center">{previewText}</div>
+                <div className="py-2 text-center italic">{previewText}</div>
               ) : (
                 <TypePreview text={previewText} />
               )}
