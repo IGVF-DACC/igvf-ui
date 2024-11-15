@@ -145,7 +145,7 @@ const MAX_PATH_QUERY_LENGTH_ESTIMATE = 50;
  * Maximum number of bytes to read from a gzipped text file. This must have a value enough for
  * successful decompression.
  */
-const MAX_READ_SIZE = 150_000;
+const MAX_READ_SIZE = 50_000;
 
 /**
  * Default maximum number of lines to return from the text file preview methods. Make sure this has
@@ -589,8 +589,9 @@ export default class FetchRequest {
           done = true;
         } else if (inflator.result) {
           console.log(
-            "************** INFLATOR:%s",
-            inflator.result?.length || "NO INFLATOR"
+            "************** INFLATOR:%s--%s",
+            inflator.result?.length || "NO INFLATOR",
+            decompressedText.length
           );
           decompressedText += inflator.result;
           if (decompressedText) {
