@@ -145,7 +145,7 @@ const MAX_PATH_QUERY_LENGTH_ESTIMATE = 50;
  * Maximum number of bytes to read from a gzipped text file. This must have a value enough for
  * successful decompression.
  */
-const MAX_READ_SIZE = 50_000;
+const MAX_READ_SIZE = 100_000;
 
 /**
  * Default maximum number of lines to return from the text file preview methods. Make sure this has
@@ -572,11 +572,14 @@ export default class FetchRequest {
     // text reaches `maxLines`.
     let done = false;
     let decompressedText = "";
+    let compressedReadCount = 0;
     let lineCount = 0;
-    while (!done && decompressedText.length < MAX_READ_SIZE) {
-      console.log("********* READING", decompressedText.length);
+    while (!done && compressedReadCount < MAX_READ_SIZE) {
       const { value, done: readerDone } = await reader.read();
+      console.log("********* VALUE", value?.length || "NONE");
       if (value) {
+        compressedReadCount += value.length;
+        console.log("********* READING", compressedReadCount);
         // Unzip the chunk of text into the pako buffer and add it to our text accumulator. In some
         // cases pako can return `undefined`, so ignore those.
         inflator.push(value, readerDone);
