@@ -141,6 +141,7 @@ export function HostedFilePreview({
     setIsLoading(true);
     loadHostedFile(file).then((data) => {
       if (data) {
+        console.log("****** DATA", data.length);
         // If error occurred while downloading the file, set the error state.
         if (data.startsWith("ERROR:")) {
           setIsError(true);
