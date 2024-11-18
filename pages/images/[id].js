@@ -69,6 +69,12 @@ export default function Image({ image, attribution = null, isJson }) {
                   />
                 </div>
               </DataItemValue>
+              {image.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{image.submitter_comment}</DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           <Attribution attribution={attribution} />

@@ -109,6 +109,12 @@ export default function Publication({
                   </DataItemValue>
                 </>
               )}
+              {publication.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{publication.submitter_comment}</DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {samples.length > 0 && (

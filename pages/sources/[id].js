@@ -54,6 +54,12 @@ export default function Source({ source, isJson }) {
                   </DataItemValue>
                 </>
               )}
+              {source.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{source.submitter_comment}</DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
         </JsonDisplay>

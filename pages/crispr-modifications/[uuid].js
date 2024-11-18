@@ -47,6 +47,8 @@ export default function CrisprModification({
         <JsonDisplay item={modification} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
+              <DataItemLabel>Summary</DataItemLabel>
+              <DataItemValue>{modification.summary}</DataItemValue>
               <DataItemLabel>Modality</DataItemLabel>
               <DataItemValue>{modification.modality}</DataItemValue>
               <DataItemLabel>Cas</DataItemLabel>
@@ -97,8 +99,14 @@ export default function CrisprModification({
                   </DataItemValue>
                 </>
               )}
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{modification.summary}</DataItemValue>
+              {modification.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>
+                    {modification.submitter_comment}
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {biosamplesModified.length > 0 && (

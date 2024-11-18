@@ -52,6 +52,8 @@ export default function DegronModification({
         <JsonDisplay item={modification} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
+              <DataItemLabel>Summary</DataItemLabel>
+              <DataItemValue>{modification.summary}</DataItemValue>
               <DataItemLabel>Degron System</DataItemLabel>
               <DataItemValue>{modification.degron_system}</DataItemValue>
               {taggedProteins.length > 0 && (
@@ -96,8 +98,14 @@ export default function DegronModification({
                   </DataItemValue>
                 </>
               )}
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{modification.summary}</DataItemValue>
+              {modification.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>
+                    {modification.submitter_comment}
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {biosamplesModified.length > 0 && (
