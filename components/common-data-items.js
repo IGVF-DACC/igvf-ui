@@ -697,9 +697,7 @@ export function FileDataItems({ item, children }) {
       {item.submitter_comment && (
         <>
           <DataItemLabel>Submitter Comment</DataItemLabel>
-          <DataItemValue className="break-all">
-            {item.submitter_comment}
-          </DataItemValue>
+          <DataItemValue>{item.submitter_comment}</DataItemValue>
         </>
       )}
       {children}
