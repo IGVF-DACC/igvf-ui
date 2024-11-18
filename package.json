@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --keepAliveTimeout 70000",
     "lint": "next lint",
     "test": "jest --coverage",
     "cypress:open": "cypress open",
