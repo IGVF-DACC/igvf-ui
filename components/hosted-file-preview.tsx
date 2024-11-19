@@ -166,57 +166,56 @@ export function HostedFilePreview({
   // supported for previewing.
   const isPreviewable =
     checkFileDownloadable(file) && !isLoading && TypePreview;
-  return (
-    <>
-      <TooltipRef tooltipAttr={tooltipAttr}>
-        <div className="flex gap-1">
-          <Button
-            onClick={handlePreviewClick}
-            size={buttonSize}
-            isDisabled={!isPreviewable}
-            type="secondary"
-            hasIconOnly
-            className="text-xs"
-          >
-            <EyeIcon className="h-4 w-4" />
-          </Button>
-          {isLoading && <Spinner svgClassName="h-5" />}
-        </div>
-      </TooltipRef>
-      {isPreviewable && (
+  if (isPreviewable) {
+    return (
+      <>
+        <TooltipRef tooltipAttr={tooltipAttr}>
+          <div className="flex gap-1">
+            <Button
+              onClick={handlePreviewClick}
+              size={buttonSize}
+              type="secondary"
+              hasIconOnly
+              className="text-xs"
+            >
+              <EyeIcon className="h-4 w-4" />
+            </Button>
+            {isLoading && <Spinner svgClassName="h-5" />}
+          </div>
+        </TooltipRef>
         <Tooltip tooltipAttr={tooltipAttr}>
           Preview this {file.file_format} file. Only the first portion of large
           files appear.
         </Tooltip>
-      )}
-      <Modal
-        isOpen={Boolean(previewText)}
-        onClose={handleClosePreview}
-        testid="hosted-file-preview-modal"
-      >
-        <Modal.Header onClose={handleClosePreview}>
-          <div>
-            <h2>{file.file_format} File Preview</h2>
-            <h3 className="text-xs">
-              Only the first portion of large files appear
-            </h3>
-          </div>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="max-h-[50vh] overflow-y-auto">
-            {isError ? (
-              <div className="py-2 text-center italic">{previewText}</div>
-            ) : (
-              <TypePreview text={previewText} />
-            )}
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={handleClosePreview} type="secondary">
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
+        <Modal
+          isOpen={Boolean(previewText)}
+          onClose={handleClosePreview}
+          testid="hosted-file-preview-modal"
+        >
+          <Modal.Header onClose={handleClosePreview}>
+            <div>
+              <h2>{file.file_format} File Preview</h2>
+              <h3 className="text-xs">
+                Only the first portion of large files appear
+              </h3>
+            </div>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="max-h-[50vh] overflow-y-auto">
+              {isError ? (
+                <div className="py-2 text-center italic">{previewText}</div>
+              ) : (
+                <TypePreview text={previewText} />
+              )}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleClosePreview} type="secondary">
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
 }
