@@ -17,6 +17,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
+import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
@@ -58,7 +59,9 @@ export default function MatrixFile({
           alternateAccessions={matrixFile.alternate_accessions}
         />
         <ObjectPageHeader item={matrixFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={matrixFile} />
+          <FileHeaderDownload file={matrixFile}>
+            <HostedFilePreview file={matrixFile} buttonSize="sm" />
+          </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={matrixFile} isJsonFormat={isJson}>
           <DataPanel>

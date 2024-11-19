@@ -1,5 +1,8 @@
 import _ from "lodash";
-import FetchRequest, { HTTP_STATUS_CODE } from "../fetch-request";
+import FetchRequest, {
+  HTTP_STATUS_CODE,
+  isErrorObject,
+} from "../fetch-request";
 import { DataProviderObject } from "../../globals";
 import type { ErrorObject } from "../fetch-request.d";
 
@@ -683,5 +686,29 @@ describe("Test static isResponseSuccess function", () => {
       status: "success",
     };
     expect(FetchRequest.isResponseSuccess(response)).toBeTruthy();
+  });
+});
+
+describe("Test isErrorObject function", () => {
+  it("returns true for an error object", () => {
+    const error: ErrorObject = {
+      isError: true,
+      "@type": ["HTTPNotFound", "Error"],
+      code: 404,
+      description: "The resource could not be found.",
+      detail: "URL",
+      status: "error",
+      title: "Not Found",
+    };
+    expect(isErrorObject(error)).toBeTruthy();
+  });
+
+  it("returns false for a non-error object", () => {
+    const response: DataProviderObject = {
+      "@id": "/labs/j-michael-cherry/",
+      "@type": ["Lab", "Item"],
+      name: "j-michael-cherry",
+    };
+    expect(isErrorObject(response)).toBeFalsy();
   });
 });

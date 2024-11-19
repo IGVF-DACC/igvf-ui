@@ -25,6 +25,8 @@
  * `defaultErrorValue`.
  */
 
+// node_modules
+import pako from "pako";
 // lib
 import { API_URL, SERVER_URL, BACKEND_URL, MAX_URL_LENGTH } from "./constants";
 
@@ -140,6 +142,18 @@ Object.freeze(NETWORK_ERROR_RESPONSE);
 const MAX_PATH_QUERY_LENGTH_ESTIMATE = 50;
 
 /**
+ * Maximum number of bytes to read from a gzipped text file. This must have a value enough for
+ * successful decompression.
+ */
+const MAX_READ_SIZE = 500_000_000;
+
+/**
+ * Default maximum number of lines to return from the text file preview methods. Make sure this has
+ * a value less than `MAX_READ_LINES`.
+ */
+const DEFAULT_MAX_TEXT_LINES = 100;
+
+/**
  * Log a request from the NextJS server to igvfd.
  * @param {string} method FetchRequest method that performs the request
  * @param {string} path Path or paths to requested resource
@@ -148,6 +162,18 @@ const MAX_PATH_QUERY_LENGTH_ESTIMATE = 50;
 function logRequest(method: string, path: string): void {
   const date = new Date().toISOString();
   console.log(`SVRREQ [${date}] ${method} ${path}`);
+}
+
+/**
+ * Type guard to check if `item` is an `ErrorObject`. Pass the result of the `union()` method to
+ * this function so items that are `ErrorObject` type are automatically treated as that type.
+ * @param item Item to check whether it's an ErrorObject or actual data
+ * @returns True if `item` is an `ErrorObject`
+ */
+export function isErrorObject(
+  item: DataProviderObject | ErrorObject
+): item is ErrorObject {
+  return (item as ErrorObject).isError === true;
 }
 
 /**
@@ -304,7 +330,13 @@ export default class FetchRequest {
    */
   private buildOptions(
     method: FetchMethod,
-    additional: { payload?: object; accept?: string; contentType?: string }
+    additional: {
+      payload?: object;
+      accept?: string;
+      contentType?: string;
+      acceptEncoding?: string;
+    },
+    includeCredentials = true
   ): RequestInit {
     if (additional.accept) {
       this.headers.set("Accept", additional.accept);
@@ -314,9 +346,9 @@ export default class FetchRequest {
     }
     const options: RequestInit = {
       method,
-      credentials: "include",
       redirect: "follow",
       headers: this.headers,
+      ...(includeCredentials && { credentials: "include" }),
     };
     if (additional.payload && METHODS_ALLOWING_BODY.includes(method)) {
       options.body = JSON.stringify(additional.payload);
@@ -340,7 +372,7 @@ export default class FetchRequest {
       accept: PAYLOAD_FORMAT.JSON,
     });
     try {
-      logRequest("getObject", path);
+      logRequest("getObject", this.pathUrl(path));
       const response = await fetch(
         this.pathUrl(path, options.isDbRequest),
         headerOptions
@@ -363,7 +395,7 @@ export default class FetchRequest {
   /**
    * Request the object with the given URL, including protocol and domain.
    * @param {string} url Full URL to requested resource
-   * @param {T} defaultErrorValue? Value to return if the request fails; error object if not given
+   * @param {string} [accept] Accept header to send with the request; application/json by default
    * @returns {Promise<DataProviderObject|ErrorObject>} Requested object or error object
    */
   public async getObjectByUrl(
@@ -507,6 +539,80 @@ export default class FetchRequest {
         ? NETWORK_ERROR_RESPONSE
         : defaultErrorValue;
     }
+  }
+
+  /**
+   * Request a text file hosted in an AWS bucket with the given full URL. This method returns just
+   * the first `maxLines` lines of the text file, limited to `MAX_READ_LINES`. We expect
+   * the file to have gzip compression. Very large files work fine with this method, as we only
+   * read up to `MAX_READ_LINES` lines of the file, and decompress the file in chunks.
+   * @param url Full URL to a gzipped text file in an AWS bucket
+   * @param maxLines Maximum number of lines to return from the text file
+   * @returns First decompressed `maxLines` lines of the text file
+   */
+  /* istanbul ignore next */
+  public async getZippedPreviewText(url, maxLines = DEFAULT_MAX_TEXT_LINES) {
+    const options = this.buildOptions(
+      "GET",
+      {
+        accept: PAYLOAD_FORMAT.TEXT,
+      },
+      false
+    );
+    const response = await fetch(url, options);
+    if (!response.body) {
+      throw new Error("ReadableStream not supported in this browser");
+    }
+
+    // Set up for streamed reads and decompression by streamed chunks.
+    const reader = response.body.getReader();
+    const inflator = new pako.Inflate({ to: "string" });
+
+    // Read the stream by chunks and decompress the chunks until it ends or the number of lines of
+    // text reaches `maxLines`.
+    let done = false;
+    let decompressedText = "";
+    let compressedReadCount = 0;
+    let lineCount = 0;
+    while (!done && compressedReadCount < MAX_READ_SIZE) {
+      const { value, done: readerDone } = await reader.read();
+      if (value) {
+        compressedReadCount += value.length;
+        // Unzip the chunk of text into the pako buffer and add it to our text accumulator. In some
+        // cases pako can return `undefined`, so ignore those.
+        inflator.push(value, readerDone);
+        if (inflator.err) {
+          done = true;
+        } else if (inflator.result) {
+          decompressedText += inflator.result;
+          if (decompressedText) {
+            // If lineCount exceeds maxLines, stop after the `maxLines` line.
+            const lines = decompressedText.split("\n");
+            lineCount += lines.length;
+            if (lineCount >= maxLines) {
+              // Trim the accumulated decompressed text to just the first `maxLines` lines
+              const linesToKeep = lines.slice(0, maxLines);
+              decompressedText = linesToKeep.join("\n");
+              done = true;
+            }
+          }
+
+          // Clear inflator result to reset state and prevent growing memory usage.
+          inflator.result = "";
+        }
+      }
+      done = readerDone;
+    }
+
+    if (inflator.err) {
+      console.error(inflator.err);
+      return `ERROR: ${inflator.msg}`;
+    }
+
+    // Now `decompressedText` contains up to `maxLines` lines
+    const lines = decompressedText.split("\n");
+    const linesToKeep = lines.slice(0, maxLines);
+    return linesToKeep.join("\n");
   }
 
   /**

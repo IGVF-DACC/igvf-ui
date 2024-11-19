@@ -6,14 +6,84 @@
  */
 
 // node_modules
-import PropTypes from "prop-types";
 import { forwardRef } from "react";
 
 /**
- * Default data grid cell. Custom data grid cells can use wrap or replace this; whatever they
- * choose.
+ * The content of a cell in the data grid. It can be a string, number, JSX element, React component,
+ * or a function returning a React component.
  */
-function DefaultCell({ children }) {
+type CellContent =
+  | string
+  | number
+  | React.ReactNode
+  | ((props: any) => React.ReactNode);
+
+/**
+ * Defines one cell in the data grid. The cell can contain a simple type or a React component. The
+ * cell can span multiple columns.
+ */
+export type Cell = {
+  /**
+   * Identifier for the cell unique throughout the row.
+   */
+  id: string;
+
+  /**
+   * Content of the cell.
+   */
+  content: CellContent;
+
+  /**
+   * Number of columns the cell spans. Default is 1.
+   */
+  columns?: number;
+
+  /**
+   * HTML role of the cell. Default is "cell".
+   */
+  role?: string;
+
+  /**
+   * Source of the cell. Used for custom cell renderers.
+   */
+  source?: unknown;
+};
+
+/**
+ * Defines one row in the data grid. The row can contain multiple cells and child rows. The row can
+ * contain a custom React component to render the row.
+ */
+export type Row = {
+  /**
+   * Identifier for the row unique throughout the data grid.
+   */
+  id: string;
+
+  /**
+   * Array of cells in the row.
+   */
+  cells: Cell[];
+
+  /**
+   * Array of child rows in the row when the cells span multiple rows to the right.
+   */
+  children?: Row[];
+
+  /**
+   * Custom React component to render the row.
+   */
+  RowComponent?: React.ComponentType<any>;
+};
+
+/**
+ * Defines an entire data grid.
+ */
+export type DataGridFormat = Row[];
+
+/**
+ * Default data grid cell. Custom data grid cells can use wrap or replace this.
+ */
+function DefaultCell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-full w-full bg-white p-2 dark:bg-gray-900">
       {children}
@@ -22,14 +92,17 @@ function DefaultCell({ children }) {
 }
 
 /**
- * Surround the <DataGrid> component with this wrapper component, or a custom one like it. Note
+ * Surround the `<DataGrid>` component with this wrapper component, or a custom one like it. Note
  * the use of CSS outlines instead of borders as all other panels use. This prevents Safari (12.4
  * at the time of writing) from allowing the table to scroll horizontally even if you can see the
  * entire table.
  */
 export const DataGridContainer = forwardRef(function DataGridContainer(
-  { className = "", children },
-  ref
+  {
+    className = "",
+    children,
+  }: { className?: string; children: React.ReactNode },
+  ref: React.Ref<HTMLDivElement>
 ) {
   return (
     <div
@@ -44,13 +117,13 @@ export const DataGridContainer = forwardRef(function DataGridContainer(
   );
 });
 
-DataGridContainer.propTypes = {
-  // Extra Tailwind CSS classes to apply to the container
-  className: PropTypes.string,
-};
-
 /**
  * Main data-grid interface.
+ * @param data Data to render in the data grid
+ * @param CellComponent Component to render all cells in matrix unless specifically overridden
+ * @param startingRow Starting CSS grid row number; used for recursive rendering
+ * @param startingCol Starting CSS grid column number; used for recursive rendering
+ * @param meta Extra metadata to pass to custom cell renderers
  */
 export default function DataGrid({
   data,
@@ -58,6 +131,12 @@ export default function DataGrid({
   startingRow = 1,
   startingCol = 1,
   meta = {},
+}: {
+  data: DataGridFormat;
+  CellComponent?: React.ComponentType<any>;
+  startingRow?: number;
+  startingCol?: number;
+  meta?: object;
 }) {
   let rowLine = startingRow;
   return data.reduce((acc, row) => {
@@ -108,7 +187,7 @@ export default function DataGrid({
       <DataGrid
         key={`${row.id}-children`}
         data={row.children}
-        Cell={CellComponent}
+        CellComponent={CellComponent}
         startingRow={rowLine}
         startingCol={colLine}
       />
@@ -117,27 +196,3 @@ export default function DataGrid({
     return acc.concat(rowRenders).concat(children);
   }, []);
 }
-
-DataGrid.propTypes = {
-  // The data to render in the data-grid form
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      cells: PropTypes.arrayOf(
-        PropTypes.shape({
-          content: PropTypes.any,
-          columns: PropTypes.number,
-        })
-      ).isRequired,
-      children: PropTypes.array,
-    })
-  ).isRequired,
-  // Component to render all cells in matrix unless specifically overridden
-  CellComponent: PropTypes.func,
-  // Starting CSS grid row number; used for recursive rendering
-  startingRow: PropTypes.number,
-  // Starting CSS grid column number; used for recursive rendering
-  startingCol: PropTypes.number,
-  // Extra metadata to pass to custom cell renderers
-  meta: PropTypes.object,
-};

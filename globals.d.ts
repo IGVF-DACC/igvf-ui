@@ -245,17 +245,27 @@ export type CollectionTitles = {
  */
 
 /**
+ * Possible values for a file's `upload_status` property.
+ */
+export type UploadStatus =
+  | "pending"
+  | "file not found"
+  | "invalidated"
+  | "validated";
+
+/**
  * Data structure common to all file object types.
  */
 export interface FileObject extends DatabaseObject {
-  accession: string;
-  aliases: string[];
+  accession?: string;
+  aliases?: string[];
   content_type: string;
   derived_from?: string[];
   file_format: string;
   file_set: string;
-  file_size: number;
-  upload_status: string;
+  file_size?: number;
+  href?: string;
+  upload_status?: UploadStatus;
 }
 
 /**

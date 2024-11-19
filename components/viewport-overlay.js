@@ -12,10 +12,10 @@ export default function ViewportOverlay({ isEnabled, children }) {
     <div className="relative">
       {isEnabled && (
         <div
-          className="fixed inset-0 z-40 bg-white opacity-70"
+          className="fixed inset-0 z-40 flex items-center justify-center bg-white opacity-70"
           data-testid="viewport-overlay"
         >
-          <Spinner className="h-full" />
+          <Spinner className="h-16 w-16" />
         </div>
       )}
       {children}
