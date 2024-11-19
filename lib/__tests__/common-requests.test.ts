@@ -1,3 +1,4 @@
+import type { DatabaseObject } from "../../globals.d";
 import {
   requestAnalysisSteps,
   requestAwards,
@@ -403,7 +404,10 @@ describe("Test all the common requests", () => {
     );
 
     const request = new FetchRequest();
-    const result = await requestSeqspecFiles(seqspecFiles, request);
+    const result = await requestSeqspecFiles(
+      seqspecFiles as unknown as DatabaseObject[],
+      request
+    );
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual(mockResult["@graph"][0]);
   });
@@ -472,7 +476,10 @@ describe("Test all the common requests", () => {
     );
 
     const request = new FetchRequest();
-    const result = await requestSeqspecFiles(seqspecFiles, request);
+    const result = await requestSeqspecFiles(
+      seqspecFiles as unknown as DatabaseObject[],
+      request
+    );
     expect(result).toHaveLength(0);
   });
 
@@ -557,7 +564,10 @@ describe("Test all the common requests", () => {
     );
 
     const request = new FetchRequest();
-    const result = await requestSeqspecFiles(seqspecFiles, request);
+    const result = await requestSeqspecFiles(
+      seqspecFiles as unknown as DatabaseObject[],
+      request
+    );
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual(mockResult["@graph"][0]);
   });
@@ -1059,7 +1069,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toBeCalledWith(
-      "/search/?field=accession&field=construct_library_sets&field=protocols&field=sample_terms&field=status&field=summary&@id=/tissues/IGVFSM0003DDDD/&@id=/technical-samples/IGVFSM3106NGJL/&limit=2",
+      "/search/?field=accession&field=construct_library_sets&field=disease_terms&field=protocols&field=sample_terms&field=status&field=summary&@id=/tissues/IGVFSM0003DDDD/&@id=/technical-samples/IGVFSM3106NGJL/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);

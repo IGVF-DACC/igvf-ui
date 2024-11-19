@@ -53,7 +53,7 @@ export interface DatabaseObject {
   lab?: string | DatabaseObject;
   release_timestamp?: string;
   status?: string;
-  title: string;
+  title?: string;
   uuid?: string;
   [key: string]: unknown;
 }
@@ -262,7 +262,7 @@ export interface FileObject extends DatabaseObject {
   content_type: string;
   derived_from?: string[];
   file_format: string;
-  file_set: string;
+  file_set: string | FileSetObject;
   file_size?: number;
   href?: string;
   upload_status?: UploadStatus;
@@ -272,7 +272,15 @@ export interface FileObject extends DatabaseObject {
  * Data structure common to all file set object types.
  */
 export interface FileSetObject extends DatabaseObject {
-  aliases: string[];
-  file_set_type: string;
+  aliases?: string[];
+  file_set_type?: string;
   files: string[];
+  samples?: string[] | SampleObject[];
+}
+
+/**
+ * Data structure common to all sample object types.
+ */
+export interface SampleObject extends DatabaseObject {
+  aliases?: string[];
 }

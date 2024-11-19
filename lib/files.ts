@@ -7,7 +7,13 @@ import _ from "lodash";
 import { requestFiles } from "./common-requests";
 import type FetchRequest from "./fetch-request";
 // root
-import type { DatabaseObject, FileObject, UploadStatus } from "../globals.d";
+import type {
+  DatabaseObject,
+  FileObject,
+  FileSetObject,
+  SampleObject,
+  UploadStatus,
+} from "../globals.d";
 
 /**
  * Set of file statuses that are not downloadable.
@@ -202,4 +208,47 @@ export function checkFileDownloadable(file: FileObject): boolean {
     !isDownloadDisabledByStatus &&
     !file.externally_hosted
   );
+}
+
+/**
+ * Type guard to see if a file set is an embedded file-set object in a file object.
+ * @param fileSet File set in a file object; could be a string `@id` or an embedded file set object
+ * @returns True if the file set is an embedded file set object
+ */
+function checkFileSetIsObject(
+  fileSet: string | FileSetObject
+): fileSet is FileSetObject {
+  return (fileSet as FileSetObject).samples !== undefined;
+}
+
+/**
+ * Type guard to see if a file set's `samples` property is an array of sample objects or an array of
+ * sample `@id` strings.
+ * @param samples Samples array in a file set; could be an array of sample objects or an array of
+ *     sample `@id` strings
+ * @returns True if the samples array is an array of sample objects
+ */
+function checkSampleIsObjectArray(
+  samples: string[] | SampleObject[]
+): samples is SampleObject[] {
+  return samples?.length > 0 && typeof samples[0] !== "string";
+}
+
+/**
+ * Collect all sample objects from a file object's `file_set` object. Both `file_set` and
+ * `file_set.samples` have to be embedded objects in the file object. The returned samples are
+ * deduplicated.
+ * @param files File objects to collect samples from
+ * @returns Array of sample objects from the files deduplicated
+ */
+export function collectFileFileSetSamples(files: FileObject): SampleObject[] {
+  // Collect all samples from the file set of the file.
+  const samples: SampleObject[] = [];
+  if (checkFileSetIsObject(files.file_set)) {
+    if (checkSampleIsObjectArray(files.file_set.samples)) {
+      samples.push(...files.file_set.samples);
+    }
+  }
+
+  return _.uniqBy(samples, "@id");
 }
