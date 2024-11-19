@@ -11,6 +11,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
+import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
@@ -51,7 +52,9 @@ export default function ImageFile({
           alternateAccessions={imageFile.alternate_accessions}
         />
         <ObjectPageHeader item={imageFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={imageFile} />
+          <FileHeaderDownload file={imageFile}>
+            <HostedFilePreview file={imageFile} buttonSize="sm" />
+          </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={imageFile} isJsonFormat={isJson}>
           <DataPanel>

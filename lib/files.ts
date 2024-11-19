@@ -186,7 +186,7 @@ export async function getAllDerivedFromFiles(
 
 /**
  * Check if a file is downloadable based on its upload status and its anvil status, as well as
- * having an `href` property.
+ * not being externally hosted.
  * @param file File object to check
  * @returns True if the file is downloadable
  */
@@ -200,6 +200,6 @@ export function checkFileDownloadable(file: FileObject): boolean {
   return (
     !isDownloadDisabledByAnvil &&
     !isDownloadDisabledByStatus &&
-    Boolean(file.href)
+    !file.externally_hosted
   );
 }

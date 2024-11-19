@@ -18,6 +18,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
+import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
@@ -60,7 +61,9 @@ export default function AlignmentFile({
           alternateAccessions={alignmentFile.alternate_accessions}
         />
         <ObjectPageHeader item={alignmentFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={alignmentFile} />
+          <FileHeaderDownload file={alignmentFile}>
+            <HostedFilePreview file={alignmentFile} buttonSize="sm" />
+          </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={alignmentFile} isJsonFormat={isJson}>
           <DataPanel>

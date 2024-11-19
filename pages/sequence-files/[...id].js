@@ -18,6 +18,7 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
+import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
@@ -61,7 +62,9 @@ export default function SequenceFile({
           alternateAccessions={sequenceFile.alternate_accessions}
         />
         <ObjectPageHeader item={sequenceFile} isJsonFormat={isJson}>
-          <FileHeaderDownload file={sequenceFile} />
+          <FileHeaderDownload file={sequenceFile}>
+            <HostedFilePreview file={sequenceFile} buttonSize="sm" />
+          </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={sequenceFile} isJsonFormat={isJson}>
           <DataPanel>
