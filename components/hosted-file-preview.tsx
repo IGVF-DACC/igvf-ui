@@ -164,8 +164,7 @@ export function HostedFilePreview({
 
   // The criteria for previewing is the same as for downloading plus the file's type has to be
   // supported for previewing.
-  const isPreviewable =
-    checkFileDownloadable(file) && !isLoading && TypePreview;
+  const isPreviewable = checkFileDownloadable(file) && TypePreview;
   if (isPreviewable) {
     return (
       <>
