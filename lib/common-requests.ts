@@ -314,6 +314,7 @@ export async function requestSamples(
     await request.getMultipleObjectsBulk(paths, [
       "accession",
       "construct_library_sets",
+      "disease_terms",
       "protocols",
       "sample_terms",
       "status",

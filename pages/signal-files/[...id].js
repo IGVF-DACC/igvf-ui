@@ -22,17 +22,20 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFileSets,
   requestFiles,
+  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
+  collectFileFileSetSamples,
   convertFileDownloadPathToFilePagePath,
 } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -44,6 +47,7 @@ export default function SignalFile({
   derivedFrom,
   derivedFromFileSets,
   inputFileFor,
+  fileSetSamples,
   fileFormatSpecifications,
   referenceFiles,
   isJson,
@@ -98,6 +102,21 @@ export default function SignalFile({
               )}
             </DataArea>
           </DataPanel>
+          {fileFormatSpecifications.length > 0 && (
+            <DocumentTable
+              documents={fileFormatSpecifications}
+              title="File Format Specifications"
+              pagePanels={pagePanels}
+              pagePanelId="file-format-specifications"
+            />
+          )}
+          {fileSetSamples.length > 0 && (
+            <SampleTable
+              samples={fileSetSamples}
+              pagePanels={pagePanels}
+              pagePanelId="file-set-samples"
+            />
+          )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
@@ -127,14 +146,6 @@ export default function SignalFile({
               pagePanelId="reference-files"
             />
           )}
-          {fileFormatSpecifications.length > 0 && (
-            <DocumentTable
-              documents={fileFormatSpecifications}
-              title="File Format Specifications"
-              pagePanels={pagePanels}
-              pagePanelId="file-format-specifications"
-            />
-          )}
           {documents.length > 0 && (
             <DocumentTable
               documents={documents}
@@ -160,6 +171,8 @@ SignalFile.propTypes = {
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
+  // Samples associated with the file's file sets
+  fileSetSamples: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.array.isRequired,
   // Attribution for this file
@@ -212,6 +225,14 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = signalFile.reference_files
       ? await requestFiles(signalFile.reference_files, request)
       : [];
+    const embeddedFileSetSamples = collectFileFileSetSamples(signalFile);
+    const fileSetSamplePaths = embeddedFileSetSamples.map(
+      (sample) => sample["@id"]
+    );
+    const fileSetSamples =
+      fileSetSamplePaths.length > 0
+        ? await requestSamples(fileSetSamplePaths, request)
+        : [];
     const attribution = await buildAttribution(signalFile, req.headers.cookie);
     return {
       props: {
@@ -220,6 +241,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         inputFileFor,
+        fileSetSamples,
         fileFormatSpecifications,
         pageContext: { title: signalFile.accession },
         attribution,
