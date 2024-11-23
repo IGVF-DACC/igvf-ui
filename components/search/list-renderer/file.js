@@ -17,6 +17,7 @@ import {
   SearchListItemSupplementContent,
 } from "./search-list-item";
 // components
+import { ExternallyHostedBadge } from "../../common-pill-badges";
 import SeparatedList from "../../separated-list";
 
 export default function File({ item: file, accessoryData = null }) {
@@ -30,6 +31,10 @@ export default function File({ item: file, accessoryData = null }) {
 
   // During indexing, `file_set` can contain a path instead of the expected object.
   const isFileSetEmbedded = typeof file.file_set === "object";
+
+  // Determine whether the file is externally hosted from the file object in accessory data.
+  const isExternallyHosted =
+    accessoryData?.[file["@id"]]?.externally_hosted ?? false;
 
   // Get the seqspec_of objects from the accessory data.
   let seqspecOfs = file.seqspec_of
@@ -99,7 +104,9 @@ export default function File({ item: file, accessoryData = null }) {
             )}
           </SearchListItemSupplement>
         )}
-        <SearchListItemQuality item={file} />
+        <SearchListItemQuality item={file}>
+          {isExternallyHosted && <ExternallyHostedBadge />}
+        </SearchListItemQuality>
       </SearchListItemMain>
     </SearchListItemContent>
   );
@@ -113,10 +120,26 @@ File.propTypes = {
 };
 
 File.getAccessoryDataPaths = (items) => {
-  const seqspecOfPaths = items.reduce((pathAcc, item) => {
-    return item.seqspec_of ? pathAcc.concat(item.seqspec_of) : pathAcc;
-  }, []);
-  return seqspecOfPaths.length > 0
-    ? [{ type: "File", paths: seqspecOfPaths, fields: ["accession"] }]
-    : [];
+  // Get all search-result file `externally_hosted` properties.
+  const files = [
+    {
+      type: "File",
+      paths: items.map((item) => item["@id"]),
+      fields: ["externally_hosted"],
+    },
+  ];
+
+  // Get the `seqspec_of` for all files in the results.
+  let seqspecOfPaths = items.reduce(
+    (pathAcc, item) =>
+      item.seqspec_of ? pathAcc.concat(item.seqspec_of) : pathAcc,
+    []
+  );
+  seqspecOfPaths = [...new Set(seqspecOfPaths)];
+  const seqspecOf =
+    seqspecOfPaths.length > 0
+      ? [{ type: "File", paths: seqspecOfPaths, fields: ["accession"] }]
+      : [];
+
+  return files.concat(seqspecOf);
 };

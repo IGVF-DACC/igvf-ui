@@ -10,7 +10,7 @@ const customJestConfig = {
     "<rootDir>/lib",
   ],
   modulePathIgnorePatterns: ["<rootDir>/cdk/"],
-  setupFilesAfterEnv: ["./jest.setup.js"],
+  setupFilesAfterEnv: ["./jest.setup.ts"],
   testEnvironment: "jest-environment-jsdom",
   testPathIgnorePatterns: [
     "<rootDir>/cypress",

@@ -77,6 +77,23 @@ describe("Test FileDownload component", () => {
     expect(downloadLink).toHaveClass("text-red-500");
   });
 
+  it("renders a download link for a file with an externally hosted URL", () => {
+    const file = {
+      "@id": "/files/ENCFF000VZB/",
+      "@type": ["File", "Item"],
+      accession: "ENCFF000VZB",
+      externally_hosted: true,
+      external_host_url: "https://example.com/",
+      status: "released",
+      upload_status: "validated",
+    };
+
+    render(<FileDownload file={file} />);
+    const downloadLink = screen.getByRole("link");
+    expect(downloadLink).toHaveAttribute("href", "https://example.com/");
+    expect(screen.getByTestId("icon-externally-hosted")).toBeInTheDocument();
+  });
+
   it("renders a disabled download link for a file", () => {
     const file = {
       "@id": "/reference-files/IGVFFI0001SQBR/",
@@ -118,7 +135,7 @@ describe("Test FileHeaderDownload component", () => {
     render(<FileHeaderDownload file={file} />);
 
     const downloadLink = screen.getByTestId("file-header-download");
-    expect(downloadLink).toHaveClass("flex grow items-center px-1");
+    expect(downloadLink).toHaveClass("flex items-center gap-1");
 
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute(

@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import { PillBadge } from "./pill-badge";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { toShishkebabCase } from "../lib/general";
@@ -252,13 +253,14 @@ export default function Status({ status, isAbbreviated = false }) {
   }
 
   return (
-    <div
-      className={`flex h-5 w-fit gap-0.5 whitespace-nowrap rounded-full border border-white pl-0.5 pr-1.5 text-xs font-semibold uppercase shadow-status ${styles}`}
-      data-testid={`status-pill-${status.replace(/\s/g, "-")}`}
+    <PillBadge
+      className={styles}
+      testid={`status-pill-${status.replace(/\s/g, "-")}`}
+      iconPosition="left"
     >
-      <Icon />
+      <Icon className="ml-[-8px]" />
       <div className="pt-px">{status}</div>
-    </div>
+    </PillBadge>
   );
 }
 

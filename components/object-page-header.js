@@ -5,6 +5,7 @@ import { AuditDetail, useAudit } from "./audit";
 import { EditLink } from "./edit-func";
 import { JsonViewLink, ObjectViewLink } from "./json-button";
 import QualitySection from "./quality-section";
+import { ExternallyHostedBadge } from "./common-pill-badges";
 
 /**
  * Display the header above the data areas of an object page. This generally comprises controls on
@@ -13,13 +14,16 @@ import QualitySection from "./quality-section";
  */
 export default function ObjectPageHeader({ item, isJsonFormat, children }) {
   const auditState = useAudit();
+  const isExternallyHosted = item.externally_hosted ?? false;
 
   return (
     <>
       <div className="mb-1 flex justify-between">
-        <QualitySection item={item} auditState={auditState} />
-        {children}
-        <div className="flex justify-end gap-1">
+        <QualitySection item={item} auditState={auditState}>
+          {isExternallyHosted && <ExternallyHostedBadge />}
+          {children}
+        </QualitySection>
+        <div className="flex items-end justify-end gap-1">
           <EditLink item={item} />
           {isJsonFormat ? (
             <ObjectViewLink item={item} />

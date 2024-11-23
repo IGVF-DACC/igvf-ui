@@ -15,11 +15,18 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import { ExternallyHostedBadge } from "../../common-pill-badges";
 
-export default function MeasurementSet({ item: measurementSet }) {
+export default function MeasurementSet({
+  item: measurementSet,
+  accessoryData = null,
+}) {
   // Collect the summary of the sample object in the measurement set if available. MeasurementSet
   // objects can have zero or one sample object, so we only need to check the first one.
   const sampleSummary = measurementSet.samples?.[0].summary || "";
+  const isExternallyHosted =
+    accessoryData?.[measurementSet["@id"]].externally_hosted ?? false;
   const isSupplementsVisible =
     measurementSet.alternate_accessions?.length > 0 || sampleSummary;
 
@@ -52,7 +59,9 @@ export default function MeasurementSet({ item: measurementSet }) {
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>
-      <SearchListItemQuality item={measurementSet} />
+      <SearchListItemQuality item={measurementSet}>
+        {isExternallyHosted && <ExternallyHostedBadge />}
+      </SearchListItemQuality>
     </SearchListItemContent>
   );
 }
@@ -60,4 +69,17 @@ export default function MeasurementSet({ item: measurementSet }) {
 MeasurementSet.propTypes = {
   // Single measurement set search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
+  // Accessory data to display for all search-result objects
+  accessoryData: PropTypes.object,
+};
+
+MeasurementSet.getAccessoryDataPaths = (items) => {
+  // Get the displayed measurement-set objects to get their `externally_hosted` properties.
+  return [
+    {
+      type: "MeasurementSet",
+      paths: items.map((item) => item["@id"]),
+      fields: ["externally_hosted"],
+    },
+  ];
 };

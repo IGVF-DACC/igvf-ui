@@ -100,6 +100,8 @@ export async function requestFiles(
       "content_type",
       "creation_timestamp",
       "derived_from",
+      "external_host_url",
+      "externally_hosted",
       "file_format",
       "file_size",
       "file_set",

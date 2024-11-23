@@ -12,8 +12,12 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import { ExternallyHostedBadge } from "../../common-pill-badges";
 
-export default function ModelSet({ item: modelSet }) {
+export default function ModelSet({ item: modelSet, accessoryData = null }) {
+  const isExternallyHosted =
+    accessoryData?.[modelSet["@id"]].externally_hosted ?? false;
   const isSupplementsVisible = modelSet.alternate_accessions?.length > 0;
 
   return (
@@ -33,7 +37,9 @@ export default function ModelSet({ item: modelSet }) {
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>
-      <SearchListItemQuality item={modelSet} />
+      <SearchListItemQuality item={modelSet}>
+        {isExternallyHosted && <ExternallyHostedBadge />}
+      </SearchListItemQuality>
     </SearchListItemContent>
   );
 }
@@ -41,4 +47,17 @@ export default function ModelSet({ item: modelSet }) {
 ModelSet.propTypes = {
   // Single ModelSet search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
+  // Accessory data to display for all search-result objects
+  accessoryData: PropTypes.object,
+};
+
+ModelSet.getAccessoryDataPaths = (items) => {
+  // Get the displayed measurement-set objects to get their `externally_hosted` properties.
+  return [
+    {
+      type: "ModelSet",
+      paths: items.map((item) => item["@id"]),
+      fields: ["externally_hosted"],
+    },
+  ];
 };

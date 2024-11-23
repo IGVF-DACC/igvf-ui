@@ -15,6 +15,8 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import { UniformlyProcessedBadge } from "../../common-pill-badges";
 
 export default function AnalysisSet({
   item: analysisSet,
@@ -63,11 +65,7 @@ export default function AnalysisSet({
         )}
       </SearchListItemMain>
       <SearchListItemQuality item={analysisSet}>
-        {isUniformPipeline && (
-          <div className="flex h-[22px] items-center gap-1 self-start rounded-full border border-amber-800 bg-amber-200 px-2 text-xs font-semibold uppercase text-amber-800 dark:border-amber-500 dark:bg-amber-900 dark:text-amber-200">
-            Uniformly Processed
-          </div>
-        )}
+        {isUniformPipeline && <UniformlyProcessedBadge workflow={workflows} />}
       </SearchListItemQuality>
     </SearchListItemContent>
   );

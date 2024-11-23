@@ -284,3 +284,12 @@ export interface FileSetObject extends DatabaseObject {
 export interface SampleObject extends DatabaseObject {
   aliases?: string[];
 }
+
+/**
+ * Data structure common to all workflow object types.
+ */
+export interface WorkflowObject extends DatabaseObject {
+  name: string;
+  source_url: string;
+  uniform_pipeline?: boolean;
+}

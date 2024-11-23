@@ -594,6 +594,20 @@ export function FileDataItems({ item, children }) {
       <DataItemValue>{item.file_format}</DataItemValue>
       <DataItemLabel>Content Type</DataItemLabel>
       <DataItemValue>{item.content_type}</DataItemValue>
+      {item.external_host_url && (
+        <>
+          <DataItemLabel>External Host URL</DataItemLabel>
+          <DataItemValueUrl>
+            <a
+              href={item.external_host_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {item.external_host_url}
+            </a>
+          </DataItemValueUrl>
+        </>
+      )}
       {item.content_summary && (
         <>
           <DataItemLabel>Content Summary</DataItemLabel>
