@@ -174,6 +174,32 @@ DataItemValue.propTypes = {
 };
 
 /**
+ * Display a single boolean value as "True" or "False".
+ * @param {string} className Additional Tailwind CSS classes to apply to the <div> element
+ * @param {boolean} children The boolean value to display
+ */
+export function DataItemValueBoolean({ className = "", children = null }) {
+  if (typeof children === "boolean") {
+    return (
+      <div
+        className={`mb-4 font-medium text-data-value last:mb-0 @md:mb-0 @md:min-w-0 ${className}`}
+        data-testid="dataitemvalue"
+      >
+        {children ? "True" : "False"}
+      </div>
+    );
+  }
+  return null;
+}
+
+DataItemValueBoolean.propTypes = {
+  // Additional Tailwind CSS classes to apply to the <div> element
+  className: PropTypes.string,
+  // The boolean value to display
+  children: PropTypes.bool,
+};
+
+/**
  * Display the value of a data item that consists of a URL. This will break the URL at any
  * character so it doesn't overflow the data panel.
  */

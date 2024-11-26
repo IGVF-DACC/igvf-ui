@@ -423,8 +423,8 @@ export function BiosampleDataItems({
               ? "Embryonic"
               : "unknown"
             : item.embryonic
-            ? `Embryonic ${item.age}`
-            : item.age}
+              ? `Embryonic ${item.age}`
+              : item.age}
           {item.age_units ? (
             <>
               {" "}
@@ -562,7 +562,7 @@ OntologyTermDataItems.commonProperties = [
 /**
  * Display data items common to all file-derived objects.
  */
-export function FileDataItems({ item, children }) {
+export function FileDataItems({ item, children = null }) {
   const tooltipAttr = useTooltip("external-host-url");
 
   return (
@@ -696,6 +696,8 @@ export function FileDataItems({ item, children }) {
 FileDataItems.propTypes = {
   // file object common for all file types
   item: PropTypes.object.isRequired,
+  // Children elements to render
+  children: PropTypes.node,
 };
 
 FileDataItems.commonProperties = [

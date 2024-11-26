@@ -196,7 +196,7 @@ export default class FetchRequest {
    */
   static isResponseSuccess(
     response: DataProviderObject | ErrorObject
-  ): boolean {
+  ): response is DataProviderObject {
     if (
       typeof response === "object" &&
       response !== null &&

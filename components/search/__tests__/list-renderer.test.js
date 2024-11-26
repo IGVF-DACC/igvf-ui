@@ -15,6 +15,7 @@ import File from "../list-renderer/file";
 import Gene from "../list-renderer/gene";
 import HumanDonor from "../list-renderer/human-donor";
 import ImageItem from "../list-renderer/image";
+import IndexFile from "../list-renderer/index-file";
 import Lab from "../list-renderer/lab";
 import MeasurementSet from "../list-renderer/measurement-set";
 import ModelSet from "../list-renderer/model-set";
@@ -2759,5 +2760,96 @@ describe("Test Image component", () => {
 
     const supplement = screen.queryByTestId("search-list-item-supplement");
     expect(supplement).toBeNull();
+  });
+});
+
+describe("Test IndexFile component", () => {
+  it("renders an index file item with no supplement data", () => {
+    const item = {
+      "@id": "/index-files/IGVFFI0002BAIN/",
+      "@type": ["IndexFile", "File", "Item"],
+      accession: "IGVFFI0002BAIN",
+      aliases: ["j-michael-cherry:aliases01"],
+      summary: "index of IGVFFI0002ALTB",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <IndexFile item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^IndexFile IGVFFI0002BAIN$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^index of IGVFFI0002ALTB$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent(/^$/);
+  });
+
+  it("renders an index file item with file-set supplement data", () => {
+    const item = {
+      "@id": "/index-files/IGVFFI0002BAIN/",
+      "@type": ["IndexFile", "File", "Item"],
+      accession: "IGVFFI0002BAIN",
+      aliases: ["j-michael-cherry:aliases01"],
+      file_set: {
+        "@id": "/analysis-sets/IGVFDS9563CORS/",
+        accession: "IGVFDS9563CORS",
+        file_set_type: "principal analysis",
+        samples: [
+          {
+            "@id": "/tissues/IGVFSM0000DDDD/",
+            accession: "IGVFSM0000DDDD",
+            classifications: ["tissue"],
+            sample_terms: [
+              {
+                term_name: "lung",
+                "@id": "/sample-terms/UBERON_0002048/",
+              },
+            ],
+            summary:
+              "lung tissue, female, Homo sapiens (25-30 months) transfected with a reporter library",
+            taxa: "Homo sapiens",
+          },
+        ],
+        summary:
+          "SUPERSTARR targeting Mir683-2: barcode to sample mapping, coding_variants, diseases_genes, documentation (readme), elements reference and 15 more",
+      },
+      summary: "index of IGVFFI0002ALTB",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <IndexFile item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^IndexFile IGVFFI0002BAIN$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^index of IGVFFI0002ALTB$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent(
+      "File SetSUPERSTARR targeting Mir683-2: barcode to sample mapping, coding_variants, diseases_genes, documentation (readme), elements reference and 15 more"
+    );
   });
 });

@@ -6,6 +6,7 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
+  DataItemValueBoolean,
   DataItemValueUrl,
   DataPanel,
 } from "../data-area";
@@ -252,5 +253,23 @@ describe("Test the DataAreaTitle and collapser", () => {
     fireEvent.click(screen.getByText("Test Title 1"), { altKey: true });
     expect(screen.queryByText("Expanded 1")).not.toBeInTheDocument();
     expect(screen.queryByText("Expanded 2")).not.toBeInTheDocument();
+  });
+});
+
+describe("Test the DataItemValueBoolean component", () => {
+  it("renders the boolean value true", () => {
+    render(<DataItemValueBoolean>{true}</DataItemValueBoolean>);
+    expect(screen.getByText("True")).toBeInTheDocument();
+  });
+
+  it("renders the boolean value false", () => {
+    render(<DataItemValueBoolean>{false}</DataItemValueBoolean>);
+    expect(screen.getByText("False")).toBeInTheDocument();
+  });
+
+  it('renders nothing when the value is "undefined"', () => {
+    render(<DataItemValueBoolean>{undefined}</DataItemValueBoolean>);
+    expect(screen.queryByText("True")).not.toBeInTheDocument();
+    expect(screen.queryByText("False")).not.toBeInTheDocument();
   });
 });
