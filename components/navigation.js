@@ -179,19 +179,23 @@ function NavigationLink({
   onClick,
   isNarrowNav = false,
   isChildItem = false,
+  isExternal = false,
   children,
 }) {
   // Helps determine if the link should reload the page or use NextJS navigation
   const { linkReload } = useContext(GlobalContext);
   const cssClasses = navigationClasses(isNarrowNav, isChildItem);
 
-  if (linkReload.isEnabled) {
+  if (linkReload.isEnabled || isExternal) {
     return (
       <a
         href={href}
         onClick={onClick}
         data-testid={`navigation-${id}`}
         className={cssClasses}
+        {...(isExternal
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {})}
       >
         {children}
       </a>
@@ -221,6 +225,8 @@ NavigationLink.propTypes = {
   isNarrowNav: PropTypes.bool,
   // True if this item is a child of another navigation item
   isChildItem: PropTypes.bool,
+  // True if the link should open in a new tab
+  isExternal: PropTypes.bool,
 };
 
 /**
@@ -383,6 +389,7 @@ function NavigationHrefItem({
   navigationClick,
   isChildItem = false,
   isNarrowNav = false,
+  isExternal = false,
   children,
 }) {
   return (
@@ -393,6 +400,7 @@ function NavigationHrefItem({
         onClick={navigationClick}
         isNarrowNav={isNarrowNav}
         isChildItem={isChildItem}
+        isExternal={isExternal}
       >
         {children}
       </NavigationLink>
@@ -411,6 +419,8 @@ NavigationHrefItem.propTypes = {
   isChildItem: PropTypes.bool,
   // True if the navigation is in narrow mode
   isNarrowNav: PropTypes.bool,
+  // True if the link should open in a new tab
+  isExternal: PropTypes.bool,
 };
 
 /**
@@ -742,6 +752,15 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             isChildItem
           >
             General Help
+          </NavigationHrefItem>
+          <NavigationHrefItem
+            id="github-issues"
+            href="https://github.com/orgs/IGVF/projects/1/views/2?filterQuery=front-end%3A%22Data+Portal%22&visibleFields=%5B%22Title%22%2C%22Assignees%22%2C%22Status%22%2C114383190%5D"
+            navigationClick={navigationClick}
+            isChildItem
+            isExternal
+          >
+            Data Portal Issues?
           </NavigationHrefItem>
         </NavigationGroupItem>
 
