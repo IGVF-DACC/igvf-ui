@@ -606,7 +606,7 @@ export function FileDataItems({ item, children }) {
               <QuestionMarkCircleIcon className="h-4 w-4" />
             </TooltipRef>
             <Tooltip tooltipAttr={tooltipAttr}>
-              Imaging data is not hosted here due to size. Please use the link.
+              Files are externally hosted. Please use the link.
             </Tooltip>
           </DataItemLabel>
           <DataItemValueUrl>

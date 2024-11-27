@@ -1,4 +1,5 @@
 // node_modules
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import Link from "next/link";
 import PropTypes from "prop-types";
@@ -29,6 +30,7 @@ import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
+import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -117,6 +119,7 @@ export default function MeasurementSet({
   isJson,
 }) {
   const pagePanels = usePagePanels(measurementSet["@id"]);
+  const tooltipAttr = useTooltip("external-image-url");
 
   // Split the files into those with an @type of ImageFile and all others.
   const groupedFiles = _.groupBy(files, (file) =>
@@ -265,7 +268,16 @@ export default function MeasurementSet({
                 )}
                 {measurementSet.external_image_url && (
                   <>
-                    <DataItemLabel>External Image URL</DataItemLabel>
+                    <DataItemLabel className="flex items-center gap-1">
+                      External Image URL
+                      <TooltipRef tooltipAttr={tooltipAttr}>
+                        <QuestionMarkCircleIcon className="h-4 w-4" />
+                      </TooltipRef>
+                      <Tooltip tooltipAttr={tooltipAttr}>
+                        Image data is not hosted here due to size. Please use
+                        the link.
+                      </Tooltip>
+                    </DataItemLabel>
                     <DataItemValue>
                       <a
                         href={measurementSet.external_image_url}
