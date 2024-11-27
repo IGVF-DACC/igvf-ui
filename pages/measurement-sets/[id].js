@@ -15,6 +15,7 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
+  DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
@@ -278,7 +279,7 @@ export default function MeasurementSet({
                         the link.
                       </Tooltip>
                     </DataItemLabel>
-                    <DataItemValue>
+                    <DataItemValueUrl>
                       <a
                         href={measurementSet.external_image_url}
                         target="_blank"
@@ -286,7 +287,7 @@ export default function MeasurementSet({
                       >
                         {measurementSet.external_image_url}
                       </a>
-                    </DataItemValue>
+                    </DataItemValueUrl>
                   </>
                 )}
               </FileSetDataItems>
