@@ -390,7 +390,7 @@ export function AuditStatus({ item, auditState }) {
     return (
       <button
         onClick={auditState.toggleDetailsOpen}
-        className={`flex h-[22px] items-center rounded-full border border-audit px-1 ${
+        className={`flex h-[22px] shrink items-center rounded-full border border-audit px-1 ${
           auditState.isDetailOpen
             ? "bg-button-audit-open"
             : "bg-button-audit-closed"

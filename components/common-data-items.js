@@ -11,6 +11,7 @@
  */
 
 // node_modules
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import Link from "next/link";
 import PropTypes from "prop-types";
@@ -26,6 +27,7 @@ import {
 import DbxrefList from "./dbxref-list";
 import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
+import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { formatDate } from "../lib/dates";
 import { dataSize, truthyOrZero } from "../lib/general";
@@ -561,6 +563,8 @@ OntologyTermDataItems.commonProperties = [
  * Display data items common to all file-derived objects.
  */
 export function FileDataItems({ item, children }) {
+  const tooltipAttr = useTooltip("external-host-url");
+
   return (
     <>
       {typeof item.file_set === "object" && (
@@ -594,6 +598,28 @@ export function FileDataItems({ item, children }) {
       <DataItemValue>{item.file_format}</DataItemValue>
       <DataItemLabel>Content Type</DataItemLabel>
       <DataItemValue>{item.content_type}</DataItemValue>
+      {item.external_host_url && (
+        <>
+          <DataItemLabel className="flex items-center gap-1">
+            External Host URL
+            <TooltipRef tooltipAttr={tooltipAttr}>
+              <QuestionMarkCircleIcon className="h-4 w-4" />
+            </TooltipRef>
+            <Tooltip tooltipAttr={tooltipAttr}>
+              Files are externally hosted. Please use the link.
+            </Tooltip>
+          </DataItemLabel>
+          <DataItemValueUrl>
+            <a
+              href={item.external_host_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {item.external_host_url}
+            </a>
+          </DataItemValueUrl>
+        </>
+      )}
       {item.content_summary && (
         <>
           <DataItemLabel>Content Summary</DataItemLabel>

@@ -223,8 +223,9 @@ export function SearchListItemQuality({ item, children }) {
         className="mt-2 flex flex-wrap gap-1"
         data-testid="search-list-item-quality"
       >
-        <QualitySection item={item} auditState={auditState} />
-        {children}
+        <QualitySection item={item} auditState={auditState}>
+          {children}
+        </QualitySection>
       </div>
       <AuditDetail item={item} auditState={auditState} />
     </>

@@ -1335,6 +1335,11 @@ describe("Test File component", () => {
         sequencing_run: 1,
         seqspecs: ["/configuration-file/IGVFFI1234CONF/"],
       },
+      "/configuration-file/IGVFFI1234CONF/": {
+        "@id": "/configuration-file/IGVFFI1234CONF/",
+        "@type": ["ConfigurationFile", "File", "Item"],
+        externally_hosted: true,
+      },
     };
 
     render(
@@ -1362,6 +1367,11 @@ describe("Test File component", () => {
 
     const paths = File.getAccessoryDataPaths([item]);
     expect(paths).toEqual([
+      {
+        type: "File",
+        paths: ["/configuration-file/IGVFFI1234CONF/"],
+        fields: ["externally_hosted"],
+      },
       {
         type: "File",
         paths: [
@@ -1423,7 +1433,13 @@ describe("Test File component", () => {
     };
 
     const paths = File.getAccessoryDataPaths([item]);
-    expect(paths).toEqual([]);
+    expect(paths).toEqual([
+      {
+        fields: ["externally_hosted"],
+        paths: ["/configuration-file/IGVFFI1234CONF/"],
+        type: "File",
+      },
+    ]);
   });
 });
 
@@ -1699,6 +1715,15 @@ describe("Test the MeasurementSet component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+
+    const paths = MeasurementSet.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      {
+        type: "MeasurementSet",
+        paths: ["/measurement-sets/IGVFDS6408BFHD/"],
+        fields: ["externally_hosted"],
+      },
+    ]);
   });
 
   it("renders a MeasurementSet item with more than one sample", () => {
@@ -1760,7 +1785,16 @@ describe("Test the MeasurementSet component", () => {
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <MeasurementSet item={item} />
+        <MeasurementSet
+          item={item}
+          accessoryData={{
+            "/measurement-sets/IGVFDS6408BFHD/": {
+              "@id": "/measurement-sets/IGVFDS6408BFHD/",
+              "@type": ["MeasurementSet", "FileSet", "Item"],
+              externally_hosted: true,
+            },
+          }}
+        />
       </SessionContext.Provider>
     );
 
@@ -2301,7 +2335,16 @@ describe("Test the ModelSet component", () => {
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <ModelSet item={item} />
+        <ModelSet
+          item={item}
+          accessoryData={{
+            "/models/IGVFDS1234MODL/": {
+              "@id": "/models/IGVFDS1234MODL/",
+              "@type": ["ModelSet", "FileSet", "Item"],
+              externally_hosted: true,
+            },
+          }}
+        />
       </SessionContext.Provider>
     );
 
@@ -2317,6 +2360,15 @@ describe("Test the ModelSet component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+
+    const paths = ModelSet.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      {
+        type: "ModelSet",
+        paths: ["/models/IGVFDS1234MODL/"],
+        fields: ["externally_hosted"],
+      },
+    ]);
   });
 });
 
