@@ -4,17 +4,17 @@ import { requestUsers } from "./common-requests";
 import { DataProviderObject } from "../globals";
 import { itemId } from "./general";
 import { err, fromOption, ok } from "./result";
+// root
+import type { DatabaseObject } from "../globals.d";
 
 /**
- * An interface that for an object which can have attribution
- * information generated.
+ * An interface that for an object which can have attribution information generated.
  *
- * Objects with `lab`, `award`, or `collections`, when passed to
- * `buildAttribution` will have their attribution details built.
+ * Objects with `lab`, `award`, or `collections`, when passed to `buildAttribution` will have their
+ * attribution details built.
  *
- * All properties are optional because some objects may attempt
- * to have attributions made of them when these propertis don't
- * exist, in which case the returned Attribution would be null.
+ * All properties are optional because some objects may attempt to have attributions made of them
+ * when these properties don't exist, in which case the returned Attribution would be null.
  */
 export interface Attributable {
   "@type": string[];
@@ -24,10 +24,9 @@ export interface Attributable {
 }
 
 /**
- * The Attribution of an object. Once an object has its attribution
- * built, the details are collected into an object that has this
- * interface. Attributions are then passed to the Attribution component
- * to be rendered.
+ * The Attribution of an object. Once an object has its attribution built, the details are
+ * collected into an object that has this interface. Attributions are then passed to the
+ * Attribution component to be rendered.
  */
 export interface Attribution {
   type: string;
@@ -40,12 +39,12 @@ export interface Attribution {
 
 /**
  * Generate the attribution data for an object page.
- * @param {object} obj Object for the displayed page
+ * @param {DatabaseObject} obj Object for the displayed page
  * @param {string} cookie Server cookie to authenticate the request
- * @returns {object} attribution data for the given page
+ * @returns {Attribution} attribution data for the given page
  */
 export default async function buildAttribution(
-  obj: Attributable,
+  obj: DatabaseObject,
   cookie: string
 ): Promise<Attribution> {
   const request = new FetchRequest({ cookie });
@@ -81,7 +80,7 @@ export default async function buildAttribution(
   ).optional();
 
   const collections = fromOption(obj.collections)
-    .and_then<[string]>((c) => (c.length > 0 ? ok(c) : err(null)))
+    .and_then<string[]>((c) => (c.length > 0 ? ok(c) : err(null)))
     .optional();
 
   return {

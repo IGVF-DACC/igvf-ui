@@ -7,7 +7,11 @@ import SiteTitle from "./site-title";
 /**
  * Put this at the top of any page that needs a tab title and a page title.
  */
-export default function PagePreamble({ pageTitle = "", sections, children }) {
+export default function PagePreamble({
+  pageTitle = "",
+  sections,
+  children = null,
+}) {
   return (
     <>
       <SiteTitle pageTitle={pageTitle} />

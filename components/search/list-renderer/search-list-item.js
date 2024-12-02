@@ -214,7 +214,7 @@ export function SearchListItemContent({ children }) {
 /**
  * Wrapper for the status and audit information of a search-list item.
  */
-export function SearchListItemQuality({ item, children }) {
+export function SearchListItemQuality({ item, children = null }) {
   const auditState = useAudit();
 
   return (
@@ -235,4 +235,6 @@ export function SearchListItemQuality({ item, children }) {
 SearchListItemQuality.propTypes = {
   // Search-result item to to display the status and audits for
   item: PropTypes.object.isRequired,
+  // Additional children to display in the quality section
+  children: PropTypes.node,
 };

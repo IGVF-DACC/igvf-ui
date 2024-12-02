@@ -12,7 +12,7 @@ import { sortObjectProps } from "../lib/general";
  * @param {*} children the children components to display
  * @returns either a raw JSON view or a object view
  */
-export default function JsonDisplay({ item, isJsonFormat, children }) {
+export default function JsonDisplay({ item, isJsonFormat, children = null }) {
   const sortedItem = sortObjectProps(item);
 
   return (
@@ -29,4 +29,5 @@ export default function JsonDisplay({ item, isJsonFormat, children }) {
 JsonDisplay.propTypes = {
   item: PropTypes.object.isRequired,
   isJsonFormat: PropTypes.bool.isRequired,
+  children: PropTypes.node,
 };

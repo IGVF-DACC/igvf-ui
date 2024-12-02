@@ -43,14 +43,16 @@ export interface ObjectActions {
  */
 export interface DatabaseObject {
   "@context"?: string;
-  "@id"?: string;
+  "@id": string;
   "@type": string[];
   accession?: string;
   actions?: ObjectActions[];
   alternate_accessions?: string[];
+  award?: string | DatabaseObject;
   audit?: Audits;
+  collections?: string[];
   creation_timestamp?: string;
-  lab?: string | DatabaseObject;
+  lab?: string | LabObject;
   release_timestamp?: string;
   status?: string;
   title?: string;
@@ -262,9 +264,13 @@ export interface FileObject extends DatabaseObject {
   content_type: string;
   derived_from?: string[];
   file_format: string;
+  file_format_specifications: string[];
   file_set: string | FileSetObject;
   file_size?: number;
   href?: string;
+  input_file_for?: string[] | FileObject[];
+  reference_files: string[] | FileObject[];
+  summary?: string;
   upload_status?: UploadStatus;
 }
 
@@ -276,6 +282,16 @@ export interface FileSetObject extends DatabaseObject {
   file_set_type?: string;
   files: string[];
   samples?: string[] | SampleObject[];
+  summary: string;
+}
+
+/**
+ * Lab object type.
+ */
+export interface LabObject extends DatabaseObject {
+  institute_label: string;
+  name: string;
+  title: string;
 }
 
 /**
