@@ -584,6 +584,8 @@ export function FileDataItems({ item, children = null }) {
           </DataItemValue>
         </>
       )}
+      <DataItemLabel>Summary</DataItemLabel>
+      <DataItemValue>{item.summary}</DataItemValue>
       {item.analysis_step_version && (
         <>
           <DataItemLabel>Analysis Step Version</DataItemLabel>
@@ -686,9 +688,19 @@ export function FileDataItems({ item, children = null }) {
           <DataItemValue>{item.validation_error_detail}</DataItemValue>
         </>
       )}
+      {item.revoke_detail && (
+        <>
+          <DataItemLabel>Revoke Detail</DataItemLabel>
+          <DataItemValue>{item.revoke_detail}</DataItemValue>
+        </>
+      )}
+      {item.submitter_comment && (
+        <>
+          <DataItemLabel>Submitter Comment</DataItemLabel>
+          <DataItemValue>{item.submitter_comment}</DataItemValue>
+        </>
+      )}
       {children}
-      <DataItemLabel>Summary</DataItemLabel>
-      <DataItemValue>{item.summary}</DataItemValue>
     </>
   );
 }
@@ -711,6 +723,8 @@ FileDataItems.commonProperties = [
   "md5sum",
   "submitted_file_name",
   "validation_error_detail",
+  "revoke_detail",
+  "submitter_comment",
 ];
 
 /**

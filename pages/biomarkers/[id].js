@@ -75,6 +75,12 @@ export default function Biomarker({
                   </DataItemValue>
                 </>
               )}
+              {biomarker.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{biomarker.submitter_comment}</DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           <Attribution attribution={attribution} />

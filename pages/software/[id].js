@@ -81,6 +81,12 @@ export default function Software({
                   </DataItemList>
                 </>
               )}
+              {software.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{software.submitter_comment}</DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
 

@@ -60,6 +60,14 @@ export default function PhenotypicFeature({
                   </DataItemValue>
                 </>
               )}
+              {phenotypicFeature.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>
+                    {phenotypicFeature.submitter_comment}
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           <Attribution attribution={attribution} />
