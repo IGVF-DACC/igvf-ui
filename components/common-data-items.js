@@ -423,8 +423,8 @@ export function BiosampleDataItems({
               ? "Embryonic"
               : "unknown"
             : item.embryonic
-              ? `Embryonic ${item.age}`
-              : item.age}
+            ? `Embryonic ${item.age}`
+            : item.age}
           {item.age_units ? (
             <>
               {" "}
