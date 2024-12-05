@@ -22,6 +22,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -59,6 +60,7 @@ export default function ModelSet({
         />
         <ObjectPageHeader item={modelSet} isJsonFormat={isJson} />
         <JsonDisplay item={modelSet} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={modelSet} />
           <DataPanel>
             <DataArea>
               <FileSetDataItems item={modelSet} publications={publications}>

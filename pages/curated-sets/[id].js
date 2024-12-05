@@ -22,6 +22,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -56,6 +57,7 @@ export default function CuratedSet({
         />
         <ObjectPageHeader item={curatedSet} isJsonFormat={isJson} />
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={curatedSet} />
           <DataPanel>
             <DataArea>
               <FileSetDataItems item={curatedSet} publications={publications}>

@@ -18,6 +18,7 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SequencingFileTable from "../../components/sequencing-file-table";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -63,6 +64,7 @@ export default function ConfigurationFile({
           </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={configurationFile} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={configurationFile} />
           <DataPanel>
             <DataArea>
               <FileDataItems item={configurationFile} />

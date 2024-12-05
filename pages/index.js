@@ -15,6 +15,7 @@ import { requestDatasetSummary } from "../lib/common-requests";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
 import { convertFileSetsToReleaseData } from "../lib/home";
+import { getUserQueryExtras } from "../lib/query-utils";
 
 /**
  * Display a statistic panel that shows some property and count of their occurrences in the
@@ -22,7 +23,7 @@ import { convertFileSetsToReleaseData } from "../lib/home";
  */
 function Statistic({ graphic, label, value, query, colorClass }) {
   // Extra query-string parameters for list pages
-  const extraQueries = useBrowserStateQuery({ addAmpersand: true });
+  const extraQueries = useBrowserStateQuery();
 
   return (
     <div
@@ -178,11 +179,18 @@ export async function getServerSideProps({ req }) {
   cacheRef.setFetchConfig(fetchHomePageData, request);
   const { fileSets } = await cacheRef.getData();
 
+  // Get session properties to know if the user has logged in or not, and generate the
+  // corresponding query strings.
+  const sessionProperties = (
+    await request.getObject("/session-properties")
+  ).optional();
+  const queryExtras = getUserQueryExtras(sessionProperties);
+
   const fileResults = (
-    await request.getObject("/search/?type=File&limit=0")
+    await request.getObject(`/search/?type=File&limit=0${queryExtras}`)
   ).optional();
   const sampleResults = (
-    await request.getObject("/search/?type=Sample&limit=0")
+    await request.getObject(`/search/?type=Sample&limit=0${queryExtras}`)
   ).optional();
 
   return {

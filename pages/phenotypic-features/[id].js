@@ -15,6 +15,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { errorObjectToProps } from "../../lib/errors";
@@ -40,6 +41,7 @@ export default function PhenotypicFeature({
         <PagePreamble title={title} sections={sections} />
         <ObjectPageHeader item={phenotypicFeature} isJsonFormat={isJson} />
         <JsonDisplay item={phenotypicFeature} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={phenotypicFeature} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Phenotypic Feature</DataItemLabel>

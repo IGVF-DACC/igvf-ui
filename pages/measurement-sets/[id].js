@@ -31,6 +31,7 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -168,6 +169,7 @@ export default function MeasurementSet({
         />
         <ObjectPageHeader item={measurementSet} isJsonFormat={isJson} />
         <JsonDisplay item={measurementSet} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={measurementSet} />
           <DataPanel>
             <DataArea>
               <FileSetDataItems

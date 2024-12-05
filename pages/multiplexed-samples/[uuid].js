@@ -24,6 +24,7 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -70,6 +71,7 @@ export default function MultiplexedSample({
         />
         <ObjectPageHeader item={multiplexedSample} isJsonFormat={isJson} />
         <JsonDisplay item={multiplexedSample} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={multiplexedSample} />
           <DataPanel>
             <DataArea>
               <SampleDataItems

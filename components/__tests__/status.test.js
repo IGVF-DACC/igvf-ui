@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import Status from "../status";
+import Status, { StatusPreviewDetail } from "../status";
 
 describe("Test the status badges", () => {
   it("generates the correct status-badge Tailwind CSS classes for the current state", () => {
@@ -24,5 +24,19 @@ describe("Test the status badges", () => {
     const { container } = render(<Status status="current" isAbbreviated />);
     expect(container.getElementsByClassName("bg-[#00a99d]").length).toBe(1);
     expect(container.getElementsByClassName("flex").length).toBe(0);
+  });
+});
+
+describe("Test the `StatusPreviewDetail` component", () => {
+  it("shows the preview banner for items with the `preview` status", () => {
+    const item = { status: "preview" };
+    const { container } = render(<StatusPreviewDetail item={item} />);
+    expect(container.textContent).toContain("This object is in preview status");
+  });
+
+  it("does not show the preview banner for items with a status other than `preview`", () => {
+    const item = { status: "released" };
+    const { container } = render(<StatusPreviewDetail item={item} />);
+    expect(container.textContent).toBe("");
   });
 });

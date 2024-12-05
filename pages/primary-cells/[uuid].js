@@ -22,6 +22,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -72,6 +73,7 @@ export default function PrimaryCell({
         />
         <ObjectPageHeader item={primaryCell} isJsonFormat={isJson} />
         <JsonDisplay item={primaryCell} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={primaryCell} />
           <DataPanel>
             <DataArea>
               <BiosampleDataItems

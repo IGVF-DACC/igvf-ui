@@ -47,7 +47,7 @@ describe("Test the DataArea component", () => {
   it("properly renders a data panel with custom Tailwind CSS classes", () => {
     render(
       <>
-        <DataPanel className="text-xs">
+        <DataPanel className="text-xs" isPaddingSuppressed>
           <DataArea>
             <DataItemLabel className="font-black">Status</DataItemLabel>
             <DataItemValueUrl>

@@ -18,6 +18,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import {
   requestDocuments,
@@ -51,6 +52,7 @@ export default function RodentDonor({
         <AlternateAccessions alternateAccessions={donor.alternate_accessions} />
         <ObjectPageHeader item={donor} isJsonFormat={isJson} />
         <JsonDisplay item={donor} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={donor} />
           <DataPanel>
             <DataArea>
               <DonorDataItems item={donor} publications={publications}>

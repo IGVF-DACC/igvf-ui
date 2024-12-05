@@ -22,6 +22,7 @@ import PhenotypicFeatureTable from "../../components/phenotypic-feature-table";
 import RelatedDonorsTable from "../../components/related-donors-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -53,6 +54,7 @@ export default function HumanDonor({
         <AlternateAccessions alternateAccessions={donor.alternate_accessions} />
         <ObjectPageHeader item={donor} isJsonFormat={isJson} />
         <JsonDisplay item={donor} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={donor} />
           <DataPanel>
             <DataArea>
               <DonorDataItems item={donor} publications={publications} />

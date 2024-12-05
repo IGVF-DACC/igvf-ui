@@ -8,6 +8,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -26,6 +27,7 @@ export default function PhenotypeOntologyTerm({
         <PagePreamble />
         <ObjectPageHeader item={phenotypeOntologyTerm} isJsonFormat={isJson} />
         <JsonDisplay item={phenotypeOntologyTerm} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={phenotypeOntologyTerm} />
           <DataPanel>
             <DataArea>
               <OntologyTermDataItems item={phenotypeOntologyTerm} isA={isA} />

@@ -15,6 +15,7 @@ import JsonPanel from "../components/json-panel";
 import ObjectPageHeader from "../components/object-page-header";
 import Page from "../components/page";
 import PagePreamble from "../components/page-preamble";
+import { StatusPreviewDetail } from "../components/status";
 import UnknownTypePanel from "../components/unknown-type-panel";
 
 /**
@@ -80,6 +81,7 @@ export default function FallbackObject({
           <PagePreamble title={title} />
           <ObjectPageHeader item={generic} isJsonFormat={isJson} />
           <JsonDisplay item={generic} isJsonFormat={isJson}>
+            <StatusPreviewDetail item={generic} />
             <UnknownTypePanel item={generic} attribution={attribution} />
           </JsonDisplay>
         </EditableItem>
