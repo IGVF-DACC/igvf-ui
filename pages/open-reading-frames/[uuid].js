@@ -15,6 +15,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import AliasList from "../../components/alias-list";
 import { errorObjectToProps } from "../../lib/errors";
@@ -29,6 +30,7 @@ export default function OpenReadingFrame({ orf, isJson }) {
         <PagePreamble />
         <ObjectPageHeader item={orf} isJsonFormat={isJson} />
         <JsonDisplay item={orf} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={orf} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Open Reading Frame ID</DataItemLabel>

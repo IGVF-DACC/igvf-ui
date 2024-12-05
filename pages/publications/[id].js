@@ -23,6 +23,7 @@ import { PublicationCitation } from "../../components/publication";
 import SampleTable from "../../components/sample-table";
 import SoftwareTable from "../../components/software-table";
 import SoftwareVersionTable from "../../components/software-version-table";
+import { StatusPreviewDetail } from "../../components/status";
 import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -63,6 +64,7 @@ export default function Publication({
         <PagePreamble />
         <ObjectPageHeader item={publication} isJsonFormat={isJson} />
         <JsonDisplay item={publication} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={publication} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Title</DataItemLabel>

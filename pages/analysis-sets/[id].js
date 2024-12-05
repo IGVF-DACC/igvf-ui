@@ -28,6 +28,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -74,6 +75,7 @@ export default function AnalysisSet({
         />
         <ObjectPageHeader item={analysisSet} isJsonFormat={isJson} />
         <JsonDisplay item={analysisSet} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={analysisSet} />
           <DataPanel>
             <DataArea>
               {analysisSet.aliases?.length > 0 && (

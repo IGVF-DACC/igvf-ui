@@ -18,6 +18,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SoftwareVersionTable from "../../components/software-version-table";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import {
   requestPublications,
@@ -45,6 +46,7 @@ export default function Software({
         <PagePreamble />
         <ObjectPageHeader item={software} isJsonFormat={isJson} />
         <JsonDisplay item={software} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={software} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Title</DataItemLabel>

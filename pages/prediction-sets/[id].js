@@ -26,6 +26,7 @@ import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -77,6 +78,7 @@ export default function PredictionSet({
         />
         <ObjectPageHeader item={predictionSet} isJsonFormat={isJson} />
         <JsonDisplay item={predictionSet} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={predictionSet} />
           <DataPanel>
             <DataArea>
               <FileSetDataItems

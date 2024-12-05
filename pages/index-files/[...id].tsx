@@ -24,6 +24,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -91,6 +92,7 @@ export default function ImageFile({
           </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={indexFile} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={indexFile} />
           <DataPanel>
             <DataArea>
               <FileDataItems item={indexFile} />

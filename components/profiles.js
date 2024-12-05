@@ -12,6 +12,12 @@ import { useBrowserStateQuery } from "./presentation-status";
 import { SEARCH_MODE_TITLE } from "../lib/profiles";
 
 /**
+ * List of schema types that do not have additional query-string parameters for list/report pages.
+ * This is usually because they have a different form of statuses.
+ */
+const typesWithoutExtraQueries = ["Award", "Lab", "User"];
+
+/**
  * Displays a search field for highlighting elements of a schema or list of schemas.
  */
 export function SchemaSearchField({
@@ -62,7 +68,10 @@ SchemaSearchField.propTypes = {
  */
 export function SearchAndReportType({ type, title }) {
   // Extra query-string parameters for list/report pages
-  const extraQueries = useBrowserStateQuery({ addAmpersand: true });
+  let extraQueries = useBrowserStateQuery();
+  if (typesWithoutExtraQueries.includes(type)) {
+    extraQueries = "";
+  }
 
   return (
     <AttachedButtons>

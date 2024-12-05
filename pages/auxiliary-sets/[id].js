@@ -24,6 +24,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -67,6 +68,7 @@ export default function AuxiliarySet({
         />
         <ObjectPageHeader item={auxiliarySet} isJsonFormat={isJson} />
         <JsonDisplay item={auxiliarySet} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={auxiliarySet} />
           <DataPanel>
             <DataArea>
               <FileSetDataItems
