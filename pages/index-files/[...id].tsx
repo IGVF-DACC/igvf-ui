@@ -21,9 +21,9 @@ import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -51,7 +51,7 @@ interface IndexFileObject extends FileObject {
   transcriptome_annotation?: string;
 }
 
-export default function ImageFile({
+export default function IndexFile({
   indexFile,
   attribution,
   documents,
@@ -72,7 +72,8 @@ export default function ImageFile({
   fileFormatSpecifications: any[];
   isJson: boolean;
 }) {
-  const pagePanels = usePagePanels(indexFile["@id"]);
+  const sections = useSecDir();
+
   const hasReferencePanel =
     indexFile.assembly || indexFile.transcriptome_annotation;
   const hasAlignmentPanel = "filtered" in indexFile || "redacted" in indexFile;
@@ -81,7 +82,7 @@ export default function ImageFile({
     <>
       <Breadcrumbs item={indexFile} />
       <EditableItem item={indexFile}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={indexFile.alternate_accessions}
         />
@@ -98,7 +99,9 @@ export default function ImageFile({
           </DataPanel>
           {hasReferencePanel && (
             <>
-              <DataAreaTitle>Reference Source Details</DataAreaTitle>
+              <DataAreaTitle id="reference-source-details">
+                Reference Source Details
+              </DataAreaTitle>
               <DataPanel>
                 <DataArea>
                   {indexFile.assembly && (
@@ -121,7 +124,9 @@ export default function ImageFile({
           )}
           {hasAlignmentPanel && (
             <>
-              <DataAreaTitle>Alignment Details</DataAreaTitle>
+              <DataAreaTitle id="alignment-details">
+                Alignment Details
+              </DataAreaTitle>
               <DataPanel>
                 <DataArea>
                   {"filtered" in indexFile && (
@@ -148,16 +153,11 @@ export default function ImageFile({
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
-              pagePanels={pagePanels}
-              pagePanelId="file-format-specifications"
+              panelId="file-format-specifications"
             />
           )}
           {fileSetSamples.length > 0 && (
-            <SampleTable
-              samples={fileSetSamples}
-              pagePanels={pagePanels}
-              pagePanelId="file-set-samples"
-            />
+            <SampleTable samples={fileSetSamples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -166,8 +166,6 @@ export default function ImageFile({
               reportLink={`/multireport/?type=File&input_file_for=${indexFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
-              pagePanels={pagePanels}
-              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -176,17 +174,10 @@ export default function ImageFile({
               reportLink={`/multireport/?type=File&derived_from=${indexFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-for"
+              panelId="input-file-for"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="document"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

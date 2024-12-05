@@ -1,14 +1,9 @@
 // node_modules
-import { AnimatePresence, motion } from "framer-motion";
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
-import {
-  standardAnimationTransition,
-  standardAnimationVariants,
-} from "./animation";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
 import SortableGrid from "./sortable-grid";
@@ -130,11 +125,8 @@ export default function SequencingFileTable({
   seqspecFiles = [],
   hasReadType = false,
   isSeqspecHidden = false,
-  pagePanels,
-  pagePanelId,
+  panelId = "sequencing-files",
 }) {
-  const isExpanded = pagePanels?.isExpanded(pagePanelId) ?? true;
-
   // True or false isIlluminaReadType adds a positive or negative `illumina_read_type` selector to
   // the report link. Undefined generates no `illumina_read_type` selector in the file query string.
   let illuminaSelector = "";
@@ -150,35 +142,11 @@ export default function SequencingFileTable({
       )}${illuminaSelector}`
     : "";
 
-  const sortableGrid = (
-    <SortableGrid
-      data={files}
-      columns={filesColumns}
-      pager={{}}
-      meta={{
-        seqspecFiles,
-        hasReadType,
-        isSeqspecHidden,
-      }}
-      keyProp="@id"
-    />
-  );
-
   return (
     <>
-      <DataAreaTitle>
-        {pagePanels ? (
-          <DataAreaTitle.Expander
-            pagePanels={pagePanels}
-            pagePanelId={pagePanelId}
-            label={`${title} table`}
-          >
-            {title}
-          </DataAreaTitle.Expander>
-        ) : (
-          title
-        )}
-        {reportLink && isExpanded && (
+      <DataAreaTitle id={panelId}>
+        {title}
+        {reportLink && (
           <DataAreaTitleLink
             href={reportLink}
             label="Report of files that have this item as their file set"
@@ -187,24 +155,19 @@ export default function SequencingFileTable({
           </DataAreaTitleLink>
         )}
       </DataAreaTitle>
-      {pagePanels ? (
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              className="overflow-hidden"
-              initial="collapsed"
-              animate="open"
-              exit="collapsed"
-              transition={standardAnimationTransition}
-              variants={standardAnimationVariants}
-            >
-              {sortableGrid}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      ) : (
-        <>{sortableGrid}</>
-      )}
+      <div className="overflow-hidden">
+        <SortableGrid
+          data={files}
+          columns={filesColumns}
+          pager={{}}
+          meta={{
+            seqspecFiles,
+            hasReadType,
+            isSeqspecHidden,
+          }}
+          keyProp="@id"
+        />
+      </div>
     </>
   );
 }
@@ -226,8 +189,6 @@ SequencingFileTable.propTypes = {
   hasReadType: PropTypes.bool,
   // True to hide the seqspec column
   isSeqspecHidden: PropTypes.bool,
-  // Expandable panels to determine if this table should appear collapsed or expanded
-  pagePanels: PropTypes.object.isRequired,
-  // ID of the panel that contains this table, unique on the page
-  pagePanelId: PropTypes.string.isRequired,
+  // ID of the panel for the section directory
+  panelId: PropTypes.string,
 };

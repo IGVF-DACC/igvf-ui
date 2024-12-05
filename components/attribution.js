@@ -25,7 +25,7 @@ export default function Attribution({ attribution = null }) {
   if (attributionsWithValues.length > 1) {
     return (
       <>
-        <DataAreaTitle>Attribution</DataAreaTitle>
+        <DataAreaTitle id="attribution">Attribution</DataAreaTitle>
         <DataPanel>
           <Collections
             collections={attribution.collections}

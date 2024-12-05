@@ -1,12 +1,7 @@
 // node_modules
-import { AnimatePresence, motion } from "framer-motion";
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
-import {
-  standardAnimationTransition,
-  standardAnimationVariants,
-} from "./animation";
 import { BatchDownloadActuator } from "./batch-download";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
@@ -67,11 +62,8 @@ export default function FileTable({
   downloadQuery = null,
   isDownloadable = false,
   controllerContent = null,
-  pagePanels = null,
-  pagePanelId = "",
+  panelId = "files",
 }) {
-  const isExpanded = pagePanels?.isExpanded(pagePanelId) ?? true;
-
   // Compose the report link, either from the file set or the given link and label.
   const finalReportLink = fileSet
     ? `/multireport/?type=File&file_set.@id=${encodeURIComponent(
@@ -99,19 +91,9 @@ export default function FileTable({
 
   return (
     <>
-      <DataAreaTitle>
-        {pagePanels ? (
-          <DataAreaTitle.Expander
-            pagePanels={pagePanels}
-            pagePanelId={pagePanelId}
-            label={`${title} table`}
-          >
-            {title}
-          </DataAreaTitle.Expander>
-        ) : (
-          title
-        )}
-        {(controller || finalReportLink) && isExpanded && (
+      <DataAreaTitle id={panelId}>
+        {title}
+        {(controller || finalReportLink) && (
           <div className="align-center flex gap-1">
             {controller && (
               <BatchDownloadActuator
@@ -129,24 +111,7 @@ export default function FileTable({
           </div>
         )}
       </DataAreaTitle>
-      {pagePanels ? (
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              className="overflow-hidden"
-              initial="collapsed"
-              animate="open"
-              exit="collapsed"
-              transition={standardAnimationTransition}
-              variants={standardAnimationVariants}
-            >
-              {sortableGrid}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      ) : (
-        <>{sortableGrid}</>
-      )}
+      <div className="overflow-hidden">{sortableGrid}</div>
     </>
   );
 }
@@ -168,8 +133,6 @@ FileTable.propTypes = {
   isDownloadable: PropTypes.bool,
   // Extra text or JSX content for the batch download controller
   controllerContent: PropTypes.node,
-  // Expandable panels to determine if this table should appear collapsed or expanded
-  pagePanels: PropTypes.object,
-  // ID of the panel that contains this table, unique on the page
-  pagePanelId: PropTypes.string,
+  // Unique ID for the table for the section directory
+  panelId: PropTypes.string,
 };

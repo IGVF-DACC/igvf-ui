@@ -22,9 +22,9 @@ import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -55,7 +55,8 @@ export default function PredictionSet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(predictionSet["@id"]);
+  const sections = useSecDir();
+
   const constructLibrarySets =
     predictionSet.samples?.length > 0
       ? predictionSet.samples.reduce(
@@ -71,7 +72,7 @@ export default function PredictionSet({
     <>
       <Breadcrumbs item={predictionSet} />
       <EditableItem item={predictionSet}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={predictionSet.alternate_accessions}
         />
@@ -199,8 +200,6 @@ export default function PredictionSet({
                 files={files}
                 fileFileSets={fileFileSets}
                 derivedFromFiles={derivedFromFiles}
-                pagePanels={pagePanels}
-                pagePanelId="file-graph"
               />
             </>
           )}
@@ -209,16 +208,10 @@ export default function PredictionSet({
               samples={predictionSet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${predictionSet["@id"]}`}
               reportLabel="Report of samples in this prediction set"
-              pagePanels={pagePanels}
-              pagePanelId="samples"
             />
           )}
           {predictionSet.donors?.length > 0 && (
-            <DonorTable
-              donors={predictionSet.donors}
-              pagePanels={pagePanels}
-              pagePanelId="donors"
-            />
+            <DonorTable donors={predictionSet.donors} />
           )}
           {inputFileSets.length > 0 && (
             <FileSetTable
@@ -226,8 +219,7 @@ export default function PredictionSet({
               reportLink={`/multireport/?type=FileSet&input_for=${predictionSet["@id"]}`}
               reportLabel="Report of file sets that are inputs for this prediction set"
               title="Input File Sets"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-sets"
+              panelId="input-file-sets"
             />
           )}
           {inputFileSetFor.length > 0 && (
@@ -236,8 +228,7 @@ export default function PredictionSet({
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${predictionSet["@id"]}`}
               reportLabel="Report of file sets that this prediction set is an input for"
               title="File Sets Using This Prediction Set as an Input"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-set-for"
+              panelId="input-file-set-for"
             />
           )}
           {controlFor.length > 0 && (
@@ -246,17 +237,10 @@ export default function PredictionSet({
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${predictionSet["@id"]}`}
               reportLabel="Report of file sets that have this prediction set as a control"
               title="File Sets Controlled by This Prediction Set"
-              pagePanels={pagePanels}
-              pagePanelId="control-for"
+              panelId="control-for"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

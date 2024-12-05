@@ -14,6 +14,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { errorObjectToProps } from "../../lib/errors";
@@ -27,6 +28,8 @@ export default function PhenotypicFeature({
   isJson,
   attribution = null,
 }) {
+  const sections = useSecDir();
+
   const title = getPhenotypicFeatureTitle(phenotypicFeature);
   const feature = `${phenotypicFeature.feature.term_name} (${phenotypicFeature.feature.term_id})`;
 
@@ -34,7 +37,7 @@ export default function PhenotypicFeature({
     <>
       <Breadcrumbs item={phenotypicFeature} title={title} />
       <EditableItem item={phenotypicFeature}>
-        <PagePreamble title={title} />
+        <PagePreamble title={title} sections={sections} />
         <ObjectPageHeader item={phenotypicFeature} isJsonFormat={isJson} />
         <JsonDisplay item={phenotypicFeature} isJsonFormat={isJson}>
           <DataPanel>

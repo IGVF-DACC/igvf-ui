@@ -17,6 +17,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { errorObjectToProps } from "../../lib/errors";
@@ -25,6 +26,8 @@ import { truncateText } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Document({ document, attribution = null, isJson }) {
+  const sections = useSecDir();
+
   return (
     <>
       <Breadcrumbs
@@ -32,7 +35,7 @@ export default function Document({ document, attribution = null, isJson }) {
         title={truncateText(document.description, 40)}
       />
       <EditableItem item={document}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <ObjectPageHeader item={document} isJsonFormat={isJson} />
         <JsonDisplay item={document} isJsonFormat={isJson}>
           <DataPanel>

@@ -6,13 +6,17 @@ import Icon from "../icon";
 import SessionContext from "../session-context";
 // local
 import { fileSetTypeColorMap } from "./types";
+// root
+import type { CollectionTitles } from "../../globals.d";
 
 /**
  * Draw the legend to show what colors correspond to each file set type.
  * @param fileSetTypes List of file set types that appear in the graph
  */
 export function Legend({ fileSetTypes }: { fileSetTypes: string[] }) {
-  const { collectionTitles } = useContext<any>(SessionContext);
+  const { collectionTitles } = useContext(SessionContext as any) as {
+    collectionTitles: CollectionTitles;
+  };
 
   return (
     <div className="border-t border-data-border py-2">

@@ -306,3 +306,18 @@ export function truncateText(text: string, maxLength: number) {
   }
   return processedText;
 }
+
+/**
+ * Convert text to title case. Capitalize the first letter of each word, and the rest of each word
+ * appears in lowercase. This applies to all words, including conjunctions and prepositions.
+ * @param text The text to convert to title case
+ * @returns The text converted to title case
+ */
+export function convertTextToTitleCase(text: string): string {
+  return text
+    .split(" ")
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+}

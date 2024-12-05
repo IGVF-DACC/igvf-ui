@@ -3,7 +3,7 @@ import { ReactNode, useContext } from "react";
 // components
 import SessionContext from "../session-context";
 // root
-import type { DatabaseObject } from "../../globals.d";
+import type { CollectionTitles, DatabaseObject } from "../../globals.d";
 
 /**
  * Display the title and object subtype in the file and file-set modals.
@@ -16,7 +16,9 @@ export function FileModalTitle({
   item: DatabaseObject;
   children: ReactNode;
 }) {
-  const { collectionTitles } = useContext<any>(SessionContext);
+  const { collectionTitles } = useContext(SessionContext as any) as {
+    collectionTitles: CollectionTitles;
+  };
   const fileType = item["@type"][0];
 
   return (

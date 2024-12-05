@@ -14,9 +14,9 @@ import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 import SequencingFileTable from "../../components/sequencing-file-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -47,13 +47,13 @@ export default function ConfigurationFile({
   fileFormatSpecifications,
   isJson,
 }) {
-  const pagePanels = usePagePanels(configurationFile["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={configurationFile} />
       <EditableItem item={configurationFile}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={configurationFile.alternate_accessions}
         />
@@ -75,24 +75,17 @@ export default function ConfigurationFile({
               itemPath={configurationFile["@id"]}
               itemPathProp="seqspecs"
               isSeqspecHidden
-              pagePanels={pagePanels}
-              pagePanelId="seqspec-file-of"
             />
           )}
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
-              pagePanels={pagePanels}
-              pagePanelId="file-format-specifications"
+              panelId="file-format-specifications"
             />
           )}
           {fileSetSamples.length > 0 && (
-            <SampleTable
-              samples={fileSetSamples}
-              pagePanels={pagePanels}
-              pagePanelId="file-set-samples"
-            />
+            <SampleTable samples={fileSetSamples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -101,8 +94,6 @@ export default function ConfigurationFile({
               reportLink={`/multireport/?type=File&input_file_for=${configurationFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
-              pagePanels={pagePanels}
-              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -111,17 +102,10 @@ export default function ConfigurationFile({
               reportLink={`/multireport/?type=File&derived_from=${configurationFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-for"
+              panelId="input-file-for"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

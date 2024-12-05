@@ -14,9 +14,9 @@ import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -45,13 +45,13 @@ export default function ImageFile({
   fileFormatSpecifications,
   isJson,
 }) {
-  const pagePanels = usePagePanels(imageFile["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={imageFile} />
       <EditableItem item={imageFile}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={imageFile.alternate_accessions}
         />
@@ -70,16 +70,11 @@ export default function ImageFile({
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
-              pagePanels={pagePanels}
-              pagePanelId="file-format-specifications"
+              panelId="file-format-specifications"
             />
           )}
           {fileSetSamples.length > 0 && (
-            <SampleTable
-              samples={fileSetSamples}
-              pagePanels={pagePanels}
-              pagePanelId="file-set-samples"
-            />
+            <SampleTable samples={fileSetSamples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -88,8 +83,6 @@ export default function ImageFile({
               reportLink={`/multireport/?type=File&input_file_for=${imageFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
-              pagePanels={pagePanels}
-              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -98,17 +91,10 @@ export default function ImageFile({
               reportLink={`/multireport/?type=File&derived_from=${imageFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-for"
+              panelId="input-file-for"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="document"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

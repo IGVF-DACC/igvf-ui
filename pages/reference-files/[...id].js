@@ -22,9 +22,9 @@ import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -54,13 +54,13 @@ export default function ReferenceFile({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(referenceFile["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={referenceFile} />
       <EditableItem item={referenceFile}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={referenceFile.alternate_accessions}
         />
@@ -79,7 +79,9 @@ export default function ReferenceFile({
             referenceFile.source_url ||
             referenceFile.transcriptome_annotation) && (
             <>
-              <DataAreaTitle>Reference Source Details</DataAreaTitle>
+              <DataAreaTitle id="reference-source-details">
+                Reference Source Details
+              </DataAreaTitle>
               <DataPanel>
                 <DataArea>
                   {referenceFile.assembly && (
@@ -118,16 +120,11 @@ export default function ReferenceFile({
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
-              pagePanels={pagePanels}
-              pagePanelId="file-format-specifications"
+              panelId="file-format-specifications"
             />
           )}
           {fileSetSamples.length > 0 && (
-            <SampleTable
-              samples={fileSetSamples}
-              pagePanels={pagePanels}
-              pagePanelId="file-set-samples"
-            />
+            <SampleTable samples={fileSetSamples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -136,8 +133,6 @@ export default function ReferenceFile({
               reportLink={`/multireport/?type=File&input_file_for=${referenceFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
-              pagePanels={pagePanels}
-              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -146,8 +141,7 @@ export default function ReferenceFile({
               reportLink={`/multireport/?type=File&derived_from=${referenceFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-for"
+              panelId="input-file-for"
             />
           )}
           {integratedIn.length > 0 && (
@@ -156,17 +150,10 @@ export default function ReferenceFile({
               title="Integrated In"
               reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files.@id=${referenceFile["@id"]}`}
               reportLabel={`View ConstructLibrarySets integrated with ${referenceFile.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="integrated-in"
+              panelId="integrated-in"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

@@ -14,9 +14,9 @@ import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -52,13 +52,13 @@ export default function WholeOrganism({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(sample["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={sample} />
       <EditableItem item={sample}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={sample.alternate_accessions}
         />
@@ -81,20 +81,12 @@ export default function WholeOrganism({
               />
             </DataArea>
           </DataPanel>
-          {donors.length > 0 && (
-            <DonorTable
-              donors={donors}
-              pagePanels={pagePanels}
-              pagePanelId="donors"
-            />
-          )}
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {sample.file_sets.length > 0 && (
             <FileSetTable
               fileSets={sample.file_sets}
               reportLink={`/multireport/?type=FileSet&samples.@id=${sample["@id"]}`}
               reportLabel="Report of file sets containing this sample"
-              pagePanels={pagePanels}
-              pagePanelId="file-sets"
             />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -103,8 +95,7 @@ export default function WholeOrganism({
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${sample["@id"]}`}
               reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
-              pagePanels={pagePanels}
-              pagePanelId="multiplexed-in-samples"
+              panelId="multiplexed-in-samples"
             />
           )}
           {pooledIn.length > 0 && (
@@ -113,8 +104,7 @@ export default function WholeOrganism({
               reportLink={`/multireport/?type=Biosample&pooled_from=${sample["@id"]}`}
               reportLabel="Report of pooled samples in which this sample is included"
               title="Pooled In"
-              pagePanels={pagePanels}
-              pagePanelId="pooled-in"
+              panelId="pooled-in"
             />
           )}
           {parts.length > 0 && (
@@ -123,8 +113,7 @@ export default function WholeOrganism({
               reportLink={`/multireport/?type=Biosample&part_of=${sample["@id"]}`}
               reportLabel="Report of parts into which this sample has been divided"
               title="Sample Parts"
-              pagePanels={pagePanels}
-              pagePanelId="parts"
+              panelId="sample-parts"
             />
           )}
           {sample.modifications?.length > 0 && (
@@ -132,8 +121,6 @@ export default function WholeOrganism({
               modifications={sample.modifications}
               reportLink={`/multireport/?type=Modification&biosamples_modified=${sample["@id"]}`}
               reportLabel={`Report of genetic modifications for ${sample.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="modifications"
             />
           )}
           {sortedFractions.length > 0 && (
@@ -142,8 +129,7 @@ export default function WholeOrganism({
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${sample["@id"]}`}
               reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
-              pagePanels={pagePanels}
-              pagePanelId="sorted-fractions"
+              panelId="sorted-fractions"
             />
           )}
           {biomarkers.length > 0 && (
@@ -151,8 +137,6 @@ export default function WholeOrganism({
               biomarkers={biomarkers}
               reportLink={`/multireport/?type=Biomarker&biomarker_for=${sample["@id"]}`}
               reportLabel={`Report of biological markers that are associated with biosample ${sample.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="biomarkers"
             />
           )}
           {treatments.length > 0 && (
@@ -160,17 +144,9 @@ export default function WholeOrganism({
               treatments={treatments}
               reportLink={`/multireport/?type=Treatment&biosamples_treated=${sample["@id"]}`}
               reportLabel={`Report of treatments applied to the biosample ${sample.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="treatments"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
@@ -218,10 +194,13 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/whole-organisms/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(sample)) {
-    const biomarkers =
-      sample.biomarkers?.length > 0
-        ? await requestBiomarkers(sample.biomarkers, request)
-        : [];
+    let biomarkers = [];
+    if (sample.biomarkers?.length > 0) {
+      const biomarkerPaths = sample.biomarkers.map(
+        (biomarker) => biomarker["@id"]
+      );
+      biomarkers = await requestBiomarkers(biomarkerPaths, request);
+    }
     let diseaseTerms = [];
     if (sample.disease_terms?.length > 0) {
       const diseaseTermPaths = sample.disease_terms.map(

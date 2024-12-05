@@ -20,9 +20,9 @@ import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -52,13 +52,13 @@ export default function SignalFile({
   referenceFiles,
   isJson,
 }) {
-  const pagePanels = usePagePanels(signalFile["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={signalFile} />
       <EditableItem item={signalFile}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={signalFile.alternate_accessions}
         />
@@ -73,7 +73,7 @@ export default function SignalFile({
               <FileDataItems item={signalFile} />
             </DataArea>
           </DataPanel>
-          <DataAreaTitle>Signal Details</DataAreaTitle>
+          <DataAreaTitle id="signal-details">Signal Details</DataAreaTitle>
           <DataPanel>
             <DataArea>
               <>
@@ -106,16 +106,11 @@ export default function SignalFile({
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
-              pagePanels={pagePanels}
-              pagePanelId="file-format-specifications"
+              panelId="file-format-specifications"
             />
           )}
           {fileSetSamples.length > 0 && (
-            <SampleTable
-              samples={fileSetSamples}
-              pagePanels={pagePanels}
-              pagePanelId="file-set-samples"
-            />
+            <SampleTable samples={fileSetSamples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -124,8 +119,6 @@ export default function SignalFile({
               reportLink={`/multireport/?type=File&input_file_for=${signalFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
-              pagePanels={pagePanels}
-              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -134,25 +127,17 @@ export default function SignalFile({
               reportLink={`/multireport/?type=File&derived_from=${signalFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-for"
+              panelId="input-file-for"
             />
           )}
           {referenceFiles.length > 0 && (
             <FileTable
               files={referenceFiles}
               title="Reference Files"
-              pagePanels={pagePanels}
-              pagePanelId="reference-files"
+              panelId="reference"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

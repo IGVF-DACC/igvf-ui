@@ -117,6 +117,8 @@ module.exports = {
         "file-graph-model": "var(--color-file-graph-model)",
         "file-graph-prediction": "var(--color-file-graph-prediction)",
         "file-graph-unknown": "var(--color-file-graph-unknown)",
+
+        "section-directory": "var(--color-section-directory-highlight)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
@@ -286,6 +288,8 @@ module.exports = {
         "file-graph-model": "var(--color-file-graph-model)",
         "file-graph-prediction": "var(--color-file-graph-prediction)",
         "file-graph-unknown": "var(--color-file-graph-unknown)",
+
+        "section-directory": "var(--color-section-directory)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",

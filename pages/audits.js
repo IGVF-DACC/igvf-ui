@@ -6,7 +6,11 @@ import { Fragment, useContext } from "react";
 import AuditKeyTable from "../components/audit-key-table";
 import AuditTable from "../components/audit-table";
 import PagePreamble from "../components/page-preamble";
-import { secDirId, useSecDir } from "../components/section-directory";
+import {
+  SCROLL_TO_TOP_ID,
+  secDirId,
+  useSecDir,
+} from "../components/section-directory";
 import SessionContext from "../components/session-context";
 // lib
 import { errorObjectToProps } from "../lib/errors";
@@ -66,11 +70,17 @@ function getTypeLevel(type, hierarchy, currentLevel = 0) {
 function DirectoryItemRenderer({ section }) {
   const { profiles } = useContext(SessionContext);
   const hierarchy = profiles?._hierarchy.Item || null;
+  const isScrollToTop = section.id === SCROLL_TO_TOP_ID;
 
   // Get the DOM element for the audit section and extract the `@type` it represents from the
   // data-type attribute.
   const element = document.querySelector(`[id="${section.id}"]`);
   const type = element?.getAttribute("data-type") || "";
+
+  if (isScrollToTop) {
+    return <div>{section.title}</div>;
+  }
+
   if (hierarchy && type) {
     const { level, isParent } = getTypeLevel(type, hierarchy);
     return (
@@ -98,10 +108,10 @@ DirectoryItemRenderer.propTypes = {
 export default function AuditDoc({ auditDoc, schemas }) {
   const { collectionTitles, profiles } = useContext(SessionContext);
   const hierarchy = profiles?._hierarchy.Item || null;
-  const sections = useSecDir(
-    DirectoryItemRenderer,
-    hierarchy ? "profiles" : ""
-  );
+  const sections = useSecDir({
+    renderer: DirectoryItemRenderer,
+    hash: hierarchy ? "profiles" : "",
+  });
 
   const result = _.flatMap(auditDoc, (auditGroup, key) => {
     return auditGroup.map((audit) => {

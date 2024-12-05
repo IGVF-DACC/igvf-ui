@@ -13,6 +13,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -20,11 +21,13 @@ import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
+  const sections = useSecDir();
+
   return (
     <>
       <Breadcrumbs item={assayOntologyTerm} />
       <EditableItem item={assayOntologyTerm}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <ObjectPageHeader item={assayOntologyTerm} isJsonFormat={isJson} />
         <JsonDisplay item={assayOntologyTerm} isJsonFormat={isJson}>
           <DataPanel>

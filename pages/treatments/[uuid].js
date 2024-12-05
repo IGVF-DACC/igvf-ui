@@ -15,9 +15,9 @@ import ProductInfo from "../../components/product-info";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { requestDocuments, requestBiosamples } from "../../lib/common-requests";
@@ -36,13 +36,13 @@ export default function Treatment({
   sources,
   isJson,
 }) {
-  const pagePanels = usePagePanels(treatment["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={treatment} />
       <EditableItem item={treatment}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <ObjectPageHeader item={treatment} isJsonFormat={isJson} />
         <JsonDisplay item={treatment} isJsonFormat={isJson}>
           <DataPanel>
@@ -144,17 +144,9 @@ export default function Treatment({
             <SampleTable
               samples={biosamplesTreated}
               title="Treated Biosamples"
-              pagePanels={pagePanels}
-              pagePanelId="biosamples-treated"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

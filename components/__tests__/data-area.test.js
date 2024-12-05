@@ -10,7 +10,6 @@ import {
   DataItemValueUrl,
   DataPanel,
 } from "../data-area";
-import { usePagePanels } from "../page-panels";
 import Status from "../status";
 
 describe("Test the DataArea component", () => {
@@ -87,6 +86,20 @@ describe("Test the DataArea component", () => {
 
     const title = screen.getByTestId("dataitemvalue");
     expect(title).toBeInTheDocument();
+  });
+
+  it("handles the `secDirTitle` prop for the DataAreaTitle component", () => {
+    render(
+      <DataAreaTitle secDirTitle="Treatments">
+        <DataAreaTitleLink href="/profiles" label="Link to profiles page">
+          Profiles
+        </DataAreaTitleLink>
+      </DataAreaTitle>
+    );
+
+    const dataAreaTitle = screen.getByTestId("dataareatitle");
+    expect(dataAreaTitle).toBeInTheDocument();
+    expect(dataAreaTitle).toHaveAttribute("data-sec-dir", "Treatments");
   });
 });
 
@@ -167,92 +180,6 @@ describe("Test DataItemList", () => {
     listItems.forEach((item) => {
       expect(item).toHaveClass("break-all");
     });
-  });
-});
-
-describe("Test the DataAreaTitle and collapser", () => {
-  it("renders a title with a collapsible control", () => {
-    function TitleWithCollapser() {
-      const pagePanels = usePagePanels("/test/page/");
-
-      return (
-        <>
-          <DataAreaTitle>
-            <DataAreaTitle.Expander
-              pagePanels={pagePanels}
-              pagePanelId="test-panel"
-              label="Test table"
-            >
-              Test Title
-            </DataAreaTitle.Expander>
-          </DataAreaTitle>
-          {pagePanels.isExpanded("test-panel") && <div>Expanded</div>}
-        </>
-      );
-    }
-
-    render(<TitleWithCollapser />);
-
-    expect(screen.getByText("Test Title")).toBeInTheDocument();
-    expect(screen.queryByText("Expanded")).not.toBeInTheDocument();
-
-    // Click the button to expand the panel
-    fireEvent.click(screen.getByText("Test Title"));
-    expect(screen.getByText("Expanded")).toBeInTheDocument();
-  });
-
-  it("renders multiple tables with collapsible controls", () => {
-    function TitleWithCollapser() {
-      const pagePanels = usePagePanels("/test/page/");
-
-      return (
-        <>
-          <DataAreaTitle>
-            <DataAreaTitle.Expander
-              pagePanels={pagePanels}
-              pagePanelId="test-panel-1"
-              label="Test table 1"
-            >
-              Test Title 1
-            </DataAreaTitle.Expander>
-          </DataAreaTitle>
-          {pagePanels.isExpanded("test-panel-1") && <div>Expanded 1</div>}
-          <DataAreaTitle>
-            <DataAreaTitle.Expander
-              pagePanels={pagePanels}
-              pagePanelId="test-panel-2"
-              label="Test table 2"
-            >
-              Test Title 2
-            </DataAreaTitle.Expander>
-          </DataAreaTitle>
-          {pagePanels.isExpanded("test-panel-2") && <div>Expanded 2</div>}
-        </>
-      );
-    }
-
-    render(<TitleWithCollapser />);
-
-    expect(screen.getByText("Test Title 1")).toBeInTheDocument();
-    expect(screen.getByText("Test Title 2")).toBeInTheDocument();
-    expect(screen.queryByText("Expanded 1")).not.toBeInTheDocument();
-    expect(screen.queryByText("Expanded 2")).not.toBeInTheDocument();
-
-    // Click the button to expand the first panel
-    fireEvent.click(screen.getByText("Test Title 1"));
-    expect(screen.getByText("Expanded 1")).toBeInTheDocument();
-    expect(screen.queryByText("Expanded 2")).not.toBeInTheDocument();
-
-    // Click the button to expand the second panel
-    fireEvent.click(screen.getByText("Test Title 2"));
-    expect(screen.getByText("Expanded 1")).toBeInTheDocument();
-    expect(screen.getByText("Expanded 2")).toBeInTheDocument();
-
-    // Click the button to collapse the first panel with the option key down and make sure both
-    // panels collapse. Delay a half second to allow the animations to finish.
-    fireEvent.click(screen.getByText("Test Title 1"), { altKey: true });
-    expect(screen.queryByText("Expanded 1")).not.toBeInTheDocument();
-    expect(screen.queryByText("Expanded 2")).not.toBeInTheDocument();
   });
 });
 
