@@ -837,7 +837,7 @@ export default function Schema({
         </div>
         <AddLink schema={schema} label="Add" />
       </div>
-      <DataPanel className="p-0 @container">
+      <DataPanel className="@container" isPaddingSuppressed>
         <TabGroup defaultId={tab}>
           <TabList>
             <SchemaTab

@@ -20,6 +20,7 @@ import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -50,6 +51,7 @@ export default function DegronModification({
         <PagePreamble />
         <ObjectPageHeader item={modification} isJsonFormat={isJson} />
         <JsonDisplay item={modification} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={modification} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Summary</DataItemLabel>

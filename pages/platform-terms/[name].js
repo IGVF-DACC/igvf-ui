@@ -14,6 +14,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -32,6 +33,7 @@ export default function PlatformOntologyTerm({
         <PagePreamble />
         <ObjectPageHeader item={platformOntologyTerm} isJsonFormat={isJson} />
         <JsonDisplay item={platformOntologyTerm} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={platformOntologyTerm} />
           <DataPanel>
             <DataArea>
               <OntologyTermDataItems item={platformOntologyTerm} isA={isA} />

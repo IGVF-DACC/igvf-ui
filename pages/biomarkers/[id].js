@@ -15,6 +15,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { getBiomarkerTitle } from "../../lib/biomarker";
@@ -35,6 +36,7 @@ export default function Biomarker({
         <PagePreamble />
         <ObjectPageHeader item={biomarker} isJsonFormat={isJson} />
         <JsonDisplay item={biomarker} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={biomarker} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Name</DataItemLabel>

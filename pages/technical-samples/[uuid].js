@@ -20,6 +20,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -58,6 +59,7 @@ export default function TechnicalSample({
         />
         <ObjectPageHeader item={sample} isJsonFormat={isJson} />
         <JsonDisplay item={sample} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={sample} />
           <DataPanel>
             <DataArea>
               <SampleDataItems

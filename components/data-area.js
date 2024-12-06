@@ -26,10 +26,16 @@ import { PagePanelButton } from "./page-panels";
  * Displays a panel -- typically to display data items for an object, but you can use this for
  * anything that should appear in a panel on the page.
  */
-export function DataPanel({ className = "", children }) {
+export function DataPanel({
+  className = "",
+  isPaddingSuppressed = false,
+  children,
+}) {
   return (
     <div
-      className={`border border-panel bg-panel p-4 @container ${className}`}
+      className={`border border-panel bg-panel @container ${
+        isPaddingSuppressed ? "" : "p-4"
+      } ${className}`}
       data-testid="datapanel"
     >
       {children}
@@ -40,6 +46,8 @@ export function DataPanel({ className = "", children }) {
 DataPanel.propTypes = {
   // Additional Tailwind CSS classes to add to the panel
   className: PropTypes.string,
+  // True if padding should be suppressed
+  isPaddingSuppressed: PropTypes.bool,
 };
 
 /**

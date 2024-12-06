@@ -17,6 +17,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { errorObjectToProps } from "../../lib/errors";
@@ -35,6 +36,7 @@ export default function Document({ document, attribution = null, isJson }) {
         <PagePreamble />
         <ObjectPageHeader item={document} isJsonFormat={isJson} />
         <JsonDisplay item={document} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={document} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Type</DataItemLabel>

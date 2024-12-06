@@ -1,7 +1,7 @@
 // lib
 import { encodeUriElement } from "./query-encoding";
 // types
-import { NextJsServerQuery } from "../globals";
+import type { NextJsServerQuery, SessionPropertiesObject } from "../globals";
 
 /**
  * Keys that should not be included in the query string. These keys can appear spuriously from
@@ -78,4 +78,25 @@ export function splitPathAndQueryString(pathMaybeWithQuery: string): {
  */
 export function isJsonFormat(query: NextJsServerQuery): boolean {
   return query.format === "json";
+}
+
+/**
+ * Compose a query string to append to other queries based on the user's session properties. Varies
+ * depending on whether the user is logged in and whether they are an admin.
+ * @param sessionProperties /session-properties object; might be empty object or null
+ * @returns Composed query string ready to append to other queries; starts with & if non-empty
+ */
+export function getUserQueryExtras(sessionProperties: SessionPropertiesObject) {
+  // Add status=released to the query string for non-logged-in users.
+  const releaseQuery = sessionProperties?.["auth.userid"]
+    ? ""
+    : "status=released";
+
+  // Add status!=deleted to the query string if the authenticated user is an admin.
+  const notDeletedQuery = sessionProperties?.admin ? "status!=deleted" : "";
+
+  const composedQuery = [releaseQuery, notDeletedQuery]
+    .filter((query) => query)
+    .join("&");
+  return composedQuery ? `&${composedQuery}` : "";
 }

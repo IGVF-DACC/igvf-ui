@@ -15,6 +15,7 @@ import EnsemblLink from "../../components/ensemble-link";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -29,6 +30,7 @@ export default function Gene({ gene, isJson }) {
         <PagePreamble />
         <ObjectPageHeader item={gene} isJsonFormat={isJson} />
         <JsonDisplay item={gene} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={gene} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>ENSEMBL GeneID</DataItemLabel>

@@ -226,6 +226,16 @@ export interface SessionObject {
 }
 
 /**
+ * Session properties object from the data provider while the user has logged in.
+ */
+export interface SessionPropertiesObject {
+  admin?: boolean;
+  "auth.userid"?: string;
+  user?: UserObject;
+  user_actions?: UserActionObject[];
+}
+
+/**
  * NextJS query object that gets passed to `getServerSideProps`.
  */
 export interface NextJsServerQuery {
@@ -309,3 +319,20 @@ export interface WorkflowObject extends DatabaseObject {
   source_url: string;
   uniform_pipeline?: boolean;
 }
+
+/**
+ * Data structure of the `User` object.
+ */
+export interface UserObject extends DatabaseObject {
+  title: string;
+}
+
+/**
+ * User actions in the session properties.
+ */
+export type UserActionObject = {
+  id: string;
+  title: string;
+  href: string;
+  notSubmittable: boolean;
+};
