@@ -16,9 +16,9 @@ import { EditableItem } from "../../components/edit";
 import ProductInfo from "../../components/product-info";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { requestDocuments, requestSamples } from "../../lib/common-requests";
@@ -36,13 +36,13 @@ export default function CrisprModification({
   isJson,
   attribution = null,
 }) {
-  const pagePanels = usePagePanels(modification["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={modification} />
       <EditableItem item={modification}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <ObjectPageHeader item={modification} isJsonFormat={isJson} />
         <JsonDisplay item={modification} isJsonFormat={isJson}>
           <DataPanel>
@@ -115,17 +115,9 @@ export default function CrisprModification({
               reportLink={`/multireport/?type=Biosample&modifications.@id=${modification["@id"]}`}
               reportLabel="Report of biosamples that have this modification"
               title="Biosamples Modified by this Modification"
-              pagePanels={pagePanels}
-              pagePanelId="biosamples-modified"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

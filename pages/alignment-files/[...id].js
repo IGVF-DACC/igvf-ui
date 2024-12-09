@@ -21,9 +21,9 @@ import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -54,13 +54,13 @@ export default function AlignmentFile({
   referenceFiles,
   isJson,
 }) {
-  const pagePanels = usePagePanels(alignmentFile["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={alignmentFile} />
       <EditableItem item={alignmentFile}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={alignmentFile.alternate_accessions}
         />
@@ -75,7 +75,9 @@ export default function AlignmentFile({
               <FileDataItems item={alignmentFile} />
             </DataArea>
           </DataPanel>
-          <DataAreaTitle>Alignment Details</DataAreaTitle>
+          <DataAreaTitle id="alignment-details">
+            Alignment Details
+          </DataAreaTitle>
           <DataPanel>
             <DataArea>
               {referenceFiles.length > 0 && (
@@ -118,16 +120,11 @@ export default function AlignmentFile({
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
-              pagePanels={pagePanels}
-              pagePanelId="file-format-docs"
+              panelId="file-format-specifications"
             />
           )}
           {fileSetSamples.length > 0 && (
-            <SampleTable
-              samples={fileSetSamples}
-              pagePanels={pagePanels}
-              pagePanelId="file-set-samples"
-            />
+            <SampleTable samples={fileSetSamples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -136,8 +133,6 @@ export default function AlignmentFile({
               reportLink={`/multireport/?type=File&input_file_for=${alignmentFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
-              pagePanels={pagePanels}
-              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -146,17 +141,10 @@ export default function AlignmentFile({
               reportLink={`/multireport/?type=File&derived_from=${alignmentFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-for"
+              panelId="input-file-for"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

@@ -21,9 +21,9 @@ import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -54,13 +54,13 @@ export default function TabularFile({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(tabularFile["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={tabularFile} />
       <EditableItem item={tabularFile}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={tabularFile.alternate_accessions}
         />
@@ -77,7 +77,9 @@ export default function TabularFile({
           </DataPanel>
           {(tabularFile.assembly || tabularFile.transcriptome_annotation) && (
             <>
-              <DataAreaTitle>Reference Source Details</DataAreaTitle>
+              <DataAreaTitle id="reference-source-details">
+                Reference Source Details
+              </DataAreaTitle>
               <DataPanel>
                 <DataArea>
                   {tabularFile.assembly && (
@@ -102,16 +104,11 @@ export default function TabularFile({
             <DocumentTable
               documents={fileFormatSpecifications}
               title="File Format Specifications"
-              pagePanels={pagePanels}
-              pagePanelId="file-format-specifications"
+              panelId="file-format-specifications"
             />
           )}
           {fileSetSamples.length > 0 && (
-            <SampleTable
-              samples={fileSetSamples}
-              pagePanels={pagePanels}
-              pagePanelId="file-set-samples"
-            />
+            <SampleTable samples={fileSetSamples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -120,8 +117,6 @@ export default function TabularFile({
               reportLink={`/multireport/?type=File&input_file_for=${tabularFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
-              pagePanels={pagePanels}
-              pagePanelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
@@ -130,8 +125,7 @@ export default function TabularFile({
               reportLink={`/multireport/?type=File&derived_from=${tabularFile["@id"]}`}
               reportLabel="Report of files derived from this file"
               title="Files Derived From This File"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-for"
+              panelId="input-file-for"
             />
           )}
           {integratedIn.length > 0 && (
@@ -140,8 +134,7 @@ export default function TabularFile({
               title="Integrated In"
               reportLink={`/multireport/?type=ConstructLibrarySet&integrated_content_files.@id=${tabularFile["@id"]}`}
               reportLabel={`Report of ConstructLibrarySets that integrate ${tabularFile.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="integrated-in"
+              panelId="integrated-in"
             />
           )}
           {barcodeMapFor.length > 0 && (
@@ -150,17 +143,10 @@ export default function TabularFile({
               reportLink={`/multireport/?type=MultiplexedSample&barcode_map.@id=${tabularFile["@id"]}`}
               reportLabel="Report of multiplexed samples in which this file is a barcode map for"
               title="Barcode Map For"
-              pagePanels={pagePanels}
-              pagePanelId="barcode-map-for"
+              panelId="barcode-map-for"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

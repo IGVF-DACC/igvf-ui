@@ -27,9 +27,9 @@ import FileSetFilesTables from "../../components/file-set-files-tables";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
@@ -79,7 +79,7 @@ function AssayDetails({ measurementSet }) {
   if (measurementSet.sequencing_library_types?.length > 0) {
     return (
       <>
-        <DataAreaTitle>Assay Details</DataAreaTitle>
+        <DataAreaTitle id="assay-details">Assay Details</DataAreaTitle>
         <DataPanel>
           <DataArea>
             {measurementSet.sequencing_library_types?.length > 0 && (
@@ -119,8 +119,8 @@ export default function MeasurementSet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(measurementSet["@id"]);
   const tooltipAttr = useTooltip("external-image-url");
+  const sections = useSecDir();
 
   // Split the files into those with an @type of ImageFile and all others.
   const groupedFiles = _.groupBy(files, (file) =>
@@ -162,7 +162,7 @@ export default function MeasurementSet({
     <>
       <Breadcrumbs item={measurementSet} />
       <EditableItem item={measurementSet}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={measurementSet.alternate_accessions}
         />
@@ -303,6 +303,7 @@ export default function MeasurementSet({
                 files={groupedFiles.image}
                 fileSet={measurementSet}
                 title="Imaging Results"
+                panelId="imaging"
               />
             )}
           </FileSetFilesTables>
@@ -311,16 +312,11 @@ export default function MeasurementSet({
               samples={measurementSet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${measurementSet["@id"]}`}
               reportLabel="Report of Samples in This File Set"
-              pagePanels={pagePanels}
-              pagePanelId="samples"
+              panelId="samples"
             />
           )}
           {measurementSet.donors?.length > 0 && (
-            <DonorTable
-              donors={measurementSet.donors}
-              pagePanels={pagePanels}
-              pagePanelId="donors"
-            />
+            <DonorTable donors={measurementSet.donors} />
           )}
           <AssayDetails measurementSet={measurementSet} />
           {controlFileSets.length > 0 && (
@@ -329,8 +325,7 @@ export default function MeasurementSet({
               title="Control File Sets"
               reportLink={`/multireport/?type=FileSet&control_for.@id=${measurementSet["@id"]}`}
               reportLabel="Report of Control File Sets in This File Set"
-              pagePanels={pagePanels}
-              pagePanelId="control-file-sets"
+              panelId="control-file-sets"
             />
           )}
           {inputFileSetFor.length > 0 && (
@@ -339,8 +334,7 @@ export default function MeasurementSet({
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${measurementSet["@id"]}`}
               reportLabel="Report of file sets that this measurement set is an input for"
               title="File Sets Using This Measurement Set as an Input"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-set-for"
+              panelId="input-file-sets-for"
             />
           )}
           {controlFor.length > 0 && (
@@ -349,8 +343,7 @@ export default function MeasurementSet({
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${measurementSet["@id"]}`}
               reportLabel="Report of file sets that have this measurement set as a control"
               title="File Sets Controlled by This Measurement Set"
-              pagePanels={pagePanels}
-              pagePanelId="control-for"
+              panelId="control-for"
             />
           )}
           {relatedMultiomeSets.length > 0 && (
@@ -359,8 +352,7 @@ export default function MeasurementSet({
               title="Related Multiome Datasets"
               reportLink={composeRelatedDatasetReportLink(measurementSet)}
               reportLabel="Report of Related Multiome Datasets"
-              pagePanels={pagePanels}
-              pagePanelId="related-multiome-datasets"
+              panelId="related-multiome-datasets"
             />
           )}
           {auxiliarySets.length > 0 && (
@@ -377,17 +369,10 @@ export default function MeasurementSet({
                   );
                 },
               }}
-              pagePanels={pagePanels}
-              pagePanelId="auxiliary-datasets"
+              panelId="auxiliary-sets"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

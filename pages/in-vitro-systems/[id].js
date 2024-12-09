@@ -20,9 +20,9 @@ import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -67,13 +67,13 @@ export default function InVitroSystem({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(inVitroSystem["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={inVitroSystem} />
       <EditableItem item={inVitroSystem}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={inVitroSystem.alternate_accessions}
         />
@@ -158,20 +158,12 @@ export default function InVitroSystem({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
-          {donors.length > 0 && (
-            <DonorTable
-              donors={donors}
-              pagePanels={pagePanels}
-              pagePanelId="donors"
-            />
-          )}
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {inVitroSystem.file_sets.length > 0 && (
             <FileSetTable
               fileSets={inVitroSystem.file_sets}
               reportLink={`/multireport/?type=FileSet&samples.@id=${inVitroSystem["@id"]}`}
               reportLabel="Report of file sets associated with this sample"
-              pagePanels={pagePanels}
-              pagePanelId="file-sets"
             />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -180,8 +172,7 @@ export default function InVitroSystem({
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${inVitroSystem["@id"]}`}
               reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
-              pagePanels={pagePanels}
-              pagePanelId="multiplexed-in-samples"
+              panelId="multiplexed-in-samples"
             />
           )}
           {pooledFrom.length > 0 && (
@@ -190,8 +181,7 @@ export default function InVitroSystem({
               reportLink={`/multireport/?type=Sample&pooled_in=${inVitroSystem["@id"]}`}
               reportLabel="Report of samples this biosample is pooled from"
               title="Biosamples Pooled From"
-              pagePanels={pagePanels}
-              pagePanelId="biosamples-pooled-from"
+              panelId="pooled-from"
             />
           )}
           {pooledIn.length > 0 && (
@@ -200,8 +190,7 @@ export default function InVitroSystem({
               reportLink={`/multireport/?type=Biosample&pooled_from=${inVitroSystem["@id"]}`}
               reportLabel="Report of pooled biosamples in which this sample is included"
               title="Pooled In"
-              pagePanels={pagePanels}
-              pagePanelId="pooled-in"
+              panelId="pooled-in"
             />
           )}
           {demultiplexedTo.length > 0 && (
@@ -210,8 +199,7 @@ export default function InVitroSystem({
               reportLink={`/multireport/?type=Biosample&demultiplexed_from=${inVitroSystem["@id"]}`}
               reportLabel="Report of parts into which this sample has been demultiplexed"
               title="Demultiplexed To Sample"
-              pagePanels={pagePanels}
-              pagePanelId="demultiplexed-to-sample"
+              panelId="demultiplexed-to"
             />
           )}
           {parts.length > 0 && (
@@ -220,8 +208,7 @@ export default function InVitroSystem({
               reportLink={`/multireport/?type=Biosample&part_of=${inVitroSystem["@id"]}`}
               reportLabel="Report of parts into which this sample has been divided"
               title="Sample Parts"
-              pagePanels={pagePanels}
-              pagePanelId="sample-parts"
+              panelId="parts"
             />
           )}
           {originOf.length > 0 && (
@@ -230,8 +217,7 @@ export default function InVitroSystem({
               reportLink={`/multireport/?type=Biosample&originated_from.@id=${inVitroSystem["@id"]}`}
               reportLabel="Report of samples which originate from this sample"
               title="Origin Sample Of"
-              pagePanels={pagePanels}
-              pagePanelId="origin-sample-of"
+              panelId="origin-of"
             />
           )}
           {inVitroSystem.modifications?.length > 0 && (
@@ -239,8 +225,6 @@ export default function InVitroSystem({
               modifications={inVitroSystem.modifications}
               reportLink={`/multireport/?type=Modification&biosamples_modified=${inVitroSystem["@id"]}`}
               reportLabel={`Report of genetic modifications for ${inVitroSystem.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="modifications"
             />
           )}
           {sortedFractions.length > 0 && (
@@ -249,8 +233,7 @@ export default function InVitroSystem({
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${inVitroSystem["@id"]}`}
               reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
-              pagePanels={pagePanels}
-              pagePanelId="sorted-fractions-of-sample"
+              panelId="sorted-fractions"
             />
           )}
           {biomarkers.length > 0 && (
@@ -258,8 +241,6 @@ export default function InVitroSystem({
               biomarkers={biomarkers}
               reportLink={`/multireport/?type=Biomarker&biomarker_for=${inVitroSystem["@id"]}`}
               reportLabel={`Report of biological markers that are associated with biosample ${inVitroSystem.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="biomarkers"
             />
           )}
           {treatments.length > 0 && (
@@ -267,25 +248,16 @@ export default function InVitroSystem({
               treatments={treatments}
               reportLink={`/multireport/?type=Treatment&biosamples_treated=${inVitroSystem["@id"]}`}
               reportLabel={`Report of treatments applied to the biosample ${inVitroSystem.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="treatments"
             />
           )}
           {cellFateChangeTreatments.length > 0 && (
             <TreatmentTable
               treatments={cellFateChangeTreatments}
               title="Cell Fate Change Treatments"
-              pagePanels={pagePanels}
-              pagePanelId="cell-fate-change-treatments"
+              panelId="cell-fate-change-treatments"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
@@ -349,10 +321,13 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/in-vitro-systems/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(inVitroSystem)) {
-    const biomarkers =
-      inVitroSystem.biomarkers?.length > 0
-        ? await requestBiomarkers(inVitroSystem.biomarkers, request)
-        : [];
+    let biomarkers = [];
+    if (inVitroSystem.biomarkers?.length > 0) {
+      const biomarkerPaths = inVitroSystem.biomarkers.map(
+        (biomarker) => biomarker["@id"]
+      );
+      biomarkers = await requestBiomarkers(biomarkerPaths, request);
+    }
     let cellFateProtocol = null;
     if (inVitroSystem.cell_fate_change_protocol) {
       cellFateProtocol = (

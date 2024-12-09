@@ -21,9 +21,9 @@ import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -37,6 +37,7 @@ import {
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { convertTextToTitleCase } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 /**
@@ -48,8 +49,8 @@ import { isJsonFormat } from "../../lib/query-utils";
 function LibraryDetails({ library }) {
   return (
     <>
-      <DataAreaTitle className="capitalize">
-        {library.file_set_type} Details
+      <DataAreaTitle id="library-details">
+        {convertTextToTitleCase(library.file_set_type)} Details
       </DataAreaTitle>
       <DataPanel>
         <DataArea>
@@ -258,13 +259,13 @@ export default function ConstructLibrarySet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(constructLibrarySet["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={constructLibrarySet} />
       <EditableItem item={constructLibrarySet}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={constructLibrarySet.alternate_accessions}
         />
@@ -319,8 +320,7 @@ export default function ConstructLibrarySet({
               title="Integrated Content Files"
               reportLink={`/multireport/?type=File&integrated_in.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of files that have integrated in this construct library set"
-              pagePanels={pagePanels}
-              pagePanelId="integrated-content-files"
+              panelId="integrated-content"
             />
           )}
           {inputFileSetFor.length > 0 && (
@@ -329,8 +329,7 @@ export default function ConstructLibrarySet({
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of file sets that this construct library set is an input for"
               title="File Sets Using This Construct Library Set as an Input"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-set-for"
+              panelId="input-file-set-for"
             />
           )}
           {controlFor.length > 0 && (
@@ -339,8 +338,7 @@ export default function ConstructLibrarySet({
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of file sets that have this construct library set as a control"
               title="File Sets Controlled by This Construct Library Set"
-              pagePanels={pagePanels}
-              pagePanelId="control-for"
+              panelId="control-for"
             />
           )}
           {constructLibrarySet.applied_to_samples.length > 0 && (
@@ -349,17 +347,9 @@ export default function ConstructLibrarySet({
               reportLink={`/multireport/?type=Sample&construct_library_sets=${constructLibrarySet["@id"]}`}
               reportLabel="Report of samples that link to this construct library set"
               title="Applied to Samples"
-              pagePanels={pagePanels}
-              pagePanelId="applied-to-samples"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

@@ -18,8 +18,8 @@ import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import {
   requestAnalysisSteps,
@@ -40,13 +40,13 @@ export default function Workflow({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(workflow["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={workflow} />
       <EditableItem item={workflow}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={workflow.alternate_accessions}
         />
@@ -138,17 +138,9 @@ export default function Workflow({
               analysisSteps={analysisSteps}
               reportLink={`/multireport/?type=AnalysisStep&workflow.@id=${workflow["@id"]}`}
               reportLabel="Analysis Steps that link to this workflow"
-              pagePanels={pagePanels}
-              pagePanelId="analysis-steps"
             />
           )}
-          {documents?.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents?.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
@@ -183,9 +175,13 @@ export async function getServerSideProps({ params, req, query }) {
       ? await requestDocuments(workflow.documents, request)
       : [];
 
-    const analysisSteps = workflow.analysis_steps
-      ? await requestAnalysisSteps(workflow.analysis_steps, request)
-      : [];
+    let analysisSteps = [];
+    if (workflow.analysis_steps.length > 0) {
+      const analysisStepPaths = workflow.analysis_steps.map(
+        (analysisStep) => analysisStep["@id"]
+      );
+      analysisSteps = await requestAnalysisSteps(analysisStepPaths, request);
+    }
 
     let publications = [];
     if (workflow.publications?.length > 0) {

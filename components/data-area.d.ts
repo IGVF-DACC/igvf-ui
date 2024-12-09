@@ -22,9 +22,13 @@ export function DataArea({
 }): React.ReactElement | null;
 
 export function DataAreaTitle({
+  id,
+  secDirTitle,
   className,
   children,
 }: {
+  id?: string;
+  secDirTitle?: string;
   className?: string;
   children: React.ReactNode;
 }): React.ReactElement | null;

@@ -19,9 +19,9 @@ import FileTable from "../../components/file-table";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -44,13 +44,13 @@ export default function CuratedSet({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(curatedSet["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={curatedSet} />
       <EditableItem item={curatedSet}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={curatedSet.alternate_accessions}
         />
@@ -100,16 +100,10 @@ export default function CuratedSet({
               samples={curatedSet.samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${curatedSet["@id"]}`}
               reportLabel="Report of samples in this curated set"
-              pagePanels={pagePanels}
-              pagePanelId="samples"
             />
           )}
           {curatedSet.donors?.length > 0 && (
-            <DonorTable
-              donors={curatedSet.donors}
-              pagePanels={pagePanels}
-              pagePanelId="donors"
-            />
+            <DonorTable donors={curatedSet.donors} />
           )}
           {files.length > 0 && (
             <FileTable files={files} fileSet={curatedSet} isDownloadable />
@@ -120,8 +114,7 @@ export default function CuratedSet({
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${curatedSet["@id"]}`}
               reportLabel="Report of file sets that this curated set is an input for"
               title="File Sets Using This Curated Set as an Input"
-              pagePanels={pagePanels}
-              pagePanelId="input-file-set-for"
+              panelId="input-file-set-for"
             />
           )}
           {controlFor.length > 0 && (
@@ -130,17 +123,10 @@ export default function CuratedSet({
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${curatedSet["@id"]}`}
               reportLabel="Report of file sets that have this curated set as a control"
               title="File Sets Controlled by This Curated Set"
-              pagePanels={pagePanels}
-              pagePanelId="control-for"
+              panelId="control-for"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>

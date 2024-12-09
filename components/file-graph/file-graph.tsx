@@ -9,7 +9,6 @@ import { LinkHorizontal } from "@visx/shape";
 import { DataAreaTitle, DataPanel } from "../data-area";
 import GlobalContext from "../global-context";
 import Icon from "../icon";
-import { type PagePanelStates } from "../page-panels";
 // lib
 import { truncateText } from "../../lib/general";
 // local
@@ -363,19 +362,15 @@ export function FileGraph({
   derivedFromFiles,
   fileFileSets,
   title = "File Association Graph",
-  pagePanels,
-  pagePanelId,
+  panelId = "file-graph",
 }: {
   fileSet: DatabaseObject;
   files: DatabaseObject[];
   fileFileSets: DatabaseObject[];
   derivedFromFiles: DatabaseObject[];
   title?: string;
-  pagePanels: PagePanelStates;
-  pagePanelId: string;
+  panelId?: string;
 }) {
-  const isExpanded = pagePanels.isExpanded(pagePanelId);
-
   const data = generateGraphData(
     files as FileObject[],
     fileFileSets as FileSetObject[],
@@ -390,35 +385,27 @@ export function FileGraph({
   if (trimmedData.length > 0) {
     return (
       <section role="region" aria-labelledby="file-graph">
-        <DataAreaTitle>
-          <DataAreaTitle.Expander
-            pagePanels={pagePanels}
-            pagePanelId={pagePanelId}
-            label={`${title} table`}
-          >
-            <div id="file-graph">{title}</div>
-          </DataAreaTitle.Expander>
+        <DataAreaTitle id={panelId}>
+          <div id="file-graph">{title}</div>
         </DataAreaTitle>
-        {isExpanded && (
-          <div className="overflow-hidden [&>div]:p-0">
-            <DataPanel>
-              {!isGraphTooLarge ? (
-                <>
-                  <Graph
-                    fileSet={fileSet as FileSetObject}
-                    nativeFiles={files as FileObject[]}
-                    graphData={trimmedData}
-                  />
-                  <Legend fileSetTypes={relevantFileSetTypes} />
-                </>
-              ) : (
-                <div className="p-4 text-center italic">
-                  Graph too large to display
-                </div>
-              )}
-            </DataPanel>
-          </div>
-        )}
+        <div className="overflow-hidden [&>div]:p-0">
+          <DataPanel>
+            {!isGraphTooLarge ? (
+              <>
+                <Graph
+                  fileSet={fileSet as FileSetObject}
+                  nativeFiles={files as FileObject[]}
+                  graphData={trimmedData}
+                />
+                <Legend fileSetTypes={relevantFileSetTypes} />
+              </>
+            ) : (
+              <div className="p-4 text-center italic">
+                Graph too large to display
+              </div>
+            )}
+          </DataPanel>
+        </div>
       </section>
     );
   }

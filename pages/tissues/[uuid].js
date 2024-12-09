@@ -20,9 +20,9 @@ import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
-import { usePagePanels } from "../../components/page-panels";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -60,13 +60,13 @@ export default function Tissue({
   attribution = null,
   isJson,
 }) {
-  const pagePanels = usePagePanels(tissue["@id"]);
+  const sections = useSecDir();
 
   return (
     <>
       <Breadcrumbs item={tissue} />
       <EditableItem item={tissue}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <AlternateAccessions
           alternateAccessions={tissue.alternate_accessions}
         />
@@ -125,20 +125,12 @@ export default function Tissue({
               </BiosampleDataItems>
             </DataArea>
           </DataPanel>
-          {donors.length > 0 && (
-            <DonorTable
-              donors={donors}
-              pagePanels={pagePanels}
-              pagePanelId="donors"
-            />
-          )}
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {tissue.file_sets.length > 0 && (
             <FileSetTable
               fileSets={tissue.file_sets}
               reportLink={`/multireport/?type=FileSet&samples.@id=${tissue["@id"]}`}
               reportLabel="Report of file sets containing this sample"
-              pagePanels={pagePanels}
-              pagePanelId="file-sets"
             />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -147,8 +139,7 @@ export default function Tissue({
               reportLink={`/multireport/?type=MultiplexedSample&multiplexed_samples.@id=${tissue["@id"]}`}
               reportLabel="Report of multiplexed samples in which this sample is included"
               title="Multiplexed In Samples"
-              pagePanels={pagePanels}
-              pagePanelId="multiplexed-in-samples"
+              panelId="multiplexed-in-samples"
             />
           )}
           {pooledFrom.length > 0 && (
@@ -157,8 +148,7 @@ export default function Tissue({
               reportLink={`/multireport/?type=Sample&pooled_in=${tissue["@id"]}`}
               reportLabel="Report of biosamples this biosample is pooled from"
               title="Biosamples Pooled From"
-              pagePanels={pagePanels}
-              pagePanelId="pooled-from"
+              panelId="pooled-from"
             />
           )}
           {pooledIn.length > 0 && (
@@ -167,8 +157,7 @@ export default function Tissue({
               reportLink={`/multireport/?type=Biosample&pooled_from=${tissue["@id"]}`}
               reportLabel="Report of pooled samples in which this sample is included"
               title="Pooled In"
-              pagePanels={pagePanels}
-              pagePanelId="pooled-in"
+              panelId="pooled-in"
             />
           )}
           {parts.length > 0 && (
@@ -177,8 +166,7 @@ export default function Tissue({
               reportLink={`/multireport/?type=Biosample&part_of=${tissue["@id"]}`}
               reportLabel="Report of parts into which this sample has been divided"
               title="Sample Parts"
-              pagePanels={pagePanels}
-              pagePanelId="parts"
+              panelId="sample-parts"
             />
           )}
           {tissue.modifications?.length > 0 && (
@@ -186,8 +174,6 @@ export default function Tissue({
               modifications={tissue.modifications}
               reportLink={`/multireport/?type=Modification&biosamples_modified=${tissue["@id"]}`}
               reportLabel={`Report of genetic modifications for ${tissue.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="modifications"
             />
           )}
           {sortedFractions.length > 0 && (
@@ -196,8 +182,7 @@ export default function Tissue({
               reportLink={`/multireport/?type=Sample&sorted_from.@id=${tissue["@id"]}`}
               reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
-              pagePanels={pagePanels}
-              pagePanelId="sorted-fractions"
+              panelId="sorted-fractions"
             />
           )}
           {biomarkers.length > 0 && (
@@ -205,8 +190,6 @@ export default function Tissue({
               biomarkers={biomarkers}
               reportLink={`/multireport/?type=Biomarker&biomarker_for=${tissue["@id"]}`}
               reportLabel={`Report of biological markers that are associated with biosample ${tissue.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="biomarkers"
             />
           )}
           {treatments.length > 0 && (
@@ -214,17 +197,9 @@ export default function Tissue({
               treatments={treatments}
               reportLink={`/multireport/?type=Treatment&biosamples_treated=${tissue["@id"]}`}
               reportLabel={`Report of treatments applied to the biosample ${tissue.accession}`}
-              pagePanels={pagePanels}
-              pagePanelId="treatments"
             />
           )}
-          {documents.length > 0 && (
-            <DocumentTable
-              documents={documents}
-              pagePanels={pagePanels}
-              pagePanelId="documents"
-            />
-          )}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
@@ -274,10 +249,13 @@ export async function getServerSideProps({ params, req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = (await request.getObject(`/tissues/${params.uuid}/`)).union();
   if (FetchRequest.isResponseSuccess(tissue)) {
-    const biomarkers =
-      tissue.biomarkers?.length > 0
-        ? await requestBiomarkers(tissue.biomarkers, request)
-        : [];
+    let biomarkers = [];
+    if (tissue.biomarkers?.length > 0) {
+      const biomarkerPaths = tissue.biomarkers.map(
+        (biomarker) => biomarker["@id"]
+      );
+      biomarkers = await requestBiomarkers(biomarkerPaths, request);
+    }
     let diseaseTerms = [];
     if (tissue.disease_terms?.length > 0) {
       const diseaseTermPaths = tissue.disease_terms.map((term) => term["@id"]);

@@ -15,6 +15,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
 import { errorObjectToProps } from "../../lib/errors";
@@ -28,11 +29,13 @@ export default function AnalysisStep({
   attribution = null,
   isJson,
 }) {
+  const sections = useSecDir();
+
   return (
     <>
       <Breadcrumbs item={analysisStep} />
       <EditableItem item={analysisStep}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <ObjectPageHeader item={analysisStep} isJsonFormat={isJson} />
         <JsonDisplay item={analysisStep} isJsonFormat={isJson}>
           <DataPanel>

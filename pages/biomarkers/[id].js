@@ -15,6 +15,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { getBiomarkerTitle } from "../../lib/biomarker";
@@ -28,11 +29,13 @@ export default function Biomarker({
   attribution = null,
   isJson,
 }) {
+  const sections = useSecDir();
+
   return (
     <>
       <Breadcrumbs item={biomarker} />
       <EditableItem item={biomarker}>
-        <PagePreamble />
+        <PagePreamble sections={sections} />
         <ObjectPageHeader item={biomarker} isJsonFormat={isJson} />
         <JsonDisplay item={biomarker} isJsonFormat={isJson}>
           <DataPanel>
