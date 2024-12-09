@@ -1,21 +1,71 @@
 // node_modules
-import { DocumentTextIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import ChartFileSetLab from "../components/chart-file-set-lab";
-import ChartFileSetRelease from "../components/chart-file-set-release";
 import { DataAreaTitle, DataPanel } from "../components/data-area";
 import HomeTitle from "../components/home-title";
 import Icon from "../components/icon";
 import { useBrowserStateQuery } from "../components/presentation-status";
 // lib
-import { ServerCache } from "../lib/cache";
-import { requestDatasetSummary } from "../lib/common-requests";
+// import { ServerCache } from "../lib/cache";
+// import { requestDatasetSummary } from "../lib/common-requests";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
-import { convertFileSetsToReleaseData } from "../lib/home";
-import { getUserQueryExtras } from "../lib/query-utils";
+
+/**
+ * Icon for the processed data sets statistic.
+ */
+function ProcessedIcon({ className }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className={className}
+    >
+      <path
+        d="M4.6,2.9c0-.2.1-.5.4-.5l1.2-.3c.2,0,.5,0,.6.3l.4.8c.4,0,.8.1,1.1.3l.7-.5c.2-.1.5-.1.7,0l.9.9c.2.2.2.5,0,.7l-.5.7c.2.4.3.7.3,1.1l.8.4c.2.1.3.4.3.6l-.3,1.2c0,.2-.3.4-.5.4h-.9c-.2.3-.5.5-.8.8v.9c0,.2,0,.5-.3.5l-1.2.3c-.2,0-.5,0-.6-.3l-.4-.8c-.4,0-.8-.1-1.1-.3l-.7.5c-.2.1-.5.1-.7,0l-.9-.9c-.2-.2-.2-.5,0-.7l.5-.7c-.2-.4-.3-.7-.3-1.1l-.8-.4c-.2-.1-.3-.4-.3-.6l.3-1.2c0-.2.3-.4.5-.4h.9c.2-.3.5-.5.8-.8,0,0,0-.9,0-.9ZM7.2,8.3c.8-.2,1.3-1.1,1.1-1.9s-1.1-1.3-1.9-1.1-1.3,1.1-1.1,1.9,1.1,1.3,1.9,1.1Z"
+        style={{ fillRule: "evenodd" }}
+      />
+      <path
+        d="M13.3,8.8c.1-.2.4-.3.6-.3l1.2.3c.2,0,.4.3.4.5v.9c.3.2.5.5.8.8h.9c.2,0,.5,0,.5.3l.3,1.2c0,.2,0,.5-.3.6l-.8.4c0,.4-.1.8-.3,1.1l.5.7c.1.2.1.5,0,.7l-.9.9c-.2.2-.5.2-.7,0l-.7-.5c-.4.2-.7.3-1.1.3l-.4.8c-.1.2-.4.3-.6.3l-1.2-.3c-.2,0-.4-.3-.4-.5v-.9c-.3-.2-.5-.5-.8-.8h-.9c-.2,0-.5,0-.5-.3l-.3-1.2c0-.2,0-.5.3-.6l.8-.4c0-.4.1-.8.3-1.1l-.5-.7c-.1-.2-.1-.5,0-.7l.9-.9c.2-.2.5-.2.7,0l.7.5c.4-.2.7-.3,1.1-.3,0,0,.4-.8.4-.8ZM12.8,14.8c.8.2,1.7-.3,1.9-1.1s-.3-1.7-1.1-1.9-1.7.3-1.9,1.1.3,1.7,1.1,1.9Z"
+        style={{ fillRule: "evenodd" }}
+      />
+    </svg>
+  );
+}
+
+ProcessedIcon.propTypes = {
+  // Tailwind CSS classes for the icon
+  className: PropTypes.string,
+};
+
+/**
+ * Icon for the predictions data sets statistic.
+ */
+function PredictionsIcon({ className }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M10,15.1c-3.6,0-6.6-2.9-6.6-6.6s2.9-6.6,6.6-6.6,6.6,2.9,6.6,6.6-2.9,6.6-6.6,6.6ZM10,3.1c-3,0-5.4,2.4-5.4,5.4s2.4,5.4,5.4,5.4,5.4-2.4,5.4-5.4-2.4-5.4-5.4-5.4Z" />
+      <path
+        d="M15.7,14.1h-1c-1.3,1.1-2.9,1.8-4.7,1.8s-3.5-.7-4.7-1.8h-1l-2,3.9h15.5l-2-3.9Z"
+        style={{ fillRule: "evenodd" }}
+      />
+      <path d="M8.5,10c-.1,0-.2,0-.3-.2l-.3-1c-.1-.4-.4-.7-.9-.9l-1-.3c-.1,0-.2-.1-.2-.3s0-.2.2-.3l1-.3c.4-.1.7-.4.9-.9l.3-1c0-.1.1-.2.3-.2h0c.1,0,.2,0,.3.2l.3,1c.1.4.4.7.9.9l1,.3c.1,0,.2.1.2.3s0,.2-.2.3l-1,.3c-.4.1-.7.4-.9.9h-.3c0,0,.3,0,.3,0l-.3,1c0,.1-.1.2-.3.2ZM7.2,7.4h0c.6.2,1.1.7,1.3,1.3h0s0,0,0,0c.2-.6.6-1.1,1.3-1.3h0s0,0,0,0c-.6-.2-1.1-.6-1.3-1.3h0s0,0,0,0c-.2.6-.6,1.1-1.3,1.3h0Z" />
+    </svg>
+  );
+}
+
+PredictionsIcon.propTypes = {
+  // Tailwind CSS classes for the icon
+  className: PropTypes.string,
+};
 
 /**
  * Display a statistic panel that shows some property and count of their occurrences in the
@@ -83,12 +133,14 @@ FileSetChartSection.propTypes = {
  * Titles for the two charts on the home page. Used for the chart panel title and the chart aria
  * labels.
  */
-const FILESET_RELEASE_TITLE = "Data Sets Released";
 const FILESET_STATUS_TITLE = "Data Sets Produced by IGVF Labs";
 
-export default function Home({ fileSets, fileCount, sampleCount }) {
-  const releaseData = convertFileSetsToReleaseData(fileSets);
-
+export default function Home({
+  labData,
+  processedCount,
+  predictionsCount,
+  rawCount,
+}) {
   return (
     <div className="@container/home">
       <HomeTitle />
@@ -103,39 +155,31 @@ export default function Home({ fileSets, fileCount, sampleCount }) {
       </p>
       <div className="my-4 @xl/home:flex @xl/home:gap-4">
         <Statistic
-          graphic={<Icon.FileSet className="fill-sky-600" />}
-          label="Data Sets (Measurement Sets)"
-          value={fileSets.length}
-          query="type=MeasurementSet"
+          graphic={<ProcessedIcon className="fill-sky-600" />}
+          label="Processed Datasets"
+          value={processedCount}
+          query="type=AnalysisSet&status=released"
           colorClass="bg-sky-100 dark:bg-sky-900 border-sky-600 hover:bg-sky-200 dark:hover:bg-sky-800"
         />
         <Statistic
-          graphic={<DocumentTextIcon className="fill-teal-600" />}
-          label="Files"
-          value={fileCount}
-          query="type=File"
+          graphic={<PredictionsIcon className="fill-teal-600" />}
+          label="Predictions Datasets"
+          value={predictionsCount}
+          query="type=PredictionSet&status=released"
           colorClass="bg-teal-200 dark:bg-teal-900 border-teal-600 hover:bg-teal-300 dark:hover:bg-teal-800"
         />
         <Statistic
           graphic={<Icon.Sample className="fill-yellow-600" />}
-          label="Samples"
-          value={sampleCount}
-          query="type=Sample"
+          label="Raw Datasets"
+          value={rawCount}
+          query="type=MeasurementSet&status=released"
           colorClass="bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800"
         />
       </div>
-      {releaseData.length >= 2 && (
-        <FileSetChartSection title={FILESET_RELEASE_TITLE}>
-          <ChartFileSetRelease
-            releaseData={releaseData}
-            title={FILESET_RELEASE_TITLE}
-          />
-        </FileSetChartSection>
-      )}
-      {fileSets.length > 0 && (
+      {labData.doc_count > 0 && (
         <FileSetChartSection title={FILESET_STATUS_TITLE}>
           <ChartFileSetLab
-            fileSets={fileSets}
+            labData={labData}
             title={FILESET_STATUS_TITLE}
             shouldIncludeLinks
           />
@@ -147,57 +191,67 @@ export default function Home({ fileSets, fileCount, sampleCount }) {
 
 Home.propTypes = {
   // All measurement sets in the system
-  fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Total number of files in the system
-  fileCount: PropTypes.number,
-  // Total number of samples in the system
-  sampleCount: PropTypes.number,
+  labData: PropTypes.shape({
+    doc_count: PropTypes.number,
+  }),
+  // Total number of processed data sets in the system
+  processedCount: PropTypes.number,
+  // Total number of prediction data sets in the system
+  predictionsCount: PropTypes.number,
+  // Total number of raw data sets in the system
+  rawCount: PropTypes.number,
 };
 
 /**
  * Server cache key for the home page props.
  */
-const HOME_PAGE_PROPS_KEY = "home-page-props";
+// const HOME_PAGE_PROPS_KEY = "home-page-props";
 
-/**
- * Callback to pass to `new ServerCache(..)` to fetch the home-page data when we don't have it in
- * the Redis cache.
- * @param {FetchRequest} request Result of `new FetchRequest(..)`
- * @returns {string} JSON stringified props for the home page.
- */
-async function fetchHomePageData(request) {
-  const datasetSummary = await requestDatasetSummary(request);
-  const props = {
-    fileSets: datasetSummary?.["@graph"] || [],
-  };
-  return JSON.stringify(props);
-}
+// /**
+//  * Callback to pass to `new ServerCache(..)` to fetch the home-page data when we don't have it in
+//  * the Redis cache.
+//  * @param {FetchRequest} request Result of `new FetchRequest(..)`
+//  * @returns {string} JSON stringified props for the home page.
+//  */
+// async function fetchHomePageData(request) {
+//   const datasetSummary = await requestDatasetSummary(request);
+//   const props = {
+//     fileSets: datasetSummary?.["@graph"] || [],
+//   };
+//   return JSON.stringify(props);
+// }
 
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const cacheRef = new ServerCache(HOME_PAGE_PROPS_KEY);
-  cacheRef.setFetchConfig(fetchHomePageData, request);
-  const { fileSets } = await cacheRef.getData();
-
-  // Get session properties to know if the user has logged in or not, and generate the
-  // corresponding query strings.
-  const sessionProperties = (
-    await request.getObject("/session-properties")
+  // const cacheRef = new ServerCache(HOME_PAGE_PROPS_KEY);
+  // cacheRef.setFetchConfig(fetchHomePageData, request);
+  // const { fileSets } = await cacheRef.getData();
+  const labData = (
+    await request.getObject(
+      "/dataset-summary-agg/?type=MeasurementSet&config=PreferredAssayTitleSummary&status=released"
+    )
   ).optional();
-  const queryExtras = getUserQueryExtras(sessionProperties);
 
-  const fileResults = (
-    await request.getObject(`/search/?type=File&limit=0${queryExtras}`)
+  const processedResults = (
+    await request.getObject("/search/?type=AnalysisSet&status=released&limit=0")
   ).optional();
-  const sampleResults = (
-    await request.getObject(`/search/?type=Sample&limit=0${queryExtras}`)
+  const predictionsResults = (
+    await request.getObject(
+      "/search/?type=PredictionSet&status=released&limit=0"
+    )
+  ).optional();
+  const rawResults = (
+    await request.getObject(
+      "/search/?type=MeasurementSet&status=released&limit=0"
+    )
   ).optional();
 
   return {
     props: {
-      fileSets: fileSets || [],
-      fileCount: fileResults?.total || 0,
-      sampleCount: sampleResults?.total || 0,
+      labData: labData?.matrix.y || [],
+      processedCount: processedResults?.total || 0,
+      predictionsCount: predictionsResults?.total || 0,
+      rawCount: rawResults?.total || 0,
     },
   };
 }
