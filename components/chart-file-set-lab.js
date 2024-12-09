@@ -3,30 +3,14 @@ import _ from "lodash";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useEffect } from "react";
 // components
-import {
-  DROPDOWN_ALIGN_RIGHT,
-  Dropdown,
-  DropdownRef,
-  useDropdown,
-} from "./dropdown";
-import { ListSelect } from "./form-elements";
 // lib
 import {
   abbreviateNumber,
   toShishkebabCase,
   truncateText,
 } from "../lib/general";
-import {
-  composeFileSetQueryElements,
-  convertLabDataToChartData,
-  filterFileSetsByMonth,
-  formatMonth,
-  generateFileSetMonthList,
-  collectFileSetMonths,
-  generateNumberArray,
-} from "../lib/home";
+import { convertLabDataToChartData, generateNumberArray } from "../lib/home";
 import { encodeUriElement } from "../lib/query-encoding";
 
 // Use a dynamic import to avoid an import error for nivo modules.
@@ -177,7 +161,6 @@ BarLink.propTypes = {
  * `Bar` component, but it wraps the bar in a link to the report page with the appropriate filters.
  */
 function CustomBar({ bar }) {
-  console.log("BAR DATA", bar.width, bar.height);
   const barData = bar.data;
   const dataPoint = barData.data;
   const [lab, prefixedTerm] = dataPoint.title.split("|");
@@ -220,118 +203,11 @@ CustomBar.propTypes = {
 };
 
 /**
- * Presents a button that lets the user select a month to filter the chart by.
- */
-function MonthSelector({
-  fileSetMonths,
-  selectedMonth,
-  setDynamicSelectedMonth,
-  className = "",
-}) {
-  const dropdownAttr = useDropdown("month-selector", DROPDOWN_ALIGN_RIGHT);
-
-  // Collect all the creation months from the file sets and add "All" as the first option. For
-  // display, format the currently selected month as "All" or "MMMM yyyy".
-  const months = ["All"].concat(generateFileSetMonthList(fileSetMonths));
-  const selectedMonthFormatted = formatMonth(selectedMonth, "MMMM yyyy");
-
-  // Called when the user selects a month from the dropdown. Update the chart to show only data for
-  // the selected month, then close the month-selection dropdown.
-  function monthSelection(month) {
-    setDynamicSelectedMonth(month);
-    dropdownAttr.isVisible = false;
-  }
-
-  useEffect(() => {
-    if (dropdownAttr.isVisible) {
-      // Scroll the month selector dropdown to the selected month.
-      const selectedMonthButton = document.getElementById(selectedMonth);
-      if (selectedMonthButton) {
-        const selectedMonthButtonTop = selectedMonthButton.offsetTop;
-        const monthSelectorOptions = document.getElementById(
-          "month-selector-options"
-        );
-        monthSelectorOptions.scrollTop = selectedMonthButtonTop - 5;
-      }
-    }
-  }, [dropdownAttr.isVisible]);
-
-  return (
-    <div id="month-selector" className={className}>
-      <DropdownRef dropdownAttr={dropdownAttr}>
-        <button
-          aria-label={`Filter the chart for ${
-            selectedMonthFormatted === "All"
-              ? "all months"
-              : selectedMonthFormatted
-          }`}
-          className="h-6 rounded border border-button-primary bg-button-primary px-2 text-xs text-button-primary"
-        >
-          {selectedMonthFormatted}
-        </button>
-      </DropdownRef>
-      <Dropdown dropdownAttr={dropdownAttr}>
-        <ListSelect
-          value={selectedMonth}
-          onChange={monthSelection}
-          className="shadow-lg [&>div]:max-h-52"
-          scrollId="month-selector-options"
-          isBorderHidden
-        >
-          {months.map((month) => {
-            const displayedMonth = formatMonth(month, "MMMM yyyy");
-            return (
-              <ListSelect.Option key={month} id={month} label={displayedMonth}>
-                <div className="text-left">{displayedMonth}</div>
-              </ListSelect.Option>
-            );
-          })}
-        </ListSelect>
-      </Dropdown>
-    </div>
-  );
-}
-
-MonthSelector.propTypes = {
-  // FileSet months to collect
-  fileSetMonths: PropTypes.object.isRequired,
-  // Currently selected month
-  selectedMonth: PropTypes.string.isRequired,
-  // Called when the user selects a month
-  setDynamicSelectedMonth: PropTypes.func.isRequired,
-  // Tailwind CSS classes to apply to the selector
-  className: PropTypes.string,
-};
-
-/**
- * Display one item in the legend for the chart, with a colored box and corresponding label.
- */
-function LegendItem({ color, label }) {
-  return (
-    <div className="flex items-center gap-1">
-      <div className="h-3 w-5" style={{ backgroundColor: color }} />
-      <div className="text-xs">{label}</div>
-    </div>
-  );
-}
-
-LegendItem.propTypes = {
-  // Color for the legend item as a hex string
-  color: PropTypes.string.isRequired,
-  // Label text for the legend item
-  label: PropTypes.string.isRequired,
-};
-
-/**
  * Display a bar chart of MeasurementSets by lab and title, breaking each bar into counts by
  * file-set type. The title comes from the `preferred_assay_title` of the MeasurementSet if it
  * exists, or the `assay_term.term_name` if not.
  */
-export default function ChartFileSetLab({
-  labData,
-  title,
-  shouldIncludeLinks = false,
-}) {
+export default function ChartFileSetLab({ labData, title }) {
   if (labData.doc_count > 0) {
     const { chartData, maxCount } = convertLabDataToChartData(labData);
     console.log("CHART DATA", chartData, maxCount);
@@ -402,6 +278,4 @@ ChartFileSetLab.propTypes = {
   }),
   // Title for the chart; used for the chart's aria label
   title: PropTypes.string.isRequired,
-  // True to have the chart and legend link to corresponding pages on the local site
-  shouldIncludeLinks: PropTypes.bool,
 };
