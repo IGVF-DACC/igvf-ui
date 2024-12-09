@@ -3,7 +3,7 @@ import _ from "lodash";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 // components
 import {
   DROPDOWN_ALIGN_RIGHT,
@@ -11,7 +11,7 @@ import {
   DropdownRef,
   useDropdown,
 } from "./dropdown";
-import { ButtonLink, ListSelect } from "./form-elements";
+import { ListSelect } from "./form-elements";
 // lib
 import {
   abbreviateNumber,
@@ -20,7 +20,7 @@ import {
 } from "../lib/general";
 import {
   composeFileSetQueryElements,
-  convertFileSetsToLabData,
+  convertLabDataToChartData,
   filterFileSetsByMonth,
   formatMonth,
   generateFileSetMonthList,
@@ -55,7 +55,7 @@ const CHART_TICK_COUNT = 5;
 /**
  * Order that data should appear in the chart bars, left to right.
  */
-const fileSetTypeOrder = ["released", "withFiles", "initiated"];
+const fileSetTypeOrder = ["value"];
 
 /**
  * Configuration for each legend element in display order:
@@ -88,8 +88,7 @@ Object.freeze(legendProps);
  * single {lab}|{title} string, so we have to break those back apart here.
  */
 function CustomYTick({ value, y }) {
-  const [lab, termAndPrefix] = value.split("|");
-  const term = termAndPrefix.split("^")[1];
+  const [lab, term] = value.split("|");
 
   return (
     <g transform={`translate(40,${y})`} id={`bar-${toShishkebabCase(value)}`}>
@@ -178,13 +177,10 @@ BarLink.propTypes = {
  * `Bar` component, but it wraps the bar in a link to the report page with the appropriate filters.
  */
 function CustomBar({ bar }) {
+  console.log("BAR DATA", bar.width, bar.height);
   const barData = bar.data;
   const dataPoint = barData.data;
   const [lab, prefixedTerm] = dataPoint.title.split("|");
-  const queryElements = composeFileSetQueryElements(
-    barData.id,
-    dataPoint.selectedMonth
-  );
 
   // Extract the preferred assay title or assay term name based on the prefix we added earlier.
   const [prefix, term] = prefixedTerm.split("^");
@@ -196,7 +192,7 @@ function CustomBar({ bar }) {
     <BarLink
       path={`/multireport/?type=MeasurementSet&lab.title=${encodeUriElement(
         lab
-      )}${termQuery}${queryElements}`}
+      )}${termQuery}`}
       shouldIncludeLinks={dataPoint.shouldIncludeLinks}
     >
       <g transform={`translate(${bar.x},${bar.y})`}>
@@ -327,105 +323,22 @@ LegendItem.propTypes = {
 };
 
 /**
- * Display the legend for the chart, with a button for each file-set type. The button links to the
- * report page with the appropriate filters, including a date range if the user has selected a
- * month.
- */
-function Legend({
-  selectedMonth,
-  fileSetTypeCounts,
-  shouldIncludeLinks = false,
-}) {
-  return (
-    <div className="flex items-center gap-1">
-      {legendProps.map((legend) => {
-        if (fileSetTypeCounts[legend.id] > 0) {
-          const queryElement = composeFileSetQueryElements(
-            legend.id,
-            selectedMonth
-          );
-          const href = `/multireport/?type=MeasurementSet${queryElement}`;
-          return shouldIncludeLinks ? (
-            <ButtonLink
-              key={legend.id}
-              type="secondary"
-              size="sm"
-              href={href}
-              className="gap-1"
-            >
-              <LegendItem color={legend.color} label={legend.label} />
-            </ButtonLink>
-          ) : (
-            <LegendItem
-              key={legend.id}
-              color={legend.color}
-              label={legend.label}
-            />
-          );
-        }
-      })}
-    </div>
-  );
-}
-
-Legend.propTypes = {
-  // Selected month to filter the chart by in yyyy-MM format, or "All"
-  selectedMonth: PropTypes.string.isRequired,
-  // Counts for each file-set type
-  fileSetTypeCounts: PropTypes.exact({
-    initiated: PropTypes.number,
-    withFiles: PropTypes.number,
-    released: PropTypes.number,
-  }),
-  // True to have legend link to the production portal instead of the local site
-  shouldIncludeLinks: PropTypes.bool,
-};
-
-/**
  * Display a bar chart of MeasurementSets by lab and title, breaking each bar into counts by
  * file-set type. The title comes from the `preferred_assay_title` of the MeasurementSet if it
  * exists, or the `assay_term.term_name` if not.
  */
 export default function ChartFileSetLab({
-  fileSets,
+  labData,
   title,
-  staticSelectedMonth = "",
   shouldIncludeLinks = false,
 }) {
-  // Currently selected month to filter the chart by
-  const [dynamicSelectedMonth, setDynamicSelectedMonth] = useState("All");
-  const selectedMonth = staticSelectedMonth || dynamicSelectedMonth;
-
-  // Generate the array of colors for the bars based on the legend colors and sorted by
-  // `fileSetTypeOrder`. Sort because the order of colors in the bars differs from the order they
-  // appear in the legend.
-  const barColors = legendProps
-    .toSorted(
-      (a, b) => fileSetTypeOrder.indexOf(a.id) - fileSetTypeOrder.indexOf(b.id)
-    )
-    .map((d) => d.color);
-
-  // Filter the file sets by the selected month, then convert to a form the Nivo bar chart can use.
-  const fileSetMonths = collectFileSetMonths(fileSets);
-  const selectedFileSets = filterFileSetsByMonth(
-    fileSets,
-    fileSetMonths,
-    selectedMonth
-  );
-
-  if (selectedFileSets.length > 0) {
-    const { fileSetData, counts, maxCount } = convertFileSetsToLabData(
-      selectedFileSets,
-      selectedMonth,
-      shouldIncludeLinks
-    );
+  if (labData.doc_count > 0) {
+    const { chartData, maxCount } = convertLabDataToChartData(labData);
+    console.log("CHART DATA", chartData, maxCount);
     return (
-      <div
-        className="relative"
-        style={{ height: 30 * fileSetData.length + 60 }}
-      >
+      <div className="relative" style={{ height: 30 * chartData.length + 60 }}>
         <ResponsiveBar
-          data={fileSetData}
+          data={chartData}
           animate={false}
           ariaLabel={title}
           axisBottom={{
@@ -448,7 +361,7 @@ export default function ChartFileSetLab({
             from: "color",
             modifiers: [["darker", 1.6]],
           }}
-          colors={barColors}
+          colors={["#f8a72b", "#64cccb", "#59a14f"]}
           enableGridX={true}
           enableGridY={false}
           indexBy="title"
@@ -473,22 +386,6 @@ export default function ChartFileSetLab({
           valueScale={{ type: "linear" }}
           valueFormat={() => null}
         />
-        <div className="absolute bottom-0 left-4 right-4 flex justify-between">
-          <Legend
-            selectedMonth={selectedMonth}
-            fileSetTypeCounts={counts}
-            shouldIncludeLinks={shouldIncludeLinks}
-          />
-          {!staticSelectedMonth && (
-            <MonthSelector
-              fileSetMonths={fileSetMonths}
-              selectedMonth={selectedMonth}
-              setDynamicSelectedMonth={(month) =>
-                setDynamicSelectedMonth(month || "All")
-              }
-            />
-          )}
-        </div>
       </div>
     );
   }
@@ -498,11 +395,13 @@ export default function ChartFileSetLab({
 
 ChartFileSetLab.propTypes = {
   // FileSet objects to display in the chart
-  fileSets: PropTypes.arrayOf(PropTypes.object),
+  labData: PropTypes.shape({
+    group_by: PropTypes.arrayOf(PropTypes.string),
+    label: PropTypes.string,
+    doc_count: PropTypes.number,
+  }),
   // Title for the chart; used for the chart's aria label
   title: PropTypes.string.isRequired,
-  // Selected month to filter the chart by in yyyy-MM format if specified in the query string
-  staticSelectedMonth: PropTypes.string,
   // True to have the chart and legend link to corresponding pages on the local site
   shouldIncludeLinks: PropTypes.bool,
 };

@@ -4,14 +4,13 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import ChartFileSetLab from "../components/chart-file-set-lab";
-import ChartFileSetRelease from "../components/chart-file-set-release";
 import { DataAreaTitle, DataPanel } from "../components/data-area";
 import HomeTitle from "../components/home-title";
 import Icon from "../components/icon";
 import { useBrowserStateQuery } from "../components/presentation-status";
 // lib
-import { ServerCache } from "../lib/cache";
-import { requestDatasetSummary } from "../lib/common-requests";
+// import { ServerCache } from "../lib/cache";
+// import { requestDatasetSummary } from "../lib/common-requests";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
 import { convertFileSetsToReleaseData } from "../lib/home";
@@ -82,12 +81,9 @@ FileSetChartSection.propTypes = {
  * Titles for the two charts on the home page. Used for the chart panel title and the chart aria
  * labels.
  */
-const FILESET_RELEASE_TITLE = "Data Sets Released";
 const FILESET_STATUS_TITLE = "Data Sets Produced by IGVF Labs";
 
-export default function Home({ fileSets, fileCount, sampleCount }) {
-  const releaseData = convertFileSetsToReleaseData(fileSets);
-
+export default function Home({ labData, fileCount, sampleCount }) {
   return (
     <div className="@container/home">
       <HomeTitle />
@@ -100,41 +96,11 @@ export default function Home({ fileSets, fileCount, sampleCount }) {
         catalog of the impact of genomic variants on genome function and
         phenotypes.
       </p>
-      <div className="my-4 @xl/home:flex @xl/home:gap-4">
-        <Statistic
-          graphic={<Icon.FileSet className="fill-sky-600" />}
-          label="Data Sets (Measurement Sets)"
-          value={fileSets.length}
-          query="type=MeasurementSet"
-          colorClass="bg-sky-100 dark:bg-sky-900 border-sky-600 hover:bg-sky-200 dark:hover:bg-sky-800"
-        />
-        <Statistic
-          graphic={<DocumentTextIcon className="fill-teal-600" />}
-          label="Files"
-          value={fileCount}
-          query="type=File"
-          colorClass="bg-teal-200 dark:bg-teal-900 border-teal-600 hover:bg-teal-300 dark:hover:bg-teal-800"
-        />
-        <Statistic
-          graphic={<Icon.Sample className="fill-yellow-600" />}
-          label="Samples"
-          value={sampleCount}
-          query="type=Sample"
-          colorClass="bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800"
-        />
-      </div>
-      {releaseData.length >= 2 && (
-        <FileSetChartSection title={FILESET_RELEASE_TITLE}>
-          <ChartFileSetRelease
-            releaseData={releaseData}
-            title={FILESET_RELEASE_TITLE}
-          />
-        </FileSetChartSection>
-      )}
-      {fileSets.length > 0 && (
+      <div className="my-4 @xl/home:flex @xl/home:gap-4" />
+      {labData.doc_count > 0 && (
         <FileSetChartSection title={FILESET_STATUS_TITLE}>
           <ChartFileSetLab
-            fileSets={fileSets}
+            labData={labData}
             title={FILESET_STATUS_TITLE}
             shouldIncludeLinks
           />
@@ -146,7 +112,9 @@ export default function Home({ fileSets, fileCount, sampleCount }) {
 
 Home.propTypes = {
   // All measurement sets in the system
-  fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  labData: PropTypes.shape({
+    doc_count: PropTypes.number,
+  }),
   // Total number of files in the system
   fileCount: PropTypes.number,
   // Total number of samples in the system
@@ -156,27 +124,32 @@ Home.propTypes = {
 /**
  * Server cache key for the home page props.
  */
-const HOME_PAGE_PROPS_KEY = "home-page-props";
+// const HOME_PAGE_PROPS_KEY = "home-page-props";
 
-/**
- * Callback to pass to `new ServerCache(..)` to fetch the home-page data when we don't have it in
- * the Redis cache.
- * @param {FetchRequest} request Result of `new FetchRequest(..)`
- * @returns {string} JSON stringified props for the home page.
- */
-async function fetchHomePageData(request) {
-  const datasetSummary = await requestDatasetSummary(request);
-  const props = {
-    fileSets: datasetSummary?.["@graph"] || [],
-  };
-  return JSON.stringify(props);
-}
+// /**
+//  * Callback to pass to `new ServerCache(..)` to fetch the home-page data when we don't have it in
+//  * the Redis cache.
+//  * @param {FetchRequest} request Result of `new FetchRequest(..)`
+//  * @returns {string} JSON stringified props for the home page.
+//  */
+// async function fetchHomePageData(request) {
+//   const datasetSummary = await requestDatasetSummary(request);
+//   const props = {
+//     fileSets: datasetSummary?.["@graph"] || [],
+//   };
+//   return JSON.stringify(props);
+// }
 
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const cacheRef = new ServerCache(HOME_PAGE_PROPS_KEY);
-  cacheRef.setFetchConfig(fetchHomePageData, request);
-  const { fileSets } = await cacheRef.getData();
+  // const cacheRef = new ServerCache(HOME_PAGE_PROPS_KEY);
+  // cacheRef.setFetchConfig(fetchHomePageData, request);
+  // const { fileSets } = await cacheRef.getData();
+  const labData = (
+    await request.getObject(
+      "/dataset-summary-agg/?type=MeasurementSet&config=PreferredAssayTitleSummary&status=released"
+    )
+  ).optional();
 
   const fileResults = (
     await request.getObject("/search/?type=File&limit=0")
@@ -187,7 +160,7 @@ export async function getServerSideProps({ req }) {
 
   return {
     props: {
-      fileSets: fileSets || [],
+      labData: labData?.matrix.y || [],
       fileCount: fileResults?.total || 0,
       sampleCount: sampleResults?.total || 0,
     },

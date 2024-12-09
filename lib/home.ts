@@ -173,34 +173,6 @@ export function filterFileSetsByMonth(
 }
 
 /**
- * Represents each file set datum in the file-set lab bar chart.
- */
-type FileSetTypeData = {
-  title: string;
-  initiated: number;
-  withFiles: number;
-  released: number;
-};
-
-/**
- * Indicates how many of each file-set type exists in the data.
- */
-type FileSetTypeCounts = {
-  initiated: number;
-  withFiles: number;
-  released: number;
-};
-
-/**
- * All data needed for the file-set lab bar chart.
- */
-type FileSetLabChartData = {
-  fileSetData: FileSetTypeData[];
-  counts: FileSetTypeCounts;
-  maxCount: number;
-};
-
-/**
  * Take a month in yyyy-MM format and convert it into a range query element for Elasticsearch. The
  * range query element is a string that represents a range of dates in the format `[start TO end]`.
  * The start date is the first day of the given month, and the end date is the last day of the
@@ -265,6 +237,55 @@ export function composeFileSetQueryElements(
 }
 
 /**
+ * Represents each file set datum in the file-set lab bar chart.
+ */
+type LabChartItem = {
+  /** Encoded title to use for each bar in the graph; contains the lab title and sub property */
+  title: string;
+  /** Value for the length of the bar for the lab and sub property */
+  value: number;
+};
+
+/**
+ * All data needed for the file-set lab bar chart.
+ */
+type LabChartData = {
+  chartData: LabChartItem[];
+  maxCount: number;
+};
+
+/**
+ * Represents the format of data within a single bucket. The index signature key name comes from an
+ * entry in the `LabData.group_by` array.
+ */
+type BucketData = {
+  key: string;
+  doc_count: number;
+} & {
+  [key: string]: AxisData;
+};
+
+/**
+ * One level of data buckets within a `LabData` object. Multiple levels of buckets can exist within
+ * a `LabData` object.
+ */
+type AxisData = {
+  buckets: BucketData[];
+};
+
+/**
+ * Represents the matrix data used for lab charts, but only the object under the `y` axis data. The
+ * index signature key name comes from an entry in the `LabData.group_by` array.
+ */
+type LabData = {
+  group_by: string[];
+  label: string;
+  doc_count: number;
+} & {
+  [key: string]: AxisData;
+};
+
+/**
  * Convert an array of FileSet objects into file-set type data in the form of an array of objects
  * that the Nivo bar chart can use. Each output array element handles a single bar in the chart,
  * which is a combination of lab and title. The output array is sorted by lab and then title.
@@ -273,80 +294,26 @@ export function composeFileSetQueryElements(
  * @param shouldIncludeLinks True to add the `shouldIncludeLinks` property to the data
  * @returns Nivo data for a bar chart and maximum count of file sets in a single bar
  */
-export function convertFileSetsToLabData(
-  fileSets: DatabaseObject[],
-  selectedMonth: string,
-  shouldIncludeLinks: boolean
-): FileSetLabChartData {
-  // Group all the file sets by keys that concatenate each lab and title -- {lab}|{title}.
-  const labSummaryGroups = _.groupBy(fileSets, (fileSet: DatabaseObject) => {
-    // Get the preferred assay title if it exists, otherwise use the assay term name. Encode a
-    // "prf^" prefix for the preferred assay title, and an "atn^" prefix for the assay term name so
-    // we can split the prefix from the assay title when we display it in the chart.
-    let term: string;
-    if (fileSet.preferred_assay_title) {
-      term = `prf^${fileSet.preferred_assay_title}`;
-    } else {
-      const assayTerm = fileSet.assay_term;
-      term = `atn^${(assayTerm as { term_name: string }).term_name}`;
-    }
-    return `${(fileSet.lab as { title: string }).title}|${term}`;
-  });
+export function convertLabDataToChartData(labData: LabData): LabChartData {
+  const labGroup = labData.group_by[0];
+  const subGroup = labData.group_by[1];
+  const labBuckets = labData[labGroup].buckets;
 
-  // Sort the group names effectively by lab and then title. The Nivo bar chart needs this list
-  // in reverse order.
-  const labSummaryGroupNames = Object.keys(labSummaryGroups)
-    .sort()
-    .toReversed();
+  const chartData = labBuckets.reduce((acc, labBucket) => {
+    const labTitle = labBucket.key;
+    const subBuckets = labBucket[subGroup].buckets;
+    const labItems: LabChartItem[] = subBuckets.map((subBucket) => ({
+      title: `${labTitle}|${subBucket.key}`,
+      value: subBucket.doc_count,
+    }));
+    return acc.concat(labItems);
+  }, [] as LabChartItem[]);
 
-  // Convert the grouped data into a flat array of objects that the Nivo bar chart can use. Each
-  // object has the lab|title key, and the number of released, initiated, and with-files file
-  // sets. Each output array element corresponds to a lab|title bar in the chart.
-  let initiatedCount = 0;
-  let withFilesCount = 0;
-  let releasedCount = 0;
-  let maxCount = 0;
-  const fileSetData = labSummaryGroupNames.map((key) => {
-    const labSummaryFileSets = labSummaryGroups[key];
-
-    const released = labSummaryFileSets.filter((fileSet) => {
-      return isReleasedFileSet(fileSet);
-    }).length;
-    const initiated = labSummaryFileSets.filter((fileSet) => {
-      return (
-        isNonReleasedFileSet(fileSet) &&
-        (!fileSet.files || (fileSet.files as string[]).length === 0)
-      );
-    }).length;
-    const withFiles = labSummaryFileSets.filter((fileSet) => {
-      return (
-        isNonReleasedFileSet(fileSet) && (fileSet.files as string[])?.length > 0
-      );
-    }).length;
-    maxCount = Math.max(maxCount, released + initiated + withFiles);
-    initiatedCount += initiated;
-    withFilesCount += withFiles;
-    releasedCount += released;
-
-    return {
-      title: key,
-      initiated,
-      withFiles,
-      released,
-      selectedMonth,
-      shouldIncludeLinks,
-    } as FileSetTypeData;
-  });
-
-  return {
-    fileSetData,
-    counts: {
-      initiated: initiatedCount,
-      withFiles: withFilesCount,
-      released: releasedCount,
-    },
-    maxCount,
+  const labChartData: LabChartData = {
+    chartData,
+    maxCount: labData.doc_count,
   };
+  return labChartData;
 }
 
 /**
