@@ -296,14 +296,22 @@ type LabData = {
  */
 export function convertLabDataToChartData(labData: LabData): LabChartData {
   const labGroup = labData.group_by[0];
-  const subGroup = labData.group_by[1];
+  let subGroup = labData.group_by[1];
+  let nullSubGroup = "";
+  if (Array.isArray(subGroup)) {
+    nullSubGroup = subGroup[1];
+    subGroup = subGroup[0];
+  }
+  console.log("SUBGROUP", subGroup, nullSubGroup);
   const labBuckets = labData[labGroup].buckets;
 
   const chartData = labBuckets.reduce((acc, labBucket) => {
     const labTitle = labBucket.key;
     const subBuckets = labBucket[subGroup].buckets;
     const labItems: LabChartItem[] = subBuckets.map((subBucket) => ({
-      title: `${labTitle}|${subBucket.key}`,
+      title: `${labTitle}|${
+        subBucket.key === nullSubGroup ? "none" : subBucket.key
+      }`,
       value: subBucket.doc_count,
     }));
     return acc.concat(labItems);

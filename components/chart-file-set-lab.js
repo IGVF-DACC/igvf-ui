@@ -42,31 +42,6 @@ const CHART_TICK_COUNT = 5;
 const fileSetTypeOrder = ["value"];
 
 /**
- * Configuration for each legend element in display order:
- *   - id: Unique identifier for the legend element
- *   - color: Color to display the legend element
- *   - label: Text to display for the legend element
- */
-const legendProps = [
-  {
-    id: "initiated",
-    color: "#f8a72b",
-    label: "Initiated Data Sets",
-  },
-  {
-    id: "withFiles",
-    color: "#64cccb",
-    label: "Data Sets With Files",
-  },
-  {
-    id: "released",
-    color: "#59a14f",
-    label: "Released Data Sets",
-  },
-];
-Object.freeze(legendProps);
-
-/**
  * Nivo calls this component to render each tick on the Y axis. It renders the lab and title
  * strings for the tick. When building the Nivo data, the lab and title got concatenated into a
  * single {lab}|{title} string, so we have to break those back apart here.
@@ -210,7 +185,6 @@ CustomBar.propTypes = {
 export default function ChartFileSetLab({ labData, title }) {
   if (labData.doc_count > 0) {
     const { chartData, maxCount } = convertLabDataToChartData(labData);
-    console.log("CHART DATA", chartData, maxCount);
     return (
       <div className="relative" style={{ height: 30 * chartData.length + 60 }}>
         <ResponsiveBar

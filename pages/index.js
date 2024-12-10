@@ -1,16 +1,27 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
+import { useState } from "react";
 // components
 import ChartFileSetLab from "../components/chart-file-set-lab";
-import { DataAreaTitle, DataPanel } from "../components/data-area";
+import { DataPanel } from "../components/data-area";
 import HomeTitle from "../components/home-title";
 import Icon from "../components/icon";
+import { TabGroup, TabList, TabTitle } from "../components/tabs";
 // lib
 // import { ServerCache } from "../lib/cache";
 // import { requestDatasetSummary } from "../lib/common-requests";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
+
+/**
+ * Query parameters for the different tabs on the home page, keyed with the corresponding tab ID.
+ */
+const tabRequestMap = {
+  processed: "?type=AnalysisSet&config=AssayTitlesSummary&status=released",
+  predictions: "?type=PredictionSet&config=FileSetTypeSummary&status=released",
+  raw: "?type=MeasurementSet&config=PreferredAssayTitleSummary&status=released",
+};
 
 /**
  * Icon for the processed data sets statistic.
@@ -111,19 +122,13 @@ Statistic.propTypes = {
 /**
  * Display the chart of file sets by lab and summary, along with the chart's title.
  */
-function FileSetChartSection({ title = "", children }) {
+function FileSetChartSection({ children }) {
   return (
-    <section className="relative my-8 hidden @xl/home:block">
-      {title && <DataAreaTitle className="text-center">{title}</DataAreaTitle>}
-      <DataPanel className="px-0 py-4">{children}</DataPanel>
+    <section className="relative hidden @xl/home:block">
+      <DataPanel isPaddingSuppressed>{children}</DataPanel>
     </section>
   );
 }
-
-FileSetChartSection.propTypes = {
-  // Title above the chart panel
-  title: PropTypes.string,
-};
 
 /**
  * Titles for the two charts on the home page. Used for the chart panel title and the chart aria
@@ -137,6 +142,18 @@ export default function Home({
   predictionsCount,
   rawCount,
 }) {
+  const [activeLabData, setActiveLabData] = useState(labData);
+
+  function onTabChange(tabId) {
+    const request = new FetchRequest();
+    const query = `/dataset-summary-agg/${tabRequestMap[tabId]}`;
+    request.getObject(query).then((response) => {
+      if (response.isOk()) {
+        setActiveLabData(response.unwrap().matrix.y);
+      }
+    });
+  }
+
   return (
     <div className="@container/home">
       <HomeTitle />
@@ -172,10 +189,20 @@ export default function Home({
           colorClass="bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800"
         />
       </div>
-      {labData.doc_count > 0 && (
-        <FileSetChartSection title={FILESET_STATUS_TITLE}>
+      <TabGroup
+        onChange={onTabChange}
+        className="border-l border-r border-t border-panel"
+      >
+        <TabList className="bg-data-background">
+          <TabTitle id="processed">Processed Datasets</TabTitle>
+          <TabTitle id="predictions">Predictions Datasets</TabTitle>
+          <TabTitle id="raw">Raw Datasets</TabTitle>
+        </TabList>
+      </TabGroup>
+      {activeLabData.doc_count > 0 && (
+        <FileSetChartSection>
           <ChartFileSetLab
-            labData={labData}
+            labData={activeLabData}
             title={FILESET_STATUS_TITLE}
             shouldIncludeLinks
           />
@@ -223,9 +250,7 @@ export async function getServerSideProps({ req }) {
   // cacheRef.setFetchConfig(fetchHomePageData, request);
   // const { fileSets } = await cacheRef.getData();
   const labData = (
-    await request.getObject(
-      "/dataset-summary-agg/?type=MeasurementSet&config=PreferredAssayTitleSummary&status=released"
-    )
+    await request.getObject(`/dataset-summary-agg/${tabRequestMap.processed}`)
   ).optional();
 
   const processedResults = (
