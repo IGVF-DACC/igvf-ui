@@ -20,6 +20,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import {
   requestAnalysisSteps,
@@ -52,6 +53,7 @@ export default function Workflow({
         />
         <ObjectPageHeader item={workflow} isJsonFormat={isJson} />
         <JsonDisplay item={workflow} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={workflow} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Name</DataItemLabel>

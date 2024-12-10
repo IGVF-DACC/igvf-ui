@@ -1,4 +1,5 @@
 // node_modules
+import { EyeIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
 import { PillBadge } from "./pill-badge";
@@ -224,6 +225,12 @@ const statusStyles = {
       </svg>
     ),
   },
+
+  preview: {
+    styles:
+      "bg-amber-300 text-black dark:bg-amber-700 dark:text-white shadow-amber-400 [&>svg]:fill-black dark:[&>svg]:fill-white dark:shadow-amber-600",
+    Icon: () => <EyeIcon className="mx-0.5 h-4 w-4" />,
+  },
 };
 
 /**
@@ -269,4 +276,27 @@ Status.propTypes = {
   status: PropTypes.string.isRequired,
   // Whether to display the status in abbreviated form
   isAbbreviated: PropTypes.bool,
+};
+
+/**
+ * Display a banner at the top of the summary panel to give details about the meaning of the object
+ * preview status.
+ */
+export function StatusPreviewDetail({ item }) {
+  if (item.status === "preview") {
+    return (
+      <div className="${className} border-l border-r border-t border-panel">
+        <div className="bg-amber-300 px-2 py-0.5 text-center text-sm text-black dark:bg-amber-700 dark:text-white">
+          This object is in preview status. Metadata is subject to change until
+          this object is released.
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
+StatusPreviewDetail.propTypes = {
+  // Object with status
+  item: PropTypes.object.isRequired,
 };

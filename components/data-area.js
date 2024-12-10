@@ -26,10 +26,17 @@ import { secDirId } from "./section-directory";
  * Displays a panel -- typically to display data items for an object, but you can use this for
  * anything that should appear in a panel on the page.
  */
-export function DataPanel({ className = "", id = "", children }) {
+export function DataPanel({
+  className = "",
+  id = "",
+  isPaddingSuppressed = false,
+  children,
+}) {
   return (
     <div
-      className={`border border-panel bg-panel p-4 @container ${className}`}
+      className={`border border-panel bg-panel @container ${
+        isPaddingSuppressed ? "" : "p-4"
+      } ${className}`}
       data-testid="datapanel"
       id={id}
     >
@@ -43,6 +50,8 @@ DataPanel.propTypes = {
   className: PropTypes.string,
   // HTML id attribute for the section directory
   id: PropTypes.string,
+  // True if padding should be suppressed
+  isPaddingSuppressed: PropTypes.bool,
 };
 
 /**

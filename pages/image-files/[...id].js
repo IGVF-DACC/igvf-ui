@@ -17,6 +17,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -61,6 +62,7 @@ export default function ImageFile({
           </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={imageFile} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={imageFile} />
           <DataPanel>
             <DataArea>
               <FileDataItems item={imageFile} />

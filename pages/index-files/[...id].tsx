@@ -24,6 +24,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -92,6 +93,7 @@ export default function IndexFile({
           </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={indexFile} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={indexFile} />
           <DataPanel>
             <DataArea>
               <FileDataItems item={indexFile} />

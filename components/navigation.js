@@ -586,7 +586,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
   // Logged-in session-properties object
   const { sessionProperties } = useContext(SessionContext);
   // Extra query-string parameters for list/report pages
-  const extraQueries = useBrowserStateQuery({ addAmpersand: true });
+  const extraQueries = useBrowserStateQuery();
 
   /**
    * Called when the user clicks a group navigation item to open or close it.

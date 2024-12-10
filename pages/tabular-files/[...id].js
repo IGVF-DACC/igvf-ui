@@ -24,6 +24,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -70,6 +71,7 @@ export default function TabularFile({
           </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={tabularFile} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={tabularFile} />
           <DataPanel>
             <DataArea>
               <FileDataItems item={tabularFile} />

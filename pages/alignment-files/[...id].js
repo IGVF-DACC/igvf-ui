@@ -25,6 +25,7 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -70,6 +71,7 @@ export default function AlignmentFile({
           </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={alignmentFile} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={alignmentFile} />
           <DataPanel>
             <DataArea>
               <FileDataItems item={alignmentFile} />

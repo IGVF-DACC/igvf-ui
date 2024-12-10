@@ -2,14 +2,14 @@
 import { useContext } from "react";
 // components
 import SessionContext from "./session-context";
+// lib
+import { getUserQueryExtras } from "../lib/query-utils";
 
 /**
- * Generate additional query-string elements depending on the current browser state.
+ * Generate additional query-string elements depending on the current browser state, preceded with
+ * an ampersand.
  */
-export function useBrowserStateQuery({ addAmpersand = false }) {
+export function useBrowserStateQuery() {
   const { sessionProperties } = useContext(SessionContext);
-
-  // Add status!=deleted to the query string if the authenticated user is an admin.
-  const statusQuery = sessionProperties?.admin ? "status!=deleted" : "";
-  return statusQuery ? `${addAmpersand ? "&" : ""}${statusQuery}` : "";
+  return getUserQueryExtras(sessionProperties);
 }

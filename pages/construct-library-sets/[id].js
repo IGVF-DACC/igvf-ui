@@ -25,6 +25,7 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -271,6 +272,7 @@ export default function ConstructLibrarySet({
         />
         <ObjectPageHeader item={constructLibrarySet} isJsonFormat={isJson} />
         <JsonDisplay item={constructLibrarySet} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={constructLibrarySet} />
           <DataPanel>
             <DataArea>
               <FileSetDataItems

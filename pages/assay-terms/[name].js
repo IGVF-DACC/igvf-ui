@@ -14,6 +14,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -30,6 +31,7 @@ export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
         <PagePreamble sections={sections} />
         <ObjectPageHeader item={assayOntologyTerm} isJsonFormat={isJson} />
         <JsonDisplay item={assayOntologyTerm} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={assayOntologyTerm} />
           <DataPanel>
             <DataArea>
               <OntologyTermDataItems item={assayOntologyTerm} isA={isA}>

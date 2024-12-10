@@ -18,6 +18,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
+import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { requestDocuments, requestBiosamples } from "../../lib/common-requests";
@@ -45,6 +46,7 @@ export default function Treatment({
         <PagePreamble sections={sections} />
         <ObjectPageHeader item={treatment} isJsonFormat={isJson} />
         <JsonDisplay item={treatment} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={treatment} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Treatment Term Name</DataItemLabel>
