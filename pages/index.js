@@ -13,7 +13,7 @@ import { TabGroup, TabList, TabTitle } from "../components/tabs";
 // import { requestDatasetSummary } from "../lib/common-requests";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
-import { getTypeConfig } from "../lib/home";
+import { getAllFileSetTypes, getFileSetTypeConfig } from "../lib/home";
 
 /**
  * Icon for the processed data sets statistic.
@@ -131,17 +131,18 @@ export default function Home({
   // Data for the currently active lab data chart tab
   const [activeLabData, setActiveLabData] = useState(labData);
   // Holds the ID of the currently selected tab
-  const activeTab = useRef("processed");
+  const activeFileSetType = useRef("processed");
 
-  const typeConfig = getTypeConfig(activeTab.current);
+  const typeConfig = getFileSetTypeConfig(activeFileSetType.current);
+  const allTypes = getAllFileSetTypes();
   const chartTitle = typeConfig.title;
 
   // Request the lab data for the selected tab.
   function onTabChange(tabId) {
-    activeTab.current = tabId;
-    const typeConfig = getTypeConfig(tabId);
-    const query = typeConfig.query;
-    const queryPath = `/dataset-summary-agg/${query}`;
+    activeFileSetType.current = tabId;
+    const typeConfig = getFileSetTypeConfig(tabId);
+    const { dataQuery, typeQuery } = typeConfig;
+    const queryPath = `/dataset-summary-agg/?${typeQuery}&${dataQuery}`;
     const request = new FetchRequest();
     request.getObject(queryPath).then((response) => {
       if (response.isOk()) {
@@ -190,9 +191,14 @@ export default function Home({
         className="border-l border-r border-t border-panel"
       >
         <TabList className="bg-data-background">
-          <TabTitle id="processed">Processed Datasets</TabTitle>
-          <TabTitle id="predictions">Predictions Datasets</TabTitle>
-          <TabTitle id="raw">Raw Datasets</TabTitle>
+          {allTypes.map((type) => {
+            const typeConfig = getFileSetTypeConfig(type);
+            return (
+              <TabTitle key={type} id={type}>
+                {typeConfig.title}
+              </TabTitle>
+            );
+          })}
         </TabList>
       </TabGroup>
       {activeLabData.doc_count > 0 && (
@@ -200,6 +206,7 @@ export default function Home({
           <ChartFileSetLab
             labData={activeLabData}
             title={chartTitle}
+            type={activeFileSetType.current}
             shouldIncludeLinks
           />
         </FileSetChartSection>
@@ -245,9 +252,11 @@ export async function getServerSideProps({ req }) {
   // const cacheRef = new ServerCache(HOME_PAGE_PROPS_KEY);
   // cacheRef.setFetchConfig(fetchHomePageData, request);
   // const { fileSets } = await cacheRef.getData();
-  const typeConfig = getTypeConfig("processed");
+  const typeConfig = getFileSetTypeConfig("processed");
   const labData = (
-    await request.getObject(`/dataset-summary-agg/${typeConfig.query}`)
+    await request.getObject(
+      `/dataset-summary-agg/?${typeConfig.typeQuery}&${typeConfig.dataQuery}`
+    )
   ).optional();
 
   const processedResults = (

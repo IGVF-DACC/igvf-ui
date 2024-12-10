@@ -9,38 +9,43 @@ import type { DatabaseObject } from "../globals.d";
 /**
  * Represents the file-set types that the Data Set Lab bar chart can represent.
  */
-type FileSetType = "processed" | "predictions" | "raw" | "null";
+type FileSetType = "processed" | "predictions" | "raw";
 
 /**
  * Specifies the configuration for each file-set type.
  */
-type TypeConfig = {
+type FileSetTypeConfig = {
   /** Query string to access the data for the chart */
-  query: string;
+  dataQuery: string;
+  /** `type` element of the query string */
+  typeQuery: string;
   /** Title to display for the file-set type */
   title: string;
+  /** Term to use to filter searches linked to a bar on the chart */
+  termProp: string;
 };
 
 /**
  * Maps a file-set type to its corresponding parameters for the chart and queries.
  */
-const typeConfig: { [key in FileSetType]: TypeConfig } = {
+const typeConfig: { [key in FileSetType]: FileSetTypeConfig } = {
   processed: {
-    query: "?type=AnalysisSet&config=AssayTitlesSummary&status=released",
+    dataQuery: "config=AssayTitlesSummary&status=released",
+    typeQuery: "type=AnalysisSet",
     title: "Processed Datasets",
+    termProp: "assay_titles",
   },
   predictions: {
-    query: "?type=PredictionSet&config=FileSetTypeSummary&status=released",
+    dataQuery: "config=FileSetTypeSummary&status=released",
+    typeQuery: "type=PredictionSet",
     title: "Predictions Datasets",
+    termProp: "file_set_type",
   },
   raw: {
-    query:
-      "?type=MeasurementSet&config=PreferredAssayTitleSummary&status=released",
+    dataQuery: "config=PreferredAssayTitleSummary&status=released",
+    typeQuery: "type=MeasurementSet",
     title: "Raw Datasets",
-  },
-  null: {
-    query: "",
-    title: "No Data Available",
+    termProp: "preferred_assay_title",
   },
 };
 
@@ -97,8 +102,23 @@ export function formatMonth(month: string, outputFormat: string): string {
  * @param type File-set type to get the configuration for
  * @returns Configuration for the given file-set type
  */
-export function getTypeConfig(type: FileSetType): TypeConfig {
-  return typeConfig[type] || typeConfig.null;
+export function getFileSetTypeConfig(type: FileSetType): FileSetTypeConfig {
+  return (
+    typeConfig[type] || {
+      dataQuery: "",
+      typeQuery: "",
+      title: "No Data Available",
+      termProp: "",
+    }
+  );
+}
+
+/**
+ * Get an array of all file-set types in the `typeConfig` global object.
+ * @returns Array of all file-set types
+ */
+export function getAllFileSetTypes(): FileSetType[] {
+  return Object.keys(typeConfig) as FileSetType[];
 }
 
 /**

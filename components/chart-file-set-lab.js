@@ -10,7 +10,11 @@ import {
   toShishkebabCase,
   truncateText,
 } from "../lib/general";
-import { convertLabDataToChartData, generateNumberArray } from "../lib/home";
+import {
+  convertLabDataToChartData,
+  generateNumberArray,
+  getFileSetTypeConfig,
+} from "../lib/home";
 import { encodeUriElement } from "../lib/query-encoding";
 
 // Use a dynamic import to avoid an import error for nivo modules.
@@ -35,11 +39,6 @@ const AXIS_LEFT_WIDTH = 400;
  * Maximum number of labelled ticks on the X-axis. This axis represents the number of file sets.
  */
 const CHART_TICK_COUNT = 5;
-
-/**
- * Order that data should appear in the chart bars, left to right.
- */
-const fileSetTypeOrder = ["value"];
 
 /**
  * Nivo calls this component to render each tick on the Y axis. It renders the lab and title
@@ -115,19 +114,13 @@ CustomXTick.propTypes = {
  * Wraps a bar in a link to the report page with the appropriate filters. The link is only added if
  * `shouldIncludeLinks` is true.
  */
-function BarLink({ path, shouldIncludeLinks, children }) {
-  return shouldIncludeLinks ? (
-    <Link href={path}>{children}</Link>
-  ) : (
-    <>{children}</>
-  );
+function BarLink({ path, children }) {
+  return <Link href={path}>{children}</Link>;
 }
 
 BarLink.propTypes = {
   // Path to link to
   path: PropTypes.string.isRequired,
-  // True to have each bar link to the corresponding search
-  shouldIncludeLinks: PropTypes.bool,
 };
 
 /**
@@ -135,23 +128,24 @@ BarLink.propTypes = {
  * MeasurementSets with a specific data-set type. This custom component does the same as the default
  * `Bar` component, but it wraps the bar in a link to the report page with the appropriate filters.
  */
-function CustomBar({ bar }) {
+function CustomBar({ bar, type }) {
   const barData = bar.data;
   const dataPoint = barData.data;
-  const [lab, prefixedTerm] = dataPoint.title.split("|");
+  const [lab, term] = dataPoint.title.split("|");
+  const { typeQuery, termProp } = getFileSetTypeConfig(type);
+  const termElement =
+    term === "none"
+      ? `${termProp}!=*`
+      : `${termProp}=${encodeUriElement(term)}`;
 
   // Extract the preferred assay title or assay term name based on the prefix we added earlier.
-  const [prefix, term] = prefixedTerm.split("^");
-  const queryKey =
-    prefix === "prf" ? "preferred_assay_title" : "assay_term.term_name";
-  const termQuery = `&${queryKey}=${encodeUriElement(term)}`;
+  // const termQuery = `&${queryKey}=${encodeUriElement(term)}`;
 
   return (
     <BarLink
-      path={`/multireport/?type=MeasurementSet&lab.title=${encodeUriElement(
+      path={`/multireport/?${typeQuery}&lab.title=${encodeUriElement(
         lab
-      )}${termQuery}`}
-      shouldIncludeLinks={dataPoint.shouldIncludeLinks}
+      )}&${termElement}`}
     >
       <g transform={`translate(${bar.x},${bar.y})`}>
         <rect width={bar.width} height={bar.height} fill={bar.color} />
@@ -175,6 +169,8 @@ CustomBar.propTypes = {
     // Color of the bar
     color: PropTypes.string.isRequired,
   }).isRequired,
+  // Type of file-set data to display in the chart
+  type: PropTypes.string.isRequired,
 };
 
 /**
@@ -182,9 +178,10 @@ CustomBar.propTypes = {
  * file-set type. The title comes from the `preferred_assay_title` of the MeasurementSet if it
  * exists, or the `assay_term.term_name` if not.
  */
-export default function ChartFileSetLab({ labData, title }) {
+export default function ChartFileSetLab({ labData, title, type }) {
   if (labData.doc_count > 0) {
     const { chartData, maxCount } = convertLabDataToChartData(labData);
+
     return (
       <div className="relative" style={{ height: 30 * chartData.length + 60 }}>
         <ResponsiveBar
@@ -206,7 +203,7 @@ export default function ChartFileSetLab({ labData, title }) {
             const [lab, title] = datum.indexValue.split("|");
             return `${datum.formattedValue} ${datum.id} ${title} from ${lab}`;
           }}
-          barComponent={CustomBar}
+          barComponent={(props) => <CustomBar {...props} type={type} />}
           borderColor={{
             from: "color",
             modifiers: [["darker", 1.6]],
@@ -216,7 +213,6 @@ export default function ChartFileSetLab({ labData, title }) {
           enableGridY={false}
           indexBy="title"
           indexScale={{ type: "band", round: true }}
-          keys={fileSetTypeOrder}
           labelSkipWidth={12}
           labelSkipHeight={12}
           labelTextColor={{
@@ -246,10 +242,12 @@ export default function ChartFileSetLab({ labData, title }) {
 ChartFileSetLab.propTypes = {
   // FileSet objects to display in the chart
   labData: PropTypes.shape({
-    group_by: PropTypes.arrayOf(PropTypes.string),
-    label: PropTypes.string,
-    doc_count: PropTypes.number,
+    group_by: PropTypes.array.isRequired,
+    label: PropTypes.string.isRequired,
+    doc_count: PropTypes.number.isRequired,
   }),
   // Title for the chart; used for the chart's aria label
   title: PropTypes.string.isRequired,
+  // Type of file-set data to display in the chart
+  type: PropTypes.string.isRequired,
 };
