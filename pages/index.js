@@ -1,7 +1,7 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 // components
 import ChartFileSetLab from "../components/chart-file-set-lab";
 import { DataPanel } from "../components/data-area";
@@ -13,15 +13,7 @@ import { TabGroup, TabList, TabTitle } from "../components/tabs";
 // import { requestDatasetSummary } from "../lib/common-requests";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
-
-/**
- * Query parameters for the different tabs on the home page, keyed with the corresponding tab ID.
- */
-const tabRequestMap = {
-  processed: "?type=AnalysisSet&config=AssayTitlesSummary&status=released",
-  predictions: "?type=PredictionSet&config=FileSetTypeSummary&status=released",
-  raw: "?type=MeasurementSet&config=PreferredAssayTitleSummary&status=released",
-};
+import { getTypeConfig } from "../lib/home";
 
 /**
  * Icon for the processed data sets statistic.
@@ -130,24 +122,28 @@ function FileSetChartSection({ children }) {
   );
 }
 
-/**
- * Titles for the two charts on the home page. Used for the chart panel title and the chart aria
- * labels.
- */
-const FILESET_STATUS_TITLE = "Data Sets Produced by IGVF Labs";
-
 export default function Home({
   labData,
   processedCount,
   predictionsCount,
   rawCount,
 }) {
+  // Data for the currently active lab data chart tab
   const [activeLabData, setActiveLabData] = useState(labData);
+  // Holds the ID of the currently selected tab
+  const activeTab = useRef("processed");
 
+  const typeConfig = getTypeConfig(activeTab.current);
+  const chartTitle = typeConfig.title;
+
+  // Request the lab data for the selected tab.
   function onTabChange(tabId) {
+    activeTab.current = tabId;
+    const typeConfig = getTypeConfig(tabId);
+    const query = typeConfig.query;
+    const queryPath = `/dataset-summary-agg/${query}`;
     const request = new FetchRequest();
-    const query = `/dataset-summary-agg/${tabRequestMap[tabId]}`;
-    request.getObject(query).then((response) => {
+    request.getObject(queryPath).then((response) => {
       if (response.isOk()) {
         setActiveLabData(response.unwrap().matrix.y);
       }
@@ -203,7 +199,7 @@ export default function Home({
         <FileSetChartSection>
           <ChartFileSetLab
             labData={activeLabData}
-            title={FILESET_STATUS_TITLE}
+            title={chartTitle}
             shouldIncludeLinks
           />
         </FileSetChartSection>
@@ -249,8 +245,9 @@ export async function getServerSideProps({ req }) {
   // const cacheRef = new ServerCache(HOME_PAGE_PROPS_KEY);
   // cacheRef.setFetchConfig(fetchHomePageData, request);
   // const { fileSets } = await cacheRef.getData();
+  const typeConfig = getTypeConfig("processed");
   const labData = (
-    await request.getObject(`/dataset-summary-agg/${tabRequestMap.processed}`)
+    await request.getObject(`/dataset-summary-agg/${typeConfig.query}`)
   ).optional();
 
   const processedResults = (

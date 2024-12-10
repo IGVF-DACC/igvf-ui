@@ -7,6 +7,44 @@ import { iso8601ToYearDate } from "./dates";
 import type { DatabaseObject } from "../globals.d";
 
 /**
+ * Represents the file-set types that the Data Set Lab bar chart can represent.
+ */
+type FileSetType = "processed" | "predictions" | "raw" | "null";
+
+/**
+ * Specifies the configuration for each file-set type.
+ */
+type TypeConfig = {
+  /** Query string to access the data for the chart */
+  query: string;
+  /** Title to display for the file-set type */
+  title: string;
+};
+
+/**
+ * Maps a file-set type to its corresponding parameters for the chart and queries.
+ */
+const typeConfig: { [key in FileSetType]: TypeConfig } = {
+  processed: {
+    query: "?type=AnalysisSet&config=AssayTitlesSummary&status=released",
+    title: "Processed Datasets",
+  },
+  predictions: {
+    query: "?type=PredictionSet&config=FileSetTypeSummary&status=released",
+    title: "Predictions Datasets",
+  },
+  raw: {
+    query:
+      "?type=MeasurementSet&config=PreferredAssayTitleSummary&status=released",
+    title: "Raw Datasets",
+  },
+  null: {
+    query: "",
+    title: "No Data Available",
+  },
+};
+
+/**
  * Represents the month format associated with each file set. The month might come from the
  * `creation_timestamp` of the file set, the `release_timestamp` of the file set, or the
  * `submitted_files_timestamp` of the file set, depending on each file set's type. This is an
@@ -15,11 +53,6 @@ import type { DatabaseObject } from "../globals.d";
 export type FileSetMonths = {
   [fileSet: string]: string;
 };
-
-/**
- * The three file-set types that the Data Set Lab bar chart can represent.
- */
-export type FileSetType = "released" | "withFiles" | "initiated";
 
 /**
  * Check if the given file set should be considered released.
@@ -57,6 +90,15 @@ export function formatMonth(month: string, outputFormat: string): string {
     return dateFns.format(date, outputFormat);
   }
   return month;
+}
+
+/**
+ * Get the configuration for the given file-set type.
+ * @param type File-set type to get the configuration for
+ * @returns Configuration for the given file-set type
+ */
+export function getTypeConfig(type: FileSetType): TypeConfig {
+  return typeConfig[type] || typeConfig.null;
 }
 
 /**
@@ -199,44 +241,6 @@ export function composeMonthRangeQueryElement(month: string): string {
 }
 
 /**
- * Compose a set of query-string elements for the given file-set type and month to filter file sets.
- * This includes status and date-range query elements.
- * @param fileSetType File-set type to represent in the query
- * @param selectedMonth Month in yyyy-MM format, or "All" to not filter by date
- * @returns Query element for the given status, term, and month
- */
-export function composeFileSetQueryElements(
-  fileSetType: FileSetType,
-  selectedMonth: string
-): string {
-  const dateRange = composeMonthRangeQueryElement(selectedMonth);
-
-  // Determine the status, file, and month-range query elements.
-  let statusAndFileQuery = "";
-  let monthQuery = "";
-  if (fileSetType === "released") {
-    statusAndFileQuery = "&status=released&status=archived&status=revoked";
-    monthQuery = dateRange
-      ? `&advancedQuery=release_timestamp:${dateRange}`
-      : "";
-  } else {
-    if (fileSetType === "withFiles") {
-      statusAndFileQuery = "&status=in+progress&files=*";
-      monthQuery = dateRange
-        ? `&advancedQuery=submitted_files_timestamp:${dateRange}`
-        : "";
-    } else {
-      statusAndFileQuery = "&status=in+progress&files!=*";
-      monthQuery = dateRange
-        ? `&advancedQuery=creation_timestamp:${dateRange}`
-        : "";
-    }
-  }
-
-  return `${statusAndFileQuery}${monthQuery}`;
-}
-
-/**
  * Represents each file set datum in the file-set lab bar chart.
  */
 type LabChartItem = {
@@ -296,13 +300,15 @@ type LabData = {
  */
 export function convertLabDataToChartData(labData: LabData): LabChartData {
   const labGroup = labData.group_by[0];
+
+  // The subgroup can be an array or a string. If it's an array, the second element is the null
+  // subgroup, and the first element is the subgroup.
   let subGroup = labData.group_by[1];
   let nullSubGroup = "";
   if (Array.isArray(subGroup)) {
     nullSubGroup = subGroup[1];
     subGroup = subGroup[0];
   }
-  console.log("SUBGROUP", subGroup, nullSubGroup);
   const labBuckets = labData[labGroup].buckets;
 
   const chartData = labBuckets.reduce((acc, labBucket) => {
