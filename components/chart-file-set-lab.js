@@ -237,7 +237,7 @@ export default function ChartFileSetLab({ labData, title }) {
             from: "color",
             modifiers: [["darker", 1.6]],
           }}
-          colors={["#f8a72b", "#64cccb", "#59a14f"]}
+          colors="#59a14f"
           enableGridX={true}
           enableGridY={false}
           indexBy="title"
