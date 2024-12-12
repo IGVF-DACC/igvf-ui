@@ -299,8 +299,8 @@ export interface FileSetObject extends DatabaseObject {
  * Lab object type.
  */
 export interface LabObject extends DatabaseObject {
-  institute_label: string;
-  name: string;
+  institute_label?: string;
+  name?: string;
   title: string;
 }
 

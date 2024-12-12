@@ -102,7 +102,7 @@ export class ServerCache {
    * configuration has been set. Fetched data gets cached.
    * @param [options] - Options to adjust the behavior of the method
    */
-  async getData(options: GetDataOptions = {}): Promise<unknown> {
+  async getData<T>(options: GetDataOptions = {}): Promise<T> {
     if (this.redisClient) {
       const forceFetch = this.isFetched && Boolean(options.forceFetch);
       if (!forceFetch) {

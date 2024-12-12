@@ -1,6 +1,16 @@
-module.exports = {
+import type { Config } from "tailwindcss";
+
+const tailwindConfig: Config = {
   darkMode: "class",
   content: ["./pages/**/*.{js,ts,tsx}", "./components/**/*.{js,ts,tsx}"],
+  safelist: [
+    "fore-fileset-type-analysis",
+    "back-fileset-type-analysis",
+    "fore-fileset-type-prediction",
+    "back-fileset-type-prediction",
+    "fore-fileset-type-measurement",
+    "back-fileset-type-measurement",
+  ],
   theme: {
     container: {
       center: true,
@@ -10,12 +20,12 @@ module.exports = {
         "scroll-fade": "scrollFade 3s linear",
       },
       // that is actual animation
-      keyframes: () => ({
+      keyframes: {
         scrollFade: {
-          "0%": { opacity: 1 },
-          "100%": { opacity: 0 },
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" },
         },
-      }),
+      },
       aspectRatio: {
         hd: "16 / 9",
         cinema: "21 / 9",
@@ -418,3 +428,5 @@ module.exports = {
     },
   ],
 };
+
+export default tailwindConfig;

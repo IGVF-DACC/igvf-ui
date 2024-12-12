@@ -44,6 +44,33 @@
   }
 }
 
+/** Colors to represent different fileset types */
+@layer utilities {
+  .fore-fileset-type-analysis {
+    @apply fill-sky-600;
+  }
+
+  .fore-fileset-type-prediction {
+    @apply fill-teal-600;
+  }
+
+  .fore-fileset-type-measurement {
+    @apply fill-yellow-600;
+  }
+
+  .back-fileset-type-analysis {
+    @apply bg-sky-100 dark:bg-sky-900 border-sky-600 hover:bg-sky-200 dark:hover:bg-sky-800;
+  }
+
+  .back-fileset-type-prediction {
+    @apply bg-teal-200 dark:bg-teal-900 border-teal-600 hover:bg-teal-300 dark:hover:bg-teal-800;
+  }
+
+  .back-fileset-type-measurement {
+    @apply bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800;
+  }
+}
+
 :root {
   --color-background: #f8f8f8;
 

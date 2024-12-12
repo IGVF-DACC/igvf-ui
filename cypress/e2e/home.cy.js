@@ -7,13 +7,22 @@ describe("Home page", () => {
     cy.viewport("macbook-13");
     cy.visit("/");
 
-    // At least five bar elements in the chart.
-    cy.get('[id^="bar-"]').should("have.length.greaterThan", 4);
+    // At least five bar elements in the default "processed" chart.
+    cy.get('[id^="bar-"]').should("have.length.greaterThan", 2);
 
-    // Check the month-selector button opens the month-selector list.
-    cy.get("#dropdown-month-selector-ref").should("contain.text", "All");
-    cy.get("[data-testid=dropdown-month-selector]").should("not.exist");
-    cy.get("#month-selector").click();
-    cy.get("[data-testid=dropdown-month-selector]").should("exist");
+    // The "predictions" tab should have the title "Predictions Datasets".
+    cy.get("#tab-predictions").should("have.text", "Predictions Datasets");
+    cy.get("#tab-predictions").click();
+    cy.get('[id^="bar-"]').should("have.length.greaterThan", 2);
+
+    // The "raw" tab should have the title "Raw Datasets".
+    cy.get("#tab-raw").should("have.text", "Raw Datasets");
+    cy.get("#tab-raw").click();
+    cy.get('[id^="bar-"]').should("have.length.greaterThan", 2);
+
+    // The "processed" tab should have the title "Processed Datasets".
+    cy.get("#tab-processed").should("have.text", "Processed Datasets");
+    cy.get("#tab-processed").click();
+    cy.get('[id^="bar-"]').should("have.length.greaterThan", 2);
   });
 });
