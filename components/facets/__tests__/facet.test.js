@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import Facet from "../facet";
 import FacetTerm from "../facet-term";
 
@@ -95,6 +95,8 @@ describe("Test the <Facet> component", () => {
         facet={facet}
         searchResults={searchResults}
         updateQuery={updateQuery}
+        updateOpen={() => {}}
+        isFacetOpen={false}
       >
         {facet.terms.map((term) => {
           return (
@@ -129,5 +131,10 @@ describe("Test the <Facet> component", () => {
     expect(checkbox).toHaveAttribute("checked");
     checkbox = within(terms[1]).getByRole("checkbox");
     expect(checkbox).not.toHaveAttribute("checked");
+
+    // Check the first term.
+    checkbox = within(terms[0]).getByRole("checkbox");
+    fireEvent.click(checkbox);
+    expect(checkbox).toHaveAttribute("checked");
   });
 });

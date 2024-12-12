@@ -1,9 +1,8 @@
 // node_modules
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
 // components/facets
-import { FacetGroup, FacetGroupButton, getFacetsInGroup } from "./facet-groups";
+import { FacetList } from "./facet-list";
 // components
 import { DataPanel } from "../../components/data-area";
 import HelpTip from "../../components/help-tip";
@@ -49,60 +48,23 @@ ClearAll.propTypes = {
  * facet-group button, display the modal containing the facets for that group.
  */
 export default function FacetSection({ searchResults }) {
-  // Filter out facet groups that have no facets.
-  const facetGroupsWithFacets = searchResults.facet_groups.filter(
-    (facetGroup) => {
-      const facetsInGroup = getFacetsInGroup(searchResults, facetGroup);
-      return facetsInGroup.length > 0;
-    }
-  );
-
-  // Facet group selected by the user clicking on its button, bringing up the facets for that group.
-  const [selectedGroup, setSelectedGroup] = useState(
-    facetGroupsWithFacets[0] || null
-  );
-
-  // Reset selected facet group if the facet groups change, so we can handle having the selected
-  // group disappear if the user selects a term that removes all the facets in the selected group.
-  const facetGroupTitles = facetGroupsWithFacets.map((group) => group.title);
-  useEffect(() => {
-    const isSelectedGroupValid =
-      Boolean(selectedGroup) && facetGroupTitles.includes(selectedGroup.title);
-    if (!isSelectedGroupValid) {
-      setSelectedGroup(facetGroupsWithFacets[0]);
-    }
-  }, [facetGroupTitles.join()]);
-
   // Determine if we should show facets at all. This is the case when no facet groups exist, and
   // the search results have no displayable facets.
   const visibleFacets = getVisibleFacets(searchResults.facets);
-  if (visibleFacets.length > 0 || facetGroupsWithFacets.length > 0) {
+  if (visibleFacets.length > 0) {
     return (
-      <DataPanel className="mb-4 lg:mb-0 lg:w-72 lg:shrink-0 lg:grow-0 lg:overflow-y-auto">
-        {facetGroupsWithFacets.length > 0 && (
-          <div
-            className="flex flex-wrap content-start gap-0.5 text-sm font-semibold"
-            data-testid="facetgroup-buttons"
-          >
-            {facetGroupsWithFacets.map((facetGroup) => {
-              return (
-                <FacetGroupButton
-                  key={facetGroup.title}
-                  searchResults={searchResults}
-                  group={facetGroup}
-                  isSelected={facetGroup.title === selectedGroup?.title}
-                  onClick={(group) => setSelectedGroup(group)}
-                />
-              );
-            })}
-          </div>
-        )}
-        <ClearAll searchResults={searchResults} />
-        <HelpTip className="mt-4">
-          Click and hold a term momentarily to select items <i>without</i> that
-          term.
-        </HelpTip>
-        <FacetGroup searchResults={searchResults} group={selectedGroup} />
+      <DataPanel
+        className="mb-4 lg:mb-0 lg:w-72 lg:shrink-0 lg:grow-0 lg:overflow-y-auto"
+        isPaddingSuppressed
+      >
+        <div className="p-4">
+          <ClearAll searchResults={searchResults} />
+          <HelpTip className="mt-4">
+            Click and hold a term momentarily to select items <i>without</i>{" "}
+            that term.
+          </HelpTip>
+        </div>
+        <FacetList searchResults={searchResults} />
       </DataPanel>
     );
   }

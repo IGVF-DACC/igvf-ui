@@ -1,3 +1,11 @@
 {
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "options": {
+        "parser": "typescript"
+      }
+    }
+  ],
   "trailingComma": "es5"
 }

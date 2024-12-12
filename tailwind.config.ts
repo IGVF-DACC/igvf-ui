@@ -93,6 +93,15 @@ const tailwindConfig: Config = {
         "facet-tag": "var(--color-facet-tag-background)",
         "facet-tag-neg": "var(--color-facet-tag-neg-background)",
 
+        "facet-counter": "var(--color-facet-counter)",
+        "facet-counter-open": "var(--color-facet-counter-open)",
+        "facet-counter-selected": "var(--color-facet-counter-selected)",
+        "facet-counter-open-selected":
+          "var(--color-facet-counter-open-selected)",
+        "facet-counter-negative": "var(--color-facet-counter-negative)",
+        "facet-counter-open-negative":
+          "var(--color-facet-counter-open-negative)",
+
         "site-search-header": "var(--color-site-search-header-background)",
 
         "schema-prop-type-string": "var(--color-schema-prop-type-bg-string)",
@@ -164,6 +173,15 @@ const tailwindConfig: Config = {
 
         "facet-filter": "var(--color-facet-filter-input-border)",
         "facet-filter-focus": "var(--color-facet-filter-input-border-focus)",
+
+        "facet-counter": "var(--color-facet-counter)",
+        "facet-counter-open": "var(--color-facet-counter-open)",
+        "facet-counter-selected": "var(--color-facet-counter-selected)",
+        "facet-counter-open-selected":
+          "var(--color-facet-counter-open-selected)",
+        "facet-counter-negative": "var(--color-facet-counter-negative)",
+        "facet-counter-open-negative":
+          "var(--color-facet-counter-open-negative)",
 
         "tab-group": "var(--color-tab-group-border)",
         "tab-selected": "var(--color-tab-selected-border)",
@@ -428,6 +446,18 @@ const tailwindConfig: Config = {
         },
       };
       addUtilities(newUtilities);
+    },
+
+    // Mask to fade the facet term count indicators on the right edge.
+    function ({ addUtilities }) {
+      addUtilities({
+        ".facet-term-count-mask": {
+          maskImage:
+            "linear-gradient(to right, rgba(0, 0, 0, 1) calc(100% - 30px), rgba(0, 0, 0, 0) 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, rgba(0, 0, 0, 1) calc(100% - 30px), rgba(0, 0, 0, 0) 100%)",
+        },
+      });
     },
   ],
 };

@@ -7,7 +7,6 @@ import StandardTerms from "./custom-facets/standard-terms";
 import StandardTitle from "./custom-facets/standard-title";
 import TaxaTagLabel from "./custom-facets/taxa-tag-label";
 import TaxaTermLabel from "./custom-facets/taxa-term-label";
-import TypeTerm from "./custom-facets/type-terms";
 
 /**
  * Registry of custom facet components for the term label, terms (basically the entire facet sans
@@ -33,7 +32,6 @@ const facetRegistry = {
   // Custom terms, basically controlling the appearance of the entire facet sans title.
   terms: {
     "audit.INTERNAL_ACTION.category": InternalActionAuditTerms,
-    type: TypeTerm,
     standard: StandardTerms,
   },
 
