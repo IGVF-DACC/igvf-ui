@@ -66,6 +66,7 @@ config: Dict[str, Any] = {
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
             },
+            'backend_url': 'https://igvfd-igvf-2236-fix-dbxrefs.demo.igvf.org',
             'tags': [
                 ('time-to-live-hours', '60'),
                 ('turn-off-on-friday-night', 'yes'),
