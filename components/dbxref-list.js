@@ -117,7 +117,7 @@ export const dbxrefPrefixMap = {
   IMSR_JAX: {
     pattern: "https://www.jax.org/strain/{0}",
   },
-  ISGR: {
+  IGSR: {
     pattern: "https://www.internationalgenome.org/data-portal/sample/{0}",
   },
   MGI: {
