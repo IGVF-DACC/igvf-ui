@@ -201,25 +201,25 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
     updateQuery(query.format());
   }
 
-  /**
-   * When the user clicks the "All" button, add all terms for this facet to the query string.
-   */
-  function onAllClick() {
-    query.deleteKeyValue(facet.field);
-    facet.terms.forEach((term) => {
-      const key = term.key_as_string || term.key;
-      query.addKeyValue(facet.field, key);
-    });
-    updateQuery(query.format());
-  }
+  // /**
+  //  * When the user clicks the "All" button, add all terms for this facet to the query string.
+  //  */
+  // function onAllClick() {
+  //   query.deleteKeyValue(facet.field);
+  //   facet.terms.forEach((term) => {
+  //     const key = term.key_as_string || term.key;
+  //     query.addKeyValue(facet.field, key);
+  //   });
+  //   updateQuery(query.format());
+  // }
 
-  /**
-   * When the user clicks the "None" button, remove all terms for this facet from the query string.
-   */
-  function onNoneClick() {
-    query.deleteKeyValue(facet.field);
-    updateQuery(query.format());
-  }
+  // /**
+  //  * When the user clicks the "None" button, remove all terms for this facet from the query string.
+  //  */
+  // function onNoneClick() {
+  //   query.deleteKeyValue(facet.field);
+  //   updateQuery(query.format());
+  // }
 
   // Clear the term filter when the facet terms change.
   useEffect(() => {
@@ -227,12 +227,7 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
   }, [facet.terms.length]);
 
   return (
-    <div>
-      <TermsSelectors
-        facetTitle={facet.title}
-        onAllClick={onAllClick}
-        onNoneClick={onNoneClick}
-      />
+    <div className="mt-2">
       {facet.terms.length > MIN_FILTER_COUNT && (
         <TermFilter
           id={facet.field}

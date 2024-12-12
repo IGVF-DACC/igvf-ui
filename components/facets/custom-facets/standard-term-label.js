@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
  */
 export default function StandardTermLabel({ term, isNegative }) {
   return (
-    <div className="[&>div:first-child]:break-anywhere flex grow items-center justify-between gap-2 text-sm font-normal leading-[1.1]">
+    <div className="flex grow items-center justify-between gap-2 text-sm font-normal leading-[1.1] [&>div:first-child]:break-anywhere">
       <div>{term.key_as_string || term.key}</div>
       {!isNegative && <div>{term.doc_count}</div>}
     </div>

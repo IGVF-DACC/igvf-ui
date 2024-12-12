@@ -3,12 +3,14 @@ import { useAuth0 } from "@auth0/auth0-react";
 import PropTypes from "prop-types";
 // components
 import { auditMap } from "../../audit";
+// components/facets/custom-facets
+import { StandardTitleButton } from "./standard-title";
 
 /**
  * Displays the title for audit facets. These show a shortened title and an icon matching the icons
  * in the audit panels. This component gets used for the titles of all audit categories.
  */
-export default function AuditTitle({ facet }) {
+export default function AuditTitle({ facet, updateOpen, isFacetOpen }) {
   const { isAuthenticated } = useAuth0();
 
   if (isAuthenticated || facet.field !== "audit.INTERNAL_ACTION.category") {
@@ -17,11 +19,12 @@ export default function AuditTitle({ facet }) {
     const mapping = auditMap[auditType];
 
     return (
-      <h2
-        className="mb-1 bg-facet-title text-center text-base font-medium text-facet-title"
-        data-testid={`facettitle-${facet.field}`}
+      <StandardTitleButton
+        field={facet.field}
+        updateOpen={updateOpen}
+        isFacetOpen={isFacetOpen}
       >
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center gap-1">
           <div>Audit {mapping.humanReadable}</div>
           <div className="relative h-4 w-4">
             <mapping.Icon
@@ -29,7 +32,7 @@ export default function AuditTitle({ facet }) {
             />
           </div>
         </div>
-      </h2>
+      </StandardTitleButton>
     );
   }
   return null;
@@ -41,4 +44,8 @@ AuditTitle.propTypes = {
     // Audit property name including the audit type
     field: PropTypes.string.isRequired,
   }).isRequired,
+  // Function to call when the user clicks the open/collapse button
+  updateOpen: PropTypes.func.isRequired,
+  // True if the facet displays all its terms
+  isFacetOpen: PropTypes.bool.isRequired,
 };
