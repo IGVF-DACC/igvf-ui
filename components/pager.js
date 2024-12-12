@@ -139,9 +139,7 @@ export default function Pager({ currentPage, totalPages, onClick, className }) {
               <button
                 type="button"
                 className={`block w-full px-1 text-sm ${
-                  isCurrentPage
-                    ? " rounded-md bg-gray-300 dark:bg-gray-600"
-                    : ""
+                  isCurrentPage ? "rounded-md bg-gray-300 dark:bg-gray-600" : ""
                 }`}
                 onClick={() => pageNumberClick(pageNumber)}
                 aria-label={`Page ${pageNumber}`}
