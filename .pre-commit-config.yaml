@@ -27,5 +27,6 @@ repos:
       - id: prettier
         args:
           - "--config"
-          - "prettier.config.js"
+          - ".prettierrc.json"
+          - "--log-level=debug"
         exclude: "^cdk/"
