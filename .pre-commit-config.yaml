@@ -25,8 +25,4 @@ repos:
     rev: v3.0.0
     hooks:
       - id: prettier
-        args:
-          - "--config"
-          - ".prettierrc.js"
-          - "--log-level=debug"
         exclude: "^cdk/"
