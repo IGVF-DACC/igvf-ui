@@ -1,7 +1,13 @@
 // node_modules
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useState } from "react";
+// components
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "../animation";
 // components/facets
 import Facet from "./facet";
 import facetRegistry from "./facet-registry";
@@ -76,13 +82,25 @@ export function FacetList({ searchResults }) {
             updateOpen={() => updateOpen(facet.field)}
             isFacetOpen={openedFacets[facet.field]}
           >
-            {openedFacets[facet.field] && (
-              <Terms
-                facet={facet}
-                searchResults={searchResults}
-                updateQuery={updateQuery}
-              />
-            )}
+            <AnimatePresence>
+              {openedFacets[facet.field] && (
+                <motion.div
+                  data-testid={`facet-terms-${facet.field}`}
+                  className="overflow-hidden md:hidden"
+                  initial="collapsed"
+                  animate="open"
+                  exit="collapsed"
+                  transition={standardAnimationTransition}
+                  variants={standardAnimationVariants}
+                >
+                  <Terms
+                    facet={facet}
+                    searchResults={searchResults}
+                    updateQuery={updateQuery}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Facet>
         );
       })}
