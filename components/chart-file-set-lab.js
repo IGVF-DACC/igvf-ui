@@ -187,7 +187,6 @@ CustomBar.propTypes = {
  * exists, or the `assay_term.term_name` if not.
  */
 export default function ChartFileSetLab({ labData, title, type }) {
-  console.log("LAB TYPE", type);
   const { chartData } = convertLabDataToChartData(labData);
 
   return (
@@ -257,7 +256,7 @@ ChartFileSetLab.propTypes = {
     doc_count: PropTypes.number.isRequired,
   }),
   // Title for the chart; used for the chart's aria label
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   // Type of file-set data to display in the chart
   type: PropTypes.string.isRequired,
 };
