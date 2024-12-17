@@ -136,15 +136,29 @@ function CustomBar({ bar, type }) {
   // const termQuery = `&${queryKey}=${encodeUriElement(term)}`;
 
   return (
-    <BarLink
-      path={`/multireport/?type=${typeQuery}&lab.title=${encodeUriElement(
-        lab
-      )}&${termElement}`}
-    >
-      <g transform={`translate(${bar.x},${bar.y})`}>
-        <rect width={bar.width} height={bar.height} fill={color} />
+    <>
+      <BarLink
+        path={`/multireport/?type=${typeQuery}&lab.title=${encodeUriElement(
+          lab
+        )}&${termElement}`}
+      >
+        <g transform={`translate(${bar.x},${bar.y})`}>
+          <rect width={bar.width} height={bar.height} fill={color} />
+        </g>
+      </BarLink>
+      <g transform={`translate(${bar.width + 5},${bar.y + 12})`}>
+        <text
+          x={0}
+          y={0}
+          textAnchor="start"
+          dominantBaseline="central"
+          className="fill-black dark:fill-white"
+          fontSize={10}
+        >
+          {abbreviateNumber(dataPoint.value)}
+        </text>
       </g>
-    </BarLink>
+    </>
   );
 }
 
@@ -203,6 +217,8 @@ export default function ChartFileSetLab({ labData, title, type }) {
         }}
         enableGridX={true}
         enableGridY={false}
+        enableTotals={true}
+        totalsOffset={10}
         indexBy="title"
         indexScale={{ type: "band", round: true }}
         labelSkipWidth={12}
