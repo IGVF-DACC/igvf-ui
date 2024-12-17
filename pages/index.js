@@ -9,12 +9,14 @@ import HomeTitle from "../components/home-title";
 import Icon from "../components/icon";
 import { TabGroup, TabList, TabTitle } from "../components/tabs";
 // lib
-// import { ServerCache } from "../lib/cache";
-// import { requestDatasetSummary } from "../lib/common-requests";
 import { ServerCache } from "../lib/cache";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
-import { getAllFileSetTypes, getFileSetTypeConfig } from "../lib/home";
+import {
+  getAllFileSetTypes,
+  getFileSetTypeConfig,
+  typeConfig,
+} from "../lib/home";
 
 /**
  * Key for the cache that stores the statistics for the home page.
@@ -139,7 +141,6 @@ export default function Home({
   // Holds the ID of the currently selected tab
   const activeFileSetType = useRef("processed");
 
-  const typeConfig = getFileSetTypeConfig(activeFileSetType.current);
   const allTypes = getAllFileSetTypes();
   const chartTitle = typeConfig.title;
 
@@ -178,21 +179,21 @@ export default function Home({
           label="Processed Datasets"
           value={processedCount}
           query="type=AnalysisSet&status=released"
-          colorClass="bg-sky-100 dark:bg-sky-900 border-sky-600 hover:bg-sky-200 dark:hover:bg-sky-800"
+          colorClass={typeConfig.processed.bgClass}
         />
         <Statistic
           graphic={<PredictionsIcon className="fill-teal-600" />}
           label="Predictions Datasets"
           value={predictionsCount}
           query="type=PredictionSet&status=released"
-          colorClass="bg-teal-200 dark:bg-teal-900 border-teal-600 hover:bg-teal-300 dark:hover:bg-teal-800"
+          colorClass={typeConfig.predictions.bgClass}
         />
         <Statistic
           graphic={<Icon.Sample className="fill-yellow-600" />}
           label="Raw Datasets"
           value={rawCount}
           query="type=MeasurementSet&status=released"
-          colorClass="bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800"
+          colorClass={typeConfig.raw.bgClass}
         />
       </div>
       <TabGroup
@@ -203,7 +204,11 @@ export default function Home({
           {allTypes.map((type) => {
             const typeConfig = getFileSetTypeConfig(type);
             return (
-              <TabTitle key={type} id={type}>
+              <TabTitle
+                key={type}
+                id={type}
+                className={`font-semibold ${typeConfig.bgClass}`}
+              >
                 {typeConfig.title}
               </TabTitle>
             );
