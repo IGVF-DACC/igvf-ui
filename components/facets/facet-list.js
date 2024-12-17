@@ -1,4 +1,5 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
@@ -23,9 +24,10 @@ import { splitPathAndQueryString } from "../../lib/query-utils";
 export function FacetList({ searchResults }) {
   const router = useRouter();
   const { path } = splitPathAndQueryString(searchResults["@id"]);
+  const { isAuthenticated } = useAuth0();
 
   // Get all the facet objects from the search results that are in the facet group.
-  const facets = getVisibleFacets(searchResults.facets);
+  const facets = getVisibleFacets(searchResults.facets, isAuthenticated);
 
   // Keep track of which facets are open and closed; closed by default.
   const [openedFacets, setOpenedFacets] = useState(() => {
@@ -69,7 +71,6 @@ export function FacetList({ searchResults }) {
   return (
     <div>
       {facets.map((facet) => {
-        console.log("FACET", facet);
         const Terms = facetRegistry.terms.lookup(facet.field);
 
         // Find the facet object in the search results that matches the facet field in the facet

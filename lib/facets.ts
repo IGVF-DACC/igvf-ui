@@ -28,10 +28,18 @@ export function getFilterTerm(filter: { field: string; term: string }): string {
 /**
  * Filter out the hidden facet fields from the given array of facets.
  * @param facets Property of search results
+ * @param isAuthenticated True if the user has authenticated
  * @returns Facets that the user can see
  */
 export function getVisibleFacets(
-  facets: { field: string; count: number }[]
+  facets: { field: string; count: number }[],
+  isAuthenticated: boolean
 ): { field: string; count: number }[] {
-  return facets.filter((facet) => !HIDDEN_FACET_FIELDS.includes(facet.field));
+  const extraHiddenFIelds = isAuthenticated
+    ? []
+    : ["audit.INTERNAL_ACTION.category"];
+  return facets.filter(
+    (facet) =>
+      !HIDDEN_FACET_FIELDS.concat(extraHiddenFIelds).includes(facet.field)
+  );
 }
