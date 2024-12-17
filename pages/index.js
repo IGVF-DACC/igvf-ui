@@ -23,6 +23,21 @@ import {
  */
 const STATISTICS_CACHE_KEY = "home-page-statistics";
 
+const colorConfig = {
+  processed: {
+    bgClass:
+      "bg-sky-100 dark:bg-sky-900 border-sky-600 hover:bg-sky-200 dark:hover:bg-sky-800",
+  },
+  predictions: {
+    bgClass:
+      "bg-teal-200 dark:bg-teal-900 border-teal-600 hover:bg-teal-300 dark:hover:bg-teal-800",
+  },
+  raw: {
+    bgClass:
+      "bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800",
+  },
+};
+
 /**
  * Icon for the processed data sets statistic.
  */
@@ -82,6 +97,7 @@ PredictionsIcon.propTypes = {
  * database.
  */
 function Statistic({ graphic, label, value, query, colorClass }) {
+  console.log("COLOR CLASS", colorClass);
   return (
     <div
       className={`my-4 grow basis-1/3 rounded border @xl/home:my-0 ${colorClass}`}
@@ -161,6 +177,7 @@ export default function Home({
       });
   }
 
+  console.log("TYPE CONFIG", typeConfig.processed.bgClass);
   return (
     <div className="@container/home">
       <HomeTitle />
@@ -179,21 +196,21 @@ export default function Home({
           label="Processed Datasets"
           value={processedCount}
           query="type=AnalysisSet&status=released"
-          colorClass={typeConfig.processed.bgClass}
+          colorClass={colorConfig.processed.bgClass}
         />
         <Statistic
           graphic={<PredictionsIcon className="fill-teal-600" />}
           label="Predictions Datasets"
           value={predictionsCount}
           query="type=PredictionSet&status=released"
-          colorClass={typeConfig.predictions.bgClass}
+          colorClass={colorConfig.predictions.bgClass}
         />
         <Statistic
           graphic={<Icon.Sample className="fill-yellow-600" />}
           label="Raw Datasets"
           value={rawCount}
           query="type=MeasurementSet&status=released"
-          colorClass={typeConfig.raw.bgClass}
+          colorClass={colorConfig.raw.bgClass}
         />
       </div>
       <TabGroup
