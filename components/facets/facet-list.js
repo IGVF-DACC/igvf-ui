@@ -69,6 +69,7 @@ export function FacetList({ searchResults }) {
   return (
     <div>
       {facets.map((facet) => {
+        console.log("FACET", facet);
         const Terms = facetRegistry.terms.lookup(facet.field);
 
         // Find the facet object in the search results that matches the facet field in the facet

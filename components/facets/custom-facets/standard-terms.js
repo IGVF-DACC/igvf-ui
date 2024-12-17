@@ -1,10 +1,15 @@
 // node_modules
+import { motion, AnimatePresence } from "framer-motion";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 // components/facets
 import FacetTerm from "../facet-term";
 // components
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "../../animation";
 import Icon from "../../icon";
 // lib
 import QueryString from "../../../lib/query-string";
@@ -147,6 +152,70 @@ CollapseControl.propTypes = {
   setIsExpanded: PropTypes.func.isRequired,
 };
 
+/**
+ * Display a segment of terms for a facet. Usually all terms in a facet get displayed, but facets
+ * with lots of terms can show a subset of terms along with a button to expand the list to show all
+ * terms.
+ *
+ * Use this component to display one segment of terms for a facet, so usually the always-displayed
+ * terms regardless of whether the user has expanded the list of terms or not, and the segment of
+ * terms that are only displayed when the user has expanded the list.
+ */
+function TermSegment({ termSegment, field, selectionFilters, onTermClick }) {
+  return (
+    <>
+      {termSegment.map((term) => {
+        const termKey = term.key_as_string || term.key;
+        const checkedFilter = selectionFilters.find(
+          (filter) => filter.field === field && filter.term === termKey
+        );
+        const isChecked = Boolean(checkedFilter);
+        const isNegative = isChecked && checkedFilter.isNegative;
+
+        return (
+          <FacetTerm
+            key={term.key}
+            field={field}
+            term={term}
+            isChecked={isChecked}
+            isNegative={isNegative}
+            onClick={onTermClick}
+          />
+        );
+      })}
+    </>
+  );
+}
+
+TermSegment.propTypes = {
+  // Array of terms to display
+  termSegment: PropTypes.arrayOf(
+    PropTypes.shape({
+      // Label for the facet term
+      key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      // Number of results for the facet term
+      doc_count: PropTypes.number,
+      // Label for the facet term as a string when available
+      key_as_string: PropTypes.string,
+    })
+  ).isRequired,
+  // Field of the facet that the terms belong to
+  field: PropTypes.string.isRequired,
+  // Array of selected filters for this facet
+  selectionFilters: PropTypes.arrayOf(
+    PropTypes.shape({
+      // Field of the selected filter
+      field: PropTypes.string.isRequired,
+      // Term of the selected filter
+      term: PropTypes.string.isRequired,
+      // True if the selected filter is a negative filter
+      isNegative: PropTypes.bool.isRequired,
+    })
+  ).isRequired,
+  // Function to call when the user clicks a term
+  onTermClick: PropTypes.func.isRequired,
+};
+
 export default function StandardTerms({ searchResults, facet, updateQuery }) {
   // User-typed term to filter the facet terms
   const [filterTerm, setFilterTerm] = useState("");
@@ -165,10 +234,8 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
 
   // Further limit the terms if the facet has enough terms to be expandable and is currently
   // collapsed.
-  const displayedTerms =
-    filteredTerms.length > MIN_COLLAPSABLE_TERMS_COUNT && !isExpanded
-      ? filteredTerms.slice(0, COLLAPSED_TERMS_COUNT)
-      : filteredTerms;
+  const alwaysDisplayedTerms = filteredTerms.slice(0, COLLAPSED_TERMS_COUNT);
+  const expandedDisplayedTerms = filteredTerms.slice(COLLAPSED_TERMS_COUNT);
 
   // Get the terms that are currently selected for this facet.
   const selectionFilters = searchResults.filters.map((filter) => {
@@ -235,29 +302,33 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
           setCurrentFilter={setFilterTerm}
         />
       )}
-      {displayedTerms.length > 0 ? (
+      {alwaysDisplayedTerms.length > 0 ? (
         <>
           <ul>
-            {displayedTerms.map((term) => {
-              const termKey = term.key_as_string || term.key;
-              const checkedFilter = selectionFilters.find(
-                (filter) =>
-                  filter.field === facet.field && filter.term === termKey
-              );
-              const isChecked = Boolean(checkedFilter);
-              const isNegative = isChecked && checkedFilter.isNegative;
-
-              return (
-                <FacetTerm
-                  key={term.key}
-                  field={facet.field}
-                  term={term}
-                  isChecked={isChecked}
-                  isNegative={isNegative}
-                  onClick={onTermClick}
-                />
-              );
-            })}
+            <TermSegment
+              termSegment={alwaysDisplayedTerms}
+              field={facet.field}
+              selectionFilters={selectionFilters}
+              onTermClick={onTermClick}
+            />
+            <AnimatePresence>
+              {expandedDisplayedTerms.length > 0 && isExpanded && (
+                <motion.ul
+                  initial="collapsed"
+                  animate="open"
+                  exit="collapsed"
+                  transition={standardAnimationTransition}
+                  variants={standardAnimationVariants}
+                >
+                  <TermSegment
+                    termSegment={expandedDisplayedTerms}
+                    field={facet.field}
+                    selectionFilters={selectionFilters}
+                    onTermClick={onTermClick}
+                  />
+                </motion.ul>
+              )}
+            </AnimatePresence>
           </ul>
           {filteredTerms.length > MIN_COLLAPSABLE_TERMS_COUNT && (
             <CollapseControl
