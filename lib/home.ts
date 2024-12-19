@@ -101,7 +101,6 @@ export function getFileSetTypeConfig(type: FileSetType): FileSetTypeConfig {
       title: "No Data Available",
       termProp: "",
       color: "#000000",
-      bgClass: "transparent",
     }
   );
 }
