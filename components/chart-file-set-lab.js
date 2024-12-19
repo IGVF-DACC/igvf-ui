@@ -11,8 +11,8 @@ import {
 } from "../lib/general";
 import {
   convertLabDataToChartData,
-  getFileSetTypeConfig,
   NO_ASSAY_TITLE_LABEL,
+  typeConfig,
 } from "../lib/home";
 import { encodeUriElement } from "../lib/query-encoding";
 
@@ -126,7 +126,7 @@ function CustomBar({ bar, type }) {
   const barData = bar.data;
   const dataPoint = barData.data;
   const [lab, term] = dataPoint.title.split("|");
-  const { typeQuery, termProp, color } = getFileSetTypeConfig(type);
+  const { typeQuery, termProp, color } = typeConfig[type];
   const termElement =
     term === NO_ASSAY_TITLE_LABEL
       ? `${termProp}!=*`
@@ -186,7 +186,7 @@ CustomBar.propTypes = {
  * file-set type. The title comes from the `preferred_assay_title` of the MeasurementSet if it
  * exists, or the `assay_term.term_name` if not.
  */
-export default function ChartFileSetLab({ labData, title, type }) {
+export default function ChartFileSetLab({ labData, type }) {
   const { chartData } = convertLabDataToChartData(labData);
 
   return (
@@ -194,7 +194,6 @@ export default function ChartFileSetLab({ labData, title, type }) {
       <ResponsiveBar
         data={chartData}
         animate={false}
-        ariaLabel={title}
         axisBottom={{
           tickSize: 5,
           tickPadding: 5,
@@ -255,8 +254,6 @@ ChartFileSetLab.propTypes = {
     label: PropTypes.string.isRequired,
     doc_count: PropTypes.number.isRequired,
   }),
-  // Title for the chart; used for the chart's aria label
-  title: PropTypes.string,
   // Type of file-set data to display in the chart
   type: PropTypes.string.isRequired,
 };
