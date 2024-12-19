@@ -695,7 +695,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         >
           <NavigationHrefItem
             id="schemas"
-            href="/help/data-submission/data-model-examples"
+            href="/profiles"
             navigationClick={navigationClick}
             isChildItem
           >
@@ -703,7 +703,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="data-model-examples"
-            href="/profiles"
+            href="/help/data-submission/data-model-examples"
             navigationClick={navigationClick}
             isChildItem
           >
