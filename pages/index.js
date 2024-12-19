@@ -12,42 +12,46 @@ import { TabGroup, TabList, TabTitle } from "../components/tabs";
 import { ServerCache } from "../lib/cache";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
-import {
-  getAllFileSetTypes,
-  getFileSetTypeConfig,
-  typeConfig,
-} from "../lib/home";
+import { getAllFileSetTypes, getFileSetTypeConfig } from "../lib/home";
 
-/**
- * Key for the cache that stores the statistics for the home page.
- */
-const STATISTICS_CACHE_KEY = "home-page-statistics";
-
-const colorConfig = {
+const typeColorConfig = {
   processed: {
+    // Property referencing an icon component
+    Icon: ProcessedIcon,
+    iconClass: "fill-sky-600",
     bgClass:
       "bg-sky-100 dark:bg-sky-900 border-sky-600 hover:bg-sky-200 dark:hover:bg-sky-800",
   },
   predictions: {
+    Icon: PredictionsIcon,
+    iconClass: "fill-teal-600",
     bgClass:
       "bg-teal-200 dark:bg-teal-900 border-teal-600 hover:bg-teal-300 dark:hover:bg-teal-800",
   },
   raw: {
+    Icon: Icon.Sample,
+    iconClass: "fill-yellow-600",
     bgClass:
       "bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800",
   },
 };
 
 /**
+ * Key for the cache that stores the statistics for the home page.
+ */
+const STATISTICS_CACHE_KEY = "home-page-statistics";
+
+/**
  * Icon for the processed data sets statistic.
  */
-function ProcessedIcon({ className }) {
+function ProcessedIcon({ className, style }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
       className={className}
+      style={style}
     >
       <path
         d="M4.6,2.9c0-.2.1-.5.4-.5l1.2-.3c.2,0,.5,0,.6.3l.4.8c.4,0,.8.1,1.1.3l.7-.5c.2-.1.5-.1.7,0l.9.9c.2.2.2.5,0,.7l-.5.7c.2.4.3.7.3,1.1l.8.4c.2.1.3.4.3.6l-.3,1.2c0,.2-.3.4-.5.4h-.9c-.2.3-.5.5-.8.8v.9c0,.2,0,.5-.3.5l-1.2.3c-.2,0-.5,0-.6-.3l-.4-.8c-.4,0-.8-.1-1.1-.3l-.7.5c-.2.1-.5.1-.7,0l-.9-.9c-.2-.2-.2-.5,0-.7l.5-.7c-.2-.4-.3-.7-.3-1.1l-.8-.4c-.2-.1-.3-.4-.3-.6l.3-1.2c0-.2.3-.4.5-.4h.9c.2-.3.5-.5.8-.8,0,0,0-.9,0-.9ZM7.2,8.3c.8-.2,1.3-1.1,1.1-1.9s-1.1-1.3-1.9-1.1-1.3,1.1-1.1,1.9,1.1,1.3,1.9,1.1Z"
@@ -64,6 +68,8 @@ function ProcessedIcon({ className }) {
 ProcessedIcon.propTypes = {
   // Tailwind CSS classes for the icon
   className: PropTypes.string,
+  // CSS style properties
+  style: PropTypes.object,
 };
 
 /**
@@ -97,7 +103,6 @@ PredictionsIcon.propTypes = {
  * database.
  */
 function Statistic({ graphic, label, value, query, colorClass }) {
-  console.log("COLOR CLASS", colorClass);
   return (
     <div
       className={`my-4 grow basis-1/3 rounded border @xl/home:my-0 ${colorClass}`}
@@ -157,14 +162,17 @@ export default function Home({
   // Holds the ID of the currently selected tab
   const activeFileSetType = useRef("processed");
 
+  const counts = {
+    processed: processedCount,
+    predictions: predictionsCount,
+    raw: rawCount,
+  };
   const allTypes = getAllFileSetTypes();
-  const chartTitle = typeConfig.title;
 
   // Request the lab data for the selected tab as a browser-initiated fetch.
   function onTabChange(tabId) {
     activeFileSetType.current = tabId;
-    const typeConfig = getFileSetTypeConfig(tabId);
-    const { dataQuery, typeQuery } = typeConfig;
+    const { dataQuery, typeQuery } = getFileSetTypeConfig(tabId);
 
     // Request the lab data for the selected tab.
     const request = new FetchRequest({ backend: true });
@@ -177,7 +185,6 @@ export default function Home({
       });
   }
 
-  console.log("TYPE CONFIG", typeConfig.processed.bgClass);
   return (
     <div className="@container/home">
       <HomeTitle />
@@ -191,27 +198,20 @@ export default function Home({
         phenotypes.
       </p>
       <div className="my-4 @xl/home:flex @xl/home:gap-4">
-        <Statistic
-          graphic={<ProcessedIcon className="fill-sky-600" />}
-          label="Processed Datasets"
-          value={processedCount}
-          query="type=AnalysisSet&status=released"
-          colorClass={colorConfig.processed.bgClass}
-        />
-        <Statistic
-          graphic={<PredictionsIcon className="fill-teal-600" />}
-          label="Predictions Datasets"
-          value={predictionsCount}
-          query="type=PredictionSet&status=released"
-          colorClass={colorConfig.predictions.bgClass}
-        />
-        <Statistic
-          graphic={<Icon.Sample className="fill-yellow-600" />}
-          label="Raw Datasets"
-          value={rawCount}
-          query="type=MeasurementSet&status=released"
-          colorClass={colorConfig.raw.bgClass}
-        />
+        {allTypes.map((type) => {
+          const typeConfig = getFileSetTypeConfig(type);
+          const Icon = typeColorConfig[type].Icon;
+          return (
+            <Statistic
+              key={type}
+              graphic={<Icon className={typeColorConfig[type].iconClass} />}
+              label={typeConfig.title}
+              value={counts[type]}
+              query={`type=${typeConfig.typeQuery}&status=released`}
+              colorClass={typeColorConfig[type].bgClass}
+            />
+          );
+        })}
       </div>
       <TabGroup
         onChange={onTabChange}
@@ -224,7 +224,7 @@ export default function Home({
               <TabTitle
                 key={type}
                 id={type}
-                className={`font-semibold ${typeConfig.bgClass}`}
+                className={`font-semibold ${typeColorConfig[type].bgClass}`}
               >
                 {typeConfig.title}
               </TabTitle>
@@ -236,7 +236,6 @@ export default function Home({
         <FileSetChartSection>
           <ChartFileSetLab
             labData={activeLabData}
-            title={chartTitle}
             type={activeFileSetType.current}
             shouldIncludeLinks
           />

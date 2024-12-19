@@ -27,8 +27,6 @@ type FileSetTypeConfig = {
   termProp: string;
   /** Color to use for the file-set type */
   color: string;
-  /** Background class to use for the file-set type */
-  bgClass: string;
 };
 
 /**
@@ -41,8 +39,6 @@ export const typeConfig: { [key in FileSetType]: FileSetTypeConfig } = {
     title: "Processed Datasets",
     termProp: "assay_titles",
     color: "#0284c7",
-    bgClass:
-      "bg-sky-100 dark:bg-sky-900 border-sky-600 hover:bg-sky-200 dark:hover:bg-sky-800",
   },
   predictions: {
     dataQuery: "config=FileSetTypeSummary&status=released",
@@ -50,8 +46,6 @@ export const typeConfig: { [key in FileSetType]: FileSetTypeConfig } = {
     title: "Predictions Datasets",
     termProp: "file_set_type",
     color: "#0d9488",
-    bgClass:
-      "bg-teal-200 dark:bg-teal-900 border-teal-600 hover:bg-teal-300 dark:hover:bg-teal-800",
   },
   raw: {
     dataQuery: "config=PreferredAssayTitleSummary&status=released",
@@ -59,8 +53,6 @@ export const typeConfig: { [key in FileSetType]: FileSetTypeConfig } = {
     title: "Raw Datasets",
     termProp: "preferred_assay_title",
     color: "#ca8a04",
-    bgClass:
-      "bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800",
   },
 };
 
