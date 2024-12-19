@@ -34,7 +34,9 @@ function genLabChartDataCacheKey(type: string): string {
  * @returns {string} JSON stringified props for the home page.
  */
 async function fetchHomePageData(request, meta): Promise<string> {
+  console.log("Fetching home page data ********", meta.queryString);
   const datasetSummary = await requestDatasetSummary(request, meta.queryString);
+  console.log("Fetched home page data ********", datasetSummary);
   const props = datasetSummary.matrix?.y || {};
   return JSON.stringify(props);
 }
