@@ -25,8 +25,10 @@ type FileSetTypeConfig = {
   title: string;
   /** Term to use to filter searches linked to a bar on the chart */
   termProp: string;
-  /** Color to use for the file-set type */
-  color: string;
+  /** Foreground class to use for the file-set type */
+  foreground: string;
+  /** Background class to use for the file-set type */
+  background: string;
 };
 
 /**
@@ -38,21 +40,24 @@ export const typeConfig: { [key in FileSetType]: FileSetTypeConfig } = {
     typeQuery: "AnalysisSet",
     title: "Processed Datasets",
     termProp: "assay_titles",
-    color: "#0284c7",
+    foreground: "fore-fileset-type-analysis",
+    background: "back-fileset-type-analysis",
   },
   predictions: {
     dataQuery: "config=FileSetTypeSummary&status=released",
     typeQuery: "PredictionSet",
     title: "Predictions Datasets",
     termProp: "file_set_type",
-    color: "#0d9488",
+    foreground: "fore-fileset-type-prediction",
+    background: "back-fileset-type-prediction",
   },
   raw: {
     dataQuery: "config=PreferredAssayTitleSummary&status=released",
     typeQuery: "MeasurementSet",
     title: "Raw Datasets",
     termProp: "preferred_assay_title",
-    color: "#ca8a04",
+    foreground: "fore-fileset-type-measurement",
+    background: "back-fileset-type-measurement",
   },
 };
 
@@ -100,7 +105,8 @@ export function getFileSetTypeConfig(type: FileSetType): FileSetTypeConfig {
       typeQuery: "",
       title: "No Data Available",
       termProp: "",
-      color: "#000000",
+      foreground: "",
+      background: "",
     }
   );
 }

@@ -14,26 +14,13 @@ import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
 import { getAllFileSetTypes, getFileSetTypeConfig } from "../lib/home";
 
+/**
+ * Map file-set types to corresponding icons.
+ */
 const typeColorConfig = {
-  processed: {
-    // Property referencing an icon component
-    Icon: ProcessedIcon,
-    iconClass: "fill-sky-600",
-    bgClass:
-      "bg-sky-100 dark:bg-sky-900 border-sky-600 hover:bg-sky-200 dark:hover:bg-sky-800",
-  },
-  predictions: {
-    Icon: PredictionsIcon,
-    iconClass: "fill-teal-600",
-    bgClass:
-      "bg-teal-200 dark:bg-teal-900 border-teal-600 hover:bg-teal-300 dark:hover:bg-teal-800",
-  },
-  raw: {
-    Icon: Icon.Sample,
-    iconClass: "fill-yellow-600",
-    bgClass:
-      "bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800",
-  },
+  processed: ProcessedIcon,
+  predictions: PredictionsIcon,
+  raw: Icon.Sample,
 };
 
 /**
@@ -200,15 +187,15 @@ export default function Home({
       <div className="my-4 @xl/home:flex @xl/home:gap-4">
         {allTypes.map((type) => {
           const typeConfig = getFileSetTypeConfig(type);
-          const Icon = typeColorConfig[type].Icon;
+          const Icon = typeColorConfig[type];
           return (
             <Statistic
               key={type}
-              graphic={<Icon className={typeColorConfig[type].iconClass} />}
+              graphic={<Icon className={typeConfig.foreground} />}
               label={typeConfig.title}
               value={counts[type]}
               query={`type=${typeConfig.typeQuery}&status=released`}
-              colorClass={typeColorConfig[type].bgClass}
+              colorClass={typeConfig.background}
             />
           );
         })}
@@ -221,11 +208,7 @@ export default function Home({
           {allTypes.map((type) => {
             const typeConfig = getFileSetTypeConfig(type);
             return (
-              <TabTitle
-                key={type}
-                id={type}
-                className={`font-semibold ${typeColorConfig[type].bgClass}`}
-              >
+              <TabTitle key={type} id={type}>
                 {typeConfig.title}
               </TabTitle>
             );
