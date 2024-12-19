@@ -17,6 +17,7 @@ let redisClient: RedisClientType | null = null;
  */
 
 export function getCacheClient(): RedisClientType | null {
+  console.log("GET REDIS CLIENT ********", redisClient);
   if (redisClient === null) {
     try {
       redisClient = createClient({
