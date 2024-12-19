@@ -3,6 +3,14 @@ import type { Config } from "tailwindcss";
 const tailwindConfig: Config = {
   darkMode: "class",
   content: ["./pages/**/*.{js,ts,tsx}", "./components/**/*.{js,ts,tsx}"],
+  safelist: [
+    "fore-fileset-type-analysis",
+    "back-fileset-type-analysis",
+    "fore-fileset-type-prediction",
+    "back-fileset-type-prediction",
+    "fore-fileset-type-measurement",
+    "back-fileset-type-measurement",
+  ],
   theme: {
     container: {
       center: true,

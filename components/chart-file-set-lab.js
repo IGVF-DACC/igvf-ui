@@ -126,7 +126,7 @@ function CustomBar({ bar, type }) {
   const barData = bar.data;
   const dataPoint = barData.data;
   const [lab, term] = dataPoint.title.split("|");
-  const { typeQuery, termProp, color } = typeConfig[type];
+  const { typeQuery, termProp, foreground } = typeConfig[type];
   const termElement =
     term === NO_ASSAY_TITLE_LABEL
       ? `${termProp}!=*`
@@ -143,7 +143,7 @@ function CustomBar({ bar, type }) {
         )}&${termElement}`}
       >
         <g transform={`translate(${bar.x},${bar.y})`}>
-          <rect width={bar.width} height={bar.height} fill={color} />
+          <rect width={bar.width} height={bar.height} className={foreground} />
         </g>
       </BarLink>
       <g transform={`translate(${bar.width + 5},${bar.y + 12})`}>
