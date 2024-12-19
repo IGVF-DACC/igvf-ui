@@ -144,6 +144,7 @@ export default function Home({
   predictionsCount,
   rawCount,
 }) {
+  console.log("HOME PROPS *********", labData);
   // Data for the currently active lab data chart tab
   const [activeLabData, setActiveLabData] = useState(labData);
   // Holds the ID of the currently selected tab
@@ -271,11 +272,16 @@ async function fetchHomePageStatistics(request) {
 export async function getServerSideProps({ req }) {
   const serverRequest = new FetchRequest({ backend: true });
   const { typeQuery, dataQuery } = getFileSetTypeConfig("processed");
+  console.log(
+    "HOME QUERY *********",
+    `/api/dataset-summary/?type=${typeQuery}&${dataQuery}`
+  );
   const labData = (
     await serverRequest.getObject(
       `/api/dataset-summary/?type=${typeQuery}&${dataQuery}`
     )
   ).optional();
+  console.log("LAB DATA *********", labData);
 
   const providerRequest = new FetchRequest({ cookie: req.headers.cookie });
   const cacheRef = new ServerCache(STATISTICS_CACHE_KEY, 30);
