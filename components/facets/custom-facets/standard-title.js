@@ -1,6 +1,8 @@
 // node_modules
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
+// components/facets
+import { FacetTermCount } from "../facet-term-count";
 
 /**
  * Alternate facet title renderers can use this to display the standard title collapse/expand
@@ -49,13 +51,16 @@ StandardTitleButton.propTypes = {
  */
 export default function StandardTitle({ facet, updateOpen, isFacetOpen }) {
   return (
-    <StandardTitleButton
-      field={facet.field}
-      updateOpen={updateOpen}
-      isFacetOpen={isFacetOpen}
-    >
-      {facet.title}
-    </StandardTitleButton>
+    <>
+      <StandardTitleButton
+        field={facet.field}
+        updateOpen={updateOpen}
+        isFacetOpen={isFacetOpen}
+      >
+        {facet.title}
+      </StandardTitleButton>
+      <FacetTermCount facet={facet} />
+    </>
   );
 }
 
@@ -66,6 +71,8 @@ StandardTitle.propTypes = {
     field: PropTypes.string.isRequired,
     // Facet title
     title: PropTypes.string.isRequired,
+    // List of facet terms
+    terms: PropTypes.arrayOf(PropTypes.object).isRequired,
   }).isRequired,
   // Function to call when the user clicks the open/collapse button
   updateOpen: PropTypes.func.isRequired,

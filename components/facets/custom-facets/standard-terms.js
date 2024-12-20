@@ -21,14 +21,9 @@ import { splitPathAndQueryString } from "../../../lib/query-utils";
 const MIN_FILTER_COUNT = 20;
 
 /**
- * Minimum number of facet terms to display the expand/collapse button.
- */
-const MIN_COLLAPSABLE_TERMS_COUNT = 15;
-
-/**
  * Number of facet terms to display when the facet is collapsed.
  */
-const COLLAPSED_TERMS_COUNT = 10;
+const COLLAPSED_TERMS_COUNT = 15;
 
 /**
  * Button to select all or none of the facet terms.
@@ -268,26 +263,6 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
     updateQuery(query.format());
   }
 
-  // /**
-  //  * When the user clicks the "All" button, add all terms for this facet to the query string.
-  //  */
-  // function onAllClick() {
-  //   query.deleteKeyValue(facet.field);
-  //   facet.terms.forEach((term) => {
-  //     const key = term.key_as_string || term.key;
-  //     query.addKeyValue(facet.field, key);
-  //   });
-  //   updateQuery(query.format());
-  // }
-
-  // /**
-  //  * When the user clicks the "None" button, remove all terms for this facet from the query string.
-  //  */
-  // function onNoneClick() {
-  //   query.deleteKeyValue(facet.field);
-  //   updateQuery(query.format());
-  // }
-
   // Clear the term filter when the facet terms change.
   useEffect(() => {
     setFilterTerm("");
@@ -330,7 +305,7 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
               )}
             </AnimatePresence>
           </ul>
-          {filteredTerms.length > MIN_COLLAPSABLE_TERMS_COUNT && (
+          {filteredTerms.length > COLLAPSED_TERMS_COUNT && (
             <CollapseControl
               id={facet.field}
               totalTermCount={filteredTerms.length}

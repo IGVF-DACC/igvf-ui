@@ -3,6 +3,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import PropTypes from "prop-types";
 // components
 import { auditMap } from "../../audit";
+// component/facets
+import { FacetTermCount } from "../facet-term-count";
 // components/facets/custom-facets
 import { StandardTitleButton } from "./standard-title";
 
@@ -19,20 +21,23 @@ export default function AuditTitle({ facet, updateOpen, isFacetOpen }) {
     const mapping = auditMap[auditType];
 
     return (
-      <StandardTitleButton
-        field={facet.field}
-        updateOpen={updateOpen}
-        isFacetOpen={isFacetOpen}
-      >
-        <div className="flex items-center gap-1">
-          <div>Audit {mapping.humanReadable}</div>
-          <div className="relative h-4 w-4">
-            <mapping.Icon
-              className={`absolute bottom-0 left-0 right-0 top-0 ${mapping.color}`}
-            />
+      <>
+        <StandardTitleButton
+          field={facet.field}
+          updateOpen={updateOpen}
+          isFacetOpen={isFacetOpen}
+        >
+          <div className="flex items-center gap-1">
+            <div>Audit {mapping.humanReadable}</div>
+            <div className="relative h-4 w-4">
+              <mapping.Icon
+                className={`absolute bottom-0 left-0 right-0 top-0 ${mapping.color}`}
+              />
+            </div>
           </div>
-        </div>
-      </StandardTitleButton>
+        </StandardTitleButton>
+        <FacetTermCount facet={facet} />
+      </>
     );
   }
   return null;

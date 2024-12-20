@@ -26,6 +26,10 @@ module.exports = {
         "excel-import-dark": "url('/img/excel-file-origin-dark.png')",
         "help-banner": "url('/img/help-banner.jpg')",
         "help-banner-dark": "url('/img/help-banner-dark.jpg')",
+        "facet-bar-blanks":
+          "repeating-linear-gradient(to right, #e0e0e0 0 2px, transparent 2px 4px)",
+        "facet-bar":
+          "repeating-linear-gradient(to right, #2563eb 0 2px, transparent 2px 4px)",
       },
       colors: {
         background: "var(--color-background)",
