@@ -275,7 +275,7 @@ export async function getServerSideProps({ req }) {
   console.log("SERVER RUNTIME CONFIG *********", serverRuntimeConfig);
   console.log("PUBLIC RUNTIME CONFIG *********", publicRuntimeConfig);
 
-  const serverRequest = new FetchRequest();
+  const serverRequest = new FetchRequest({ backend: true });
   const { typeQuery, dataQuery } = getFileSetTypeConfig("processed");
   console.log(
     "HOME QUERY *********",
