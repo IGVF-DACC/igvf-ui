@@ -2,6 +2,7 @@
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { useRef, useState } from "react";
+import getConfig from "next/config";
 // components
 import ChartFileSetLab from "../components/chart-file-set-lab";
 import { DataPanel } from "../components/data-area";
@@ -270,7 +271,11 @@ async function fetchHomePageStatistics(request) {
 }
 
 export async function getServerSideProps({ req }) {
-  const serverRequest = new FetchRequest({ backend: true });
+  const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
+  console.log("SERVER RUNTIME CONFIG *********", serverRuntimeConfig);
+  console.log("PUBLIC RUNTIME CONFIG *********", publicRuntimeConfig);
+
+  const serverRequest = new FetchRequest();
   const { typeQuery, dataQuery } = getFileSetTypeConfig("processed");
   console.log(
     "HOME QUERY *********",
