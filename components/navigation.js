@@ -701,6 +701,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Schemas
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="data-model-examples"
+            href="/help/data-submission/data-model-examples"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Data Model Examples
+          </NavigationHrefItem>
         </NavigationGroupItem>
 
         <NavigationGroupItem
