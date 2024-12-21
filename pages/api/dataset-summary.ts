@@ -34,9 +34,7 @@ function genLabChartDataCacheKey(type: string): string {
  * @returns {string} JSON stringified props for the home page.
  */
 async function fetchHomePageData(request, meta): Promise<string> {
-  console.log("Fetching home page data ********", meta.queryString);
   const datasetSummary = await requestDatasetSummary(request, meta.queryString);
-  console.log("Fetched home page data ********", datasetSummary);
   const props = datasetSummary.matrix?.y || {};
   return JSON.stringify(props);
 }
@@ -53,7 +51,6 @@ export default async function datasetSummary(
   // Get the object type from the query string, and .
   const queryType = req.query.type;
   const queryString = getQueryStringFromServerQuery(req.query);
-  console.log("SUMMARY QUERY STRING", queryString);
   if (!queryType) {
     res.status(400).json({ error: "Missing query type" });
     return;
@@ -65,14 +62,8 @@ export default async function datasetSummary(
     genLabChartDataCacheKey(queryType as string),
     30
   );
-  console.log(
-    "SUMMARY CACHEREF %s for query type %s",
-    cacheRef,
-    genLabChartDataCacheKey(queryType as string)
-  );
   cacheRef.setFetchConfig(fetchHomePageData, serverRequest, { queryString });
   const labData = await cacheRef.getData<LabData>();
-  console.log("SUMMARY LAB DATA", labData);
 
   if (labData) {
     res.status(200).json(labData);

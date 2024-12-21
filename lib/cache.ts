@@ -103,7 +103,6 @@ export class ServerCache {
    * @param [options] - Options to adjust the behavior of the method
    */
   async getData<T>(options: GetDataOptions = {}): Promise<T> {
-    console.log("REDIS GET DATA ********", this.key, this.redisClient);
     if (this.redisClient) {
       const forceFetch = this.isFetched && Boolean(options.forceFetch);
       if (!forceFetch) {

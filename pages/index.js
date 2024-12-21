@@ -1,8 +1,7 @@
 // node_modules
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useRef, useState } from "react";
-import getConfig from "next/config";
+import { useEffect, useRef, useState } from "react";
 // components
 import ChartFileSetLab from "../components/chart-file-set-lab";
 import { DataPanel } from "../components/data-area";
@@ -139,15 +138,9 @@ function FileSetChartSection({ children }) {
   );
 }
 
-export default function Home({
-  labData,
-  processedCount,
-  predictionsCount,
-  rawCount,
-}) {
-  console.log("HOME PROPS *********", labData);
+export default function Home({ processedCount, predictionsCount, rawCount }) {
   // Data for the currently active lab data chart tab
-  const [activeLabData, setActiveLabData] = useState(labData);
+  const [activeLabData, setActiveLabData] = useState();
   // Holds the ID of the currently selected tab
   const activeFileSetType = useRef("processed");
 
@@ -173,6 +166,20 @@ export default function Home({
         }
       });
   }
+
+  useEffect(() => {
+    const { dataQuery, typeQuery } = getFileSetTypeConfig("processed");
+
+    // Request the lab data for the selected tab.
+    const request = new FetchRequest({ backend: true });
+    request
+      .getObject(`/api/dataset-summary/?type=${typeQuery}&${dataQuery}`)
+      .then((response) => {
+        if (response.isOk()) {
+          setActiveLabData(response.unwrap());
+        }
+      });
+  }, []);
 
   return (
     <div className="@container/home">
@@ -217,7 +224,7 @@ export default function Home({
           })}
         </TabList>
       </TabGroup>
-      {activeLabData.doc_count > 0 && (
+      {activeLabData?.doc_count > 0 && (
         <FileSetChartSection>
           <ChartFileSetLab
             labData={activeLabData}
@@ -231,10 +238,6 @@ export default function Home({
 }
 
 Home.propTypes = {
-  // All measurement sets in the system
-  labData: PropTypes.shape({
-    doc_count: PropTypes.number,
-  }),
   // Total number of processed data sets in the system
   processedCount: PropTypes.number,
   // Total number of prediction data sets in the system
@@ -271,23 +274,6 @@ async function fetchHomePageStatistics(request) {
 }
 
 export async function getServerSideProps({ req }) {
-  const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
-  console.log("SERVER RUNTIME CONFIG *********", serverRuntimeConfig);
-  console.log("PUBLIC RUNTIME CONFIG *********", publicRuntimeConfig);
-
-  const serverRequest = new FetchRequest({ backend: true });
-  const { typeQuery, dataQuery } = getFileSetTypeConfig("processed");
-  console.log(
-    "HOME QUERY *********",
-    `/api/dataset-summary/?type=${typeQuery}&${dataQuery}`
-  );
-  const labData = (
-    await serverRequest.getObject(
-      `/api/dataset-summary/?type=${typeQuery}&${dataQuery}`
-    )
-  ).optional();
-  console.log("LAB DATA *********", labData);
-
   const providerRequest = new FetchRequest({ cookie: req.headers.cookie });
   const cacheRef = new ServerCache(STATISTICS_CACHE_KEY, 30);
   cacheRef.setFetchConfig(fetchHomePageStatistics, providerRequest);
@@ -296,7 +282,6 @@ export async function getServerSideProps({ req }) {
 
   return {
     props: {
-      labData: labData || { doc_count: 0 },
       processedCount,
       predictionsCount,
       rawCount,

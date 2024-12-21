@@ -17,20 +17,16 @@ let redisClient: RedisClientType | null = null;
  */
 
 export function getCacheClient(): RedisClientType | null {
-  console.log("GET REDIS CLIENT ********", redisClient);
   if (redisClient === null) {
     try {
       redisClient = createClient({
         url: CACHE_URL,
       });
-      console.log("NEW REDIS CLIENT ********", redisClient);
       redisClient.on("error", (err) => {
-        console.log("NEW REDIS CLIENT ONERR ********", err);
         console.error("Redis client error", err);
       });
       redisClient.connect();
     } catch (error) {
-      console.log("NEW REDIS CLIENT CATCH ********", error);
       console.error(error);
       redisClient = null;
     }
