@@ -19,6 +19,7 @@ import HelpTip from "../../components/help-tip";
 import PagePreamble from "../../components/page-preamble";
 import {
   SchemaSearchField,
+  SchemaVersion,
   SearchAndReportType,
 } from "../../components/profiles";
 import SchemaIcon from "../../components/schema-icon";
@@ -29,6 +30,7 @@ import { toShishkebabCase } from "../../lib/general";
 import {
   checkSearchTermSchema,
   checkSearchTermTitle,
+  schemaToPath,
   SEARCH_MODE_PROPERTIES,
   SEARCH_MODE_TITLE,
 } from "../../lib/profiles";
@@ -237,7 +239,7 @@ function SubTree({
           <>
             <Link
               onClick={onClick}
-              href={`${schema.$id.replace(".json", "")}`}
+              href={schemaToPath(schema)}
               aria-label={`View schema for ${title}${
                 isTitleHighlighted ? " (highlighted)" : ""
               }`}
@@ -247,6 +249,7 @@ function SubTree({
             >
               {title}
             </Link>
+            <SchemaVersion schema={schema} isLinked />
             <TooltipRef tooltipAttr={tooltipAttr}>
               <button>
                 <QuestionMarkCircleIcon className="h-4 w-4 cursor-pointer" />

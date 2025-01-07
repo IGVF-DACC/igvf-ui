@@ -4,12 +4,13 @@ import {
   TableCellsIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid";
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { AttachedButtons, ButtonLink, TextField } from "./form-elements";
 import { useBrowserStateQuery } from "./presentation-status";
 // lib
-import { SEARCH_MODE_TITLE } from "../lib/profiles";
+import { schemaToPath, SEARCH_MODE_TITLE } from "../lib/profiles";
 
 /**
  * List of schema types that do not have additional query-string parameters for list/report pages.
@@ -102,4 +103,30 @@ SearchAndReportType.propTypes = {
   type: PropTypes.string.isRequired,
   // Human-readable title for the schema
   title: PropTypes.string.isRequired,
+};
+
+/**
+ * Display a schema's version number.
+ */
+export function SchemaVersion({ schema, isLinked = false }) {
+  const version = schema.properties.schema_version.default;
+  const path = schemaToPath(schema);
+  const className =
+    "border-schema-version inline-block border bg-schema-version px-1 text-xs font-semibold text-schema-version no-underline";
+  if (isLinked) {
+    return (
+      <Link
+        href={`${path}/changelog`}
+        className={`${className} rounded-sm`}
+      >{`v${version}`}</Link>
+    );
+  }
+  return <div className={className}>{`v${version}`}</div>;
+}
+
+SchemaVersion.propTypes = {
+  // The schema object
+  schema: PropTypes.object.isRequired,
+  // True to link to the changelog page, false to just display the version number
+  isLinked: PropTypes.bool,
 };

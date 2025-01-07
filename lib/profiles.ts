@@ -213,3 +213,12 @@ export function schemaToType(schema: Schema, profiles: Profiles): string {
   }
   return objectType || "";
 }
+
+/**
+ * Given a schema, return the path to the corresponding individual schema page.
+ * @param schema Individual schema to get the path for
+ * @returns Path to the individual schema page
+ */
+export function schemaToPath(schema: Schema): string {
+  return schema.$id.replace(".json", "");
+}

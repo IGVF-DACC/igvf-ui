@@ -5,6 +5,7 @@ import {
   getProfiles,
   notSubmittableProperty,
   schemaPageTabUrl,
+  schemaToPath,
   schemaToType,
 } from "../profiles";
 // types
@@ -39,7 +40,7 @@ describe("Test getProfiles functionality", () => {
       })
     );
 
-    getProfiles("/data-provider").then((data) => {
+    getProfiles().then((data) => {
       expect(data).toEqual(mockData);
     });
   });
@@ -459,5 +460,40 @@ describe("Test the schemaToType function", () => {
 
     const result = schemaToType(schema, {});
     expect(result).toBe("");
+  });
+});
+
+describe("Test the schemaToPath function", () => {
+  it("generates the correct path for the schema", () => {
+    const schema: Schema = {
+      "@type": ["JSONSchema"],
+      title: "Human Donor",
+      $id: "/profiles/human_donor.json",
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      additionalProperties: false,
+      description: "Derived schema submitting human donors.",
+      required: ["award", "lab", "taxa"],
+      type: "object",
+      mixinProperties: [
+        {
+          $ref: "donor.json#/properties",
+        },
+      ],
+      properties: {
+        "@id": {
+          notSubmittable: true,
+          title: "ID",
+          type: "string",
+        },
+        "@type": {
+          notSubmittable: true,
+          title: "Type",
+          type: "array",
+        },
+      },
+    };
+
+    const result = schemaToPath(schema);
+    expect(result).toBe("/profiles/human_donor");
   });
 });
