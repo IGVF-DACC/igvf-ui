@@ -231,6 +231,21 @@ const statusStyles = {
       "bg-amber-300 text-black dark:bg-amber-700 dark:text-white shadow-amber-400 [&>svg]:fill-black dark:[&>svg]:fill-white dark:shadow-amber-600",
     Icon: () => <EyeIcon className="mx-0.5 h-4 w-4" />,
   },
+
+  "validation exempted": {
+    styles: "bg-[#00a651] text-white shadow-[#007d3d] [&>svg]:fill-white",
+    Icon: () => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="fill-status-validation-exempted"
+        className="h-full"
+      >
+        <path d="M5.8,8.5c.6-1.7,2.3-3,4.2-3s3.6,1.2,4.2,3h2.6c-.7-3.1-3.5-5.5-6.8-5.5s-6.1,2.3-6.8,5.5h2.6Z" />
+        <path d="M14.2,11.5c-.6,1.7-2.3,3-4.2,3s-3.6-1.2-4.2-3h-2.6c.7,3.1,3.5,5.5,6.8,5.5s6.1-2.3,6.8-5.5h-2.6Z" />
+      </svg>
+    ),
+  },
 };
 
 /**
