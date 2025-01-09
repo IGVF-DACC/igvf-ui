@@ -33,6 +33,7 @@ import MarkdownSection from "../../components/markdown-section";
 import PagePreamble from "../../components/page-preamble";
 import {
   SchemaSearchField,
+  SchemaVersion,
   SearchAndReportType,
 } from "../../components/profiles";
 import SessionContext from "../../components/session-context";
@@ -660,6 +661,10 @@ function FormattedSchema({
           <DataItemValue>{schema.title}</DataItemValue>
           <DataItemLabel>Description</DataItemLabel>
           <DataItemValue>{schema.description}</DataItemValue>
+          <DataItemLabel>Version</DataItemLabel>
+          <DataItemValue>
+            <SchemaVersion schema={schema} />
+          </DataItemValue>
           {schema.required?.length > 0 && (
             <>
               <DataItemLabel>Required</DataItemLabel>

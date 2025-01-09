@@ -202,6 +202,9 @@
   --color-schema-prop-type-text-link: #9a3412;
   --color-schema-prop-type-text-null: #1f2937;
   --color-schema-prop-type-text-default: #1f2937;
+  --color-schema-version-background: #b2d0de;
+  --color-schema-version-text: #000000;
+  --color-schema-version-border: #91aab5;
 
   --color-indexed-state-background: #4ade80;
   --color-indexed-state-border: #22c55e;
@@ -397,6 +400,9 @@
   --color-schema-prop-type-text-link: #fdba74;
   --color-schema-prop-type-text-null: #d1d5db;
   --color-schema-prop-type-text-default: #e5e7eb;
+  --color-schema-version-background: #415c69;
+  --color-schema-version-text: #ffffff;
+  --color-schema-version-border: #5f8699;
 
   --color-indexed-state-background: #14532d;
   --color-indexed-state-border: #15803d;

@@ -104,6 +104,7 @@ const tailwindConfig: Config = {
         "schema-prop-type-link": "var(--color-schema-prop-type-bg-link)",
         "schema-prop-type-null": "var(--color-schema-prop-type-bg-null)",
         "schema-prop-type-default": "var(--color-schema-prop-type-bg-default)",
+        "schema-version": "var(--color-schema-version-background)",
 
         "indexed-state": "var(--color-indexed-state-background)",
         "indexing-state": "var(--color-indexing-state-background)",
@@ -187,6 +188,7 @@ const tailwindConfig: Config = {
         "schema-prop-type-null": "var(--color-schema-prop-type-border-null)",
         "schema-prop-type-default":
           "var(--color-schema-prop-type-border-default)",
+        "schema-version": "var(--color-schema-version-border)",
 
         "indexed-state": "var(--color-indexed-state-border)",
         "indexing-state": "var(--color-indexing-state-border)",
@@ -241,6 +243,7 @@ const tailwindConfig: Config = {
         "schema-prop-type-null": "var(--color-schema-prop-type-text-null)",
         "schema-prop-type-default":
           "var(--color-schema-prop-type-text-default)",
+        "schema-version": "var(--color-schema-version-text)",
 
         "indexed-state": "var(--color-indexed-state-content)",
         "indexing-state": "var(--color-indexing-state-content)",
