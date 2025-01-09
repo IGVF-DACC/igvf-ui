@@ -1,5 +1,8 @@
-import { DatabaseObject, DataProviderObject, SearchResults } from "../globals";
+// lib
 import FetchRequest from "./fetch-request";
+import { type DatasetSummary } from "./home";
+// root
+import type { DatabaseObject, DataProviderObject } from "../globals";
 
 /**
  * Retrieve the analysis step objects for the given analysis step paths from the data provider.
@@ -424,11 +427,12 @@ export async function requestSources(
  * @returns The dataset summary object requested
  */
 export async function requestDatasetSummary(
-  request: FetchRequest
-): Promise<SearchResults> {
-  return (await request.getObject("/dataset-summary")).unwrap_or(
-    {}
-  ) as unknown as SearchResults;
+  request: FetchRequest,
+  queryString: string = ""
+): Promise<DatasetSummary> {
+  return (
+    await request.getObject(`/dataset-summary-agg/?${queryString}`)
+  ).unwrap_or({}) as unknown as DatasetSummary;
 }
 
 /**
