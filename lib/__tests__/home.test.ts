@@ -127,7 +127,7 @@ describe("Test getFileSetTypeConfig function", () => {
     expect(getFileSetTypeConfig("raw")).toEqual({
       dataQuery: "config=PreferredAssayTitleSummary&status=released",
       typeQuery: "MeasurementSet",
-      title: "Raw Datasets",
+      title: "Released Raw Datasets",
       termProp: "preferred_assay_title",
       foreground: "fore-fileset-type-measurement",
       background: "back-fileset-type-measurement",
@@ -136,7 +136,7 @@ describe("Test getFileSetTypeConfig function", () => {
     expect(getFileSetTypeConfig("processed")).toEqual({
       dataQuery: "config=AssayTitlesSummary&status=released",
       typeQuery: "AnalysisSet",
-      title: "Processed Datasets",
+      title: "Released Processed Datasets",
       termProp: "assay_titles",
       foreground: "fore-fileset-type-analysis",
       background: "back-fileset-type-analysis",
@@ -145,7 +145,7 @@ describe("Test getFileSetTypeConfig function", () => {
     expect(getFileSetTypeConfig("predictions")).toEqual({
       dataQuery: "config=FileSetTypeSummary&status=released",
       typeQuery: "PredictionSet",
-      title: "Predictions Datasets",
+      title: "Released Predictions Datasets",
       termProp: "file_set_type",
       foreground: "fore-fileset-type-prediction",
       background: "back-fileset-type-prediction",
