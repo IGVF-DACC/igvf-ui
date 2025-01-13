@@ -58,6 +58,14 @@ export default function Workflow({
             <DataArea>
               <DataItemLabel>Name</DataItemLabel>
               <DataItemValue>{workflow.name}</DataItemValue>
+              {"uniform_pipeline" in workflow && (
+                <>
+                  <DataItemLabel>Uniform Pipeline</DataItemLabel>
+                  <DataItemValue>
+                    {workflow.uniform_pipeline === true ? "Yes" : "No"}
+                  </DataItemValue>
+                </>
+              )}
               {workflow.description && (
                 <>
                   <DataItemLabel>Description</DataItemLabel>
