@@ -94,6 +94,12 @@ export default function SignalFile({
                   <DataItemValue>True</DataItemValue>
                 </>
               )}
+              {signalFile.assembly && (
+                <>
+                  <DataItemLabel>Genome Assembly</DataItemLabel>
+                  <DataItemValue>{signalFile.assembly}</DataItemValue>
+                </>
+              )}
               {signalFile.start_view_position && (
                 <>
                   <DataItemLabel>Start View Position</DataItemLabel>

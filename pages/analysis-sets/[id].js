@@ -94,6 +94,18 @@ export default function AnalysisSet({
                   <DataItemValue>{analysisSet.summary}</DataItemValue>
                 </>
               )}
+              {analysisSet.workflows.length > 0 && (
+                <>
+                  <DataItemLabel>Workflows</DataItemLabel>
+                  <DataItemList isCollapsible>
+                    {analysisSet.workflows.map((workflow) => (
+                      <Link key={workflow["@id"]} href={workflow["@id"]}>
+                        {`${workflow.name} (${workflow.accession})`}
+                      </Link>
+                    ))}
+                  </DataItemList>
+                </>
+              )}
               {analysisSet.functional_assay_mechanisms.length > 0 && (
                 <>
                   <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
@@ -113,17 +125,6 @@ export default function AnalysisSet({
                   </DataItemValue>
                 </>
               )}
-              {analysisSet.publication_identifiers?.length > 0 && (
-                <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList
-                      dbxrefs={analysisSet.publication_identifiers}
-                      isCollapsible
-                    />
-                  </DataItemValue>
-                </>
-              )}
               {analysisSet.external_image_data_url && (
                 <>
                   <DataItemLabel>External Image Data URL</DataItemLabel>
@@ -138,10 +139,15 @@ export default function AnalysisSet({
                   </DataItemValueUrl>
                 </>
               )}
-              {analysisSet.submitter_comment && (
+              {analysisSet.publication_identifiers?.length > 0 && (
                 <>
-                  <DataItemLabel>Submitter Comment</DataItemLabel>
-                  <DataItemValue>{analysisSet.submitter_comment}</DataItemValue>
+                  <DataItemLabel>Publication Identifiers</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList
+                      dbxrefs={analysisSet.publication_identifiers}
+                      isCollapsible
+                    />
+                  </DataItemValue>
                 </>
               )}
               {publications.length > 0 && (
@@ -177,6 +183,12 @@ export default function AnalysisSet({
                       </a>
                     ))}
                   </DataItemList>
+                </>
+              )}
+              {analysisSet.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>{analysisSet.submitter_comment}</DataItemValue>
                 </>
               )}
             </DataArea>

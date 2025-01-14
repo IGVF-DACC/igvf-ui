@@ -739,6 +739,12 @@ export function FileSetDataItems({ item, publications = [], children }) {
           <DataItemValue>{item.file_set_type}</DataItemValue>
         </>
       )}
+      {item.control_type && (
+        <>
+          <DataItemLabel>Control Type</DataItemLabel>
+          <DataItemValue>{item.control_type}</DataItemValue>
+        </>
+      )}
       {item.summary && (
         <>
           <DataItemLabel>Summary</DataItemLabel>
@@ -816,6 +822,7 @@ FileSetDataItems.propTypes = {
 FileSetDataItems.commonProperties = [
   "aliases",
   "dbxrefs",
+  "control_type",
   "description",
   "file_set_type",
   "publications",

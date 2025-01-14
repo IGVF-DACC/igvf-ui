@@ -72,6 +72,14 @@ export default function DegronModification({
                   </DataItemValue>
                 </>
               )}
+              {"activated" in modification && (
+                <>
+                  <DataItemLabel>Activated</DataItemLabel>
+                  <DataItemValue>
+                    {modification.activated === true ? "Yes" : "No"}
+                  </DataItemValue>
+                </>
+              )}
               {modification.description && (
                 <>
                   <DataItemLabel>Description</DataItemLabel>

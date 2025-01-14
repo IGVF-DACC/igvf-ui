@@ -108,6 +108,12 @@ export default function AlignmentFile({
                   <DataItemValue>True</DataItemValue>
                 </>
               )}
+              {alignmentFile.assembly && (
+                <>
+                  <DataItemLabel>Genome Assembly</DataItemLabel>
+                  <DataItemValue>{alignmentFile.assembly}</DataItemValue>
+                </>
+              )}
               {alignmentFile.transcriptome_annotation && (
                 <>
                   <DataItemLabel>Transcriptome Annotation</DataItemLabel>

@@ -16,6 +16,15 @@ const modificationsColumns = [
     id: "modality",
     title: "Modality",
   },
+  {
+    id: "activated",
+    title: "Activation",
+    display: ({ source }) => {
+      if ("activated" in source) {
+        return <>{source.activated === true ? "Yes" : "No"}</>;
+      }
+    },
+  },
 ];
 
 /**
