@@ -69,11 +69,17 @@ export interface FileSetNodeData extends GenericNodeData {
  */
 export type NodeData = FileNodeData | FileSetNodeData;
 
+export type FileSetTypeColorMapSpec = {
+  readonly fill: string;
+  readonly bg: string;
+  readonly color: string;
+};
+
 /**
  * Represents a mapping of file set types to colors.
  */
-type FileSetTypeColorMap = {
-  readonly [key: string]: { readonly fill: string; readonly bg: string };
+export type FileSetTypeColorMap = {
+  readonly [key: string]: FileSetTypeColorMapSpec;
 };
 
 /**
@@ -83,26 +89,43 @@ export const fileSetTypeColorMap: FileSetTypeColorMap = {
   AnalysisSet: {
     fill: "fill-file-graph-analysis",
     bg: "bg-file-graph-analysis",
+    color: "#faafff",
   },
   AuxiliarySet: {
     fill: "fill-file-graph-auxiliary",
     bg: "bg-file-graph-auxiliary",
+    color: "#60fa72",
   },
   ConstructLibrarySet: {
     fill: "fill-file-graph-construct-library",
     bg: "bg-file-graph-construct-library",
+    color: "#ff84aa",
   },
-  CuratedSet: { fill: "fill-file-graph-curated", bg: "bg-file-graph-curated" },
+  CuratedSet: {
+    fill: "fill-file-graph-curated",
+    bg: "bg-file-graph-curated",
+    color: "#faac60",
+  },
   MeasurementSet: {
     fill: "fill-file-graph-measurement",
     bg: "bg-file-graph-measurement",
+    color: "#7cc0ff",
   },
-  ModelSet: { fill: "fill-file-graph-model", bg: "bg-file-graph-model" },
+  ModelSet: {
+    fill: "fill-file-graph-model",
+    bg: "bg-file-graph-model",
+    color: "#f5fa60",
+  },
   PredictionSet: {
     fill: "fill-file-graph-prediction",
     bg: "bg-file-graph-prediction",
+    color: "#60f5fa",
   },
-  unknown: { fill: "fill-file-graph-unknown", bg: "bg-file-graph-unknown" },
+  unknown: {
+    fill: "fill-file-graph-unknown",
+    bg: "bg-file-graph-unknown",
+    color: "#c0c0c0",
+  },
 };
 
 /**
