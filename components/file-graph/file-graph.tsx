@@ -2,11 +2,13 @@
 import * as d3Dag from "d3-dag";
 import { DocumentTextIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
 import { Group } from "@visx/group";
 import { LinkHorizontal } from "@visx/shape";
 // components
 import { DataAreaTitle, DataPanel } from "../data-area";
+import { Button } from "../form-elements";
 import GlobalContext from "../global-context";
 import Icon from "../icon";
 // lib
@@ -115,15 +117,20 @@ function GraphNode({
  * @param fileSet The file set object for the page the user views
  * @param nativeFiles Files belonging to the file set the user views
  * @param graphData List of nodes to include in the graph
+ * @param onReady Called when the graph is ready to be displayed
  */
 function Graph({
   fileSet,
   nativeFiles,
   graphData,
+  onReady = () => {},
+  isFileDownload = false,
 }: {
   fileSet: FileSetObject;
   nativeFiles: FileObject[];
   graphData: NodeData[];
+  onReady?: (svg: SVGSVGElement) => void;
+  isFileDownload?: boolean;
 }) {
   // Holds the DAG to render after it has been loaded in the browser
   const [loadedDag, setLoadedDag] = useState<d3Dag.Dag<
@@ -137,6 +144,8 @@ function Graph({
   const [layoutWidth, setLayoutWidth] = useState(0);
   // Holds the node that the user has clicked on to display a modal
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
+  // Reference to the SVG element that holds the graph; useful for saving the graph to a file
+  const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     // useEffect hides the d3-dag code from the NextJS server because d3-dag requires the browser's
@@ -162,6 +171,10 @@ function Graph({
       setLayoutWidth(height);
     }, 0);
 
+    // Notify the caller that the graph is ready to be displayed. Use this to download the chart to
+    // an SVG file.
+    onReady(svgRef.current);
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -175,7 +188,12 @@ function Graph({
 
   return loadedDag ? (
     <div className="overflow-x-auto">
-      <svg className="mx-auto" width={layoutWidth} height={layoutHeight}>
+      <svg
+        className="mx-auto"
+        width={layoutWidth}
+        height={layoutHeight}
+        ref={svgRef}
+      >
         <defs>
           <marker
             id="arrow"
@@ -197,8 +215,12 @@ function Graph({
               <LinkHorizontal
                 key={`link-${i}`}
                 data={link}
-                className="stroke-black dark:stroke-white"
-                strokeWidth="1"
+                {...(!isFileDownload && {
+                  className: "stroke-black dark:stroke-white",
+                })}
+                {...(isFileDownload && {
+                  style: { stroke: "black" },
+                })}
                 fill="none"
                 x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
                 markerEnd="url(#arrow)"
@@ -213,7 +235,8 @@ function Graph({
               const background =
                 fileSetTypeColorMap[fileSet["@type"][0]] ||
                 fileSetTypeColorMap.unknown;
-              const foreground = darkMode.enabled ? "#ffffff" : "#000000";
+              const foreground =
+                darkMode.enabled && !isFileDownload ? "#ffffff" : "#000000";
               return (
                 <GraphNode
                   key={i}
@@ -344,6 +367,64 @@ function Graph({
   );
 }
 
+function SaveSvgTrigger({
+  fileSet,
+  nativeFiles,
+  trimmedData,
+}: {
+  fileSet: FileSetObject;
+  nativeFiles: FileObject[];
+  trimmedData;
+}) {
+  const hiddenContainerRef = useRef<HTMLDivElement | null>(null);
+
+  function saveAsSVG() {
+    // Create an off-screen container
+    const container = document.createElement("div");
+    hiddenContainerRef.current = container;
+    document.body.appendChild(container);
+
+    // Create a root for React 18 rendering
+    const root = createRoot(container);
+
+    // Render <Graph /> inside the off-screen container
+    root.render(
+      <Graph
+        fileSet={fileSet}
+        nativeFiles={nativeFiles}
+        graphData={trimmedData}
+        isFileDownload
+      />
+    );
+
+    // Wait a bit for rendering to complete
+    setTimeout(() => {
+      const svgElement = container.querySelector("svg");
+      if (svgElement) {
+        // Extract the SVG string
+        const svgString = new XMLSerializer().serializeToString(svgElement);
+
+        // Convert to Blob and trigger download
+        const blob = new Blob([svgString], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "graph.svg";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      // Cleanup: Unmount the component and remove the container
+      root.unmount();
+      document.body.removeChild(container);
+    }, 100); // Small delay to ensure the component has rendered
+  }
+
+  return <Button onClick={saveAsSVG}>Download Graph</Button>;
+}
+
 /**
  * Display a graph of the file associations for a file set in a collapsible panel. We use files in
  * `files` instead of those embedded in `fileSet` because the embedded file objects do not include
@@ -381,6 +462,8 @@ export function FileGraph({
   const relevantFileSetTypes = !isGraphTooLarge
     ? collectRelevantFileSetTypes(trimmedData, fileSet as FileSetObject)
     : [];
+  const [svgRef, setSvgRef] = useState<SVGSVGElement | null>(null);
+  console.log("SVGREF IS", svgRef);
 
   if (trimmedData.length > 0) {
     return (
@@ -396,6 +479,7 @@ export function FileGraph({
                   fileSet={fileSet as FileSetObject}
                   nativeFiles={files as FileObject[]}
                   graphData={trimmedData}
+                  onReady={setSvgRef}
                 />
                 <Legend fileSetTypes={relevantFileSetTypes} />
               </>
@@ -403,6 +487,13 @@ export function FileGraph({
               <div className="p-4 text-center italic">
                 Graph too large to display
               </div>
+            )}
+            {svgRef && (
+              <SaveSvgTrigger
+                fileSet={fileSet as FileSetObject}
+                nativeFiles={files as FileObject[]}
+                trimmedData={trimmedData}
+              />
             )}
           </DataPanel>
         </div>
