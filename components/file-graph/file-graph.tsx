@@ -29,6 +29,7 @@ import {
   isFileNodeData,
   isFileSetNodeData,
   MAX_NODES_TO_DISPLAY,
+  type FileSetTypeColorMapSpec,
   type NodeData,
 } from "./types";
 // root
@@ -55,6 +56,7 @@ function GraphNode({
   isNodeSelected,
   isRounded = false,
   className = "",
+  isGraphDownload = false,
   children,
 }: {
   node: d3Dag.DagNode<
@@ -65,13 +67,30 @@ function GraphNode({
     undefined
   >;
   onNodeClick: (nodeData: NodeData) => void;
-  background: { fill: string; bg: string };
+  background: FileSetTypeColorMapSpec;
   label: string;
   isNodeSelected: boolean;
   isRounded?: boolean;
+  isGraphDownload?: boolean;
   className?: string;
   children: ReactNode;
 }) {
+  const rectProps = {
+    height: NODE_HEIGHT,
+    width: NODE_WIDTH,
+    x: -NODE_WIDTH / 2,
+    y: -NODE_HEIGHT / 2,
+    opacity: 1,
+    strokeWidth: 1,
+    ...(isRounded ? { rx: 10, ry: 10 } : {}),
+    ...(!isGraphDownload && {
+      className: `stroke-gray-800 dark:stroke-gray-400 ${background.fill}`,
+    }),
+    ...(isGraphDownload && {
+      style: { stroke: "#1f2937", fill: background.color },
+    }),
+  };
+
   return (
     <Group
       top={node.x}
@@ -82,16 +101,7 @@ function GraphNode({
       aria-label={label}
       className={className}
     >
-      <rect
-        height={NODE_HEIGHT}
-        width={NODE_WIDTH}
-        x={-NODE_WIDTH / 2}
-        y={-NODE_HEIGHT / 2}
-        opacity={1}
-        className={`stroke-gray-800 dark:stroke-gray-400 ${background.fill}`}
-        strokeWidth={1}
-        {...(isRounded ? { rx: 10, ry: 10 } : {})}
-      />
+      <rect {...rectProps} />
       {isNodeSelected && (
         <rect
           height={NODE_HEIGHT + 8}
@@ -124,13 +134,13 @@ function Graph({
   nativeFiles,
   graphData,
   onReady = () => {},
-  isFileDownload = false,
+  isGraphDownload = false,
 }: {
   fileSet: FileSetObject;
   nativeFiles: FileObject[];
   graphData: NodeData[];
   onReady?: (svg: SVGSVGElement) => void;
-  isFileDownload?: boolean;
+  isGraphDownload?: boolean;
 }) {
   // Holds the DAG to render after it has been loaded in the browser
   const [loadedDag, setLoadedDag] = useState<d3Dag.Dag<
@@ -215,10 +225,10 @@ function Graph({
               <LinkHorizontal
                 key={`link-${i}`}
                 data={link}
-                {...(!isFileDownload && {
+                {...(!isGraphDownload && {
                   className: "stroke-black dark:stroke-white",
                 })}
-                {...(isFileDownload && {
+                {...(isGraphDownload && {
                   style: { stroke: "black" },
                 })}
                 fill="none"
@@ -236,7 +246,8 @@ function Graph({
                 fileSetTypeColorMap[fileSet["@type"][0]] ||
                 fileSetTypeColorMap.unknown;
               const foreground =
-                darkMode.enabled && !isFileDownload ? "#ffffff" : "#000000";
+                darkMode.enabled && !isGraphDownload ? "#ffffff" : "#000000";
+              console.log("GRAPH", isGraphDownload);
               return (
                 <GraphNode
                   key={i}
@@ -244,7 +255,8 @@ function Graph({
                   onNodeClick={onNodeClick}
                   background={background}
                   label={`File ${graphNode.file.accession}, file format ${graphNode.file.file_format}, content type ${graphNode.file.content_type}`}
-                  isNodeSelected={isNodeSelected}
+                  isNodeSelected={isNodeSelected && !isGraphDownload}
+                  isGraphDownload={isGraphDownload}
                   className="relative"
                 >
                   <DocumentTextIcon
@@ -295,7 +307,8 @@ function Graph({
                   onNodeClick={onNodeClick}
                   background={background}
                   label={`File set ${graphNode.fileSet.title}`}
-                  isNodeSelected={isNodeSelected}
+                  isNodeSelected={isNodeSelected && !isGraphDownload}
+                  isGraphDownload={isGraphDownload}
                   isRounded
                 >
                   <Icon.FileSet
@@ -393,7 +406,7 @@ function SaveSvgTrigger({
         fileSet={fileSet}
         nativeFiles={nativeFiles}
         graphData={trimmedData}
-        isFileDownload
+        isGraphDownload
       />
     );
 
@@ -488,13 +501,11 @@ export function FileGraph({
                 Graph too large to display
               </div>
             )}
-            {svgRef && (
-              <SaveSvgTrigger
-                fileSet={fileSet as FileSetObject}
-                nativeFiles={files as FileObject[]}
-                trimmedData={trimmedData}
-              />
-            )}
+            <SaveSvgTrigger
+              fileSet={fileSet as FileSetObject}
+              nativeFiles={files as FileObject[]}
+              trimmedData={trimmedData}
+            />
           </DataPanel>
         </div>
       </section>
