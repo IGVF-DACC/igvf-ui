@@ -45,7 +45,7 @@ import type {
 } from "./fetch-request.d";
 import { ok, err, Result, Ok } from "./result";
 
-const FETCH_METHOD = {
+export const FETCH_METHOD = {
   GET: "GET",
   HEAD: "HEAD",
   POST: "POST",

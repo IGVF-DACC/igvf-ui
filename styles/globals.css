@@ -59,15 +59,15 @@
   }
 
   .back-fileset-type-analysis {
-    @apply bg-sky-100 dark:bg-sky-900 border-sky-600 hover:bg-sky-200 dark:hover:bg-sky-800;
+    @apply border-sky-600 bg-sky-100 hover:bg-sky-200 dark:bg-sky-900 dark:hover:bg-sky-800;
   }
 
   .back-fileset-type-prediction {
-    @apply bg-teal-200 dark:bg-teal-900 border-teal-600 hover:bg-teal-300 dark:hover:bg-teal-800;
+    @apply border-teal-600 bg-teal-200 hover:bg-teal-300 dark:bg-teal-900 dark:hover:bg-teal-800;
   }
 
   .back-fileset-type-measurement {
-    @apply bg-yellow-100 dark:bg-yellow-900 border-yellow-600 hover:bg-yellow-200 dark:hover:bg-yellow-800;
+    @apply border-yellow-600 bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900 dark:hover:bg-yellow-800;
   }
 }
 
@@ -141,7 +141,7 @@
   --color-facet-group-button-border: #d1d5db;
   --color-facet-group-button-text: #000000;
 
-  --color-facet-title-background: #b2d0de;
+  --color-facet-title-background: transparent;
   --color-facet-title-text: #000000;
 
   --color-facet-tag-background: #a7f3d0;
@@ -159,6 +159,13 @@
   --color-facet-filter-input-border-focus: #000000;
   --color-facet-filter-input-text: #85abd6;
   --color-facet-filter-input-text-focus: #000000;
+
+  --color-facet-counter: #808080;
+  --color-facet-counter-open: #c0c0c0;
+  --color-facet-counter-selected: #84cc16;
+  --color-facet-counter-open-selected: #a3e635;
+  --color-facet-counter-negative: #e11d48;
+  --color-facet-counter-open-negative: #fb7185;
 
   --color-tab-group-border: #d0d0d0;
   --color-tab-selected-border: #3b82f6;
@@ -330,6 +337,13 @@
   --color-facet-group-button-border: #998868;
   --color-facet-group-button-text: #ffffff;
   --color-facet-group-button-selected-text: #ffffff;
+
+  --color-facet-counter: #909090;
+  --color-facet-counter-open: #404040;
+  --color-facet-counter-selected: #84cc16;
+  --color-facet-counter-open-selected: #a3e635;
+  --color-facet-counter-negative: #e11d48;
+  --color-facet-counter-open-negative: #be123c;
 
   --color-button-audit-open-background: #064e3b;
   --color-button-audit-closed-background: #000000;
@@ -530,37 +544,6 @@ a {
 
 .dark #graph .edge > polygon {
   fill: #fff !important;
-}
-
-/* Scroll-to-top button opacity animation */
-#scroll-to-top {
-  padding: 0;
-  opacity: 1;
-  animation: fadeIn 200ms linear;
-}
-
-#scroll-to-top.fade-out {
-  padding: 0;
-  opacity: 0;
-  animation: fadeOut 200ms linear;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
 }
 
 /**

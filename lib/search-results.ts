@@ -34,9 +34,9 @@ export function generateSearchResultsTypes(
       const allResultTypes = typeFacet.terms.map((term) => term.key);
       const concreteTypes = allResultTypes.filter((type) => {
         const typeSubtypes = (profiles as ProfilesProps)._subtypes[type];
-        return typeSubtypes
-          ? typeSubtypes.length === 1 && type === typeSubtypes[0]
-          : false;
+        return (
+          typeSubtypes && typeSubtypes.length === 1 && type === typeSubtypes[0]
+        );
       });
       const readableTitles = collectionTitles
         ? concreteTypes.map((type) => collectionTitles[type])
@@ -71,4 +71,17 @@ export function stripLimitQueryIfNeeded(query: NextJsServerQuery): string {
 
   // Return an empty string to indicate we don't need a redirect.
   return "";
+}
+
+/**
+ * Extracts all the `type={object type}` query parameters from the search-results query string.
+ * Both concrete and abstract types get included.
+ * @param searchResults Search results from the data provider
+ * @returns Array of types that explicitly appear in the search results query string
+ */
+export function getSpecificSearchTypes(searchResults: SearchResults): string[] {
+  const typeFacet = searchResults.filters.filter(
+    (filter) => filter.field === "type"
+  );
+  return typeFacet.length > 0 ? typeFacet.map((facet) => facet.term) : [];
 }
