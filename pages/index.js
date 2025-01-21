@@ -218,7 +218,7 @@ export default function Home({ processedCount, predictionsCount, rawCount }) {
       </div>
       <TabGroup
         onChange={onTabChange}
-        className="border-l border-r border-t border-panel hidden @xl/home:block"
+        className="hidden border-l border-r border-t border-panel @xl/home:block"
       >
         <TabList className="bg-data-background">
           {allTypes.map((type) => {
@@ -239,7 +239,7 @@ export default function Home({ processedCount, predictionsCount, rawCount }) {
             shouldIncludeLinks
           />
         ) : (
-          <div className="px-4 py-8 italic text-center text-gray-500 dark:text-gray-400">
+          <div className="px-4 py-8 text-center italic text-gray-500 dark:text-gray-400">
             No {activeFileSetType} data available.
           </div>
         )}

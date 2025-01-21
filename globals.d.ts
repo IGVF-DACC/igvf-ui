@@ -1,3 +1,5 @@
+import { Collection } from "lodash";
+
 /**
  * Single audit within an audit category.
  */
@@ -185,13 +187,22 @@ export interface SearchResultsFacetGroup {
   title: string;
 }
 
+export type SearchResultsFacetTerm = {
+  /** Title of the term */
+  key: string;
+  /** Number of items with this term */
+  doc_count: number;
+};
+
 export interface SearchResultsFacet {
+  /** Object property the facet represents */
   field: string;
-  terms: {
-    doc_count: number;
-    key: string;
-  }[];
-  [key: string]: unknown;
+  /** Title to display for the facet */
+  title: string;
+  /** List of terms in the facet */
+  terms: SearchResultsFacetTerm[];
+  /** Total number of objects selected within this facet */
+  total: number;
 }
 
 export interface SearchResultsFilter {
@@ -245,10 +256,15 @@ export interface NextJsServerQuery {
 /**
  * Response from /collection-titles.
  */
-export type CollectionTitles = {
+export type CollectionTitles = CollectionTitleProps | CollectionTitleGenerics;
+
+interface CollectionTitleProps {
   "@type": string[];
+}
+
+interface CollectionTitleGenerics {
   [key: string]: string;
-};
+}
 
 /**
  * ************************************************************************************************

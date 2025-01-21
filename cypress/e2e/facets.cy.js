@@ -2,45 +2,40 @@
 
 describe("Facet tests", () => {
   it("shows the correct facet components for an object type", () => {
-    cy.visit("/search?type=InVitroSystem");
+    // Login so we can test persistent open facets.
+    cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
+    cy.contains("Cypress Testing");
+    cy.wait(1000);
 
-    // Make sure facet groups are present and the first is selected.
-    cy.get(`[data-testid="facetgroup-buttons"]`).should("exist");
-    cy.get(`[data-testid="facetgroup-buttons"]`)
-      .find("button")
-      .should("have.length", 7);
-    cy.get(`[data-testid="facetgroup-buttons"]`)
-      .find("button")
-      .first()
-      .should("have.class", "border-facet-group-button-selected");
+    // Navigate to the InVitroSystem list view.
+    cy.get("[data-testid=navigation-data-model]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
 
-    // Make sure we have some facets appearing.
-    cy.get(`[data-testid^="facet-"]`).should("have.length.gte", 5);
-    cy.get(`[data-testid="facet-sample_terms.term_name"]`).should("exist");
+    // Click the link with aria-label containing "In Vitro Systems"
+    cy.get(`[aria-label="List view of all In Vitro Systems objects"]`).click();
 
     // Make sure we have some search results.
-    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 5);
+    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length.gte", 5);
 
-    // Make sure clicking a facet term has an effect.
+    // Make sure we have some facets and open the Sample one. For some reason we need the delay or
+    // it ignores the click.
+    cy.get(`[data-testid^="facet-container-"]`).should("have.length.gte", 3);
+    cy.wait(1000);
+    cy.get(`[data-testid="facettrigger-sample_terms.term_name"]`).click();
+
+    // Make sure clicking a facet term in the Sample facet has an effect.
     cy.get(`label[id="facet-checkbox-sample_terms.term_name-hues8"]`).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
     cy.get(`[aria-label="Clear Sample filter for HUES8"]`).should("exist");
     cy.get(`label[id="facet-checkbox-sample_terms.term_name-hues8"]`).click();
-    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 5);
+    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length.gte", 5);
     cy.get(`[aria-label="Clear Sample Terms filter for HUES8"]`).should(
       "not.exist"
     );
 
-    // Click another facet group and make sure a new set of facets appears.
-    cy.get(`[aria-label="Provenance filter group"]`).click();
-    cy.get(`[data-testid^="facet-"]`).should("have.length.gte", 4);
-    cy.get(`[data-testid="facet-sample_terms.term_name"]`).should("not.exist");
-    cy.get(`[data-testid="facet-collections"]`).should("exist");
-
-    // Make sure we have some search results.
-    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 5);
-
-    // Click a facet term and make sure it has an effect.
+    // Open the Lab facet, click a term, and make sure it has an effect.
+    cy.wait(1000);
+    cy.get(`[data-testid="facettrigger-lab.title"]`).click();
     cy.get(
       `label[id="facet-checkbox-lab.title-danwei-huangfu-2c-mskcc"]`
     ).click();
@@ -56,24 +51,51 @@ describe("Facet tests", () => {
     );
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 5);
 
-    // Check we can transition to the report view with the facets.
+    // Check we can transition to the report view with selected facets. Delay three seconds to make
+    // sure opened facets get saved.
+    cy.wait(3000);
     cy.get(
       `label[id="facet-checkbox-lab.title-j-michael-cherry-2c-stanford"]`
     ).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 4);
-
     cy.get(`[aria-label="Select report view"]`).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
       "4 items"
     );
-    cy.get(`[aria-label="Provenance filter group"]`).click();
+
+    // Now we're in the report view. Make sure the Sample and Lab facets are still open.
+    cy.get(`[data-testid="facettrigger-sample_terms.term_name"]`).should(
+      "have.attr",
+      "aria-expanded",
+      "true"
+    );
+    cy.get(`[data-testid="facettrigger-lab.title"]`).should(
+      "have.attr",
+      "aria-expanded",
+      "true"
+    );
+
+    // Uncheck the lab facet term and make sure the count updates.
     cy.get(
       `label[id="facet-checkbox-lab.title-j-michael-cherry-2c-stanford"]`
     ).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
       "5 items"
+    );
+
+    // Load the search view and make sure the Sample and Lab facets are still open.
+    cy.visit("/search/?type=InVitroSystem");
+    cy.get(`[data-testid="facettrigger-sample_terms.term_name"]`).should(
+      "have.attr",
+      "aria-expanded",
+      "true"
+    );
+    cy.get(`[data-testid="facettrigger-lab.title"]`).should(
+      "have.attr",
+      "aria-expanded",
+      "true"
     );
   });
 });
