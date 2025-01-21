@@ -1,6 +1,6 @@
 // node_modules
 import * as d3Dag from "d3-dag";
-import { DocumentTextIcon } from "@heroicons/react/20/solid";
+import { ArrowDownTrayIcon, DocumentTextIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -11,6 +11,7 @@ import { DataAreaTitle, DataPanel } from "../data-area";
 import { Button } from "../form-elements";
 import GlobalContext from "../global-context";
 import Icon from "../icon";
+import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { truncateText } from "../../lib/general";
 // local
@@ -38,6 +39,11 @@ import type {
   FileObject,
   FileSetObject,
 } from "../../globals.d";
+
+/**
+ * Horizontal offset of arrowhead from the target node.
+ */
+const LINK_ARROWHEAD_X_OFFSET = -88;
 
 /**
  * Display a selectable node in the graph, for either a file or a file set node. Put the contents
@@ -117,6 +123,38 @@ function GraphNode({
       )}
       {children}
     </Group>
+  );
+}
+
+/**
+ * Display an arrowhead at the end of a link between two nodes. The arrowhead is a triangle pointing
+ * in the direction of the target node. `x` comes from `link.target.x` which -- in this graph
+ * orientation -- specifies the vertical position of the target node. `y` comes from
+ * `link.target.y` which specifies the horizontal position of the target node.
+ * @param x X-coordinate of the arrowhead from the target node
+ * @param y Y-coordinate of the arrowhead from the target node
+ * @param isGraphDownload True if downloading graph as an SVG file, false if browser displayed
+ */
+function LinkArrowHead({
+  x,
+  y,
+  isGraphDownload,
+}: {
+  x: number;
+  y: number;
+  isGraphDownload: boolean;
+}) {
+  const offsetY = y + LINK_ARROWHEAD_X_OFFSET;
+  return (
+    <polygon
+      points={`${offsetY},${x - 5} ${offsetY + 10},${x} ${offsetY},${x + 5}`}
+      {...(!isGraphDownload && {
+        className: "stroke-black dark:stroke-white fill-black dark:fill-white",
+      })}
+      {...(isGraphDownload && {
+        style: { stroke: "black", fill: "black" },
+      })}
+    />
   );
 }
 
@@ -204,37 +242,45 @@ function Graph({
         height={layoutHeight}
         ref={svgRef}
       >
-        <defs>
-          <marker
-            id="arrow"
-            viewBox="0 -5 10 10"
-            refX="20"
-            refY="0"
-            markerWidth="10"
-            markerHeight="10"
-            orient="auto"
-            className="fill-black dark:fill-white"
-          >
-            <path d="M0,-5L10,0L0,5" />
-          </marker>
-        </defs>
+        <g>
+          <defs>
+            <marker
+              id="arrow"
+              viewBox="0 -5 10 10"
+              refX="20"
+              refY="0"
+              markerWidth="10"
+              markerHeight="10"
+              orient="auto"
+              className="fill-black dark:fill-white"
+              style={{ fill: "black" }}
+            >
+              <path d="M0,-5L10,0L0,5" />
+            </marker>
+          </defs>
+        </g>
         <Group top={0} left={0}>
           {loadedDag.links().map((link, i) => {
             // Render the edges between nodes as lines.
             return (
-              <LinkHorizontal
-                key={`link-${i}`}
-                data={link}
-                {...(!isGraphDownload && {
-                  className: "stroke-black dark:stroke-white",
-                })}
-                {...(isGraphDownload && {
-                  style: { stroke: "black" },
-                })}
-                fill="none"
-                x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
-                markerEnd="url(#arrow)"
-              />
+              <g key={`link-${i}`}>
+                <LinkHorizontal
+                  data={link}
+                  {...(!isGraphDownload && {
+                    className: "stroke-black dark:stroke-white",
+                  })}
+                  {...(isGraphDownload && {
+                    style: { stroke: "black" },
+                  })}
+                  fill="none"
+                  x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
+                />
+                <LinkArrowHead
+                  x={link.target.x}
+                  y={link.target.y}
+                  isGraphDownload={isGraphDownload}
+                />
+              </g>
             );
           })}
           {loadedDag.descendants().map((node, i) => {
@@ -389,6 +435,7 @@ function SaveSvgTrigger({
   nativeFiles: FileObject[];
   trimmedData;
 }) {
+  const tooltipAttr = useTooltip("graph-download");
   const hiddenContainerRef = useRef<HTMLDivElement | null>(null);
 
   function saveAsSVG() {
@@ -435,7 +482,18 @@ function SaveSvgTrigger({
     }, 100); // Small delay to ensure the component has rendered
   }
 
-  return <Button onClick={saveAsSVG}>Download Graph</Button>;
+  return (
+    <>
+      <TooltipRef tooltipAttr={tooltipAttr}>
+        <div>
+          <Button size="sm" onClick={saveAsSVG}>
+            <ArrowDownTrayIcon className="h-4 w-4" />
+          </Button>
+        </div>
+      </TooltipRef>
+      <Tooltip tooltipAttr={tooltipAttr}>Save graph as SVG file</Tooltip>
+    </>
+  );
 }
 
 /**
@@ -483,6 +541,11 @@ export function FileGraph({
       <section role="region" aria-labelledby="file-graph">
         <DataAreaTitle id={panelId}>
           <div id="file-graph">{title}</div>
+          <SaveSvgTrigger
+            fileSet={fileSet as FileSetObject}
+            nativeFiles={files as FileObject[]}
+            trimmedData={trimmedData}
+          />
         </DataAreaTitle>
         <div className="overflow-hidden [&>div]:p-0">
           <DataPanel>
@@ -501,11 +564,6 @@ export function FileGraph({
                 Graph too large to display
               </div>
             )}
-            <SaveSvgTrigger
-              fileSet={fileSet as FileSetObject}
-              nativeFiles={files as FileObject[]}
-              trimmedData={trimmedData}
-            />
           </DataPanel>
         </div>
       </section>
