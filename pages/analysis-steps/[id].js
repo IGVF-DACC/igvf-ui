@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
 import Attribution from "../../components/attribution";
+import { AnalysisStepVersionTable } from "../../components/analysis-step-version-table";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
@@ -112,6 +113,13 @@ export default function AnalysisStep({
               )}
             </DataArea>
           </DataPanel>
+          {analysisStep.analysis_step_versions.length > 0 && (
+            <AnalysisStepVersionTable
+              analysisStepVersions={analysisStep.analysis_step_versions}
+              reportLink={`/multireport/?type=AnalysisStepVersions&analysis_step.@id=${analysisStep["@id"]}`}
+              reportLabel="Analysis Step Versions"
+            />
+          )}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
