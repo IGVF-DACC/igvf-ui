@@ -32,10 +32,10 @@ const analysisStepVersionColumns = [
 ];
 
 /**
- * Display a sortable table of the given analysis steps. Optionally display a link to a report page of
+ * Display a sortable table of the given analysis step versions. Optionally display a link to a report page of
  * the analysis steps in this table.
  */
-export default function AnalysisStepVersionTable({
+export function AnalysisStepVersionTable({
   analysisStepVersions,
   reportLink = "",
   reportLabel = "",

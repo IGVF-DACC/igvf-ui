@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
 import Attribution from "../../components/attribution";
-import AnalysisStepVersionTable from "../../components/analysis-step-version-table";
+import { AnalysisStepVersionTable } from "../../components/analysis-step-version-table";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,
