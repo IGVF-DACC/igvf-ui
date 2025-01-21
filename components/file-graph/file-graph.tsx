@@ -293,7 +293,6 @@ function Graph({
                 fileSetTypeColorMap.unknown;
               const foreground =
                 darkMode.enabled && !isGraphDownload ? "#ffffff" : "#000000";
-              console.log("GRAPH", isGraphDownload);
               return (
                 <GraphNode
                   key={i}
@@ -426,6 +425,13 @@ function Graph({
   );
 }
 
+/**
+ * Handles the button to download the graph as an SVG file. It also directs the actual process of
+ * saving the SVG file.
+ * @param fileSet The file set object the user views
+ * @param nativeFiles Files included directly in `fileSet`
+ * @param trimmedData List of nodes to include in the graph
+ */
 function SaveSvgTrigger({
   fileSet,
   nativeFiles,
@@ -433,21 +439,18 @@ function SaveSvgTrigger({
 }: {
   fileSet: FileSetObject;
   nativeFiles: FileObject[];
-  trimmedData;
+  trimmedData: NodeData[];
 }) {
   const tooltipAttr = useTooltip("graph-download");
-  const hiddenContainerRef = useRef<HTMLDivElement | null>(null);
 
   function saveAsSVG() {
-    // Create an off-screen container
+    // Create an off-screen container and create the React 18 root inside it.
     const container = document.createElement("div");
-    hiddenContainerRef.current = container;
     document.body.appendChild(container);
-
-    // Create a root for React 18 rendering
     const root = createRoot(container);
 
-    // Render <Graph /> inside the off-screen container
+    // Render <Graph /> inside the off-screen container, indicating we're rendering the graph for
+    // download.
     root.render(
       <Graph
         fileSet={fileSet}
@@ -457,16 +460,17 @@ function SaveSvgTrigger({
       />
     );
 
-    // Wait a bit for rendering to complete
+    // Wait a bit for rendering to complete. `<Graph /> calls its `onReady` prop when it's ready,
+    // but only when rendering in the browser, not when called inside a `root.render()`. So that's
+    // why we need this arbitrary delay.
     setTimeout(() => {
       const svgElement = container.querySelector("svg");
       if (svgElement) {
-        // Extract the SVG string
         const svgString = new XMLSerializer().serializeToString(svgElement);
-
-        // Convert to Blob and trigger download
         const blob = new Blob([svgString], { type: "image/svg+xml" });
         const url = URL.createObjectURL(blob);
+
+        // Set up an off-screen anchor element, then virtually click it to download the SVG file.
         const a = document.createElement("a");
         a.href = url;
         a.download = "graph.svg";
@@ -476,10 +480,10 @@ function SaveSvgTrigger({
         URL.revokeObjectURL(url);
       }
 
-      // Cleanup: Unmount the component and remove the container
+      // Cleanup: Unmount the component and remove the container.
       root.unmount();
       document.body.removeChild(container);
-    }, 100); // Small delay to ensure the component has rendered
+    }, 10);
   }
 
   return (
@@ -533,8 +537,6 @@ export function FileGraph({
   const relevantFileSetTypes = !isGraphTooLarge
     ? collectRelevantFileSetTypes(trimmedData, fileSet as FileSetObject)
     : [];
-  const [svgRef, setSvgRef] = useState<SVGSVGElement | null>(null);
-  console.log("SVGREF IS", svgRef);
 
   if (trimmedData.length > 0) {
     return (
@@ -555,7 +557,6 @@ export function FileGraph({
                   fileSet={fileSet as FileSetObject}
                   nativeFiles={files as FileObject[]}
                   graphData={trimmedData}
-                  onReady={setSvgRef}
                 />
                 <Legend fileSetTypes={relevantFileSetTypes} />
               </>
