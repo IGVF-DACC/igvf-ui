@@ -44,8 +44,7 @@ ClearAll.propTypes = {
 };
 
 /**
- * Display the facet area that contains the buttons for the facet groups. If the user clicks a
- * facet-group button, display the modal containing the facets for that group.
+ * Display the facet area including the Clear All button and the facets themselves.
  */
 export default function FacetSection({ searchResults }) {
   // Determine if we should show facets at all. This is the case when no facet groups exist, and
