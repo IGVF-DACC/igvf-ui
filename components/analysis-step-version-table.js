@@ -12,6 +12,7 @@ const analysisStepVersionColumns = [
   {
     id: "@id",
     title: "Analysis Step Versions",
+    display: ({ source }) => <Link href={source["@id"]}>{source["@id"]}</Link>,
   },
   {
     id: "software_versions",
