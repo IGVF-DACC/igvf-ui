@@ -133,21 +133,26 @@ function GraphNode({
  * `link.target.y` which specifies the horizontal position of the target node.
  * @param x X-coordinate of the arrowhead from the target node
  * @param y Y-coordinate of the arrowhead from the target node
+ * @param angle Angle of the arrowhead in radians
  * @param isGraphDownload True if downloading graph as an SVG file, false if browser displayed
  */
 function LinkArrowHead({
   x,
   y,
+  angle,
   isGraphDownload,
 }: {
   x: number;
   y: number;
+  angle: number;
   isGraphDownload: boolean;
 }) {
-  const offsetY = y + LINK_ARROWHEAD_X_OFFSET;
   return (
     <polygon
-      points={`${offsetY},${x - 5} ${offsetY + 10},${x} ${offsetY},${x + 5}`}
+      points="0,-5 10,0 0,5"
+      transform={`translate(${
+        y + LINK_ARROWHEAD_X_OFFSET + Math.sin(angle) * 2.8
+      },${x - 10 * Math.sin(angle) * 1.3}) rotate(${(angle * 180) / Math.PI})`}
       {...(!isGraphDownload && {
         className: "stroke-black dark:stroke-white fill-black dark:fill-white",
       })}
@@ -258,25 +263,16 @@ function Graph({
         height={layoutHeight}
         ref={svgRef}
       >
-        <g>
-          <defs>
-            <marker
-              id="arrow"
-              viewBox="0 -5 10 10"
-              refX="20"
-              refY="0"
-              markerWidth="10"
-              markerHeight="10"
-              orient="auto"
-              className="fill-black dark:fill-white"
-              style={{ fill: "black" }}
-            >
-              <path d="M0,-5L10,0L0,5" />
-            </marker>
-          </defs>
-        </g>
         <Group top={0} left={0}>
           {loadedDag.links().map((link, i) => {
+            const source = { x: link.source.x, y: link.source.y + 70 };
+            const target = { x: link.target.x, y: link.target.y - 70 };
+
+            // Calculate the angle of the arrowhead based on the link's source and target positions.
+            const dx = target.y - source.y;
+            const dy = target.x - source.x;
+            const angle = Math.atan2(dy, dx) * 0.4;
+
             // Render the edges between nodes as lines.
             return (
               <g key={`link-${i}`}>
@@ -289,11 +285,13 @@ function Graph({
                     style: { stroke: "black" },
                   })}
                   fill="none"
-                  x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
+                  source={() => source}
+                  target={() => target}
                 />
                 <LinkArrowHead
                   x={link.target.x}
                   y={link.target.y}
+                  angle={angle}
                   isGraphDownload={isGraphDownload}
                 />
               </g>
