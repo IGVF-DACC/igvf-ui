@@ -3,7 +3,6 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Attribution from "../../components/attribution";
-import AnalysisStepTable from "../../components/analysis-step-table";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
   DataArea,

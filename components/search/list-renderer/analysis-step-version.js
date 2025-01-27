@@ -36,21 +36,18 @@ export default function AnalysisStepVersion({ item: analysisStepVersion }) {
         <SearchListItemMeta>
           <span key="lab">{analysisStepVersion.lab.title}</span>
         </SearchListItemMeta>
-        {isSupplementsVisible && (
-          <SearchListItemSupplement>
-            <SearchListItemSupplementAlternateAccessions item={analysisSet} />
-            {analysisStepVersion.analysis_step && (
-              <SearchListItemSupplementSection>
-                <SearchListItemSupplementLabel>
-                  Analysis Step
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {analysisStepVersion.analysis_step.title}
-                </SearchListItemSupplementContent>
-              </SearchListItemSupplementSection>
-            )}
-          </SearchListItemSupplement>
-        )}
+        <SearchListItemSupplement>
+          {analysisStepVersion.analysis_step && (
+            <SearchListItemSupplementSection>
+              <SearchListItemSupplementLabel>
+                Analysis Step
+              </SearchListItemSupplementLabel>
+              <SearchListItemSupplementContent>
+                {analysisStepVersion.analysis_step.name}
+              </SearchListItemSupplementContent>
+            </SearchListItemSupplementSection>
+          )}
+        </SearchListItemSupplement>
       </SearchListItemMain>
       <SearchListItemQuality item={analysisStepVersion} />
     </SearchListItemContent>
