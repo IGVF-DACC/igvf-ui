@@ -2654,7 +2654,7 @@ describe("Test Analysis Step Version component", () => {
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <AnalysisStep item={item} />
+        <AnalysisStepVersion item={item} />
       </SessionContext.Provider>
     );
 

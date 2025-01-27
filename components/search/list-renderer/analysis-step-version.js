@@ -6,6 +6,11 @@ import {
   SearchListItemMain,
   SearchListItemMeta,
   SearchListItemQuality,
+  SearchListItemSupplement,
+  SearchListItemSupplementAlternateAccessions,
+  SearchListItemSupplementContent,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -31,6 +36,21 @@ export default function AnalysisStepVersion({ item: analysisStepVersion }) {
         <SearchListItemMeta>
           <span key="lab">{analysisStepVersion.lab.title}</span>
         </SearchListItemMeta>
+        {isSupplementsVisible && (
+          <SearchListItemSupplement>
+            <SearchListItemSupplementAlternateAccessions item={analysisSet} />
+            {analysisStepVersion.analysis_step && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Analysis Step
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {analysisStepVersion.analysis_step.title}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+          </SearchListItemSupplement>
+        )}
       </SearchListItemMain>
       <SearchListItemQuality item={analysisStepVersion} />
     </SearchListItemContent>
