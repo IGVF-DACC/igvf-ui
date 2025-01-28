@@ -1,14 +1,17 @@
 // node_modules
 import * as d3Dag from "d3-dag";
-import { DocumentTextIcon } from "@heroicons/react/20/solid";
+import { ArrowDownTrayIcon, DocumentTextIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
 import { Group } from "@visx/group";
 import { LinkHorizontal } from "@visx/shape";
 // components
 import { DataAreaTitle, DataPanel } from "../data-area";
+import { Button } from "../form-elements";
 import GlobalContext from "../global-context";
 import Icon from "../icon";
+import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { truncateText } from "../../lib/general";
 // local
@@ -27,6 +30,7 @@ import {
   isFileNodeData,
   isFileSetNodeData,
   MAX_NODES_TO_DISPLAY,
+  type FileSetTypeColorMapSpec,
   type NodeData,
 } from "./types";
 // root
@@ -35,6 +39,11 @@ import type {
   FileObject,
   FileSetObject,
 } from "../../globals.d";
+
+/**
+ * Horizontal offset of arrowhead from the target node.
+ */
+const LINK_ARROWHEAD_X_OFFSET = -88;
 
 /**
  * Display a selectable node in the graph, for either a file or a file set node. Put the contents
@@ -53,6 +62,7 @@ function GraphNode({
   isNodeSelected,
   isRounded = false,
   className = "",
+  isGraphDownload = false,
   children,
 }: {
   node: d3Dag.DagNode<
@@ -63,13 +73,30 @@ function GraphNode({
     undefined
   >;
   onNodeClick: (nodeData: NodeData) => void;
-  background: { fill: string; bg: string };
+  background: FileSetTypeColorMapSpec;
   label: string;
   isNodeSelected: boolean;
   isRounded?: boolean;
+  isGraphDownload?: boolean;
   className?: string;
   children: ReactNode;
 }) {
+  const rectProps = {
+    height: NODE_HEIGHT,
+    width: NODE_WIDTH,
+    x: -NODE_WIDTH / 2,
+    y: -NODE_HEIGHT / 2,
+    opacity: 1,
+    strokeWidth: 1,
+    ...(isRounded ? { rx: 10, ry: 10 } : {}),
+    ...(!isGraphDownload && {
+      className: `stroke-gray-800 dark:stroke-gray-400 ${background.fill}`,
+    }),
+    ...(isGraphDownload && {
+      style: { stroke: "#1f2937", fill: background.color },
+    }),
+  };
+
   return (
     <Group
       top={node.x}
@@ -80,16 +107,7 @@ function GraphNode({
       aria-label={label}
       className={className}
     >
-      <rect
-        height={NODE_HEIGHT}
-        width={NODE_WIDTH}
-        x={-NODE_WIDTH / 2}
-        y={-NODE_HEIGHT / 2}
-        opacity={1}
-        className={`stroke-gray-800 dark:stroke-gray-400 ${background.fill}`}
-        strokeWidth={1}
-        {...(isRounded ? { rx: 10, ry: 10 } : {})}
-      />
+      <rect {...rectProps} />
       {isNodeSelected && (
         <rect
           height={NODE_HEIGHT + 8}
@@ -109,21 +127,59 @@ function GraphNode({
 }
 
 /**
+ * Display an arrowhead at the end of a link between two nodes. The arrowhead is a triangle pointing
+ * in the direction of the target node. `x` comes from `link.target.x` which -- in this graph
+ * orientation -- specifies the vertical position of the target node. `y` comes from
+ * `link.target.y` which specifies the horizontal position of the target node.
+ * @param x X-coordinate of the arrowhead from the target node
+ * @param y Y-coordinate of the arrowhead from the target node
+ * @param isGraphDownload True if downloading graph as an SVG file, false if browser displayed
+ */
+function LinkArrowHead({
+  x,
+  y,
+  isGraphDownload,
+}: {
+  x: number;
+  y: number;
+  isGraphDownload: boolean;
+}) {
+  const offsetY = y + LINK_ARROWHEAD_X_OFFSET;
+  return (
+    <polygon
+      points={`${offsetY},${x - 5} ${offsetY + 10},${x} ${offsetY},${x + 5}`}
+      {...(!isGraphDownload && {
+        className: "stroke-black dark:stroke-white fill-black dark:fill-white",
+      })}
+      {...(isGraphDownload && {
+        style: { stroke: "black", fill: "black" },
+      })}
+    />
+  );
+}
+
+/**
  * Display a graph of file associations for a file set. The graph is a directed acyclic graph (DAG)
  * where each node represents a file and each edge represents a `derived_from` relationship between
  * files.
  * @param fileSet The file set object for the page the user views
  * @param nativeFiles Files belonging to the file set the user views
  * @param graphData List of nodes to include in the graph
+ * @param onReady Called when the graph is ready to be displayed
+ * @param isGraphDownload True to download graph in SVG file, false to display in browser
  */
 function Graph({
   fileSet,
   nativeFiles,
   graphData,
+  onReady = () => {},
+  isGraphDownload = false,
 }: {
   fileSet: FileSetObject;
   nativeFiles: FileObject[];
   graphData: NodeData[];
+  onReady?: (svg: SVGSVGElement) => void;
+  isGraphDownload?: boolean;
 }) {
   // Holds the DAG to render after it has been loaded in the browser
   const [loadedDag, setLoadedDag] = useState<d3Dag.Dag<
@@ -137,12 +193,27 @@ function Graph({
   const [layoutWidth, setLayoutWidth] = useState(0);
   // Holds the node that the user has clicked on to display a modal
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
+  // Reference to the SVG element that holds the graph; useful for saving the graph to a file
+  const svgRef = useRef<SVGSVGElement>(null);
+  // Timer to periodically monitor when svgRef gets filled in with the SVG element
+  let svgReadyTimer: NodeJS.Timeout;
+
+  // Poll the SVG element ref to know when the graph is ready to be displayed.
+  function waitForSvg() {
+    if (svgRef.current) {
+      // Notify the caller that the graph is ready to be displayed. Use this to download the chart
+      // to an SVG file.
+      onReady(svgRef.current);
+    } else {
+      svgReadyTimer = setTimeout(waitForSvg, 10);
+    }
+  }
 
   useEffect(() => {
     // useEffect hides the d3-dag code from the NextJS server because d3-dag requires the browser's
     // DOM to run. Use a timer to give React a cycle to render the "Loading..." message before
     // running the d3-dag code.
-    const timer = setTimeout(() => {
+    const loadingTimer = setTimeout(() => {
       const dag = d3Dag.dagStratify()(graphData);
       const layout = d3Dag
         .sugiyama()
@@ -162,7 +233,13 @@ function Graph({
       setLayoutWidth(height);
     }, 0);
 
-    return () => clearTimeout(timer);
+    // Start waiting for the SVG graph to finish rendering.
+    waitForSvg();
+
+    return () => {
+      clearTimeout(loadingTimer);
+      clearTimeout(svgReadyTimer);
+    };
   }, []);
 
   /**
@@ -175,34 +252,51 @@ function Graph({
 
   return loadedDag ? (
     <div className="overflow-x-auto">
-      <svg className="mx-auto" width={layoutWidth} height={layoutHeight}>
-        <defs>
-          <marker
-            id="arrow"
-            viewBox="0 -5 10 10"
-            refX="20"
-            refY="0"
-            markerWidth="10"
-            markerHeight="10"
-            orient="auto"
-            className="fill-black dark:fill-white"
-          >
-            <path d="M0,-5L10,0L0,5" />
-          </marker>
-        </defs>
+      <svg
+        className="mx-auto"
+        width={layoutWidth}
+        height={layoutHeight}
+        ref={svgRef}
+      >
+        <g>
+          <defs>
+            <marker
+              id="arrow"
+              viewBox="0 -5 10 10"
+              refX="20"
+              refY="0"
+              markerWidth="10"
+              markerHeight="10"
+              orient="auto"
+              className="fill-black dark:fill-white"
+              style={{ fill: "black" }}
+            >
+              <path d="M0,-5L10,0L0,5" />
+            </marker>
+          </defs>
+        </g>
         <Group top={0} left={0}>
           {loadedDag.links().map((link, i) => {
             // Render the edges between nodes as lines.
             return (
-              <LinkHorizontal
-                key={`link-${i}`}
-                data={link}
-                className="stroke-black dark:stroke-white"
-                strokeWidth="1"
-                fill="none"
-                x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
-                markerEnd="url(#arrow)"
-              />
+              <g key={`link-${i}`}>
+                <LinkHorizontal
+                  data={link}
+                  {...(!isGraphDownload && {
+                    className: "stroke-black dark:stroke-white",
+                  })}
+                  {...(isGraphDownload && {
+                    style: { stroke: "black" },
+                  })}
+                  fill="none"
+                  x={(node: any) => node.y - NODE_WIDTH / 2 + 10}
+                />
+                <LinkArrowHead
+                  x={link.target.x}
+                  y={link.target.y}
+                  isGraphDownload={isGraphDownload}
+                />
+              </g>
             );
           })}
           {loadedDag.descendants().map((node, i) => {
@@ -213,7 +307,8 @@ function Graph({
               const background =
                 fileSetTypeColorMap[fileSet["@type"][0]] ||
                 fileSetTypeColorMap.unknown;
-              const foreground = darkMode.enabled ? "#ffffff" : "#000000";
+              const foreground =
+                darkMode.enabled && !isGraphDownload ? "#ffffff" : "#000000";
               return (
                 <GraphNode
                   key={i}
@@ -221,7 +316,8 @@ function Graph({
                   onNodeClick={onNodeClick}
                   background={background}
                   label={`File ${graphNode.file.accession}, file format ${graphNode.file.file_format}, content type ${graphNode.file.content_type}`}
-                  isNodeSelected={isNodeSelected}
+                  isNodeSelected={isNodeSelected && !isGraphDownload}
+                  isGraphDownload={isGraphDownload}
                   className="relative"
                 >
                   <DocumentTextIcon
@@ -272,7 +368,8 @@ function Graph({
                   onNodeClick={onNodeClick}
                   background={background}
                   label={`File set ${graphNode.fileSet.title}`}
-                  isNodeSelected={isNodeSelected}
+                  isNodeSelected={isNodeSelected && !isGraphDownload}
+                  isGraphDownload={isGraphDownload}
                   isRounded
                 >
                   <Icon.FileSet
@@ -345,6 +442,124 @@ function Graph({
 }
 
 /**
+ * Save an SVG element as an SVG file.
+ * @param svgElement SVG element to save as an SVG file
+ */
+async function saveSvg(
+  svgElement: SVGSVGElement,
+  fileSet: FileSetObject
+): Promise<void> {
+  const svgString = new XMLSerializer().serializeToString(svgElement);
+  const blob = new Blob([svgString], { type: "image/svg+xml" });
+
+  // Generate a suggested file name.
+  const filename = `${fileSet.accession}_graph.svg`;
+
+  if ("showSaveFilePicker" in window) {
+    // Use the File System Access API to save the SVG file using a Save As modal.
+    try {
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: filename,
+        types: [
+          {
+            description: `File graph for file set ${fileSet.accession}`,
+            accept: { "image/svg+xml": [".svg"] },
+          },
+        ],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+    } catch (error) {
+      console.error("Save aborted:", error);
+    }
+  } else {
+    // The File System Access API is not available in this browser, so directly download the SVG
+    // file to the user's download directory as configured in their browser.
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+}
+
+/**
+ * Handles the button to download the graph as an SVG file. It also directs the actual process of
+ * saving the SVG file.
+ * @param fileSet The file set object the user views
+ * @param nativeFiles Files included directly in `fileSet`
+ * @param trimmedData List of nodes to include in the graph
+ */
+function SaveSvgTrigger({
+  fileSet,
+  nativeFiles,
+  trimmedData,
+}: {
+  fileSet: FileSetObject;
+  nativeFiles: FileObject[];
+  trimmedData: NodeData[];
+}) {
+  const tooltipAttr = useTooltip("graph-download");
+
+  // Set up the process to save the graph as an SVG file, and render the graph for a file instead
+  // of for the browser. The downloaded file doesn't use Tailwind CSS classes nor does it pay
+  // attention to dark mode.
+  function saveAsSvgSetup() {
+    // Create an off-screen container and create the React 18 root inside it.
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+
+    // Render <Graph /> inside the off-screen container, indicating we're rendering the graph for
+    // download.
+    root.render(
+      <Graph
+        fileSet={fileSet}
+        nativeFiles={nativeFiles}
+        graphData={trimmedData}
+        onReady={(svgElement) => {
+          if (svgElement) {
+            saveSvg(svgElement, fileSet);
+          }
+
+          // Cleanup: Unmount the component and remove the container.
+          root.unmount();
+          document.body.removeChild(container);
+        }}
+        isGraphDownload
+      />
+    );
+  }
+
+  return (
+    <>
+      <TooltipRef tooltipAttr={tooltipAttr}>
+        <div>
+          <Button size="sm" onClick={saveAsSvgSetup}>
+            <ArrowDownTrayIcon className="h-4 w-4" />
+          </Button>
+        </div>
+      </TooltipRef>
+      <Tooltip tooltipAttr={tooltipAttr}>
+        Download graph as SVG file. See{" "}
+        <a
+          href="https://youtu.be/700ZwlFX41g"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          tutorial
+        </a>
+        .
+      </Tooltip>
+    </>
+  );
+}
+
+/**
  * Display a graph of the file associations for a file set in a collapsible panel. We use files in
  * `files` instead of those embedded in `fileSet` because the embedded file objects do not include
  * enough properties of the files to generate the graph.
@@ -387,6 +602,11 @@ export function FileGraph({
       <section role="region" aria-labelledby="file-graph">
         <DataAreaTitle id={panelId}>
           <div id="file-graph">{title}</div>
+          <SaveSvgTrigger
+            fileSet={fileSet as FileSetObject}
+            nativeFiles={files as FileObject[]}
+            trimmedData={trimmedData}
+          />
         </DataAreaTitle>
         <div className="overflow-hidden [&>div]:p-0">
           <DataPanel>
