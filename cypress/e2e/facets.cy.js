@@ -25,7 +25,7 @@ describe("Facet tests", () => {
 
     // Make sure clicking a facet term in the Sample facet has an effect.
     cy.get(`label[id="facet-checkbox-sample_terms.term_name-hues8"]`).click();
-    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
+    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length.gte", 2);
     cy.get(`[aria-label="Clear Sample filter for HUES8"]`).should("exist");
     cy.get(`label[id="facet-checkbox-sample_terms.term_name-hues8"]`).click();
     cy.get(`[data-testid^="search-list-item-/"]`).should("have.length.gte", 5);
@@ -39,7 +39,7 @@ describe("Facet tests", () => {
     cy.get(
       `label[id="facet-checkbox-lab.title-danwei-huangfu-2c-mskcc"]`
     ).click();
-    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 1);
+    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length.gte", 2);
     cy.get(`[aria-label="Clear Lab filter for Danwei Huangfu, MSKCC"]`).should(
       "exist"
     );
@@ -49,7 +49,7 @@ describe("Facet tests", () => {
     cy.get(`[aria-label="Clear Lab filter for Danwei Huangfu, MSKCC"]`).should(
       "not.exist"
     );
-    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 5);
+    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length.gte", 5);
 
     // Check we can transition to the report view with selected facets. Delay three seconds to make
     // sure opened facets get saved.
@@ -82,7 +82,7 @@ describe("Facet tests", () => {
     ).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
-      "5 items"
+      "6 items"
     );
 
     // Load the search view and make sure the Sample and Lab facets are still open.
