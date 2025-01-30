@@ -684,6 +684,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Audit Documentation
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="resources"
+            href="/tissue-summary/homo-sapiens"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Resources
+          </NavigationHrefItem>
         </NavigationGroupItem>
 
         <NavigationGroupItem

@@ -51,7 +51,7 @@ describe("DataGrid", () => {
       </DataGridContainer>
     );
 
-    const table = screen.getByRole("table");
+    const table = screen.getByRole("grid");
     expect(table).toBeInTheDocument();
 
     const cells = within(table).getAllByRole("cell");
@@ -118,7 +118,7 @@ describe("DataGrid", () => {
       </DataGridContainer>
     );
 
-    const table = screen.getByRole("table");
+    const table = screen.getByRole("grid");
     expect(table).toBeInTheDocument();
     expect(table).toHaveClass("bg-slate-900");
 
@@ -141,5 +141,32 @@ describe("DataGrid", () => {
 
     const contentCell = within(cells[2]).getByText("3");
     expect(contentCell).toHaveStyle({ color: "#ffff00" });
+  });
+
+  it("renders a table with cells with no wrapper element", () => {
+    const data = [
+      {
+        id: "first-sub-row",
+        cells: [
+          { id: "sub-row-cell-1", content: <SpecialCell value="1" /> },
+          {
+            id: "sub-row-cell-2",
+            content: <SpecialCell value="2" />,
+            noWrapper: true,
+          },
+        ],
+      },
+    ];
+
+    render(
+      <DataGridContainer>
+        <DataGrid role="table" data={data} />
+      </DataGridContainer>
+    );
+
+    // Get all the elements with a role of "cell".
+    const cells = screen.getAllByRole("cell");
+    expect(cells[0].firstChild).toHaveClass("flex");
+    expect(cells[1].firstChild).not.toHaveClass("flex");
   });
 });

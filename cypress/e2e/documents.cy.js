@@ -30,6 +30,6 @@ describe("Must sign in to see current document objects", () => {
       "http://localhost:3000/treatments/10c05ac0-52a2-11e6-bdf4-0800200c9a66/"
     );
     cy.contains("Cypress Testing");
-    cy.get("[role=table]").find("[aria-label^=Download]");
+    cy.get("[role=grid]").find("[aria-label^=Download]");
   });
 });

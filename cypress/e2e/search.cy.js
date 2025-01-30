@@ -14,7 +14,7 @@ describe("search view tests", () => {
 
     cy.get(`[aria-label="Select report view"]`).click();
     cy.get("[data-testid^=search-list-item-]").should("not.exist");
-    cy.get("[role=table]").should("exist");
+    cy.get("[role=grid]").should("exist");
     cy.get("[role=columnheader]").its("length").should("be.gte", 1);
     cy.get("[role=cell]").its("length").should("be.gte", 1);
 
@@ -22,7 +22,7 @@ describe("search view tests", () => {
     cy.get("[data-testid^=search-list-item-]")
       .its("length")
       .should("be.gte", 1);
-    cy.get("[role=table]").should("not.exist");
+    cy.get("[role=grid]").should("not.exist");
     cy.get("[role=columnheader]").should("not.exist");
     cy.get("[role=cell]").should("not.exist");
   });
@@ -33,7 +33,7 @@ describe("search view tests", () => {
     cy.get("[data-testid=navigation-schemas]").click();
     cy.get(`[aria-label="List view of all Labs objects"]`).click();
     cy.get(`[aria-label="Select report view"]`).click();
-    cy.get("[role=table]").should("exist");
+    cy.get("[role=grid]").should("exist");
 
     cy.contains("Columns").click();
     cy.get("[id^=headlessui-dialog-panel-]").should("exist");
@@ -71,8 +71,8 @@ describe("search view tests", () => {
     cy.get(`[data-testid="search-list"]`).find("li").should("have.length", 100);
 
     cy.get(`[aria-label="Select report view"]`).click();
-    cy.get("[role=table]").should("exist");
-    cy.get("[role=table]").find(`[role=cell]`).should("have.length", 500);
+    cy.get("[role=grid]").should("exist");
+    cy.get("[role=grid]").find(`[role=cell]`).should("have.length", 500);
 
     cy.get(`[aria-label="Select list view"]`).click();
     cy.get(`[data-testid="search-list"]`).find("li").should("have.length", 100);
