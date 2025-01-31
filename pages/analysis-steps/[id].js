@@ -116,7 +116,7 @@ export default function AnalysisStep({
           {analysisStep.analysis_step_versions.length > 0 && (
             <AnalysisStepVersionTable
               analysisStepVersions={analysisStep.analysis_step_versions}
-              reportLink={`/multireport/?type=AnalysisStepVersions&analysis_step.@id=${analysisStep["@id"]}`}
+              reportLink={`/multireport/?type=AnalysisStepVersion&analysis_step.@id=${analysisStep["@id"]}`}
               reportLabel="Analysis Step Versions"
             />
           )}
