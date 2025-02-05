@@ -92,12 +92,8 @@ const measurementSetColumns = [
   {
     id: "construct-library-sets",
     title: "Associated Construct Library Sets",
-    display: ({ source, meta }) => {
+    display: ({ source }) => {
       if (source.samples?.length > 0) {
-        // Get the embedded construct library sets in all file set samples. These construct library
-        // sets don't have enough properties to display in the table, so find the corresponding
-        // construct library sets in the meta.constructLibrarySets array which have all the
-        // properties we need for the table.
         const embeddedConstructLibrarySets = source.samples.reduce(
           (acc, sample) => {
             return sample.construct_library_sets?.length > 0
@@ -106,15 +102,8 @@ const measurementSetColumns = [
           },
           []
         );
-        const constructLibrarySetPaths = embeddedConstructLibrarySets.map(
-          (fileSet) => fileSet["@id"]
-        );
-        const constructLibrarySets = meta.constructLibrarySets.filter(
-          (fileSet) => constructLibrarySetPaths.includes(fileSet["@id"])
-        );
-
         return (
-          <LinkedIdAndStatusStack items={constructLibrarySets}>
+          <LinkedIdAndStatusStack items={embeddedConstructLibrarySets}>
             {(constructLibrarySets) => constructLibrarySets.accession}
           </LinkedIdAndStatusStack>
         );
@@ -197,11 +186,7 @@ const auxiliarySetColumns = [
     title: "Associated Construct Library Sets",
     display: ({ source, meta }) => {
       if (source.samples?.length > 0) {
-        // Get the embedded construct library sets in all file set samples. These construct library
-        // sets don't have enough properties to display in the table, so find the corresponding
-        // construct library sets in the meta.constructLibrarySets array which have all the
-        // properties we need for the table.
-        const embeddedConstructLibrarySets = source.samples.reduce(
+        const constructLibrarySetPaths = source.samples.reduce(
           (acc, sample) => {
             return sample.construct_library_sets?.length > 0
               ? acc.concat(sample.construct_library_sets)
@@ -211,7 +196,7 @@ const auxiliarySetColumns = [
         );
 
         const constructLibrarySets = meta.constructLibrarySets.filter(
-          (fileSet) => embeddedConstructLibrarySets.includes(fileSet["@id"])
+          (fileSet) => constructLibrarySetPaths.includes(fileSet["@id"])
         );
 
         return (

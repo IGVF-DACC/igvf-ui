@@ -15,6 +15,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
@@ -32,6 +33,7 @@ import {
   requestBiomarkers,
   requestBiosamples,
   requestDocuments,
+  requestDonors,
   requestFileSets,
   requestInstitutionalCertificates,
   requestPublications,
@@ -49,6 +51,7 @@ export default function MultiplexedSample({
   institutionalCertificates,
   publications,
   documents,
+  donors,
   attribution = null,
   sortedFractions,
   sources,
@@ -123,6 +126,7 @@ export default function MultiplexedSample({
               </SampleDataItems>
             </DataArea>
           </DataPanel>
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {multiplexedSample.file_sets.length > 0 && (
             <FileSetTable
               fileSets={multiplexedSample.file_sets}
@@ -183,6 +187,8 @@ MultiplexedSample.propTypes = {
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors associated with the sample
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sorted fractions sample
   sortedFractions: PropTypes.arrayOf(PropTypes.object),
   // Sources associated with the sample
@@ -208,18 +214,12 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/multiplexed-samples/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(multiplexedSample)) {
-    // Request the construct library sets from all the embedded multiplexed samples instead of the
-    // `construct_library_sets` property of the multiplexed sample itself because the latter is
-    // not always fully populated.
     let constructLibrarySets = [];
-    if (multiplexedSample.multiplexed_samples?.length > 0) {
-      let constructLibrarySetPaths =
-        multiplexedSample.multiplexed_samples.reduce((acc, sample) => {
-          return sample.construct_library_sets?.length > 0
-            ? acc.concat(sample.construct_library_sets)
-            : acc;
-        }, []);
-      constructLibrarySetPaths = [...new Set(constructLibrarySetPaths)];
+    if (multiplexedSample.construct_library_sets.length > 0) {
+      const constructLibrarySetPaths =
+        multiplexedSample.construct_library_sets.map(
+          (constructLibrarySet) => constructLibrarySet["@id"]
+        );
       constructLibrarySets = await requestFileSets(
         constructLibrarySetPaths,
         request
@@ -239,6 +239,11 @@ export async function getServerSideProps({ params, req, query }) {
             request
           )
         : [];
+    let donors = [];
+    if (multiplexedSample.donors?.length > 0) {
+      const donorPaths = multiplexedSample.donors.map((donor) => donor["@id"]);
+      donors = await requestDonors(donorPaths, request);
+    }
     let publications = [];
     if (multiplexedSample.publications?.length > 0) {
       const publicationPaths = multiplexedSample.publications.map(
@@ -299,6 +304,7 @@ export async function getServerSideProps({ params, req, query }) {
         institutionalCertificates,
         publications,
         documents,
+        donors,
         sortedFractions,
         sources,
         treatments,
