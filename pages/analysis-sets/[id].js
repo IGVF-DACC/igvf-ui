@@ -94,6 +94,12 @@ export default function AnalysisSet({
                   <DataItemValue>{analysisSet.summary}</DataItemValue>
                 </>
               )}
+              {analysisSet.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{analysisSet.description}</DataItemValue>
+                </>
+              )}
               {analysisSet.workflows.length > 0 && (
                 <>
                   <DataItemLabel>Workflows</DataItemLabel>
