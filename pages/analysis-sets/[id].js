@@ -439,13 +439,16 @@ export async function getServerSideProps({ params, req, query }) {
 
     let constructLibrarySets = [];
     if (inputFileSetSamples.length > 0) {
-      let constructLibrarySetPaths = inputFileSetSamples.reduce(
+      const embeddedConstructLibrarySets = inputFileSetSamples.reduce(
         (acc, sample) => {
           return sample.construct_library_sets?.length > 0
             ? acc.concat(sample.construct_library_sets)
             : acc;
         },
         []
+      );
+      let constructLibrarySetPaths = embeddedConstructLibrarySets.map(
+        (constructLibrarySet) => constructLibrarySet["@id"]
       );
 
       if (constructLibrarySetPaths.length > 0) {

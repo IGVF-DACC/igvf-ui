@@ -266,9 +266,11 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = tissue.documents
       ? await requestDocuments(tissue.documents, request)
       : [];
-    const donors = tissue.donors
-      ? await requestDonors(tissue.donors, request)
-      : [];
+    let donors = [];
+    if (tissue.donors?.length > 0) {
+      const donorPaths = tissue.donors.map((donor) => donor["@id"]);
+      donors = await requestDonors(donorPaths, request);
+    }
     const partOf = tissue.part_of
       ? (await request.getObject(tissue.part_of)).optional()
       : null;
@@ -304,9 +306,16 @@ export async function getServerSideProps({ params, req, query }) {
       );
       treatments = await requestTreatments(treatmentPaths, request);
     }
-    const constructLibrarySets = tissue.construct_library_sets
-      ? await requestFileSets(tissue.construct_library_sets, request)
-      : [];
+    let constructLibrarySets = [];
+    if (tissue.construct_library_sets?.length > 0) {
+      const constructLibrarySetPaths = tissue.construct_library_sets.map(
+        (constructLibrarySet) => constructLibrarySet["@id"]
+      );
+      constructLibrarySets = await requestFileSets(
+        constructLibrarySetPaths,
+        request
+      );
+    }
     let multiplexedInSamples = [];
     if (tissue.multiplexed_in.length > 0) {
       const multiplexedInPaths = tissue.multiplexed_in.map(

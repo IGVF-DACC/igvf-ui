@@ -243,9 +243,11 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = primaryCell.documents
       ? await requestDocuments(primaryCell.documents, request)
       : [];
-    const donors = primaryCell.donors
-      ? await requestDonors(primaryCell.donors, request)
-      : [];
+    let donors = [];
+    if (primaryCell.donors?.length > 0) {
+      const donorPaths = primaryCell.donors.map((donor) => donor["@id"]);
+      donors = await requestDonors(donorPaths, request);
+    }
     const partOf = primaryCell.part_of
       ? (await request.getObject(primaryCell.part_of)).optional()
       : null;
@@ -281,9 +283,16 @@ export async function getServerSideProps({ params, req, query }) {
       );
       treatments = await requestTreatments(treatmentPaths, request);
     }
-    const constructLibrarySets = primaryCell.construct_library_sets
-      ? await requestFileSets(primaryCell.construct_library_sets, request)
-      : [];
+    let constructLibrarySets = [];
+    if (primaryCell.construct_library_sets?.length > 0) {
+      const constructLibrarySetPaths = primaryCell.construct_library_sets.map(
+        (constructLibrarySet) => constructLibrarySet["@id"]
+      );
+      constructLibrarySets = await requestFileSets(
+        constructLibrarySetPaths,
+        request
+      );
+    }
     let multiplexedInSamples = [];
     if (primaryCell.multiplexed_in.length > 0) {
       const multiplexedInPaths = primaryCell.multiplexed_in.map(

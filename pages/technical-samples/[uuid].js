@@ -174,9 +174,16 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
-    const constructLibrarySets = sample.construct_library_sets
-      ? await requestFileSets(sample.construct_library_sets, request)
-      : [];
+    let constructLibrarySets = [];
+    if (sample.construct_library_sets?.length > 0) {
+      const constructLibrarySetPaths = sample.construct_library_sets.map(
+        (constructLibrarySet) => constructLibrarySet["@id"]
+      );
+      constructLibrarySets = await requestFileSets(
+        constructLibrarySetPaths,
+        request
+      );
+    }
     let multiplexedInSamples = [];
     if (sample.multiplexed_in.length > 0) {
       const multiplexedInPaths = sample.multiplexed_in.map(

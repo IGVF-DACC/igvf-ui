@@ -353,9 +353,11 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = inVitroSystem.documents
       ? await requestDocuments(inVitroSystem.documents, request)
       : [];
-    const donors = inVitroSystem.donors
-      ? await requestDonors(inVitroSystem.donors, request)
-      : [];
+    let donors = [];
+    if (inVitroSystem.donors?.length > 0) {
+      const donorPaths = inVitroSystem.donors.map((donor) => donor["@id"]);
+      donors = await requestDonors(donorPaths, request);
+    }
     const partOf = inVitroSystem.part_of
       ? (await request.getObject(inVitroSystem.part_of)).optional()
       : null;
@@ -409,9 +411,16 @@ export async function getServerSideProps({ params, req, query }) {
     const targetedSampleTerm = inVitroSystem.targeted_sample_term
       ? (await request.getObject(inVitroSystem.targeted_sample_term)).optional()
       : null;
-    const constructLibrarySets = inVitroSystem.construct_library_sets
-      ? await requestFileSets(inVitroSystem.construct_library_sets, request)
-      : [];
+    let constructLibrarySets = [];
+    if (inVitroSystem.construct_library_sets?.length > 0) {
+      const constructLibrarySetPaths = inVitroSystem.construct_library_sets.map(
+        (constructLibrarySet) => constructLibrarySet["@id"]
+      );
+      constructLibrarySets = await requestFileSets(
+        constructLibrarySetPaths,
+        request
+      );
+    }
     let multiplexedInSamples = [];
     if (inVitroSystem.multiplexed_in.length > 0) {
       const multiplexedInPaths = inVitroSystem.multiplexed_in.map(

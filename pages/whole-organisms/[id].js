@@ -213,9 +213,11 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = sample.documents
       ? await requestDocuments(sample.documents, request)
       : [];
-    const donors = sample.donors
-      ? await requestDonors(sample.donors, request)
-      : [];
+    let donors = [];
+    if (sample.donors?.length > 0) {
+      const donorPaths = sample.donors.map((donor) => donor["@id"]);
+      donors = await requestDonors(donorPaths, request);
+    }
     const parts =
       sample.parts?.length > 0
         ? await requestBiosamples(sample.parts, request)
@@ -244,9 +246,16 @@ export async function getServerSideProps({ params, req, query }) {
         })
       );
     }
-    const constructLibrarySets = sample.construct_library_sets
-      ? await requestFileSets(sample.construct_library_sets, request)
-      : [];
+    let constructLibrarySets = [];
+    if (sample.construct_library_sets?.length > 0) {
+      const constructLibrarySetPaths = sample.construct_library_sets.map(
+        (constructLibrarySet) => constructLibrarySet["@id"]
+      );
+      constructLibrarySets = await requestFileSets(
+        constructLibrarySetPaths,
+        request
+      );
+    }
     let multiplexedInSamples = [];
     if (sample.multiplexed_in.length > 0) {
       const multiplexedInPaths = sample.multiplexed_in.map(
