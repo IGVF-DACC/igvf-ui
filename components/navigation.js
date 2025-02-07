@@ -686,7 +686,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="resources"
-            href="/tissue-summary/homo-sapiens"
+            href="/tissue-summary/mus-musculus"
             navigationClick={navigationClick}
             isChildItem
           >

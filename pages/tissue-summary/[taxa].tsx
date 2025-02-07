@@ -2,7 +2,6 @@
 import { ArrowDownIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import Link from "next/link";
-import { useRouter } from "next/router";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import DataGrid, {
@@ -11,7 +10,6 @@ import DataGrid, {
   type Row,
 } from "../../components/data-grid";
 import PagePreamble from "../../components/page-preamble";
-import { TabGroup, TabList, TabTitle } from "../../components/tabs";
 // lib
 import FetchRequest from "../../lib/fetch-request";
 import { errorObjectToProps } from "../../lib/errors";
@@ -69,18 +67,6 @@ type TaxaMap = {
  * Map a taxa to the corresponding paths to the data provider matrix query and the UI page.
  */
 const taxaQueries: Record<string, TaxaMap> = {
-  "homo-sapiens": {
-    dataProviderPath:
-      "/tissue-homo-sapiens/?type=Tissue&taxa=Homo+sapiens&virtual=false",
-    cellLinkPath: "/search/?type=Tissue&taxa=Homo+sapiens",
-    pagePath: "/tissue-summary/homo-sapiens",
-    queryAtType: "TissueSummaryHomoSapiens",
-    columnHeaderCellClass: "bg-tissue-matrix-column-header-homo-sapiens",
-    rowHeaderCellClass: "bg-tissue-matrix-row-header-homo-sapiens",
-    rowSubheaderCellClass: "bg-tissue-matrix-row-subheader-homo-sapiens",
-    dataCellClass: "bg-tissue-matrix-data-homo-sapiens",
-    hoverCellClass: "group-hover:bg-tissue-matrix-highlight-homo-sapiens",
-  },
   "mus-musculus": {
     dataProviderPath:
       "/tissue-mus-musculus/?type=Tissue&taxa=Mus+musculus&virtual=false",
@@ -423,8 +409,6 @@ export default function TissueSummary({
 }: {
   tissueSummary: MatrixResults;
 }) {
-  const router = useRouter();
-
   // Map `tissueSummary["@type"]` to the corresponding taxa string.
   const taxa = Object.keys(taxaQueries).find(
     (taxaQueriesKey) =>
@@ -435,37 +419,22 @@ export default function TissueSummary({
   // the `<DataGrid>` component.
   const dataGrid = convertMatrixToDataGrid(tissueSummary.matrix, taxa);
 
-  // Called when the user clicks on a tab. Go to the tissue matrix path for the chosen taxa.
-  function onTabChange(tabId: string) {
-    router.push(taxaQueries[tabId].pagePath);
-  }
-
   return (
     <>
       <Breadcrumbs item={tissueSummary} />
-      <PagePreamble />
-      <TabGroup defaultId={taxa} onChange={onTabChange}>
-        <TabList>
-          <TabTitle id="homo-sapiens">
-            <i>Homo Sapiens</i>
-          </TabTitle>
-          <TabTitle id="mus-musculus">
-            <i>Mus Musculus</i>
-          </TabTitle>
-        </TabList>
-        <div className="pt-4">
-          <LabelXAxis label={tissueSummary.matrix.x.label} />
-          <div className="flex">
-            <LabelYAxis label={tissueSummary.matrix.y.label} />
-            <div
-              role="table"
-              className="border-1 grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
-            >
-              <DataGrid data={dataGrid} meta={{ taxa }} />
-            </div>
+      <PagePreamble pageTitle={tissueSummary.title} />
+      <div className="pt-4">
+        <LabelXAxis label={tissueSummary.matrix.x.label} />
+        <div className="flex">
+          <LabelYAxis label={tissueSummary.matrix.y.label} />
+          <div
+            role="table"
+            className="border-1 grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
+          >
+            <DataGrid data={dataGrid} meta={{ taxa }} />
           </div>
         </div>
-      </TabGroup>
+      </div>
     </>
   );
 }
