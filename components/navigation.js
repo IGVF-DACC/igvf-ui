@@ -684,13 +684,22 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Audit Documentation
           </NavigationHrefItem>
+        </NavigationGroupItem>
+
+        <NavigationGroupItem
+          id="resources"
+          title="Resources"
+          icon={<Icon.Resources />}
+          isGroupOpened={openedParents.includes("resources")}
+          handleGroupClick={handleParentClick}
+        >
           <NavigationHrefItem
             id="resources"
             href="/tissue-summary/mus-musculus"
             navigationClick={navigationClick}
             isChildItem
           >
-            Resources
+            Tissues
           </NavigationHrefItem>
         </NavigationGroupItem>
 

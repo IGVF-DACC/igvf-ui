@@ -426,7 +426,7 @@ export default function TissueSummary({
       <div className="pt-4">
         <LabelXAxis label={tissueSummary.matrix.x.label} />
         <div className="flex">
-          <LabelYAxis label={tissueSummary.matrix.y.label} />
+          <LabelYAxis label="Tissue / Organ" />
           <div
             role="table"
             className="border-1 grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
