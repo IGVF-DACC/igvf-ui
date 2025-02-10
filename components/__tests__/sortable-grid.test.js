@@ -67,7 +67,7 @@ describe("SortableGrid", () => {
 
     render(<SortableGrid data={data} columns={columns} />);
 
-    const table = screen.getByRole("table");
+    const table = screen.getByRole("grid");
     expect(table).toBeInTheDocument();
 
     const headers = within(table).getAllByRole("columnheader");

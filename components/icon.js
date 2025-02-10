@@ -241,6 +241,19 @@ const Icon = {
       <path d="M17.7,5.29c2-2-1-4.99-2.99-2.99l-4.62,4.62l2.99,2.99L17.7,5.29z" />
     </svg>
   ),
+  Resources: ({ className = null, testid = "icon-resources" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <polygon points="10 7.2 17.3 4.6 10 2 2.7 4.6 10 7.2" />
+      <polygon points="9.5 8.1 2 5.4 2 15.1 9.5 17.8 9.5 8.1" />
+      <polygon points="10.5 8.1 10.5 17.8 18 15.1 18 5.4 10.5 8.1" />
+    </svg>
+  ),
   Sample: ({ className = null, testid = "icon-sample" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -447,6 +460,10 @@ Icon.Methodology.propTypes = {
   testid: PropTypes.string,
 };
 Icon.PencilSlash.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Resources.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };

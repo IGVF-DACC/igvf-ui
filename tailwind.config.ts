@@ -139,6 +139,27 @@ const tailwindConfig: Config = {
         "file-graph-unknown": "var(--color-file-graph-unknown)",
 
         "section-directory": "var(--color-section-directory-highlight)",
+
+        "tissue-matrix-data-homo-sapiens":
+          "var(--color-tissue-matrix-data-homo-sapiens)",
+        "tissue-matrix-column-header-homo-sapiens":
+          "var(--color-tissue-matrix-column-header-homo-sapiens)",
+        "tissue-matrix-row-header-homo-sapiens":
+          "var(--color-tissue-matrix-row-header-homo-sapiens)",
+        "tissue-matrix-row-subheader-homo-sapiens":
+          "var(--color-tissue-matrix-row-subheader-homo-sapiens)",
+        "tissue-matrix-highlight-homo-sapiens":
+          "var(--color-tissue-matrix-highlight-homo-sapiens)",
+        "tissue-matrix-data-mus-musculus":
+          "var(--color-tissue-matrix-data-mus-musculus)",
+        "tissue-matrix-column-header-mus-musculus":
+          "var(--color-tissue-matrix-column-header-mus-musculus)",
+        "tissue-matrix-row-header-mus-musculus":
+          "var(--color-tissue-matrix-row-header-mus-musculus)",
+        "tissue-matrix-row-subheader-mus-musculus":
+          "var(--color-tissue-matrix-row-subheader-mus-musculus)",
+        "tissue-matrix-highlight-mus-musculus":
+          "var(--color-tissue-matrix-highlight-mus-musculus)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",

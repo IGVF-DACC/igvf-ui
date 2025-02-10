@@ -291,6 +291,18 @@
   /** Section Directory */
   --color-section-directory-highlight: #d9f99d;
   --color-section-directory: #365314;
+
+  /** Tissue Matrix */
+  --color-tissue-matrix-data-homo-sapiens: #cab14f;
+  --color-tissue-matrix-column-header-homo-sapiens: #c8d2fc;
+  --color-tissue-matrix-row-header-homo-sapiens: #c8d2fc;
+  --color-tissue-matrix-row-subheader-homo-sapiens: #dbe2ff;
+  --color-tissue-matrix-highlight-homo-sapiens: #e8ecff;
+  --color-tissue-matrix-data-mus-musculus: #cab14f;
+  --color-tissue-matrix-column-header-mus-musculus: #c8d2fc;
+  --color-tissue-matrix-row-header-mus-musculus: #c8d2fc;
+  --color-tissue-matrix-row-subheader-mus-musculus: #dbe2ff;
+  --color-tissue-matrix-highlight-mus-musculus: #e8ecff;
 }
 
 /**
@@ -479,6 +491,18 @@
 
   --color-section-directory-highlight: #365314;
   --color-section-directory: #d9f99d;
+
+  /** Tissue Matrix */
+  --color-tissue-matrix-data-homo-sapiens: #7b6c30;
+  --color-tissue-matrix-column-header-homo-sapiens: #5d699e;
+  --color-tissue-matrix-row-header-homo-sapiens: #5d699e;
+  --color-tissue-matrix-row-subheader-homo-sapiens: #545f8f;
+  --color-tissue-matrix-highlight-homo-sapiens: #424554;
+  --color-tissue-matrix-data-mus-musculus: #7b6c30;
+  --color-tissue-matrix-column-header-mus-musculus: #5d699e;
+  --color-tissue-matrix-row-header-mus-musculus: #5d699e;
+  --color-tissue-matrix-row-subheader-mus-musculus: #545f8f;
+  --color-tissue-matrix-highlight-mus-musculus: #424554;
 }
 
 a {

@@ -47,6 +47,11 @@ export type Cell = {
    * Source of the cell. Used for custom cell renderers.
    */
   source?: unknown;
+
+  /**
+   * True to not wrap the cell content in a default cell wrapper.
+   */
+  noWrapper?: boolean;
 };
 
 /**
@@ -100,14 +105,15 @@ function DefaultCell({ children }: { children: React.ReactNode }) {
 export const DataGridContainer = forwardRef(function DataGridContainer(
   {
     className = "",
+    role = "grid",
     children,
-  }: { className?: string; children: React.ReactNode },
+  }: { className?: string; role?: string; children: React.ReactNode },
   ref: React.Ref<HTMLDivElement>
 ) {
   return (
     <div
       ref={ref}
-      role="table"
+      role={role}
       className={`border-1 grid w-full gap-px overflow-x-auto border border-panel bg-gray-300 text-sm dark:outline-gray-700 dark:bg-gray-700${
         className ? ` ${className}` : ""
       }`}
@@ -150,6 +156,9 @@ export default function DataGrid({
       let cellContent;
       if (typeof cell.content === "function") {
         CellRenderer = cell.content;
+        cellContent = (
+          <CellRenderer id={cell.id} source={cell.source} meta={meta} />
+        );
       } else {
         cellContent = cell.content;
       }
@@ -164,18 +173,18 @@ export default function DataGrid({
           }}
           role={cell.role || "cell"}
         >
-          <CellWrapper
-            rowId={row.id}
-            cells={row.cells}
-            cellIndex={index}
-            meta={meta}
-          >
-            {CellRenderer ? (
-              <CellRenderer id={cell.id} source={cell.source} meta={meta} />
-            ) : (
+          {cell.noWrapper ? (
+            cellContent
+          ) : (
+            <CellWrapper
+              rowId={row.id}
+              cells={row.cells}
+              cellIndex={index}
+              meta={meta}
+            >
               <>{cellContent}</>
-            )}
-          </CellWrapper>
+            </CellWrapper>
+          )}
         </div>
       );
       colLine += cell.columns || 1;
@@ -190,9 +199,16 @@ export default function DataGrid({
         CellComponent={CellComponent}
         startingRow={rowLine}
         startingCol={colLine}
+        meta={meta}
       />
     ) : null;
     rowLine += childCount;
-    return acc.concat(rowRenders).concat(children);
+    return acc
+      .concat(
+        <div key={row.id} className="group contents">
+          {rowRenders}
+        </div>
+      )
+      .concat(children);
   }, []);
 }
