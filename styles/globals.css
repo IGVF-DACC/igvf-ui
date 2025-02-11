@@ -213,6 +213,10 @@
   --color-schema-version-text: #000000;
   --color-schema-version-border: #91aab5;
 
+  --color-checkfiles-version-background: #b2d0de;
+  --color-checkfiles-version-text: #000000;
+  --color-checkfiles-version-border: #91aab5;
+
   --color-indexed-state-background: #4ade80;
   --color-indexed-state-border: #22c55e;
   --color-indexed-state-content: #f0fdf4;
@@ -429,6 +433,10 @@
   --color-schema-version-background: #415c69;
   --color-schema-version-text: #ffffff;
   --color-schema-version-border: #5f8699;
+
+  --color-checkfiles-version-background: #415c69;
+  --color-checkfiles-version-text: #000000;
+  --color-checkfiles-version-border: #5f8699;
 
   --color-indexed-state-background: #14532d;
   --color-indexed-state-border: #15803d;
