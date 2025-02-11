@@ -202,7 +202,12 @@ export default function AnalysisSet({
 
           {files.length > 0 && (
             <>
-              <FileTable files={files} fileSet={analysisSet} isDownloadable />
+              <FileTable
+                files={files}
+                fileSet={analysisSet}
+                isDownloadable
+                isFilteredVisible
+              />
               <FileGraph
                 fileSet={analysisSet}
                 files={files}
