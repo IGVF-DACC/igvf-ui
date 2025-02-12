@@ -9,6 +9,7 @@ import { PropTypes } from "prop-types";
  * /public/collections directory.
  */
 const collectionMap = {
+  ACMG73: "acmg73.svg",
   ClinGen: "clingen.svg",
   ENCODE: "encode.svg",
   GREGoR: "gregor.svg",
@@ -16,10 +17,16 @@ const collectionMap = {
   "IGVF_catalog_beta_v0.2": "igvf-catalog-0.2.svg",
   "IGVF_catalog_beta_v0.3": "igvf-catalog-0.3.svg",
   "IGVF_catalog_beta_v0.4": "igvf-catalog-0.4.svg",
+  "IGVF_catalog_beta_v0.5": "igvf-catalog-0.5.svg",
+  "IGVF phase 1": "igvf-phase-1.svg",
   MaveDB: "mave-db.svg",
+  Morphic: "morphic.svg",
   MPRAbase: "mpra-base.svg",
+  StanfordFCC: "stanford-fcc.svg",
+  "TOPMED Freeze 8": "topmed-freeze-8.svg",
   VarChAMP: "varchamp.svg",
   Vista: "vista.svg",
+  "Williams Syndrome Research": "williams-syndrome-research.svg",
 };
 
 /**
