@@ -271,7 +271,6 @@ NavigationButton.propTypes = {
  */
 function NavigationSignInItem({ id, isNarrowNav = false, children }) {
   const { isLoading, loginWithRedirect } = useAuth0();
-  const { setAuthStageLogin } = useContext(SessionContext);
 
   return (
     <li>
@@ -279,7 +278,6 @@ function NavigationSignInItem({ id, isNarrowNav = false, children }) {
         id={id}
         onClick={() => {
           loginAuthProvider(loginWithRedirect);
-          setAuthStageLogin();
         }}
         isNarrowNav={isNarrowNav}
         isDisabled={isLoading}
@@ -311,7 +309,7 @@ function NavigationSignOutItem({
   // True if sign-out warning modal open
   const [isWarningOpen, setIsWarningOpen] = useState(false);
 
-  const { sessionProperties, setAuthStageLogout } = useContext(SessionContext);
+  const { sessionProperties } = useContext(SessionContext);
   const { logout } = useAuth0();
 
   /**
@@ -320,7 +318,6 @@ function NavigationSignOutItem({
    */
   function handleAuthClick() {
     logoutAuthProvider(logout);
-    setAuthStageLogout();
   }
 
   return (

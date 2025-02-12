@@ -2,7 +2,6 @@
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import Script from "next/script";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
@@ -78,7 +77,7 @@ function TestServerWarning() {
   }
 }
 
-function Site({ Component, pageProps, authentication }) {
+function Site({ Component, pageProps, postLoginRedirectUri }) {
   // Flag to indicate if <Link> components should cause page reload
   const [isLinkReloadEnabled, setIsLinkReloadEnabled] = useState(false);
   const { isLoading } = useAuth0();
@@ -159,7 +158,7 @@ function Site({ Component, pageProps, authentication }) {
       <TestServerWarning />
       <div className="md:container">
         <GlobalContext.Provider value={globalContext}>
-          <Session authentication={authentication}>
+          <Session postLoginRedirectUri={postLoginRedirectUri}>
             <div className="md:flex">
               <NavigationSection />
               <div className="min-w-0 shrink grow px-3 py-2 @container/main md:px-8">
@@ -185,20 +184,13 @@ Site.propTypes = {
   Component: PropTypes.elementType.isRequired,
   // Properties associated with the page to pass to `Component`
   pageProps: PropTypes.object.isRequired,
-  // Auth0 authentication state and transition setter
-  authentication: PropTypes.exact({
-    // True if Auth0 has authenticated but we haven't yet logged into igvfd
-    authTransitionPath: PropTypes.string.isRequired,
-    // Sets the `authTransitionPath` state
-    setAuthTransitionPath: PropTypes.func.isRequired,
-  }).isRequired,
+  // URL to redirect to after the user logs in
+  postLoginRedirectUri: PropTypes.string,
 };
 
 export default function App(props) {
-  // Path user viewed when they logged in; also indicates Auth0 has auth'd but igvfd hasn't yet
-  const [authTransitionPath, setAuthTransitionPath] = useState("");
-
-  const router = useRouter();
+  const [postLoginRedirectUri, setPostLoginRedirectUri] = useState("/");
+  // const router = useRouter();
 
   /**
    * Called after the user signs in and auth0 redirects back to the application. We set the
@@ -208,12 +200,8 @@ export default function App(props) {
    */
   function onRedirectCallback(appState) {
     if (appState?.returnTo) {
-      router.replace(appState.returnTo);
+      setPostLoginRedirectUri(appState.returnTo);
     }
-
-    // Indicate that Auth0 has completed authentication so Session context can log into igvfd, and
-    // reload this path if needed to see the authenticated content.
-    setAuthTransitionPath(appState?.returnTo || "");
   }
 
   // Handle stand-alone pages. They need no navigation nor authentication.
@@ -231,13 +219,7 @@ export default function App(props) {
         audience: AUTH0_AUDIENCE,
       }}
     >
-      <Site
-        {...props}
-        authentication={{
-          authTransitionPath,
-          setAuthTransitionPath,
-        }}
-      />
+      <Site {...props} postLoginRedirectUri={postLoginRedirectUri} />
     </Auth0Provider>
   );
 }
@@ -247,4 +229,6 @@ App.propTypes = {
   Component: PropTypes.elementType.isRequired,
   // Properties associated with the page to pass to `Component`
   pageProps: PropTypes.object.isRequired,
+  // URL to redirect to after the user logs in
+  postLoginRedirectUri: PropTypes.string,
 };

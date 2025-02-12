@@ -5,6 +5,7 @@ describe("Test that the post-login redirect goes to the correct URI", () => {
     cy.get("[data-testid=navigation-data]").click();
     cy.get("[data-testid=navigation-raw-datasets]").click();
     cy.url().should("include", "/search/?type=MeasurementSet");
+    cy.wait(1000);
 
     // Sign in.
     cy.loginAuth0(
@@ -12,8 +13,14 @@ describe("Test that the post-login redirect goes to the correct URI", () => {
       Cypress.env("AUTH_PASSWORD"),
       false
     );
+
     cy.contains("Cypress Testing");
-    cy.wait(1000);
+
+    cy.window().then((win) => {
+      if (win.location.search.includes("code=")) {
+        win.history.replaceState({}, document.title, win.location.pathname);
+      }
+    });
 
     // Confirm that we redirect back to the gene page.
     cy.url().should("include", "/search/?type=MeasurementSet");
