@@ -308,7 +308,8 @@ export type UploadStatus =
   | "pending"
   | "file not found"
   | "invalidated"
-  | "validated";
+  | "validated"
+  | "validation exempted";
 
 /**
  * Data structure common to all file object types.
@@ -316,10 +317,11 @@ export type UploadStatus =
 export interface FileObject extends DatabaseObject {
   accession?: string;
   aliases?: string[];
+  checkfiles_version?: string;
   content_type: string;
   derived_from?: string[];
   file_format: string;
-  file_format_specifications: string[];
+  file_format_specifications?: string[];
   file_set: string | FileSetObject;
   file_size?: number;
   href?: string;

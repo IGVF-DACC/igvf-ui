@@ -337,7 +337,7 @@ export default function Profiles({ schemas, collectionTitles = null }) {
       <Breadcrumbs item={schemas} />
       <PagePreamble />
       <ProfilesHeader />
-      <DataPanel className="p-0">
+      <DataPanel isPaddingSuppressed>
         <SearchSection
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

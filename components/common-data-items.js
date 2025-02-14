@@ -18,6 +18,7 @@ import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
 import AliasList from "./alias-list";
+import { CheckfilesVersion } from "./checkfiles-version";
 import {
   DataItemLabel,
   DataItemList,
@@ -682,6 +683,10 @@ export function FileDataItems({ item, children = null }) {
           </DataItemValue>
         </>
       )}
+      <DataItemLabel>Checkfiles Version</DataItemLabel>
+      <DataItemValue>
+        <CheckfilesVersion file={item} />
+      </DataItemValue>
       {item.validation_error_detail && (
         <>
           <DataItemLabel>Validation Error Detail</DataItemLabel>
