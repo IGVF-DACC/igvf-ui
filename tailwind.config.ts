@@ -162,6 +162,27 @@ const tailwindConfig: Config = {
           "var(--color-tissue-matrix-row-subheader-mus-musculus)",
         "tissue-matrix-highlight-mus-musculus":
           "var(--color-tissue-matrix-highlight-mus-musculus)",
+
+        "cell-model-matrix-data-cell-line":
+          "var(--color-cell-model-matrix-data-cell-line)",
+        "cell-model-matrix-column-header-cell-line":
+          "var(--color-cell-model-matrix-column-header-cell-line)",
+        "cell-model-matrix-row-header-cell-line":
+          "var(--color-cell-model-matrix-row-header-cell-line)",
+        "cell-model-matrix-row-subheader-cell-line":
+          "var(--color-cell-model-matrix-row-subheader-cell-line)",
+        "cell-model-matrix-highlight-cell-line":
+          "var(--color-cell-model-matrix-highlight-cell-line)",
+        "cell-model-matrix-data-differentiated-specimens":
+          "var(--color-cell-model-matrix-data-differentiated-specimens)",
+        "cell-model-matrix-column-header-differentiated-specimens":
+          "var(--color-cell-model-matrix-column-header-differentiated-specimens)",
+        "cell-model-matrix-row-header-differentiated-specimens":
+          "var(--color-cell-model-matrix-row-header-differentiated-specimens)",
+        "cell-model-matrix-row-subheader-differentiated-specimens":
+          "var(--color-cell-model-matrix-row-subheader-differentiated-specimens)",
+        "cell-model-matrix-highlight-differentiated-specimens":
+          "var(--color-cell-model-matrix-highlight-differentiated-specimens)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",

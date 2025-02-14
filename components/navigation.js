@@ -691,12 +691,20 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
-            id="resources"
+            id="tissues"
             href="/tissue-summary/mus-musculus"
             navigationClick={navigationClick}
             isChildItem
           >
             Tissues
+          </NavigationHrefItem>
+          <NavigationHrefItem
+            id="cell-models"
+            href="/cell-models/cell-lines"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Cell Models
           </NavigationHrefItem>
         </NavigationGroupItem>
 
