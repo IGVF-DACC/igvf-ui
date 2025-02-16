@@ -196,7 +196,12 @@ export default function PredictionSet({
           </DataPanel>
           {files.length > 0 && (
             <>
-              <FileTable files={files} fileSet={predictionSet} isDownloadable />
+              <FileTable
+                files={files}
+                fileSet={predictionSet}
+                isDownloadable
+                isFilteredVisible
+              />
               <FileGraph
                 fileSet={predictionSet}
                 files={files}

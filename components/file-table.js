@@ -44,6 +44,24 @@ const filesColumns = [
       truthyOrZero(source.file_size) ? dataSize(source.file_size) : "",
   },
   {
+    id: "filtered",
+    title: "Filtered",
+    display: ({ source }) => {
+      return source.filtered ? <Status status="filtered" /> : null;
+    },
+    sorter: (item) => (item.filtered ? 0 : 1),
+    hide: (data, columns, meta) => {
+      if (!meta.isFilteredVisible) {
+        return true;
+      }
+
+      // Only show this column if the files have a mix of filtered and unfiltered statuses.
+      const filtered = data.map((item) => Boolean(item.filtered));
+      const filteredValues = new Set(filtered);
+      return filteredValues.size === 1;
+    },
+  },
+  {
     id: "upload_status",
     title: "Upload Status",
     display: ({ source }) => <Status status={source.upload_status} />,
@@ -62,6 +80,7 @@ export default function FileTable({
   downloadQuery = null,
   isDownloadable = false,
   controllerContent = null,
+  isFilteredVisible = false,
   panelId = "files",
 }) {
   // Compose the report link, either from the file set or the given link and label.
@@ -85,6 +104,7 @@ export default function FileTable({
       data={files}
       columns={filesColumns}
       keyProp="@id"
+      meta={{ isFilteredVisible }}
       pager={{}}
     />
   );
@@ -133,6 +153,8 @@ FileTable.propTypes = {
   isDownloadable: PropTypes.bool,
   // Extra text or JSX content for the batch download controller
   controllerContent: PropTypes.node,
+  // True to show the "Filtered" column if both filtered and unfiltered files exist
+  isFilteredVisible: PropTypes.bool,
   // Unique ID for the table for the section directory
   panelId: PropTypes.string,
 };
