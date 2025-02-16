@@ -42,9 +42,9 @@ export default function FallbackObject({
   breadcrumbMeta = null,
   isJson = false,
 }) {
-  const title = extractTitle(generic);
-
   if (generic) {
+    const title = extractTitle(generic);
+
     // Pages get displayed as markdown.
     if (generic["@type"].includes("Page")) {
       return (

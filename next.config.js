@@ -4,6 +4,7 @@
 const UI_VERSION = "8.38.0";
 
 module.exports = {
+  pageExtensions: ["tsx", "ts", "jsx", "js"],
   trailingSlash: true,
   reactStrictMode: false,
   images: {
