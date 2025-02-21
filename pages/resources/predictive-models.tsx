@@ -2143,7 +2143,7 @@ export default function GenesLoci() {
 
   return (
     <div>
-      <PagePreamble />
+      <PagePreamble pageTitle="Predictive Models" />
       <div role="table" className="overflow-x-auto text-sm">
         <DataTable data={sortedStaticData} />
       </div>
