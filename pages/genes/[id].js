@@ -1,7 +1,10 @@
 // node_modules
+import _ from "lodash";
+import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
+import Collections from "../../components/collections";
 import {
   DataArea,
   DataItemLabel,
@@ -19,10 +22,15 @@ import { StatusPreviewDetail } from "../../components/status";
 // lib
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { encodeUriElement } from "../../lib/query-encoding";
 import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
 
 export default function Gene({ gene, isJson }) {
+  const sortedStudySets = _.sortBy(gene.study_sets, (studySet) =>
+    studySet.toLowerCase()
+  );
+
   return (
     <>
       <Breadcrumbs item={gene} />
@@ -86,6 +94,35 @@ export default function Gene({ gene, isJson }) {
                 <>
                   <DataItemLabel>Submitter Comment</DataItemLabel>
                   <DataItemValue>{gene.submitter_comment}</DataItemValue>
+                </>
+              )}
+              {sortedStudySets.length > 0 && (
+                <>
+                  <DataItemLabel>Study Sets</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {sortedStudySets.map((studySet) => (
+                        <Link
+                          key={studySet}
+                          href={`/search/?type=Gene&study_sets=${encodeUriElement(
+                            studySet
+                          )}`}
+                        >
+                          {studySet}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              {gene.collections?.length > 0 && (
+                <>
+                  <DataItemLabel>Collections</DataItemLabel>
+                  <Collections
+                    collections={gene.collections}
+                    itemType={gene["@type"][0]}
+                    isMarginSuppressed
+                  />
                 </>
               )}
             </DataArea>

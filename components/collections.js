@@ -50,7 +50,11 @@ const COLLECTION_HEIGHT = 70;
  * Display the collection logos for an array of collection strings. If the collection string doesn't exist
  * in the collection map, it displays as text.
  */
-export default function Collections({ collections = null, itemType }) {
+export default function Collections({
+  collections = null,
+  itemType,
+  isMarginSuppressed = false,
+}) {
   if (collections?.length > 0) {
     // Make sure we show only unique collections, and sort them alphabetically.
     const uniqueCollections = [...new Set(collections)];
@@ -59,32 +63,35 @@ export default function Collections({ collections = null, itemType }) {
     );
 
     return (
-      <div className="mb-6 flex flex-wrap gap-1">
+      <ul
+        className={`flex flex-wrap gap-1 ${isMarginSuppressed ? "" : "mb-6"}`}
+      >
         {sortedCollections.map((collection) => {
           const imageFile = collectionMap[collection];
           return (
-            <Link
-              key={collection}
-              href={`/search/?type=${itemType}&collections=${collection}`}
-              className="block overflow-hidden border border-data-border bg-white no-underline dark:bg-gray-200"
-            >
-              {imageFile ? (
-                <Image
-                  src={`/collections/${collectionMap[collection]}`}
-                  width={COLLECTION_WIDTH}
-                  height={COLLECTION_HEIGHT}
-                  alt={`${collection} collection`}
-                />
-              ) : (
-                <div className="flex h-[70px] w-[105px] items-center justify-center break-all px-1 text-xs dark:text-black">
-                  {collection}
-                  <div className="sr-only"> collection</div>
-                </div>
-              )}
-            </Link>
+            <li key={collection}>
+              <Link
+                href={`/search/?type=${itemType}&collections=${collection}`}
+                className="block overflow-hidden border border-data-border bg-white no-underline dark:bg-gray-200"
+              >
+                {imageFile ? (
+                  <Image
+                    src={`/collections/${collectionMap[collection]}`}
+                    width={COLLECTION_WIDTH}
+                    height={COLLECTION_HEIGHT}
+                    alt={`${collection} collection`}
+                  />
+                ) : (
+                  <div className="flex h-[70px] w-[105px] items-center justify-center break-all px-1 text-xs dark:text-black">
+                    {collection}
+                    <div className="sr-only"> collection</div>
+                  </div>
+                )}
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ul>
     );
   }
   return null;
@@ -95,4 +102,6 @@ Collections.propTypes = {
   collections: PropTypes.arrayOf(PropTypes.string),
   // Item type, used for the search link
   itemType: PropTypes.string.isRequired,
+  // Suppress the bottom margin
+  isMarginSuppressed: PropTypes.bool,
 };
