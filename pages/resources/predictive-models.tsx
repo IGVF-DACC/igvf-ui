@@ -1,3 +1,5 @@
+// node_modules
+import _ from "lodash";
 // components
 import { DataCellWithClasses, DataTable } from "../../components/data-table";
 import PagePreamble from "../../components/page-preamble";
@@ -2137,11 +2139,13 @@ function CodingVariantCell({ children }: { children: React.ReactNode }) {
 }
 
 export default function GenesLoci() {
+  const sortedStaticData = _.sortBy(staticData, (row) => row.cells[0].content);
+
   return (
     <div>
       <PagePreamble />
       <div role="table" className="overflow-x-auto text-sm">
-        <DataTable data={staticData} />
+        <DataTable data={sortedStaticData} />
       </div>
     </div>
   );
