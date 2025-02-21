@@ -134,8 +134,16 @@ const staticData: DataTableFormat = [
       },
       {
         id: "L",
-        content:
-          "We have scaled ChromHMM to do large scale universal chromatin state annotations (see https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02572-z;)",
+        content: (
+          <>
+            We have scaled ChromHMM to do large scale universal chromatin state
+            annotations (see{" "}
+            <CellLink>
+              https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02572-z
+            </CellLink>
+            )
+          </>
+        ),
       },
       {
         id: "M",
@@ -2029,8 +2037,16 @@ const staticData: DataTableFormat = [
       },
       {
         id: "F",
-        content:
-          'JUMP Cell Painting https://jump-cellpainting.broadinstitute.org/cell-painting and data from the collaborative project "Cross-platform, deep phenotyping for protein coding variants"',
+        content: (
+          <>
+            JUMP Cell Painting{" "}
+            <CellLink>
+              https://jump-cellpainting.broadinstitute.org/cell-painting
+            </CellLink>{" "}
+            and data from the collaborative project &ldquo;Cross-platform, deep
+            phenotyping for protein coding variants&rdquo;
+          </>
+        ),
       },
       {
         id: "G",
