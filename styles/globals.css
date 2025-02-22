@@ -307,6 +307,18 @@
   --color-tissue-matrix-row-header-mus-musculus: #c8d2fc;
   --color-tissue-matrix-row-subheader-mus-musculus: #dbe2ff;
   --color-tissue-matrix-highlight-mus-musculus: #e8ecff;
+
+  /** Cell Model Matrix */
+  --color-cell-model-matrix-data-cell-line: #cab14f;
+  --color-cell-model-matrix-column-header-cell-line: #c8d2fc;
+  --color-cell-model-matrix-row-header-cell-line: #c8d2fc;
+  --color-cell-model-matrix-row-subheader-cell-line: #dbe2ff;
+  --color-cell-model-matrix-highlight-cell-line: #e8ecff;
+  --color-cell-model-matrix-data-differentiated-specimens: #cab14f;
+  --color-cell-model-matrix-column-header-differentiated-specimens: #c8d2fc;
+  --color-cell-model-matrix-row-header-differentiated-specimens: #c8d2fc;
+  --color-cell-model-matrix-row-subheader-differentiated-specimens: #dbe2ff;
+  --color-cell-model-matrix-highlight-differentiated-specimens: #e8ecff;
 }
 
 /**
@@ -511,6 +523,18 @@
   --color-tissue-matrix-row-header-mus-musculus: #5d699e;
   --color-tissue-matrix-row-subheader-mus-musculus: #545f8f;
   --color-tissue-matrix-highlight-mus-musculus: #424554;
+
+  /** Cell Model Matrix */
+  --color-cell-model-matrix-data-cell-line: #7b6c30;
+  --color-cell-model-matrix-column-header-cell-line: #5d699e;
+  --color-cell-model-matrix-row-header-cell-line: #5d699e;
+  --color-cell-model-matrix-row-subheader-cell-line: #545f8f;
+  --color-cell-model-matrix-highlight-cell-line: #424554;
+  --color-cell-model-matrix-data-differentiated-specimens: #7b6c30;
+  --color-cell-model-matrix-column-header-differentiated-specimens: #5d699e;
+  --color-cell-model-matrix-row-header-differentiated-specimens: #5d699e;
+  --color-cell-model-matrix-row-subheader-differentiated-specimens: #545f8f;
+  --color-cell-model-matrix-highlight-differentiated-specimens: #424554;
 }
 
 a {

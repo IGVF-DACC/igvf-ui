@@ -1,6 +1,7 @@
 // node_modules
 import _ from "lodash";
 import Link from "next/link";
+import { useRouter } from "next/router";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import DataGrid, {
@@ -10,6 +11,7 @@ import DataGrid, {
 } from "../../components/data-grid";
 import { LabelXAxis, LabelYAxis } from "../../components/matrix";
 import PagePreamble from "../../components/page-preamble";
+import { TabGroup, TabList, TabTitle } from "../../components/tabs";
 // lib
 import FetchRequest from "../../lib/fetch-request";
 import { errorObjectToProps } from "../../lib/errors";
@@ -34,17 +36,17 @@ type CellSource = {
 };
 
 /**
- * Used to map a taxa string to data provider and UI page paths.
+ * Used to map a view string to data provider and UI page paths.
  */
-type TaxaMap = {
+type ViewMap = {
+  /** Title of the tab to select this view */
+  tabTitle: string;
   /** Path and query string for the data provider matrix query for the given taxa */
   dataProviderPath: string;
   /** Base path for cells to link to */
   cellLinkPath: string;
   /** Path for the UI page that displays the page for the given taxa */
   pagePath: string;
-  /** `@type` of the matrix search result for the taxa query */
-  queryAtType: string;
   /** Tailwind CSS class for the column header cells in the matrix */
   columnHeaderCellClass: string;
   /** Tailwind CSS class for the row header cells in the matrix */
@@ -58,27 +60,48 @@ type TaxaMap = {
 };
 
 /**
- * Map a taxa to the corresponding paths to the data provider matrix query and the UI page.
+ * Identifies each type of cell-model data this page handles, and matches the last element of the
+ * URL path for this page.
  */
-const taxaQueries: Record<string, TaxaMap> = {
-  "mus-musculus": {
+type ViewIdentifier = "cell-lines" | "differentiated-specimens";
+
+/**
+ * Map a view to the corresponding paths to the data provider matrix query and the UI page.
+ */
+const viewQueries: Record<string, ViewMap> = {
+  "cell-lines": {
+    tabTitle: "Cell Lines",
+    dataProviderPath: "/matrix/?type=Sample&config=sample-cell-lines",
+    cellLinkPath: "/search/?type=Sample",
+    pagePath: "/cell-models/cell-lines/",
+    columnHeaderCellClass: "bg-cell-model-matrix-column-header-cell-line",
+    rowHeaderCellClass: "bg-cell-model-matrix-row-header-cell-line",
+    rowSubheaderCellClass: "bg-cell-model-matrix-row-subheader-cell-line",
+    dataCellClass: "bg-cell-model-matrix-data-cell-line",
+    hoverCellClass: "group-hover:bg-cell-model-matrix-highlight-cell-line",
+  },
+  "differentiated-specimens": {
+    tabTitle: "Differentiated Specimens",
     dataProviderPath:
-      "/tissue-mus-musculus/?type=Tissue&taxa=Mus+musculus&virtual=false",
-    cellLinkPath: "/search/?type=Tissue&taxa=Mus+musculus",
-    pagePath: "/tissue-summary/mus-musculus",
-    queryAtType: "TissueSummaryMusMusculus",
-    columnHeaderCellClass: "bg-tissue-matrix-column-header-mus-musculus",
-    rowHeaderCellClass: "bg-tissue-matrix-row-header-mus-musculus",
-    rowSubheaderCellClass: "bg-tissue-matrix-row-subheader-mus-musculus",
-    dataCellClass: "bg-tissue-matrix-data-mus-musculus",
-    hoverCellClass: "group-hover:bg-tissue-matrix-highlight-mus-musculus",
+      "/matrix/?type=Sample&config=sample-differentiated-specimens",
+    cellLinkPath: "/search/?type=Sample",
+    pagePath: "/cell-models/differentiated-specimens/",
+    columnHeaderCellClass:
+      "bg-cell-model-matrix-column-header-differentiated-specimens",
+    rowHeaderCellClass:
+      "bg-cell-model-matrix-row-header-differentiated-specimens",
+    rowSubheaderCellClass:
+      "bg-cell-model-matrix-row-subheader-differentiated-specimens",
+    dataCellClass: "bg-cell-model-matrix-data-differentiated-specimens",
+    hoverCellClass:
+      "group-hover:bg-cell-model-matrix-highlight-differentiated-specimens",
   },
 };
 
 /**
  * List all accepted taxa.
  */
-const acceptedTaxa = Object.keys(taxaQueries);
+const acceptedViews = Object.keys(viewQueries) as ViewIdentifier[];
 
 /**
  * Generate a map of column labels to their 0-based column index. Each label appears as a key in
@@ -86,10 +109,31 @@ const acceptedTaxa = Object.keys(taxaQueries);
  * @param columnBuckets - Buckets for the x-axis of the matrix
  * @returns Map of column labels to their 0-based column index
  */
-function generateMatrixColumnMap(columnBuckets: MatrixBucket[]): ColumnMap {
-  const sortedBuckets = _.sortBy(columnBuckets, (bucket) =>
+function generateMatrixColumnMap(
+  columnBuckets: MatrixBucket[],
+  rowBuckets: MatrixBucket[],
+  majorXProp: string,
+  minorYProp: string
+): ColumnMap {
+  // Descend into the rows to find out which columns get used.
+  const usedColumns = new Set<string>();
+  for (const rowBucket of rowBuckets) {
+    for (const childBucket of rowBucket[minorYProp].buckets) {
+      for (const columnBucket of childBucket[majorXProp].buckets) {
+        usedColumns.add(columnBucket.key);
+      }
+    }
+  }
+
+  // Filter the column buckets to only the used ones, and sort them by their keys.
+  const usedBuckets = columnBuckets.filter((bucket) =>
+    usedColumns.has(bucket.key)
+  );
+  const sortedBuckets = _.sortBy(usedBuckets, (bucket) =>
     bucket.key.toLowerCase()
   );
+
+  // Generate the column map from the used sorted buckets.
   return sortedBuckets.reduce((acc, bucket, i) => {
     const column = { [bucket.key]: i };
     return { ...acc, ...column };
@@ -107,9 +151,9 @@ function RowHeaderCell({
   meta,
 }: {
   source: CellSource;
-  meta: { taxa: string };
+  meta: { view: string };
 }) {
-  const bgClass = taxaQueries[meta.taxa].rowHeaderCellClass;
+  const bgClass = viewQueries[meta.view].rowHeaderCellClass;
 
   return (
     <Link
@@ -131,10 +175,10 @@ function RowSubheaderCell({
   meta,
 }: {
   source: CellSource;
-  meta: { taxa: string };
+  meta: { view: string };
 }) {
-  const bgClass = taxaQueries[meta.taxa].rowSubheaderCellClass;
-  const hoverClass = taxaQueries[meta.taxa].hoverCellClass;
+  const bgClass = viewQueries[meta.view].rowSubheaderCellClass;
+  const hoverClass = viewQueries[meta.view].hoverCellClass;
 
   return (
     <div className="relative h-full w-full">
@@ -158,9 +202,9 @@ function ColumnHeaderCell({
   meta,
 }: {
   source: CellSource;
-  meta: { taxa: string };
+  meta: { view: string };
 }) {
-  const bgClass = taxaQueries[meta.taxa].columnHeaderCellClass;
+  const bgClass = viewQueries[meta.view].columnHeaderCellClass;
 
   return (
     <Link
@@ -184,10 +228,10 @@ function DataCell({
   meta,
 }: {
   source: CellSource;
-  meta: { taxa: string };
+  meta: { view: string };
 }) {
-  const bgClass = taxaQueries[meta.taxa].dataCellClass;
-  const hoverClass = taxaQueries[meta.taxa].hoverCellClass;
+  const bgClass = viewQueries[meta.view].dataCellClass;
+  const hoverClass = viewQueries[meta.view].hoverCellClass;
 
   if (source.href) {
     return (
@@ -213,7 +257,7 @@ function DataCell({
  * @param majorXProp Major X-axis property name
  * @param majorYQuery Major Y-axis query string
  * @param minorYProp Minor Y-axis property name
- * @param taxa Taxa string for the matrix data: `homo-sapiens` or `mus-musculus`
+ * @param view View identifier for the matrix `cell-lines` or `differentiated-specimens`
  * @returns Data-grid row for one child row of the matrix
  */
 function generateChildRow(
@@ -222,116 +266,132 @@ function generateChildRow(
   majorXProp: string,
   majorYQuery: string,
   minorYProp: string,
-  taxa: string
+  view: ViewIdentifier
 ): Row {
-  // Create the cells for one child row, starting with the minor Y-axis category for the row.
-  const href = `${
-    taxaQueries[taxa].cellLinkPath
-  }&${majorYQuery}&${minorYProp}=${encodeUriElement(childBucket.key)}`;
-  const childCells = [
-    {
-      id: `${minorYProp}-${toShishkebabCase(childBucket.key)}`,
-      content: RowSubheaderCell,
-      source: { key: childBucket.key, href },
-      noWrapper: true,
-      role: "rowheader",
-    },
-  ] as Cell[];
+  if (childBucket[majorXProp].buckets.length > 0) {
+    // Create the cells for one child row, starting with the minor Y-axis category for the row.
+    const href = `${
+      viewQueries[view].cellLinkPath
+    }&${majorYQuery}&${minorYProp}=${encodeUriElement(childBucket.key)}`;
+    const childCells = [
+      {
+        id: `${minorYProp}-${toShishkebabCase(childBucket.key)}`,
+        content: RowSubheaderCell,
+        source: { key: childBucket.key, href },
+        noWrapper: true,
+        role: "rowheader",
+      },
+    ] as Cell[];
 
-  // Now generate a cell for each X-axis category in the matrix with a zero count. Fill in
-  // the actual counts later. Use the bucket keys to find the corresponding column index in
-  // `columnMap`.
-  for (const key in columnMap) {
-    childCells[columnMap[key] + 1] = {
-      id: key,
-      content: DataCell,
-      source: { key, href: "" },
-      noWrapper: true,
+    // Now generate a cell for each X-axis category in the matrix with a zero count. Fill in
+    // the actual counts later. Use the bucket keys to find the corresponding column index in
+    // `columnMap`.
+    for (const key in columnMap) {
+      childCells[columnMap[key] + 1] = {
+        id: key,
+        content: DataCell,
+        source: { key, href: "" },
+        noWrapper: true,
+      };
+    }
+
+    // Fill in the actual counts for the cells that have a non-zero count. The bucket keys match the
+    // column labels in the matrix, so use `columnMap` to find the correct column index for each key.
+    const childColumnBuckets = childBucket[majorXProp].buckets;
+    for (const columnBucket of childColumnBuckets) {
+      const columnIndex = columnMap[columnBucket.key] + 1;
+      (childCells[columnIndex].source as CellSource).href = `${
+        viewQueries[view].cellLinkPath
+      }&${majorYQuery}&${minorYProp}=${encodeUriElement(
+        childBucket.key
+      )}&${majorXProp}=${encodeUriElement(columnBucket.key)}`;
+    }
+
+    return {
+      id: toShishkebabCase(childBucket.key),
+      cells: childCells,
     };
   }
-
-  // Fill in the actual counts for the cells that have a non-zero count. The bucket keys match the
-  // column labels in the matrix, so use `columnMap` to find the correct column index for each key.
-  const childColumnBuckets = childBucket[majorXProp].buckets;
-  for (const columnBucket of childColumnBuckets) {
-    const columnIndex = columnMap[columnBucket.key] + 1;
-    (childCells[columnIndex].source as CellSource).href = `${
-      taxaQueries[taxa].cellLinkPath
-    }&${majorYQuery}&${minorYProp}=${encodeUriElement(
-      childBucket.key
-    )}&${majorXProp}=${encodeUriElement(columnBucket.key)}`;
-  }
-
-  return {
-    id: toShishkebabCase(childBucket.key),
-    cells: childCells,
-  };
+  return null;
 }
 
 /**
  * Convert the matrix object from the data provider to a format that can be used by `<DataGrid>`.
  * This includes not only the data for the cells, but also the top and left header rows.
  * @param matrix Entire matrix object from the data provider
- * @param taxa Taxa string for the matrix data: `homo-sapiens` or `mus-musculus`
+ * @param view View identifier for the matrix `cell-lines` or `differentiated-specimens`
  * @returns Data from the matrix object formatted for the data grid
  */
 function convertMatrixToDataGrid(
   matrix: MatrixResultsObject,
-  taxa: string
+  view: ViewIdentifier
 ): DataGridFormat {
   const majorXProp = matrix.x.group_by as string;
   const majorYProp = matrix.y.group_by[0];
   const minorYProp = matrix.y.group_by[1];
 
   // Make a map of the x column labels to their index so we know what column to put each cell in.
-  const columnMap = generateMatrixColumnMap(matrix.x[majorXProp].buckets);
+  const columnMap = generateMatrixColumnMap(
+    matrix.x[majorXProp].buckets,
+    matrix.y[majorYProp].buckets,
+    majorXProp,
+    minorYProp
+  );
 
   // Generate the data grid rows we can pass to `<DataGrid>`, excluding the header row that we'll
   // add later.
   const sortedBuckets = _.sortBy(matrix.y[majorYProp].buckets, (bucket) =>
     bucket.key.toLowerCase()
   );
-  const dataGrid: DataGridFormat = sortedBuckets.map((bucket) => {
-    const bucketId = toShishkebabCase(bucket.key);
+  let dataGrid: DataGridFormat = sortedBuckets.map((bucket) => {
     const childBuckets = bucket[minorYProp].buckets;
     const majorYQuery = `${majorYProp}=${encodeUriElement(bucket.key)}`;
-    const childRows = childBuckets.map((childBucket) => {
+    let childRows = childBuckets.map((childBucket) => {
       return generateChildRow(
         childBucket,
         columnMap,
         majorXProp,
         majorYQuery,
         minorYProp,
-        taxa
+        view
       );
     }) as Row[];
 
-    const href = `${taxaQueries[taxa].cellLinkPath}&${majorYQuery}`;
-    return {
-      id: bucketId,
-      cells: [
-        {
-          id: `${bucketId}-header`,
-          content: RowHeaderCell,
-          source: { key: bucket.key, href },
-          noWrapper: true,
-          role: "rowheader",
-        } as Cell,
-      ],
-      children: childRows,
-    } as Row;
+    // Generate the child row grid data after removing any null child rows.
+    childRows = childRows.filter((row) => row !== null);
+    if (childRows.length > 0) {
+      const bucketId = toShishkebabCase(bucket.key);
+      const href = `${viewQueries[view].cellLinkPath}&${majorYQuery}`;
+      return {
+        id: bucketId,
+        cells: [
+          {
+            id: `${bucketId}-header`,
+            content: RowHeaderCell,
+            source: { key: bucket.key, href },
+            noWrapper: true,
+            role: "rowheader",
+          } as Cell,
+        ],
+        children: childRows,
+      } as Row;
+    }
+    return null;
   });
+
+  // Remove any null entries from dataGrid.
+  dataGrid = dataGrid.filter((row) => row !== null);
 
   // Build the header row columns that have a label.
   const headerColumnCells = [];
   for (const key in columnMap) {
     const href = `${
-      taxaQueries[taxa].cellLinkPath
+      viewQueries[view].cellLinkPath
     }&${majorXProp}=${encodeUriElement(key)}`;
     headerColumnCells[columnMap[key]] = {
       id: toShishkebabCase(key),
       content: ColumnHeaderCell,
-      source: { key, href, taxa },
+      source: { key, href, view },
       noWrapper: true,
       role: "columnheader",
     };
@@ -349,62 +409,74 @@ function convertMatrixToDataGrid(
 }
 
 /**
- * Formats the overall Tissue Summary page, including the matrix of rodent data.
- * @param tissueSummary - Tissue summary data from the data provider
+ * Formats the overall Cell Model page, including the matrix of assay data.
+ * @param cellModel - Cell model data from the data provider
  */
 export default function TissueSummary({
-  tissueSummary,
+  cellModel,
+  view,
 }: {
-  tissueSummary: MatrixResults;
+  cellModel: MatrixResults;
+  view: ViewIdentifier;
 }) {
-  // Map `tissueSummary["@type"]` to the corresponding taxa string.
-  const taxa = Object.keys(taxaQueries).find(
-    (taxaQueriesKey) =>
-      taxaQueries[taxaQueriesKey].queryAtType === tissueSummary["@type"][0]
-  );
+  const router = useRouter();
 
   // Take the matrix data from the data provider and convert it to a format that can be used by
   // the `<DataGrid>` component.
-  const dataGrid = convertMatrixToDataGrid(tissueSummary.matrix, taxa);
+  const dataGrid = convertMatrixToDataGrid(cellModel.matrix, view);
+
+  function handleTabClick(tabId) {
+    router.push(viewQueries[tabId].pagePath);
+  }
 
   return (
     <>
-      <Breadcrumbs item={tissueSummary} />
-      <PagePreamble pageTitle={tissueSummary.title} />
-      <div className="pt-4">
-        <LabelXAxis label={tissueSummary.matrix.x.label} />
-        <div className="flex">
-          <LabelYAxis label="Tissue / Organ" />
-          <div
-            role="table"
-            className="border-1 grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
-          >
-            <DataGrid data={dataGrid} meta={{ taxa }} />
+      <Breadcrumbs item={cellModel} />
+      <PagePreamble pageTitle="Cell Models" />
+      <TabGroup onChange={handleTabClick} defaultId={view}>
+        <TabList>
+          {acceptedViews.map((viewName) => (
+            <TabTitle id={viewName} key={viewName}>
+              {viewQueries[viewName].tabTitle}
+            </TabTitle>
+          ))}
+        </TabList>
+        <div className="mt-4">
+          <LabelXAxis label={cellModel.matrix.x.label} />
+          <div className="flex">
+            <LabelYAxis label={cellModel.matrix.y.label} />
+            <div
+              role="table"
+              className="border-1 grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
+            >
+              <DataGrid data={dataGrid} meta={{ view }} />
+            </div>
           </div>
         </div>
-      </div>
+      </TabGroup>
     </>
   );
 }
 
 export async function getServerSideProps({ req, params }) {
   // Make sure the last path segment contains something we handle.
-  const taxa = params.taxa;
-  if (!acceptedTaxa.includes(taxa)) {
+  const view = params.view;
+  if (!acceptedViews.includes(view)) {
     return { notFound: true };
   }
 
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const tissueSummary = (
-    await request.getObject(taxaQueries[taxa].dataProviderPath)
+  const cellModel = (
+    await request.getObject(viewQueries[view].dataProviderPath)
   ).union();
-  if (FetchRequest.isResponseSuccess(tissueSummary)) {
+  if (FetchRequest.isResponseSuccess(cellModel)) {
     return {
       props: {
-        tissueSummary,
-        pageContext: { title: "Tissue Summary" },
+        cellModel,
+        view,
+        pageContext: { title: "Cell Model" },
       },
     };
   }
-  return errorObjectToProps(tissueSummary);
+  return errorObjectToProps(cellModel);
 }
