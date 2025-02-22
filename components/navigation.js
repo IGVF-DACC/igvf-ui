@@ -691,6 +691,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
+            id="overview"
+            href="/resources"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Overview
+          </NavigationHrefItem>
+          <NavigationHrefItem
             id="tissues"
             href="/tissue-summary/mus-musculus"
             navigationClick={navigationClick}
@@ -705,6 +713,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             isChildItem
           >
             Cell Models
+          </NavigationHrefItem>
+          <NavigationHrefItem
+            id="computational-tools"
+            href="/computational-tools"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Computational Tools
           </NavigationHrefItem>
         </NavigationGroupItem>
 

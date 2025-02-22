@@ -61,6 +61,9 @@ const tailwindConfig: Config = {
 
         "collapse-ctrl": "var(--color-collapse-ctrl-background)",
 
+        "table-header-cell": "var(--color-table-header-cell-background)",
+        "table-data-cell": "var(--color-table-data-cell-background)",
+
         "button-primary": "var(--color-button-primary-background)",
         "button-secondary": "var(--color-button-secondary-background)",
         "button-warning": "var(--color-button-warning-background)",
