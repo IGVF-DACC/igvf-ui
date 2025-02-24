@@ -8,10 +8,10 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
 import ChromosomeLocations from "../../components/chromosome-locations";
+import { ConstructLibraryTable } from "../../components/construct-library-table";
 import {
   DataArea,
   DataItemLabel,
-  DataItemList,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
@@ -35,6 +35,7 @@ import {
   requestFileSets,
   requestGenes,
   requestPublications,
+  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -52,22 +53,12 @@ export default function PredictionSet({
   files,
   fileFileSets,
   derivedFromFiles,
+  samples,
   assessedGenes,
   attribution = null,
   isJson,
 }) {
   const sections = useSecDir();
-
-  const constructLibrarySets =
-    predictionSet.samples?.length > 0
-      ? predictionSet.samples.reduce(
-          (acc, sample) =>
-            sample.construct_library_sets
-              ? acc.concat(sample.construct_library_sets)
-              : acc,
-          []
-        )
-      : [];
 
   return (
     <>
@@ -104,26 +95,6 @@ export default function PredictionSet({
                         ))}
                       </SeparatedList>
                     </DataItemValue>
-                  </>
-                )}
-                {constructLibrarySets.length > 0 && (
-                  <>
-                    <DataItemLabel>Construct Library Sets</DataItemLabel>
-                    <DataItemList isCollapsible>
-                      {constructLibrarySets.map((fileSet) => {
-                        return (
-                          <div key={fileSet["@id"]}>
-                            <Link href={fileSet["@id"]}>
-                              {fileSet.accession}
-                            </Link>
-                            <span className="text-gray-600 dark:text-gray-400">
-                              {" "}
-                              {fileSet.summary}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </DataItemList>
                   </>
                 )}
                 {predictionSet.small_scale_gene_list && (
@@ -210,15 +181,23 @@ export default function PredictionSet({
               />
             </>
           )}
-          {predictionSet.samples?.length > 0 && (
+          {samples.length > 0 && (
             <SampleTable
-              samples={predictionSet.samples}
+              samples={samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${predictionSet["@id"]}`}
               reportLabel="Report of samples in this prediction set"
+              isConstructLibraryColumnVisible
             />
           )}
           {predictionSet.donors?.length > 0 && (
             <DonorTable donors={predictionSet.donors} />
+          )}
+          {predictionSet.construct_library_sets?.length > 0 && (
+            <ConstructLibraryTable
+              constructLibrarySets={predictionSet.construct_library_sets}
+              title="Associated Construct Library Sets"
+              panelId="associated-construct-library-sets"
+            />
           )}
           {inputFileSets.length > 0 && (
             <FileSetTable
@@ -272,6 +251,8 @@ PredictionSet.propTypes = {
   derivedFromFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Genes that are assessed in this prediction set
   assessedGenes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples associated with this prediction set
+  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this prediction set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this prediction set
@@ -292,6 +273,12 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = predictionSet.documents
       ? await requestDocuments(predictionSet.documents, request)
       : [];
+
+    let samples = [];
+    if (predictionSet.samples?.length > 0) {
+      const samplePaths = predictionSet.samples.map((sample) => sample["@id"]);
+      samples = await requestSamples(samplePaths, request);
+    }
 
     const inputFileSets =
       predictionSet.input_file_sets?.length > 0
@@ -358,6 +345,7 @@ export async function getServerSideProps({ params, req, query }) {
         files,
         fileFileSets,
         derivedFromFiles,
+        samples,
         pageContext: { title: predictionSet.accession },
         attribution,
         isJson,

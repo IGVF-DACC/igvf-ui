@@ -5,6 +5,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
+import { ConstructLibraryTable } from "../../components/construct-library-table";
 import {
   DataArea,
   DataItemLabel,
@@ -30,6 +31,7 @@ import {
   requestFiles,
   requestFileSets,
   requestPublications,
+  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -42,6 +44,7 @@ export default function CuratedSet({
   files,
   inputFileSetFor,
   controlFor,
+  samples,
   attribution = null,
   isJson,
 }) {
@@ -97,11 +100,12 @@ export default function CuratedSet({
               </FileSetDataItems>
             </DataArea>
           </DataPanel>
-          {curatedSet.samples?.length > 0 && (
+          {samples.length > 0 && (
             <SampleTable
-              samples={curatedSet.samples}
+              samples={samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${curatedSet["@id"]}`}
               reportLabel="Report of samples in this curated set"
+              isConstructLibraryColumnVisible
             />
           )}
           {curatedSet.donors?.length > 0 && (
@@ -109,6 +113,13 @@ export default function CuratedSet({
           )}
           {files.length > 0 && (
             <FileTable files={files} fileSet={curatedSet} isDownloadable />
+          )}
+          {curatedSet.construct_library_sets?.length > 0 && (
+            <ConstructLibraryTable
+              constructLibrarySets={curatedSet.construct_library_sets}
+              title="Associated Construct Library Sets"
+              panelId="associated-construct-library-sets"
+            />
           )}
           {inputFileSetFor.length > 0 && (
             <FileSetTable
@@ -148,6 +159,8 @@ CuratedSet.propTypes = {
   inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets that this curated set is a control for
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples associated with this curated set
+  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this curated set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -182,6 +195,12 @@ export async function getServerSideProps({ params, req, query }) {
       controlFor = await requestFileSets(controlForPaths, request);
     }
 
+    let samples = [];
+    if (curatedSet.samples?.length > 0) {
+      const samplePaths = curatedSet.samples.map((sample) => sample["@id"]);
+      samples = await requestSamples(samplePaths, request);
+    }
+
     let publications = [];
     if (curatedSet.publications?.length > 0) {
       const publicationPaths = curatedSet.publications.map(
@@ -198,6 +217,7 @@ export async function getServerSideProps({ params, req, query }) {
         files,
         inputFileSetFor,
         controlFor,
+        samples,
         pageContext: { title: curatedSet.accession },
         attribution,
         isJson,

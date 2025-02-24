@@ -6,6 +6,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
+import { ConstructLibraryTable } from "../../components/construct-library-table";
 import {
   DataArea,
   DataItemLabel,
@@ -20,6 +21,7 @@ import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
@@ -30,6 +32,7 @@ import {
   requestFiles,
   requestFileSets,
   requestPublications,
+  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -45,6 +48,7 @@ export default function ModelSet({
   inputFileSets,
   inputFileSetFor,
   controlFor,
+  samples,
   attribution = null,
   isJson,
 }) {
@@ -143,6 +147,23 @@ export default function ModelSet({
             <FileTable files={files} fileSet={modelSet} isDownloadable />
           )}
 
+          {samples.length > 0 && (
+            <SampleTable
+              samples={samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${modelSet["@id"]}`}
+              reportLabel="Report of samples in this model set"
+              isConstructLibraryColumnVisible
+            />
+          )}
+
+          {modelSet.construct_library_sets?.length > 0 && (
+            <ConstructLibraryTable
+              constructLibrarySets={modelSet.construct_library_sets}
+              title="Associated Construct Library Sets"
+              panelId="associated-construct-library-sets"
+            />
+          )}
+
           {inputFileSets.length > 0 && (
             <FileSetTable
               fileSets={inputFileSets}
@@ -197,6 +218,8 @@ ModelSet.propTypes = {
   inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Control for file sets
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples associated with this model set
+  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this model set
@@ -220,6 +243,12 @@ export async function getServerSideProps({ params, req, query }) {
     const documents = modelSet.documents
       ? await requestDocuments(modelSet.documents, request)
       : [];
+
+    let samples = [];
+    if (modelSet.samples?.length > 0) {
+      const samplePaths = modelSet.samples.map((sample) => sample["@id"]);
+      samples = await requestSamples(samplePaths, request);
+    }
 
     const externalInputData = modelSet.external_input_data
       ? (await request.getObject(modelSet.external_input_data)).optional()
@@ -271,6 +300,7 @@ export async function getServerSideProps({ params, req, query }) {
         inputFileSets,
         inputFileSetFor,
         controlFor,
+        samples,
         pageContext: { title: modelSet.model_name },
         attribution,
         isJson,

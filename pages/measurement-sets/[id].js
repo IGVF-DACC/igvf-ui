@@ -9,6 +9,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
+import { ConstructLibraryTable } from "../../components/construct-library-table";
 import {
   DataArea,
   DataAreaTitle,
@@ -128,21 +129,6 @@ export default function MeasurementSet({
     file["@type"].includes("ImageFile") ? "image" : "other"
   );
 
-  // Collect all the embedded construct library sets from all the samples in the FileSet. Remove
-  // those with duplicate `@id` values.
-  const constructLibrarySets = measurementSet.samples.reduce(
-    (acc, sample) =>
-      sample.construct_library_sets
-        ? acc.concat(sample.construct_library_sets)
-        : acc,
-    []
-  );
-  const uniqueConstructLibrarySets = constructLibrarySets.filter(
-    (fileSet, index, self) =>
-      index ===
-      self.findIndex((otherFileSet) => otherFileSet["@id"] === fileSet["@id"])
-  );
-
   // Collect all sample summaries and display them as a collapsible list.
   const sampleSummaries =
     measurementSet.samples?.length > 0
@@ -214,22 +200,6 @@ export default function MeasurementSet({
                     <DataItemLabel>Sample Summaries</DataItemLabel>
                     <DataItemList isCollapsible>
                       {uniqueSampleSummaries}
-                    </DataItemList>
-                  </>
-                )}
-                {uniqueConstructLibrarySets.length > 0 && (
-                  <>
-                    <DataItemLabel>Construct Library Sets</DataItemLabel>
-                    <DataItemList isCollapsible>
-                      {uniqueConstructLibrarySets.map((fileSet) => (
-                        <Fragment key={fileSet["@id"]}>
-                          <Link href={fileSet["@id"]}>{fileSet.accession}</Link>
-                          <span className="text-gray-600 dark:text-gray-400">
-                            {" "}
-                            {fileSet.summary}
-                          </span>
-                        </Fragment>
-                      ))}
                     </DataItemList>
                   </>
                 )}
@@ -309,16 +279,24 @@ export default function MeasurementSet({
               />
             )}
           </FileSetFilesTables>
-          {measurementSet.samples?.length > 0 && (
+          {samples?.length > 0 && (
             <SampleTable
-              samples={measurementSet.samples}
+              samples={samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${measurementSet["@id"]}`}
               reportLabel="Report of Samples in This File Set"
               panelId="samples"
+              isConstructLibraryColumnVisible
             />
           )}
           {measurementSet.donors?.length > 0 && (
             <DonorTable donors={measurementSet.donors} />
+          )}
+          {measurementSet.construct_library_sets?.length > 0 && (
+            <ConstructLibraryTable
+              constructLibrarySets={measurementSet.construct_library_sets}
+              title="Associated Construct Library Sets"
+              panelId="associated-construct-library-sets"
+            />
           )}
           <AssayDetails measurementSet={measurementSet} />
           {controlFileSets.length > 0 && (
