@@ -7,6 +7,7 @@ import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { ConstructLibraryTable } from "../../components/construct-library-table";
 import {
   DataArea,
   DataItemLabel,
@@ -26,6 +27,7 @@ import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
@@ -42,7 +44,6 @@ import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { getAllDerivedFromFiles } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
-import SampleTable from "../../components/sample-table";
 
 export default function AnalysisSet({
   analysisSet,
@@ -60,6 +61,7 @@ export default function AnalysisSet({
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
+  samples,
   attribution = null,
   isJson,
 }) {
@@ -217,16 +219,25 @@ export default function AnalysisSet({
             </>
           )}
 
-          {analysisSet.samples?.length > 0 && (
+          {samples.length > 0 && (
             <SampleTable
-              samples={analysisSet.samples}
+              samples={samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${analysisSet["@id"]}`}
               reportLabel="Report of samples in this analysis set"
+              isConstructLibraryColumnVisible
             />
           )}
 
           {analysisSet.donors?.length > 0 && (
             <DonorTable donors={analysisSet.donors} />
+          )}
+
+          {analysisSet.construct_library_sets?.length > 0 && (
+            <ConstructLibraryTable
+              constructLibrarySets={analysisSet.construct_library_sets}
+              title="Associated Construct Library Sets"
+              panelId="associated-construct-library-sets"
+            />
           )}
 
           {inputFileSets.length > 0 && (
@@ -297,6 +308,8 @@ AnalysisSet.propTypes = {
   measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // ConstructLibrarySets to display
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples from analysis set `samples` property that doesn't embed enough properties to display
+  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this analysis set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
@@ -365,6 +378,12 @@ export async function getServerSideProps({ params, req, query }) {
         (control) => control["@id"]
       );
       controlFor = await requestFileSets(controlForPaths, request);
+    }
+
+    let samples = [];
+    if (analysisSet.samples?.length > 0) {
+      const samplePaths = analysisSet.samples.map((sample) => sample["@id"]);
+      samples = await requestSamples(samplePaths, request);
     }
 
     let appliedToSamples = [];
@@ -492,6 +511,7 @@ export async function getServerSideProps({ params, req, query }) {
         auxiliarySets,
         measurementSets,
         constructLibrarySets,
+        samples,
         pageContext: { title: analysisSet.accession },
         attribution,
         isJson,

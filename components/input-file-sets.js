@@ -88,36 +88,6 @@ const measurementSetColumns = [
       columnHideCondition(measurementSets, "auxiliary_sets"),
     isSortable: false,
   },
-
-  {
-    id: "construct-library-sets",
-    title: "Associated Construct Library Sets",
-    display: ({ source }) => {
-      if (source.samples?.length > 0) {
-        const embeddedConstructLibrarySets = source.samples.reduce(
-          (acc, sample) => {
-            return sample.construct_library_sets?.length > 0
-              ? acc.concat(sample.construct_library_sets)
-              : acc;
-          },
-          []
-        );
-        return (
-          <LinkedIdAndStatusStack items={embeddedConstructLibrarySets}>
-            {(constructLibrarySets) => constructLibrarySets.accession}
-          </LinkedIdAndStatusStack>
-        );
-      }
-      return null;
-    },
-    hide: (measurementSets) => {
-      const samples = measurementSets.reduce((acc, measurementSet) => {
-        return acc.concat(measurementSet.samples);
-      }, []);
-      return columnHideCondition(samples, "construct_library_sets");
-    },
-    isSortable: false,
-  },
 ];
 
 /**
@@ -178,43 +148,6 @@ const auxiliarySetColumns = [
     ),
     hide: (auxiliarySets) =>
       columnHideCondition(auxiliarySets, "measurement_sets"),
-    isSortable: false,
-  },
-
-  {
-    id: "construct-library-sets",
-    title: "Associated Construct Library Sets",
-    display: ({ source, meta }) => {
-      if (source.samples?.length > 0) {
-        const constructLibrarySetPaths = source.samples.reduce(
-          (acc, sample) => {
-            return sample.construct_library_sets?.length > 0
-              ? acc.concat(sample.construct_library_sets)
-              : acc;
-          },
-          []
-        );
-
-        const constructLibrarySets = meta.constructLibrarySets.filter(
-          (fileSet) => constructLibrarySetPaths.includes(fileSet["@id"])
-        );
-
-        return (
-          <LinkedIdAndStatusStack items={constructLibrarySets}>
-            {(constructLibrarySets) => constructLibrarySets.accession}
-          </LinkedIdAndStatusStack>
-        );
-      }
-      return null;
-    },
-    hide: (auxiliarySets) => {
-      const samples = auxiliarySets.reduce((acc, auxiliarySets) => {
-        return auxiliarySets.samples?.length > 0
-          ? acc.concat(auxiliarySets.samples)
-          : acc;
-      }, []);
-      return columnHideCondition(samples, "construct_library_sets");
-    },
     isSortable: false,
   },
 ];

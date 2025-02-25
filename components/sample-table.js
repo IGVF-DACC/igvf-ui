@@ -7,6 +7,7 @@ import { useContext } from "react";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
+import LinkedIdAndStatusStack from "./linked-id-and-status-stack";
 import SeparatedList from "./separated-list";
 import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
@@ -82,6 +83,23 @@ const sampleColumns = [
     isSortable: false,
   },
   {
+    id: "construct-library-sets",
+    title: "Associated Construct Library Sets",
+    display: ({ source }) => {
+      return (
+        <>
+          {source.construct_library_sets && (
+            <LinkedIdAndStatusStack items={source.construct_library_sets}>
+              {(fileSet) => fileSet.accession}
+            </LinkedIdAndStatusStack>
+          )}
+        </>
+      );
+    },
+    hide: (data, columns, meta) => !meta.isConstructLibraryColumnVisible,
+    isSortable: false,
+  },
+  {
     id: "summary",
     title: "Summary",
     isSortable: false,
@@ -97,6 +115,7 @@ export default function SampleTable({
   reportLabel = null,
   title = "Samples",
   panelId = "samples",
+  isConstructLibraryColumnVisible = false,
 }) {
   const { collectionTitles } = useContext(SessionContext);
 
@@ -115,7 +134,7 @@ export default function SampleTable({
           data={samples}
           columns={sampleColumns}
           keyProp="@id"
-          meta={{ collectionTitles }}
+          meta={{ collectionTitles, isConstructLibraryColumnVisible }}
           pager={{}}
         />
       </div>
@@ -134,4 +153,6 @@ SampleTable.propTypes = {
   title: PropTypes.string,
   // ID of the panel containing this table for the section directory
   panelId: PropTypes.string,
+  // True to show the "Associated Construct Library Sets" column
+  isConstructLibraryColumnVisible: PropTypes.bool,
 };

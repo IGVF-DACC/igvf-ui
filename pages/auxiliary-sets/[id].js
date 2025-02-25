@@ -7,6 +7,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
+import { ConstructLibraryTable } from "../../components/construct-library-table";
 import {
   DataArea,
   DataItemLabel,
@@ -32,6 +33,7 @@ import {
   requestFiles,
   requestFileSets,
   requestPublications,
+  requestSamples,
   requestSeqspecFiles,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -48,6 +50,7 @@ export default function AuxiliarySet({
   seqspecFiles,
   inputFileSetFor,
   controlFor,
+  samples,
   attribution = null,
   isJson,
 }) {
@@ -99,15 +102,23 @@ export default function AuxiliarySet({
               />
             )}
           </FileSetFilesTables>
-          {auxiliarySet.samples?.length > 0 && (
+          {samples.length > 0 && (
             <SampleTable
-              samples={auxiliarySet.samples}
+              samples={samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${auxiliarySet["@id"]}`}
               reportLabel="Report of samples in this auxiliary set"
+              isConstructLibraryColumnVisible
             />
           )}
           {auxiliarySet.donors?.length > 0 && (
             <DonorTable donors={auxiliarySet.donors} />
+          )}
+          {auxiliarySet.construct_library_sets?.length > 0 && (
+            <ConstructLibraryTable
+              constructLibrarySets={auxiliarySet.construct_library_sets}
+              title="Associated Construct Library Sets"
+              panelId="associated-construct-library-sets"
+            />
           )}
           {relatedDatasets.length > 0 && (
             <FileSetTable
@@ -160,6 +171,8 @@ AuxiliarySet.propTypes = {
   inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets controlled by this file set
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples associated with this file set
+  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this file set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
@@ -185,6 +198,12 @@ export async function getServerSideProps({ params, req, query }) {
     if (auxiliarySet.files.length > 0) {
       const filePaths = auxiliarySet.files.map((file) => file["@id"]) || [];
       files = await requestFiles(filePaths, request);
+    }
+
+    let samples = [];
+    if (auxiliarySet.samples?.length > 0) {
+      const samplePaths = auxiliarySet.samples.map((sample) => sample["@id"]);
+      samples = await requestSamples(samplePaths, request);
     }
 
     let relatedDatasets = [];
@@ -236,6 +255,7 @@ export async function getServerSideProps({ params, req, query }) {
         relatedDatasets,
         seqspecFiles,
         inputFileSetFor,
+        samples,
         controlFor,
         pageContext: { title: auxiliarySet.accession },
         attribution,
