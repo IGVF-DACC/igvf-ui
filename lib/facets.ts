@@ -1,5 +1,13 @@
+// node_modules
+import _ from "lodash";
 // lib
 import FetchRequest from "./fetch-request";
+// root
+import type {
+  SearchResultsFacet,
+  SearchResultsFacetTerm,
+  SearchResultsFilter,
+} from "../globals.d";
 
 /**
  * Facet fields that don't get displayed as a facet.
@@ -20,7 +28,7 @@ export type FacetOpenState = Record<string, boolean>;
  * @param filter Search result filter object for a single term
  * @returns Term for the filter, including wildcard terms
  */
-export function getFilterTerm(filter: { field: string; term: string }): string {
+export function getFilterTerm(filter: SearchResultsFilter): string {
   const isAnyOrNot = filter.term === "*";
 
   let term;
@@ -41,16 +49,152 @@ export function getFilterTerm(filter: { field: string; term: string }): string {
  * @returns Facets that the user can see
  */
 export function getVisibleFacets(
-  facets: { field: string; count: number }[],
+  facets: SearchResultsFacet[],
   isAuthenticated: boolean
-): { field: string; count: number }[] {
+): SearchResultsFacet[] {
   const extraHiddenFIelds = isAuthenticated
     ? []
     : ["audit.INTERNAL_ACTION.category"];
-  return facets.filter(
+  const normalAndParentFacets = filterOutChildFacets(facets);
+
+  return normalAndParentFacets.filter(
     (facet) =>
       !HIDDEN_FACET_FIELDS.concat(extraHiddenFIelds).includes(facet.field)
   );
+}
+
+/**
+ * Filter out the hidden facet fields from the given array of filters. This is useful for only
+ * showing facet tags that the user is allowed to see.
+ * @param filters Search result filters
+ * @param isAuthenticated True if the user has authenticated
+ * @returns Filters that the user can see
+ */
+export function getVisibleFilters(
+  filters: SearchResultsFilter[],
+  isAuthenticated: boolean
+): SearchResultsFilter[] {
+  const extraHiddenFIelds = isAuthenticated
+    ? []
+    : ["audit.INTERNAL_ACTION.category"];
+
+  return filters.filter(
+    (filter) =>
+      !HIDDEN_FACET_FIELDS.concat(extraHiddenFIelds).includes(filter.field)
+  );
+}
+
+/**
+ * Check if a facet is the parent of a hierarchical facet.
+ * @param facet Facet to check if it's the parent of a hierarchical facet
+ * @returns True if the facet is the parent of a hierarchical facet
+ */
+export function checkHierarchicalFacet(facet: SearchResultsFacet): boolean {
+  return Boolean(facet.terms[0].subfacet);
+}
+
+/**
+ * Collect all child facets from all parent facets.
+ * @param facets From search results
+ * @returns All child facets from all parent facets
+ */
+export function collectAllChildFacets(
+  facets: SearchResultsFacet[]
+): SearchResultsFacet[] {
+  return facets.reduce((acc, facet) => {
+    const isHierarchicalFacet = checkHierarchicalFacet(facet);
+    return isHierarchicalFacet ? acc.concat(facet.terms[0].subfacet) : acc;
+  }, []);
+}
+
+/**
+ * When a child facet term is selected, it appears as a top-level facet without a title in the
+ * search result facets. This function filters out these child facet terms from the facets so they
+ * don't appear at the bottom of the facet list as an independent facet.
+ * @param facets Facets from search results, possibly including selected child facet terms
+ * @returns Facets without the child facet terms
+ */
+export function filterOutChildFacets(
+  facets: SearchResultsFacet[]
+): SearchResultsFacet[] {
+  const childFacets = collectAllChildFacets(facets);
+
+  // Find facets that exist despite not being in the type's search config. These are automatically
+  // generated from selected properties not included in facet configurations, but also from selected child
+  // facets, which we don't want included in facets.
+  const nonConfiguredFacets = facets.filter((facet) => facet.appended);
+
+  // Generate a list of all non-configured facets that are also selected child facets.
+  const nonConfiguredChildFacets = _.intersectionBy(
+    nonConfiguredFacets,
+    childFacets,
+    "field"
+  );
+
+  // Filter out the non-configured child facets from the facets.
+  return facets.filter((facet) => {
+    return !nonConfiguredChildFacets.some((childFacet) => {
+      return childFacet.field === facet.field;
+    });
+  });
+}
+
+/**
+ * Get the selected terms, negative-selected terms, and non-selected terms for a facet. For normal
+ * facets, the terms are directly in the facet. For hierarchical facets, the terms are in the
+ * subfacets, and the parent terms are ignored.
+ * @param facet Containing the terms to determine their selection state
+ * @param filters Search-result filters to use to determine the current selections
+ * @returns Object containing the selected terms, negative-selected terms, and non-selected terms
+ */
+export function getTermSelections(
+  facet: SearchResultsFacet,
+  filters: SearchResultsFilter[]
+): {
+  selectedTerms: string[];
+  negativeTerms: string[];
+  nonSelectedTerms: string[];
+} {
+  const isHierarchicalFacet = checkHierarchicalFacet(facet);
+
+  // Get the field and terms for the facet. For hierarchical facets, collect all the terms from the
+  // subfacets.
+  let field = "";
+  let terms: SearchResultsFacetTerm[] = [];
+  if (isHierarchicalFacet) {
+    field = facet.terms[0].subfacet?.field;
+    terms = facet.terms.reduce((acc, parentTerm) => {
+      return acc.concat(parentTerm.subfacet.terms);
+    }, [] as SearchResultsFacetTerm[]);
+  } else {
+    field = facet.field;
+    terms = facet.terms;
+  }
+
+  // Divide the filters into selected and negative-selected terms.
+  const groupedFilters = _.groupBy(filters, (filter) => {
+    if (filter.field === field) {
+      return "selected";
+    }
+    if (filter.field === `${field}!`) {
+      return "negative";
+    }
+    return "neither";
+  });
+
+  // Get the term names for the selected, negative-selected, and non-selected terms; the latter
+  // does not appear in the filters, so we have to use the facet terms to determine them.
+  const selectedTerms =
+    groupedFilters.selected?.map((filter) => filter.term) || [];
+  const negativeTerms =
+    groupedFilters.negative?.map((filter) => filter.term) || [];
+  const nonSelectedTerms = terms
+    .map((term) => term.key.toString())
+    .filter((term) => {
+      return !selectedTerms.includes(term) && !negativeTerms.includes(term);
+    });
+
+  return { selectedTerms, negativeTerms, nonSelectedTerms };
 }
 
 /**

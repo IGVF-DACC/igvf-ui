@@ -5,9 +5,13 @@ import PropTypes from "prop-types";
  * Displays the standard term label for the standard facet terms. It shows the term name at the
  * left of the space, and the count of terms on the right.
  */
-export default function StandardTermLabel({ term, isNegative }) {
+export default function StandardTermLabel({ term, isNegative, isChildTerm }) {
   return (
-    <div className="flex grow items-center justify-between gap-2 text-sm font-normal leading-[1.1] [&>div:first-child]:break-anywhere">
+    <div
+      className={`flex grow items-center justify-between gap-2 leading-[1.1] [&>div:first-child]:break-anywhere ${
+        isChildTerm ? "text-xs font-light" : "text-sm font-normal"
+      }`}
+    >
       <div>{term.key_as_string || term.key}</div>
       {!isNegative && <div>{term.doc_count}</div>}
     </div>
@@ -26,4 +30,6 @@ StandardTermLabel.propTypes = {
   }).isRequired,
   // True if the term is negated
   isNegative: PropTypes.bool.isRequired,
+  // True if the term is a child term within a sub facet
+  isChildTerm: PropTypes.bool.isRequired,
 };

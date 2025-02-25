@@ -16,12 +16,13 @@ export default function FacetTerm({
   term,
   isChecked,
   isNegative,
+  parent = null,
   onClick,
 }) {
   const TermLabel = facetRegistry.termLabel.lookup(field);
   const id = `${field}-${toShishkebabCase(
     encodeUriElement(term.key_as_string || term.key)
-  )}`;
+  )}${parent ? `-${toShishkebabCase(parent.term.key)}` : ""}`;
 
   return (
     <li data-testid={`facetterm-${id}`}>
@@ -31,13 +32,17 @@ export default function FacetTerm({
         name={`${term.key_as_string || term.key} with ${term.doc_count} result${
           term.doc_count > 1 ? "s" : ""
         }`}
-        onClick={() => onClick(field, term, false)}
-        onLongClick={() => onClick(field, term, true)}
+        onClick={() => onClick(field, term, false, parent)}
+        onLongClick={() => onClick(field, term, true, parent)}
         className={`cursor-pointer rounded border border-transparent px-2 py-1 hover:border-data-border ${
           isNegative ? "line-through" : ""
         }`}
       >
-        <TermLabel term={term} isNegative={isNegative} />
+        <TermLabel
+          term={term}
+          isNegative={isNegative}
+          isChildTerm={Boolean(parent)}
+        />
       </Checkbox>
     </li>
   );
@@ -56,6 +61,13 @@ FacetTerm.propTypes = {
   isChecked: PropTypes.bool.isRequired,
   // True if the term is negated
   isNegative: PropTypes.bool.isRequired,
+  // Field name and key of the parent term if this term is a child term
+  parent: PropTypes.exact({
+    // Field of the parent term
+    field: PropTypes.string,
+    // Parent term object including key and subfacet
+    term: PropTypes.object,
+  }),
   // Called when the checkbox is checked or unchecked
   onClick: PropTypes.func.isRequired,
 };
