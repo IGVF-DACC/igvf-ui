@@ -89,6 +89,9 @@
   --color-panel-background: #fff;
   --color-panel-border: #d0d0d0;
 
+  --color-table-header-cell-background: #e0e0e0;
+  --color-table-data-cell-background: #ffffff;
+
   --color-button-primary-background: #4f66a7;
   --color-button-secondary-background: transparent;
   --color-button-warning-background: #990f12;
@@ -340,6 +343,9 @@
   --color-collapse-ctrl-border: #374151;
   --color-collapse-ctrl-text: #9ca3af;
   --color-collapse-ctrl-background: #1f2937;
+
+  --color-table-header-cell-background: #283547;
+  --color-table-data-cell-background: #000000;
 
   --color-panel-background: #000205;
   --color-panel-border: #4e5b75;

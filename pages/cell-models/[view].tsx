@@ -71,7 +71,8 @@ type ViewIdentifier = "cell-lines" | "differentiated-specimens";
 const viewQueries: Record<string, ViewMap> = {
   "cell-lines": {
     tabTitle: "Cell Lines",
-    dataProviderPath: "/matrix/?type=Sample&config=sample-cell-lines",
+    dataProviderPath:
+      "/matrix/?type=Sample&classifications=cell+line&config=sample-cell-lines",
     cellLinkPath: "/search/?type=Sample",
     pagePath: "/cell-models/cell-lines/",
     columnHeaderCellClass: "bg-cell-model-matrix-column-header-cell-line",
@@ -83,7 +84,7 @@ const viewQueries: Record<string, ViewMap> = {
   "differentiated-specimens": {
     tabTitle: "Differentiated Specimens",
     dataProviderPath:
-      "/matrix/?type=Sample&config=sample-differentiated-specimens",
+      "/matrix/?type=Sample&classifications=differentiated+cell+specimen&classifications=reprogrammed+cell+specimen&config=sample-differentiated-specimens",
     cellLinkPath: "/search/?type=Sample",
     pagePath: "/cell-models/differentiated-specimens/",
     columnHeaderCellClass:
