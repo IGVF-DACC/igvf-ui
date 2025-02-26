@@ -722,6 +722,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Computational Tools
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="predictive-models"
+            href="/predictive-models"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Predictive Models
+          </NavigationHrefItem>
         </NavigationGroupItem>
 
         <NavigationGroupItem
