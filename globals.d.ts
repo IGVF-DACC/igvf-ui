@@ -352,6 +352,9 @@ export interface FileSetObject extends DatabaseObject {
  */
 export interface InstitutionalCertificateObject extends DatabaseObject {
   certificate_identifier: string;
+  data_use_limitation?: string;
+  data_use_limitation_modifiers?: string[];
+  data_use_limitation_summary: string;
 }
 
 /**

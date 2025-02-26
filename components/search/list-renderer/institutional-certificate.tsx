@@ -30,6 +30,9 @@ export default function InstitutionalCertificate({
         <SearchListItemTitle>{item.certificate_identifier}</SearchListItemTitle>
         <SearchListItemMeta>
           <span key="lab">{(item.lab as LabObject).title}</span>
+          <span key="data-use-limitation">
+            {item.data_use_limitation_summary}
+          </span>
         </SearchListItemMeta>
         <SearchListItemQuality item={item} />
       </SearchListItemMain>
