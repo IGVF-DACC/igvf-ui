@@ -10,6 +10,7 @@
 import type {
   CollectionTitles,
   DatabaseObject,
+  DataProviderObject,
   Schema,
   SearchResults,
 } from "../globals.d";
@@ -104,14 +105,16 @@ function buildPageBreadcrumbs(
 
   // Build the breadcrumb data from the collection and item.
   const breadcrumbs = pageObjects.map((pathObject) => {
-    const { title } = getPageTitleAndCodes(pathObject) as {
+    const { title } = getPageTitleAndCodes(
+      pathObject as unknown as DataProviderObject
+    ) as {
       title: string;
       codes?: string[];
     };
     return { title, href: pathObject["@id"] } as Breadcrumb;
   });
 
-  const { title } = getPageTitleAndCodes(page);
+  const { title } = getPageTitleAndCodes(page as unknown as DataProviderObject);
   return breadcrumbs.concat({ title } as Breadcrumb);
 }
 

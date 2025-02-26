@@ -2,7 +2,11 @@
 import FetchRequest from "./fetch-request";
 import { type DatasetSummary } from "./home";
 // root
-import type { DatabaseObject, DataProviderObject } from "../globals";
+import type {
+  DatabaseObject,
+  DataProviderObject,
+  FileObject,
+} from "../globals";
 
 /**
  * Retrieve the analysis step objects for the given analysis step paths from the data provider.
@@ -141,7 +145,9 @@ export async function requestSeqspecFiles(
   let seqspecFiles: DataProviderObject[] = [];
   if (files.length > 0) {
     const seqspecPaths: string[] = files.reduce((acc: string[], file) => {
-      const fileSeqspecs = file.seqspecs as string[] | undefined;
+      const fileSeqspecs = (file as FileObject).seqspecs as
+        | string[]
+        | undefined;
       if (fileSeqspecs && fileSeqspecs.length > 0) {
         // File schemas define seqspecs as either an array of @ids or partial embedded
         // configuration-file objects. If the latter, extract the @id paths from each object.

@@ -48,7 +48,7 @@ export function splitIlluminaSequenceFiles(
         acc.imageFileType.push(file);
       } else if (file["@type"][0] === "TabularFile") {
         acc.tabularFileType.push(file);
-      } else if (file.illumina_read_type) {
+      } else if ((file as FileObject).illumina_read_type) {
         acc.filesWithReadType.push(file);
       } else {
         acc.filesWithoutReadType.push(file);
@@ -121,7 +121,7 @@ async function getFileDerivedFromFiles(
     derivedFromFiles = (await requestFiles(
       derivedFromPaths,
       request
-    )) as FileObject[];
+    )) as unknown as FileObject[];
   }
 
   return derivedFromFiles;

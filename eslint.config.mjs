@@ -5,6 +5,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
+import jest from "eslint-plugin-jest";
+import globals from "globals";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,10 +28,11 @@ const eslintConfig = [
     plugins: {
       "testing-library": testingLibrary,
       "@typescript-eslint": typescriptEslint,
+      jest,
     },
 
     languageOptions: {
-      globals: {},
+      globals: { ...globals.jest },
       parser: tsParser,
     },
 
@@ -41,11 +44,22 @@ const eslintConfig = [
         },
       ],
 
-      // "comma-dangle": ["error", "always-multiline"],
+      "comma-dangle": [
+        "error",
+        {
+          arrays: "always-multiline",
+          objects: "always-multiline",
+          imports: "always-multiline",
+          exports: "always-multiline",
+          functions: "never",
+        },
+      ],
       curly: "error",
       "dot-notation": ["error"],
       eqeqeq: ["error"],
       "func-style": ["error", "declaration"],
+
+      ...jest.configs.recommended.rules,
 
       "no-else-return": [
         "error",

@@ -210,10 +210,9 @@ export async function getServerSideProps(
 
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const indexFile = (
-    await request.getObject(`/image-files/${params.id}/`)
-  ).union() as IndexFileObject;
-  if (FetchRequest.isResponseSuccess(indexFile)) {
+  const item = (await request.getObject(`/image-files/${params.id}/`)).union();
+  if (FetchRequest.isResponseSuccess(item)) {
+    const indexFile = item as unknown as FileObject;
     const documents = indexFile.documents
       ? await requestDocuments(indexFile.documents as string[], request)
       : [];
@@ -267,5 +266,5 @@ export async function getServerSideProps(
       },
     };
   }
-  return errorObjectToProps(indexFile as ErrorObject);
+  return errorObjectToProps(item as ErrorObject);
 }

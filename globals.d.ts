@@ -57,7 +57,6 @@ export interface DatabaseObject {
   status?: string;
   title?: string;
   uuid?: string;
-  [key: string]: unknown;
 }
 
 /**
@@ -317,16 +316,22 @@ export type UploadStatus =
 export interface FileObject extends DatabaseObject {
   accession?: string;
   aliases?: string[];
+  anvil_url?: string;
   checkfiles_version?: string;
   content_type: string;
+  controlled_access?: boolean;
   derived_from?: string[];
+  documents?: string[] | DocumentObject[];
+  externally_hosted?: boolean;
   file_format: string;
   file_format_specifications?: string[];
   file_set: string | FileSetObject;
   file_size?: number;
   href?: string;
+  illumina_read_type?: string;
   input_file_for?: string[] | FileObject[];
   reference_files: string[] | FileObject[];
+  seqspecs?: string[];
   summary?: string;
   upload_status?: UploadStatus;
 }
@@ -340,6 +345,13 @@ export interface FileSetObject extends DatabaseObject {
   files: string[];
   samples?: string[] | SampleObject[];
   summary: string;
+}
+
+/**
+ * Institutional certificate object type.
+ */
+export interface InstitutionalCertificateObject extends DatabaseObject {
+  certificate_identifier: string;
 }
 
 /**

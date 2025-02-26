@@ -202,7 +202,7 @@ export default class FetchRequest {
       response !== null &&
       "@type" in response
     ) {
-      const types = (response as DatabaseObject)["@type"];
+      const types = (response as unknown as DatabaseObject)["@type"];
       return !types.includes("Error");
     }
     return true;

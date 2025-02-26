@@ -66,7 +66,7 @@ export function getPageTitleAndCodes(item: DataProviderObject): {
   title: string;
   codes: string[];
 } {
-  const page = item as PageObject;
+  const page = item as unknown as PageObject;
 
   // Match the page title with a regex that captures the displayable title and one or more square-
   // bracket-delimited codes. The displayable title gets captured in the first group, and all the
@@ -142,7 +142,7 @@ export async function savePage(
   if (!isNewPage) {
     writeablePage = (
       await request.getObject(`${page["@id"]}?frame=edit`)
-    ).union() as PageObject;
+    ).union() as unknown as PageObject;
     if (writeablePage["@type"]?.includes("Error")) {
       return writeablePage;
     }
