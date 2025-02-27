@@ -44,10 +44,6 @@ export interface PageObject extends DatabaseObject {
   };
   name: string;
   parent?: string;
-  submitted_by?: {
-    "@id": string;
-    title: string;
-  };
   summary?: string;
   title: string;
 }

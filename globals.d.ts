@@ -55,6 +55,7 @@ export interface DatabaseObject {
   lab?: string | LabObject;
   release_timestamp?: string;
   status?: string;
+  submitted_by?: string | UserObject;
   title?: string;
   uuid?: string;
   [key: string]: unknown;
@@ -340,6 +341,19 @@ export interface FileSetObject extends DatabaseObject {
   files: string[];
   samples?: string[] | SampleObject[];
   summary: string;
+}
+
+/**
+ * Institutional certificate object type.
+ */
+export interface InstitutionalCertificateObject extends DatabaseObject {
+  certificate_identifier: string;
+  controlled_access: boolean;
+  data_use_limitation?: string;
+  data_use_limitation_modifiers?: string[];
+  data_use_limitation_summary: string;
+  summary: string;
+  urls: string[];
 }
 
 /**

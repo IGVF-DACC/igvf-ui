@@ -202,6 +202,8 @@ export function DataItemValueUrl({ className = "", children }) {
 DataItemValueUrl.propTypes = {
   // Additional Tailwind CSS classes to apply to the <div> element
   className: PropTypes.string,
+  // Element containing the URL to display, possibly a string
+  children: PropTypes.node,
 };
 
 /**
