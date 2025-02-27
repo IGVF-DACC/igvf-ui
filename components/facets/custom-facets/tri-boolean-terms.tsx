@@ -1,5 +1,8 @@
 // node_modules
 import { Field, Label, Radio, RadioGroup } from "@headlessui/react";
+// lib
+import QueryString from "../../../lib/query-string";
+import { splitPathAndQueryString } from "../../../lib/query-utils";
 // root
 import type {
   SearchResultsFacet,
@@ -50,15 +53,21 @@ export default function TriBooleanTerms({
 }: {
   searchResults: SearchResults;
   facet: SearchResultsFacet;
-  updateQuery: (facet: string, term: string) => void;
+  updateQuery: (queryString: string) => void;
 }) {
-  function onChange(clickedValue: number) {
-    console.log("ONCHANGE", clickedValue);
-  }
+  // Generate a query based on the current URL to update once the user clicks a facet term.
+  const { queryString } = splitPathAndQueryString(searchResults["@id"]);
+  const query = new QueryString(queryString);
 
-  console.log("TRI SEARCH", searchResults);
-  console.log("TRI FACET", facet);
-  console.log("TRI UPDATE", updateQuery);
+  function onChange(clickedValue: number) {
+    query.deleteKeyValue(facet.field);
+    if (clickedValue === TriBoolean.False) {
+      query.addKeyValue(facet.field, "false");
+    } else if (clickedValue === TriBoolean.True) {
+      query.addKeyValue(facet.field, "true");
+    }
+    updateQuery(query.format());
+  }
 
   // Build array of available boolean terms as well as "either"
   const eitherTerm: SearchResultsFacetTerm = {
@@ -79,14 +88,17 @@ export default function TriBooleanTerms({
       className="p-2"
     >
       {terms.map((term) => (
-        <Field key={term.key} className="flex items-center gap-2 px-2">
+        <Field
+          key={term.key}
+          className="flex cursor-pointer items-center gap-2 rounded border border-transparent px-2 hover:border-data-border"
+        >
           <Radio
             value={term.key}
-            className="group flex size-4 items-center justify-center rounded-full border bg-white data-[checked]:bg-blue-400"
+            className="group flex size-4 items-center justify-center rounded-full border bg-white data-[checked]:bg-gray-500"
           >
-            <span className="invisible size-2 rounded-full bg-white group-data-[checked]:visible" />
+            <span className="invisible size-1.5 rounded-full bg-white group-data-[checked]:visible" />
           </Radio>
-          <Label className="flex w-full justify-between">
+          <Label className="flex w-full cursor-pointer justify-between text-sm">
             <div>{term.key_as_string}</div>
             <div>{term.doc_count}</div>
           </Label>
