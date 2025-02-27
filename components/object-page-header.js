@@ -42,4 +42,6 @@ ObjectPageHeader.propTypes = {
   item: PropTypes.object.isRequired,
   // is this view in Json format
   isJsonFormat: PropTypes.bool.isRequired,
+  // Optional children to insert between standard header elements
+  children: PropTypes.node,
 };

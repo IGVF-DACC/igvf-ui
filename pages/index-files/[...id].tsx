@@ -191,7 +191,6 @@ type Params = {
   id: string[];
 };
 
-// export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 export async function getServerSideProps(
   context: GetServerSidePropsContext<Params>
 ) {

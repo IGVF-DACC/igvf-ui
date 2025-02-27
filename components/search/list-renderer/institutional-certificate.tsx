@@ -10,7 +10,6 @@ import {
 } from "./search-list-item";
 // root
 import type {
-  DatabaseObject,
   InstitutionalCertificateObject,
   LabObject,
 } from "../../../globals.d";
@@ -25,14 +24,13 @@ export default function InstitutionalCertificate({
       <SearchListItemMain>
         <SearchListItemUniqueId>
           <SearchListItemType item={item} />
-          {item.uuid}
+          {item.certificate_identifier}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{item.certificate_identifier}</SearchListItemTitle>
+        <SearchListItemTitle>
+          {item.summary} {item.data_use_limitation_summary}
+        </SearchListItemTitle>
         <SearchListItemMeta>
           <span key="lab">{(item.lab as LabObject).title}</span>
-          <span key="data-use-limitation">
-            {item.data_use_limitation_summary}
-          </span>
         </SearchListItemMeta>
         <SearchListItemQuality item={item} />
       </SearchListItemMain>
