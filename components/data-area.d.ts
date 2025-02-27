@@ -88,7 +88,7 @@ export function DataItemValueUrl({
   children,
 }: {
   className?: string; // Additional Tailwind CSS classes
-  children: string; // URL to display
+  children: React.ReactNode; // URL to display
 }): React.ReactElement | null;
 
 export function DataItemList({
