@@ -60,6 +60,7 @@ export default function TriBooleanTerms({
   const query = new QueryString(queryString);
 
   function onChange(clickedValue: number) {
+    // Clear all filters for the current facet field, then add the selected value if not "either".
     query.deleteKeyValue(facet.field);
     if (clickedValue === TriBoolean.False) {
       query.addKeyValue(facet.field, "false");
@@ -84,7 +85,7 @@ export default function TriBooleanTerms({
     <RadioGroup
       value={selectedValue}
       onChange={onChange}
-      aria-label="Boolean filter"
+      aria-label={`${facet.title} boolean selector`}
       className="p-2"
     >
       {terms.map((term) => (
@@ -98,7 +99,12 @@ export default function TriBooleanTerms({
           >
             <span className="invisible size-1.5 rounded-full bg-white group-data-[checked]:visible" />
           </Radio>
-          <Label className="flex w-full cursor-pointer justify-between text-sm">
+          <Label
+            className="flex w-full cursor-pointer justify-between text-sm"
+            aria-label={`${term.key_as_string} with ${term.doc_count} ${
+              term.doc_count === 1 ? "result" : "results"
+            }`}
+          >
             <div>{term.key_as_string}</div>
             <div>{term.doc_count}</div>
           </Label>
