@@ -62,6 +62,7 @@ import Gene from "./gene";
 import HumanDonor from "./human-donor";
 import ImageItem from "./image";
 import IndexFile from "./index-file";
+import InstitutionalCertificate from "./institutional-certificate";
 import Lab from "./lab";
 import MeasurementSet from "./measurement-set";
 import MultiplexedSample from "./multiplexed-sample";
@@ -101,6 +102,7 @@ const renderers = {
   Image: ImageItem,
   ImageFile: File,
   IndexFile,
+  InstitutionalCertificate,
   InVitroSystem: Biosample,
   Lab,
   MatrixFile: File,

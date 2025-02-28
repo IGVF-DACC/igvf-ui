@@ -180,7 +180,7 @@ export default function buildBreadcrumbs(
   let breadcrumbs: Breadcrumb[] = [];
   if (data["@type"]) {
     if (data["@type"].includes("Page")) {
-      breadcrumbs = buildPageBreadcrumbs(data as PageObject, meta);
+      breadcrumbs = buildPageBreadcrumbs(data as unknown as PageObject, meta);
     } else if (
       data["@type"].includes("Search") ||
       data["@type"].includes("Report")
@@ -219,7 +219,7 @@ export async function getBreadcrumbMeta(
   request: FetchRequest
 ): Promise<BreadcrumbMeta> {
   if (data["@type"].includes("Page")) {
-    return getPageBreadcrumbMeta(data as PageObject, request);
+    return getPageBreadcrumbMeta(data as unknown as PageObject, request);
   }
   return {};
 }

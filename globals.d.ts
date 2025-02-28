@@ -55,6 +55,7 @@ export interface DatabaseObject {
   lab?: string | LabObject;
   release_timestamp?: string;
   status?: string;
+  submitted_by?: string | UserObject;
   title?: string;
   uuid?: string;
   [key: string]: unknown;
@@ -164,8 +165,8 @@ export interface SearchResults {
   clear_filters: string;
   columns: SearchResultsColumns;
   facet_groups?: SearchResultsFacetGroup[];
-  facets?: SearchResultsFacet[];
-  filters?: SearchResultsFilter[];
+  facets: SearchResultsFacet[];
+  filters: SearchResultsFilter[];
   non_sortable?: string[];
   notification: string;
   sort?: SearchResultsSort;
@@ -187,9 +188,11 @@ export interface SearchResultsFacetGroup {
 
 export type SearchResultsFacetTerm = {
   /** Title of the term */
-  key: string;
+  key: string | number;
   /** Number of items with this term */
   doc_count: number;
+  /** Human-readable version of `key` for some cases, like boolean properties */
+  key_as_string?: string;
 };
 
 export interface SearchResultsFacet {
@@ -340,6 +343,19 @@ export interface FileSetObject extends DatabaseObject {
   files: string[];
   samples?: string[] | SampleObject[];
   summary: string;
+}
+
+/**
+ * Institutional certificate object type.
+ */
+export interface InstitutionalCertificateObject extends DatabaseObject {
+  certificate_identifier: string;
+  controlled_access: boolean;
+  data_use_limitation?: string;
+  data_use_limitation_modifiers?: string[];
+  data_use_limitation_summary: string;
+  summary: string;
+  urls: string[];
 }
 
 /**

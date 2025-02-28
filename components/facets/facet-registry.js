@@ -1,12 +1,14 @@
 // components/facets/custom-facets
 import AuditTitle from "./custom-facets/audit-title";
 import InternalActionAuditTerms from "./custom-facets/audit-internal-action-terms";
+import NoTermCountTitle from "./custom-facets/no-term-count-title";
 import StandardTagLabel from "./custom-facets/standard-tag-label";
 import StandardTermLabel from "./custom-facets/standard-term-label";
 import StandardTerms from "./custom-facets/standard-terms";
 import StandardTitle from "./custom-facets/standard-title";
 import TaxaTagLabel from "./custom-facets/taxa-tag-label";
 import TaxaTermLabel from "./custom-facets/taxa-term-label";
+import TriBooleanTerms from "./custom-facets/tri-boolean-terms";
 
 /**
  * Registry of custom facet components for the term label, terms (basically the entire facet sans
@@ -32,6 +34,7 @@ const facetRegistry = {
   // Custom terms, basically controlling the appearance of the entire facet sans title.
   terms: {
     "audit.INTERNAL_ACTION.category": InternalActionAuditTerms,
+    controlled_access: TriBooleanTerms,
     standard: StandardTerms,
   },
 
@@ -41,6 +44,7 @@ const facetRegistry = {
     "audit.INTERNAL_ACTION.category": AuditTitle,
     "audit.NOT_COMPLIANT.category": AuditTitle,
     "audit.WARNING.category": AuditTitle,
+    controlled_access: NoTermCountTitle,
     standard: StandardTitle,
   },
 };

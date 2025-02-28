@@ -44,7 +44,10 @@ export function FacetTermCount({
   const nonSelectedTerms = facet.terms
     .map((term) => term.key)
     .filter((term) => {
-      return !selectedTerms.includes(term) && !negativeTerms.includes(term);
+      return (
+        !selectedTerms.includes(term as string) &&
+        !negativeTerms.includes(term as string)
+      );
     });
 
   // Build the help text for the aria and the tooltip.
