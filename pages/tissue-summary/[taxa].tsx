@@ -14,7 +14,7 @@ import PagePreamble from "../../components/page-preamble";
 import FetchRequest from "../../lib/fetch-request";
 import { errorObjectToProps } from "../../lib/errors";
 import { toShishkebabCase } from "../../lib/general";
-import { type ColumnMap } from "../../lib/matrix";
+import { type ColumnMap, generateMatrixColumnMap } from "../../lib/matrix";
 import { encodeUriElement } from "../../lib/query-encoding";
 // root
 import type {
@@ -79,22 +79,6 @@ const taxaQueries: Record<string, TaxaMap> = {
  * List all accepted taxa.
  */
 const acceptedTaxa = Object.keys(taxaQueries);
-
-/**
- * Generate a map of column labels to their 0-based column index. Each label appears as a key in
- * the returned object, with the value being the index of the corresponding column in the matrix.
- * @param columnBuckets - Buckets for the x-axis of the matrix
- * @returns Map of column labels to their 0-based column index
- */
-function generateMatrixColumnMap(columnBuckets: MatrixBucket[]): ColumnMap {
-  const sortedBuckets = _.sortBy(columnBuckets, (bucket) =>
-    bucket.key.toLowerCase()
-  );
-  return sortedBuckets.reduce((acc, bucket, i) => {
-    const column = { [bucket.key]: i };
-    return { ...acc, ...column };
-  }, {});
-}
 
 /**
  * Renders the top-level header cells that covers potentially multiple rows in the matrix. It

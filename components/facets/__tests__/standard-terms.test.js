@@ -214,9 +214,7 @@ describe("Test the StandardTerms component", () => {
     };
     const facet = searchResults.facets[1];
     // mock the updateQuery function, but have the mock display something to console.log
-    const updateQuery = jest.fn((query) =>
-      console.log("******** QUERY", query)
-    );
+    const updateQuery = jest.fn();
 
     render(
       <StandardTerms
