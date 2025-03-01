@@ -412,23 +412,39 @@ function HolyGrail() {
   );
 }
 
-function collectRows(rows: Row[]): Cell[] {
+function collectRows(
+  rows: Row[],
+  segment = 0
+): { rows: Cell[]; updatedSegment: number } {
   const tableCells: Cell[] = [];
+  let lastCellHasChildRows = true;
+
   rows.forEach((row) => {
-    row.cells.forEach((cell) => {
-      cell.rowSpan = calculateRowSpan(cell);
+    row.cells.forEach((cell, i) => {
+      cell._rowSpan = calculateRowSpan(cell);
+      if (!lastCellHasChildRows && i === 0) {
+        segment += 1;
+      }
+      cell._segment = segment;
+
       tableCells.push(cell);
       if (cell.childRows) {
-        const childRowCells = collectRows(cell.childRows);
+        const { rows: childRowCells, updatedSegment } = collectRows(
+          cell.childRows,
+          segment
+        );
         tableCells.push(...childRowCells);
+        segment = updatedSegment;
       }
+
+      lastCellHasChildRows = Boolean(cell.childRows);
     });
   });
-  return tableCells;
+  return { rows: tableCells, updatedSegment: segment + 1 };
 }
 
 export default function Assays() {
-  const data = collectRows(holyGrailData);
+  const { rows: data } = collectRows(holyGrailData);
   console.log(data);
   return (
     <>

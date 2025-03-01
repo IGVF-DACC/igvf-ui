@@ -16,10 +16,10 @@ export type Cell = {
   childRows?: Row[];
   /** True if the cell is a header cell, usually for vertical headers; false for a data cell */
   isHeaderCell?: boolean;
-  /** Number of rows spanned by this cell. Do not set in DataTableFormat; used internally */
-  rowSpan?: number;
-  /** True if first cell in HTML row; Do not set in DataTableFormat; used internally */
-  isFirstCell?: boolean;
+  /** Number of rows spanned by this cell. Do not set in DataTableFormat; internal use */
+  _rowSpan?: number;
+  /** Segment number to split cells into HTML rows; Do not set in DataTableFormat; internal use */
+  _segment?: number;
 };
 
 /**
