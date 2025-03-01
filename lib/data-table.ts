@@ -12,8 +12,14 @@ export type Cell = {
   }>;
   /** Extra props to pass to `component` */
   componentProps?: Record<string, unknown>;
+  /** Rows to the right vertically spanned by this cell */
+  childRows?: Row[];
   /** True if the cell is a header cell, usually for vertical headers; false for a data cell */
   isHeaderCell?: boolean;
+  /** Number of rows spanned by this cell. Do not set in DataTableFormat; used internally */
+  rowSpan?: number;
+  /** True if first cell in HTML row; Do not set in DataTableFormat; used internally */
+  isFirstCell?: boolean;
 };
 
 /**
@@ -35,12 +41,18 @@ export type DataTableFormat = Row[];
 
 /**
  * Split the given array of rows into segments (arrays) of arrays of rows. Each segment contains
- * either only header rows or only data rows. The order of the rows is preserved.
+ * either only header rows or only data rows. The order of the rows is preserved. For example, if
+ * the input rows are:
+ *   [header, data, header, header, data, data]
+ * the output will be:
+ *   [[header], [data], [header, header], [data, data]].
+ * In the result, you can tell whether a segment is for header rows or data rows by checking the
+ * `isHeaderRow` property of the first row in the segment.
  * @param rows - The array of rows to split.
  * @returns Array of arrays of rows, where each inner array contains either only header rows or
  *     only data rows.
  */
-export function splitHeaderAndDataRows(
+export function splitRowsIntoSegments(
   rows: DataTableFormat
 ): DataTableFormat[] {
   let headerRows: Row[] = [];
@@ -76,4 +88,21 @@ export function splitHeaderAndDataRows(
     result.push(dataRows);
   }
   return result;
+}
+
+/**
+ * Calculate the number of rows spanned by the given cell. If the cell has child rows, the result
+ * includes the number of rows spanned by each child row, and the children of the cells in the
+ * child rows, and so on.
+ * @param cell - Cell to calculate the row span for
+ * @returns The number of rows spanned by the cell
+ */
+export function calculateRowSpan(cell: Cell): number {
+  if (cell.childRows) {
+    return cell.childRows.reduce(
+      (acc, row) => acc + calculateRowSpan(row.cells[0]),
+      0
+    );
+  }
+  return 1;
 }

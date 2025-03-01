@@ -722,6 +722,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Computational Tools
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="assays"
+            href="/assays"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Assays
+          </NavigationHrefItem>
         </NavigationGroupItem>
 
         <NavigationGroupItem
