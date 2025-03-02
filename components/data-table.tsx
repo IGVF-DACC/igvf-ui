@@ -24,15 +24,18 @@ export function DataCellWithClasses({
 
 function DefaultHeaderCell({
   rowSpan,
+  colSpan,
   children,
 }: {
   rowSpan: number;
+  colSpan: number;
   children: string | number | React.ReactNode;
 }) {
   return (
     <th
       className="sticky top-0 z-[2] min-w-40 border-b border-r border-panel bg-table-header-cell p-2 text-left align-bottom last:border-r-0"
       {...(rowSpan > 1 ? { rowSpan } : {})}
+      {...(colSpan > 1 ? { colSpan } : {})}
     >
       {children}
     </th>
@@ -41,15 +44,18 @@ function DefaultHeaderCell({
 
 function DefaultDataCell({
   rowSpan,
+  colSpan,
   children,
 }: {
   rowSpan: number;
+  colSpan: number;
   children: string | number | React.ReactNode;
 }) {
   return (
     <td
       className="min-w-40 border-b border-r border-panel bg-table-data-cell p-2 align-top last:border-r-0"
       {...(rowSpan > 1 ? { rowSpan } : {})}
+      {...(colSpan > 1 ? { colSpan } : {})}
     >
       {children}
     </td>
@@ -84,6 +90,7 @@ function SingleRow({
           <CellComponent
             key={cell.id}
             rowSpan={cell._rowSpan}
+            colSpan={cell.colSpan}
             {...cell.componentProps}
           >
             {cell.content}

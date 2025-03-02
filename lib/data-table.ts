@@ -14,6 +14,8 @@ export type Cell = {
   componentProps?: Record<string, unknown>;
   /** Rows to the right vertically spanned by this cell */
   childRows?: Row[];
+  /** Number of columns to span */
+  colSpan?: number;
   /** True if the cell is a header cell, usually for vertical headers; false for a data cell */
   isHeaderCell?: boolean;
   /** Number of rows spanned by this cell. Internal use */

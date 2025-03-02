@@ -4,157 +4,824 @@ import { DataTable } from "../components/data-table";
 import { type DataTableFormat } from "../lib/data-table";
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-const basicTableData: DataTableFormat = [
-  {
-    id: "1",
-    cells: [
-      { id: "1", content: "Title 1 example" },
-      { id: "2", content: "Title 2 example" },
-      { id: "3", content: "Title 3 example" },
-      { id: "4", content: "Title 4 example" },
-    ],
-  },
-  {
-    id: "2",
-    cells: [
-      { id: "1", content: "Title 5 example" },
-      { id: "2", content: "Title 6 example" },
-      { id: "3", content: "Title 7 example" },
-      { id: "4", content: "Title 8 example" },
-    ],
-  },
-  {
-    id: "3",
-    cells: [
-      { id: "1", content: "Title 9 example" },
-      { id: "2", content: "Title 10 example" },
-      { id: "3", content: "Title 11 example" },
-      { id: "4", content: "Title 12 example" },
-    ],
-  },
-];
-
 const tableData: DataTableFormat = [
   {
-    // New <tr> 1 **********
+    id: "header",
+    cells: [
+      {
+        id: "term-category",
+        content: "Term Category",
+      },
+      {
+        id: "assay",
+        content: "Assay",
+      },
+      {
+        id: "preferred-assay-title",
+        content: "Preferred Assay Title",
+      },
+      {
+        id: "0",
+        content: "3D chromatin structure",
+      },
+      {
+        id: "1",
+        content: "chromatin accessibility",
+      },
+      {
+        id: "2",
+        content: "CRISPR screens",
+      },
+      {
+        id: "3",
+        content: "DNA binding",
+      },
+      {
+        id: "4",
+        content: "DNA methylation",
+      },
+      {
+        id: "5",
+        content: "gene expression",
+      },
+      {
+        id: "6",
+        content: "multiome",
+      },
+      {
+        id: "7",
+        content: "Protein characterization",
+      },
+      {
+        id: "8",
+        content: "Reporter",
+      },
+      {
+        id: "9",
+        content: "Grand Total",
+      },
+    ],
+    isHeaderRow: true,
+  },
+  {
     id: "1",
     cells: [
       {
         id: "1",
-        content: "Title 1 example",
+        content: "3D chromatin structure",
         childRows: [
-          {
-            id: "1",
-            cells: [
-              { id: "2", content: "Title 2 example" },
-              { id: "3", content: "Title 3 example" },
-              { id: "4", content: "Title 4 example" },
-            ],
-          },
           {
             id: "3",
             cells: [
-              // New <tr> 2 **********
-              { id: "5", content: "Title 5 example" },
-              { id: "6", content: "Title 6 example" },
-              { id: "7", content: "Title 7 example" },
-            ],
-          },
-          {
-            id: "4",
-            cells: [
-              // New <tr> 3 **********
-              { id: "8", content: "Title 8 example" },
-              { id: "9", content: "Title 9 example" },
-              { id: "10", content: "Title 10 example" },
+              {
+                id: "2",
+                content: "Hi-C assay",
+                childRows: [
+                  {
+                    id: "4",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "Hi-C",
+                      },
+                      {
+                        id: "1",
+                        content: "12",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "12",
+                      },
+                    ],
+                  },
+                  {
+                    id: "5",
+                    cells: [
+                      {
+                        id: "5",
+                        content: "HiCAR",
+                      },
+                      {
+                        id: "1",
+                        content: "20",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "20",
+                      },
+                    ],
+                  },
+                ],
+              },
             ],
           },
         ],
       },
     ],
   },
-];
-
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-const holyGrailData: DataTableFormat = [
   {
-    // New <tr> 1 **********
-    id: "1",
+    id: "3d-chromatin-structure-total",
     cells: [
       {
+        id: "3d-chromatin-structure-total",
+        content: "3D chromatin structure total",
+        colSpan: 3,
+      },
+      {
         id: "1",
-        content: "Title 1 example",
+        content: "32",
+      },
+      {
+        id: "2",
+        content: "",
+      },
+      {
+        id: "3",
+        content: "",
+      },
+      {
+        id: "4",
+        content: "",
+      },
+      {
+        id: "5",
+        content: "",
+      },
+      {
+        id: "6",
+        content: "",
+      },
+      {
+        id: "7",
+        content: "",
+      },
+      {
+        id: "8",
+        content: "",
+      },
+      {
+        id: "9",
+        content: "",
+      },
+      {
+        id: "10",
+        content: "32",
+      },
+    ],
+  },
+  {
+    id: "chromatin-accessibility",
+    cells: [
+      {
+        id: "chromatin-accessibility",
+        content: "Chromatin accessibility",
         childRows: [
+          {
+            id: "0",
+            cells: [
+              {
+                id: "0",
+                content:
+                  "bulk assay for transposase-accessible chromatin using sequencing",
+              },
+              {
+                id: "1",
+                content: "ATAC-seq",
+              },
+              {
+                id: "2",
+                content: "",
+              },
+              {
+                id: "3",
+                content: "47",
+              },
+              {
+                id: "4",
+                content: "",
+              },
+              {
+                id: "5",
+                content: "",
+              },
+              {
+                id: "6",
+                content: "",
+              },
+              {
+                id: "7",
+                content: "",
+              },
+              {
+                id: "8",
+                content: "",
+              },
+              {
+                id: "9",
+                content: "",
+              },
+              {
+                id: "10",
+                content: "",
+              },
+              {
+                id: "11",
+                content: "47",
+              },
+            ],
+          },
           {
             id: "1",
             cells: [
               {
-                id: "2",
-                content: "Title 2 example",
+                id: "0",
+                content: "single-cell ATAC-seq",
                 childRows: [
+                  {
+                    id: "0",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "scATAC-seq",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "4",
+                      },
+                      {
+                        id: "4",
+                        content: "",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "4",
+                      },
+                    ],
+                  },
+                  {
+                    id: "1",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "SHARE-seq",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "401",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "401",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "2",
+            cells: [
+              {
+                id: "0",
+                content: "single-nucleus ATAC-seq",
+                childRows: [
+                  {
+                    id: "0",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "10x multiome",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "75",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "75",
+                      },
+                    ],
+                  },
+                  {
+                    id: "1",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "10x multiome with MULTI-seq",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "59",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "59",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "chromatin-accessibility-total",
+    cells: [
+      {
+        id: "chromatin-accessibility-total",
+        content: "chromatin accessibility Total",
+        colSpan: 3,
+      },
+      {
+        id: "2",
+        content: "",
+      },
+      {
+        id: "3",
+        content: "51",
+      },
+      {
+        id: "4",
+        content: "",
+      },
+      {
+        id: "5",
+        content: "",
+      },
+      {
+        id: "6",
+        content: "",
+      },
+      {
+        id: "7",
+        content: "",
+      },
+      {
+        id: "8",
+        content: "535",
+      },
+      {
+        id: "9",
+        content: "",
+      },
+      {
+        id: "10",
+        content: "",
+      },
+      {
+        id: "11",
+        content: "586",
+      },
+    ],
+  },
+  {
+    id: "crispr-screens",
+    cells: [
+      {
+        id: "0",
+        content: "CRISPR screens",
+        childRows: [
+          {
+            id: "0",
+            cells: [
+              {
+                id: "0",
+                content: "in vitro CRISPR screen assay",
+                childRows: [
+                  {
+                    id: "0",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "CRISPR MACS screen",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "9",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "9",
+                      },
+                    ],
+                  },
+                  {
+                    id: "1",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "Growth CRISPR screen",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "4",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "4",
+                      },
+                    ],
+                  },
+                  {
+                    id: "2",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "Migration CRISPR screen",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "6",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "6",
+                      },
+                    ],
+                  },
                   {
                     id: "3",
                     cells: [
                       {
+                        id: "0",
+                        content: "Parse SPLIT-seq",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
                         id: "3",
-                        content: "Title 3 example",
-                        childRows: [
-                          {
-                            id: "4",
-                            cells: [
-                              {
-                                id: "4",
-                                content: "Title 4 example",
-                              },
-                            ],
-                          },
-                          {
-                            // New <tr> 2 **********
-                            id: "5",
-                            cells: [
-                              {
-                                id: "5",
-                                content: "Title 5 example",
-                              },
-                            ],
-                          },
-                          {
-                            // New <tr> 3 **********
-                            id: "6",
-                            cells: [
-                              {
-                                id: "6",
-                                content: "Title 6 example",
-                              },
-                            ],
-                          },
-                        ],
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "2",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "2",
                       },
                     ],
                   },
                   {
-                    // New <tr> 4 **********
-                    id: "7",
+                    id: "4",
                     cells: [
                       {
+                        id: "0",
+                        content: "Proliferation CRISPR screen",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "38",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
                         id: "7",
-                        content: "Title 7 example",
-                        childRows: [
-                          {
-                            id: "8",
-                            cells: [{ id: "8", content: "Title 8 example" }],
-                          },
-                          {
-                            // New <tr> 5 **********
-                            id: "9",
-                            cells: [{ id: "9", content: "Title 9 example" }],
-                          },
-                          {
-                            // New <tr> 6 **********
-                            id: "10",
-                            cells: [{ id: "10", content: "Title 10 example" }],
-                          },
-                        ],
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "38",
                       },
                     ],
                   },
@@ -163,53 +830,315 @@ const holyGrailData: DataTableFormat = [
             ],
           },
           {
-            // New <tr> 7 **********
-            id: "11",
-            cells: [
-              { id: "11", content: "Title 11 example" },
-              { id: "12", content: "Title 12 example" },
-              { id: "13", content: "Title 13 example" },
-            ],
-          },
-          {
-            // New <tr> 8 **********
-            id: "14",
+            id: "1",
             cells: [
               {
-                id: "14",
-                content: "Title 14 example",
+                id: "0",
+                content: "in vitro CRISPRa screen using flow cytometry",
                 childRows: [
                   {
-                    id: "15",
+                    id: "0",
                     cells: [
                       {
-                        id: "15",
-                        content: "Title 15 example",
-                        childRows: [
-                          {
-                            id: "16",
-                            cells: [{ id: "16", content: "Title 16 example" }],
-                          },
-                          {
-                            // New <tr> 9 **********
-                            id: "17",
-                            cells: [{ id: "17", content: "Title 17 example" }],
-                          },
-                          {
-                            // New <tr> 10 **********
-                            id: "18",
-                            cells: [{ id: "18", content: "Title 18 example" }],
-                          },
-                        ],
+                        id: "0",
+                        content: "CRISPR FACS screen",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "92",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "92",
                       },
                     ],
                   },
                   {
-                    // New <tr> 11 **********
-                    id: "19",
+                    id: "1",
                     cells: [
-                      { id: "19", content: "Title 19 example" },
-                      { id: "20", content: "Title 20 example" },
+                      {
+                        id: "0",
+                        content: "CRISPR FlowFISH screen",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "270",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "270",
+                      },
+                    ],
+                  },
+                  {
+                    id: "2",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "Variant-EFFECTS",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "489",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "489",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: "2",
+            cells: [
+              {
+                id: "0",
+                content: "in vitro CRISPR screen using single-cell RNA-seq",
+                childRows: [
+                  {
+                    id: "0",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "Perturb-seq",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "167",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "167",
+                      },
+                    ],
+                  },
+                  {
+                    id: "1",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "scCRISPR screen",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "8",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "8",
+                      },
+                    ],
+                  },
+                  {
+                    id: "2",
+                    cells: [
+                      {
+                        id: "0",
+                        content: "TAP-seq",
+                      },
+                      {
+                        id: "2",
+                        content: "",
+                      },
+                      {
+                        id: "3",
+                        content: "",
+                      },
+                      {
+                        id: "4",
+                        content: "31",
+                      },
+                      {
+                        id: "5",
+                        content: "",
+                      },
+                      {
+                        id: "6",
+                        content: "",
+                      },
+                      {
+                        id: "7",
+                        content: "",
+                      },
+                      {
+                        id: "8",
+                        content: "",
+                      },
+                      {
+                        id: "9",
+                        content: "",
+                      },
+                      {
+                        id: "10",
+                        content: "",
+                      },
+                      {
+                        id: "11",
+                        content: "31",
+                      },
                     ],
                   },
                 ],
@@ -221,201 +1150,63 @@ const holyGrailData: DataTableFormat = [
     ],
   },
   {
-    // New <tr> 12 **********
-    id: "2",
+    id: "chromatin-accessibility-total",
     cells: [
       {
-        id: "21",
-        content: "Title 21 example",
-        childRows: [
-          {
-            id: "22",
-            cells: [
-              {
-                id: "22",
-                content: "Title 22 example",
-                childRows: [
-                  {
-                    id: "23",
-                    cells: [
-                      {
-                        id: "23",
-                        content: "Title 23 example",
-                        childRows: [
-                          {
-                            id: "24",
-                            cells: [{ id: "24", content: "Title 24 example" }],
-                          },
-                          {
-                            // New <tr> 13 **********
-                            id: "25",
-                            cells: [{ id: "25", content: "Title 25 example" }],
-                          },
-                          {
-                            // New <tr> 14 **********
-                            id: "26",
-                            cells: [{ id: "26", content: "Title 26 example" }],
-                          },
-                          {
-                            // New <tr> 15 **********
-                            id: "27",
-                            cells: [{ id: "27", content: "Title 27 example" }],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  {
-                    // New <tr> 16 **********
-                    id: "28",
-                    cells: [
-                      {
-                        id: "28",
-                        content: "Title 28 example",
-                        childRows: [
-                          {
-                            id: "29",
-                            cells: [{ id: "29", content: "Title 29 example" }],
-                          },
-                          {
-                            // New <tr> 17 **********
-                            id: "30",
-                            cells: [{ id: "30", content: "Title 30 example" }],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            // New <tr> 18 **********
-            id: "31",
-            cells: [
-              { id: "31", content: "Title 31 example" },
-              { id: "32", content: "Title 32 example" },
-              { id: "33", content: "Title 33 example" },
-            ],
-          },
-        ],
+        id: "chromatin-accessibility-total",
+        content: "chromatin accessibility Total",
+        colSpan: 3,
+      },
+      {
+        id: "2",
+        content: "",
+      },
+      {
+        id: "3",
+        content: "",
+      },
+      {
+        id: "4",
+        content: "1114",
+      },
+      {
+        id: "5",
+        content: "",
+      },
+      {
+        id: "6",
+        content: "2",
+      },
+      {
+        id: "7",
+        content: "",
+      },
+      {
+        id: "8",
+        content: "",
+      },
+      {
+        id: "9",
+        content: "",
+      },
+      {
+        id: "10",
+        content: "",
+      },
+      {
+        id: "11",
+        content: "1116",
       },
     ],
   },
 ];
-
-function Buildup() {
-  return (
-    <table className="my-4 border">
-      <tbody className="[&>tr>td]:border [&>tr>td]:border-gray-800">
-        <tr>
-          <td rowSpan={3}>Title 1 example</td>
-          <td>Title 2 example</td>
-          <td>Title 3 example</td>
-          <td>Title 4 example</td>
-        </tr>
-        <tr>
-          <td>Title 5 example</td>
-          <td>Title 6 example</td>
-          <td>Title 7 example</td>
-        </tr>
-        <tr>
-          <td>Title 8 example</td>
-          <td>Title 9 example</td>
-          <td>Title 10 example</td>
-        </tr>
-      </tbody>
-    </table>
-  );
-}
-
-function HolyGrail() {
-  return (
-    <table className="my-4 border">
-      <tbody className="[&>tr>td]:border [&>tr>td]:border-gray-800">
-        <tr>
-          <td rowSpan={11}>Title 1 example</td>
-          <td rowSpan={6}>Title 2 example</td>
-          <td rowSpan={3}>Title 3 example</td>
-          <td rowSpan={1}>Title 4 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 5 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 6 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={3}>Title 7 example</td>
-          <td rowSpan={1}>Title 8 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 9 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 10 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 11 example</td>
-          <td rowSpan={1}>Title 12 example</td>
-          <td rowSpan={1}>Title 13 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={4}>Title 14 example</td>
-          <td rowSpan={3}>Title 15 example</td>
-          <td rowSpan={1}>Title 16 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 17 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 18 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 19 example</td>
-          <td rowSpan={1}>Title 20 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={7}>Title 21 example</td>
-          <td rowSpan={6}>Title 22 example</td>
-          <td rowSpan={4}>Title 23 example</td>
-          <td rowSpan={1}>Title 24 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 25 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 26 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 27 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={2}>Title 28 example</td>
-          <td rowSpan={1}>Title 29 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 30 example</td>
-        </tr>
-        <tr>
-          <td rowSpan={1}>Title 31 example</td>
-          <td rowSpan={1}>Title 32 example</td>
-          <td rowSpan={1}>Title 33 example</td>
-        </tr>
-      </tbody>
-    </table>
-  );
-}
 
 export default function Assays() {
   return (
     <>
       <div className="mb-4">
-        <DataTable data={holyGrailData} />
+        <DataTable data={tableData} />
       </div>
-      <Buildup />
-      <HolyGrail />
     </>
   );
 }
