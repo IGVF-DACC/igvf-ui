@@ -427,8 +427,16 @@ const staticData: DataTableFormat = [
         content:
           "eQTL, GWAS, known variant-gene links, ATAC-seq, variant-TFBSs, GO and expression-based gene-gene similarities",
       },
-      { id: "F", content: "Unpublished, in early development" },
-      { id: "G", content: "Maureen Sartor (sartorma@umich.edu)" },
+      {
+        id: "F",
+        content: (
+          <CellLink href="https://academic.oup.com/bib/article/22/2/2161/5809565">
+            Coupled matrix–matrix and coupled tensor–matrix completion methods
+            for predicting drug–target interactions
+          </CellLink>
+        ),
+      },
+      { id: "G", content: "Maureen Sartor, UMich" },
     ],
   },
   {
@@ -491,14 +499,21 @@ const staticData: DataTableFormat = [
         component: RegulatoryElementCell,
       },
       { id: "B", content: "" },
-      { id: "C", content: "MACS2 peaks" },
+      { id: "C", content: "MACS2" },
       {
         id: "D",
         content:
           "Does a variant overlap a DNase or ATAC peak (e.g., extended to a constant distance threshold)",
       },
       { id: "E", content: "ATAC-seq (bulk or sc), DNase-seq" },
-      { id: "F", content: "" },
+      {
+        id: "F",
+        content: (
+          <CellLink href="https://github.com/macs3-project/MACS">
+            MACS: Model-based Analysis for ChIP-Seq
+          </CellLink>
+        ),
+      },
       { id: "G", content: "" },
     ],
   },
