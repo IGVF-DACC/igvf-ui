@@ -1,13 +1,9 @@
 // components
 import { DataTable } from "../components/data-table";
 // lib
-import {
-  calculateRowSpan,
-  type Cell,
-  type DataTableFormat,
-  type Row,
-} from "../lib/data-table";
+import { type DataTableFormat } from "../lib/data-table";
 
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 const basicTableData: DataTableFormat = [
   {
     id: "1",
@@ -412,44 +408,11 @@ function HolyGrail() {
   );
 }
 
-function collectRows(
-  rows: Row[],
-  segment = 0
-): { rows: Cell[]; updatedSegment: number } {
-  const tableCells: Cell[] = [];
-  let lastCellHasChildRows = true;
-
-  rows.forEach((row) => {
-    row.cells.forEach((cell, i) => {
-      cell._rowSpan = calculateRowSpan(cell);
-      if (!lastCellHasChildRows && i === 0) {
-        segment += 1;
-      }
-      cell._segment = segment;
-
-      tableCells.push(cell);
-      if (cell.childRows) {
-        const { rows: childRowCells, updatedSegment } = collectRows(
-          cell.childRows,
-          segment
-        );
-        tableCells.push(...childRowCells);
-        segment = updatedSegment;
-      }
-
-      lastCellHasChildRows = Boolean(cell.childRows);
-    });
-  });
-  return { rows: tableCells, updatedSegment: segment + 1 };
-}
-
 export default function Assays() {
-  const { rows: data } = collectRows(holyGrailData);
-  console.log(data);
   return (
     <>
       <div className="mb-4">
-        <DataTable data={tableData} />
+        <DataTable data={holyGrailData} />
       </div>
       <Buildup />
       <HolyGrail />

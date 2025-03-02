@@ -16,10 +16,10 @@ export type Cell = {
   childRows?: Row[];
   /** True if the cell is a header cell, usually for vertical headers; false for a data cell */
   isHeaderCell?: boolean;
-  /** Number of rows spanned by this cell. Do not set in DataTableFormat; internal use */
+  /** Number of rows spanned by this cell. Internal use */
   _rowSpan?: number;
-  /** Segment number to split cells into HTML rows; Do not set in DataTableFormat; internal use */
-  _segment?: number;
+  /** All cells within a single HTML table row share the same ID. Internal use */
+  _htmlRowId?: number;
 };
 
 /**
@@ -105,4 +105,44 @@ export function calculateRowSpan(cell: Cell): number {
     );
   }
   return 1;
+}
+
+/**
+ * Collects all rows within a segment (header/data) and flattens them into a single array of cells.
+ * It adds `_htmlRowId` to each cell to indicate which HTML row it belongs to. This lets
+ * `<DataTable>` to split this flat array of cells into HTML rows. It also adds `_rowSpan` to each
+ * cell to indicate how many rows it spans.
+ * @param rows Rows within a segment (header/data) to flatten
+ * @param htmlRowId Segment number to split cells into HTML rows
+ * @returns Flattened array of cells with updated segment number
+ */
+export function flattenCells(
+  rows: Row[],
+  htmlRowId = 0
+): { rows: Cell[]; updatedSegment: number } {
+  const tableCells: Cell[] = [];
+  let lastCellHasChildRows = true;
+
+  rows.forEach((row) => {
+    row.cells.forEach((cell, i) => {
+      cell._rowSpan = calculateRowSpan(cell);
+      if (!lastCellHasChildRows && i === 0) {
+        htmlRowId += 1;
+      }
+      cell._htmlRowId = htmlRowId;
+
+      tableCells.push(cell);
+      if (cell.childRows) {
+        const { rows: childRowCells, updatedSegment } = flattenCells(
+          cell.childRows,
+          htmlRowId
+        );
+        tableCells.push(...childRowCells);
+        htmlRowId = updatedSegment;
+      }
+
+      lastCellHasChildRows = Boolean(cell.childRows);
+    });
+  });
+  return { rows: tableCells, updatedSegment: htmlRowId + 1 };
 }
