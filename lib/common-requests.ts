@@ -117,6 +117,7 @@ export async function requestFiles(
       "lab.@id",
       "lab.title",
       "lane",
+      "read_names",
       "seqspecs",
       "sequencing_platform",
       "sequencing_run",
