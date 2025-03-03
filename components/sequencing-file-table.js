@@ -39,6 +39,13 @@ const filesColumns = [
     title: "Sequencing Run",
   },
   {
+    id: "read_names",
+    title: "Read Names",
+    display: ({ source }) =>
+      source.read_names ? source.read_names?.join(", ") : "",
+    isSortable: false,
+  },
+  {
     id: "seqspecs",
     title: "Associated seqspec Files",
     display: ({ source, meta }) => {
