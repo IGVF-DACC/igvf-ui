@@ -1430,7 +1430,7 @@ const tableData: DataTableFormat = [
 
 function TitleHeaderCell({ children }: { children: string }) {
   return (
-    <th className="sticky top-0 z-[2] border-b border-r border-panel bg-[#e0e4eb] p-2 text-left align-bottom font-bold">
+    <th className="sticky top-0 z-[2] border-b border-r border-panel bg-[#e0e4eb] p-2 text-left align-bottom font-bold dark:bg-[#3c3d3f]">
       {children}
     </th>
   );
@@ -1438,7 +1438,7 @@ function TitleHeaderCell({ children }: { children: string }) {
 
 function CounterHeaderCell({ children }: { children: string }) {
   return (
-    <th className="sticky top-0 z-[2] w-[40px] rotate-180 whitespace-nowrap border-b border-r border-panel bg-[#8392b0] px-1 py-2 text-left font-semibold text-white [writing-mode:vertical-lr]">
+    <th className="sticky top-0 z-[2] w-[40px] rotate-180 whitespace-nowrap border-b border-r border-panel bg-[#8392b0] px-1 py-2 text-left font-semibold text-white [writing-mode:vertical-lr] dark:bg-[#464e5e]">
       {children}
     </th>
   );
@@ -1463,7 +1463,7 @@ function TotalCell({
 }) {
   return (
     <td
-      className="min-w-40 border-b border-r border-panel bg-[#e0e4eb] p-2 align-top last:border-r-0"
+      className="min-w-40 border-b border-r border-panel bg-[#e0e4eb] p-2 align-top last:border-r-0 dark:bg-[#3c3d3f]"
       {...(rowSpan > 1 ? { rowSpan } : {})}
       {...(colSpan > 1 ? { colSpan } : {})}
     >
@@ -1483,7 +1483,7 @@ function TotalCounterCell({
 }) {
   return (
     <td
-      className="min-w-8 border-b border-r border-panel bg-[#e0e4eb] p-2 text-right align-top last:border-r-0"
+      className="min-w-8 border-b border-r border-panel bg-[#e0e4eb] p-2 text-right align-top last:border-r-0 dark:bg-[#3c3d3f]"
       {...(rowSpan > 1 ? { rowSpan } : {})}
       {...(colSpan > 1 ? { colSpan } : {})}
     >
