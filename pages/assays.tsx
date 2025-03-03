@@ -1438,8 +1438,10 @@ function TitleHeaderCell({ children }: { children: string }) {
 
 function CounterHeaderCell({ children }: { children: string }) {
   return (
-    <th className="sticky top-0 z-[2] w-[40px] rotate-180 whitespace-nowrap border-b border-r border-panel bg-[#8392b0] px-1 py-2 text-left font-semibold text-white [writing-mode:vertical-lr] dark:bg-[#464e5e]">
-      {children}
+    <th className="sticky top-0 z-[2] w-[40px] whitespace-nowrap border-b border-r border-panel bg-[#8392b0] px-1 py-2 align-bottom font-semibold text-white dark:bg-[#464e5e]">
+      <div className="mx-auto inline-flex rotate-180 justify-self-center text-start [writing-mode:vertical-lr]">
+        {children}
+      </div>
     </th>
   );
 }
