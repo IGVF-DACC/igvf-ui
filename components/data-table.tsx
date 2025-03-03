@@ -78,7 +78,7 @@ function SingleRow({
   isHeaderSegment: boolean;
 }) {
   return (
-    <tr>
+    <tr className="[&>td]:last:border-b-0 last:[&>td]:border-r-0">
       {cells.map((cell) => {
         const DefaultCellWrapper =
           isHeaderSegment || cell.isHeaderCell
@@ -105,32 +105,33 @@ export function DataTable({ data }: { data: DataTableFormat }) {
   const rowsSegments = splitRowsIntoSegments(data);
 
   return (
-    <table>
-      {rowsSegments.map((rows) => {
-        const { rows: flattenedCells } = flattenCells(rows);
-        const htmlTableRows = _.groupBy(flattenedCells, "_htmlRowId");
-        console.log("FLATTENED CELLS", htmlTableRows);
+    <div className="max-h-[90vh] overflow-auto border border-panel">
+      <table>
+        {rowsSegments.map((rows) => {
+          const { rows: flattenedCells } = flattenCells(rows);
+          const htmlTableRows = _.groupBy(flattenedCells, "_htmlRowId");
 
-        // Now we're in a contiguous segment of rows that are all header rows or all data rows.
-        const isHeaderSegment = rows[0].isHeaderRow;
-        const SegmentWrapper = isHeaderSegment
-          ? HeaderRowsWrapper
-          : DataRowsWrapper;
+          // Now we're in a contiguous segment of rows that are all header rows or all data rows.
+          const isHeaderSegment = rows[0].isHeaderRow;
+          const SegmentWrapper = isHeaderSegment
+            ? HeaderRowsWrapper
+            : DataRowsWrapper;
 
-        return (
-          <SegmentWrapper key={rows[0].id}>
-            {Object.entries(htmlTableRows).map(([rowId, rowCells]) => {
-              return (
-                <SingleRow
-                  key={rowId}
-                  cells={rowCells}
-                  isHeaderSegment={isHeaderSegment}
-                />
-              );
-            })}
-          </SegmentWrapper>
-        );
-      })}
-    </table>
+          return (
+            <SegmentWrapper key={rows[0].id}>
+              {Object.entries(htmlTableRows).map(([rowId, rowCells]) => {
+                return (
+                  <SingleRow
+                    key={rowId}
+                    cells={rowCells}
+                    isHeaderSegment={isHeaderSegment}
+                  />
+                );
+              })}
+            </SegmentWrapper>
+          );
+        })}
+      </table>
+    </div>
   );
 }
