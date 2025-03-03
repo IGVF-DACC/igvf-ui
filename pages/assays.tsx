@@ -1116,7 +1116,6 @@ const tableData: DataTableFormat = [
                       {
                         id: "0",
                         content: "Variant-EFFECTS",
-                        component: CounterCell,
                       },
                       {
                         id: "2",
@@ -1187,7 +1186,6 @@ const tableData: DataTableFormat = [
                       {
                         id: "0",
                         content: "Perturb-seq",
-                        component: CounterCell,
                       },
                       {
                         id: "2",
