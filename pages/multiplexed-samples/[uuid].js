@@ -215,7 +215,7 @@ export async function getServerSideProps({ params, req, query }) {
   ).union();
   if (FetchRequest.isResponseSuccess(multiplexedSample)) {
     let constructLibrarySets = [];
-    if (multiplexedSample.construct_library_sets.length > 0) {
+    if (multiplexedSample.construct_library_sets?.length > 0) {
       const constructLibrarySetPaths =
         multiplexedSample.construct_library_sets.map(
           (constructLibrarySet) => constructLibrarySet["@id"]
