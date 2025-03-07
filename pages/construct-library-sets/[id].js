@@ -346,7 +346,7 @@ export default function ConstructLibrarySet({
           {constructLibrarySet.applied_to_samples.length > 0 && (
             <SampleTable
               samples={constructLibrarySet.applied_to_samples}
-              reportLink={`/multireport/?type=Sample&construct_library_sets=${constructLibrarySet["@id"]}`}
+              reportLink={`/multireport/?type=Sample&construct_library_sets.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of samples that link to this construct library set"
               title="Applied to Samples"
             />
