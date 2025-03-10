@@ -91,7 +91,7 @@ config: Dict[str, Any] = {
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
             },
-            'backend_url': 'https://igvfd-dev.demo.igvf.org',
+            'backend_url': 'https://igvfd-IGVF-2440-assay-slims-facet.demo.igvf.org',
             'tags': [
             ],
         },
