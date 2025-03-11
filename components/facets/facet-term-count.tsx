@@ -4,6 +4,8 @@ import _ from "lodash";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // components/facets
 import type { SearchResults, SearchResultsFacet } from "../../globals.d";
+// lib
+import { getTermSelections } from "../../lib/facets";
 
 /**
  * Displays a representation of the count of items and selections in a facet.
@@ -21,34 +23,10 @@ export function FacetTermCount({
   isFacetOpen?: boolean;
 }) {
   const tooltipAttr = useTooltip(`facet-counter-${facet.field}`);
-
-  // Find the currently selected and negative-selected terms for this facet.
-  const groupedFilters = _.groupBy(searchResults.filters, (filter) => {
-    if (filter.field === facet.field) {
-      return "selected";
-    }
-    if (filter.field === `${facet.field}!`) {
-      return "negative";
-    }
-
-    // Not used.
-    return "neither";
-  });
-
-  // Map the term objects to their titles. Non-selected terms come from the facets, not the
-  // filters, so they have a different mapping process.
-  const selectedTerms =
-    groupedFilters.selected?.map((filter) => filter.term) || [];
-  const negativeTerms =
-    groupedFilters.negative?.map((filter) => filter.term) || [];
-  const nonSelectedTerms = facet.terms
-    .map((term) => term.key)
-    .filter((term) => {
-      return (
-        !selectedTerms.includes(term as string) &&
-        !negativeTerms.includes(term as string)
-      );
-    });
+  const { selectedTerms, negativeTerms, nonSelectedTerms } = getTermSelections(
+    facet,
+    searchResults.filters
+  );
 
   // Build the help text for the aria and the tooltip.
   const helpText = `${
@@ -57,6 +35,9 @@ export function FacetTermCount({
     facet.terms.length === 1 ? "term" : "terms"
   }`;
 
+  // NOTE: The use of a loop index for React keys is a workaround for the lack of unique keys in
+  // the facet term object. This is a temporary solution until the backend can guarantee a unique
+  // key for each facet term.
   const singleIndicatorClassNames = "h-1.5 w-2.5 flex-none border";
   return (
     <>
@@ -66,35 +47,35 @@ export function FacetTermCount({
           data-testid={`facet-term-count-${facet.field}`}
           aria-label={helpText}
         >
-          {selectedTerms.map((term) => {
+          {selectedTerms.map((term, i) => {
             const className = isFacetOpen
               ? "bg-facet-counter-open-selected border-facet-counter-open-selected"
               : "bg-facet-counter-selected border-facet-counter-selected";
             return (
               <div
-                key={term}
+                key={`${term}-${i}`}
                 className={`${singleIndicatorClassNames} ${className}`}
               />
             );
           })}
-          {negativeTerms.map((term) => {
+          {negativeTerms.map((term, i) => {
             const className = isFacetOpen
               ? "bg-facet-counter-open-negative border-facet-counter-open-negative"
               : "bg-facet-counter-negative border-facet-counter-negative";
             return (
               <div
-                key={term}
+                key={`${term}-${i}`}
                 className={`${singleIndicatorClassNames} ${className}`}
               />
             );
           })}
-          {nonSelectedTerms.map((term) => {
+          {nonSelectedTerms.map((term, i) => {
             const className = isFacetOpen
               ? "border-facet-counter-open"
               : "border-facet-counter";
             return (
               <div
-                key={term}
+                key={`${term}-${i}`}
                 className={`${singleIndicatorClassNames} ${className}`}
               />
             );

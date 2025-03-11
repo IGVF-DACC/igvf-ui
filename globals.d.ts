@@ -190,9 +190,13 @@ export type SearchResultsFacetTerm = {
   /** Title of the term */
   key: string | number;
   /** Number of items with this term */
-  doc_count: number;
+  doc_count?: number;
+  /** Possibly when using non-configured facet term */
+  isEqual?: boolean;
   /** Human-readable version of `key` for some cases, like boolean properties */
   key_as_string?: string;
+  /** Child facets in a facet hierarchy */
+  subfacet?: SearchResultsFacet;
 };
 
 export interface SearchResultsFacet {
@@ -202,8 +206,10 @@ export interface SearchResultsFacet {
   title: string;
   /** List of terms in the facet */
   terms: SearchResultsFacetTerm[];
-  /** Total number of objects selected within this facet */
-  total: number;
+  /** Total number of objects selected within this facet; only in parent facets */
+  total?: number;
+  /** True if facet term selected but not in search config */
+  appended?: boolean;
 }
 
 export interface SearchResultsFilter {

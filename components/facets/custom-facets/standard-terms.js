@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import { motion, AnimatePresence } from "framer-motion";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
@@ -156,9 +157,15 @@ CollapseControl.propTypes = {
  * terms regardless of whether the user has expanded the list of terms or not, and the segment of
  * terms that are only displayed when the user has expanded the list.
  */
-function TermSegment({ termSegment, field, selectionFilters, onTermClick }) {
+function TermSegment({
+  termSegment,
+  field,
+  selectionFilters,
+  parent,
+  onTermClick,
+}) {
   return (
-    <div className="px-2">
+    <div className="pl-2">
       {termSegment.map((term) => {
         const termKey = term.key_as_string || term.key;
         const checkedFilter = selectionFilters.find(
@@ -168,14 +175,28 @@ function TermSegment({ termSegment, field, selectionFilters, onTermClick }) {
         const isNegative = isChecked && checkedFilter.isNegative;
 
         return (
-          <FacetTerm
-            key={term.key}
-            field={field}
-            term={term}
-            isChecked={isChecked}
-            isNegative={isNegative}
-            onClick={onTermClick}
-          />
+          <div key={term.key} className={`${term.subfacet ? "my-2" : ""}`}>
+            <FacetTerm
+              key={term.key}
+              field={field}
+              term={term}
+              parent={parent}
+              isChecked={isChecked}
+              isNegative={isNegative}
+              onClick={onTermClick}
+            />
+            {term.subfacet && (
+              <div className="pl-3">
+                <TermSegment
+                  termSegment={term.subfacet.terms}
+                  field={term.subfacet.field}
+                  selectionFilters={selectionFilters}
+                  parent={{ field, term }}
+                  onTermClick={onTermClick}
+                />
+              </div>
+            )}
+          </div>
         );
       })}
     </div>
@@ -207,9 +228,76 @@ TermSegment.propTypes = {
       isNegative: PropTypes.bool.isRequired,
     })
   ).isRequired,
+  // Field name and key of the parent term if these terms are child terms
+  parent: PropTypes.exact({
+    // Field of the parent term
+    field: PropTypes.string,
+    // Parent term object including key and subfacet
+    term: PropTypes.object,
+  }),
   // Function to call when the user clicks a term
   onTermClick: PropTypes.func.isRequired,
 };
+
+/**
+ * Process the user's click on a facet term. Add or remove the term from the query string and
+ * navigate to the new URL.
+ * @param {string} field Field of the facet that the user clicked a term within
+ * @param {object} term Term that the user clicked within a facet
+ * @param {boolean} isNegative True if the term is negated
+ * @param {object} parent Parent term of the term the user clicked, if it's a child term
+ * @param {QueryString} query Query string object to update
+ * @param {function} updateQuery Function to call to update the query string
+ */
+function processTermClick(field, term, isNegative, parent, query, updateQuery) {
+  const matchingTerms = query.getKeyValues(field, "ANY");
+  const key = term.key_as_string || term.key;
+  if (matchingTerms.includes(key)) {
+    // Remove the term from the query because it's already selected.
+    query.deleteKeyValue(field, key);
+    if (term.subfacet) {
+      // Term has child terms; automatically deselect them all
+      term.subfacet.terms.forEach((subterm) => {
+        query.deleteKeyValue(term.subfacet.field, subterm.key);
+      });
+    } else if (parent) {
+      // If the deselected term is the last selected child term, deselect the parent term. Start by
+      // getting all subfacet keys for the parent term.
+      const parentSubfacetKeys = parent.term.subfacet.terms.map(
+        (subterm) => subterm.key
+      );
+
+      // Get all selected subfacet keys in the query string. Some could belong to other parent terms.
+      const allSelectedSubfacetKeys = query.getKeyValues(field, "ANY");
+
+      // Filter down to only those selected subfacet keys that belong to the parent term.
+      const parentSelectedSubfacetKeys = allSelectedSubfacetKeys.filter((key) =>
+        parentSubfacetKeys.includes(key)
+      );
+
+      // If no selected terms exist for the parent term, deselect the parent term.
+      if (parentSelectedSubfacetKeys.length === 0) {
+        query.deleteKeyValue(parent.field, parent.term.key);
+      }
+    }
+  } else {
+    // Add the term to the query because it's not already selected.
+    const polarity = isNegative ? "NEGATIVE" : "POSITIVE";
+    query.addKeyValue(field, key, polarity);
+
+    // Process parent or child terms when subfacets are involved.
+    if (term.subfacet) {
+      // Term has child terms; automatically select them all
+      term.subfacet.terms.forEach((subterm) => {
+        query.deleteKeyValue(term.subfacet.field, subterm.key);
+        query.addKeyValue(term.subfacet.field, subterm.key, polarity);
+      });
+    }
+  }
+  query.deleteKeyValue("from");
+  query.deleteKeyValue(field, "*");
+  updateQuery(query.format());
+}
 
 export default function StandardTerms({ searchResults, facet, updateQuery }) {
   // User-typed term to filter the facet terms
@@ -248,19 +336,11 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
    * to the new URL.
    * @param {string} field Field of the facet that the user clicked a term within
    * @param {object} term Term that the user clicked within a facet
+   * @param {boolean} isNegative True if the term is negated
+   * @param {boolean} parentTerm Parent term of the term the user clicked, if it's a child term
    */
-  function onTermClick(field, term, isNegative) {
-    const matchingTerms = query.getKeyValues(field, "ANY");
-    const key = term.key_as_string || term.key;
-    if (matchingTerms.includes(key)) {
-      query.deleteKeyValue(field, key);
-    } else {
-      const polarity = isNegative ? "NEGATIVE" : "POSITIVE";
-      query.addKeyValue(field, key, polarity);
-    }
-    query.deleteKeyValue("from");
-    query.deleteKeyValue(field, "*");
-    updateQuery(query.format());
+  function onTermClick(field, term, isNegative, parent) {
+    processTermClick(field, term, isNegative, parent, query, updateQuery);
   }
 
   // Clear the term filter when the facet terms change.

@@ -1,11 +1,16 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import PropTypes from "prop-types";
 // components/facets
 import facetRegistry from "./facet-registry";
 // lib
-import { getVisibleFacets } from "../../lib/facets";
+import {
+  collectAllChildFacets,
+  filterOutChildFacets,
+  getVisibleFilters,
+} from "../../lib/facets";
 
 /**
  * Facet tags show a list of the currently selected facet terms. Clicking each tag clears that facet
@@ -18,12 +23,16 @@ import { getVisibleFacets } from "../../lib/facets";
  * from the search-results object.
  */
 function FacetTag({ filter, facets }) {
+  const filteredFacets = filterOutChildFacets(facets);
+  const allChildFacets = collectAllChildFacets(filteredFacets);
+  const allFacets = filteredFacets.concat(allChildFacets);
+
   // Get the title for the tag from the given filter's `field` property. If the field ends with a
   // `!`, remove it before looking up the human-readable title. If we can't find a title for the
   // field, use the field name as the title.
   const isNegative = filter.field.at(-1) === "!";
   const filterField = isNegative ? filter.field.slice(0, -1) : filter.field;
-  const facetForFilter = facets.find((facet) => facet.field === filterField);
+  const facetForFilter = allFacets.find((facet) => facet.field === filterField);
   const title = facetForFilter ? facetForFilter.title : filter.field;
 
   // Look for any custom tag label renderer components.
@@ -72,9 +81,14 @@ FacetTag.propTypes = {
  * facet modals.
  */
 export default function FacetTags({ searchResults }) {
+  const { isAuthenticated } = useAuth0();
+  const removableFilters = getVisibleFilters(
+    searchResults.filters,
+    isAuthenticated
+  );
+
   // All selected facet terms appear in the `filters` property of the search results except for the
   // hidden facet fields.
-  const removableFilters = getVisibleFacets(searchResults.filters);
   if (removableFilters.length > 0) {
     return (
       <div className="mb-2 flex flex-wrap gap-1" data-testid="facettags">
