@@ -255,15 +255,30 @@ function processTermClick(field, term, isNegative, parent, query, updateQuery) {
   if (matchingTerms.includes(key)) {
     // Remove the term from the query because it's already selected.
     query.deleteKeyValue(field, key);
-
-    // If the term has a parent, also remove the parent term
-    if (parent) {
-      query.deleteKeyValue(parent.field, parent.term.key);
-    } else if (term.subfacet) {
+    if (term.subfacet) {
       // Term has child terms; automatically deselect them all
       term.subfacet.terms.forEach((subterm) => {
         query.deleteKeyValue(term.subfacet.field, subterm.key);
       });
+    } else if (parent) {
+      // If the deselected term is the last selected child term, deselect the parent term. Start by
+      // getting all subfacet keys for the parent term.
+      const parentSubfacetKeys = parent.term.subfacet.terms.map(
+        (subterm) => subterm.key
+      );
+
+      // Get all selected subfacet keys in the query string. Some could belong to other parent terms.
+      const allSelectedSubfacetKeys = query.getKeyValues(field, "ANY");
+
+      // Filter down to only those selected subfacet keys that belong to the parent term.
+      const parentSelectedSubfacetKeys = allSelectedSubfacetKeys.filter((key) =>
+        parentSubfacetKeys.includes(key)
+      );
+
+      // If no selected terms exist for the parent term, deselect the parent term.
+      if (parentSelectedSubfacetKeys.length === 0) {
+        query.deleteKeyValue(parent.field, parent.term.key);
+      }
     }
   } else {
     // Add the term to the query because it's not already selected.
@@ -274,21 +289,9 @@ function processTermClick(field, term, isNegative, parent, query, updateQuery) {
     if (term.subfacet) {
       // Term has child terms; automatically select them all
       term.subfacet.terms.forEach((subterm) => {
+        query.deleteKeyValue(term.subfacet.field, subterm.key);
         query.addKeyValue(term.subfacet.field, subterm.key, polarity);
       });
-    } else if (parent) {
-      // `term` is part of a subfacet. If all its peers are selected, also select the parent term.
-      const allSubfacetTerms = parent.term.subfacet.terms.map(
-        (subterm) => subterm.key
-      );
-      const selectedSubfacetTerms = query.getKeyValues(field, "ANY");
-      const allSubfacetTermsSelected = _.isEqual(
-        _.sortBy(allSubfacetTerms),
-        _.sortBy(selectedSubfacetTerms)
-      );
-      if (allSubfacetTermsSelected) {
-        query.addKeyValue(parent.field, parent.term.key, polarity);
-      }
     }
   }
   query.deleteKeyValue("from");
