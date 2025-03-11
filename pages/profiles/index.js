@@ -212,7 +212,10 @@ function SubTree({
         "bg-schema-name-highlight"
       );
       if (highlightedNames.length > 0) {
-        highlightedNames[0].scrollIntoView();
+        highlightedNames[0].scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
       }
     }
   }, [searchTerm]);
