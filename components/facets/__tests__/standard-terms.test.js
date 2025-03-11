@@ -213,7 +213,10 @@ describe("Test the StandardTerms component", () => {
       total: 30,
     };
     const facet = searchResults.facets[1];
-    const updateQuery = jest.fn();
+    // mock the updateQuery function, but have the mock display something to console.log
+    const updateQuery = jest.fn((query) =>
+      console.log("******** QUERY", query)
+    );
 
     render(
       <StandardTerms
@@ -224,11 +227,11 @@ describe("Test the StandardTerms component", () => {
     );
 
     // Click the parent term. Make sure it also selects the child terms "MPRA" and "STARR-seq".
-    const parentTerm = screen.getByTestId(
+    let parentTerm = screen.getByTestId(
       /^facetterm-assay_term.assay_slims-massively-parallel-reporter-assay$/
     );
     expect(parentTerm).toBeInTheDocument();
-    const checkbox = within(parentTerm).getByRole("checkbox");
+    let checkbox = within(parentTerm).getByRole("checkbox");
     await user.click(checkbox);
     expect(updateQuery).toHaveBeenCalledWith(
       "type=MeasurementSet&assay_term.assay_slims=Massively+parallel+reporter+assay&assay_term.term_name=MPRA&assay_term.term_name=STARR-seq"
@@ -249,7 +252,7 @@ describe("Test the StandardTerms component", () => {
       "type=MeasurementSet&assay_term.term_name=MPRA"
     );
 
-    // Click the child term "STARR-seq" and make sure it also selects the parent term.
+    // Click the child term "STARR-seq" and make sure it doesn't select the parent term.
     childTerm = screen.getByTestId(
       /^facetterm-assay_term.term_name-starr-seq-massively-parallel-reporter-assay$/
     );
@@ -257,13 +260,37 @@ describe("Test the StandardTerms component", () => {
     childCheckbox = within(childTerm).getByRole("checkbox");
     await user.click(childCheckbox);
     expect(updateQuery).toHaveBeenCalledWith(
+      "type=MeasurementSet&assay_term.term_name=MPRA&assay_term.term_name=STARR-seq"
+    );
+
+    // Click the parent term to select both children.
+    parentTerm = screen.getByTestId(
+      /^facetterm-assay_term.assay_slims-massively-parallel-reporter-assay$/
+    );
+    checkbox = within(parentTerm).getByRole("checkbox");
+    await user.click(checkbox);
+    expect(updateQuery).toHaveBeenCalledWith(
       "type=MeasurementSet&assay_term.assay_slims=Massively+parallel+reporter+assay&assay_term.term_name=MPRA&assay_term.term_name=STARR-seq"
     );
 
-    // Click to remove the child term "STARR-seq" and make sure it removes the parent term.
+    // Click the child term "STARR-seq" and make sure the parent term is still selected.
+    childTerm = screen.getByTestId(
+      /^facetterm-assay_term.term_name-starr-seq-massively-parallel-reporter-assay$/
+    );
+    expect(childTerm).toBeInTheDocument();
+    childCheckbox = within(childTerm).getByRole("checkbox");
     await user.click(childCheckbox);
     expect(updateQuery).toHaveBeenCalledWith(
-      "type=MeasurementSet&assay_term.term_name=MPRA"
+      "type=MeasurementSet&assay_term.assay_slims=Massively+parallel+reporter+assay&assay_term.term_name=MPRA"
     );
+
+    // Click the child term "MPRA" and make sure the parent term gets deselected.
+    childTerm = screen.getByTestId(
+      /^facetterm-assay_term.term_name-mpra-massively-parallel-reporter-assay$/
+    );
+    expect(childTerm).toBeInTheDocument();
+    childCheckbox = within(childTerm).getByRole("checkbox");
+    await user.click(childCheckbox);
+    expect(updateQuery).toHaveBeenCalledWith("type=MeasurementSet");
   });
 });
