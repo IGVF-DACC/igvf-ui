@@ -29,14 +29,21 @@ export function CheckfilesVersion({ file }: { file: FileObject }) {
     return <div className={className}>No version due to exemption</div>;
   }
 
-  return (
-    <Link
-      href="https://github.com/IGVF-DACC/checkfiles/tags"
-      className={`${className} rounded-sm no-underline`}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Legacy version of checkfiles
-    </Link>
-  );
+  if (
+    file.upload_status === "validated" ||
+    file.upload_status === "invalidated"
+  ) {
+    return (
+      <Link
+        href="https://github.com/IGVF-DACC/checkfiles/tags"
+        className={`${className} rounded-sm no-underline`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Legacy version of checkfiles
+      </Link>
+    );
+  }
+
+  // Show nothing for file that are not validated, invalidated, or exempted.
 }

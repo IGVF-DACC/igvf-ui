@@ -30,6 +30,7 @@ import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
+import { checkCheckfilesVersionVisible } from "../lib/checkfiles-version";
 import { formatDate } from "../lib/dates";
 import { dataSize, truthyOrZero } from "../lib/general";
 
@@ -683,10 +684,14 @@ export function FileDataItems({ item, children = null }) {
           </DataItemValue>
         </>
       )}
-      <DataItemLabel>Checkfiles Version</DataItemLabel>
-      <DataItemValue>
-        <CheckfilesVersion file={item} />
-      </DataItemValue>
+      {checkCheckfilesVersionVisible(item) && (
+        <>
+          <DataItemLabel>Checkfiles Version</DataItemLabel>
+          <DataItemValue>
+            <CheckfilesVersion file={item} />
+          </DataItemValue>
+        </>
+      )}
       {item.validation_error_detail && (
         <>
           <DataItemLabel>Validation Error Detail</DataItemLabel>
