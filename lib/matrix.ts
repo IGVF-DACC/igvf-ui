@@ -14,12 +14,18 @@ export type ColumnMap = {
  * Generate a map of column labels to their 0-based column index. Each label appears as a key in
  * the returned object, with the value being the index of the corresponding column in the matrix.
  * @param columnBuckets - Buckets for the x-axis of the matrix
+ * @param excludeColumns - List of column labels to exclude from the map
  * @returns Map of column labels to their 0-based column index
  */
 export function generateMatrixColumnMap(
-  columnBuckets: MatrixBucket[]
+  columnBuckets: MatrixBucket[],
+  excludeColumns: string[] = []
 ): ColumnMap {
-  const sortedBuckets = _.sortBy(columnBuckets, (bucket) =>
+  const filteredBuckets = columnBuckets.filter(
+    (bucket) => !excludeColumns.includes(bucket.key)
+  );
+
+  const sortedBuckets = _.sortBy(filteredBuckets, (bucket) =>
     bucket.key.toLowerCase()
   );
   return sortedBuckets.reduce((acc, bucket, i) => {

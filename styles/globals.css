@@ -322,6 +322,12 @@
   --color-cell-model-matrix-row-header-differentiated-specimens: #c8d2fc;
   --color-cell-model-matrix-row-subheader-differentiated-specimens: #dbe2ff;
   --color-cell-model-matrix-highlight-differentiated-specimens: #e8ecff;
+
+  /** Assay Summary Matrix */
+  --color-assay-summary-matrix-term-category-total: #c7e8d6ff;
+  --color-assay-summary-matrix-data-column-header: #c8d2fc;
+  --color-assay-summary-matrix-data-cell: #ecdc99;
+  --color-assay-summary-matrix-total-cell: #c7e8d6ff;
 }
 
 /**
@@ -541,6 +547,12 @@
   --color-cell-model-matrix-row-header-differentiated-specimens: #5d699e;
   --color-cell-model-matrix-row-subheader-differentiated-specimens: #545f8f;
   --color-cell-model-matrix-highlight-differentiated-specimens: #424554;
+
+  /** Assay Summary Matrix */
+  --color-assay-summary-matrix-term-category-total: #064e3b;
+  --color-assay-summary-matrix-data-column-header: #40434f;
+  --color-assay-summary-matrix-data-cell: #4b4631;
+  --color-assay-summary-matrix-total-cell: #064e3b;
 }
 
 a {
@@ -626,4 +638,28 @@ a {
   100% {
     background-color: transparent;
   }
+}
+
+/**
+ * Handle row highlighting on hover on the Assay Summary table. This handles hovering over the
+ * Preferred Assay Title header, the data cells, or the row total cell.
+ */
+#assay-summary-table
+  tr:has(td[data-highlight]:hover, th[data-highlight]:hover)
+  td,
+#assay-summary-table
+  tr:has(td[data-highlight]:hover, th[data-highlight]:hover)
+  th[data-highlight] {
+  background-color: #e9ecfd;
+}
+
+.dark
+  #assay-summary-table
+  tr:has(td[data-highlight]:hover, th[data-highlight]:hover)
+  td,
+.dark
+  #assay-summary-table
+  tr:has(td[data-highlight]:hover, th[data-highlight]:hover)
+  th[data-highlight] {
+  background-color: #232326;
 }

@@ -730,6 +730,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Predictive Models
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="assays"
+            href="/assays"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Assays
+          </NavigationHrefItem>
         </NavigationGroupItem>
 
         <NavigationGroupItem
