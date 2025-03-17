@@ -18,6 +18,7 @@ import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
+import { InstitutionalCertificateTable } from "../../components/institutional-certificate-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -80,7 +81,6 @@ export default function MultiplexedSample({
               <SampleDataItems
                 item={multiplexedSample}
                 constructLibrarySets={constructLibrarySets}
-                institutionalCertificates={institutionalCertificates}
                 publications={publications}
               >
                 {multiplexedSample.multiplexing_methods.length > 0 && (
@@ -168,6 +168,11 @@ export default function MultiplexedSample({
           )}
           {biomarkers.length > 0 && <BiomarkerTable biomarkers={biomarkers} />}
           {treatments.length > 0 && <TreatmentTable treatments={treatments} />}
+          {institutionalCertificates.length > 0 && (
+            <InstitutionalCertificateTable
+              institutionalCertificates={institutionalCertificates}
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -232,13 +237,17 @@ export async function getServerSideProps({ params, req, query }) {
       );
       biomarkers = await requestBiomarkers(biomarkerPaths, request);
     }
-    const institutionalCertificates =
-      multiplexedSample.institutional_certificates.length > 0
-        ? await requestInstitutionalCertificates(
-            multiplexedSample.institutional_certificates,
-            request
-          )
-        : [];
+    let institutionalCertificates = [];
+    if (multiplexedSample.institutional_certificates?.length > 0) {
+      const institutionalCertificatePaths =
+        multiplexedSample.institutional_certificates.map(
+          (institutionalCertificate) => institutionalCertificate["@id"]
+        );
+      institutionalCertificates = await requestInstitutionalCertificates(
+        institutionalCertificatePaths,
+        request
+      );
+    }
     let donors = [];
     if (multiplexedSample.donors?.length > 0) {
       const donorPaths = multiplexedSample.donors.map((donor) => donor["@id"]);

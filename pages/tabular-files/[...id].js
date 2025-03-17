@@ -5,6 +5,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataAreaTitle,
@@ -66,6 +67,7 @@ export default function TabularFile({
           alternateAccessions={tabularFile.alternate_accessions}
         />
         <ObjectPageHeader item={tabularFile} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={tabularFile} />
           <FileHeaderDownload file={tabularFile}>
             <HostedFilePreview file={tabularFile} buttonSize="sm" />
           </FileHeaderDownload>

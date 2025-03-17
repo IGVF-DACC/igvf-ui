@@ -5,6 +5,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import { DataArea, DataPanel } from "../../components/data-area";
 import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
@@ -57,6 +58,7 @@ export default function ModelFile({
           alternateAccessions={modelFile.alternate_accessions}
         />
         <ObjectPageHeader item={modelFile} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={modelFile} />
           <FileHeaderDownload file={modelFile}>
             <HostedFilePreview file={modelFile} buttonSize="sm" />
           </FileHeaderDownload>

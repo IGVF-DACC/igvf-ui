@@ -15,6 +15,7 @@ import {
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
+import { InstitutionalCertificateTable } from "../../components/institutional-certificate-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -65,7 +66,6 @@ export default function TechnicalSample({
               <SampleDataItems
                 item={sample}
                 constructLibrarySets={constructLibrarySets}
-                institutionalCertificates={institutionalCertificates}
                 sources={sources}
                 publications={publications}
               >
@@ -103,6 +103,13 @@ export default function TechnicalSample({
               reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
               panelId="sorted-fractions"
+            />
+          )}
+          {institutionalCertificates.length > 0 && (
+            <InstitutionalCertificateTable
+              institutionalCertificates={institutionalCertificates}
+              reportLink={`/multireport/?type=InstitutionalCertificate&samples=${sample["@id"]}`}
+              reportLabel={`Report of institutional certificates associated with ${sample.accession}`}
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}

@@ -8,6 +8,9 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import { ControlledAccessIndicator } from "../../controlled-access";
+import { DataUseLimitationStatus } from "../../data-use-limitation-status";
 // root
 import type {
   InstitutionalCertificateObject,
@@ -26,13 +29,14 @@ export default function InstitutionalCertificate({
           <SearchListItemType item={item} />
           {item.certificate_identifier}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>
-          {item.summary} {item.data_use_limitation_summary}
-        </SearchListItemTitle>
+        <SearchListItemTitle>{item.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <span key="lab">{(item.lab as LabObject).title}</span>
         </SearchListItemMeta>
-        <SearchListItemQuality item={item} />
+        <SearchListItemQuality item={item}>
+          <DataUseLimitationStatus summary={item.data_use_limitation_summary} />
+          <ControlledAccessIndicator item={item} />
+        </SearchListItemQuality>
       </SearchListItemMain>
     </SearchListItemContent>
   );

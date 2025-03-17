@@ -6,6 +6,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataAreaTitle,
@@ -67,6 +68,7 @@ export default function SequenceFile({
           alternateAccessions={sequenceFile.alternate_accessions}
         />
         <ObjectPageHeader item={sequenceFile} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={sequenceFile} />
           <FileHeaderDownload file={sequenceFile}>
             <HostedFilePreview file={sequenceFile} buttonSize="sm" />
           </FileHeaderDownload>

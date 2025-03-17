@@ -136,15 +136,9 @@ export function SampleDataItems({
   item,
   sources = null,
   constructLibrarySets = [],
-  institutionalCertificates = [],
   publications = [],
   children,
 }) {
-  // Get a list of institutional certificates for this sample sorted by certificate identifier.
-  const sortedInstitutionalCertificates = _.sortBy(institutionalCertificates, [
-    "certificate_identifier",
-  ]);
-
   return (
     <>
       <DataItemLabel>Summary</DataItemLabel>
@@ -295,20 +289,6 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
-      {sortedInstitutionalCertificates.length > 0 && (
-        <>
-          <DataItemLabel>Institutional Certificates</DataItemLabel>
-          <DataItemValue>
-            <SeparatedList>
-              {sortedInstitutionalCertificates.map((certificate) => (
-                <Link key={certificate["@id"]} href={certificate["@id"]}>
-                  {certificate.certificate_identifier}
-                </Link>
-              ))}
-            </SeparatedList>
-          </DataItemValue>
-        </>
-      )}
     </>
   );
 }
@@ -320,8 +300,6 @@ SampleDataItems.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Construct library sets for this sample
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
-  // Institutional certificates for this sample
-  institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
   // Publications associated with this sample
   publications: PropTypes.arrayOf(PropTypes.object),
 };
@@ -357,7 +335,6 @@ export function BiosampleDataItems({
   partOf = null,
   sampleTerms = null,
   sources = null,
-  institutionalCertificates = [],
   publications = [],
   children,
 }) {
@@ -365,7 +342,6 @@ export function BiosampleDataItems({
     <SampleDataItems
       item={item}
       constructLibrarySets={constructLibrarySets}
-      institutionalCertificates={institutionalCertificates}
       sources={sources}
       publications={publications}
     >
@@ -478,8 +454,6 @@ BiosampleDataItems.propTypes = {
   partOf: PropTypes.object,
   // Sample ontology for the biosample
   sampleTerms: PropTypes.arrayOf(PropTypes.object),
-  // Institutional certificates for this biosample
-  institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
   // Publications associated with this biosample
   publications: PropTypes.arrayOf(PropTypes.object),
   // Source lab or source for this biosample
@@ -668,12 +642,6 @@ export function FileDataItems({ item, children = null }) {
               {item.anvil_url}
             </a>
           </DataItemValue>
-        </>
-      )}
-      {item.controlled_access && (
-        <>
-          <DataItemLabel>Controlled Access</DataItemLabel>
-          <DataItemValue>Yes</DataItemValue>
         </>
       )}
       {item.submitted_file_name && (
