@@ -186,6 +186,15 @@ const tailwindConfig: Config = {
           "var(--color-cell-model-matrix-row-subheader-differentiated-specimens)",
         "cell-model-matrix-highlight-differentiated-specimens":
           "var(--color-cell-model-matrix-highlight-differentiated-specimens)",
+
+        "assay-summary-matrix-term-category-total":
+          "var(--color-assay-summary-matrix-term-category-total)",
+        "assay-summary-matrix-data-column-header":
+          "var(--color-assay-summary-matrix-data-column-header)",
+        "assay-summary-matrix-data-cell":
+          "var(--color-assay-summary-matrix-data-cell)",
+        "assay-summary-matrix-total-cell":
+          "var(--color-assay-summary-matrix-total-cell)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
