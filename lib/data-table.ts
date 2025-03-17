@@ -100,7 +100,7 @@ export function splitRowsIntoSegments(
  * @returns The number of rows spanned by the cell
  */
 export function calculateRowSpan(cell: Cell): number {
-  if (cell.childRows) {
+  if (cell.childRows?.length > 0) {
     return cell.childRows.reduce(
       (acc, row) => acc + calculateRowSpan(row.cells[0]),
       0
@@ -134,7 +134,7 @@ export function flattenCells(
       cell._htmlRowId = htmlRowId;
 
       tableCells.push(cell);
-      if (cell.childRows) {
+      if (cell.childRows?.length > 0) {
         const { rows: childRowCells, updatedSegment } = flattenCells(
           cell.childRows,
           htmlRowId
