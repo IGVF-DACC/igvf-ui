@@ -28,7 +28,7 @@ import GlobalContext from "./global-context";
 import Icon from "./icon";
 import IdSearchTrigger from "./id-search-trigger";
 import IndexerState from "./indexer-state";
-import { Email, Twitter } from "./site-info";
+import { CreativeCommons, Email, Twitter } from "./site-info";
 import SiteLogo from "./logo";
 import Modal from "./modal";
 import { useBrowserStateQuery } from "./presentation-status";
@@ -871,6 +871,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           <div className="flex justify-center gap-2">
             <Email />
             <Twitter />
+            <CreativeCommons />
           </div>
         </NavigationItem>
       </NavigationList>
