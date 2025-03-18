@@ -63,7 +63,6 @@ export default function InVitroSystem({
   treatments,
   cellFateChangeTreatments,
   biomarkers,
-  targetedSampleTerm = null,
   multiplexedInSamples,
   attribution = null,
   isJson,
@@ -100,12 +99,12 @@ export default function InVitroSystem({
                   dateObtainedTitle: "Date Collected",
                 }}
               >
-                {targetedSampleTerm && (
+                {inVitroSystem.targeted_sample_term && (
                   <>
                     <DataItemLabel>Targeted Sample Term</DataItemLabel>
                     <DataItemValue>
-                      <Link href={targetedSampleTerm["@id"]}>
-                        {targetedSampleTerm.term_name}
+                      <Link href={inVitroSystem.targeted_sample_term["@id"]}>
+                        {inVitroSystem.targeted_sample_term.term_name}
                       </Link>
                     </DataItemValue>
                   </>
@@ -306,8 +305,6 @@ InVitroSystem.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Treatments for cell fate change of the sample
   cellFateChangeTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // The targeted endpoint biosample resulting from differentiation or reprogramming
-  targetedSampleTerm: PropTypes.object,
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
@@ -408,9 +405,6 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
-    const targetedSampleTerm = inVitroSystem.targeted_sample_term
-      ? (await request.getObject(inVitroSystem.targeted_sample_term)).optional()
-      : null;
     let constructLibrarySets = [];
     if (inVitroSystem.construct_library_sets?.length > 0) {
       const constructLibrarySetPaths = inVitroSystem.construct_library_sets.map(
@@ -463,7 +457,6 @@ export async function getServerSideProps({ params, req, query }) {
         sources,
         treatments,
         cellFateChangeTreatments,
-        targetedSampleTerm,
         multiplexedInSamples,
         pageContext: {
           title: `${inVitroSystem.sample_terms[0].term_name} — ${inVitroSystem.accession}`,
