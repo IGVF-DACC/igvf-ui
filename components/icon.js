@@ -66,6 +66,17 @@ const Icon = {
       />
     </svg>
   ),
+  CCBY: ({ className = null, testid = "icon-ccby" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 64 64"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path d="M31.9,0c9,0,16.6,3.1,22.7,9.3,6.2,6.2,9.3,13.8,9.3,22.7s-3,16.5-9.1,22.5c-6.5,6.4-14.1,9.5-22.9,9.5s-16.2-3.1-22.5-9.4C3.1,48.3,0,40.8,0,32S3.1,15.7,9.4,9.3C15.6,3.1,23.1,0,31.9,0ZM32.1,5.8c-7.3,0-13.4,2.6-18.5,7.7-5.2,5.3-7.8,11.5-7.8,18.6s2.6,13.2,7.8,18.4c5.2,5.2,11.4,7.8,18.5,7.8s13.3-2.6,18.6-7.8c5-4.8,7.5-11,7.5-18.3s-2.6-13.5-7.7-18.6c-5.1-5.1-11.3-7.7-18.5-7.7ZM40.6,24.1v13.1h-3.7v15.5h-9.9v-15.5h-3.7v-13.1c0-.6.2-1.1.6-1.5.4-.4.9-.6,1.5-.6h13.1c.5,0,1,.2,1.4.6.4.4.6.9.6,1.5ZM27.5,15.8c0-3,1.5-4.5,4.5-4.5s4.5,1.5,4.5,4.5-1.5,4.5-4.5,4.5-4.5-1.5-4.5-4.5Z" />
+    </svg>
+  ),
   Circle: ({ className = null, testid = "icon-circle" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -416,6 +427,10 @@ Icon.Brand.propTypes = {
   testid: PropTypes.string,
 };
 Icon.Catalog.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.CCBY.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
