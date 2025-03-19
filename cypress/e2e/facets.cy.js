@@ -82,7 +82,7 @@ describe("Facet tests", () => {
     ).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
-      "6 items"
+      "7 items"
     );
 
     // Load the search view and make sure the Sample and Lab facets are still open.
