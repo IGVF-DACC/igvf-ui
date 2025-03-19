@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 // components
 import { AuditDetail, useAudit } from "./audit";
 import { EditLink } from "./edit-func";
+import { HistoryLink } from "./history-link";
 import { JsonViewLink, ObjectViewLink } from "./json-button";
 import QualitySection from "./quality-section";
 import { ExternallyHostedBadge } from "./common-pill-badges";
@@ -25,6 +26,7 @@ export default function ObjectPageHeader({ item, isJsonFormat, children }) {
         </QualitySection>
         <div className="flex items-end justify-end gap-1">
           <EditLink item={item} />
+          <HistoryLink item={item} />
           {isJsonFormat ? (
             <ObjectViewLink item={item} />
           ) : (

@@ -24,6 +24,15 @@ module.exports = {
       process.env.PUBLIC_BACKEND_URL || process.env.BACKEND_URL || "",
     UI_VERSION,
   },
+  async rewrites() {
+    return [
+      {
+        // Redirect object history requests to the common history renderer.
+        source: "/:prefix/:id/@@history",
+        destination: "/history", // Common history renderer
+      },
+    ];
+  },
   async redirects() {
     return [
       {
