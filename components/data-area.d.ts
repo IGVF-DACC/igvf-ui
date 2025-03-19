@@ -9,9 +9,13 @@ import { PagePanelStates } from "./page-panels";
 
 export function DataPanel({
   className,
+  id,
+  isPaddingSuppressed,
   children,
 }: {
   className?: string;
+  id?: string;
+  isPaddingSuppressed?: boolean;
   children: React.ReactNode;
 }): React.ReactElement | null;
 
