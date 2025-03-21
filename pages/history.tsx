@@ -1,7 +1,12 @@
 // node_modules
+import { AnimatePresence, motion } from "framer-motion";
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { type MouseEvent, useState } from "react";
 // components
+import {
+  standardAnimationTransition,
+  standardAnimationVariants,
+} from "../components/animation";
 import { DataPanel } from "../components/data-area";
 import { HistoryLink } from "../components/history-link";
 import JsonPanel from "../components/json-panel";
@@ -74,13 +79,22 @@ function HistoryPanel({
           isExpanded={isPanelExpanded}
           onExpandClick={onExpandClick}
         />
-        {isPanelExpanded && (
-          <div className="pb-2 pl-2 pr-2">
-            <JsonPanel id={entry.timestamp}>
-              {JSON.stringify(sortObjectProps(entry.props), null, 2)}
-            </JsonPanel>
-          </div>
-        )}
+        <AnimatePresence>
+          {isPanelExpanded && (
+            <motion.div
+              className="overflow-hidden pb-2 pl-2 pr-2"
+              initial="collapsed"
+              animate="open"
+              exit="collapsed"
+              transition={standardAnimationTransition}
+              variants={standardAnimationVariants}
+            >
+              <JsonPanel id={entry.timestamp}>
+                {JSON.stringify(sortObjectProps(entry.props), null, 2)}
+              </JsonPanel>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </DataPanel>
   );
