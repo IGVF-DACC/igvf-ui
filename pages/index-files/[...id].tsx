@@ -5,6 +5,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataAreaTitle,
@@ -88,6 +89,7 @@ export default function IndexFile({
           alternateAccessions={indexFile.alternate_accessions}
         />
         <ObjectPageHeader item={indexFile} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={indexFile} />
           <FileHeaderDownload file={indexFile}>
             <HostedFilePreview file={indexFile} buttonSize="sm" />
           </FileHeaderDownload>

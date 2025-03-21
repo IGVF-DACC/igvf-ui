@@ -4,10 +4,10 @@ import Link from "next/link";
 // components
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataItemLabel,
-  DataItemValueBoolean,
   DataItemValueUrl,
   DataItemValue,
   DataPanel,
@@ -15,9 +15,11 @@ import {
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
+import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { requestSamples } from "../../lib/common-requests";
 import { formatDate } from "../../lib/dates";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -25,17 +27,21 @@ import { type ErrorObject } from "../../lib/fetch-request.d";
 import PagePreamble from "../../components/page-preamble";
 import { isJsonFormat } from "../../lib/query-utils";
 // root
-import {
-  type InstitutionalCertificateObject,
-  type UserObject,
-} from "../../globals.d";
+import type {
+  InstitutionalCertificateObject,
+  SampleObject,
+  UserObject,
+} from "../../globals";
+import { DataUseLimitationStatus } from "../../components/data-use-limitation-status";
 
 export default function InstitutionalCertificate({
   institutionalCertificate,
+  samples,
   attribution,
   isJson,
 }: {
   institutionalCertificate: InstitutionalCertificateObject;
+  samples: SampleObject[];
   attribution: any;
   isJson: boolean;
 }) {
@@ -50,10 +56,13 @@ export default function InstitutionalCertificate({
       <Breadcrumbs item={institutionalCertificate} />
       <EditableItem item={institutionalCertificate}>
         <PagePreamble sections={sections} />
-        <ObjectPageHeader
-          item={institutionalCertificate}
-          isJsonFormat={isJson}
-        />
+        <ObjectPageHeader item={institutionalCertificate} isJsonFormat={isJson}>
+          <DataUseLimitationStatus
+            limitation={institutionalCertificate.data_use_limitation}
+            modifiers={institutionalCertificate.data_use_limitation_modifiers}
+          />
+          <ControlledAccessIndicator item={institutionalCertificate} />
+        </ObjectPageHeader>
         <JsonDisplay item={institutionalCertificate} isJsonFormat={isJson}>
           <DataPanel>
             <DataArea>
@@ -73,31 +82,6 @@ export default function InstitutionalCertificate({
                   {url}
                 </a>
               </DataItemValueUrl>
-
-              <DataItemLabel>Controlled Access</DataItemLabel>
-              <DataItemValueBoolean>
-                {institutionalCertificate.controlled_access}
-              </DataItemValueBoolean>
-
-              {institutionalCertificate.data_use_limitation && (
-                <>
-                  <DataItemLabel>Data Use Limitation</DataItemLabel>
-                  <DataItemValue>
-                    {institutionalCertificate.data_use_limitation}
-                  </DataItemValue>
-                </>
-              )}
-
-              {institutionalCertificate.data_use_limitation_modifiers && (
-                <>
-                  <DataItemLabel>Data Use Limitation Modifiers</DataItemLabel>
-                  <DataItemValue>
-                    {institutionalCertificate.data_use_limitation_modifiers.join(
-                      ", "
-                    )}
-                  </DataItemValue>
-                </>
-              )}
 
               <DataItemLabel>Creation Timestamp</DataItemLabel>
               <DataItemValue>
@@ -123,6 +107,7 @@ export default function InstitutionalCertificate({
               )}
             </DataArea>
           </DataPanel>
+          {samples.length > 0 && <SampleTable samples={samples} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
@@ -146,6 +131,10 @@ export async function getServerSideProps(
   if (FetchRequest.isResponseSuccess(item)) {
     const institutionalCertificate =
       item as unknown as InstitutionalCertificateObject;
+    const samples =
+      institutionalCertificate.samples?.length > 0
+        ? await requestSamples(institutionalCertificate.samples, request)
+        : [];
     const attribution = await buildAttribution(
       institutionalCertificate,
       req.headers.cookie
@@ -154,8 +143,9 @@ export async function getServerSideProps(
     return {
       props: {
         institutionalCertificate,
+        samples,
         pageContext: {
-          title: `${item.summary} ${item.data_use_limitation_summary}`,
+          title: item.summary,
         },
         attribution,
         isJson,

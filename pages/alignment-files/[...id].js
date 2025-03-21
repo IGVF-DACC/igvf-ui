@@ -6,6 +6,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataAreaTitle,
@@ -66,6 +67,7 @@ export default function AlignmentFile({
           alternateAccessions={alignmentFile.alternate_accessions}
         />
         <ObjectPageHeader item={alignmentFile} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={alignmentFile} />
           <FileHeaderDownload file={alignmentFile}>
             <HostedFilePreview file={alignmentFile} buttonSize="sm" />
           </FileHeaderDownload>

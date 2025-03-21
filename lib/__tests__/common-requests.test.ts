@@ -871,7 +871,7 @@ describe("Test all the common requests", () => {
         },
       ],
       "@id":
-        "/search/?field=certificate_identifier&field=status&@id=/institutional-certificates//search/?field=certificate_identifier&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
+        "/search/?field=certificate_identifier&field=controlled_access&field=data_use_limitation_summary&field=lab&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
       "@type": ["Search"],
       clear_filters: "/search/",
       notification: "Success",
@@ -893,7 +893,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toBeCalledWith(
-      "/search/?field=certificate_identifier&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
+      "/search/?field=certificate_identifier&field=controlled_access&field=data_use_limitation_summary&field=lab&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
       expect.anything()
     );
     expect(result).toHaveLength(1);

@@ -17,6 +17,7 @@ import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
+import { InstitutionalCertificateTable } from "../../components/institutional-certificate-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -33,6 +34,7 @@ import {
   requestDocuments,
   requestDonors,
   requestFileSets,
+  requestInstitutionalCertificates,
   requestOntologyTerms,
   requestPublications,
   requestTreatments,
@@ -64,6 +66,7 @@ export default function InVitroSystem({
   cellFateChangeTreatments,
   biomarkers,
   multiplexedInSamples,
+  institutionalCertificates,
   attribution = null,
   isJson,
 }) {
@@ -89,9 +92,6 @@ export default function InVitroSystem({
                 diseaseTerms={diseaseTerms}
                 parts={parts}
                 partOf={partOf}
-                institutionalCertificates={
-                  inVitroSystem.institutional_certificates
-                }
                 publications={publications}
                 sampleTerms={inVitroSystem.sample_terms}
                 sources={sources}
@@ -258,6 +258,13 @@ export default function InVitroSystem({
               panelId="cell-fate-change-treatments"
             />
           )}
+          {institutionalCertificates.length > 0 && (
+            <InstitutionalCertificateTable
+              institutionalCertificates={institutionalCertificates}
+              reportLink={`/multireport/?type=InstitutionalCertificate&samples=${inVitroSystem["@id"]}`}
+              reportLabel={`Report of institutional certificates associated with ${inVitroSystem.accession}`}
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -307,6 +314,8 @@ InVitroSystem.propTypes = {
   cellFateChangeTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Institutional certificates referencing this sample
+  institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -425,6 +434,17 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    let institutionalCertificates = [];
+    if (inVitroSystem.institutional_certificates?.length > 0) {
+      const institutionalCertificatePaths =
+        inVitroSystem.institutional_certificates.map(
+          (institutionalCertificate) => institutionalCertificate["@id"]
+        );
+      institutionalCertificates = await requestInstitutionalCertificates(
+        institutionalCertificatePaths,
+        request
+      );
+    }
     let publications = [];
     if (inVitroSystem.publications?.length > 0) {
       const publicationPaths = inVitroSystem.publications.map(
@@ -458,6 +478,7 @@ export async function getServerSideProps({ params, req, query }) {
         treatments,
         cellFateChangeTreatments,
         multiplexedInSamples,
+        institutionalCertificates,
         pageContext: {
           title: `${inVitroSystem.sample_terms[0].term_name} — ${inVitroSystem.accession}`,
         },

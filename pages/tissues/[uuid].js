@@ -17,6 +17,7 @@ import { EditableItem } from "../../components/edit";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import FileSetTable from "../../components/file-set-table";
+import { InstitutionalCertificateTable } from "../../components/institutional-certificate-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -33,6 +34,7 @@ import {
   requestDocuments,
   requestDonors,
   requestFileSets,
+  requestInstitutionalCertificates,
   requestOntologyTerms,
   requestPublications,
   requestTreatments,
@@ -58,6 +60,7 @@ export default function Tissue({
   sources,
   treatments,
   multiplexedInSamples,
+  institutionalCertificates,
   attribution = null,
   isJson,
 }) {
@@ -81,7 +84,6 @@ export default function Tissue({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 partOf={partOf}
-                institutionalCertificates={tissue.institutional_certificates}
                 publications={publications}
                 sampleTerms={tissue.sample_terms}
                 sources={sources}
@@ -201,6 +203,13 @@ export default function Tissue({
               reportLabel={`Report of treatments applied to the biosample ${tissue.accession}`}
             />
           )}
+          {institutionalCertificates.length > 0 && (
+            <InstitutionalCertificateTable
+              institutionalCertificates={institutionalCertificates}
+              reportLink={`/multireport/?type=InstitutionalCertificate&samples=${tissue["@id"]}`}
+              reportLabel={`Report of institutional certificates associated with ${tissue.accession}`}
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -240,6 +249,8 @@ Tissue.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Institutional certificates referencing this sample
+  institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -326,6 +337,17 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    let institutionalCertificates = [];
+    if (tissue.institutional_certificates?.length > 0) {
+      const institutionalCertificatePaths =
+        tissue.institutional_certificates.map(
+          (institutionalCertificate) => institutionalCertificate["@id"]
+        );
+      institutionalCertificates = await requestInstitutionalCertificates(
+        institutionalCertificatePaths,
+        request
+      );
+    }
     let publications = [];
     if (tissue.publications?.length > 0) {
       const publicationPaths = tissue.publications.map(
@@ -351,6 +373,7 @@ export async function getServerSideProps({ params, req, query }) {
         sources,
         treatments,
         multiplexedInSamples,
+        institutionalCertificates,
         pageContext: {
           title: `${tissue.sample_terms[0].term_name} — ${tissue.accession}`,
         },

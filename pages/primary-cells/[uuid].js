@@ -16,6 +16,7 @@ import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
+import { InstitutionalCertificateTable } from "../../components/institutional-certificate-table";
 import JsonDisplay from "../../components/json-display";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -32,6 +33,7 @@ import {
   requestDocuments,
   requestDonors,
   requestFileSets,
+  requestInstitutionalCertificates,
   requestOntologyTerms,
   requestPublications,
   requestTreatments,
@@ -58,6 +60,7 @@ export default function PrimaryCell({
   sources,
   treatments,
   multiplexedInSamples,
+  institutionalCertificates,
   attribution = null,
   isJson,
 }) {
@@ -81,9 +84,6 @@ export default function PrimaryCell({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 partOf={partOf}
-                institutionalCertificates={
-                  primaryCell.institutional_certificates
-                }
                 publications={publications}
                 sampleTerms={primaryCell.sample_terms}
                 sources={sources}
@@ -174,6 +174,13 @@ export default function PrimaryCell({
               reportLabel={`Report of treatments applied to the biosample ${primaryCell.accession}`}
             />
           )}
+          {institutionalCertificates.length > 0 && (
+            <InstitutionalCertificateTable
+              institutionalCertificates={institutionalCertificates}
+              reportLink={`/multireport/?type=InstitutionalCertificate&samples=${primaryCell["@id"]}`}
+              reportLabel={`Report of institutional certificates associated with ${primaryCell.accession}`}
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
           <Attribution attribution={attribution} />
         </JsonDisplay>
@@ -213,6 +220,8 @@ PrimaryCell.propTypes = {
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Institutional certificates referencing this sample
+  institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -303,6 +312,17 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    let institutionalCertificates = [];
+    if (primaryCell.institutional_certificates?.length > 0) {
+      const institutionalCertificatePaths =
+        primaryCell.institutional_certificates.map(
+          (institutionalCertificate) => institutionalCertificate["@id"]
+        );
+      institutionalCertificates = await requestInstitutionalCertificates(
+        institutionalCertificatePaths,
+        request
+      );
+    }
     let publications = [];
     if (primaryCell.publications?.length > 0) {
       const publicationPaths = primaryCell.publications.map(
@@ -328,6 +348,7 @@ export async function getServerSideProps({ params, req, query }) {
         sources,
         treatments,
         multiplexedInSamples,
+        institutionalCertificates,
         pageContext: {
           title: `${primaryCell.sample_terms[0].term_name} — ${primaryCell.accession}`,
         },

@@ -263,6 +263,9 @@ export async function requestInstitutionalCertificates(
   return (
     await request.getMultipleObjectsBulk(paths, [
       "certificate_identifier",
+      "controlled_access",
+      "data_use_limitation_summary",
+      "lab",
       "status",
     ])
   ).unwrap_or([]);
