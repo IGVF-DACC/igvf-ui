@@ -1,6 +1,6 @@
 // node_modules
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
-import { useState } from "react";
+import { type MouseEvent, useState } from "react";
 // components
 import { DataPanel } from "../components/data-area";
 import { HistoryLink } from "../components/history-link";
@@ -38,12 +38,12 @@ function Title({
 }: {
   id: string;
   isExpanded: boolean;
-  onExpandClick: (id: string) => void;
+  onExpandClick: (e: MouseEvent<HTMLButtonElement>, id: string) => void;
 }) {
   return (
     <div className="px-2 py-1">
       <button
-        onClick={() => onExpandClick(id)}
+        onClick={(e) => onExpandClick(e, id)}
         className="flex items-center gap-2 font-semibold"
       >
         {isExpanded ? (
@@ -63,7 +63,7 @@ function HistoryPanel({
   isPanelExpanded,
 }: {
   entry: HistoryEntry;
-  onExpandClick: (id: string) => void;
+  onExpandClick: (e: MouseEvent<HTMLButtonElement>, id: string) => void;
   isPanelExpanded: boolean;
 }) {
   return (
@@ -95,13 +95,26 @@ export default function History({ history }: { history: HistoryObject }) {
   const [expanded, setExpanded] = useState<string[]>([]);
 
   // Toggle the expansion of a history panel with the given id.
-  function onExpandClick(id: string) {
-    setExpanded((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((i) => i !== id);
+  function onExpandClick(event: MouseEvent<HTMLButtonElement>, id: string) {
+    if (event.altKey || event.ctrlKey) {
+      // User held down the option or control key when expanding or collapsing, so expand all
+      // panels if the clicked panel is currently collapsed, or collapse all panels if the
+      // clicked panel is currently expanded.
+      if (expanded.includes(id)) {
+        setExpanded([]);
+      } else {
+        setExpanded(history.history.map((entry) => entry.timestamp));
       }
-      return [...prev, id];
-    });
+    } else {
+      // User didn't hold down a key when expanding or collapsing, so expand or collapse only the
+      // clicked panel.
+      setExpanded((prev) => {
+        if (prev.includes(id)) {
+          return prev.filter((i) => i !== id);
+        }
+        return [...prev, id];
+      });
+    }
   }
 
   const currentProps = history.latest?.props;
