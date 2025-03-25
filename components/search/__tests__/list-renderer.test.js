@@ -2640,7 +2640,7 @@ describe("Test Analysis Step Version component", () => {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
       },
-      summary: "face8e04-9037-0e10-10e3-49999ee02dba",
+      summary: "fbd5e8fb-4206-4b43-92d6-922cdfe1338b",
       software_versions: [
         {
           "@id": "/software-versions/cellranger-v6.0.1/",
@@ -2659,8 +2659,9 @@ describe("Test Analysis Step Version component", () => {
     );
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/Analysis Step Version/);
-    expect(uniqueId).toHaveTextContent(/fbd5e8fb-4206-4b43-92d6-922cdfe1338b/);
+    expect(uniqueId).toHaveTextContent(
+      /AnalysisStepVersion fbd5e8fb-4206-4b43-92d6-922cdfe1338b/
+    );
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent("cellranger-v6.0.1");
