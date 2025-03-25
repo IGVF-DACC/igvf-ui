@@ -7,7 +7,6 @@ import {
   SearchListItemMeta,
   SearchListItemQuality,
   SearchListItemSupplement,
-  SearchListItemSupplementAlternateAccessions,
   SearchListItemSupplementContent,
   SearchListItemSupplementLabel,
   SearchListItemSupplementSection,
