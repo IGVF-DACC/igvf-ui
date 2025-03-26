@@ -112,6 +112,12 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const generic = (await request.getObject(resolvedUrl)).union();
+
+  // Return 404 if `generic` is an object but doesn't have an @type property.
+  if (generic && !generic["@type"]) {
+    return { notFound: true };
+  }
+
   if (FetchRequest.isResponseSuccess(generic)) {
     let awards = null;
     let labs = null;

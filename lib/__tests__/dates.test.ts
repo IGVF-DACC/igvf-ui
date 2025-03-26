@@ -11,6 +11,11 @@ describe("Date formatter", () => {
     const actual = formatDate();
     expect(actual).toBe("");
   });
+
+  it('should return a date and time if "show-time" is provided', () => {
+    const actual = formatDate("2020-01-01", "show-time");
+    expect(actual).toBe("January 1, 2020 00:00");
+  });
 });
 
 describe("Date-range formatter", () => {

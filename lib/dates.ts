@@ -15,13 +15,20 @@ import { UC } from "./constants";
  * @param date ISO 8601 date string
  * @returns Human-readable date string
  */
-export function formatDate(date?: string): string {
+export function formatDate(
+  date: string = "",
+  timeDisplay: "hide-time" | "show-time" = "hide-time"
+): string {
   if (date) {
     const jsDate = new Date(date);
     const midnightDate = new Date(
       jsDate.valueOf() + jsDate.getTimezoneOffset() * 60 * 1000
     );
-    return dateFns.format(midnightDate, "MMMM d, yyyy");
+    // Format date in the local time zone as "Month d, yyyy" and time as 24-hour time if `showTime` is true.
+    return dateFns.format(
+      midnightDate,
+      timeDisplay === "show-time" ? "MMMM d, yyyy HH:mm" : "MMMM d, yyyy"
+    );
   }
   return "";
 }

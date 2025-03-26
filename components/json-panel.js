@@ -86,6 +86,7 @@ JsonPanelTools.propTypes = {
  */
 export default function JsonPanel({
   id = null,
+  highlightedLines = [],
   isLowContrast = false,
   isBorderHidden = false,
   className = "",
@@ -115,6 +116,17 @@ export default function JsonPanel({
         className={`text-xs ${
           isBorderHidden ? "" : "border border-json-panel"
         } ${className}`}
+        lineNumberStyle={{ display: "none" }}
+        lineProps={(lineNumber) => {
+          const isHighlighted = highlightedLines.includes(lineNumber);
+          return isHighlighted
+            ? {
+                class: "bg-yellow-300 dark:bg-blue-800",
+              }
+            : {};
+        }}
+        showLineNumbers
+        wrapLines
       >
         {contentChildren}
       </SyntaxHighlighter>
@@ -126,6 +138,8 @@ export default function JsonPanel({
 JsonPanel.propTypes = {
   // Unique identifier for the component
   id: PropTypes.string,
+  // 1-based line numbers to highlight
+  highlightedLines: PropTypes.array,
   // True for low-contrast themes
   isLowContrast: PropTypes.bool,
   // True to hide the JSON panel border
