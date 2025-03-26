@@ -395,6 +395,7 @@ export interface WorkflowObject extends DatabaseObject {
  */
 export interface UserObject extends DatabaseObject {
   title: string;
+  viewing_groups: string[];
 }
 
 /**

@@ -135,7 +135,7 @@ export function Tooltip({ tooltipAttr, children }) {
       {tooltipAttr.isVisible &&
         createPortal(
           <div
-            className="z-10 max-w-[90%] rounded-md border border-gray-500 bg-gray-800 px-2 py-1 text-xs text-white drop-shadow-md dark:border-white dark:bg-gray-300 dark:text-black md:max-w-[40%] 2xl:max-w-[20%]"
+            className="z-[100] max-w-[90%] rounded-md border border-gray-500 bg-gray-800 px-2 py-1 text-xs text-white drop-shadow-md dark:border-white dark:bg-gray-300 dark:text-black md:max-w-[40%] 2xl:max-w-[20%]"
             ref={tooltipAttr.tooltipEl}
             style={tooltipAttr.styles}
             role="tooltip"
