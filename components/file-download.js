@@ -4,10 +4,12 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
+import { useContext } from "react";
 // components
 import { ExternallyHostedBadge } from "./common-pill-badges";
 import { ButtonLink } from "./form-elements";
 import LinkedIdAndStatus from "./linked-id-and-status";
+import SessionContext from "./session-context";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { API_URL } from "../lib/constants";
@@ -19,6 +21,7 @@ import { checkFileDownloadable } from "../lib/files";
  * Anvil URL.
  */
 export function FileDownload({ file, className = "" }) {
+  const { sessionProperties } = useContext(SessionContext);
   const tooltipAttr = useTooltip("file-download");
 
   if (file.externally_hosted) {
@@ -46,7 +49,10 @@ export function FileDownload({ file, className = "" }) {
     );
   }
 
-  const isFileDownloadable = checkFileDownloadable(file);
+  const isFileDownloadable = checkFileDownloadable(
+    file,
+    sessionProperties?.user?.viewing_groups
+  );
 
   return (
     <>
