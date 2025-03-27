@@ -101,6 +101,7 @@ export async function requestFiles(
       "accession",
       "aliases",
       "content_type",
+      "controlled_access",
       "creation_timestamp",
       "derived_from",
       "external_host_url",

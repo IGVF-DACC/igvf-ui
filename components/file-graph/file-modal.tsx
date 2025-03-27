@@ -11,6 +11,7 @@ import {
 } from "../data-area";
 import { FileDownload } from "../file-download";
 import { ButtonLink } from "../form-elements";
+import { HostedFilePreview } from "../hosted-file-preview";
 import Modal from "../modal";
 import Status from "../status";
 // local
@@ -46,6 +47,7 @@ export function FileModal({
               {file.accession}
             </Link>
             <FileDownload file={file} />
+            <HostedFilePreview file={file} buttonSize="sm" />
           </div>
         </FileModalTitle>
       </Modal.Header>
