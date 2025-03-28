@@ -49,6 +49,7 @@ import FetchRequest from "../../../lib/fetch-request";
  */
 import AnalysisSet from "./analysis-set";
 import AnalysisStep from "./analysis-step";
+import AnalysisStepVersion from "./analysis-step-version";
 import Award from "./award";
 import AuxiliarySet from "./auxiliary-set";
 import Biomarker from "./biomarker";
@@ -87,6 +88,7 @@ const renderers = {
   AlignmentFile: File,
   AnalysisSet,
   AnalysisStep,
+  AnalysisStepVersion,
   AssayTerm: OntologyTerm,
   AuxiliarySet,
   Award,
