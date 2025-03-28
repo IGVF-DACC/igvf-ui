@@ -219,32 +219,45 @@ export function AddInstancePage({ collection }) {
             errors: [],
           });
 
-          const defaultDescription =
-            "Error saving new item, ensure the fields are filled out correctly";
-          const defaultKeys = "Generic Error";
-          const errors = response.errors
-            ? response.errors.map((err) => {
-                // Surround each err name with ``, and separate by comma
-                const keys = err.name
-                  .map((val) => {
-                    return `\`${val}\``;
-                  })
-                  .join(", ");
-                // Unique identifier for this error object
-                const key = `${keys}${err.description}`;
-                return {
-                  description: err.description,
-                  keys,
-                  key,
-                };
-              })
-            : [
-                {
-                  description: defaultDescription,
-                  keys: defaultKeys,
-                  key: `${defaultKeys}${defaultDescription}`,
-                },
-              ];
+          console.log("RESPONSE", response);
+          let errors = [];
+          if (response.errors) {
+            errors = response.errors.map((err) => {
+              // Surround each err name with ``, and separate by comma
+              const keys = err.name
+                .map((val) => {
+                  return `\`${val}\``;
+                })
+                .join(", ");
+              // Unique identifier for this error object
+              const key = `${keys}${err.description}`;
+              return {
+                description: err.description,
+                keys,
+                key,
+              };
+            });
+          } else if (response.description) {
+            // Conflict errors show up as single messages.
+            errors = [
+              {
+                description: `${response.description} ${response.detail}`,
+                keys: response.title,
+                key: `${response.title}${response.description}`,
+              },
+            ];
+          } else {
+            const defaultDescription =
+              "Error saving new item, ensure the fields are filled out correctly";
+            const defaultKeys = "Generic Error";
+            errors = [
+              {
+                description: defaultDescription,
+                keys: defaultKeys,
+                key: `${defaultKeys}${defaultDescription}`,
+              },
+            ];
+          }
           setSaveErrors([...new Set(errors)]);
         }
       });

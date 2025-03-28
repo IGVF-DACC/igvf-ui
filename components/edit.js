@@ -179,11 +179,11 @@ export default function EditPage({ item }) {
           errors: [],
         });
 
-        const defaultDescription =
-          "Error saving new item, ensure the fields are filled out correctly";
-        const defaultKeys = "Generic Error";
-        const errors = response.errors
-          ? response.errors.map((err) => {
+        let errors = [];
+        if (response["@type"].includes("Error")) {
+          if (response.errors) {
+            // Validation errors typically give an array of error messages in `response.errors`.
+            errors = response.errors.map((err) => {
               // Surround each err name with ``, and separate by comma
               const keys = err.name
                 .map((val) => {
@@ -197,15 +197,31 @@ export default function EditPage({ item }) {
                 keys,
                 key,
               };
-            })
-          : [
+            });
+          } else if (response.description) {
+            // Conflict errors show up as single messages.
+            errors = [
+              {
+                description: `${response.description} ${response.detail}`,
+                keys: response.title,
+                key: `${response.title}${response.description}`,
+              },
+            ];
+          } else {
+            // Unknown errors show up as generic messages.
+            const defaultDescription =
+              "Error saving new item, ensure the fields are filled out correctly";
+            const defaultKeys = "Generic Error";
+            errors = [
               {
                 description: defaultDescription,
                 keys: defaultKeys,
                 key: `${defaultKeys}${defaultDescription}`,
               },
             ];
-        setSaveErrors([...new Set(errors)]);
+          }
+          setSaveErrors([...new Set(errors)]);
+        }
       }
     });
   }
