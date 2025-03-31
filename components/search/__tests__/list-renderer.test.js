@@ -2700,13 +2700,6 @@ describe("Test Analysis Step Version component without software_version", () => 
         title: "J. Michael Cherry, Stanford",
       },
       summary: "86329dd8-cadf-4714-86d4-6cd9cab4d95b",
-      software_versions: [
-        {
-          "@id": "/software-versions/cellranger-v6.0.1/",
-          name: "cellranger-v6.0.1",
-          status: "released",
-        },
-      ],
       uuid: "86329dd8-cadf-4714-86d4-6cd9cab4d95b",
       status: "released",
     };
