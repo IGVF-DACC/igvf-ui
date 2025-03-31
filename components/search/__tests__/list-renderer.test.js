@@ -2637,7 +2637,7 @@ describe("Test Analysis Step Version component", () => {
       "@type": ["AnalysisStepVersion", "Item"],
       analysis_step: {
         "@id": "/analysis-steps/IGVFWF0000WORK-example-analysis-step/",
-        title: "IGVFWF0000WORK Example Analysis Step Version",
+        title: "IGVFWF0000WORK Example Analysis Step",
       },
       award: "/awards/HG012012/",
       lab: {

@@ -29,7 +29,7 @@ export default function AnalysisStepVersion({ item: analysisStepVersion }) {
         </SearchListItemUniqueId>
         {analysisStepVersion.analysis_step && (
           <SearchListItemTitle>
-            <div key="software-versions">
+            <div key="analysis-step-version">
               {analysisStepVersion.analysis_step.title} {"Version"}
             </div>
           </SearchListItemTitle>
