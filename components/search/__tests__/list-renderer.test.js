@@ -2672,7 +2672,9 @@ describe("Test Analysis Step Version component with software_version", () => {
       "IGVFWF0000WORK Example Analysis Step Version"
     );
 
-    const supplemental = screen.getByTestId("search-list-supplemental-label");
+    const supplemental = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
     expect(supplemental).toHaveTextContent("cellranger-v6.0.1");
 
     const meta = screen.getByTestId("search-list-item-meta");
