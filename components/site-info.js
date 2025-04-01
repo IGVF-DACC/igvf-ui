@@ -63,7 +63,7 @@ export function Email() {
 }
 
 /**
- * Display eTwitter links.
+ * Display the Twitter link.
  */
 export function Twitter() {
   return (
@@ -76,6 +76,25 @@ export function Twitter() {
         aria-label="IGVF Consortium on X"
       >
         <Icon.Twitter className="h-6 w-6" />
+      </a>
+    </div>
+  );
+}
+
+/**
+ * Display Creative Commons linked icon.
+ */
+export function CreativeCommons() {
+  return (
+    <div>
+      <a
+        className="block"
+        href="https://creativecommons.org/licenses/by/4.0/"
+        target="_blank"
+        rel="noreferrer noopener"
+        aria-label="Creative Commons Attribution (CC BY) license"
+      >
+        <Icon.CCBY className="h-6 w-6" />
       </a>
     </div>
   );

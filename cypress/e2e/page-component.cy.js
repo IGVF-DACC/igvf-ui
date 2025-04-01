@@ -26,8 +26,11 @@ describe("page-component tests", () => {
 
     // Make sure the image is displayed.
     cy.contains("Image Aligned Page");
-    cy.get("img").should("have.attr", "src", "/pages/igvf-winter-logo.png");
-    cy.get("img").should("have.attr", "alt", "IGVF Logo");
+    cy.get("img[alt='IGVF Logo']").should(
+      "have.attr",
+      "src",
+      "/pages/igvf-winter-logo.png"
+    );
     cy.get("picture").should("have.attr", "style", "width: 33%;");
   });
 
