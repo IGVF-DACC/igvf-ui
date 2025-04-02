@@ -5,6 +5,7 @@ import SessionContext from "../../session-context";
 import Award from "../list-renderer/award";
 import AnalysisSet from "../list-renderer/analysis-set";
 import AnalysisStep from "../list-renderer/analysis-step";
+import AnalysisStepVersion from "../list-renderer/analysis-step-version";
 import AuxiliarySet from "../list-renderer/auxiliary-set";
 import Biomarker from "../list-renderer/biomarker";
 import Biosample from "../list-renderer/biosample";
@@ -2620,6 +2621,104 @@ describe("Test Analysis Step component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent("Test UI Analysis Step");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Analysis Step Version component with software_version", () => {
+  it("renders an analysis step version item", () => {
+    const item = {
+      "@id": "/analysis-step-versions/fbd5e8fb-4206-4b43-92d6-922cdfe1338b/",
+      "@type": ["AnalysisStepVersion", "Item"],
+      analysis_step: {
+        "@id": "/analysis-steps/IGVFWF0000WORK-example-analysis-step/",
+        title: "IGVFWF0000WORK Example Analysis Step",
+      },
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      summary: "fbd5e8fb-4206-4b43-92d6-922cdfe1338b",
+      software_versions: [
+        {
+          "@id": "/software-versions/cellranger-v6.0.1/",
+          name: "cellranger-v6.0.1",
+          status: "released",
+        },
+      ],
+      uuid: "fbd5e8fb-4206-4b43-92d6-922cdfe1338b",
+      status: "released",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisStepVersion item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(
+      /AnalysisStepVersion fbd5e8fb-4206-4b43-92d6-922cdfe1338b/
+    );
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      "IGVFWF0000WORK Example Analysis Step Version"
+    );
+
+    const supplemental = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplemental).toHaveTextContent("cellranger-v6.0.1");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Analysis Step Version component without software_version", () => {
+  it("renders an analysis step version item", () => {
+    const item = {
+      "@id": "/analysis-step-versions/86329dd8-cadf-4714-86d4-6cd9cab4d95b/",
+      "@type": ["AnalysisStepVersion", "Item"],
+      analysis_step: {
+        "@id": "/analysis-steps/IGVFWF0000WORK-example-analysis-step/",
+        title: "IGVFWF0000WORK Example Analysis Step",
+      },
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      summary: "86329dd8-cadf-4714-86d4-6cd9cab4d95b",
+      uuid: "86329dd8-cadf-4714-86d4-6cd9cab4d95b",
+      status: "released",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisStepVersion item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(
+      /AnalysisStepVersion 86329dd8-cadf-4714-86d4-6cd9cab4d95b/
+    );
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      "IGVFWF0000WORK Example Analysis Step Version"
+    );
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
