@@ -62,7 +62,7 @@ config: Dict[str, Any] = {
             'frontend': {
                 'cpu': 2048,
                 'memory_limit_mib': 4096,
-                'desired_count': 1,
+                'desired_count': 2,
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
             },
