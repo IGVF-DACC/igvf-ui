@@ -144,7 +144,7 @@ export default function TabularFile({
           {barcodeMapFor.length > 0 && (
             <SampleTable
               samples={barcodeMapFor}
-              reportLink={`/multireport/?type=MultiplexedSample&barcode_map.@id=${tabularFile["@id"]}`}
+              reportLink={`/multireport/?type=MultiplexedSample&barcode_map=${tabularFile["@id"]}`}
               reportLabel="Report of multiplexed samples in which this file is a barcode map for"
               title="Barcode Map For"
               panelId="barcode-map-for"
