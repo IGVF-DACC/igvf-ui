@@ -20,7 +20,12 @@ import {
   SearchListItemSupplementContent,
 } from "./search-list-item";
 // root
-import type { LabObject, FileObject, FileSetObject } from "../../../globals.d";
+import type {
+  LabObject,
+  FileObject,
+  FileSetObject,
+  CollectionTitles,
+} from "../../../globals";
 
 export default function IndexFile({ item: indexFile }: { item: FileObject }) {
   // During indexing, `file_set` can contain a path instead of the expected object.
@@ -29,7 +34,9 @@ export default function IndexFile({ item: indexFile }: { item: FileObject }) {
   const isSupplementVisible =
     isFileSetEmbedded || indexFile.alternate_accessions?.length > 0;
 
-  const { collectionTitles } = useContext(SessionContext);
+  const { collectionTitles } = useContext(SessionContext as any) as {
+    collectionTitles: CollectionTitles;
+  };
   const filesetTitle =
     collectionTitles?.[indexFile.file_set["@type"][0]] ||
     indexFile.file_set["@type"][0];
