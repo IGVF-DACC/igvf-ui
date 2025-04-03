@@ -199,6 +199,7 @@ export default function AnalysisSet({
                   <DataItemValue>{analysisSet.submitter_comment}</DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
 
@@ -274,8 +275,6 @@ export default function AnalysisSet({
           )}
 
           {documents.length > 0 && <DocumentTable documents={documents} />}
-
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

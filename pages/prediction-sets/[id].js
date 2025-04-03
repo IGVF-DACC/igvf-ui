@@ -163,6 +163,7 @@ export default function PredictionSet({
                   </>
                 )}
               </FileSetDataItems>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {files.length > 0 && (
@@ -227,7 +228,6 @@ export default function PredictionSet({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

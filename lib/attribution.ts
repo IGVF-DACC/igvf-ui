@@ -1,11 +1,14 @@
 // lib
 import FetchRequest from "./fetch-request";
-import { requestUsers } from "./common-requests";
-import { DataProviderObject } from "../globals";
 import { itemId } from "./general";
 import { err, fromOption, ok } from "./result";
 // root
-import type { DatabaseObject } from "../globals.d";
+import type {
+  AwardObject,
+  DatabaseObject,
+  LabObject,
+  UserObject,
+} from "../globals.d";
 
 /**
  * An interface that for an object which can have attribution information generated.
@@ -30,10 +33,9 @@ export interface Attributable {
  */
 export interface Attribution {
   type: string;
-  lab: DataProviderObject | null;
-  award: DataProviderObject | null;
-  contactPi: DataProviderObject | null;
-  pis: object[] | null;
+  lab: LabObject | null;
+  award: AwardObject | null;
+  contactPi: UserObject | null;
   collections: string[] | null;
 }
 
@@ -71,24 +73,15 @@ export default async function buildAttribution(
       })
   ).optional();
 
-  const pis = (
-    await fromOption(award)
-      .and_then((a) => fromOption(a.pis as Array<string>))
-      .map_async(async (ps) => {
-        return await requestUsers(ps, request);
-      })
-  ).optional();
-
   const collections = fromOption(obj.collections)
     .and_then<string[]>((c) => (c.length > 0 ? ok(c) : err(null)))
     .optional();
 
   return {
     type: obj["@type"][0],
-    lab,
-    award,
-    contactPi,
-    pis,
+    lab: lab as LabObject | null,
+    award: award as AwardObject | null,
+    contactPi: contactPi as UserObject | null,
     collections,
   };
 }

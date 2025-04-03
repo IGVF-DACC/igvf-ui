@@ -80,9 +80,9 @@ export default function Image({ image, attribution = null, isJson }) {
                   <DataItemValue>{image.submitter_comment}</DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

@@ -73,6 +73,7 @@ export default function MatrixFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={matrixFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle id="matrix-details">Matrix Details</DataAreaTitle>
@@ -121,7 +122,6 @@ export default function MatrixFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

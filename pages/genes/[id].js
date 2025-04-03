@@ -121,7 +121,6 @@ export default function Gene({ gene, isJson }) {
                   <Collections
                     collections={gene.collections}
                     itemType={gene["@type"][0]}
-                    isMarginSuppressed
                   />
                 </>
               )}

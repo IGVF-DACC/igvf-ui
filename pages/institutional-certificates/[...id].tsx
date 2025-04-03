@@ -105,10 +105,10 @@ export default function InstitutionalCertificate({
                   </DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {samples.length > 0 && <SampleTable samples={samples} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

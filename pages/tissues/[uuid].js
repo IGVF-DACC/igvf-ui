@@ -127,6 +127,7 @@ export default function Tissue({
                   </>
                 )}
               </BiosampleDataItems>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
@@ -211,7 +212,6 @@ export default function Tissue({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

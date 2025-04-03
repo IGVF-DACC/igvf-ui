@@ -96,9 +96,9 @@ export default function Document({ document, attribution = null, isJson }) {
                   />
                 </div>
               </DataItemValue>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

@@ -78,6 +78,7 @@ export default function HumanDonor({
                   </DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {phenotypicFeatures.length > 0 && (
@@ -90,7 +91,6 @@ export default function HumanDonor({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

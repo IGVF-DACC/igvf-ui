@@ -117,6 +117,7 @@ export default function Publication({
                   <DataItemValue>{publication.submitter_comment}</DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {samples.length > 0 && (
@@ -161,7 +162,6 @@ export default function Publication({
               reportLabel="Report of software versions with this publication"
             />
           )}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

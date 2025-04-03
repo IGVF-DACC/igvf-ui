@@ -86,9 +86,9 @@ export default function Biomarker({
                   <DataItemValue>{biomarker.submitter_comment}</DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

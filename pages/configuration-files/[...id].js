@@ -68,6 +68,7 @@ export default function ConfigurationFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={configurationFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {seqspecOf.length > 0 && (
@@ -108,7 +109,6 @@ export default function ConfigurationFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

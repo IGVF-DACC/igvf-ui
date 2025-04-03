@@ -77,6 +77,7 @@ export default function AlignmentFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={alignmentFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle id="alignment-details">
@@ -155,7 +156,6 @@ export default function AlignmentFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

@@ -263,6 +263,7 @@ export default function MeasurementSet({
                   </>
                 )}
               </FileSetDataItems>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           <FileSetFilesTables
@@ -353,7 +354,6 @@ export default function MeasurementSet({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

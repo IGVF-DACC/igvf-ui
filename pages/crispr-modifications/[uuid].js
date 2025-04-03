@@ -109,6 +109,7 @@ export default function CrisprModification({
                   </DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {biosamplesModified.length > 0 && (
@@ -120,7 +121,6 @@ export default function CrisprModification({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

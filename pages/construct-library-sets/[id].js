@@ -308,6 +308,7 @@ export default function ConstructLibrarySet({
                   </>
                 )}
               </FileSetDataItems>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           <LibraryDetails library={constructLibrarySet} />
@@ -352,7 +353,6 @@ export default function ConstructLibrarySet({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

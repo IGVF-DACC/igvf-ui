@@ -98,6 +98,7 @@ export default function CuratedSet({
                   </>
                 )}
               </FileSetDataItems>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {samples.length > 0 && (
@@ -140,7 +141,6 @@ export default function CuratedSet({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

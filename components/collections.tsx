@@ -2,13 +2,20 @@
 import _ from "lodash";
 import Image from "next/image";
 import Link from "next/link";
-import { PropTypes } from "prop-types";
+
+/**
+ * Type for the collection map object. The keys are collection names from the schema enum and the
+ * values are the corresponding logo image file names in the /public/collections directory.
+ */
+type CollectionMapping = {
+  [key: string]: string;
+};
 
 /**
  * Map of collection names to their corresponding logo image file. The logo files exist in the
  * /public/collections directory.
  */
-const collectionMap = {
+const collectionMap: CollectionMapping = {
   ACMG73: "acmg73.svg",
   ClinGen: "clingen.svg",
   ENCODE: "encode.svg",
@@ -27,7 +34,7 @@ const collectionMap = {
   VarChAMP: "varchamp.svg",
   Vista: "vista.svg",
   "Williams Syndrome Research": "williams-syndrome-research.svg",
-};
+} as const;
 
 /**
  * Height and width of collection logos in pixels. PNG or JPEG files should have double this
@@ -43,19 +50,25 @@ const collectionMap = {
  * The graphic within the 105x70 box should have a maximum width of 95px and a maximum height of
  * 60px.
  */
-const COLLECTION_WIDTH = 105;
-const COLLECTION_HEIGHT = 70;
+const COLLECTION_DIMENSIONS = {
+  WIDTH: 105,
+  HEIGHT: 70,
+} as const;
 
 /**
  * Display the collection logos for an array of collection strings. If the collection string doesn't exist
  * in the collection map, it displays as text.
+ * @param collections - From `collections` property from an object
+ * @param itemType - @type of item containing the collections
  */
 export default function Collections({
-  collections = null,
+  collections = [],
   itemType,
-  isMarginSuppressed = false,
+}: {
+  collections?: string[];
+  itemType: string;
 }) {
-  if (collections?.length > 0) {
+  if (collections.length > 0) {
     // Make sure we show only unique collections, and sort them alphabetically.
     const uniqueCollections = [...new Set(collections)];
     const sortedCollections = _.sortBy(uniqueCollections, (collection) =>
@@ -63,9 +76,7 @@ export default function Collections({
     );
 
     return (
-      <ul
-        className={`flex flex-wrap gap-1 ${isMarginSuppressed ? "" : "mb-6"}`}
-      >
+      <ul className="flex flex-wrap gap-1">
         {sortedCollections.map((collection) => {
           const imageFile = collectionMap[collection];
           return (
@@ -76,13 +87,19 @@ export default function Collections({
               >
                 {imageFile ? (
                   <Image
-                    src={`/collections/${collectionMap[collection]}`}
-                    width={COLLECTION_WIDTH}
-                    height={COLLECTION_HEIGHT}
+                    src={`/collections/${imageFile}`}
+                    width={COLLECTION_DIMENSIONS.WIDTH}
+                    height={COLLECTION_DIMENSIONS.HEIGHT}
                     alt={`${collection} collection`}
                   />
                 ) : (
-                  <div className="flex h-[70px] w-[105px] items-center justify-center break-all px-1 text-xs dark:text-black">
+                  <div
+                    className="flex items-center justify-center break-all px-1 text-xs dark:text-black"
+                    style={{
+                      width: COLLECTION_DIMENSIONS.WIDTH,
+                      height: COLLECTION_DIMENSIONS.HEIGHT,
+                    }}
+                  >
                     {collection}
                     <div className="sr-only"> collection</div>
                   </div>
@@ -94,14 +111,4 @@ export default function Collections({
       </ul>
     );
   }
-  return null;
 }
-
-Collections.propTypes = {
-  // Array of collection strings
-  collections: PropTypes.arrayOf(PropTypes.string),
-  // Item type, used for the search link
-  itemType: PropTypes.string.isRequired,
-  // Suppress the bottom margin
-  isMarginSuppressed: PropTypes.bool,
-};

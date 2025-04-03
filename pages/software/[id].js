@@ -89,11 +89,11 @@ export default function Software({
                   <DataItemValue>{software.submitter_comment}</DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
 
           {versions?.length > 0 && <SoftwareVersionTable versions={versions} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

@@ -111,6 +111,7 @@ export default function AnalysisStep({
                   </DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {analysisStep.analysis_step_versions.length > 0 && (
@@ -120,7 +121,6 @@ export default function AnalysisStep({
               reportLabel="Analysis Step Versions"
             />
           )}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

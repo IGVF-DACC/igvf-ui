@@ -73,6 +73,7 @@ export default function SignalFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={signalFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle id="signal-details">Signal Details</DataAreaTitle>
@@ -146,7 +147,6 @@ export default function SignalFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

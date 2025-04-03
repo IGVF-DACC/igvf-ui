@@ -66,6 +66,7 @@ export default function ImageFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={imageFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {fileFormatSpecifications.length > 0 && (
@@ -97,7 +98,6 @@ export default function ImageFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>
