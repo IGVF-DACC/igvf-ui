@@ -1,6 +1,9 @@
 // node_modules
 import PropTypes from "prop-types";
 import Link from "next/link";
+import { useContext } from "react";
+// components
+import SessionContext from "../../session-context";
 // components/search/list-renderer
 import {
   SearchListItemContent,
@@ -26,6 +29,10 @@ export default function IndexFile({ item: indexFile }: { item: FileObject }) {
   const isSupplementVisible =
     isFileSetEmbedded || indexFile.alternate_accessions?.length > 0;
 
+  const { collectionTitles } = useContext(SessionContext);
+  const filesetTitle =
+    collectionTitles?.[indexFile.file_set["@type"][0]] ||
+    indexFile.file_set["@type"][0];
   return (
     <SearchListItemContent>
       <SearchListItemMain>
@@ -43,7 +50,7 @@ export default function IndexFile({ item: indexFile }: { item: FileObject }) {
             {isFileSetEmbedded && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
-                  File Set
+                  {filesetTitle}
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   <Link href={indexFile.file_set["@id"]}>
