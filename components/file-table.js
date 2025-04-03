@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { BatchDownloadActuator } from "./batch-download";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
+import { HostedFilePreview } from "./hosted-file-preview";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
@@ -15,7 +16,12 @@ const filesColumns = [
   {
     id: "accession",
     title: "Accession",
-    display: ({ source }) => <FileAccessionAndDownload file={source} />,
+    display: ({ source }) => (
+      <div className="flex items-start gap-1">
+        <FileAccessionAndDownload file={source} />
+        <HostedFilePreview file={source} buttonSize="sm" />
+      </div>
+    ),
   },
   {
     id: "file_format",

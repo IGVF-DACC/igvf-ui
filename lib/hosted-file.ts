@@ -39,9 +39,9 @@ async function getSoftLink(downloadUri: string): Promise<string> {
 
   // Check `data` for `isError` property, and handle error if true.
   if (isErrorObject(data)) {
-    throw new Error(data.description);
+    console.error(data.description);
+    return "";
   }
-
   return isSoftLink(data) ? data.location : "";
 }
 

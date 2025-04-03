@@ -177,9 +177,12 @@ export function HostedFilePreview({
               hasIconOnly
               className="text-xs"
             >
-              <EyeIcon className="h-4 w-4" />
+              {isLoading ? (
+                <Spinner svgClassName="h-3 w-3" />
+              ) : (
+                <EyeIcon className="h-4 w-4" />
+              )}
             </Button>
-            {isLoading && <Spinner svgClassName="h-5" />}
           </div>
         </TooltipRef>
         <Tooltip tooltipAttr={tooltipAttr}>

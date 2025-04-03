@@ -11,6 +11,7 @@ import {
   DataItemValue,
 } from "../data-area";
 import { FileAccessionAndDownload } from "../file-download";
+import { HostedFilePreview } from "../hosted-file-preview";
 import Modal from "../modal";
 import SeparatedList from "../separated-list";
 import SortableGrid from "../sortable-grid";
@@ -29,7 +30,10 @@ const filesColumns = [
     id: "accession",
     title: "Accession",
     display: ({ source }) => (
-      <FileAccessionAndDownload file={source} isTargetBlank />
+      <div className="flex items-start gap-1">
+        <FileAccessionAndDownload file={source} />
+        <HostedFilePreview file={source} buttonSize="sm" />
+      </div>
     ),
   },
   {

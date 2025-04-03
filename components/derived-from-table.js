@@ -5,6 +5,7 @@ import Link from "next/link";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
+import { HostedFilePreview } from "./hosted-file-preview";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
@@ -17,9 +18,12 @@ const columns = [
   {
     id: "@id",
     title: "Accession",
-    display: ({ source }) => {
-      return <FileAccessionAndDownload file={source} />;
-    },
+    display: ({ source }) => (
+      <div className="flex items-start gap-1">
+        <FileAccessionAndDownload file={source} />
+        <HostedFilePreview file={source} buttonSize="sm" />
+      </div>
+    ),
   },
   {
     id: "file_set",
