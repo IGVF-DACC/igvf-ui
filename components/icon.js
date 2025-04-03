@@ -465,10 +465,6 @@ Icon.PencilSlash.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
-Icon.Resources.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
 Icon.Sample.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
