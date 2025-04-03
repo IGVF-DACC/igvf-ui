@@ -122,6 +122,8 @@ class Frontend(Construct):
             vpc=self.props.existing_resources.network.vpc,
             cpu=self.props.cpu,
             desired_count=self.props.desired_count,
+            min_healthy_percent=100,
+            max_healthy_percent=200,
             circuit_breaker=DeploymentCircuitBreaker(
                 rollback=True,
             ),
