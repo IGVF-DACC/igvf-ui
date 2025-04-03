@@ -76,14 +76,6 @@ export default function AnalysisStepVersion({
                   </DataItemValue>
                 </>
               )}
-              {analysisStepVersion.submitter_comment && (
-                <>
-                  <DataItemLabel>Submitter Comment</DataItemLabel>
-                  <DataItemValue>
-                    {analysisStepVersion.submitter_comment}
-                  </DataItemValue>
-                </>
-              )}
               {analysisStepVersion.aliases?.length > 0 && (
                 <>
                   <DataItemLabel>Aliases</DataItemLabel>
