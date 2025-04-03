@@ -682,7 +682,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             Audit Documentation
           </NavigationHrefItem>
           <NavigationHrefItem
-            id="overview"
+            id="resources"
             href="/resources"
             navigationClick={navigationClick}
             isChildItem
