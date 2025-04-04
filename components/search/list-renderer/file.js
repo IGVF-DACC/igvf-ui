@@ -49,8 +49,7 @@ export default function File({ item: file, accessoryData = null }) {
   const filesetTitle = isFileSetEmbedded
     ? (
         collectionTitles?.[file.file_set["@type"][0]] ||
-        file.file_set["@type"][0] ||
-        ""
+        file.file_set["@type"][0]
       ).slice(0, -1)
     : "FILE SET";
 
