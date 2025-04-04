@@ -7,15 +7,18 @@ import _ from "lodash";
  */
 
 /**
- * A single history entry for a database object.
+ * A single history entry for a database object. Local instances never include
+ * `user_from_access_key`, and neither do changes made by upgrade scripts.
  * @property timestamp - Timestamp of the history entry
  * @property userid - User ID of the user who made the change
  * @property props - Properties of the database object at the time of the change
+ * @property user_from_access_key - User name from the access key, if available
  */
 export type HistoryEntry = {
   timestamp: string;
   userid: string;
   props: object;
+  user_from_access_key?: string;
 };
 
 /**

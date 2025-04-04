@@ -37,7 +37,7 @@ function PageHeader({ history }: { history: HistoryObject }) {
 
 /**
  * Display the title of a history entry.
- * @param id - Timestamp of the history entry
+ * @param entry - History entry object containing details of the change
  * @param isExpanded - Whether the history entry is expanded
  * @param onExpandClick - Function to call when the expand button is clicked
  */
@@ -68,7 +68,7 @@ function Title({
         {historyDate}
       </button>
       <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-        {entry.userid ? entry.userid : "by unknown user"}
+        {entry.user_from_access_key || entry.userid || "unknown user"}
       </div>
     </div>
   );
