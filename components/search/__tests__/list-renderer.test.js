@@ -2870,6 +2870,10 @@ describe("Test IndexFile component", () => {
       accession: "IGVFFI0002BAIN",
       aliases: ["j-michael-cherry:aliases01"],
       summary: "index of IGVFFI0002ALTB",
+      file_set: {
+        "@id": "/analysis-sets/IGVFDS7216VESH/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+      },
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
