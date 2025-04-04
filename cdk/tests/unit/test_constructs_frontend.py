@@ -148,7 +148,7 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
                     'Rollback': True
                 },
                 'MaximumPercent': 200,
-                'MinimumHealthyPercent': 50
+                'MinimumHealthyPercent': 100
             },
             'DeploymentController': {
                 'Type': 'ECS'
