@@ -1401,10 +1401,7 @@ describe("Test File component", () => {
       accession: "IGVFFI0000SQBR",
       alternate_accessions: ["IGVFFI0000SQBS"],
       file_format: "txt",
-      file_set: {
-        "@id": "/analysis-sets/IGVFDS7216VESH/",
-        "@type": ["AnalysisSet", "FileSet", "Item"],
-      },
+      file_set: "/measurement-sets/IGVFDS0000MSET/",
       content_type: "sequence barcodes",
       lab: {
         title: "J. Michael Cherry, Stanford",
@@ -2883,10 +2880,7 @@ describe("Test IndexFile component", () => {
       accession: "IGVFFI0002BAIN",
       aliases: ["j-michael-cherry:aliases01"],
       summary: "index of IGVFFI0002ALTB",
-      file_set: {
-        "@id": "/analysis-sets/IGVFDS7216VESH/",
-        "@type": ["AnalysisSet", "FileSet", "Item"],
-      },
+      file_set: "/analysis-sets/IGVFDS7216VESH/",
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
