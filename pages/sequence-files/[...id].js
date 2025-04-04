@@ -78,6 +78,7 @@ export default function SequenceFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={sequenceFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           <DataAreaTitle id="sequencing-details">
@@ -188,7 +189,6 @@ export default function SequenceFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

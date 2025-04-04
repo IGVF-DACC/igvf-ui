@@ -99,6 +99,7 @@ export default function IndexFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={indexFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {hasReferencePanel && (
@@ -182,7 +183,6 @@ export default function IndexFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

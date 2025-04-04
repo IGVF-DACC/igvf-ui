@@ -77,6 +77,7 @@ export default function ReferenceFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={referenceFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {(referenceFile.assembly ||
@@ -158,7 +159,6 @@ export default function ReferenceFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

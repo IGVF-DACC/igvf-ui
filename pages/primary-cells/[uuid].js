@@ -98,6 +98,7 @@ export default function PrimaryCell({
                   </>
                 )}
               </BiosampleDataItems>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
@@ -182,7 +183,6 @@ export default function PrimaryCell({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

@@ -77,6 +77,7 @@ export default function TabularFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={tabularFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {(tabularFile.assembly || tabularFile.transcriptome_annotation) && (
@@ -151,7 +152,6 @@ export default function TabularFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

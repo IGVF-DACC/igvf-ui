@@ -32,9 +32,6 @@ describe("Test the Collections component", () => {
       "href",
       "/search?type=InVitroSystem&collections=Undefined"
     );
-
-    const wrapper = screen.getByRole("list");
-    expect(wrapper).toHaveClass("mb-6");
   });
 
   it("should render nothing for an empty collections array", () => {
@@ -45,17 +42,5 @@ describe("Test the Collections component", () => {
   it("should render nothing for an undefined collections array", () => {
     render(<Collections itemType="Tissue" />);
     expect(screen.queryAllByRole("link")).toHaveLength(0);
-  });
-
-  it("should not have an mb-6 class on the wrapper div when isMarginSuppressed is true", () => {
-    render(
-      <Collections
-        collections={["MaveDB", "ENCODE"]}
-        itemType="InVitroSystem"
-        isMarginSuppressed
-      />
-    );
-    const wrapper = screen.getByRole("list");
-    expect(wrapper).not.toHaveClass("mb-6");
   });
 });

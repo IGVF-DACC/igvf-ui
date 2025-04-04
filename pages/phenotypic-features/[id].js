@@ -73,9 +73,9 @@ export default function PhenotypicFeature({
                   </DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

@@ -78,6 +78,7 @@ export default function TechnicalSample({
                   </Link>
                 </DataItemValue>
               </SampleDataItems>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {sample.file_sets.length > 0 && (
@@ -113,7 +114,6 @@ export default function TechnicalSample({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

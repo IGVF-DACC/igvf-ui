@@ -83,6 +83,7 @@ export default function WholeOrganism({
                   dateObtainedTitle: "Date Obtained",
                 }}
               />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
@@ -158,7 +159,6 @@ export default function WholeOrganism({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

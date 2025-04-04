@@ -140,6 +140,7 @@ export default function ModelSet({
                   </>
                 )}
               </FileSetDataItems>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
 
@@ -195,8 +196,6 @@ export default function ModelSet({
           )}
 
           {documents.length > 0 && <DocumentTable documents={documents} />}
-
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

@@ -141,6 +141,7 @@ export default function Workflow({
                   <DataItemValue>{workflow.revoke_detail}</DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {analysisSteps.length > 0 && (
@@ -151,7 +152,6 @@ export default function Workflow({
             />
           )}
           {documents?.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

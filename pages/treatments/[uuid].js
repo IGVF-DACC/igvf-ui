@@ -140,6 +140,7 @@ export default function Treatment({
                   </DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {biosamplesTreated.length > 0 && (
@@ -149,7 +150,6 @@ export default function Treatment({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

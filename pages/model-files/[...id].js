@@ -68,6 +68,7 @@ export default function ModelFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={modelFile} />
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {fileFormatSpecifications.length > 0 && (
@@ -99,7 +100,6 @@ export default function ModelFile({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

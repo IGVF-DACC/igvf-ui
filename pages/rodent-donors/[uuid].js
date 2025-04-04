@@ -91,13 +91,13 @@ export default function RodentDonor({
                   </>
                 )}
               </DonorDataItems>
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {phenotypicFeatures.length > 0 && (
             <PhenotypicFeatureTable phenotypicFeatures={phenotypicFeatures} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

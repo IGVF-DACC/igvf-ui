@@ -219,7 +219,6 @@ export function AddInstancePage({ collection }) {
             errors: [],
           });
 
-          console.log("RESPONSE", response);
           let errors = [];
           if (response.errors) {
             errors = response.errors.map((err) => {

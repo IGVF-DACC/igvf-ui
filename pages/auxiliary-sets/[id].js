@@ -86,6 +86,7 @@ export default function AuxiliarySet({
                   </DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           <FileSetFilesTables
@@ -148,8 +149,6 @@ export default function AuxiliarySet({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

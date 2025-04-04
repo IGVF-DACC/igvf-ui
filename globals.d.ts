@@ -375,6 +375,24 @@ export interface LabObject extends DatabaseObject {
 }
 
 /**
+ * Award object type.
+ */
+export interface AwardObject extends DatabaseObject {
+  aliases?: string[];
+  contact_pi?: string | UserObject;
+  description?: string;
+  end_date?: string;
+  name: string;
+  pis?: string[] | UserObject[];
+  project: string;
+  start_date?: string;
+  submitter_comment?: string;
+  title: string;
+  url?: string;
+  viewing_group?: string;
+}
+
+/**
  * Data structure common to all sample object types.
  */
 export interface SampleObject extends DatabaseObject {

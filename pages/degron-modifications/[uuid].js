@@ -116,6 +116,7 @@ export default function DegronModification({
                   </DataItemValue>
                 </>
               )}
+              <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
           {biosamplesModified.length > 0 && (
@@ -127,7 +128,6 @@ export default function DegronModification({
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
-          <Attribution attribution={attribution} />
         </JsonDisplay>
       </EditableItem>
     </>

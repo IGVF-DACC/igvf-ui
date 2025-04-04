@@ -51,34 +51,30 @@ export default function UnknownTypePanel({ item, attribution = null }) {
   );
 
   return (
-    <>
-      <DataPanel>
-        <DataArea>
-          <CommonDataRenderer item={item}>
-            {_.sortBy(genericProperties).map((property) => {
-              if (!Array.isArray(item[property])) {
-                const propertyValue =
-                  typeof item[property] === "object"
-                    ? item[property]["@id"] || JSON.stringify(item[property])
-                    : item[property];
-                const label = profile?.properties[property]?.title || property;
-                return (
-                  <Fragment key={property}>
-                    <DataItemLabel>{label}</DataItemLabel>
-                    <DataItemValue>
-                      <UnspecifiedProperty
-                        properties={[String(propertyValue)]}
-                      />
-                    </DataItemValue>
-                  </Fragment>
-                );
-              }
-            })}
-          </CommonDataRenderer>
-        </DataArea>
-      </DataPanel>
-      <Attribution attribution={attribution} />
-    </>
+    <DataPanel>
+      <DataArea>
+        <CommonDataRenderer item={item}>
+          {_.sortBy(genericProperties).map((property) => {
+            if (!Array.isArray(item[property])) {
+              const propertyValue =
+                typeof item[property] === "object"
+                  ? item[property]["@id"] || JSON.stringify(item[property])
+                  : item[property];
+              const label = profile?.properties[property]?.title || property;
+              return (
+                <Fragment key={property}>
+                  <DataItemLabel>{label}</DataItemLabel>
+                  <DataItemValue>
+                    <UnspecifiedProperty properties={[String(propertyValue)]} />
+                  </DataItemValue>
+                </Fragment>
+              );
+            }
+          })}
+        </CommonDataRenderer>
+        <Attribution attribution={attribution} />
+      </DataArea>
+    </DataPanel>
   );
 }
 
