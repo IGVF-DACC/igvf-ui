@@ -299,7 +299,7 @@ export async function getServerSideProps({ params, req, query }) {
       );
     }
     const barcodeMap = multiplexedSample.barcode_map
-      ? (await request.getObject(multiplexedSample.barcode_map)).unwrap_or({})
+      ? (await request.getObject(multiplexedSample.barcode_map)).optional()
       : null;
     const attribution = await buildAttribution(
       multiplexedSample,
