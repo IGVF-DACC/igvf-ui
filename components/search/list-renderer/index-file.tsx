@@ -37,7 +37,7 @@ export default function IndexFile({ item: indexFile }: { item: FileObject }) {
   const { collectionTitles } = useContext(SessionContext as any) as {
     collectionTitles: CollectionTitles;
   };
-  let filesetTitle = isFileSetEmbedded
+  const filesetTitle = isFileSetEmbedded
     ? (
         collectionTitles?.[indexFile.file_set["@type"][0]] ||
         indexFile.file_set["@type"][0] ||
