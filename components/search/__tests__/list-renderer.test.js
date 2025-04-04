@@ -1195,6 +1195,7 @@ describe("Test File component", () => {
         file_set_type: "experimental data",
         accession: "IGVFDS0000MSET",
         "@id": "/measurement-sets/IGVFDS0000MSET/",
+        "@type": ["MeasuremetSet", "FileSet", "Item"],
       },
       content_type: "sequence barcodes",
       lab: {
