@@ -45,8 +45,9 @@ export default function File({ item: file, accessoryData = null }) {
   seqspecOfs = seqspecOfs.filter(Boolean);
 
   const { collectionTitles } = useContext(SessionContext);
-  const filesetTitle =
+  let filesetTitle =
     collectionTitles?.[file.file_set["@type"][0]] || file.file_set["@type"][0];
+  filesetTitle = filesetTitle.slice(0, -1);
 
   const isSupplementVisible =
     isFileSetEmbedded ||

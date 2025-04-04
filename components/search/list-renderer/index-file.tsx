@@ -37,9 +37,11 @@ export default function IndexFile({ item: indexFile }: { item: FileObject }) {
   const { collectionTitles } = useContext(SessionContext as any) as {
     collectionTitles: CollectionTitles;
   };
-  const filesetTitle =
+  let filesetTitle =
     collectionTitles?.[indexFile.file_set["@type"][0]] ||
     indexFile.file_set["@type"][0];
+  filesetTitle = filesetTitle.slice(0, -1);
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
