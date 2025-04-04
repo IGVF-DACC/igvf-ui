@@ -681,62 +681,13 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             Audit Documentation
           </NavigationHrefItem>
-        </NavigationGroupItem>
-
-        <NavigationGroupItem
-          id="resources"
-          title="Resources"
-          icon={<Icon.Resources />}
-          isGroupOpened={openedParents.includes("resources")}
-          handleGroupClick={handleParentClick}
-        >
           <NavigationHrefItem
-            id="overview"
+            id="resources"
             href="/resources"
             navigationClick={navigationClick}
             isChildItem
           >
-            Overview
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="tissues"
-            href="/tissue-summary/mus-musculus"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Tissues
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="cell-models"
-            href="/cell-models/cell-lines"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Cell Models
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="computational-tools"
-            href="/computational-tools"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Computational Tools
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="predictive-models"
-            href="/predictive-models"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Predictive Models
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="assays"
-            href="/assays"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Assays
+            Resources
           </NavigationHrefItem>
         </NavigationGroupItem>
 
