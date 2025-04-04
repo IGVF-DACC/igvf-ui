@@ -1242,6 +1242,7 @@ describe("Test File component", () => {
         file_set_type: "experimental data",
         accession: "IGVFDS0000MSET",
         "@id": "/measurement-sets/IGVFDS0000MSET/",
+        "@type": ["MeasuremetSet", "FileSet", "Item"],
       },
       content_type: "sequence barcodes",
       lab: {
@@ -1393,7 +1394,10 @@ describe("Test File component", () => {
       accession: "IGVFFI0000SQBR",
       alternate_accessions: ["IGVFFI0000SQBS"],
       file_format: "txt",
-      file_set: "/measurement-sets/IGVFDS0000MSET/",
+      file_set: {
+        "@id": "/analysis-sets/IGVFDS7216VESH/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+      },
       content_type: "sequence barcodes",
       lab: {
         title: "J. Michael Cherry, Stanford",
@@ -2908,6 +2912,7 @@ describe("Test IndexFile component", () => {
       aliases: ["j-michael-cherry:aliases01"],
       file_set: {
         "@id": "/analysis-sets/IGVFDS9563CORS/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
         accession: "IGVFDS9563CORS",
         file_set_type: "principal analysis",
         samples: [
