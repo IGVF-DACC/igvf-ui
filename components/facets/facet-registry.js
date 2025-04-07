@@ -2,6 +2,7 @@
 import AuditTitle from "./custom-facets/audit-title";
 import InternalActionAuditTerms from "./custom-facets/audit-internal-action-terms";
 import NoTermCountTitle from "./custom-facets/no-term-count-title";
+import StatsTerms from "./custom-facets/stats-terms";
 import StandardTagLabel from "./custom-facets/standard-tag-label";
 import StandardTermLabel from "./custom-facets/standard-term-label";
 import StandardTerms from "./custom-facets/standard-terms";
@@ -35,6 +36,8 @@ const facetRegistry = {
   terms: {
     "audit.INTERNAL_ACTION.category": InternalActionAuditTerms,
     controlled_access: TriBooleanTerms,
+    fraction_assigned_oligos: StatsTerms,
+    median_assigned_barcodes: StatsTerms,
     standard: StandardTerms,
   },
 
@@ -45,6 +48,8 @@ const facetRegistry = {
     "audit.NOT_COMPLIANT.category": AuditTitle,
     "audit.WARNING.category": AuditTitle,
     controlled_access: NoTermCountTitle,
+    fraction_assigned_oligos: NoTermCountTitle,
+    median_assigned_barcodes: NoTermCountTitle,
     standard: StandardTitle,
   },
 };

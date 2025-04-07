@@ -252,6 +252,17 @@ const Icon = {
       <path d="M17.7,5.29c2-2-1-4.99-2.99-2.99l-4.62,4.62l2.99,2.99L17.7,5.29z" />
     </svg>
   ),
+  Reset: ({ className = null, testid = "icon-reset" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path d="M10,3c-1.9,0-3.7.8-5,2.1v-1.4c0-.4-.3-.8-.8-.8s-.8.3-.8.8v3.4c0,.4.3.6.6.6h3.4c.4,0,.8-.3.8-.8s-.3-.8-.8-.8h-1.5c1-1.1,2.4-1.7,3.9-1.7,3,0,5.5,2.5,5.5,5.5s-2.5,5.5-5.5,5.5-3.9-1.1-4.8-2.9c-.2-.4-.7-.5-1-.3-.4.2-.5.7-.3,1,1.2,2.3,3.6,3.7,6.2,3.7,3.9,0,7-3.1,7-7s-3.1-7-7-7Z" />
+    </svg>
+  ),
   Sample: ({ className = null, testid = "icon-sample" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -462,6 +473,10 @@ Icon.Methodology.propTypes = {
   testid: PropTypes.string,
 };
 Icon.PencilSlash.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Reset.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
