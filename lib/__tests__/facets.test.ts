@@ -54,6 +54,7 @@ describe("Test the getVisibleFacets function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 1,
       },
       {
@@ -65,18 +66,21 @@ describe("Test the getVisibleFacets function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 1,
       },
       {
         field: "bar",
         title: "Bar",
         terms: [{ key: "two", doc_count: 1 }],
+        type: "terms",
         total: 1,
       },
       {
         field: "audit.INTERNAL_ACTION.category",
         title: "Audit category: DCC ACTION",
         terms: [{ key: "mismatched status", doc_count: 1 }],
+        type: "terms",
         total: 1,
       },
     ];
@@ -90,12 +94,14 @@ describe("Test the getVisibleFacets function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 1,
       },
       {
         field: "bar",
         title: "Bar",
         terms: [{ key: "two", doc_count: 1 }],
+        type: "terms",
         total: 1,
       },
     ];
@@ -109,18 +115,21 @@ describe("Test the getVisibleFacets function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 1,
       },
       {
         field: "bar",
         title: "Bar",
         terms: [{ key: "two", doc_count: 1 }],
+        type: "terms",
         total: 1,
       },
       {
         field: "audit.INTERNAL_ACTION.category",
         title: "Audit category: DCC ACTION",
         terms: [{ key: "mismatched status", doc_count: 1 }],
+        type: "terms",
         total: 1,
       },
     ];
@@ -191,6 +200,7 @@ describe("Test the checkHierarchicalFacet function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 3,
       })
     ).toEqual(false);
@@ -233,6 +243,7 @@ describe("Test the checkHierarchicalFacet function", () => {
             },
           },
         ],
+        type: "terms",
         total: 23,
       })
     ).toEqual(true);
@@ -293,6 +304,7 @@ describe("Test the CollectAllChildFacets function", () => {
             },
           },
         ],
+        type: "terms",
         total: 23,
       },
       {
@@ -312,6 +324,7 @@ describe("Test the CollectAllChildFacets function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 3,
       },
     ];
@@ -347,6 +360,7 @@ describe("Test filterOutChildFacets function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 1,
       },
       {
@@ -358,6 +372,7 @@ describe("Test filterOutChildFacets function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 1,
       },
       {
@@ -369,6 +384,7 @@ describe("Test filterOutChildFacets function", () => {
             isEqual: true,
           },
         ],
+        type: "terms",
         appended: true,
         total: 1,
       },
@@ -416,6 +432,7 @@ describe("Test filterOutChildFacets function", () => {
             },
           },
         ],
+        type: "terms",
         total: 30,
       },
       {
@@ -435,6 +452,7 @@ describe("Test filterOutChildFacets function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 3,
         appended: false,
       },
@@ -447,6 +465,7 @@ describe("Test filterOutChildFacets function", () => {
             isEqual: true,
           },
         ],
+        type: "terms",
         appended: true,
         total: 3,
       },
@@ -489,6 +508,7 @@ describe("Test filterOutChildFacets function", () => {
             },
           },
         ],
+        type: "terms",
         total: 30,
       },
       {
@@ -508,6 +528,7 @@ describe("Test filterOutChildFacets function", () => {
             doc_count: 1,
           },
         ],
+        type: "terms",
         total: 3,
         appended: false,
       },
@@ -519,7 +540,7 @@ describe("Test filterOutChildFacets function", () => {
 
 describe("Test the getTermSelections function", () => {
   it("should return only non-selected terms for a facet with no selections", () => {
-    const facet = {
+    const facet: SearchResultsFacet = {
       field: "lab.title",
       title: "Lab",
       terms: [
@@ -528,6 +549,7 @@ describe("Test the getTermSelections function", () => {
           doc_count: 3,
         },
       ],
+      type: "terms",
       total: 3,
     };
 
@@ -547,7 +569,7 @@ describe("Test the getTermSelections function", () => {
   });
 
   it("should return selected terms for a facet with selections", () => {
-    const facet = {
+    const facet: SearchResultsFacet = {
       field: "lab.title",
       title: "Lab",
       terms: [
@@ -556,6 +578,7 @@ describe("Test the getTermSelections function", () => {
           doc_count: 3,
         },
       ],
+      type: "terms",
       total: 3,
     };
 
@@ -580,7 +603,7 @@ describe("Test the getTermSelections function", () => {
   });
 
   it("should return negative-selected terms for a facet with negative selections", () => {
-    const facet = {
+    const facet: SearchResultsFacet = {
       field: "lab.title",
       title: "Lab",
       terms: [
@@ -589,6 +612,7 @@ describe("Test the getTermSelections function", () => {
           doc_count: 3,
         },
       ],
+      type: "terms",
       total: 3,
     };
 
@@ -613,7 +637,7 @@ describe("Test the getTermSelections function", () => {
   });
 
   it("should return selected child facets for a hierarchical facet with selections", () => {
-    const facet = {
+    const facet: SearchResultsFacet = {
       field: "assay_term.assay_slims",
       title: "Assay",
       terms: [
@@ -636,6 +660,7 @@ describe("Test the getTermSelections function", () => {
           },
         },
       ],
+      type: "terms",
       total: 23,
     };
 
@@ -657,6 +682,37 @@ describe("Test the getTermSelections function", () => {
     expect(selectedTerms).toEqual(["MPRA"]);
     expect(negativeTerms).toEqual([]);
     expect(nonSelectedTerms).toEqual(["STARR-seq"]);
+  });
+
+  it("should return return an empty array for a stats facet", () => {
+    const facet: SearchResultsFacet = {
+      field: "file_size",
+      title: "File Size",
+      terms: {
+        count: 2,
+        min: 9828031,
+        max: 98280399,
+        avg: 54054215,
+        sum: 108108430,
+      },
+      total: 2,
+      type: "stats",
+      appended: false,
+    };
+
+    const filters: SearchResultsFilter[] = [
+      {
+        field: "type",
+        term: "File",
+        remove: "/search/",
+      },
+    ];
+
+    const { selectedTerms, negativeTerms, nonSelectedTerms } =
+      getTermSelections(facet, filters);
+    expect(selectedTerms).toEqual([]);
+    expect(negativeTerms).toEqual([]);
+    expect(nonSelectedTerms).toEqual([]);
   });
 });
 

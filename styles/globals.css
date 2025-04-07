@@ -663,3 +663,54 @@ a {
   th[data-highlight] {
   background-color: #232326;
 }
+
+/**
+ * Define styles for the `<RangeSelector>` component input elements.
+ */
+[data-range-selector] > input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none !important;
+  background: transparent;
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 30%,
+    #a0a0a0 30%,
+    #a0a0a0 70%,
+    transparent 70%,
+    transparent 100%
+  );
+}
+
+[data-range-selector] > input[type="range"]:disabled {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 30%,
+    #e0e0e0 30%,
+    #e0e0e0 70%,
+    transparent 70%,
+    transparent 100%
+  );
+}
+
+[data-range-selector] > input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  background: #e0e0e0;
+  border: 1px solid #404040;
+  border-radius: 100%;
+}
+
+/**
+* Disabled thumb
+*/
+[data-range-selector] > input[type="range"]:disabled::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  opacity: 0;
+}

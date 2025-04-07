@@ -205,7 +205,9 @@ export interface SearchResultsFacet {
   /** Title to display for the facet */
   title: string;
   /** List of terms in the facet */
-  terms: SearchResultsFacetTerm[];
+  terms: SearchResultsFacetTerm[] | unknown;
+  /** Facet type as configured in search config */
+  type: string;
   /** Total number of objects selected within this facet; only in parent facets */
   total?: number;
   /** True if facet term selected but not in search config */

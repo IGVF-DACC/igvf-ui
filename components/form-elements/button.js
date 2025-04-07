@@ -212,7 +212,12 @@ function LinkElement(props) {
       />
     );
   }
-  return <Link {...propsWithoutExceptions} prefetch={prefetch} />;
+  return (
+    <Link
+      {...propsWithoutExceptions}
+      {...(prefetch === false ? { prefetch: false } : {})}
+    />
+  );
 }
 
 LinkElement.propTypes = {

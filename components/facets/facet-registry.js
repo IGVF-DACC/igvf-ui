@@ -1,11 +1,13 @@
 // components/facets/custom-facets
 import AuditTitle from "./custom-facets/audit-title";
+import FileSizeTerms from "./custom-facets/file-size-terms";
 import InternalActionAuditTerms from "./custom-facets/audit-internal-action-terms";
 import NoTermCountTitle from "./custom-facets/no-term-count-title";
 import StandardTagLabel from "./custom-facets/standard-tag-label";
 import StandardTermLabel from "./custom-facets/standard-term-label";
 import StandardTerms from "./custom-facets/standard-terms";
 import StandardTitle from "./custom-facets/standard-title";
+import FileSizeTagLabel from "./custom-facets/file-size-tag-label";
 import TaxaTagLabel from "./custom-facets/taxa-tag-label";
 import TaxaTermLabel from "./custom-facets/taxa-term-label";
 import TriBooleanTerms from "./custom-facets/tri-boolean-terms";
@@ -20,6 +22,7 @@ const facetRegistry = {
   // Custom tag labels.
   tagLabel: {
     "donors.taxa": TaxaTagLabel,
+    file_size: FileSizeTagLabel,
     taxa: TaxaTagLabel,
     standard: StandardTagLabel,
   },
@@ -35,6 +38,7 @@ const facetRegistry = {
   terms: {
     "audit.INTERNAL_ACTION.category": InternalActionAuditTerms,
     controlled_access: TriBooleanTerms,
+    file_size: FileSizeTerms,
     standard: StandardTerms,
   },
 
@@ -45,6 +49,7 @@ const facetRegistry = {
     "audit.NOT_COMPLIANT.category": AuditTitle,
     "audit.WARNING.category": AuditTitle,
     controlled_access: NoTermCountTitle,
+    file_size: NoTermCountTitle,
     standard: StandardTitle,
   },
 };
