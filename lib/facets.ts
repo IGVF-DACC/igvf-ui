@@ -234,7 +234,7 @@ export async function getFacetConfig(
   request: FetchRequest
 ): Promise<FacetOpenState> {
   const apiPath = generateFacetConfigApiPath(userUuid, selectedType);
-  return (await request.getObject(apiPath)).unwrap_or({}) as FacetOpenState;
+  return (await request.getObject(apiPath)).optional() as FacetOpenState;
 }
 
 /**

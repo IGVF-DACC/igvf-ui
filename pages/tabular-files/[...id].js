@@ -216,7 +216,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         : [];
     const barcodeMapFor =
       tabularFile.barcode_map_for.length > 0
-        ? await requestFiles(tabularFile.barcode_map_for, request)
+        ? await requestSamples(tabularFile.barcode_map_for, request)
         : [];
     const inputFileFor =
       tabularFile.input_file_for.length > 0
