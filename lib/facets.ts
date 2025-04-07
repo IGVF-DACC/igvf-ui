@@ -7,7 +7,7 @@ import type {
   SearchResultsFacet,
   SearchResultsFacetTerm,
   SearchResultsFilter,
-} from "../globals.d";
+} from "../globals";
 
 /**
  * Facet fields that don't get displayed as a facet.
@@ -19,6 +19,30 @@ const HIDDEN_FACET_FIELDS = ["type"];
  * represents, e.g. `auxiliary_sets.file_set_type`.
  */
 export type FacetOpenState = Record<string, boolean>;
+
+/**
+ * Type for stats facet terms. Most facet terms are arrays of objects with their key and doc_count,
+ * but stats facet terms are a single object with the count of items, minimum and maximum values
+ * of all items, the average value of all items, and sum of the values in all items.
+ */
+export type SearchResultsFacetStats = {
+  count: number;
+  min: number;
+  max: number;
+  avg: number;
+  sum: number;
+};
+
+/**
+ * Type guard to see if the facet terms is an array or an object.
+ * @param facet Facet to check
+ * @returns True if the facet contains a terms array
+ */
+function isTermsArray(
+  terms: SearchResultsFacetTerm[] | unknown
+): terms is SearchResultsFacetTerm[] {
+  return Array.isArray(terms);
+}
 
 /**
  * From a single filter from search results, extract the term for that filter. For example, with
@@ -90,7 +114,7 @@ export function getVisibleFilters(
  * @returns True if the facet is the parent of a hierarchical facet
  */
 export function checkHierarchicalFacet(facet: SearchResultsFacet): boolean {
-  return Boolean(facet.terms[0].subfacet);
+  return isTermsArray(facet.terms) && Boolean(facet.terms[0].subfacet);
 }
 
 /**
@@ -161,14 +185,15 @@ export function getTermSelections(
   // subfacets.
   let field = "";
   let terms: SearchResultsFacetTerm[] = [];
-  if (isHierarchicalFacet) {
-    field = facet.terms[0].subfacet?.field;
-    terms = facet.terms.reduce((acc, parentTerm) => {
-      return acc.concat(parentTerm.subfacet.terms);
+  if (isTermsArray(facet.terms) && isHierarchicalFacet) {
+    const facetTerms = facet.terms as SearchResultsFacetTerm[];
+    field = facetTerms[0].subfacet?.field;
+    terms = facetTerms.reduce((acc, parentTerm) => {
+      return acc.concat(parentTerm.subfacet.terms as SearchResultsFacetTerm[]);
     }, [] as SearchResultsFacetTerm[]);
   } else {
     field = facet.field;
-    terms = facet.terms;
+    terms = facet.terms as SearchResultsFacetTerm[];
   }
 
   // Divide the filters into selected and negative-selected terms.
@@ -188,11 +213,13 @@ export function getTermSelections(
     groupedFilters.selected?.map((filter) => filter.term) || [];
   const negativeTerms =
     groupedFilters.negative?.map((filter) => filter.term) || [];
-  const nonSelectedTerms = terms
-    .map((term) => term.key.toString())
-    .filter((term) => {
-      return !selectedTerms.includes(term) && !negativeTerms.includes(term);
-    });
+  const nonSelectedTerms = Array.isArray(terms)
+    ? terms
+        .map((term) => term.key.toString())
+        .filter((term) => {
+          return !selectedTerms.includes(term) && !negativeTerms.includes(term);
+        })
+    : [];
 
   return { selectedTerms, negativeTerms, nonSelectedTerms };
 }

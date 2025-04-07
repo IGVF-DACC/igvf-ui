@@ -47,14 +47,10 @@ Facet.propTypes = {
   facet: PropTypes.shape({
     field: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
-    terms: PropTypes.arrayOf(
-      PropTypes.shape({
-        key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-          .isRequired,
-        doc_count: PropTypes.number,
-        key_as_string: PropTypes.string,
-      })
-    ).isRequired,
+    terms: PropTypes.oneOfType([
+      PropTypes.arrayOf(PropTypes.object),
+      PropTypes.object,
+    ]),
   }).isRequired,
   // Search results from data provider
   searchResults: PropTypes.object.isRequired,

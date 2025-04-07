@@ -3,7 +3,11 @@ import _ from "lodash";
 // components
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // components/facets
-import type { SearchResults, SearchResultsFacet } from "../../globals.d";
+import type {
+  SearchResults,
+  SearchResultsFacet,
+  SearchResultsFacetTerm,
+} from "../../globals.d";
 // lib
 import { getTermSelections } from "../../lib/facets";
 
@@ -29,11 +33,10 @@ export function FacetTermCount({
   );
 
   // Build the help text for the aria and the tooltip.
+  const terms = facet.terms as SearchResultsFacetTerm[];
   const helpText = `${
     selectedTerms.length + negativeTerms.length
-  } selected of ${facet.terms.length} ${
-    facet.terms.length === 1 ? "term" : "terms"
-  }`;
+  } selected of ${terms.length} ${terms.length === 1 ? "term" : "terms"}`;
 
   // NOTE: The use of a loop index for React keys is a workaround for the lack of unique keys in
   // the facet term object. This is a temporary solution until the backend can guarantee a unique
