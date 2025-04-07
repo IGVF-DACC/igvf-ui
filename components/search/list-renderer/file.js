@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 import Link from "next/link";
+import { useContext } from "react";
 // components/search/list-renderer
 import {
   SearchListItemContent,
@@ -19,6 +20,7 @@ import {
 // components
 import { ExternallyHostedBadge } from "../../common-pill-badges";
 import SeparatedList from "../../separated-list";
+import SessionContext from "../../session-context";
 
 export default function File({ item: file, accessoryData = null }) {
   const titleElements = [
@@ -41,6 +43,15 @@ export default function File({ item: file, accessoryData = null }) {
     ? file.seqspec_of.map((seqspecOfFile) => accessoryData?.[seqspecOfFile])
     : [];
   seqspecOfs = seqspecOfs.filter(Boolean);
+
+  const { collectionTitles } = useContext(SessionContext);
+
+  const filesetTitle = isFileSetEmbedded
+    ? (
+        collectionTitles?.[file.file_set["@type"][0]] ||
+        file.file_set["@type"][0]
+      ).slice(0, -1)
+    : "FILE SET";
 
   const isSupplementVisible =
     isFileSetEmbedded ||
@@ -75,7 +86,7 @@ export default function File({ item: file, accessoryData = null }) {
             {isFileSetEmbedded && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
-                  File Set
+                  {filesetTitle}
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   <Link href={file.file_set["@id"]}>

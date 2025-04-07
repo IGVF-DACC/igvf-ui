@@ -1195,6 +1195,7 @@ describe("Test File component", () => {
         file_set_type: "experimental data",
         accession: "IGVFDS0000MSET",
         "@id": "/measurement-sets/IGVFDS0000MSET/",
+        "@type": ["MeasuremetSet", "FileSet", "Item"],
       },
       content_type: "sequence barcodes",
       lab: {
@@ -1241,6 +1242,7 @@ describe("Test File component", () => {
         file_set_type: "experimental data",
         accession: "IGVFDS0000MSET",
         "@id": "/measurement-sets/IGVFDS0000MSET/",
+        "@type": ["MeasuremetSet", "FileSet", "Item"],
       },
       content_type: "sequence barcodes",
       lab: {
@@ -1292,6 +1294,7 @@ describe("Test File component", () => {
         file_set_type: "experimental data",
         accession: "IGVFDS0000MSET",
         "@id": "/measurement-sets/IGVFDS0000MSET/",
+        "@type": ["MeasuremetSet", "FileSet", "Item"],
       },
       seqspec_of: [
         "/sequence-files/IGVFFI0000SEQU/",
@@ -1312,7 +1315,10 @@ describe("Test File component", () => {
         summary: "IGVFFI0000SEQU",
         uuid: "fcc11bf7-82ed-4074-a501-acc9c44ceb11",
         status: "released",
-        file_set: "/analysis-sets/IGVFDS6408BFHD/",
+        file_set: {
+          "@id": "/analysis-sets/IGVFDS6408BFHD/",
+          "@type": ["MeasuremetSet", "FileSet", "Item"],
+        },
         dbxrefs: ["SRA:SRR12345"],
         illumina_read_type: "R1",
         sequencing_run: 1,
@@ -1331,7 +1337,10 @@ describe("Test File component", () => {
         summary: "IGVFFI0000SEQU",
         uuid: "7bf24dce-f512-49d7-8688-dbcd927679d7",
         status: "released",
-        file_set: "/analysis-sets/IGVFDS6408BFHD/",
+        file_set: {
+          "@id": "/analysis-sets/IGVFDS6408BFHD/",
+          "@type": ["MeasuremetSet", "FileSet", "Item"],
+        },
         dbxrefs: ["SRA:SRR12346"],
         illumina_read_type: "R2",
         sequencing_run: 1,
@@ -1431,6 +1440,7 @@ describe("Test File component", () => {
         file_set_type: "experimental data",
         accession: "IGVFDS0000MSET",
         "@id": "/measurement-sets/IGVFDS0000MSET/",
+        "@type": ["MeasuremetSet", "FileSet", "Item"],
       },
     };
 
@@ -2870,6 +2880,7 @@ describe("Test IndexFile component", () => {
       accession: "IGVFFI0002BAIN",
       aliases: ["j-michael-cherry:aliases01"],
       summary: "index of IGVFFI0002ALTB",
+      file_set: "/analysis-sets/IGVFDS7216VESH/",
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
@@ -2903,6 +2914,7 @@ describe("Test IndexFile component", () => {
       aliases: ["j-michael-cherry:aliases01"],
       file_set: {
         "@id": "/analysis-sets/IGVFDS9563CORS/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
         accession: "IGVFDS9563CORS",
         file_set_type: "principal analysis",
         samples: [
@@ -2948,7 +2960,7 @@ describe("Test IndexFile component", () => {
 
     const supplement = screen.getByTestId("search-list-item-supplement");
     expect(supplement).toHaveTextContent(
-      "File SetSUPERSTARR targeting Mir683-2: barcode to sample mapping, coding_variants, diseases_genes, documentation (readme), elements reference and 15 more"
+      "AnalysisSeSUPERSTARR targeting Mir683-2: barcode to sample mapping, coding_variants, diseases_genes, documentation (readme), elements reference and 15 more"
     );
   });
 });
