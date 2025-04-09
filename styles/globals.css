@@ -712,10 +712,5 @@ a {
 [data-range-selector] > input[type="range"]:disabled::-webkit-slider-thumb {
   -webkit-appearance: none; /* Override default look */
   appearance: none;
-  width: 14px; /* Set a specific slider handle width */
-  height: 14px; /* Slider handle height */
-  cursor: not-allowed; /* Cursor on hover */
-  background: #f0f0f0;
-  border: 1px solid #c0c0c0;
-  border-radius: 100%;
+  opacity: 0;
 }

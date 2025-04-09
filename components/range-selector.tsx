@@ -86,10 +86,10 @@ function update({ container, min, max }: RangeSelectorProps): {
   // Set the inline styles for the minimum and maximum range inputs so that the left end of the
   // maximum range input is at the right end of the minimum range input, appearing as if it were
   // one range control with two thumbs.
-  min.style.width = `${minWidth}px`;
-  max.style.width = `${maxWidth}px`;
+  min.style.width = minWidth > 0 ? `${minWidth}px` : "50%";
+  max.style.width = maxWidth > 0 ? `${maxWidth}px` : "50%";
   min.style.left = "0px";
-  max.style.left = `${minWidth}px`;
+  max.style.left = minWidth > 0 ? `${minWidth}px` : "50%";
 
   // Return the updated min and max values for the change callback.
   return { minValue, maxValue };
