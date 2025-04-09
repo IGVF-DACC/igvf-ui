@@ -2,11 +2,12 @@
 import AuditTitle from "./custom-facets/audit-title";
 import InternalActionAuditTerms from "./custom-facets/audit-internal-action-terms";
 import NoTermCountTitle from "./custom-facets/no-term-count-title";
-import StatsTerms from "./custom-facets/stats-terms";
 import StandardTagLabel from "./custom-facets/standard-tag-label";
 import StandardTermLabel from "./custom-facets/standard-term-label";
 import StandardTerms from "./custom-facets/standard-terms";
 import StandardTitle from "./custom-facets/standard-title";
+import StatsTagLabel from "./custom-facets/stats-tag-label";
+import StatsTerms from "./custom-facets/stats-terms";
 import TaxaTagLabel from "./custom-facets/taxa-tag-label";
 import TaxaTermLabel from "./custom-facets/taxa-term-label";
 import TriBooleanTerms from "./custom-facets/tri-boolean-terms";
@@ -21,6 +22,8 @@ const facetRegistry = {
   // Custom tag labels.
   tagLabel: {
     "donors.taxa": TaxaTagLabel,
+    fraction_assigned_oligos: StatsTagLabel,
+    median_assigned_barcodes: StatsTagLabel,
     taxa: TaxaTagLabel,
     standard: StandardTagLabel,
   },
