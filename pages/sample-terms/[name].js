@@ -9,7 +9,6 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import DbxrefList from "../../components/dbxref-list";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -36,17 +35,6 @@ export default function SampleOntologyTerm({
           <StatusPreviewDetail item={sampleOntologyTerm} />
           <DataPanel>
             <DataArea>
-              {sampleOntologyTerm.dbxrefs?.length > 0 && (
-                <>
-                  <DataItemLabel>External Resources</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList
-                      dbxrefs={sampleOntologyTerm.dbxrefs}
-                      isCollapsible
-                    />
-                  </DataItemValue>
-                </>
-              )}
               <OntologyTermDataItems item={sampleOntologyTerm} isA={isA}>
                 {sampleOntologyTerm.organ_slims.length > 0 && (
                   <>
