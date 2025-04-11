@@ -16,7 +16,7 @@ import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
-import FileTable from "../../components/file-table";
+import CuratedFileTable from "../../components/curated-file-table";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -113,7 +113,11 @@ export default function CuratedSet({
             <DonorTable donors={curatedSet.donors} />
           )}
           {files.length > 0 && (
-            <FileTable files={files} fileSet={curatedSet} isDownloadable />
+            <CuratedFileTable
+              files={files}
+              fileSet={curatedSet}
+              isDownloadable
+            />
           )}
           {curatedSet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable
