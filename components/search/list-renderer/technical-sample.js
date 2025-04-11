@@ -44,3 +44,17 @@ TechnicalSample.propTypes = {
   // Single search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
 };
+
+TechnicalSample.getAccessoryDataPaths = (items) => {
+  return [
+    {
+      type: "InstitutionalCertificate",
+      paths: items.flatMap((item) => item.institutional_certificates),
+      fields: [
+        "controlled_access",
+        "data_use_limitation",
+        "data_use_limitation_modifiers",
+      ],
+    },
+  ];
+};
