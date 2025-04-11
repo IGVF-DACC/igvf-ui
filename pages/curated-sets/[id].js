@@ -16,7 +16,7 @@ import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
-import CuratedFileTable from "../../components/curated-file-table";
+import { CuratedSetFileTable } from "../../components/curated-set-file-table";
 import FileSetTable from "../../components/file-set-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";

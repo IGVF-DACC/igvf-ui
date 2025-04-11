@@ -63,7 +63,7 @@ const filesColumns = [
 /**
  * Display a sortable table of the given files.
  */
-export default function CuratedFileTable({
+export function CuratedSetFileTable({
   files,
   fileSet = null,
   title = "Files",
@@ -126,7 +126,7 @@ export default function CuratedFileTable({
   );
 }
 
-CuratedFileTable.propTypes = {
+CuratedSetFileTable.propTypes = {
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // FileSet object containing these files; used for report link and batch download
