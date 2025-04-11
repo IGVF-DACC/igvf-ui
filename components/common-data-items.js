@@ -517,12 +517,12 @@ export function OntologyTermDataItems({ item, isA, children }) {
           </DataItemValue>
         </>
       )}
-      {(item.description || item.definition) && (
+      {(item.definition || item.description) && (
         <>
           <DataItemLabel>
-            {item.description ? "Description" : "Definition"}
+            {item.definition ? "Definition" : "Description"}
           </DataItemLabel>
-          <DataItemValue>{item.description || item.definition}</DataItemValue>
+          <DataItemValue>{item.definition || item.description}</DataItemValue>
         </>
       )}
       {children}
