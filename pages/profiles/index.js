@@ -249,10 +249,11 @@ function SubTree({
               className={`block scroll-mt-28 @xl:scroll-mt-24 ${
                 isTitleHighlighted ? "bg-schema-name-highlight" : ""
               }`}
+              prefetch={false}
             >
               {title}
             </Link>
-            <SchemaVersion schema={schema} isLinked />
+            <SchemaVersion schema={schema} prefetch={false} isLinked />
             <TooltipRef tooltipAttr={tooltipAttr}>
               <button>
                 <QuestionMarkCircleIcon className="h-4 w-4 cursor-pointer" />
@@ -261,13 +262,25 @@ function SubTree({
             <Tooltip tooltipAttr={tooltipAttr}>
               {schema.description || "No description available"}
             </Tooltip>
-            <SearchAndReportType type={objectType} title={title} />
-            <AddLink schema={schema} label={`Add ${schema.title}`} />
+            <SearchAndReportType
+              type={objectType}
+              title={title}
+              prefetch={false}
+            />
+            <AddLink
+              schema={schema}
+              label={`Add ${schema.title}`}
+              prefetch={false}
+            />
           </>
         ) : (
           <>
             {title}
-            <SearchAndReportType type={objectType} title={title} />
+            <SearchAndReportType
+              type={objectType}
+              title={title}
+              prefetch={false}
+            />
           </>
         )}
       </div>

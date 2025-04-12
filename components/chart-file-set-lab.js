@@ -109,7 +109,11 @@ CustomXTick.propTypes = {
  * `shouldIncludeLinks` is true.
  */
 function BarLink({ path, children }) {
-  return <Link href={path}>{children}</Link>;
+  return (
+    <Link href={path} prefetch={false}>
+      {children}
+    </Link>
+  );
 }
 
 BarLink.propTypes = {

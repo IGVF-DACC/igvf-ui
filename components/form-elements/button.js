@@ -198,26 +198,28 @@ Button.displayName = "Button";
  */
 function LinkElement(props) {
   const { isExternal } = props;
+  const prefetch = props.prefetch ?? true;
 
-  // Make a copy of `props` but without `isExternal` in case it was included.
-  const { isExternal: _, ...propsWithoutIsExternal } = props;
+  // Make a copy of `props` but without `isExternal` nor `prefetch` in case it was included.
+  const { isExternal: _, prefetch: __, ...propsWithoutExceptions } = props;
 
   if (isExternal) {
-    const { isExternal: _, ...propsWithoutIsExternal } = props;
     return (
       <a
-        {...propsWithoutIsExternal}
+        {...propsWithoutExceptions}
         target="_blank"
         rel="noopener noreferrer"
       />
     );
   }
-  return <Link {...propsWithoutIsExternal} />;
+  return <Link {...propsWithoutExceptions} prefetch={prefetch} />;
 }
 
 LinkElement.propTypes = {
   // True for external links
   isExternal: PropTypes.bool,
+  // True to prefetch the link
+  prefetch: PropTypes.bool,
 };
 
 /**
@@ -239,6 +241,7 @@ export function ButtonLink({
   isInline = false,
   isDisabled = false,
   isExternal = false,
+  prefetch = true,
   className = "",
   children,
 }) {
@@ -265,6 +268,7 @@ export function ButtonLink({
   ) : (
     <LinkElement
       isExternal={isExternal}
+      prefetch={prefetch}
       href={href}
       aria-label={label}
       id={id}
@@ -300,6 +304,8 @@ ButtonLink.propTypes = {
   isDisabled: PropTypes.bool,
   // True if the link is external
   isExternal: PropTypes.bool,
+  // True to prefetch the link
+  prefetch: PropTypes.bool,
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
 };
