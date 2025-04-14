@@ -122,6 +122,7 @@ export async function requestFiles(
       "seqspecs",
       "sequencing_platform",
       "sequencing_run",
+      "submitted_file_name",
       "status",
       "summary",
       "upload_status",
