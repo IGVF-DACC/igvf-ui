@@ -481,6 +481,14 @@ export function OntologyTermDataItems({ item, isA, children }) {
       <DataItemValue>
         <DbxrefList dbxrefs={[item.term_id]} />
       </DataItemValue>
+      {item.dbxrefs?.length > 0 && (
+        <>
+          <DataItemLabel>External Resources</DataItemLabel>
+          <DataItemValue>
+            <DbxrefList dbxrefs={item.dbxrefs} isCollapsible />
+          </DataItemValue>
+        </>
+      )}
       {isA?.length > 0 && (
         <>
           <DataItemLabel>Is A</DataItemLabel>
@@ -507,6 +515,14 @@ export function OntologyTermDataItems({ item, isA, children }) {
           <DataItemValue>
             <AliasList aliases={item.aliases} />
           </DataItemValue>
+        </>
+      )}
+      {(item.definition || item.description) && (
+        <>
+          <DataItemLabel>
+            {item.definition ? "Definition" : "Description"}
+          </DataItemLabel>
+          <DataItemValue>{item.definition || item.description}</DataItemValue>
         </>
       )}
       {children}
