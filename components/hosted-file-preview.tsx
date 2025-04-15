@@ -42,6 +42,7 @@ const typePreviewMap: TypePreviewMap = {
   tsv: PreviewTsv,
   vcf: PreviewText,
   yaml: PreviewText,
+  gtf: PreviewText,
 };
 
 /**
