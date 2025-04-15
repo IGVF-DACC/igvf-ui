@@ -3,25 +3,39 @@ import {
   ArrowDownTrayIcon,
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
 import { useContext } from "react";
 // components
 import { ExternallyHostedBadge } from "./common-pill-badges";
 import { ButtonLink } from "./form-elements";
 import LinkedIdAndStatus from "./linked-id-and-status";
-import SessionContext from "./session-context";
+import SessionContext, {
+  type SessionPropertiesObject,
+} from "./session-context";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { API_URL } from "../lib/constants";
 import { checkFileDownloadable } from "../lib/files";
+// root
+import type { FileObject } from "../globals";
 
 /**
  * Display a file-download link and download icon. Files without an `upload_status` of `file not
  * found` or `pending` have a disabled download link, as do files with controlled access and an
  * Anvil URL.
+ * @param file - File to download
+ * @param className - Additional classes to add to the button
  */
-export function FileDownload({ file, className = "" }) {
-  const { sessionProperties } = useContext(SessionContext);
+export function FileDownload({
+  file,
+  className = "",
+}: {
+  file: FileObject;
+  className?: string;
+}) {
+  const { sessionProperties } = useContext(SessionContext as any) as {
+    sessionProperties: SessionPropertiesObject;
+  };
+
   const tooltipAttr = useTooltip("file-download");
 
   if (file.externally_hosted) {
@@ -80,17 +94,17 @@ export function FileDownload({ file, className = "" }) {
   );
 }
 
-FileDownload.propTypes = {
-  // File to download
-  file: PropTypes.object.isRequired,
-  // Tailwind CSS classes for the download icon
-  className: PropTypes.string,
-};
-
 /**
  * File download link for the file object page headers.
+ * @param file - File to download
  */
-export function FileHeaderDownload({ file, children }) {
+export function FileHeaderDownload({
+  file,
+  children,
+}: {
+  file: FileObject;
+  children?: React.ReactNode;
+}) {
   return (
     <div className="flex items-center gap-1" data-testid="file-header-download">
       <FileDownload file={file} />
@@ -99,15 +113,18 @@ export function FileHeaderDownload({ file, children }) {
   );
 }
 
-FileHeaderDownload.propTypes = {
-  // File to download
-  file: PropTypes.object.isRequired,
-};
-
 /**
  * Display a file's accession and download link on one row.
+ * @param file - File to link to and download
+ * @param isTargetBlank - Open the download link in a new tab
  */
-export function FileAccessionAndDownload({ file, isTargetBlank = false }) {
+export function FileAccessionAndDownload({
+  file,
+  isTargetBlank = false,
+}: {
+  file: FileObject;
+  isTargetBlank?: boolean;
+}) {
   return (
     <div>
       <div className="flex items-center gap-1">
@@ -120,10 +137,3 @@ export function FileAccessionAndDownload({ file, isTargetBlank = false }) {
     </div>
   );
 }
-
-FileAccessionAndDownload.propTypes = {
-  // File to link to and download
-  file: PropTypes.object.isRequired,
-  // Open the download link in a new tab
-  isTargetBlank: PropTypes.bool,
-};

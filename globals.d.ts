@@ -329,6 +329,7 @@ export interface FileObject extends DatabaseObject {
   checkfiles_version?: string;
   content_type: string;
   derived_from?: string[];
+  external_host_url?: string;
   file_format: string;
   file_format_specifications?: string[];
   file_set: string | FileSetObject;
@@ -413,6 +414,7 @@ export interface WorkflowObject extends DatabaseObject {
  */
 export interface UserObject extends DatabaseObject {
   title: string;
+  submits_for: string[];
   viewing_groups: string[];
 }
 

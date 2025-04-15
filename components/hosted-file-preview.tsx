@@ -9,6 +9,7 @@ import DataGrid, {
   type DataGridFormat,
   type Row,
 } from "./data-grid";
+import { FileDownload } from "./file-download";
 import { Button } from "./form-elements";
 import Modal from "./modal";
 import Spinner from "./spinner";
@@ -46,8 +47,8 @@ const typePreviewMap: TypePreviewMap = {
 
 /**
  * Converts CSV file content in string format to a form consumable by `<DataGrid>`.
- * @param text CSV file content in string format
- * @returns CSV file content in a form consumable by `<DataGrid>`
+ * @param text - CSV file content in string format
+ * @returns - CSV file content in a form consumable by `<DataGrid>`
  */
 function convertCsvToDataGrid(text: string): DataGridFormat {
   const parsedCsv = Papa.parse(text) as Papa.ParseResult<string[]>;
@@ -63,9 +64,9 @@ function convertCsvToDataGrid(text: string): DataGridFormat {
 
 /**
  * Preview a CSV file in the modal.
- * @param text CSV file to preview
+ * @param text - CSV file to preview
  */
-function PreviewCsv({ text }: { text: string }): JSX.Element {
+function PreviewCsv({ text }: { text: string }) {
   return (
     <DataGridContainer>
       <DataGrid data={convertCsvToDataGrid(text)} />
@@ -75,8 +76,8 @@ function PreviewCsv({ text }: { text: string }): JSX.Element {
 
 /**
  * Converts TSV file content in string format to a form consumable by `<DataGrid>`.
- * @param text TSV file content in string format
- * @returns TSV file content in a form consumable by `<DataGrid>`
+ * @param text - TSV file content in string format
+ * @returns - TSV file content in a form consumable by `<DataGrid>`
  */
 function convertTsvToDataGrid(text: string): DataGridFormat {
   const rows = text.split("\n");
@@ -93,9 +94,9 @@ function convertTsvToDataGrid(text: string): DataGridFormat {
 
 /**
  * Preview a TSV file in the modal.
- * @param text TSV file to preview
+ * @param text - TSV file to preview
  */
-function PreviewTsv({ text }: { text: string }): JSX.Element {
+function PreviewTsv({ text }: { text: string }) {
   return (
     <DataGridContainer>
       <DataGrid data={convertTsvToDataGrid(text)} />
@@ -105,17 +106,37 @@ function PreviewTsv({ text }: { text: string }): JSX.Element {
 
 /**
  * Preview a generic text or yaml file in the modal.
- * @param text Text file to preview
+ * @param text - Text file to preview
  */
-function PreviewText({ text }: { text: string }): JSX.Element {
+function PreviewText({ text }: { text: string }) {
   return <pre className="whitespace-break-spaces text-sm">{text}</pre>;
+}
+
+/**
+ * Display an error message when the file preview fails.
+ * @param message - Error message to display
+ * @param children - Additional content to display below the error message
+ */
+function ErrorMessage({
+  message,
+  children = null,
+}: {
+  message: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="py-2 text-center italic">
+      {message}
+      {children}
+    </div>
+  );
 }
 
 /**
  * Show a button to preview a hosted file (a file belonging to a file object). When clicked, the
  * file downloads and appears in a modal.
- * @param file File object to preview its hosted file
- * @param buttonSize Size of the preview button using the same values as the `<Button>` component
+ * @param file - File object to preview its hosted file
+ * @param buttonSize - Size of the preview button using the same values as the `<Button>` component
  */
 export function HostedFilePreview({
   file,
@@ -205,7 +226,12 @@ export function HostedFilePreview({
           <Modal.Body>
             <div className="max-h-[50vh] overflow-y-auto">
               {isError ? (
-                <div className="py-2 text-center italic">{previewText}</div>
+                <ErrorMessage message={previewText}>
+                  <div className="flex items-center justify-center gap-1">
+                    You can download the file instead:
+                    <FileDownload file={file} />
+                  </div>
+                </ErrorMessage>
               ) : (
                 <TypePreview text={previewText} />
               )}

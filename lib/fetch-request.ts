@@ -145,7 +145,7 @@ const MAX_PATH_QUERY_LENGTH_ESTIMATE = 50;
  * Maximum number of bytes to read from a gzipped text file. This must have a value enough for
  * successful decompression.
  */
-const MAX_READ_SIZE = 500_000_000;
+const MAX_READ_SIZE = 50_000_000;
 
 /**
  * Default maximum number of lines to return from the text file preview methods. Make sure this has
@@ -333,6 +333,7 @@ export default class FetchRequest {
     additional: {
       payload?: object;
       accept?: string;
+      range?: string;
       contentType?: string;
       acceptEncoding?: string;
     },
@@ -340,6 +341,9 @@ export default class FetchRequest {
   ): RequestInit {
     if (additional.accept) {
       this.headers.set("Accept", additional.accept);
+    }
+    if (additional.range) {
+      this.headers.set("Range", additional.range);
     }
     if (additional.contentType) {
       this.headers.set("Content-Type", additional.contentType);
@@ -556,6 +560,7 @@ export default class FetchRequest {
       "GET",
       {
         accept: PAYLOAD_FORMAT.TEXT,
+        range: `bytes=0-${MAX_READ_SIZE - 1}`,
       },
       false
     );
@@ -612,7 +617,7 @@ export default class FetchRequest {
     // Now `decompressedText` contains up to `maxLines` lines
     const lines = decompressedText.split("\n");
     const linesToKeep = lines.slice(0, maxLines);
-    return linesToKeep.join("\n");
+    return linesToKeep.join("\n").trim();
   }
 
   /**
