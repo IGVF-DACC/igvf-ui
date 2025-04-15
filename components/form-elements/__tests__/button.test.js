@@ -120,6 +120,36 @@ describe("ButtonLink component", () => {
     );
     expect(container.firstChild.tagName).toBe("A");
   });
+
+  it("renders an `<A>` tag normally when `prefetch` is set to false", () => {
+    const { container } = render(
+      <ButtonLink href="/" prefetch={false}>
+        No prefetch
+      </ButtonLink>
+    );
+
+    expect(container.firstChild.tagName).toBe("A");
+  });
+
+  it("renders an `<A>` tag normally when `prefetch` is set to true", () => {
+    const { container } = render(
+      <ButtonLink href="/" prefetch={true}>
+        No prefetch
+      </ButtonLink>
+    );
+
+    expect(container.firstChild.tagName).toBe("A");
+  });
+
+  it("renders an `<A>` tag normally when `prefetch` is set to null", () => {
+    const { container } = render(
+      <ButtonLink href="/" prefetch={null}>
+        No prefetch
+      </ButtonLink>
+    );
+
+    expect(container.firstChild.tagName).toBe("A");
+  });
 });
 
 describe("Test the Tailwind CSS classes resulting from using the `hasIconOnly` flag", () => {

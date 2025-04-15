@@ -160,6 +160,7 @@ function RowHeaderCell({
     <Link
       href={source.href}
       className={`flex h-full items-center px-2 py-0.5 font-semibold no-underline ${bgClass}`}
+      prefetch={false}
     >
       {source.key}
     </Link>
@@ -186,6 +187,7 @@ function RowSubheaderCell({
       <Link
         href={source.href}
         className={`flex h-full items-center px-2 py-0.5 text-gray-800 no-underline dark:text-gray-200 ${bgClass} ${hoverClass}`}
+        prefetch={false}
       >
         {source.key}
       </Link>
@@ -211,6 +213,7 @@ function ColumnHeaderCell({
     <Link
       href={source.href}
       className={`grid h-full w-full place-items-end no-underline ${bgClass}`}
+      prefetch={false}
     >
       <div className="flex rotate-180 items-end whitespace-nowrap px-1 py-2 font-semibold [writing-mode:vertical-lr]">
         {source.key}
@@ -237,7 +240,11 @@ function DataCell({
   if (source.href) {
     return (
       <div className="relative h-full w-full">
-        <Link href={source.href} className={`block h-full w-full ${bgClass}`} />
+        <Link
+          href={source.href}
+          className={`block h-full w-full ${bgClass}`}
+          prefetch={false}
+        />
         <div
           className={`pointer-events-none absolute inset-0 group-hover:opacity-40 dark:group-hover:bg-opacity-30 ${hoverClass}`}
         />

@@ -91,22 +91,6 @@ export interface IsError {
 }
 
 /**
- * Takes a value which could be an error, and if so, returns
- * a default of null. If not an error, the value is merely returned.
- * This is used to sort of flatten the Error possibility into just
- * T or null.
- * @param {T | E extends IsError | null} x The value to be defaulted
- * @returns null if x is null or extends IsError, returns the parameter
- * x otherwise
- */
-export function nullOnError<T, E extends IsError>(x: T | E | null): T | null {
-  if (x && typeof x === "object" && "isError" in x) {
-    return null;
-  }
-  return x as T;
-}
-
-/**
  * Copy the given object but with its properties sorted alphabetically. Properties that are
  * themselves objects get sorted recursively. Properties that are arrays of objects have their
  * objects sorted. This does not handle arrays of arrays of objects, so hopefully we don't have to
