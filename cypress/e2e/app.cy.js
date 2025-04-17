@@ -33,8 +33,8 @@ describe("Navigation", () => {
     cy.url().should("include", "/search/?type=File");
     cy.get("h1").should("exist"); // Actual title depends on data
 
-    // Test Methodology submenus. Add to this once the pages these submenus link to exist.
-    cy.get("[data-testid=navigation-methodology]").click();
+    // Test Resources and Standards submenus. Add to this once the pages these submenus link to exist.
+    cy.get("[data-testid=navigation-resources-standards]").click();
 
     // Test About submenus. Add to this once the pages these submenus link to exist.
     cy.get("[data-testid=navigation-about]").click();

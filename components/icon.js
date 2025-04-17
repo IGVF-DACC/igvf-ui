@@ -218,7 +218,10 @@ const Icon = {
       />
     </svg>
   ),
-  Methodology: ({ className = null, testid = "icon-methodology" }) => (
+  ResourcesStandards: ({
+    className = null,
+    testid = "icon-resources-standards",
+  }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}

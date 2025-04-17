@@ -643,10 +643,10 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         </NavigationGroupItem>
 
         <NavigationGroupItem
-          id="methodology"
-          title="Methodology"
-          icon={<Icon.Methodology />}
-          isGroupOpened={openedParents.includes("methodology")}
+          id="resources-standards"
+          title="Resources and Standards"
+          icon={<Icon.ResourcesStandards />}
+          isGroupOpened={openedParents.includes("resources-standards")}
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
