@@ -650,6 +650,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
+            id="resources"
+            href="/resources"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Resources
+          </NavigationHrefItem>
+          <NavigationHrefItem
             id="experimental-standards"
             href="/methodology/experimental_standards"
             navigationClick={navigationClick}
@@ -680,14 +688,6 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             isChildItem
           >
             Audit Documentation
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="resources"
-            href="/resources"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Resources
           </NavigationHrefItem>
         </NavigationGroupItem>
 

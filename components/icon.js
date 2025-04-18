@@ -460,7 +460,7 @@ Icon.Gene.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
-Icon.Methodology.propTypes = {
+Icon.ResourcesStandards.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
