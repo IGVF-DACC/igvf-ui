@@ -47,15 +47,11 @@ export default function SoftwareVersion({
               <DataItemLabel>Name</DataItemLabel>
               <DataItemValue>{softwareVersion.name}</DataItemValue>
               <DataItemLabel>Software</DataItemLabel>
-              <DataItemValueUrl>
-                <a
-                  href={softwareVersion.software["@id"]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+              <DataItemValue>
+                <Link href={softwareVersion.software["@id"]}>
                   {softwareVersion.software.title}
-                </a>
-              </DataItemValueUrl>
+                </Link>
+              </DataItemValue>
               {softwareVersion.description && (
                 <>
                   <DataItemLabel>Description</DataItemLabel>
