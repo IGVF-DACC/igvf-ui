@@ -1,4 +1,5 @@
 import _ from "lodash";
+import pako from "pako";
 import FetchRequest, {
   HTTP_STATUS_CODE,
   isErrorObject,
@@ -710,5 +711,49 @@ describe("Test isErrorObject function", () => {
       name: "j-michael-cherry",
     };
     expect(isErrorObject(response)).toBeFalsy();
+  });
+});
+
+describe("Test getZippedPreviewText()", () => {
+  it("returns a successful response", async () => {
+    // Example plain text to compress (simulate the gzipped file's contents)
+    const text = "line1\nline2\nline3\nline4\nline5";
+    const compressedData = pako.gzip(text);
+
+    // Split compressed data into two chunks to simulate streaming
+    const chunk1 = compressedData.slice(
+      0,
+      Math.floor(compressedData.length / 2)
+    );
+    const chunk2 = compressedData.slice(Math.floor(compressedData.length / 2));
+
+    const mockReader = {
+      read: jest
+        .fn()
+        .mockResolvedValueOnce({ value: chunk1, done: false })
+        .mockResolvedValueOnce({ value: chunk2, done: true }),
+      cancel: jest.fn(),
+    };
+
+    window.fetch = jest.fn(() =>
+      Promise.resolve({
+        body: {
+          getReader: () => mockReader,
+        },
+        headers: new Headers(),
+        ok: true,
+        status: 206,
+      })
+    ) as jest.Mock;
+
+    const fetchRequest = new FetchRequest();
+    const result = await fetchRequest.getZippedPreviewText(
+      "http://example.com/test.gz",
+      5
+    );
+
+    expect(result).toContain("line1");
+    expect(result).toContain("line5");
+    expect(result.split("\n").length).toBeLessThanOrEqual(5);
   });
 });

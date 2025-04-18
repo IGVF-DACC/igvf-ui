@@ -21,16 +21,6 @@ type SessionUserActionsObject = {
 export type SessionPropertiesObject = {
   admin: boolean;
   "auth.userid": string;
-  user: {
-    "@context": string;
-    "@id": string;
-    "@type": string[];
-    audit: unknown;
-    lab: string;
-    status: string;
-    submits_for: string[];
-    title: string;
-    uuid: string;
-  };
+  user: UserObject;
   user_actions: SessionUserActionsObject[];
 };
