@@ -17,7 +17,6 @@ import { HTTP_STATUS_CODE } from "../lib/fetch-request";
  */
 export default function Error({ statusCode = "ERROR", title = "" }) {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
-  const { setAuthStageLogin } = useContext(SessionContext);
 
   // Login help should appear if the status code is 403 and the user has not logged in.
   const isLoginHelpVisible =
@@ -42,7 +41,6 @@ export default function Error({ statusCode = "ERROR", title = "" }) {
                 <ButtonAsLink
                   onClick={() => {
                     loginAuthProvider(loginWithRedirect);
-                    setAuthStageLogin();
                   }}
                 >
                   sign in
