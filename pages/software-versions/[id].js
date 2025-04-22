@@ -44,8 +44,8 @@ export default function SoftwareVersion({
           <StatusPreviewDetail item={softwareVersion} />
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Name</DataItemLabel>
-              <DataItemValue>{softwareVersion.name}</DataItemValue>
+              <DataItemLabel>Summary</DataItemLabel>
+              <DataItemValue>{softwareVersion.summary}</DataItemValue>
               <DataItemLabel>Software</DataItemLabel>
               <DataItemValue>
                 <Link href={softwareVersion.software["@id"]}>
@@ -70,12 +70,6 @@ export default function SoftwareVersion({
                       {softwareVersion.source_url}
                     </a>
                   </DataItemValueUrl>
-                </>
-              )}
-              {softwareVersion.download_id && (
-                <>
-                  <DataItemLabel>Download ID</DataItemLabel>
-                  <DataItemValue>{softwareVersion.download_id}</DataItemValue>
                 </>
               )}
               {softwareVersion.aliases?.length > 0 && (
