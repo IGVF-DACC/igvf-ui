@@ -608,7 +608,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         />
       )}
       <NavigationSearchTriggers />
-      <NavigationList className="p-4">
+      <NavigationList className="p-2">
         <NavigationGroupItem
           id="data"
           title="Data"
@@ -644,7 +644,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
 
         <NavigationGroupItem
           id="resources-standards"
-          title="Resources and Standards"
+          title="Resources / Standards"
           icon={<Icon.ResourcesStandards />}
           isGroupOpened={openedParents.includes("resources-standards")}
           handleGroupClick={handleParentClick}
