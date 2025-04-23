@@ -13,6 +13,9 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import { ControlledAccessIndicator } from "../../controlled-access";
+import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 
 export default function AuxiliarySet({ item: auxiliarySet }) {
   return (
@@ -31,7 +34,12 @@ export default function AuxiliarySet({ item: auxiliarySet }) {
           <SearchListItemSupplementSummary item={auxiliarySet} />
         </SearchListItemSupplement>
       </SearchListItemMain>
-      <SearchListItemQuality item={auxiliarySet} />
+      <SearchListItemQuality item={auxiliarySet}>
+        <ControlledAccessIndicator item={auxiliarySet} />
+        <DataUseLimitationSummaries
+          summaries={auxiliarySet.data_use_limitation_summaries}
+        />
+      </SearchListItemQuality>
     </SearchListItemContent>
   );
 }

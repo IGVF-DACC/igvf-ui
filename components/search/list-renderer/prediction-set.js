@@ -12,6 +12,9 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import { ControlledAccessIndicator } from "../../controlled-access";
+import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 
 export default function PredictionSet({ item: predictionSet }) {
   const isSupplementsVisible = predictionSet.alternate_accessions?.length > 0;
@@ -38,7 +41,12 @@ export default function PredictionSet({ item: predictionSet }) {
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>
-      <SearchListItemQuality item={predictionSet} />
+      <SearchListItemQuality item={predictionSet}>
+        <ControlledAccessIndicator item={predictionSet} />
+        <DataUseLimitationSummaries
+          summaries={predictionSet.data_use_limitation_summaries}
+        />
+      </SearchListItemQuality>
     </SearchListItemContent>
   );
 }

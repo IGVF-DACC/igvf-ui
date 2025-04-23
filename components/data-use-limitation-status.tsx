@@ -91,6 +91,21 @@ const limitationConfigs = {
     ),
   },
 
+  multiple: {
+    description: "Multiple data-use limitations apply.",
+    icon: () => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="white"
+        className="ml-[-4px] h-full"
+        data-testid="icon-limitation-multiple"
+      >
+        <path d="M10.1,3c-3.9,0-7.1,3-7.1,6.9,0,3.9,3,7.1,6.9,7.1,3.9,0,7.1-3,7.1-6.9,0-3.9-3-7.1-6.9-7.1ZM8.9,5.5c0-.6.5-1.1,1.1-1.1s1.1.5,1.1,1.1v5.3c0,.6-.5,1.1-1.1,1.1s-1.1-.5-1.1-1.1v-5.3ZM10,15.6c-.7,0-1.2-.6-1.2-1.2s.6-1.2,1.2-1.2,1.2.6,1.2,1.2-.6,1.2-1.2,1.2Z" />
+      </svg>
+    ),
+  },
+
   none: {
     description: "No data-use limitations.",
     icon: () => (
@@ -179,7 +194,9 @@ export function DataUseLimitationStatus({
   const tooltipAttr = useTooltip("institutional-certificate");
 
   if (summary && (limitation || modifiers.length > 0)) {
-    throw new Error("Use the limitation/modifiers or the summary; not both.");
+    throw new Error(
+      "DataUseLimitationStatus: Use the limitation/modifiers or the summary; not both."
+    );
   }
 
   // Use the separate limitation and modifiers if provided, otherwise use the summary.
@@ -197,52 +214,74 @@ export function DataUseLimitationStatus({
   const Icon =
     limitationConfigs[localLimitation]?.icon || limitationConfigs.none.icon;
 
-  if (localLimitation) {
-    return (
-      <>
-        <TooltipRef tooltipAttr={tooltipAttr}>
-          <div>
-            <PillBadge
-              className="bg-stone-700 text-white shadow-stone-800"
-              testid={`dul-badge-${toShishkebabCase(localLimitation)}`}
+  return (
+    <>
+      <TooltipRef tooltipAttr={tooltipAttr}>
+        <div>
+          <PillBadge
+            className="bg-stone-700 text-white shadow-stone-800"
+            testid={`dul-badge-${toShishkebabCase(localLimitation)}`}
+          >
+            <Icon className="ml-[-4px]" />
+            <div
+              data-testid={`limitation-${toShishkebabCase(localLimitation)}`}
+              className={localModifiers.length > 0 ? "pr-1" : ""}
             >
-              <Icon className="ml-[-4px]" />
-              <div
-                data-testid={`limitation-${toShishkebabCase(localLimitation)}`}
-                className={localModifiers.length > 0 ? "pr-1" : ""}
-              >
-                {localLimitation}
-              </div>
-              {localModifiers.length > 0 && (
-                <>
-                  {localModifiers.map((modifier) => {
-                    return (
-                      <div
-                        key={modifier}
-                        className="border-l border-white px-0.5 last:mr-[-5px] last:rounded-r-full last:pr-1.5"
-                        data-testid={`modifier-${toShishkebabCase(modifier)}`}
-                      >
-                        {modifier}
-                      </div>
-                    );
-                  })}
-                </>
-              )}
-            </PillBadge>
-          </div>
-        </TooltipRef>
-        <Tooltip tooltipAttr={tooltipAttr}>
-          <div>
-            {limitationConfigs[localLimitation]?.description ||
-              "No data-use limitations"}
-          </div>
-          {localModifiers.map((modifier) => (
-            <div key={modifier} className="mt-1.5">
-              {modifierColors[modifier]?.description || "No description"}
+              {localLimitation}
             </div>
-          ))}
-        </Tooltip>
-      </>
-    );
+            {localModifiers.length > 0 && (
+              <>
+                {localModifiers.map((modifier) => {
+                  return (
+                    <div
+                      key={modifier}
+                      className="border-l border-white px-0.5 last:mr-[-5px] last:rounded-r-full last:pr-1.5"
+                      data-testid={`modifier-${toShishkebabCase(modifier)}`}
+                    >
+                      {modifier}
+                    </div>
+                  );
+                })}
+              </>
+            )}
+          </PillBadge>
+        </div>
+      </TooltipRef>
+      <Tooltip tooltipAttr={tooltipAttr}>
+        <div>
+          {limitationConfigs[localLimitation]?.description ||
+            "No data-use limitations"}
+        </div>
+        {localModifiers.map((modifier) => (
+          <div key={modifier} className="mt-1.5">
+            {modifierColors[modifier]?.description || "No description"}
+          </div>
+        ))}
+      </Tooltip>
+    </>
+  );
+}
+
+/**
+ * Use this component when you have an array of data-use limitation summaries. These arrays in
+ * objects should normally have only one element. If multiple elements exist in the array, this
+ * component displays "MULTIPLE" in the badge with a corresponding icon.
+ * @param summaries - Array of data-use limitation summaries
+ */
+export function DataUseLimitationSummaries({
+  summaries = [],
+}: {
+  summaries?: string[];
+}) {
+  if (summaries.length === 0) {
+    return null;
   }
+
+  const uniqueSummaries = new Set(summaries);
+  if (uniqueSummaries.size > 1) {
+    // Use the fake DUL "multiple" to indicate that multiple limitations apply.
+    return <DataUseLimitationStatus summary="multiple" />;
+  }
+
+  return <DataUseLimitationStatus summary={summaries[0]} />;
 }

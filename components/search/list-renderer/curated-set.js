@@ -13,6 +13,9 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import { ControlledAccessIndicator } from "../../controlled-access";
+import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 
 export default function CuratedSet({ item: curatedSet }) {
   return (
@@ -35,7 +38,12 @@ export default function CuratedSet({ item: curatedSet }) {
           <SearchListItemSupplementSummary item={curatedSet} />
         </SearchListItemSupplement>
       </SearchListItemMain>
-      <SearchListItemQuality item={curatedSet} />
+      <SearchListItemQuality item={curatedSet}>
+        <ControlledAccessIndicator item={curatedSet} />
+        <DataUseLimitationSummaries
+          summaries={curatedSet.data_use_limitation_summaries}
+        />
+      </SearchListItemQuality>
     </SearchListItemContent>
   );
 }

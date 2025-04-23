@@ -1,5 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { DataUseLimitationStatus } from "../data-use-limitation-status";
+import {
+  DataUseLimitationStatus,
+  DataUseLimitationSummaries,
+} from "../data-use-limitation-status";
 
 describe("Test DataUseLimitationsStatus component", () => {
   it("Generates badge for limitation only", () => {
@@ -23,7 +26,7 @@ describe("Test DataUseLimitationsStatus component", () => {
   });
 
   it("generates a badge with limitation and modifiers from a summary string", () => {
-    render(<DataUseLimitationStatus summary="DS-COL,GSO" />);
+    render(<DataUseLimitationStatus summary="DS-COL-GSO" />);
     const limitation = screen.getByTestId(/^limitation-ds$/);
     expect(limitation).toBeInTheDocument();
     const icon = screen.getByTestId(/^icon-limitation-ds$/);
@@ -58,7 +61,7 @@ describe("Test DataUseLimitationsStatus component", () => {
       .mockImplementation(() => {});
 
     expect(() =>
-      render(<DataUseLimitationStatus limitation="DS" summary="DS-COL,GSO" />)
+      render(<DataUseLimitationStatus limitation="DS" summary="DS-COL-GSO" />)
     ).toThrow("Use the limitation/modifiers or the summary; not both.");
 
     // Restore console.error after the test
@@ -74,7 +77,7 @@ describe("Test DataUseLimitationsStatus component", () => {
       render(
         <DataUseLimitationStatus
           modifiers={["HMB", "UNK"]}
-          summary="DS-COL,GSO"
+          summary="DS-COL-GSO"
         />
       )
     ).toThrow("Use the limitation/modifiers or the summary; not both.");
@@ -93,11 +96,52 @@ describe("Test DataUseLimitationsStatus component", () => {
         <DataUseLimitationStatus
           limitation="DS"
           modifiers={["HMB", "UNK"]}
-          summary="DS-COL,GSO"
+          summary="DS-COL-GSO"
         />
       )
     ).toThrow("Use the limitation/modifiers or the summary; not both.");
 
     consoleError.mockRestore();
+  });
+});
+
+describe("Test DataUseLimitationSummaries component", () => {
+  it("renders no badge if no summaries provided", () => {
+    render(<DataUseLimitationSummaries />);
+    const limitation = screen.queryByTestId(/^limitation-.*$/);
+    expect(limitation).not.toBeInTheDocument();
+  });
+
+  it("renders the badge with the summary if one summary provided", () => {
+    render(<DataUseLimitationSummaries summaries={["DS-COL-GSO"]} />);
+    const limitation = screen.getByTestId(/^limitation-ds$/);
+    expect(limitation).toBeInTheDocument();
+    expect(limitation).toHaveTextContent("DS");
+    const modifiers = screen.queryAllByTestId(/^modifier-.*$/);
+    expect(modifiers).toHaveLength(2);
+    expect(modifiers[0]).toHaveTextContent("COL");
+    expect(modifiers[1]).toHaveTextContent("GSO");
+  });
+
+  it("renders a badge with `multiple` if multiple conflicting summaries provided", () => {
+    render(
+      <DataUseLimitationSummaries summaries={["DS-COL-GSO", "DS-HMB-UNK"]} />
+    );
+    const limitation = screen.getByTestId(/^limitation-multiple$/);
+    expect(limitation).toBeInTheDocument();
+    expect(limitation).toHaveTextContent("multiple");
+  });
+
+  it("renders the badge with the summary if multiple identical summaries provided", () => {
+    render(
+      <DataUseLimitationSummaries summaries={["DS-COL-GSO", "DS-COL-GSO"]} />
+    );
+    const limitation = screen.getByTestId(/^limitation-ds$/);
+    expect(limitation).toBeInTheDocument();
+    expect(limitation).toHaveTextContent("DS");
+    const modifiers = screen.queryAllByTestId(/^modifier-.*$/);
+    expect(modifiers).toHaveLength(2);
+    expect(modifiers[0]).toHaveTextContent("COL");
+    expect(modifiers[1]).toHaveTextContent("GSO");
   });
 });

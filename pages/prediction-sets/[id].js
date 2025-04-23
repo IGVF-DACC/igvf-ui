@@ -9,12 +9,14 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
 import ChromosomeLocations from "../../components/chromosome-locations";
 import { ConstructLibraryTable } from "../../components/construct-library-table";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import { FileGraph } from "../../components/file-graph";
@@ -68,7 +70,12 @@ export default function PredictionSet({
         <AlternateAccessions
           alternateAccessions={predictionSet.alternate_accessions}
         />
-        <ObjectPageHeader item={predictionSet} isJsonFormat={isJson} />
+        <ObjectPageHeader item={predictionSet} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={predictionSet} />
+          <DataUseLimitationSummaries
+            summaries={predictionSet.data_use_limitation_summaries}
+          />
+        </ObjectPageHeader>
         <JsonDisplay item={predictionSet} isJsonFormat={isJson}>
           <StatusPreviewDetail item={predictionSet} />
           <DataPanel>

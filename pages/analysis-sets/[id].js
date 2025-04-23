@@ -8,6 +8,7 @@ import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { ConstructLibraryTable } from "../../components/construct-library-table";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataItemLabel,
@@ -16,6 +17,7 @@ import {
   DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
+import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
@@ -75,7 +77,12 @@ export default function AnalysisSet({
         <AlternateAccessions
           alternateAccessions={analysisSet.alternate_accessions}
         />
-        <ObjectPageHeader item={analysisSet} isJsonFormat={isJson} />
+        <ObjectPageHeader item={analysisSet} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={analysisSet} />
+          <DataUseLimitationSummaries
+            summaries={analysisSet.data_use_limitation_summaries}
+          />
+        </ObjectPageHeader>
         <JsonDisplay item={analysisSet} isJsonFormat={isJson}>
           <StatusPreviewDetail item={analysisSet} />
           <DataPanel>

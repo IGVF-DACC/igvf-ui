@@ -8,12 +8,14 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
 import { ConstructLibraryTable } from "../../components/construct-library-table";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
@@ -69,7 +71,12 @@ export default function AuxiliarySet({
         <AlternateAccessions
           alternateAccessions={auxiliarySet.alternate_accessions}
         />
-        <ObjectPageHeader item={auxiliarySet} isJsonFormat={isJson} />
+        <ObjectPageHeader item={auxiliarySet} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={auxiliarySet} />
+          <DataUseLimitationSummaries
+            summaries={auxiliarySet.data_use_limitation_summaries}
+          />
+        </ObjectPageHeader>
         <JsonDisplay item={auxiliarySet} isJsonFormat={isJson}>
           <StatusPreviewDetail item={auxiliarySet} />
           <DataPanel>

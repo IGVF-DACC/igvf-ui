@@ -1823,45 +1823,6 @@ describe("Test the MeasurementSet component", () => {
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
-
-  it("renders a MeasurementSet item without samples", () => {
-    const item = {
-      "@id": "/measurement-sets/IGVFDS6408BFHD/",
-      "@type": ["MeasurementSet", "FileSet", "Item"],
-      accession: "IGVFDS6408BFHD",
-      alternate_accessions: ["IGVFDS6408BFHE"],
-      aliases: ["igvf:basic_measurement_set"],
-      award: "/awards/HG012012/",
-      lab: {
-        title: "J. Michael Cherry, Stanford",
-      },
-      status: "released",
-      summary: "imaging assay (yN2H)",
-      uuid: "67380d9f-06da-f9fe-9569-d31ce0607eae",
-      assay_term: {
-        term_name: "STARR-seq",
-      },
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <MeasurementSet item={item} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^Measurement Set/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS6408BFHD$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^imaging assay \(yN2H\)$/);
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-    const status = screen.getByTestId("search-list-item-quality");
-    expect(status).toHaveTextContent("released");
-  });
 });
 
 describe("Test the Software component", () => {
