@@ -88,11 +88,11 @@ const taxaQueries: Record<string, TaxaMap> = {
     cellLinkPath: "/search/?type=Tissue&taxa=Homo+sapiens",
     pagePath: "/tissue-summary/homo-sapiens",
     queryAtType: "TissueSummaryHomoSapiens",
-    columnHeaderCellClass: "bg-tissue-matrix-column-header-mus-musculus",
-    rowHeaderCellClass: "bg-tissue-matrix-row-header-mus-musculus",
-    rowSubheaderCellClass: "bg-tissue-matrix-row-subheader-mus-musculus",
-    dataCellClass: "bg-tissue-matrix-data-mus-musculus",
-    hoverCellClass: "group-hover:bg-tissue-matrix-highlight-mus-musculus",
+    columnHeaderCellClass: "bg-tissue-matrix-column-header-homo-sapiens",
+    rowHeaderCellClass: "bg-tissue-matrix-row-header-homo-sapiens",
+    rowSubheaderCellClass: "bg-tissue-matrix-row-subheader-homo-sapiens",
+    dataCellClass: "bg-tissue-matrix-data-homo-sapiens",
+    hoverCellClass: "group-hover:bg-tissue-matrix-highlight-homo-sapiens",
   },
 };
 
