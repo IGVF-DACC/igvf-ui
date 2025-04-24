@@ -152,7 +152,6 @@ To point your igvf-ui demo at a specific igvfd demo, open the file at `cdk/infra
     'frontend': {
         'cpu': 1024,
         'memory_limit_mib': 2048,
-        'desired_count': 1,
         'max_capacity': 4,
     },
     'backend_url': 'https://igvfd-dev.demo.igvf.org',

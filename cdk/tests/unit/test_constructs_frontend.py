@@ -15,7 +15,6 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
             redis_multiplexer=redis_multiplexer,
             cpu=2048,
             memory_limit_mib=4096,
-            desired_count=4,
             max_capacity=7,
             use_redis_named='Redis71',
         )
@@ -153,7 +152,6 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
             'DeploymentController': {
                 'Type': 'ECS'
             },
-            'DesiredCount': 4,
             'EnableECSManagedTags': False,
             'EnableExecuteCommand': True,
             'HealthCheckGracePeriodSeconds': 60,
@@ -438,7 +436,6 @@ def test_constructs_frontend_frontend_define_domain_name(stack, instance_type, e
             redis_multiplexer=redis_multiplexer,
             cpu=2048,
             memory_limit_mib=4096,
-            desired_count=4,
             max_capacity=7,
             use_redis_named='Redis71',
         )
@@ -466,7 +463,6 @@ def test_constructs_frontend_frontend_define_domain_name(stack, instance_type, e
             redis_multiplexer=redis_multiplexer,
             cpu=2048,
             memory_limit_mib=4096,
-            desired_count=4,
             max_capacity=7,
             use_redis_named='Redis71',
         )

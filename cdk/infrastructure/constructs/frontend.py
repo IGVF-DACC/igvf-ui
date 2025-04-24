@@ -50,7 +50,6 @@ class FrontendProps:
     redis_multiplexer: Multiplexer
     cpu: int
     memory_limit_mib: int
-    desired_count: int
     max_capacity: int
     use_redis_named: str
 
@@ -121,7 +120,6 @@ class Frontend(Construct):
             service_name='Frontend',
             vpc=self.props.existing_resources.network.vpc,
             cpu=self.props.cpu,
-            desired_count=self.props.desired_count,
             min_healthy_percent=100,
             max_healthy_percent=200,
             circuit_breaker=DeploymentCircuitBreaker(
