@@ -148,7 +148,6 @@ def config():
         frontend={
             'cpu': 1024,
             'memory_limit_mib': 2048,
-            'desired_count': 1,
             'max_capacity': 4,
             'use_redis_named': 'Redis71',
         },
