@@ -54,9 +54,9 @@ export default function Search({ searchResults, accessoryData = null }) {
       <div className="lg:flex lg:items-start lg:gap-1">
         <FacetSection searchResults={searchResults} />
         <div className="grow">
+          <FacetTags searchResults={searchResults} />
           {searchResults.total > 0 ? (
             <>
-              <FacetTags searchResults={searchResults} />
               <SearchResultsHeader searchResults={searchResults} />
               <TableCount count={searchResults.total} />
               {totalPages > 1 && <SearchPager searchResults={searchResults} />}

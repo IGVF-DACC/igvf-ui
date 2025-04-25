@@ -150,9 +150,9 @@ export default function MultiReport({ searchResults }) {
         <div className="lg:flex lg:items-start lg:gap-1">
           <FacetSection searchResults={searchResults} />
           <div className="min-w-0 grow">
+            <FacetTags searchResults={searchResults} />
             {items.length > 0 ? (
               <>
-                <FacetTags searchResults={searchResults} />
                 <SearchResultsHeader
                   searchResults={searchResults}
                   reportViewExtras={{

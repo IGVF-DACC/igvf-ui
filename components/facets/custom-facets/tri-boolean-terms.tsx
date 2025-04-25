@@ -88,7 +88,8 @@ export default function TriBooleanTerms({
     key: TriBoolean.Either,
     key_as_string: "either",
   };
-  const terms = facet.terms.concat(eitherTerm);
+  let terms = facet.terms as SearchResultsFacetTerm[];
+  terms = terms.concat(eitherTerm);
 
   // Determine the selected term.
   const selectedValue = currentSelection(facet.field, searchResults);

@@ -62,7 +62,10 @@ StandardTitle.propTypes = {
     // Facet title
     title: PropTypes.string.isRequired,
     // List of facet terms
-    terms: PropTypes.arrayOf(PropTypes.object).isRequired,
+    terms: PropTypes.oneOfType([
+      PropTypes.arrayOf(PropTypes.object),
+      PropTypes.object,
+    ]),
   }).isRequired,
   // Entire search results object from the data provider
   searchResults: PropTypes.object.isRequired,

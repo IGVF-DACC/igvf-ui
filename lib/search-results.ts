@@ -9,7 +9,8 @@ import {
   Profiles,
   ProfilesProps,
   SearchResults,
-} from "../globals.d";
+  SearchResultsFacetTerm,
+} from "../globals";
 
 /**
  * Builds an array of concrete types returned from search results. The profiles object has to have
@@ -31,7 +32,8 @@ export function generateSearchResultsTypes(
     );
     if (typeFacet) {
       // Get all concrete types from the search results.
-      const allResultTypes = typeFacet.terms.map((term) => term.key);
+      const terms = typeFacet.terms as SearchResultsFacetTerm[];
+      const allResultTypes = terms.map((term) => term.key);
       const concreteTypes = allResultTypes.filter((type) => {
         const typeSubtypes = (profiles as ProfilesProps)._subtypes[type];
         return (
