@@ -1,6 +1,7 @@
 // node_modules
 import _ from "lodash";
 import Link from "next/link";
+import { useRouter } from "next/router";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import DataGrid, {
@@ -9,7 +10,15 @@ import DataGrid, {
   type Row,
 } from "../../components/data-grid";
 import { LabelXAxis, LabelYAxis } from "../../components/matrix";
+import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
+import {
+  TabGroup,
+  TabList,
+  TabPanes,
+  TabPane,
+  TabTitle,
+} from "../../components/tabs";
 // lib
 import FetchRequest from "../../lib/fetch-request";
 import { errorObjectToProps } from "../../lib/errors";
@@ -21,7 +30,7 @@ import type {
   MatrixBucket,
   MatrixResults,
   MatrixResultsObject,
-} from "../../globals.d";
+} from "../../globals";
 
 /**
  * Source data for cell renderers in the matrix.
@@ -72,6 +81,18 @@ const taxaQueries: Record<string, TaxaMap> = {
     rowSubheaderCellClass: "bg-tissue-matrix-row-subheader-mus-musculus",
     dataCellClass: "bg-tissue-matrix-data-mus-musculus",
     hoverCellClass: "group-hover:bg-tissue-matrix-highlight-mus-musculus",
+  },
+  "homo-sapiens": {
+    dataProviderPath:
+      "/tissue-homo-sapiens/?type=Tissue&taxa=Homo+sapiens&virtual=false",
+    cellLinkPath: "/search/?type=Tissue&taxa=Homo+sapiens",
+    pagePath: "/tissue-summary/homo-sapiens",
+    queryAtType: "TissueSummaryHomoSapiens",
+    columnHeaderCellClass: "bg-tissue-matrix-column-header-homo-sapiens",
+    rowHeaderCellClass: "bg-tissue-matrix-row-header-homo-sapiens",
+    rowSubheaderCellClass: "bg-tissue-matrix-row-subheader-homo-sapiens",
+    dataCellClass: "bg-tissue-matrix-data-homo-sapiens",
+    hoverCellClass: "group-hover:bg-tissue-matrix-highlight-homo-sapiens",
   },
 };
 
@@ -340,6 +361,48 @@ function convertMatrixToDataGrid(
 }
 
 /**
+ * Display the table of data in the matrix. This handles both the human and rodent data.
+ * @param tissueSummary - Data for the matrix to display
+ * @param taxa - Taxa string for the matrix data: `homo-sapiens` or `mus-musculus`
+ * @param xLabel - Label for the X-axis
+ * @param yLabel - Label for the Y-axis
+ */
+function PanelContent({
+  tissueSummary,
+  taxa,
+  xLabel,
+  yLabel,
+}: {
+  tissueSummary: MatrixResults;
+  taxa: string;
+  xLabel: string;
+  yLabel: string;
+}) {
+  if (tissueSummary.total > 0) {
+    // Take the matrix data from the data provider and convert it to a format that can be used by
+    // the `<DataGrid>` component.
+    const dataGrid = convertMatrixToDataGrid(tissueSummary.matrix, taxa);
+
+    return (
+      <>
+        <LabelXAxis label={xLabel} />
+        <div className="flex">
+          <LabelYAxis label={yLabel} />
+          <div
+            role="table"
+            className="border-1 grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
+          >
+            <DataGrid data={dataGrid} meta={{ taxa }} />
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return <NoCollectionData pageTitle="data available" />;
+}
+
+/**
  * Formats the overall Tissue Summary page, including the matrix of rodent data.
  * @param tissueSummary - Tissue summary data from the data provider
  */
@@ -348,32 +411,61 @@ export default function TissueSummary({
 }: {
   tissueSummary: MatrixResults;
 }) {
+  const router = useRouter();
+
   // Map `tissueSummary["@type"]` to the corresponding taxa string.
   const taxa = Object.keys(taxaQueries).find(
     (taxaQueriesKey) =>
       taxaQueries[taxaQueriesKey].queryAtType === tissueSummary["@type"][0]
   );
 
-  // Take the matrix data from the data provider and convert it to a format that can be used by
-  // the `<DataGrid>` component.
-  const dataGrid = convertMatrixToDataGrid(tissueSummary.matrix, taxa);
+  // Switch to the new path for the tab the user clicked.
+  function onTabChange(tabId: string) {
+    router.push(taxaQueries[tabId].pagePath);
+  }
 
   return (
     <>
       <Breadcrumbs item={tissueSummary} />
       <PagePreamble pageTitle={tissueSummary.title} />
-      <div className="pt-4">
-        <LabelXAxis label={tissueSummary.matrix.x.label} />
-        <div className="flex">
-          <LabelYAxis label="Tissue / Organ" />
-          <div
-            role="table"
-            className="border-1 grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
+      <TabGroup defaultId={taxa} onChange={onTabChange}>
+        <TabList>
+          <TabTitle
+            id="homo-sapiens"
+            className="items-center font-semibold italic"
           >
-            <DataGrid data={dataGrid} meta={{ taxa }} />
-          </div>
-        </div>
-      </div>
+            Homo sapiens
+          </TabTitle>
+          <TabTitle
+            id="mus-musculus"
+            className="items-center font-semibold italic"
+          >
+            Mus musculus
+          </TabTitle>
+        </TabList>
+        <TabPanes>
+          <TabPane className="pt-4">
+            {taxa === "homo-sapiens" && (
+              <PanelContent
+                tissueSummary={tissueSummary}
+                taxa={taxa}
+                xLabel={tissueSummary.matrix.x.label}
+                yLabel="Tissue / Organ"
+              />
+            )}
+          </TabPane>
+          <TabPane className="pt-4">
+            {taxa === "mus-musculus" && (
+              <PanelContent
+                tissueSummary={tissueSummary}
+                taxa={taxa}
+                xLabel={tissueSummary.matrix.x.label}
+                yLabel="Tissue / Organ"
+              />
+            )}
+          </TabPane>
+        </TabPanes>
+      </TabGroup>
     </>
   );
 }

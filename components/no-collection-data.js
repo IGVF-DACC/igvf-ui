@@ -18,7 +18,6 @@ import { LINK_INLINE_STYLE } from "../lib/constants";
 export default function NoCollectionData({ pageTitle = "" }) {
   const { page } = useContext(GlobalContext);
   const { isAuthenticated, loginWithRedirect } = useAuth0();
-  const { setAuthStageLogin } = useContext(SessionContext);
 
   return (
     <DataPanel className="my-0.5">
@@ -29,7 +28,6 @@ export default function NoCollectionData({ pageTitle = "" }) {
           <ButtonAsLink
             onClick={() => {
               loginAuthProvider(loginWithRedirect);
-              setAuthStageLogin();
             }}
           >
             sign in
