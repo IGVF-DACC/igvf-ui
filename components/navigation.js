@@ -608,7 +608,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         />
       )}
       <NavigationSearchTriggers />
-      <NavigationList className="p-4">
+      <NavigationList className="p-2">
         <NavigationGroupItem
           id="data"
           title="Data"
@@ -643,12 +643,20 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
         </NavigationGroupItem>
 
         <NavigationGroupItem
-          id="methodology"
-          title="Methodology"
-          icon={<Icon.Methodology />}
-          isGroupOpened={openedParents.includes("methodology")}
+          id="resources-standards"
+          title="Resources / Standards"
+          icon={<Icon.ResourcesStandards />}
+          isGroupOpened={openedParents.includes("resources-standards")}
           handleGroupClick={handleParentClick}
         >
+          <NavigationHrefItem
+            id="resources"
+            href="/resources"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Resources
+          </NavigationHrefItem>
           <NavigationHrefItem
             id="experimental-standards"
             href="/methodology/experimental_standards"
@@ -680,14 +688,6 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             isChildItem
           >
             Audit Documentation
-          </NavigationHrefItem>
-          <NavigationHrefItem
-            id="resources"
-            href="/resources"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Resources
           </NavigationHrefItem>
         </NavigationGroupItem>
 
