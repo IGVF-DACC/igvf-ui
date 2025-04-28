@@ -58,6 +58,7 @@ export default function InstitutionalCertificate({
           <DataUseLimitationStatus
             limitation={institutionalCertificate.data_use_limitation}
             modifiers={institutionalCertificate.data_use_limitation_modifiers}
+            showHiddenLimitations
           />
         </ObjectPageHeader>
         <JsonDisplay item={institutionalCertificate} isJsonFormat={isJson}>

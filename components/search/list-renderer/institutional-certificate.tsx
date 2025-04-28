@@ -34,7 +34,10 @@ export default function InstitutionalCertificate({
         </SearchListItemMeta>
         <SearchListItemQuality item={item}>
           <ControlledAccessIndicator item={item} />
-          <DataUseLimitationStatus summary={item.data_use_limitation_summary} />
+          <DataUseLimitationStatus
+            summary={item.data_use_limitation_summary}
+            showHiddenLimitations
+          />
         </SearchListItemQuality>
       </SearchListItemMain>
     </SearchListItemContent>
