@@ -50,7 +50,17 @@ describe("Test DataUseLimitationsStatus component", () => {
   it("generates no badge if no limitation, modifiers, or summary provided", () => {
     render(<DataUseLimitationStatus />);
     const limitation = screen.getByTestId(/^limitation-.*$/);
-    expect(limitation).toHaveTextContent("No limitations");
+    expect(limitation).toHaveTextContent("no limitations");
+  });
+
+  it("renders nothing if summary contains `no certificate`", () => {
+    render(<DataUseLimitationStatus summary="no certificate" />);
+    const limitation = screen.queryByTestId(/^limitation-.*$/);
+    expect(limitation).not.toBeInTheDocument();
+    const icon = screen.queryByTestId(/^icon-limitation-.*$/);
+    expect(icon).not.toBeInTheDocument();
+    const modifiers = screen.queryAllByTestId(/^modifier-.*$/);
+    expect(modifiers).toHaveLength(0);
   });
 
   it("throws an error if both summary and limitation are provided", () => {

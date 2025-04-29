@@ -283,7 +283,6 @@ export function DataUseLimitationSummaries({
 }: {
   summaries?: string[];
 }) {
-  console.trace("SUMMARY", summaries);
   if (summaries.length === 0) {
     return null;
   }
