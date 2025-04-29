@@ -108,6 +108,25 @@ const statusStyles = {
     ),
   },
 
+  standardized_file_format: {
+    styles: "bg-green-200 text-white shadow-green-400 [&>svg]:fill-white",
+    Icon: () => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="fill-status-fallback"
+        className="h-full"
+      >
+        <path d="M10,3c-3.9,0-7,3.1-7,7s3.1,7,7,7,7-3.1,7-7-3.1-7-7-7ZM10,15.4c-3,0-5.4-2.4-5.4-5.4s2.4-5.4,5.4-5.4,5.4,2.4,5.4,5.4-2.4,5.4-5.4,5.4Z" />
+        <g>
+          <path d="M13,8.6h-6c-.3,0-.6-.3-.6-.6s.3-.6.6-.6h6c.3,0,.6.3.6.6s-.3.6-.6.6Z" />
+          <path d="M12,11h-4c-.3,0-.6-.3-.6-.6s.3-.6.6-.6h4c.3,0,.6.3.6.6s-.3.6-.6.6Z" />
+          <path d="M11.3,13.4h-2.5c-.3,0-.6-.3-.6-.6s.3-.6.6-.6h2.5c.3,0,.6.3.6.6s-.3.6-.6.6Z" />
+        </g>
+      </svg>
+    ),
+  },
+
   "in progress": {
     styles: "bg-[#0072bc] text-white shadow-[#00578f] [&>svg]:fill-white",
     Icon: () => (
