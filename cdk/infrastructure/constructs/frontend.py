@@ -199,9 +199,15 @@ class Frontend(Construct):
         )
         scalable_task.scale_on_request_count(
             'RequestCountScaling',
-            requests_per_target=600,
+            requests_per_target=100,
             target_group=self.fargate_service.target_group,
-            scale_in_cooldown=Duration.seconds(60),
+            scale_in_cooldown=Duration.seconds(300),
+            scale_out_cooldown=Duration.seconds(60),
+        )
+        scalable_task.scale_on_cpu_utilization(
+            'CpuScaling',
+            target_utilization_percent=55,
+            scale_in_cooldown=Duration.seconds(300),
             scale_out_cooldown=Duration.seconds(60),
         )
 
