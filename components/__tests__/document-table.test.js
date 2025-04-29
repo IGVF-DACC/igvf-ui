@@ -65,7 +65,7 @@ describe("Test the document table", () => {
 
     // Check the size of the table.
     const columnHeaders = screen.getAllByRole("columnheader");
-    expect(columnHeaders.length).toBe(5);
+    expect(columnHeaders.length).toBe(6);
     const cells = screen.getAllByRole("cell");
     expect(cells.length).toBe(10);
 

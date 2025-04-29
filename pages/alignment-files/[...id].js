@@ -176,7 +176,7 @@ AlignmentFile.propTypes = {
   // Samples associated with this file's file set
   fileSetSamples: PropTypes.array.isRequired,
   // Set of documents for file specifications
-  fileFormatSpecifications: PropTypes.array.isRequired,
+  fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Reference files used to generate this file
@@ -221,12 +221,17 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       alignmentFile.input_file_for.length > 0
         ? await requestFiles(alignmentFile.input_file_for, request)
         : [];
-    const fileFormatSpecifications = alignmentFile.file_format_specifications
-      ? await requestDocuments(
-          alignmentFile.file_format_specifications,
-          request
-        )
-      : [];
+    let fileFormatSpecifications = [];
+    if (alignmentFile.file_format_specifications.length > 0) {
+      const fileFormatSpecificationsPaths =
+        alignmentFile.file_format_specifications.map(
+          (document) => document["@id"]
+        );
+      fileFormatSpecifications = await requestDocuments(
+        fileFormatSpecificationsPaths,
+        request
+      );
+    }
     const referenceFiles = alignmentFile.reference_files
       ? await requestFiles(alignmentFile.reference_files, request)
       : [];
