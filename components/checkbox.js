@@ -20,8 +20,7 @@ export default function Checkbox({
   const pointerEventsClass = isDisabled ? " pointer-events-none" : "";
 
   // If no long click handler is supplied, use the normal click handler to handle long clicks.
-  const longClickHandler = onLongClick || onClick;
-  useLongClick(id, onClick, longClickHandler);
+  useLongClick(id, onClick, onLongClick);
 
   return (
     <label
@@ -35,7 +34,7 @@ export default function Checkbox({
         disabled={isDisabled}
         aria-label={name}
         checked={checked}
-        onChange={() => {}}
+        onChange={onLongClick ? () => {} : onClick}
       />
       {children}
     </label>

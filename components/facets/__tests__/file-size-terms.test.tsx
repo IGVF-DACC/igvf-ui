@@ -475,4 +475,171 @@ describe("Test FileSizeTerms component", () => {
     const legend = screen.queryByTestId("file-size-terms-legend");
     expect(legend).toHaveTextContent("No selectable range");
   });
+
+  it("renders a file-size terms facet, then we select 'Show only file with no size' button", () => {
+    const searchResults: SearchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/sequence-files/IGVFFI1165AJSO/",
+          "@type": ["SequenceFile", "File", "Item"],
+          accession: "IGVFFI1165AJSO",
+          content_type: "Nanopore reads",
+          file_format: "pod5",
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
+          },
+          status: "released",
+          summary: "Nanopore reads from sequencing run 1",
+          upload_status: "validated",
+          uuid: "fffcd64e-af02-4675-8953-7352459ee06a",
+        },
+      ],
+      "@id": "/search/?type=File&file_size=gte:5000&file_size=lte:10000000",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=File",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      facets: [
+        {
+          field: "file_size",
+          title: "File Size",
+          terms: {
+            count: 69,
+            min: 5000,
+            max: 10000000,
+            avg: 5002500,
+            sum: 5272516747,
+          },
+          total: 1,
+          type: "stats",
+          appended: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          term: "File",
+          remove: "/search/?file_size=gte%3A5000&file_size=lte%3A1000000",
+        },
+      ],
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    // Mock the updateQuery function so that it receives the URL
+    const updateQuery = jest.fn();
+
+    render(
+      <FileSizeTerms
+        searchResults={searchResults}
+        facet={searchResults.facets[0]}
+        updateQuery={updateQuery}
+      />
+    );
+
+    act(resizeObserverMock.bind(null, resizeObserverInstance));
+
+    // Get the element with the aria-label "facet-file_size-no-size"
+    const noSizeButton = screen.getByLabelText(
+      "facet-file_size-no-size"
+    ) as HTMLInputElement;
+    expect(noSizeButton).toBeInTheDocument();
+    expect(noSizeButton.checked).toBe(false);
+
+    // Click this button and check that `updateQuery()` is called with `file_size!=*`.
+    fireEvent.click(noSizeButton);
+    expect(updateQuery).toHaveBeenCalledWith("type=File&file_size!=*");
+  });
+
+  it("renders a file-size terms facet, then we deselect 'Show only file with size' button", () => {
+    const searchResults: SearchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/sequence-files/IGVFFI1165AJSO/",
+          "@type": ["SequenceFile", "File", "Item"],
+          accession: "IGVFFI1165AJSO",
+          content_type: "Nanopore reads",
+          file_format: "pod5",
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
+          },
+          status: "released",
+          summary: "Nanopore reads from sequencing run 1",
+          upload_status: "validated",
+          uuid: "fffcd64e-af02-4675-8953-7352459ee06a",
+        },
+      ],
+      "@id": "/search/?type=File&file_size!=*",
+      "@type": ["Search"],
+      clear_filters: "/search/?type=File",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      facets: [
+        {
+          field: "file_size",
+          title: "File Size",
+          terms: {
+            count: 69,
+            min: 5000,
+            max: 10000000,
+            avg: 5002500,
+            sum: 5272516747,
+          },
+          total: 1,
+          type: "stats",
+          appended: false,
+        },
+      ],
+      filters: [
+        {
+          field: "file_size!",
+          term: "*",
+          remove: "/search/?type=File",
+        },
+        {
+          field: "type",
+          term: "File",
+          remove: "/search/?file_size!=*",
+        },
+      ],
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    // Mock the updateQuery function so that it receives the URL
+    const updateQuery = jest.fn();
+
+    render(
+      <FileSizeTerms
+        searchResults={searchResults}
+        facet={searchResults.facets[0]}
+        updateQuery={updateQuery}
+      />
+    );
+
+    act(resizeObserverMock.bind(null, resizeObserverInstance));
+
+    // Get the element with the aria-label "facet-file_size-no-size"
+    const noSizeButton = screen.getByLabelText(
+      "facet-file_size-no-size"
+    ) as HTMLInputElement;
+    expect(noSizeButton).toBeInTheDocument();
+    expect(noSizeButton.checked).toBe(true);
+
+    // Click this button and check that `updateQuery()` is called with no `file_size!=*`.
+    fireEvent.click(noSizeButton);
+    expect(updateQuery).toHaveBeenCalledWith("type=File");
+  });
 });

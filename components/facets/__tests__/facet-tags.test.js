@@ -559,7 +559,7 @@ describe("Test the <FacetTags> component", () => {
 });
 
 describe("Test the file-size facet tags", () => {
-  it("renders file-size facet tags", () => {
+  it("renders file-size facet tags for file-size ranges", () => {
     const searchResults = {
       "@context": "/terms/",
       "@graph": [
@@ -636,5 +636,224 @@ describe("Test the file-size facet tags", () => {
     expect(tags[0]).toHaveTextContent("> 5.0 KB");
     expect(tags[1]).toHaveTextContent(/^File Size/);
     expect(tags[1]).toHaveTextContent("< 10 MB");
+  });
+
+  it("renders a single number for file-size facet tags", () => {
+    const searchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/sequence-files/IGVFFI1165AJSO/",
+          "@type": ["SequenceFile", "File", "Item"],
+          accession: "IGVFFI1165AJSO",
+          content_type: "Nanopore reads",
+          file_format: "pod5",
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
+          },
+          status: "released",
+          summary: "Nanopore reads from sequencing run 1",
+          upload_status: "validated",
+          uuid: "fffcd64e-af02-4675-8953-7352459ee06a",
+        },
+      ],
+      "@id": "/search/?type=File&file_size=100",
+      "@type": ["Search"],
+      all: "/search/?type=File&file_size=100&limit=all",
+      clear_filters: "/search/?type=File",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      facet_groups: [],
+      facets: [
+        {
+          field: "file_size",
+          title: "File Size",
+          terms: {
+            count: 69,
+            min: 43,
+            max: 1453609183,
+            avg: 76413286.1884058,
+            sum: 5272516747,
+          },
+          total: 1,
+          type: "stats",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "file_size",
+          term: "100",
+          remove: "/search/?type=File",
+        },
+        {
+          field: "type",
+          term: "File",
+          remove: "/search/?file_size=100",
+        },
+      ],
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    render(<FacetTags searchResults={searchResults} />);
+
+    const tagSection = screen.getByTestId("facettags");
+    const tags = within(tagSection).getAllByRole("link");
+    expect(tags.length).toBe(1);
+    expect(tags[0]).toHaveTextContent(/^File Size/);
+    expect(tags[0]).toHaveTextContent("100");
+  });
+
+  it("renders an 'Exists' file-size facet tags", () => {
+    const searchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/sequence-files/IGVFFI1165AJSO/",
+          "@type": ["SequenceFile", "File", "Item"],
+          accession: "IGVFFI1165AJSO",
+          content_type: "Nanopore reads",
+          file_format: "pod5",
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
+          },
+          status: "released",
+          summary: "Nanopore reads from sequencing run 1",
+          upload_status: "validated",
+          uuid: "fffcd64e-af02-4675-8953-7352459ee06a",
+        },
+      ],
+      "@id": "/search/?type=File&file_size=*",
+      "@type": ["Search"],
+      all: "/search/?type=File&file_size=*&limit=all",
+      clear_filters: "/search/?type=File",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      facet_groups: [],
+      facets: [
+        {
+          field: "file_size",
+          title: "File Size",
+          terms: {
+            count: 69,
+            min: 43,
+            max: 1453609183,
+            avg: 76413286.1884058,
+            sum: 5272516747,
+          },
+          total: 1,
+          type: "stats",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "file_size",
+          term: "*",
+          remove: "/search/?type=File",
+        },
+        {
+          field: "type",
+          term: "File",
+          remove: "/search/?file_size=*",
+        },
+      ],
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    render(<FacetTags searchResults={searchResults} />);
+
+    const tagSection = screen.getByTestId("facettags");
+    const tags = within(tagSection).getAllByRole("link");
+    expect(tags.length).toBe(1);
+    expect(tags[0]).toHaveTextContent(/^File Size/);
+    expect(tags[0]).toHaveTextContent("Exists");
+  });
+
+  it("renders an 'None' file-size facet tags", () => {
+    const searchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/sequence-files/IGVFFI1165AJSO/",
+          "@type": ["SequenceFile", "File", "Item"],
+          accession: "IGVFFI1165AJSO",
+          content_type: "Nanopore reads",
+          file_format: "pod5",
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
+          },
+          status: "released",
+          summary: "Nanopore reads from sequencing run 1",
+          upload_status: "validated",
+          uuid: "fffcd64e-af02-4675-8953-7352459ee06a",
+        },
+      ],
+      "@id": "/search/?type=File&file_size!=*",
+      "@type": ["Search"],
+      all: "/search/?type=File&file_size!=*&limit=all",
+      clear_filters: "/search/?type=File",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      facet_groups: [],
+      facets: [
+        {
+          field: "file_size",
+          title: "File Size",
+          terms: {
+            count: 69,
+            min: 43,
+            max: 1453609183,
+            avg: 76413286.1884058,
+            sum: 5272516747,
+          },
+          total: 1,
+          type: "stats",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "file_size!",
+          term: "*",
+          remove: "/search/?type=File",
+        },
+        {
+          field: "type",
+          term: "File",
+          remove: "/search/?file_size!=*",
+        },
+      ],
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    render(<FacetTags searchResults={searchResults} />);
+
+    const tagSection = screen.getByTestId("facettags");
+    const tags = within(tagSection).getAllByRole("link");
+    expect(tags.length).toBe(1);
+    expect(tags[0]).toHaveTextContent(/^File Size/);
+    expect(tags[0]).toHaveTextContent("None");
   });
 });
