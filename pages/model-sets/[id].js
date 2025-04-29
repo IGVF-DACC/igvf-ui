@@ -7,12 +7,14 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
 import { ConstructLibraryTable } from "../../components/construct-library-table";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
@@ -62,7 +64,12 @@ export default function ModelSet({
         <AlternateAccessions
           alternateAccessions={modelSet.alternate_accessions}
         />
-        <ObjectPageHeader item={modelSet} isJsonFormat={isJson} />
+        <ObjectPageHeader item={modelSet} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={modelSet} />
+          <DataUseLimitationSummaries
+            summaries={modelSet.data_use_limitation_summaries}
+          />
+        </ObjectPageHeader>
         <JsonDisplay item={modelSet} isJsonFormat={isJson}>
           <StatusPreviewDetail item={modelSet} />
           <DataPanel>

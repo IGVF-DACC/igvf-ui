@@ -7,12 +7,10 @@ import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { DataUseLimitationStatus } from "./data-use-limitation-status";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
+// lib
+import { type InstitutionalCertificateObject } from "../lib/data-use-limitation";
 // root
-import type {
-  DatabaseObject,
-  InstitutionalCertificateObject,
-  LabObject,
-} from "../globals";
+import type { DatabaseObject, LabObject } from "../globals";
 
 /**
  * Defines the columns for the institutional certificate table.

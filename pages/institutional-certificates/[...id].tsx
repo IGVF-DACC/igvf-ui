@@ -12,6 +12,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { DataUseLimitationStatus } from "../../components/data-use-limitation-status";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -20,6 +21,7 @@ import { useSecDir } from "../../components/section-directory";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { requestSamples } from "../../lib/common-requests";
+import { type InstitutionalCertificateObject } from "../../lib/data-use-limitation";
 import { formatDate } from "../../lib/dates";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -27,12 +29,7 @@ import { type ErrorObject } from "../../lib/fetch-request.d";
 import PagePreamble from "../../components/page-preamble";
 import { isJsonFormat } from "../../lib/query-utils";
 // root
-import type {
-  InstitutionalCertificateObject,
-  SampleObject,
-  UserObject,
-} from "../../globals";
-import { DataUseLimitationStatus } from "../../components/data-use-limitation-status";
+import type { SampleObject, UserObject } from "../../globals";
 
 export default function InstitutionalCertificate({
   institutionalCertificate,
@@ -57,11 +54,12 @@ export default function InstitutionalCertificate({
       <EditableItem item={institutionalCertificate}>
         <PagePreamble sections={sections} />
         <ObjectPageHeader item={institutionalCertificate} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={institutionalCertificate} />
           <DataUseLimitationStatus
             limitation={institutionalCertificate.data_use_limitation}
             modifiers={institutionalCertificate.data_use_limitation_modifiers}
+            showHiddenLimitations
           />
-          <ControlledAccessIndicator item={institutionalCertificate} />
         </ObjectPageHeader>
         <JsonDisplay item={institutionalCertificate} isJsonFormat={isJson}>
           <DataPanel>

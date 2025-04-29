@@ -14,6 +14,8 @@ import {
 } from "./search-list-item";
 // components
 import { ExternallyHostedBadge } from "../../common-pill-badges";
+import { ControlledAccessIndicator } from "../../controlled-access";
+import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 
 export default function ModelSet({ item: modelSet, accessoryData = null }) {
   const isExternallyHosted =
@@ -39,6 +41,10 @@ export default function ModelSet({ item: modelSet, accessoryData = null }) {
       </SearchListItemMain>
       <SearchListItemQuality item={modelSet}>
         {isExternallyHosted && <ExternallyHostedBadge />}
+        <ControlledAccessIndicator item={modelSet} />
+        <DataUseLimitationSummaries
+          summaries={modelSet.data_use_limitation_summaries}
+        />
       </SearchListItemQuality>
     </SearchListItemContent>
   );

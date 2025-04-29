@@ -1,3 +1,5 @@
+import { type InstitutionalCertificateObject } from "./lib/data-use-limitation";
+
 /**
  * Single audit within an audit category.
  */
@@ -355,20 +357,6 @@ export interface FileSetObject extends DatabaseObject {
 }
 
 /**
- * Institutional certificate object type.
- */
-export interface InstitutionalCertificateObject extends DatabaseObject {
-  certificate_identifier: string;
-  controlled_access: boolean;
-  data_use_limitation?: string;
-  data_use_limitation_modifiers?: string[];
-  data_use_limitation_summary: string;
-  samples?: string[];
-  summary: string;
-  urls: string[];
-}
-
-/**
  * Lab object type.
  */
 export interface LabObject extends DatabaseObject {
@@ -400,6 +388,7 @@ export interface AwardObject extends DatabaseObject {
  */
 export interface SampleObject extends DatabaseObject {
   aliases?: string[];
+  institutional_certificates?: string[] | InstitutionalCertificateObject[];
 }
 
 /**

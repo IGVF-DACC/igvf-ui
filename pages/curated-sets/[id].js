@@ -6,12 +6,14 @@ import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
 import { ConstructLibraryTable } from "../../components/construct-library-table";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataItemLabel,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
+import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
@@ -58,7 +60,12 @@ export default function CuratedSet({
         <AlternateAccessions
           alternateAccessions={curatedSet.alternate_accessions}
         />
-        <ObjectPageHeader item={curatedSet} isJsonFormat={isJson} />
+        <ObjectPageHeader item={curatedSet} isJsonFormat={isJson}>
+          <ControlledAccessIndicator item={curatedSet} />
+          <DataUseLimitationSummaries
+            summaries={curatedSet.data_use_limitation_summaries}
+          />
+        </ObjectPageHeader>
         <JsonDisplay item={curatedSet} isJsonFormat={isJson}>
           <StatusPreviewDetail item={curatedSet} />
           <DataPanel>

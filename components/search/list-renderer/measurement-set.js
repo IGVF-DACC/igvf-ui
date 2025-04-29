@@ -17,6 +17,8 @@ import {
 } from "./search-list-item";
 // components
 import { ExternallyHostedBadge } from "../../common-pill-badges";
+import { ControlledAccessIndicator } from "../../controlled-access";
+import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 
 export default function MeasurementSet({
   item: measurementSet,
@@ -24,7 +26,7 @@ export default function MeasurementSet({
 }) {
   // Collect the summary of the sample object in the measurement set if available. MeasurementSet
   // objects can have zero or one sample object, so we only need to check the first one.
-  const sampleSummary = measurementSet.samples?.[0].summary || "";
+  const sampleSummary = measurementSet.samples[0].summary;
   const isExternallyHosted =
     accessoryData?.[measurementSet["@id"]].externally_hosted ?? false;
   const isSupplementsVisible =
@@ -61,6 +63,10 @@ export default function MeasurementSet({
       </SearchListItemMain>
       <SearchListItemQuality item={measurementSet}>
         {isExternallyHosted && <ExternallyHostedBadge />}
+        <ControlledAccessIndicator item={measurementSet} />
+        <DataUseLimitationSummaries
+          summaries={measurementSet.data_use_limitation_summaries}
+        />
       </SearchListItemQuality>
     </SearchListItemContent>
   );

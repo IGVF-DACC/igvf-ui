@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { ControlledAccessIndicator } from "../controlled-access";
-import type { InstitutionalCertificateObject } from "../../globals";
+import { type InstitutionalCertificateObject } from "../../lib/data-use-limitation";
 
 describe("tests for ControlledAccessIndicator", () => {
   test("renders a controlled access indicator when item has controlled access", () => {

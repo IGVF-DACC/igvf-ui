@@ -11,11 +11,10 @@ import {
 // components
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationStatus } from "../../data-use-limitation-status";
+// lib
+import { type InstitutionalCertificateObject } from "../../../lib/data-use-limitation";
 // root
-import type {
-  InstitutionalCertificateObject,
-  LabObject,
-} from "../../../globals.d";
+import type { LabObject } from "../../../globals";
 
 export default function InstitutionalCertificate({
   item,
@@ -34,8 +33,11 @@ export default function InstitutionalCertificate({
           <span key="lab">{(item.lab as LabObject).title}</span>
         </SearchListItemMeta>
         <SearchListItemQuality item={item}>
-          <DataUseLimitationStatus summary={item.data_use_limitation_summary} />
           <ControlledAccessIndicator item={item} />
+          <DataUseLimitationStatus
+            summary={item.data_use_limitation_summary}
+            showHiddenLimitations
+          />
         </SearchListItemQuality>
       </SearchListItemMain>
     </SearchListItemContent>

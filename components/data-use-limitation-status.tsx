@@ -6,6 +6,11 @@ import { decomposeDataUseLimitationSummary } from "../lib/data-use-limitation";
 import { toShishkebabCase } from "../lib/general";
 
 /**
+ * Limitations that we normally wouldn't show unless explicitly requested.
+ */
+const hiddenLimitations: string[] = ["no certificate"] as const;
+
+/**
  * Maps data use limitations to the corresponding tooltip descriptions and icons.
  */
 const limitationConfigs = {
@@ -91,6 +96,21 @@ const limitationConfigs = {
     ),
   },
 
+  multiple: {
+    description: "Multiple data-use limitations apply.",
+    icon: () => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="white"
+        className="ml-[-4px] h-full"
+        data-testid="icon-limitation-multiple"
+      >
+        <path d="M10.1,3c-3.9,0-7.1,3-7.1,6.9,0,3.9,3,7.1,6.9,7.1,3.9,0,7.1-3,7.1-6.9,0-3.9-3-7.1-6.9-7.1ZM8.9,5.5c0-.6.5-1.1,1.1-1.1s1.1.5,1.1,1.1v5.3c0,.6-.5,1.1-1.1,1.1s-1.1-.5-1.1-1.1v-5.3ZM10,15.6c-.7,0-1.2-.6-1.2-1.2s.6-1.2,1.2-1.2,1.2.6,1.2,1.2-.6,1.2-1.2,1.2Z" />
+      </svg>
+    ),
+  },
+
   none: {
     description: "No data-use limitations.",
     icon: () => (
@@ -166,24 +186,29 @@ const modifierColors = {
  * @param limitation - The data-use limitation
  * @param modifiers - The data-use limitation modifiers
  * @param summary - The data-use limitation summary combining the limitation and modifiers
+ * @param showHiddenLimitations - True to show hidden limitations (e.g., "No limitations")
  */
 export function DataUseLimitationStatus({
   limitation = "",
   modifiers = [],
   summary = "",
+  showHiddenLimitations = false,
 }: {
   limitation?: string;
   modifiers?: string[];
   summary?: string;
+  showHiddenLimitations?: boolean;
 }) {
   const tooltipAttr = useTooltip("institutional-certificate");
 
   if (summary && (limitation || modifiers.length > 0)) {
-    throw new Error("Use the limitation/modifiers or the summary; not both.");
+    throw new Error(
+      "DataUseLimitationStatus: Use the limitation/modifiers or the summary; not both."
+    );
   }
 
   // Use the separate limitation and modifiers if provided, otherwise use the summary.
-  let localLimitation = limitation || "No limitations";
+  let localLimitation = limitation || "no limitations";
   let localModifiers = modifiers;
   if (summary) {
     // Summary provided instead of individual limitation and modifiers. Decompose the summary and
@@ -194,10 +219,10 @@ export function DataUseLimitationStatus({
     localModifiers = newModifiers;
   }
 
-  const Icon =
-    limitationConfigs[localLimitation]?.icon || limitationConfigs.none.icon;
+  if (!hiddenLimitations.includes(localLimitation) || showHiddenLimitations) {
+    const Icon =
+      limitationConfigs[localLimitation]?.icon || limitationConfigs.none.icon;
 
-  if (localLimitation) {
     return (
       <>
         <TooltipRef tooltipAttr={tooltipAttr}>
@@ -245,4 +270,28 @@ export function DataUseLimitationStatus({
       </>
     );
   }
+}
+
+/**
+ * Use this component when you have an array of data-use limitation summaries. These arrays in
+ * objects should normally have only one element. If multiple elements exist in the array, this
+ * component displays "MULTIPLE" in the badge with a corresponding icon.
+ * @param summaries - Array of data-use limitation summaries
+ */
+export function DataUseLimitationSummaries({
+  summaries = [],
+}: {
+  summaries?: string[];
+}) {
+  if (summaries.length === 0) {
+    return null;
+  }
+
+  const uniqueSummaries = new Set(summaries);
+  if (uniqueSummaries.size > 1) {
+    // Use the fake DUL "multiple" to indicate that multiple limitations apply.
+    return <DataUseLimitationStatus summary="multiple" />;
+  }
+
+  return <DataUseLimitationStatus summary={summaries[0]} />;
 }

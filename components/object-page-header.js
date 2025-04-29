@@ -20,7 +20,7 @@ export default function ObjectPageHeader({ item, isJsonFormat, children }) {
   return (
     <>
       <div className="mb-1 flex justify-between">
-        <QualitySection item={item} auditState={auditState}>
+        <QualitySection item={item} auditState={auditState} isForHeader>
           {isExternallyHosted && <ExternallyHostedBadge />}
           {children}
         </QualitySection>

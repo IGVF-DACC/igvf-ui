@@ -17,6 +17,8 @@ import {
 } from "./search-list-item";
 // components
 import { UniformlyProcessedBadge } from "../../common-pill-badges";
+import { ControlledAccessIndicator } from "../../controlled-access";
+import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 
 export default function AnalysisSet({
   item: analysisSet,
@@ -66,6 +68,10 @@ export default function AnalysisSet({
       </SearchListItemMain>
       <SearchListItemQuality item={analysisSet}>
         {isUniformPipeline && <UniformlyProcessedBadge workflow={workflows} />}
+        <ControlledAccessIndicator item={analysisSet} />
+        <DataUseLimitationSummaries
+          summaries={analysisSet.data_use_limitation_summaries}
+        />
       </SearchListItemQuality>
     </SearchListItemContent>
   );
