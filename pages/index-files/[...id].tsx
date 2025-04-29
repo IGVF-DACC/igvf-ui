@@ -238,9 +238,15 @@ export async function getServerSideProps(
         ? await requestFiles(indexFile.input_file_for as string[], request)
         : [];
 
-    const fileFormatSpecifications = indexFile.file_format_specifications
-      ? await requestDocuments(indexFile.file_format_specifications, request)
-      : [];
+    let fileFormatSpecifications = [];
+    if (indexFile.file_format_specifications?.length > 0) {
+      const fileFormatSpecificationsPaths =
+        indexFile.file_format_specifications.map((document) => document["@id"]);
+      fileFormatSpecifications = await requestDocuments(
+        fileFormatSpecificationsPaths,
+        request
+      );
+    }
 
     const embeddedFileSetSamples = collectFileFileSetSamples(indexFile);
 

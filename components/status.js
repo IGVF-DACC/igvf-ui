@@ -108,8 +108,8 @@ const statusStyles = {
     ),
   },
 
-  standardized_file_format: {
-    styles: "bg-green-200 text-white shadow-green-400 [&>svg]:fill-white",
+  standardized: {
+    styles: "bg-[#00a99d] text-white shadow-[#007f76] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"

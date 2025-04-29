@@ -222,7 +222,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         ? await requestFiles(alignmentFile.input_file_for, request)
         : [];
     let fileFormatSpecifications = [];
-    if (alignmentFile.file_format_specifications.length > 0) {
+    if (alignmentFile.file_format_specifications?.length > 0) {
       const fileFormatSpecificationsPaths =
         alignmentFile.file_format_specifications.map(
           (document) => document["@id"]

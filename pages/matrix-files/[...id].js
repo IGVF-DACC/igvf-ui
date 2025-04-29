@@ -142,7 +142,7 @@ MatrixFile.propTypes = {
   // Samples associated with the file's file sets
   fileSetSamples: PropTypes.array.isRequired,
   // Set of documents for file specifications
-  fileFormatSpecifications: PropTypes.array.isRequired,
+  fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Reference files used to generate this file
@@ -187,9 +187,17 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       matrixFile.input_file_for.length > 0
         ? await requestFiles(matrixFile.input_file_for, request)
         : [];
-    const fileFormatSpecifications = matrixFile.file_format_specifications
-      ? await requestDocuments(matrixFile.file_format_specifications, request)
-      : [];
+    let fileFormatSpecifications = [];
+    if (matrixFile.file_format_specifications?.length > 0) {
+      const fileFormatSpecificationsPaths =
+        matrixFile.file_format_specifications.map(
+          (document) => document["@id"]
+        );
+      fileFormatSpecifications = await requestDocuments(
+        fileFormatSpecificationsPaths,
+        request
+      );
+    }
     const referenceFiles = matrixFile.reference_files
       ? await requestFiles(matrixFile.reference_files, request)
       : [];

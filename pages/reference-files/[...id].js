@@ -179,7 +179,7 @@ ReferenceFile.propTypes = {
   // Samples associated with the file's file sets
   fileSetSamples: PropTypes.array,
   // Set of documents for file specifications
-  fileFormatSpecifications: PropTypes.array.isRequired,
+  fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // ConstructLibraryset this file was integrated in
   integratedIn: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
@@ -223,12 +223,17 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       referenceFile.input_file_for.length > 0
         ? await requestFiles(referenceFile.input_file_for, request)
         : [];
-    const fileFormatSpecifications = referenceFile.file_format_specifications
-      ? await requestDocuments(
-          referenceFile.file_format_specifications,
-          request
-        )
-      : [];
+    let fileFormatSpecifications = [];
+    if (referenceFile.file_format_specifications?.length > 0) {
+      const fileFormatSpecificationsPaths =
+        referenceFile.file_format_specifications.map(
+          (document) => document["@id"]
+        );
+      fileFormatSpecifications = await requestDocuments(
+        fileFormatSpecificationsPaths,
+        request
+      );
+    }
     let integratedIn = [];
     if (referenceFile.integrated_in.length > 0) {
       const integratedInPaths = referenceFile.integrated_in.map(
