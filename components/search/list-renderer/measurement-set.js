@@ -19,8 +19,6 @@ import {
 import { ExternallyHostedBadge } from "../../common-pill-badges";
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
-// lib
-import { collectDataUseLimitationSummariesFromSamples } from "../../../lib/data-use-limitation";
 
 export default function MeasurementSet({
   item: measurementSet,
@@ -33,10 +31,6 @@ export default function MeasurementSet({
     accessoryData?.[measurementSet["@id"]].externally_hosted ?? false;
   const isSupplementsVisible =
     measurementSet.alternate_accessions?.length > 0 || sampleSummary;
-
-  const dulSummaries = collectDataUseLimitationSummariesFromSamples(
-    measurementSet.samples
-  );
 
   return (
     <SearchListItemContent>
@@ -70,7 +64,9 @@ export default function MeasurementSet({
       <SearchListItemQuality item={measurementSet}>
         {isExternallyHosted && <ExternallyHostedBadge />}
         <ControlledAccessIndicator item={measurementSet} />
-        <DataUseLimitationSummaries summaries={dulSummaries} />
+        <DataUseLimitationSummaries
+          summaries={measurementSet.data_use_limitation_summaries}
+        />
       </SearchListItemQuality>
     </SearchListItemContent>
   );
