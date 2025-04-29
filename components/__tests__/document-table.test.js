@@ -67,7 +67,7 @@ describe("Test the document table", () => {
     const columnHeaders = screen.getAllByRole("columnheader");
     expect(columnHeaders.length).toBe(6);
     const cells = screen.getAllByRole("cell");
-    expect(cells.length).toBe(10);
+    expect(cells.length).toBe(12);
 
     // Check the contents of the table.
     const pageLinks = screen.getAllByLabelText(
