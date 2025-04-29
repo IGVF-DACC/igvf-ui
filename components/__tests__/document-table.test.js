@@ -28,6 +28,7 @@ describe("Test the document table", () => {
         submitted_by: "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/",
         document_type: "image",
         schema_version: "2",
+        standardized_file_format: "true",
         creation_timestamp: "2022-08-12T21:10:14.258976+00:00",
         "@id": "/documents/ad1f3c3e-23bf-4e33-3b4d-7333eb1ba33e/",
         "@type": ["Document", "Item"],
