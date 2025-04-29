@@ -8,10 +8,7 @@ import { toShishkebabCase } from "../lib/general";
 /**
  * Limitations that we normally wouldn't show unless explicitly requested.
  */
-const hiddenLimitations: string[] = [
-  "no limitations",
-  "no certificate",
-] as const;
+const hiddenLimitations: string[] = ["no certificate"] as const;
 
 /**
  * Maps data use limitations to the corresponding tooltip descriptions and icons.
