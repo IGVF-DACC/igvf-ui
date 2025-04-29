@@ -120,6 +120,7 @@ export default function MeasurementSet({
   controlFor,
   samples,
   seqspecFiles,
+  seqspecDocuments,
   attribution = null,
   isJson,
 }) {
@@ -277,6 +278,7 @@ export default function MeasurementSet({
             files={groupedFiles.other}
             fileSet={measurementSet}
             seqspecFiles={seqspecFiles}
+            seqspecDocuments={seqspecDocuments}
           >
             {groupedFiles.image?.length > 0 && (
               <FileTable
@@ -388,6 +390,8 @@ MeasurementSet.propTypes = {
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // seqspec documents associated with `files`
+  seqspecDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this measurement set
@@ -475,6 +479,17 @@ export async function getServerSideProps({ params, req, query }) {
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
+    let seqspecDocuments = [];
+    if (files.length > 0) {
+      const seqspecDocumentPaths = files.map(
+        (seqspecFile) => seqspecFile.seqspec_document
+      );
+      if (seqspecDocumentPaths.length > 0) {
+        const uniqueDocumentPaths = [...new Set(seqspecDocumentPaths)];
+        seqspecDocuments = await requestDocuments(uniqueDocumentPaths, request);
+      }
+    }
+
     let publications = [];
     if (measurementSet.publications?.length > 0) {
       const publicationPaths = measurementSet.publications.map(
@@ -501,6 +516,7 @@ export async function getServerSideProps({ params, req, query }) {
         controlFor,
         samples,
         seqspecFiles,
+        seqspecDocuments,
         pageContext: { title: measurementSet.accession },
         attribution,
         isJson,

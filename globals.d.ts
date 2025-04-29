@@ -418,3 +418,24 @@ export type UserActionObject = {
   href: string;
   notSubmittable: boolean;
 };
+
+/**
+ * Data structure common to all document object types.
+ */
+export interface DocumentObject extends DatabaseObject {
+  attachment: {
+    download: string;
+    href: string;
+    type: string;
+    md5sum?: string;
+    size?: number;
+    width?: number;
+    height?: number;
+  };
+  characterization_method?: string;
+  description: string;
+  document_type?: string;
+  notes?: string;
+  standardized_file_format?: boolean;
+  urls?: string[];
+}

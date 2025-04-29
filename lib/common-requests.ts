@@ -120,6 +120,7 @@ export async function requestFiles(
       "lane",
       "read_names",
       "seqspecs",
+      "seqspec_document",
       "sequencing_platform",
       "sequencing_run",
       "submitted_file_name",
