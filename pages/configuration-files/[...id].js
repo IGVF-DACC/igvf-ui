@@ -131,7 +131,7 @@ ConfigurationFile.propTypes = {
   // Samples associated with this file's file set
   fileSetSamples: PropTypes.array.isRequired,
   // Set of documents for file specifications
-  fileFormatSpecifications: PropTypes.array.isRequired,
+  fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Is the format JSON?
@@ -177,13 +177,17 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       configurationFile.input_file_for.length > 0
         ? await requestFiles(configurationFile.input_file_for, request)
         : [];
-    const fileFormatSpecifications =
-      configurationFile.file_format_specifications
-        ? await requestDocuments(
-            configurationFile.file_format_specifications,
-            request
-          )
-        : [];
+    let fileFormatSpecifications = [];
+    if (configurationFile.file_format_specifications?.length > 0) {
+      const fileFormatSpecificationsPaths =
+        configurationFile.file_format_specifications.map(
+          (document) => document["@id"]
+        );
+      fileFormatSpecifications = await requestDocuments(
+        fileFormatSpecificationsPaths,
+        request
+      );
+    }
     const embeddedFileSetSamples = collectFileFileSetSamples(configurationFile);
     const fileSetSamplePaths = embeddedFileSetSamples.map(
       (sample) => sample["@id"]

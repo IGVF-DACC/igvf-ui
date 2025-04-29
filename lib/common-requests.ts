@@ -211,6 +211,7 @@ export async function requestDocuments(
       "attachment",
       "description",
       "document_type",
+      "standardized_file_format",
       "uuid",
     ])
   ).unwrap_or([]);

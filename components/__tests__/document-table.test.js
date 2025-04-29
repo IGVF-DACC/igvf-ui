@@ -28,6 +28,7 @@ describe("Test the document table", () => {
         submitted_by: "/users/3787a0ac-f13a-40fc-a524-69628b04cd59/",
         document_type: "image",
         schema_version: "2",
+        standardized_file_format: "true",
         creation_timestamp: "2022-08-12T21:10:14.258976+00:00",
         "@id": "/documents/ad1f3c3e-23bf-4e33-3b4d-7333eb1ba33e/",
         "@type": ["Document", "Item"],
@@ -65,9 +66,9 @@ describe("Test the document table", () => {
 
     // Check the size of the table.
     const columnHeaders = screen.getAllByRole("columnheader");
-    expect(columnHeaders.length).toBe(5);
+    expect(columnHeaders.length).toBe(6);
     const cells = screen.getAllByRole("cell");
-    expect(cells.length).toBe(10);
+    expect(cells.length).toBe(12);
 
     // Check the contents of the table.
     const pageLinks = screen.getAllByLabelText(

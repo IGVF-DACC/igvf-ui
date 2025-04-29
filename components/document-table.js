@@ -6,6 +6,7 @@ import { DataAreaTitle } from "./data-area";
 import DocumentAttachmentLink from "./document-link";
 import ItemLink from "./item-link";
 import SortableGrid from "./sortable-grid";
+import Status from "./status";
 
 /**
  * Columns displayed in the document table.
@@ -39,6 +40,15 @@ const columns = [
       return <DocumentAttachmentLink document={source} />;
     },
     sorter: (item) => item.attachment.download.toLowerCase(),
+  },
+  {
+    id: "standardized_file_format",
+    title: "Standardized File Format",
+    display: ({ source }) => {
+      return source.standardized_file_format ? (
+        <Status status="standardized" />
+      ) : null;
+    },
   },
   {
     id: "attachment",
