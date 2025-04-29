@@ -746,7 +746,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toBeCalledWith(
-      "/search/?field=attachment&field=description&field=document_type&field=uuid&@id=/documents/7988b40d-f7fc-4dc2-a7d4-95936e61be5c/&@id=/documents/3508c752-4a9f-46e0-a5b6-099cd8a71428/&limit=2",
+      "/search/?field=attachment&field=description&field=document_type&field=standardized_file_format&field=uuid&@id=/documents/7988b40d-f7fc-4dc2-a7d4-95936e61be5c/&@id=/documents/3508c752-4a9f-46e0-a5b6-099cd8a71428/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
