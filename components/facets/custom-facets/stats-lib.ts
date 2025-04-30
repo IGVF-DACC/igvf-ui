@@ -61,8 +61,12 @@ export function getRangeQueryValues(
   maxRangeQueryValue: number | null;
 } {
   const rangeQueries = query.getKeyValues(field);
-  const minQuery = rangeQueries.find((query) => query.startsWith("gte:"));
-  const maxQuery = rangeQueries.find((query) => query.startsWith("lte:"));
+  const minQuery = rangeQueries.find(
+    (query) => query.startsWith("gte:") || query.startsWith("gt:")
+  );
+  const maxQuery = rangeQueries.find(
+    (query) => query.startsWith("lte:") || query.startsWith("lt:")
+  );
   const minQueryValue = minQuery ? parseFloat(minQuery.split(":")[1]) : null;
   const maxQueryValue = maxQuery ? parseFloat(maxQuery.split(":")[1]) : null;
   return {

@@ -1,4 +1,5 @@
 // lib
+import { UC } from "../../../lib/constants";
 import { dataSize } from "../../../lib/general";
 // root
 import { SearchResultsFilter } from "../../../globals";
@@ -19,7 +20,23 @@ export default function FileSizeTagLabel({
   if (filter.term.startsWith("gte:") || filter.term.startsWith("lte:")) {
     // Extract the file size value in bytes from the filter as well as the gte or lte operator.
     const value = filter.term.replace(/(gte:|lte:)/, "");
-    const operator = filter.term.startsWith("gte:") ? ">" : "<";
+    const operator = filter.term.startsWith("gte:") ? UC.ge : UC.le;
+
+    // Convert the value to a size with the appropriate magnitude.
+    const sizeLabel = dataSize(parseInt(value));
+
+    return (
+      <span>
+        {operator} {sizeLabel}
+      </span>
+    );
+  }
+
+  // If the filter term starts with "gt:" or "lt:", handle as a file-size range.
+  if (filter.term.startsWith("gt:") || filter.term.startsWith("lt:")) {
+    // Extract the file size value in bytes from the filter as well as the gte or lte operator.
+    const value = filter.term.replace(/(gt:|lt:)/, "");
+    const operator = filter.term.startsWith("gt:") ? ">" : "<";
 
     // Convert the value to a size with the appropriate magnitude.
     const sizeLabel = dataSize(parseInt(value));
