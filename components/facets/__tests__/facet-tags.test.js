@@ -633,6 +633,85 @@ describe("Test the file-size facet tags", () => {
     const tags = within(tagSection).getAllByRole("link");
     expect(tags.length).toBe(2);
     expect(tags[0]).toHaveTextContent(/^File Size/);
+    expect(tags[0]).toHaveTextContent("≥ 5.0 KB");
+    expect(tags[1]).toHaveTextContent(/^File Size/);
+    expect(tags[1]).toHaveTextContent("≤ 10 MB");
+  });
+
+  it("renders file-size facet tags for file-size ranges using ge: and le:", () => {
+    const searchResults = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/sequence-files/IGVFFI1165AJSO/",
+          "@type": ["SequenceFile", "File", "Item"],
+          accession: "IGVFFI1165AJSO",
+          content_type: "Nanopore reads",
+          file_format: "pod5",
+          lab: {
+            "@id": "/labs/j-michael-cherry/",
+            title: "J. Michael Cherry, Stanford",
+          },
+          status: "released",
+          summary: "Nanopore reads from sequencing run 1",
+          upload_status: "validated",
+          uuid: "fffcd64e-af02-4675-8953-7352459ee06a",
+        },
+      ],
+      "@id": "/search/?type=File&file_size=gt:5&file_size=lt:10",
+      "@type": ["Search"],
+      all: "/search/?type=File&file_size=gt:5&file_size=lt:10&limit=all",
+      clear_filters: "/search/?type=File",
+      columns: {
+        "@id": {
+          title: "ID",
+        },
+      },
+      facet_groups: [],
+      facets: [
+        {
+          field: "file_size",
+          title: "File Size",
+          terms: {
+            count: 69,
+            min: 43,
+            max: 1453609183,
+            avg: 76413286.1884058,
+            sum: 5272516747,
+          },
+          total: 1,
+          type: "stats",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "file_size",
+          term: "gt:5000",
+          remove: "/search/?type=File&file_size=lt%3A10",
+        },
+        {
+          field: "file_size",
+          term: "lt:10000000",
+          remove: "/search/?type=File&file_size=gt%3A5",
+        },
+        {
+          field: "type",
+          term: "File",
+          remove: "/search/?file_size=gt%3A5&file_size=lt%3A10",
+        },
+      ],
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    render(<FacetTags searchResults={searchResults} />);
+    const tagSection = screen.getByTestId("facettags");
+    const tags = within(tagSection).getAllByRole("link");
+    expect(tags.length).toBe(2);
+    expect(tags[0]).toHaveTextContent(/^File Size/);
     expect(tags[0]).toHaveTextContent("> 5.0 KB");
     expect(tags[1]).toHaveTextContent(/^File Size/);
     expect(tags[1]).toHaveTextContent("< 10 MB");
