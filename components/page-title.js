@@ -19,7 +19,7 @@ export default function PageTitle({
 
   return (
     <div
-      className={`sticky top-0 z-10 mb-5 border-b border-data-border ${className}`}
+      className={`sticky top-0 z-20 mb-5 border-b border-data-border ${className}`}
     >
       <div className="flex items-end justify-between gap-2 bg-background">
         {title && (

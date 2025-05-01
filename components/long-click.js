@@ -61,20 +61,22 @@ export default function useLongClick(
   }
 
   useEffect(() => {
-    // Install the event listeners for the checkbox. We don't need the "mouseup" event because
-    // "click" fires after "mouseup," getting handled by the checkbox `onClick` handler.
-    const el = document.getElementById(elementId);
-    el.addEventListener("mousedown", onMouseDown);
-    el.addEventListener("mouseup", onMouseUp);
-    el.addEventListener("touchstart", onMouseDown);
-    el.addEventListener("touchend", onMouseUp);
+    if (onLongClick) {
+      // Install the event listeners for the checkbox. We don't need the "mouseup" event because
+      // "click" fires after "mouseup," getting handled by the checkbox `onClick` handler.
+      const el = document.getElementById(elementId);
+      el.addEventListener("mousedown", onMouseDown);
+      el.addEventListener("mouseup", onMouseUp);
+      el.addEventListener("touchstart", onMouseDown);
+      el.addEventListener("touchend", onMouseUp);
 
-    return () => {
-      el.removeEventListener("mousedown", onMouseDown);
-      el.removeEventListener("mouseup", onMouseUp);
-      el.removeEventListener("touchstart", onMouseDown);
-      el.removeEventListener("touchend", onMouseUp);
-    };
+      return () => {
+        el.removeEventListener("mousedown", onMouseDown);
+        el.removeEventListener("mouseup", onMouseUp);
+        el.removeEventListener("touchstart", onMouseDown);
+        el.removeEventListener("touchend", onMouseUp);
+      };
+    }
   });
 
   return timer.current;

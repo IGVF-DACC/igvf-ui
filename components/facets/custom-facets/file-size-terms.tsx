@@ -1,6 +1,7 @@
 // node_modules
 import { useEffect, useRef, useState } from "react";
 // components
+import Checkbox from "../../checkbox";
 import { Button } from "../../form-elements";
 import Icon from "../../icon";
 import { RangeSelector } from "../../range-selector";
@@ -101,6 +102,10 @@ function FileSizeTermsCore({
     facet.field
   );
 
+  // Determine whether the query has selected the "Show only files with no size" checkbox.
+  const negativeSizeElements = query.getKeyValues(facet.field, "NEGATIVE");
+  const noFileSizeSelected = negativeSizeElements.length > 0;
+
   // Minimum range value the user has set
   const [sliderMinValue, setSliderMinValue] = useState<number>(0);
   // Maximum range value the user has set
@@ -149,6 +154,21 @@ function FileSizeTermsCore({
     updateQuery(query.format());
     setSliderMinValue(0);
     setSliderMaxValue(SLIDER_MAX_VALUE);
+  }
+
+  // Called when the user clicks the "Show only files with no size" checkbox.
+  function noSizeClick() {
+    if (noFileSizeSelected) {
+      // Remove the "Show only files with no size" checkbox from the query string.
+      query.deleteKeyValue(facet.field, "*");
+      updateQuery(query.format());
+    } else {
+      // Add the "Show only files with no size" checkbox to the query string. Remove any other
+      // `file_size=` elements from the query string, including ranges.
+      query.deleteKeyValue(facet.field);
+      query.addKeyValue(facet.field, "*", "NEGATIVE");
+      updateQuery(query.format());
+    }
   }
 
   // If the minimum or maximum possible values for the facet have changed, update the range
@@ -205,7 +225,7 @@ function FileSizeTermsCore({
         data-testid="file-size-terms-legend"
         className="flex justify-center gap-2 text-sm font-semibold"
       >
-        {sizeMin === sizeMax ? (
+        {sizeMin === sizeMax || noFileSizeSelected ? (
           <div>No selectable range</div>
         ) : (
           <>
@@ -216,35 +236,48 @@ function FileSizeTermsCore({
         )}
       </div>
       {isContainerVisible && (
-        <div
-          className="flex items-center gap-1"
-          data-testid="file-size-terms-range"
-        >
-          <RangeSelector
-            id={`${facet.field}-range`}
-            minValue={sliderMinValue}
-            maxValue={sliderMaxValue}
-            minRangeValue={0}
-            maxRangeValue={SLIDER_MAX_VALUE}
-            onChange={onChange}
-            isDisabled={sizeMin === sizeMax}
-          />
-          <TooltipRef tooltipAttr={resetTooltipAttr}>
-            <div>
-              <Button
-                onClick={resetRange}
-                size="sm"
-                isDisabled={resetButtonDisabled}
-                id={`reset-range-${facet.field}`}
-              >
-                <Icon.Reset className="h-4 w-4" />
-              </Button>
-            </div>
-          </TooltipRef>
-          <Tooltip tooltipAttr={resetTooltipAttr}>
-            Reset the range to the minimum and maximum values
-          </Tooltip>
-        </div>
+        <>
+          <div
+            className="flex items-center gap-1"
+            data-testid="file-size-terms-range"
+          >
+            <RangeSelector
+              id={`${facet.field}-range`}
+              minValue={sliderMinValue}
+              maxValue={sliderMaxValue}
+              minRangeValue={0}
+              maxRangeValue={SLIDER_MAX_VALUE}
+              onChange={onChange}
+              isDisabled={sizeMin === sizeMax || noFileSizeSelected}
+            />
+            <TooltipRef tooltipAttr={resetTooltipAttr}>
+              <div>
+                <Button
+                  onClick={resetRange}
+                  size="sm"
+                  isDisabled={resetButtonDisabled}
+                  id={`reset-range-${facet.field}`}
+                >
+                  <Icon.Reset className="h-4 w-4" />
+                </Button>
+              </div>
+            </TooltipRef>
+            <Tooltip tooltipAttr={resetTooltipAttr}>
+              Reset the range to the minimum and maximum values
+            </Tooltip>
+          </div>
+          <div className="flex justify-center">
+            <Checkbox
+              id={`facet-${facet.field}-no-size`}
+              checked={noFileSizeSelected}
+              name={`facet-${facet.field}-no-size`}
+              className="mt-2 text-sm font-semibold"
+              onClick={noSizeClick}
+            >
+              Show only files with no size
+            </Checkbox>
+          </div>
+        </>
       )}
     </div>
   );
