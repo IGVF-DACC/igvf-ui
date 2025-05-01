@@ -42,7 +42,6 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function ModelSet({
   modelSet,
-  softwareVersion = null,
   documents,
   publications,
   externalInputData,
@@ -101,6 +100,20 @@ export default function ModelSet({
                     </DataItemValue>
                   </>
                 )}
+                {modelSet.software_versions && (
+                  <>
+                    <DataItemLabel>Software Versions</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {modelSet.software_versions.map((version) => (
+                          <Link key={version["@id"]} href={version["@id"]}>
+                            {version.summary}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
                 {modelSet.model_zoo_location && (
                   <>
                     <DataItemLabel>Model Zoo Location</DataItemLabel>
@@ -112,16 +125,6 @@ export default function ModelSet({
                       >
                         {modelSet.model_zoo_location}
                       </a>
-                    </DataItemValue>
-                  </>
-                )}
-                {softwareVersion && (
-                  <>
-                    <DataItemLabel>Software Version</DataItemLabel>
-                    <DataItemValue>
-                      <Link href={softwareVersion["@id"]}>
-                        {softwareVersion.name}
-                      </Link>
                     </DataItemValue>
                   </>
                 )}
@@ -212,8 +215,6 @@ export default function ModelSet({
 ModelSet.propTypes = {
   // Model Set to display
   modelSet: PropTypes.object.isRequired,
-  // Software version associated with this model
-  softwareVersion: PropTypes.object,
   // External input data associated with this model
   externalInputData: PropTypes.object,
   // Files to display
@@ -243,9 +244,6 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/model-sets/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(modelSet)) {
-    const softwareVersion = modelSet.software_version
-      ? (await request.getObject(modelSet.software_version)).optional()
-      : null;
     const documents = modelSet.documents
       ? await requestDocuments(modelSet.documents, request)
       : [];

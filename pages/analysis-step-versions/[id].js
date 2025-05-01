@@ -124,7 +124,9 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         analysisStepVersion,
-        pageContext: { title: analysisStepVersion.uuid },
+        pageContext: {
+          title: `${analysisStepVersion.analysis_step.title} ${"Version"}`,
+        },
         attribution,
         isJson,
       },
