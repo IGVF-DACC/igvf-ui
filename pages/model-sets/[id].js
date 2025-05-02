@@ -296,7 +296,6 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         modelSet,
-        softwareVersion,
         documents,
         publications,
         externalInputData,
