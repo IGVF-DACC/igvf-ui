@@ -2,7 +2,11 @@ import type { Config } from "tailwindcss";
 
 const tailwindConfig: Config = {
   darkMode: "class",
-  content: ["./pages/**/*.{js,ts,tsx}", "./components/**/*.{js,ts,tsx}"],
+  content: [
+    "./pages/**/*.{js,ts,tsx}",
+    "./components/**/*.{js,ts,tsx}",
+    "./lib/**/*.{js,ts,tsx}",
+  ],
   safelist: [
     "fore-fileset-type-analysis",
     "back-fileset-type-analysis",

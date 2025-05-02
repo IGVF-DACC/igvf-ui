@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
+import { SeqspecDocumentLink } from "./seqspec-document";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
@@ -78,6 +79,29 @@ const filesColumns = [
     hide: (data, columns, meta) => meta.isSeqspecHidden,
   },
   {
+    id: "seqspec_document",
+    title: "Sequence Specification Document",
+    display: ({ source, meta }) => {
+      const matchingSeqspecDocument = meta.seqspecDocuments.find(
+        (seqspecDocument) => source.seqspec_document === seqspecDocument["@id"]
+      );
+      if (matchingSeqspecDocument) {
+        return (
+          <SeqspecDocumentLink seqspecDocument={matchingSeqspecDocument} />
+        );
+      }
+    },
+    sorter: (item, meta) => {
+      const matchingSeqspecDocument = meta.seqspecDocuments.find(
+        (seqspecDocument) => item.seqspec_document === seqspecDocument["@id"]
+      );
+      return matchingSeqspecDocument
+        ? matchingSeqspecDocument.attachment.download
+        : "";
+    },
+    hide: (data, columns, meta) => meta.isSeqspecHidden,
+  },
+  {
     id: "sequencing_platform",
     title: "Sequencing Platform",
     display: ({ source }) => {
@@ -130,6 +154,7 @@ export default function SequencingFileTable({
   itemPathProp = "file_set.@id",
   isIlluminaReadType = undefined,
   seqspecFiles = [],
+  seqspecDocuments = [],
   hasReadType = false,
   isSeqspecHidden = false,
   panelId = "sequencing-files",
@@ -169,6 +194,7 @@ export default function SequencingFileTable({
           pager={{}}
           meta={{
             seqspecFiles,
+            seqspecDocuments,
             hasReadType,
             isSeqspecHidden,
           }}
@@ -192,6 +218,8 @@ SequencingFileTable.propTypes = {
   isIlluminaReadType: PropTypes.bool,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object),
+  // seqspec documents associated with `files`
+  seqspecDocuments: PropTypes.arrayOf(PropTypes.object),
   // True if files have illumina_read_type
   hasReadType: PropTypes.bool,
   // True to hide the seqspec column

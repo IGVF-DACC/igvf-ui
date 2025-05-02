@@ -256,6 +256,7 @@ export default function ConstructLibrarySet({
   publications,
   files,
   seqspecFiles,
+  seqspecDocuments,
   integratedContentFiles,
   attribution = null,
   isJson,
@@ -316,6 +317,7 @@ export default function ConstructLibrarySet({
             files={files}
             fileSet={constructLibrarySet}
             seqspecFiles={seqspecFiles}
+            seqspecDocuments={seqspecDocuments}
           />
           {integratedContentFiles.length > 0 && (
             <FileTable
@@ -370,6 +372,8 @@ ConstructLibrarySet.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // seqspec documents associated with `files`
+  seqspecDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Integrated content file objects
   integratedContentFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this construct library
@@ -422,6 +426,17 @@ export async function getServerSideProps({ params, req, query }) {
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
+    let seqspecDocuments = [];
+    if (files.length > 0) {
+      const seqspecDocumentPaths = files.map(
+        (seqspecFile) => seqspecFile.seqspec_document
+      );
+      if (seqspecDocumentPaths.length > 0) {
+        const uniqueDocumentPaths = [...new Set(seqspecDocumentPaths)];
+        seqspecDocuments = await requestDocuments(uniqueDocumentPaths, request);
+      }
+    }
+
     let publications = [];
     if (constructLibrarySet.publications?.length > 0) {
       const publicationPaths = constructLibrarySet.publications.map(
@@ -442,6 +457,7 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         files,
         seqspecFiles,
+        seqspecDocuments,
         integratedContentFiles,
         publications,
         pageContext: { title: constructLibrarySet.accession },

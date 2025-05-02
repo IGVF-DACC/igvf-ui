@@ -50,6 +50,7 @@ export default function AuxiliarySet({
   files,
   relatedDatasets,
   seqspecFiles,
+  seqspecDocuments,
   inputFileSetFor,
   controlFor,
   samples,
@@ -100,6 +101,7 @@ export default function AuxiliarySet({
             files={groupedFiles.other}
             fileSet={auxiliarySet}
             seqspecFiles={seqspecFiles}
+            seqspecDocuments={seqspecDocuments}
           >
             {groupedFiles.tabular?.length > 0 && (
               <FileTable
@@ -173,6 +175,8 @@ AuxiliarySet.propTypes = {
   relatedDatasets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // seqspec documents associated with `files`
+  seqspecDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets that this file set is input for
   inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets controlled by this file set
@@ -222,6 +226,17 @@ export async function getServerSideProps({ params, req, query }) {
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
 
+    let seqspecDocuments = [];
+    if (files.length > 0) {
+      const seqspecDocumentPaths = files.map(
+        (seqspecFile) => seqspecFile.seqspec_document
+      );
+      if (seqspecDocumentPaths.length > 0) {
+        const uniqueDocumentPaths = [...new Set(seqspecDocumentPaths)];
+        seqspecDocuments = await requestDocuments(uniqueDocumentPaths, request);
+      }
+    }
+
     const inputFileSetFor =
       auxiliarySet.input_for.length > 0
         ? await requestFileSets(auxiliarySet.input_for, request)
@@ -260,6 +275,7 @@ export async function getServerSideProps({ params, req, query }) {
         files,
         relatedDatasets,
         seqspecFiles,
+        seqspecDocuments,
         inputFileSetFor,
         samples,
         controlFor,

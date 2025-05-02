@@ -24,6 +24,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
+import { SeqspecDocumentLink } from "../../components/seqspec-document";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
@@ -53,6 +54,7 @@ export default function SequenceFile({
   inputFileFor,
   fileSetSamples,
   fileFormatSpecifications,
+  seqspecDocument,
   attribution = null,
   isJson,
   seqspecs,
@@ -78,6 +80,14 @@ export default function SequenceFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={sequenceFile} />
+              {seqspecDocument && (
+                <>
+                  <DataItemLabel>Sequence Specification Document</DataItemLabel>
+                  <DataItemValue>
+                    <SeqspecDocumentLink seqspecDocument={seqspecDocument} />
+                  </DataItemValue>
+                </>
+              )}
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
@@ -210,6 +220,8 @@ SequenceFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // seqspec document associated with this file
+  seqspecDocument: PropTypes.object,
   // Attribution for this file
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -268,6 +280,9 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       sequenceFile.seqspecs?.length > 0
         ? await requestSeqspecFiles([sequenceFile], request)
         : [];
+    const seqspecDocuments = sequenceFile.seqspec_document
+      ? await requestDocuments([sequenceFile.seqspec_document], request)
+      : null;
     const embeddedFileSetSamples = collectFileFileSetSamples(sequenceFile);
     const fileSetSamplePaths = embeddedFileSetSamples.map(
       (sample) => sample["@id"]
@@ -289,6 +304,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileSetSamples,
         fileFormatSpecifications,
+        seqspecDocument: seqspecDocuments ? seqspecDocuments[0] : null,
         pageContext: { title: sequenceFile.accession },
         attribution,
         isJson,
