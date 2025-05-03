@@ -759,6 +759,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             Data Submission
           </NavigationHrefItem>
           <NavigationHrefItem
+            id="affiliates"
+            href="/help/affiliates/"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Affiliate Membership
+          </NavigationHrefItem>
+          <NavigationHrefItem
             id="general-help"
             href="/help/general-help"
             navigationClick={navigationClick}
