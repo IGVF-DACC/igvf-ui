@@ -37,3 +37,28 @@ export function errorObjectToProps(errorObject: ErrorObject): ServerSideProps {
     },
   };
 }
+
+/**
+ * Generate an error object to pass to NextJS with the appropriate status code and message.
+ * @param statusCode HTTP status code
+ * @param title - Short title of the error
+ * @param description - Short description of the error
+ * @param detail - Detailed description of the error
+ * @returns ErrorObject to pass to NextJS
+ */
+export function generateErrorObject(
+  statusCode: number,
+  title: string,
+  description: string,
+  detail: string
+): ErrorObject {
+  return {
+    isError: true,
+    "@type": ["Error"],
+    code: statusCode,
+    description,
+    detail,
+    status: statusCode.toString(),
+    title,
+  };
+}

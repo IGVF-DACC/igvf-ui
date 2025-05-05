@@ -24,8 +24,8 @@ import {
 import SessionContext from "../components/session-context";
 // lib
 import { UC } from "../lib/constants";
-import { errorObjectToProps } from "../lib/errors";
-import FetchRequest from "../lib/fetch-request";
+import { errorObjectToProps, generateErrorObject } from "../lib/errors";
+import FetchRequest, { HTTP_STATUS_CODE } from "../lib/fetch-request";
 import { toShishkebabCase } from "../lib/general";
 import QueryString from "../lib/query-string";
 
@@ -305,9 +305,22 @@ function getTopHitsItemListsByType(topHitsResults) {
 }
 
 export async function getServerSideProps({ req, query }) {
-  // Accept a single "term=" query-string parameter.
+  // Accept the first "query=" query-string parameter. Badly formatted queries cause a 400.
+  let term = "";
+  if (query.query) {
+    term = Array.isArray(query.query) ? query.query[0] : query.query;
+  }
+  if (!term) {
+    const error = generateErrorObject(
+      HTTP_STATUS_CODE.BAD_REQUEST,
+      "Bad request",
+      "Bad request",
+      "No search term provided."
+    );
+    return errorObjectToProps(error);
+  }
+
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const term = query.term;
   const topHitsResults = (
     await request.getObject(`/top-hits-raw?query=${term}`)
   ).union();

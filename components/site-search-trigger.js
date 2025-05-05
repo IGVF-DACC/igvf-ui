@@ -72,7 +72,7 @@ export default function SiteSearchTrigger({ isExpanded }) {
   function closeModalAndExecuteSearch(searchTerm) {
     closeModal();
     if (searchTerm) {
-      router.push(`/site-search?term=${encodeUriElement(searchTerm)}`);
+      router.push(`/site-search/?query=${encodeUriElement(searchTerm)}`);
     }
   }
 

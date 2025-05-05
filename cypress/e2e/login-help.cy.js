@@ -26,7 +26,7 @@ describe("Make sure the login help appears in the correct situations", () => {
   });
 
   it("shows the login help when viewing no site-search results while signed out", () => {
-    cy.visit("/site-search/?term=abcdefg");
+    cy.visit("/site-search/?query=abcdefg");
     cy.contains("No matching items to display");
     cy.contains("Please sign in if you believe you should see matching items");
   });
@@ -36,7 +36,7 @@ describe("Make sure the login help appears in the correct situations", () => {
     cy.contains("Cypress Testing");
     cy.wait(1000);
 
-    cy.visit("/site-search/?term=abcdefg");
+    cy.visit("/site-search/?query=abcdefg");
     cy.contains("No matching items to display");
     cy.contains(
       "Please sign in if you believe you should see matching items"

@@ -1,5 +1,5 @@
 import { ErrorObject } from "../fetch-request.d";
-import { logError, errorObjectToProps } from "../errors";
+import { generateErrorObject, errorObjectToProps, logError } from "../errors";
 
 describe("Test logError", () => {
   it("should log an error", () => {
@@ -58,6 +58,26 @@ describe("Test errorObjectToProps", () => {
       },
     };
     const actual = errorObjectToProps(errorObject);
+    expect(actual).toEqual(expected);
+  });
+});
+
+describe("Test generateErrorObject", () => {
+  it("should generate an error object", () => {
+    const statusCode = 403;
+    const title = "Forbidden";
+    const description = "You do not have permission to access this resource.";
+    const detail = "This is a detailed error message.";
+    const expected: ErrorObject = {
+      isError: true,
+      "@type": ["Error"],
+      code: statusCode,
+      description,
+      detail,
+      status: statusCode.toString(),
+      title,
+    };
+    const actual = generateErrorObject(statusCode, title, description, detail);
     expect(actual).toEqual(expected);
   });
 });
