@@ -6,6 +6,7 @@
 
 // node_modules
 import * as dateFns from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 // lib
 import { UC } from "./constants";
 
@@ -24,6 +25,7 @@ export function formatDate(
     const midnightDate = new Date(
       jsDate.valueOf() + jsDate.getTimezoneOffset() * 60 * 1000
     );
+
     // Format date in the local time zone as "Month d, yyyy" and time as 24-hour time if `showTime` is true.
     return dateFns.format(
       midnightDate,
@@ -31,6 +33,16 @@ export function formatDate(
     );
   }
   return "";
+}
+
+/**
+ * Converts a Date object to a human-readable string in the format "Month Day, Year". It ignores
+ * the time and local time zone.
+ * @param date - Date object to convert
+ * @returns Human-readable date string in the format "Month Day, Year"
+ */
+export function formatLongDate(date: Date): string {
+  return formatInTimeZone(date, "UTC", "MMMM d, yyyy");
 }
 
 /**
@@ -66,12 +78,20 @@ export function formatDateRange(startDate?: string, endDate?: string): string {
  * utilities because they can use the local time zone, which could return a month that's off by
  * one.
  * @param iso8601 ISO 8601 date string
- * @returns Equivalent date in yyyy-MM format
+ * @returns Equivalent date in yyyy-MM format, or yyyy-MM-DD if `withDate` is true
  */
-export function iso8601ToYearDate(iso8601: string): string {
-  const basicDate = iso8601.split("T")[0];
-  const dt = new Date(basicDate);
-  const year = dt.getUTCFullYear();
-  const month = dt.getUTCMonth() + 1;
-  return `${year}-${month.toString().padStart(2, "0")}`;
+export function iso8601ToDateOnly(iso8601: string): string {
+  return iso8601.split("T")[0];
+}
+
+/**
+ * Convert a date string in the format YYYY-MM-DD or 2023-08-01T04:12:31.890123+00:00 to a Date
+ * object without using the local time zone. So "2025-06-01" will return a Date object representing
+ * June 1, 2025, at midnight UTC, not "2025-05-31" in the local time zone.
+ * @param dateString Date string in the format YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS.mmmmmm+00:00
+ * @returns Date object representing `dateString`
+ */
+export function stringToDate(dateString: string): Date {
+  const dateWithoutTime = dateString.split("T")[0];
+  return dateFns.parse(dateWithoutTime, "yyyy-MM-dd", new Date());
 }

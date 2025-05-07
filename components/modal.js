@@ -28,7 +28,13 @@ import CloseButton from "./close-button";
 /**
  * Main component for modal dialogs.
  */
-export default function Modal({ isOpen, onClose, testid = null, children }) {
+export default function Modal({
+  isOpen,
+  onClose,
+  widthClasses = "w-4/5",
+  testid = null,
+  children,
+}) {
   return (
     <Dialog
       open={isOpen}
@@ -41,7 +47,9 @@ export default function Modal({ isOpen, onClose, testid = null, children }) {
         aria-hidden="true"
       />
       <div className="fixed inset-0 overflow-y-auto">
-        <Dialog.Panel className="mx-auto my-5 w-4/5 max-w-4xl overflow-hidden rounded-xl border border-modal-border bg-white drop-shadow-lg dark:bg-gray-900 xl:my-20">
+        <Dialog.Panel
+          className={`mx-auto my-5 max-w-4xl overflow-hidden rounded-xl border border-modal-border bg-white drop-shadow-lg dark:bg-gray-900 xl:my-20 ${widthClasses}`}
+        >
           {children}
         </Dialog.Panel>
       </div>
@@ -54,6 +62,8 @@ Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   // Called to close the modal on click outside or ESC
   onClose: PropTypes.func.isRequired,
+  // Tailwind CSS classes to set the width of the modal
+  widthClasses: PropTypes.string,
   // Data-testid attribute for testing
   testid: PropTypes.string,
 };

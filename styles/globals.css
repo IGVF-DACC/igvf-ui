@@ -714,3 +714,79 @@ a {
   appearance: none;
   opacity: 0;
 }
+
+/**
+ * react-date-range styles
+ */
+
+/** Entire date picker window */
+.dark .rdrCalendarWrapper {
+  background-color: #000000;
+}
+
+/** Panel that shows the currently selected dates */
+.dark .rdrDateDisplayWrapper {
+  background-color: #1f2937;
+}
+
+/** Buttons for the currently selected dates */
+.rdrDateDisplay .rdrDateInput input {
+  height: auto;
+  line-height: 1;
+  padding: 0.3rem 0.3rem;
+}
+
+.rdrDateDisplay .rdrDateInput {
+  border-radius: 0;
+}
+
+.dark .rdrDateDisplay .rdrDateInput {
+  background-color: #000000;
+  color: #d1d5db;
+}
+
+/** Focused buttons for the currently selected dates */
+.dark .rdrDateDisplay .rdrDateDisplayItemActive {
+  border-color: #8facff !important;
+}
+
+/** Month and year pickers */
+.dark .rdrMonthAndYearWrapper .rdrMonthAndYearPickers select {
+  color: #d1d5db;
+}
+
+/** Prev/Next month buttons */
+.dark .rdrNextPrevButton {
+  background-color: #000000;
+  border: 1px solid #8facff;
+  color: #8facff;
+}
+
+.dark .rdrNextPrevButton.rdrNextButton i {
+  border-color: transparent transparent transparent #8facff;
+}
+
+.dark .rdrNextPrevButton.rdrPprevButton i {
+  border-color: transparent #8facff transparent transparent;
+}
+
+/** Calendar date cells */
+.dark .rdrDayNumber span {
+  color: #6b7280;
+}
+
+.dark .rdrInRange {
+  background-color: #7c6c4e;
+}
+
+.rdrMonth .rdrDay:not(.rdrDayPassive) .rdrInRange ~ .rdrDayNumber span,
+.rdrMonth .rdrDay:not(.rdrDayPassive) .rdrStartEdge ~ .rdrDayNumber span,
+.rdrMonth .rdrDay:not(.rdrDayPassive) .rdrEndEdge ~ .rdrDayNumber span,
+.rdrMonth .rdrDay:not(.rdrDayPassive) .rdrSelected ~ .rdrDayNumber span {
+  color: #ffffff;
+}
+
+.dark .rdrStartEdge,
+.dark .rdrEndEdge {
+  background-color: #7c6c4e;
+}
