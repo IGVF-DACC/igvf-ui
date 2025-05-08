@@ -109,18 +109,6 @@ export default function AnalysisSet({
                   <DataItemValue>{analysisSet.description}</DataItemValue>
                 </>
               )}
-              {analysisSet.workflows.length > 0 && (
-                <>
-                  <DataItemLabel>Workflows</DataItemLabel>
-                  <DataItemList isCollapsible>
-                    {analysisSet.workflows.map((workflow) => (
-                      <Link key={workflow["@id"]} href={workflow["@id"]}>
-                        {`${workflow.name} (${workflow.accession})`}
-                      </Link>
-                    ))}
-                  </DataItemList>
-                </>
-              )}
               {analysisSet.functional_assay_mechanisms.length > 0 && (
                 <>
                   <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
