@@ -21,6 +21,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import { UniformlyProcessedBadge } from "../../components/common-pill-badges";
 // lib
 import {
   requestAnalysisSteps,
@@ -51,21 +52,17 @@ export default function Workflow({
         <AlternateAccessions
           alternateAccessions={workflow.alternate_accessions}
         />
-        <ObjectPageHeader item={workflow} isJsonFormat={isJson} />
+        <ObjectPageHeader item={workflow} isJsonFormat={isJson}>
+          {workflow.uniform_pipeline === true && (
+            <UniformlyProcessedBadge label="uniform pipeline" />
+          )}
+        </ObjectPageHeader>
         <JsonDisplay item={workflow} isJsonFormat={isJson}>
           <StatusPreviewDetail item={workflow} />
           <DataPanel>
             <DataArea>
               <DataItemLabel>Name</DataItemLabel>
               <DataItemValue>{workflow.name}</DataItemValue>
-              {"uniform_pipeline" in workflow && (
-                <>
-                  <DataItemLabel>Uniform Pipeline</DataItemLabel>
-                  <DataItemValue>
-                    {workflow.uniform_pipeline === true ? "Yes" : "No"}
-                  </DataItemValue>
-                </>
-              )}
               {workflow.description && (
                 <>
                   <DataItemLabel>Description</DataItemLabel>

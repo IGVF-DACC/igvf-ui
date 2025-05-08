@@ -24,7 +24,7 @@ import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import { FileGraph } from "../../components/file-graph";
 import FileSetTable from "../../components/file-set-table";
-import FileTable from "../../components/file-table";
+import AnalysisSetFileTable from "../../components/analysis-set-file-table";
 import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -212,7 +212,7 @@ export default function AnalysisSet({
 
           {files.length > 0 && (
             <>
-              <FileTable
+              <AnalysisSetFileTable
                 files={files}
                 fileSet={analysisSet}
                 isDownloadable

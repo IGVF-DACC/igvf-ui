@@ -12,6 +12,8 @@ import {
   SearchListItemType,
   SearchListItemUniqueId,
 } from "./search-list-item";
+// components
+import { UniformlyProcessedBadge } from "../../common-pill-badges";
 
 export default function Workflow({ item: workflow }) {
   const isSupplementVisible = workflow.alternate_accessions?.length > 0;
@@ -33,7 +35,11 @@ export default function Workflow({ item: workflow }) {
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>
-      <SearchListItemQuality item={workflow} />
+      <SearchListItemQuality item={workflow}>
+        {workflow.uniform_pipeline === true && (
+          <UniformlyProcessedBadge label="uniform pipeline" />
+        )}
+      </SearchListItemQuality>
     </SearchListItemContent>
   );
 }
