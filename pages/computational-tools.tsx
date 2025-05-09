@@ -146,6 +146,7 @@ function convertSoftwareToDataTable(
   publications: PublicationObject[]
 ): DataTableFormat {
   const softwareByCategory = groupByCategories(software);
+  console.log("SOFTWARE BY CATEGORY", softwareByCategory);
   const tableData: Row[] = [];
   Object.entries(softwareByCategory).forEach(([category, items]) => {
     const itemRows = generateRowsInCategory(items, publications);
@@ -253,6 +254,23 @@ function PublicationCell({
     );
   }
 }
+
+// function safeStringify(obj: any, indent = 2) {
+//   const seen = new WeakSet();
+//   return JSON.stringify(
+//     obj,
+//     (key, value) => {
+//       if (typeof value === "object" && value !== null) {
+//         if (seen.has(value)) {
+//           return "[Circular]";
+//         }
+//         seen.add(value);
+//       }
+//       return value;
+//     },
+//     indent
+//   );
+// }
 
 /**
  * Main page component for the Computational Tools page. It fetches software and publication data from

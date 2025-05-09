@@ -135,8 +135,8 @@ function SingleRow({
  * @param data - The data to render including the rows and their child rows
  */
 export function DataTable({ data }: { data: DataTableFormat }) {
+  console.log("DATA TABLE DATA", data);
   const rowsSegments = splitRowsIntoSegments(data);
-  console.log("******** DATA", data);
 
   return (
     <div className="max-h-[90vh] w-fit overflow-auto border border-panel">
