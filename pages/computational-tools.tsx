@@ -20,6 +20,52 @@ import type {
 } from "../globals";
 
 /**
+ * Header row for the DataTable.
+ */
+const headerRow: Row = {
+  id: "header-row",
+  cells: [
+    {
+      id: "header-category",
+      content: "Category",
+      component: DefaultHeaderCell,
+    },
+    {
+      id: "header-tool",
+      content: "Tool",
+      component: DefaultHeaderCell,
+    },
+    {
+      id: "header-purpose",
+      content: "Purpose",
+      component: PurposeColumnHeader,
+    },
+    {
+      id: "header-references",
+      content: "References",
+      component: ReferencesColumnHeader,
+    },
+  ],
+  isHeaderRow: true,
+};
+
+/**
+ * Mapping of software categories to their corresponding Tailwind CSS classes for their cell
+ * background.
+ */
+const categoryColorMap: Record<string, string> = {
+  "CRISPR Screens": "bg-computational-tools-category-crispr-screens",
+  "General Bioinformatic Utilities":
+    "bg-computational-tools-category-bioinformatic-utilities",
+  "Genomic Annotations": "bg-computational-tools-category-genomic-annotations",
+  Networks: "bg-computational-tools-category-networks",
+  Predictions: "bg-computational-tools-category-predictions",
+  "Reporter Assays": "bg-computational-tools-category-reporter-assays",
+  "Single Cell Multiome": "bg-computational-tools-category-single-cell",
+  unknown: "bg-computational-tools-category-unknown",
+};
+
+/**
  * Takes an array of software objects and groups them by their categories. The resulting object has
  * the category names as keys and arrays of software objects that have that category as values.
  * Each software object can have multiple categories, so one software object can appear under
@@ -63,7 +109,11 @@ function generateRowsInCategory(
       cells: [
         {
           id: `${titleAsId}-tool`,
-          content: item.title,
+          content: (
+            <a href={item.source_url} target="_blank" rel="noopener noreferrer">
+              {item.title}
+            </a>
+          ),
         },
         {
           id: `${titleAsId}-purpose`,
@@ -105,12 +155,70 @@ function convertSoftwareToDataTable(
         {
           id: `${toShishkebabCase(category)}-category`,
           content: category,
+          component: CategoryHeaderCell,
           childRows: itemRows,
+          isHeaderCell: true,
         },
       ],
     });
   });
-  return tableData;
+  return [headerRow].concat(tableData);
+}
+
+/**
+ * Displays other header cells.
+ */
+function DefaultHeaderCell({ children }: { children: React.ReactNode }) {
+  return (
+    <th className="text-computational-tools-header bg-computational-tools-header sticky top-0 z-[2] border-b border-r border-panel p-2 text-left align-bottom last:border-r-0">
+      {children}
+    </th>
+  );
+}
+
+/**
+ * Displays the Category header cell.
+ */
+function CategoryHeaderCell({
+  rowSpan,
+  children,
+}: {
+  rowSpan: number;
+  children: React.ReactNode;
+}) {
+  const color =
+    categoryColorMap[children as string] || categoryColorMap.unknown;
+
+  return (
+    <th
+      className={`border-b border-r border-panel p-2 text-left align-top font-semibold last:border-r-0 ${color}`}
+      {...(rowSpan > 1 ? { rowSpan } : {})}
+    >
+      {children}
+    </th>
+  );
+}
+
+/**
+ * Displays the Purpose header cell.
+ */
+function PurposeColumnHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <th className="text-computational-tools-header bg-computational-tools-header sticky top-0 z-[2] w-96 border-b border-r border-panel p-2 text-left last:border-r-0">
+      {children}
+    </th>
+  );
+}
+
+/**
+ * Displays the Purpose header cell.
+ */
+function ReferencesColumnHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <th className="text-computational-tools-header bg-computational-tools-header sticky top-0 z-[2] w-80 border-b border-r border-panel p-2 text-left last:border-r-0">
+      {children}
+    </th>
+  );
 }
 
 /**
