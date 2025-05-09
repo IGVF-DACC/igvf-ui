@@ -159,11 +159,8 @@ export type Profiles = ProfilesProps | ProfilesGeneric;
 /**
  * Describes the search-results object returned by the data provider.
  */
-export interface SearchResults {
-  "@context": string;
+export interface SearchResults extends DatabaseObject {
   "@graph": SearchResultsObject[];
-  "@id": string;
-  "@type": string[];
   clear_filters: string;
   columns: SearchResultsColumns;
   facet_groups?: SearchResultsFacetGroup[];
@@ -389,6 +386,25 @@ export interface AwardObject extends DatabaseObject {
 export interface SampleObject extends DatabaseObject {
   aliases?: string[];
   institutional_certificates?: string[] | InstitutionalCertificateObject[];
+}
+
+/**
+ * Data structure common to all publication object types.
+ */
+export interface PublicationObject extends DatabaseObject {
+  publication_identifiers: string[];
+}
+
+/**
+ * Data structure common to all software object types.
+ */
+export interface SoftwareObject extends DatabaseObject {
+  categories?: string[];
+  description: string;
+  name: string;
+  publications?: PublicationObject[];
+  source_url: string;
+  title: string;
 }
 
 /**

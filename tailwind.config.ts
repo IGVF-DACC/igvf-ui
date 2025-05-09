@@ -199,6 +199,25 @@ const tailwindConfig: Config = {
           "var(--color-assay-summary-matrix-data-cell)",
         "assay-summary-matrix-total-cell":
           "var(--color-assay-summary-matrix-total-cell)",
+
+        "computational-tools-header":
+          "var(--color-computational-tools-header-background)",
+        "computational-tools-category-crispr-screens":
+          "var(--color-computational-tools-category-crispr-screens)",
+        "computational-tools-category-bioinformatic-utilities":
+          "var(--color-computational-tools-category-bioinformatic-utilities)",
+        "computational-tools-category-genomic-annotations":
+          "var(--color-computational-tools-category-genomic-annotations)",
+        "computational-tools-category-networks":
+          "var(--color-computational-tools-category-networks)",
+        "computational-tools-category-predictions":
+          "var(--color-computational-tools-category-predictions)",
+        "computational-tools-category-reporter-assays":
+          "var(--color-computational-tools-category-reporter-assays)",
+        "computational-tools-category-single-cell":
+          "var(--color-computational-tools-category-single-cell)",
+        "computational-tools-category-unknown":
+          "var(--color-computational-tools-category-unknown)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
@@ -332,6 +351,9 @@ const tailwindConfig: Config = {
 
         "menu-item": "var(--color-menu-item-text)",
         "menu-item-hover": "var(--color-menu-item-text-hover)",
+
+        "computational-tools-header":
+          "var(--color-computational-tools-header-foreground)",
       },
       boxShadow: {
         // Status badges

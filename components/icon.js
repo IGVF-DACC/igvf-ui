@@ -255,6 +255,21 @@ const Icon = {
       <path d="M17.7,5.29c2-2-1-4.99-2.99-2.99l-4.62,4.62l2.99,2.99L17.7,5.29z" />
     </svg>
   ),
+  Repo: ({ className = null, testid = "icon-repo" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <circle cx="13.8" cy="10.9" r="2.5" />
+      <circle cx="6.2" cy="15.5" r="2.5" />
+      <circle cx="6.2" cy="4.5" r="2.5" />
+      <path d="M6.2,12.6c.3,0,.5,0,.7.1v-5.5c-.2,0-.5.1-.7.1s-.5,0-.7-.1v5.5c.2,0,.5-.1.7-.1Z" />
+      <path d="M12.1,8.6l-3.3-2.9c-.2.5-.6.9-1,1.1l3.4,2.9c.2-.5.5-.9.9-1.2Z" />
+    </svg>
+  ),
   Reset: ({ className = null, testid = "icon-reset" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -476,6 +491,10 @@ Icon.ResourcesStandards.propTypes = {
   testid: PropTypes.string,
 };
 Icon.PencilSlash.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Repo.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };

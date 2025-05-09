@@ -328,6 +328,18 @@
   --color-assay-summary-matrix-data-column-header: #c8d2fc;
   --color-assay-summary-matrix-data-cell: #ecdc99;
   --color-assay-summary-matrix-total-cell: #c7e8d6ff;
+
+  /** Computational Tools Table */
+  --color-computational-tools-header-background: #606060;
+  --color-computational-tools-header-foreground: #ffffff;
+  --color-computational-tools-category-crispr-screens: #e5b8b8;
+  --color-computational-tools-category-bioinformatic-utilities: #ccccff;
+  --color-computational-tools-category-genomic-annotations: #e5e3a1;
+  --color-computational-tools-category-networks: #eac2f2;
+  --color-computational-tools-category-predictions: #a1e5a6;
+  --color-computational-tools-category-reporter-assays: #e5c7a1;
+  --color-computational-tools-category-single-cell: #a1e4e5;
+  --color-computational-tools-category-unknown: #a0a0a0;
 }
 
 /**
@@ -553,6 +565,18 @@
   --color-assay-summary-matrix-data-column-header: #40434f;
   --color-assay-summary-matrix-data-cell: #4b4631;
   --color-assay-summary-matrix-total-cell: #064e3b;
+
+  /** Computational Tools Table */
+  --color-computational-tools-header-background: #404040;
+  --color-computational-tools-header-foreground: #ffffff;
+  --color-computational-tools-category-crispr-screens: #806666;
+  --color-computational-tools-category-bioinformatic-utilities: #7a7a99;
+  --color-computational-tools-category-genomic-annotations: #807e59;
+  --color-computational-tools-category-networks: #59805c;
+  --color-computational-tools-category-predictions: #59805c;
+  --color-computational-tools-category-reporter-assays: #806e59;
+  --color-computational-tools-category-single-cell: #4d7f80;
+  --color-computational-tools-category-unknown: #606060;
 }
 
 a {
