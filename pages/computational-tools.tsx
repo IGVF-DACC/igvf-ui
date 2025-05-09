@@ -163,6 +163,7 @@ function convertSoftwareToDataTable(
       ],
     });
   });
+  console.log("HEADER ROW", headerRow);
   return [headerRow].concat(tableData);
 }
 
@@ -286,6 +287,7 @@ export default function ComputationalTools({
   publications: PublicationObject[];
 }) {
   const tableData = convertSoftwareToDataTable(software, publications);
+  console.log("TABLE DATA", tableData);
   return (
     <div>
       <PagePreamble />
