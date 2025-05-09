@@ -120,7 +120,7 @@ function generateRowsInCategory(
           content: item.description,
         },
         {
-          id: `${titleAsId}-publications`,
+          id: `${titleAsId}-references`,
           content: (
             <PublicationCell
               softwarePublications={item.publications}
@@ -166,7 +166,7 @@ function convertSoftwareToDataTable(
 }
 
 /**
- * Displays other header cells.
+ * Displays general header cells.
  */
 function DefaultHeaderCell({ children }: { children: React.ReactNode }) {
   return (
@@ -211,7 +211,7 @@ function PurposeColumnHeader({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Displays the Purpose header cell.
+ * Displays the References header cell.
  */
 function ReferencesColumnHeader({ children }: { children: React.ReactNode }) {
   return (
@@ -270,7 +270,7 @@ export default function ComputationalTools({
   const tableData = convertSoftwareToDataTable(software, publications);
   return (
     <div>
-      <PagePreamble pageTitle="Computational Tools" />
+      <PagePreamble />
       <div role="table" className="overflow-x-auto text-sm">
         <DataTable data={tableData} />
       </div>

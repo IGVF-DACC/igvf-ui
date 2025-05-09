@@ -565,6 +565,18 @@
   --color-assay-summary-matrix-data-column-header: #40434f;
   --color-assay-summary-matrix-data-cell: #4b4631;
   --color-assay-summary-matrix-total-cell: #064e3b;
+
+  /** Computational Tools Table */
+  --color-computational-tools-header-background: #404040;
+  --color-computational-tools-header-foreground: #ffffff;
+  --color-computational-tools-category-crispr-screens: #806666;
+  --color-computational-tools-category-bioinformatic-utilities: #7a7a99;
+  --color-computational-tools-category-genomic-annotations: #807e59;
+  --color-computational-tools-category-networks: #59805c;
+  --color-computational-tools-category-predictions: #59805c;
+  --color-computational-tools-category-reporter-assays: #806e59;
+  --color-computational-tools-category-single-cell: #4d7f80;
+  --color-computational-tools-category-unknown: #606060;
 }
 
 a {
