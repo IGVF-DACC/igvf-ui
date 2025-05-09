@@ -392,6 +392,25 @@ export interface SampleObject extends DatabaseObject {
 }
 
 /**
+ * Data structure common to all publication object types.
+ */
+export interface PublicationObject extends DatabaseObject {
+  publication_identifiers: string[];
+}
+
+/**
+ * Data structure common to all software object types.
+ */
+export interface SoftwareObject extends DatabaseObject {
+  categories?: string[];
+  description: string;
+  name: string;
+  publications?: string[] | PublicationObject[];
+  source_url: string;
+  title: string;
+}
+
+/**
  * Data structure common to all workflow object types.
  */
 export interface WorkflowObject extends DatabaseObject {
