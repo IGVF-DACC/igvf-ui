@@ -56,8 +56,7 @@ export default function InstitutionalCertificate({
         <ObjectPageHeader item={institutionalCertificate} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={institutionalCertificate} />
           <DataUseLimitationStatus
-            limitation={institutionalCertificate.data_use_limitation}
-            modifiers={institutionalCertificate.data_use_limitation_modifiers}
+            summary={institutionalCertificate.data_use_limitation_summary}
             showHiddenLimitations
           />
         </ObjectPageHeader>
