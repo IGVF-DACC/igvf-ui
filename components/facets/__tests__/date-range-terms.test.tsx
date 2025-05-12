@@ -256,14 +256,11 @@ describe("Test DateRangeTerms component", () => {
     expect(button).toHaveTextContent("June 1, 2024");
     expect(button).toHaveTextContent("June 30, 2024");
 
-    // Click the button and make sure the modal opens.
-    await userEvent.click(button);
-    const modal = screen.getByTestId("date-range-modal");
-    expect(modal).toBeInTheDocument();
-
     // Click the "Clear" button and make sure the updateQuery function is called with the correct arguments.
-    const applyButton = screen.getByText("Clear");
-    await userEvent.click(applyButton);
+    const clearButton = screen.getByTestId(
+      "date-range-reset-release_timestamp"
+    );
+    await userEvent.click(clearButton);
     expect(updateQuery).toHaveBeenCalledWith("type=MeasurementSet");
   });
 

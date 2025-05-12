@@ -196,6 +196,7 @@ export default function DateRangeTerms({
           <Button
             size="sm"
             type="secondary"
+            id={`date-range-reset-${facet.field}`}
             isDisabled={isResetDisabled}
             onClick={() => onDateRangeApply(null, null)}
           >
