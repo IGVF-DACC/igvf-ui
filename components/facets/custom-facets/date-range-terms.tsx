@@ -89,9 +89,6 @@ function DateRangeModal({
         <Button type="secondary" onClick={onClose}>
           Cancel
         </Button>
-        <Button type="primary" onClick={() => onDateRangeChange(null, null)}>
-          Clear
-        </Button>
         <Button
           type="primary"
           onClick={() =>
@@ -171,10 +168,12 @@ export default function DateRangeTerms({
   if (startDate && endDate) {
     const humanReadableStartDate = formatLongDate(startDate);
     const humanReadableEndDate = formatLongDate(endDate);
+    const isResetDisabled =
+      earliestFilterDate === null && latestFilterDate === null;
 
     return (
       <>
-        <div className="flex justify-center gap-1 p-2">
+        <div className="flex flex-col justify-center gap-1 p-2">
           <button
             className="flex w-full rounded border border-button-secondary bg-button-secondary fill-button-secondary px-2 py-1 text-button-secondary"
             onClick={onDateRangeTrigger}
@@ -194,6 +193,14 @@ export default function DateRangeTerms({
               </div>
             </div>
           </button>
+          <Button
+            size="sm"
+            type="secondary"
+            isDisabled={isResetDisabled}
+            onClick={() => onDateRangeApply(null, null)}
+          >
+            Reset Date Range
+          </Button>
         </div>
         {isOpen && (
           <DateRangeModal
