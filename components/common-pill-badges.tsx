@@ -25,7 +25,13 @@ function UniformlyProcessedIcon({ className }: { className?: string }) {
  * Displays a badge if at least one of the given workflows is a uniform pipeline.
  * @param className Additional Tailwind CSS to apply to the badge
  */
-export function UniformlyProcessedBadge({ className }: { className?: string }) {
+export function UniformlyProcessedBadge({
+  className,
+  label = "uniformly processed",
+}: {
+  className?: string;
+  label?: string;
+}) {
   return (
     <PillBadge
       testid="uniform-pipeline-badge"
@@ -33,7 +39,7 @@ export function UniformlyProcessedBadge({ className }: { className?: string }) {
       iconPosition="left"
     >
       <UniformlyProcessedIcon className="h-4 w-4" />
-      <div className="py-px">uniformly processed</div>
+      <div className="py-px">{label}</div>
     </PillBadge>
   );
 }

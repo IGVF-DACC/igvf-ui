@@ -24,7 +24,7 @@ import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import { FileGraph } from "../../components/file-graph";
 import FileSetTable from "../../components/file-set-table";
-import FileTable from "../../components/file-table";
+import AnalysisSetFileTable from "../../components/analysis-set-file-table";
 import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -107,18 +107,6 @@ export default function AnalysisSet({
                 <>
                   <DataItemLabel>Description</DataItemLabel>
                   <DataItemValue>{analysisSet.description}</DataItemValue>
-                </>
-              )}
-              {analysisSet.workflows.length > 0 && (
-                <>
-                  <DataItemLabel>Workflows</DataItemLabel>
-                  <DataItemList isCollapsible>
-                    {analysisSet.workflows.map((workflow) => (
-                      <Link key={workflow["@id"]} href={workflow["@id"]}>
-                        {`${workflow.name} (${workflow.accession})`}
-                      </Link>
-                    ))}
-                  </DataItemList>
                 </>
               )}
               {analysisSet.functional_assay_mechanisms.length > 0 && (
@@ -212,7 +200,7 @@ export default function AnalysisSet({
 
           {files.length > 0 && (
             <>
-              <FileTable
+              <AnalysisSetFileTable
                 files={files}
                 fileSet={analysisSet}
                 isDownloadable
