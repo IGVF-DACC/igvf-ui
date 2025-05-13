@@ -59,16 +59,22 @@ DataPanel.propTypes = {
  * their values to their right on desktop. You only need this to wrap these kinds of data items.
  * Any display not comprising labels and their values can appear outside a <DataAre>.
  */
-export function DataArea({ children }) {
+export function DataArea({ isSmall = false, children }) {
+  const containerClasses = isSmall
+    ? "@sm:grid @sm:grid-cols-data-item-small @sm:gap-2 text-sm"
+    : "@md:grid @md:grid-cols-data-item @md:gap-4";
+
   return (
-    <div
-      className="@md:grid @md:grid-cols-data-item @md:gap-4"
-      data-testid="dataarea"
-    >
+    <div className={containerClasses} data-testid="dataarea">
       {children}
     </div>
   );
 }
+
+DataArea.propTypes = {
+  // True to display the small version of the data area
+  isSmall: PropTypes.bool,
+};
 
 /**
  * Displays the title above a data panel or table.
@@ -126,10 +132,11 @@ DataAreaTitleLink.propTypes = {
 /**
  * Display the label of a data item label/value pair.
  */
-export function DataItemLabel({ className = "", children }) {
+export function DataItemLabel({ className = "", isSmall = false, children }) {
+  const containerClasses = isSmall ? "mt-2 @sm:mt-0" : "mt-4 @md:mt-0";
   return (
     <div
-      className={`mt-4 break-words font-semibold text-data-label first:mt-0 @md:mt-0 dark:text-gray-400 ${className}`}
+      className={`break-words font-semibold text-data-label first:mt-0 dark:text-gray-400 ${containerClasses} ${className}`}
       data-testid="dataitemlabel"
     >
       {children}
@@ -140,15 +147,20 @@ export function DataItemLabel({ className = "", children }) {
 DataItemLabel.propTypes = {
   // Additional Tailwind CSS classes to apply to the <div> element
   className: PropTypes.string,
+  // True to use the small versions of labels and values
+  isSmall: PropTypes.bool,
 };
 
 /**
  * Display the value of a data item label/value pair.
  */
-export function DataItemValue({ className = "", children }) {
+export function DataItemValue({ className = "", isSmall = false, children }) {
+  const containerClasses = isSmall
+    ? "mb-2 @sm:mb-0 @sm:min-w-0"
+    : "mb-4 @md:mb-0 @md:min-w-0";
   return (
     <div
-      className={`mb-4 font-medium text-data-value last:mb-0 @md:mb-0 @md:min-w-0 ${className}`}
+      className={`font-medium text-data-value last:mb-0 ${containerClasses} ${className}`}
       data-testid="dataitemvalue"
     >
       {children}
@@ -159,6 +171,8 @@ export function DataItemValue({ className = "", children }) {
 DataItemValue.propTypes = {
   // Additional Tailwind CSS classes to apply to the <div> element
   className: PropTypes.string,
+  // True to use the small versions of labels and values
+  isSmall: PropTypes.bool,
 };
 
 /**

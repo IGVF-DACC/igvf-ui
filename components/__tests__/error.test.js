@@ -79,7 +79,7 @@ describe("Test the Error component while logged out", () => {
     expect(screen.getByText("403")).toBeInTheDocument();
     expect(title).toBeInTheDocument();
     expect(loginHelp).toBeInTheDocument();
-    expect(within(loginHelp).getByText("sign in"));
+    expect(within(loginHelp).getByText("sign in")).toBeInTheDocument();
 
     screen.getByRole("button").click();
     expect(loginWithRedirect).toHaveBeenCalled();

@@ -15,6 +15,11 @@ const tailwindConfig: Config = {
     "fore-fileset-type-measurement",
     "back-fileset-type-measurement",
   ],
+  variants: {
+    extend: {
+      width: ["only"],
+    },
+  },
   theme: {
     container: {
       center: true,
@@ -405,12 +410,15 @@ const tailwindConfig: Config = {
         "file-graph-model": "var(--color-file-graph-model)",
         "file-graph-prediction": "var(--color-file-graph-prediction)",
         "file-graph-unknown": "var(--color-file-graph-unknown)",
+        "file-graph-qc-trigger": "var(--color-file-graph-qc-trigger-bg)",
+        "file-graph-qc-trigger-text": "var(--color-file-graph-qc-trigger-text)",
 
         "section-directory": "var(--color-section-directory)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
         "data-item": "fit-content(200px) 1fr",
+        "data-item-small": "fit-content(160px) 1fr",
       },
       maxHeight: {
         "column-select-modal": "calc(100vh - 300px)",
@@ -419,6 +427,8 @@ const tailwindConfig: Config = {
         "nav-collapse": "var(--color-nav-collapse)",
         "facet-filter-icon": "var(--color-facet-filter-icon-stroke)",
         "facet-filter-icon-set": "var(--color-facet-filter-icon-set-stroke)",
+
+        "file-graph-node": "var(--color-file-graph-node-stroke)",
       },
       typography: {
         DEFAULT: {
@@ -516,6 +526,10 @@ const tailwindConfig: Config = {
   plugins: [
     require("@tailwindcss/typography"),
     require("@tailwindcss/container-queries"),
+
+    function ({ addVariant }) {
+      addVariant("only-child", "&:only-child");
+    },
 
     // Add .break-anywhere class until this gets built into Tailwind CSS. A PR exists for this but
     // it hasn't been merged yet:

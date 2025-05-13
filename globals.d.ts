@@ -337,6 +337,7 @@ export interface FileObject extends DatabaseObject {
   file_size?: number;
   href?: string;
   input_file_for?: string[] | FileObject[];
+  quality_metrics: string[] | QualityMetricObject[];
   reference_files: string[] | FileObject[];
   summary?: string;
   upload_status?: UploadStatus;
@@ -435,23 +436,64 @@ export type UserActionObject = {
   notSubmittable: boolean;
 };
 
+export type MimeType =
+  | "application/json"
+  | "application/pdf"
+  | "image/gif"
+  | "image/jpeg"
+  | "image/png"
+  | "image/svs"
+  | "image/tiff"
+  | "text/autosql"
+  | "text/html"
+  | "text/plain"
+  | "text/tab-separated-values";
+
+export type Attachment = {
+  download: string;
+  href: string;
+  type: MimeType;
+  md5sum?: string;
+  size?: number;
+  width?: number;
+  height?: number;
+};
+
 /**
  * Data structure common to all document object types.
  */
 export interface DocumentObject extends DatabaseObject {
-  attachment: {
-    download: string;
-    href: string;
-    type: string;
-    md5sum?: string;
-    size?: number;
-    width?: number;
-    height?: number;
-  };
+  attachment: Attachment;
   characterization_method?: string;
   description: string;
   document_type?: string;
   notes?: string;
   standardized_file_format?: boolean;
   urls?: string[];
+}
+
+export interface SoftwareObject extends DatabaseObject {
+  description: string;
+  name: string;
+  source_url: string;
+  title: string;
+}
+
+export interface SoftwareVersionObject extends DatabaseObject {
+  aliases: string[];
+  software: string | SoftwareObject;
+}
+
+export interface AnalysisStepObject extends DatabaseObject {
+  analysis_step_types: string[];
+  input_content_types: string[];
+  output_content_types: string[];
+  step_label: string;
+  title: string;
+  workflow: string | WorkflowObject;
+}
+
+export interface AnalysisStepVersionObject extends DatabaseObject {
+  analysis_step: string | AnalysisStepObject;
+  software_versions: string[] | SoftwareVersionObject[];
 }

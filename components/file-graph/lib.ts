@@ -21,7 +21,7 @@ export const NODE_WIDTH = 156;
 /**
  * Height of a node in the graph in pixels.
  */
-export const NODE_HEIGHT = 44;
+export const NODE_HEIGHT = 60;
 
 /**
  * xxhashjs seed for hashing strings; generate randomly.
