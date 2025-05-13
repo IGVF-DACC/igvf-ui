@@ -33,13 +33,11 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
-  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
-  collectFileFileSetSamples,
   convertFileDownloadPathToFilePagePath,
 } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -51,7 +49,6 @@ export default function AlignmentFile({
   derivedFrom,
   derivedFromFileSets,
   inputFileFor,
-  fileSetSamples,
   fileFormatSpecifications,
   referenceFiles,
   isJson,
@@ -134,8 +131,8 @@ export default function AlignmentFile({
               panelId="file-format-specifications"
             />
           )}
-          {fileSetSamples.length > 0 && (
-            <SampleTable samples={fileSetSamples} />
+          {alignmentFile.file_set.samples?.length > 0 && (
+            <SampleTable samples={alignmentFile.file_set.samples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -173,8 +170,6 @@ AlignmentFile.propTypes = {
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
-  // Samples associated with this file's file set
-  fileSetSamples: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -235,14 +230,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = alignmentFile.reference_files
       ? await requestFiles(alignmentFile.reference_files, request)
       : [];
-    const embeddedFileSetSamples = collectFileFileSetSamples(alignmentFile);
-    const fileSetSamplePaths = embeddedFileSetSamples.map(
-      (sample) => sample["@id"]
-    );
-    const fileSetSamples =
-      fileSetSamplePaths.length > 0
-        ? await requestSamples(fileSetSamplePaths, request)
-        : [];
     const attribution = await buildAttribution(
       alignmentFile,
       req.headers.cookie
@@ -254,7 +241,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         inputFileFor,
-        fileSetSamples,
         fileFormatSpecifications,
         pageContext: { title: alignmentFile.accession },
         attribution,

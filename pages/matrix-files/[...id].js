@@ -30,13 +30,11 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
-  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
-  collectFileFileSetSamples,
   convertFileDownloadPathToFilePagePath,
 } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -48,7 +46,6 @@ export default function MatrixFile({
   derivedFrom,
   derivedFromFileSets,
   inputFileFor,
-  fileSetSamples,
   fileFormatSpecifications,
   referenceFiles,
   isJson,
@@ -93,8 +90,8 @@ export default function MatrixFile({
               title="File Format Specifications"
             />
           )}
-          {fileSetSamples.length > 0 && (
-            <SampleTable samples={fileSetSamples} />
+          {matrixFile.file_set.samples?.length > 0 && (
+            <SampleTable samples={matrixFile.file_set.samples} />
           )}
           {referenceFiles.length > 0 && (
             <FileTable
@@ -139,8 +136,6 @@ MatrixFile.propTypes = {
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
-  // Samples associated with the file's file sets
-  fileSetSamples: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -201,14 +196,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = matrixFile.reference_files
       ? await requestFiles(matrixFile.reference_files, request)
       : [];
-    const embeddedFileSetSamples = collectFileFileSetSamples(matrixFile);
-    const fileSetSamplePaths = embeddedFileSetSamples.map(
-      (sample) => sample["@id"]
-    );
-    const fileSetSamples =
-      fileSetSamplePaths.length > 0
-        ? await requestSamples(fileSetSamplePaths, request)
-        : [];
     const attribution = await buildAttribution(matrixFile, req.headers.cookie);
     return {
       props: {
@@ -217,7 +204,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         inputFileFor,
-        fileSetSamples,
         fileFormatSpecifications,
         pageContext: { title: matrixFile.accession },
         attribution,

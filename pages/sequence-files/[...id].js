@@ -33,14 +33,12 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
-  requestSamples,
   requestSeqspecFiles,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
-  collectFileFileSetSamples,
   convertFileDownloadPathToFilePagePath,
 } from "../../lib/files";
 import { truthyOrZero } from "../../lib/general";
@@ -52,7 +50,6 @@ export default function SequenceFile({
   derivedFrom,
   derivedFromFileSets,
   inputFileFor,
-  fileSetSamples,
   fileFormatSpecifications,
   seqspecDocument,
   attribution = null,
@@ -169,8 +166,8 @@ export default function SequenceFile({
               panelId="file-format-specifications"
             />
           )}
-          {fileSetSamples.length > 0 && (
-            <SampleTable samples={fileSetSamples} />
+          {sequenceFile.file_set.samples?.length > 0 && (
+            <SampleTable samples={sequenceFile.file_set.samples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -214,8 +211,6 @@ SequenceFile.propTypes = {
   derivedFrom: PropTypes.array,
   // Filesets derived from files belong to
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Samples associated with this file's file set
-  fileSetSamples: PropTypes.array.isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
@@ -283,14 +278,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const seqspecDocuments = sequenceFile.seqspec_document
       ? await requestDocuments([sequenceFile.seqspec_document], request)
       : null;
-    const embeddedFileSetSamples = collectFileFileSetSamples(sequenceFile);
-    const fileSetSamplePaths = embeddedFileSetSamples.map(
-      (sample) => sample["@id"]
-    );
-    const fileSetSamples =
-      fileSetSamplePaths.length > 0
-        ? await requestSamples(fileSetSamplePaths, request)
-        : [];
     const attribution = await buildAttribution(
       sequenceFile,
       req.headers.cookie
@@ -302,7 +289,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         inputFileFor,
-        fileSetSamples,
         fileFormatSpecifications,
         seqspecDocument: seqspecDocuments ? seqspecDocuments[0] : null,
         pageContext: { title: sequenceFile.accession },

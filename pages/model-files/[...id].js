@@ -25,13 +25,11 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
-  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
-  collectFileFileSetSamples,
   convertFileDownloadPathToFilePagePath,
 } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -42,7 +40,6 @@ export default function ModelFile({
   documents,
   derivedFrom,
   derivedFromFileSets,
-  fileSetSamples,
   inputFileFor,
   fileFormatSpecifications,
   isJson,
@@ -78,8 +75,8 @@ export default function ModelFile({
               panelId="file-format-specifications"
             />
           )}
-          {fileSetSamples.length > 0 && (
-            <SampleTable samples={fileSetSamples} />
+          {modelFile.file_set.samples?.length > 0 && (
+            <SampleTable samples={modelFile.file_set.samples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -117,8 +114,6 @@ ModelFile.propTypes = {
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
-  // Samples associated with file sets embedded in this file
-  fileSetSamples: PropTypes.array.isRequired,
   // File specification documents
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -176,16 +171,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
-
-    const embeddedFileSetSamples = collectFileFileSetSamples(modelFile);
-    const fileSetSamplePaths = embeddedFileSetSamples.map(
-      (sample) => sample["@id"]
-    );
-    const fileSetSamples =
-      fileSetSamplePaths.length > 0
-        ? await requestSamples(fileSetSamplePaths, request)
-        : [];
-
     const attribution = await buildAttribution(modelFile, req.headers.cookie);
     return {
       props: {
@@ -194,7 +179,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         inputFileFor,
-        fileSetSamples,
         fileFormatSpecifications,
         pageContext: { title: modelFile.accession },
         attribution,

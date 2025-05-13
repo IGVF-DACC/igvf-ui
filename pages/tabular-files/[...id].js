@@ -38,7 +38,6 @@ import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
-  collectFileFileSetSamples,
   convertFileDownloadPathToFilePagePath,
 } from "../../lib/files";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -50,7 +49,6 @@ export default function TabularFile({
   derivedFrom,
   derivedFromFileSets,
   inputFileFor,
-  fileSetSamples,
   fileFormatSpecifications,
   integratedIn,
   attribution = null,
@@ -112,8 +110,8 @@ export default function TabularFile({
               panelId="file-format-specifications"
             />
           )}
-          {fileSetSamples.length > 0 && (
-            <SampleTable samples={fileSetSamples} />
+          {tabularFile.file_set.samples?.length > 0 && (
+            <SampleTable samples={tabularFile.file_set.samples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -171,8 +169,6 @@ TabularFile.propTypes = {
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
-  // Samples that belong to this file's file set
-  fileSetSamples: PropTypes.array,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // ConstructLibraryset this file was integrated in
@@ -240,14 +236,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
       integratedIn = await requestFileSets(integratedInPaths, request);
     }
-    const embeddedFileSetSamples = collectFileFileSetSamples(tabularFile);
-    const fileSetSamplePaths = embeddedFileSetSamples.map(
-      (sample) => sample["@id"]
-    );
-    const fileSetSamples =
-      fileSetSamplePaths.length > 0
-        ? await requestSamples(fileSetSamplePaths, request)
-        : [];
     const attribution = await buildAttribution(tabularFile, req.headers.cookie);
     return {
       props: {
@@ -257,7 +245,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         inputFileFor,
-        fileSetSamples,
         fileFormatSpecifications,
         integratedIn,
         pageContext: { title: tabularFile.accession },

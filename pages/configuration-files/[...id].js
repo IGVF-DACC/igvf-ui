@@ -25,10 +25,8 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
-  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
-import { collectFileFileSetSamples } from "../../lib/files";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
@@ -44,7 +42,6 @@ export default function ConfigurationFile({
   derivedFrom,
   derivedFromFileSets,
   inputFileFor,
-  fileSetSamples,
   fileFormatSpecifications,
   isJson,
 }) {
@@ -87,8 +84,8 @@ export default function ConfigurationFile({
               panelId="file-format-specifications"
             />
           )}
-          {fileSetSamples.length > 0 && (
-            <SampleTable samples={fileSetSamples} />
+          {configurationFile.file_set.samples?.length > 0 && (
+            <SampleTable samples={configurationFile.file_set.samples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -128,8 +125,6 @@ ConfigurationFile.propTypes = {
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
-  // Samples associated with this file's file set
-  fileSetSamples: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -188,14 +183,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
-    const embeddedFileSetSamples = collectFileFileSetSamples(configurationFile);
-    const fileSetSamplePaths = embeddedFileSetSamples.map(
-      (sample) => sample["@id"]
-    );
-    const fileSetSamples =
-      fileSetSamplePaths.length > 0
-        ? await requestSamples(fileSetSamplePaths, request)
-        : [];
     const attribution = await buildAttribution(
       configurationFile,
       req.headers.cookie
@@ -208,7 +195,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         inputFileFor,
-        fileSetSamples,
         fileFormatSpecifications,
         pageContext: { title: configurationFile.accession },
         attribution,
