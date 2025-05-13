@@ -42,7 +42,4 @@ describe("Test SeqspecDocumentLink component", () => {
       "/documents/c7870a38-4286-42fc-9551-22436306e22a/@@download/attachment/mouse_H3K4me3_07-473_validation_Hardison.pdf"
     );
   });
-
-  it("renders the link and title with extra Tailwind CSS classes", () => {});
-  it("renders the link and title with a child element", () => {});
 });

@@ -22,6 +22,10 @@ describe("Test the DataArea component", () => {
             <DataItemValue>
               <Status status="in progress" />
             </DataItemValue>
+            <DataItemLabel isSmall>Status Small</DataItemLabel>
+            <DataItemValue isSmall>
+              <Status status="in progress" />
+            </DataItemValue>
           </DataArea>
         </DataPanel>
         <DataAreaTitle>Treatments</DataAreaTitle>
@@ -37,19 +41,30 @@ describe("Test the DataArea component", () => {
     const dataAreaTitle = screen.getByTestId("dataareatitle");
     expect(dataAreaTitle).toBeInTheDocument();
 
-    const dataItemLabel = screen.getByTestId("dataitemlabel");
-    expect(dataItemLabel).toBeInTheDocument();
+    const dataItemLabels = screen.getAllByTestId("dataitemlabel");
+    expect(dataItemLabels[0]).toBeInTheDocument();
+    expect(dataItemLabels[0]).toHaveClass("mt-4 @md:mt-0");
 
-    const title = screen.getByTestId("dataitemvalue");
-    expect(title).toBeInTheDocument();
+    const values = screen.getAllByTestId("dataitemvalue");
+    expect(values[0]).toBeInTheDocument();
+    expect(values[0]).toHaveClass(
+      "font-medium text-data-value last:mb-0 mb-4 @md:mb-0 @md:min-w-0"
+    );
+    expect(values[1]).toBeInTheDocument();
+    expect(values[1]).toHaveClass("mb-2 @sm:mb-0 @sm:min-w-0");
+
+    // Check the CSS classes include "@md:grid @md:grid-cols-data-item @md:gap-4"
+    expect(dataArea).toHaveClass("@md:grid @md:grid-cols-data-item @md:gap-4");
   });
 
   it("properly renders a data panel with custom Tailwind CSS classes", () => {
     render(
       <>
         <DataPanel className="text-xs" isPaddingSuppressed>
-          <DataArea>
-            <DataItemLabel className="font-black">Status</DataItemLabel>
+          <DataArea isSmall>
+            <DataItemLabel className="font-black" isSmall>
+              Status
+            </DataItemLabel>
             <DataItemValueUrl>
               <a
                 href="https://igvf.org/"
@@ -76,16 +91,23 @@ describe("Test the DataArea component", () => {
 
     const dataArea = screen.getByTestId("dataarea");
     expect(dataArea).toBeInTheDocument();
+    expect(dataArea).toHaveClass(
+      "@sm:grid @sm:grid-cols-data-item-small @sm:gap-2 text-sm"
+    );
 
     const dataAreaTitle = screen.getByTestId("dataareatitle");
     expect(dataAreaTitle).toBeInTheDocument();
+    expect(dataAreaTitle).toHaveClass("mb-1 mt-4 text-2xl font-light");
 
     const dataItemLabel = screen.getByTestId("dataitemlabel");
     expect(dataItemLabel).toBeInTheDocument();
-    expect(dataItemLabel).toHaveClass("font-black");
+    expect(dataItemLabel).toHaveClass("mt-2 @sm:mt-0");
 
-    const title = screen.getByTestId("dataitemvalue");
-    expect(title).toBeInTheDocument();
+    const value = screen.getByTestId("dataitemvalue");
+    expect(value).toBeInTheDocument();
+    expect(value).toHaveClass(
+      "font-medium text-data-value last:mb-0 mb-4 @md:mb-0 @md:min-w-0 break-all"
+    );
   });
 
   it("handles the `secDirTitle` prop for the DataAreaTitle component", () => {

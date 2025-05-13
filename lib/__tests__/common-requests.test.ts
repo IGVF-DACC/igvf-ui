@@ -15,6 +15,7 @@ import {
   requestPages,
   requestPhenotypicFeatures,
   requestPublications,
+  requestQualityMetrics,
   requestSamples,
   requestSeqspecFiles,
   requestSoftware,
@@ -65,7 +66,7 @@ describe("Test all the common requests", () => {
       ["/analysis-steps/IGVFWF0000WORK-example-analysis-step/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=aliases&field=input_content_types&field=name&field=output_content_types&field=status&field=step_label&field=title&@id=/analysis-steps/IGVFWF0000WORK-example-analysis-step/&limit=1",
       expect.anything()
     );
@@ -113,7 +114,7 @@ describe("Test all the common requests", () => {
       ["/awards/HG012047/", "/awards/HG012022/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=name&field=url&@id=/awards/HG012047/&@id=/awards/HG012022/&limit=2",
       expect.anything()
     );
@@ -168,7 +169,7 @@ describe("Test all the common requests", () => {
       ],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=aliases&field=classification&field=name&field=quantification&field=status&field=synonyms&@id=/biomarkers/e8aa7ffe-e075-46d2-8a09-9707bf0b190d/&@id=/biomarkers/d97ce0ce-0125-4639-8084-94d081bea6c3/&limit=2",
       expect.anything()
     );
@@ -236,7 +237,7 @@ describe("Test all the common requests", () => {
       ],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=accession&field=disease_terms&field=sample_terms&field=status&field=summary&@id=/in-vitro-systems/IGVFSM0405BZBU/&@id=/in-vitro-systems/IGVFSM1671CSBE/&limit=2",
       expect.anything()
     );
@@ -314,8 +315,8 @@ describe("Test all the common requests", () => {
       ["/sequence-files/IGVFFI4067OVRO/", "/sequence-files/IGVFFI1165AJSO/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
-      "/search/?field=@type&field=accession&field=aliases&field=content_type&field=controlled_access&field=creation_timestamp&field=derived_from&field=external_host_url&field=externally_hosted&field=file_format&field=file_size&field=file_set&field=filtered&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=read_names&field=seqspecs&field=seqspec_document&field=sequencing_platform&field=sequencing_run&field=submitted_file_name&field=status&field=summary&field=workflow.@id&field=workflow.name&field=workflow.uniform_pipeline&field=upload_status&@id=/sequence-files/IGVFFI4067OVRO/&@id=/sequence-files/IGVFFI1165AJSO/&limit=2",
+    expect(mockFunction).toHaveBeenCalledWith(
+      "/search/?field=@type&field=accession&field=aliases&field=content_type&field=controlled_access&field=creation_timestamp&field=derived_from&field=external_host_url&field=externally_hosted&field=file_format&field=file_size&field=file_set&field=filtered&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=quality_metrics&field=read_names&field=seqspecs&field=seqspec_document&field=sequencing_platform&field=sequencing_run&field=submitted_file_name&field=status&field=summary&field=workflow.@id&field=workflow.name&field=workflow.uniform_pipeline&field=upload_status&@id=/sequence-files/IGVFFI4067OVRO/&@id=/sequence-files/IGVFFI1165AJSO/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -680,7 +681,7 @@ describe("Test all the common requests", () => {
       ["/auxiliary-sets/IGVFDS0001AUXI/", "/measurement-sets/IGVFDS4649TBFS/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=@type&field=accession&field=aliases&field=file_set_type&field=lab.title&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
       expect.anything()
     );
@@ -745,7 +746,7 @@ describe("Test all the common requests", () => {
       ],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=attachment&field=description&field=document_type&field=standardized_file_format&field=uuid&@id=/documents/7988b40d-f7fc-4dc2-a7d4-95936e61be5c/&@id=/documents/3508c752-4a9f-46e0-a5b6-099cd8a71428/&limit=2",
       expect.anything()
     );
@@ -803,7 +804,7 @@ describe("Test all the common requests", () => {
       ["/human-donors/IGVFDO3718JLGW/", "/rodent-donors/IGVFDO4122GLOB/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=accession&field=aliases&field=sex&field=status&field=taxa&@id=/human-donors/IGVFDO3718JLGW/&@id=/rodent-donors/IGVFDO4122GLOB/&limit=2",
       expect.anything()
     );
@@ -849,7 +850,7 @@ describe("Test all the common requests", () => {
       ["/genes/ENSG00000163930/", "/genes/ENSG00000207705/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=geneid&field=symbol&@id=/genes/ENSG00000163930/&@id=/genes/ENSG00000207705/&limit=2",
       expect.anything()
     );
@@ -892,7 +893,7 @@ describe("Test all the common requests", () => {
       ["/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=certificate_identifier&field=controlled_access&field=data_use_limitation_summary&field=lab&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
       expect.anything()
     );
@@ -939,7 +940,7 @@ describe("Test all the common requests", () => {
       ["/phenotype-terms/NCIT_C92648/", "/sample-terms/UBERON_0005439/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=term_id&field=term_name&@id=/phenotype-terms/NCIT_C92648/&@id=/sample-terms/UBERON_0005439/&limit=2",
       expect.anything()
     );
@@ -1005,7 +1006,7 @@ describe("Test all the common requests", () => {
       ],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=feature.@id&field=feature.term_id&field=feature.term_name&field=observation_date&field=quantity&field=quantity_units&field=status&@id=/phenotypic-features/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa/&@id=/phenotypic-features/847d7bdc-8fb3-11ed-a1eb-0242ac120002/&limit=2",
       expect.anything()
     );
@@ -1068,7 +1069,7 @@ describe("Test all the common requests", () => {
       ["/tissues/IGVFSM0003DDDD/", "/technical-samples/IGVFSM3106NGJL/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=accession&field=construct_library_sets&field=disease_terms&field=protocols&field=sample_terms&field=status&field=summary&@id=/tissues/IGVFSM0003DDDD/&@id=/technical-samples/IGVFSM3106NGJL/&limit=2",
       expect.anything()
     );
@@ -1115,7 +1116,7 @@ describe("Test all the common requests", () => {
 
     const request = new FetchRequest();
     const result = await requestSoftware(["/software/bowtie2/"], request);
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=aliases&field=description&field=lab&field=name&field=source_url&field=status&field=title&@id=/software/bowtie2/&limit=1",
       expect.anything()
     );
@@ -1159,7 +1160,7 @@ describe("Test all the common requests", () => {
       ["/software-versions/bowtie2-v2.4.4/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=downloaded_url&field=name&field=status&field=version&@id=/software-versions/bowtie2-v2.4.4/&limit=1",
       expect.anything()
     );
@@ -1216,7 +1217,7 @@ describe("Test all the common requests", () => {
       ],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=purpose&field=status&field=summary&field=treatment_term_name&field=treatment_type&@id=/treatments/d7562e66-c218-46e8-b0e2-ea6d89978b32/&@id=/treatments/bd2cb34e-c72c-11ec-9d64-0242ac120002/&limit=2",
       expect.anything()
     );
@@ -1266,7 +1267,7 @@ describe("Test all the common requests", () => {
       ],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=title&@id=/users/fa9feeb4-28ba-4356-8c24-50f4e6562029/&@id=/users/fa43a796-163c-488a-aa8e-5472a458232c/&limit=2",
       expect.anything()
     );
@@ -1315,7 +1316,7 @@ describe("Test all the common requests", () => {
       ["/sources/aviva/", "/sources/sigma/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=name&field=url&field=lab.title&@id=/sources/aviva/&@id=/sources/sigma/&limit=2",
       expect.anything()
     );
@@ -1365,7 +1366,7 @@ describe("Test all the common requests", () => {
       ["/help/donors/human-donors/", "/help/ontologies/phenotypes/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=name&field=title&field=status&@id=/help/donors/human-donors/&@id=/help/ontologies/phenotypes/&limit=2",
       expect.anything()
     );
@@ -1461,7 +1462,7 @@ describe("Test all the common requests", () => {
       ["/workflows/IGVFWF0000WORK/"],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=accession&field=aliases&field=lab&field=name&field=source_url&field=status&@id=/workflows/IGVFWF0000WORK/&limit=1",
       expect.anything()
     );
@@ -1522,12 +1523,53 @@ describe("Test all the common requests", () => {
       ],
       request
     );
-    expect(mockFunction).toBeCalledWith(
+    expect(mockFunction).toHaveBeenCalledWith(
       "/search/?field=aliases&field=authors&field=date_published&field=issue&field=journal&field=page&field=publication_identifiers&field=title&field=volume&@id=/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/&@id=/publications/244ec9fc-ddda-4f38-b72d-3430929111e4/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual(mockResult["@graph"][0]);
     expect(result[1]).toEqual(mockResult["@graph"][1]);
+  });
+
+  test("requestQualityMetrics function", async () => {
+    const mockResult = [
+      {
+        "@id": "/mpra-quality-metrics/a0696f31-1422-4946-ddea-21da73f7d04a/",
+        "@type": ["MpraQualityMetric", "QualityMetric", "Item"],
+        award: {
+          component: "data coordination",
+          "@id": "/awards/HG012012/",
+        },
+        lab: {
+          "@id": "/labs/j-michael-cherry/",
+          title: "J. Michael Cherry, Stanford",
+        },
+        quality_metric_of: ["/tabular-files/IGVFFI0001PKBD/"],
+        status: "in progress",
+        summary: "Quality metric of /tabular-files/IGVFFI0001PKBD/",
+        uuid: "a0696f31-1422-4946-ddea-21da73f7d04a",
+      },
+    ];
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockResult),
+      })
+    );
+
+    const request = new FetchRequest();
+    const result = await requestQualityMetrics(
+      ["/mpra-quality-metrics/a0696f31-1422-4946-ddea-21da73f7d04a/"],
+      request
+    );
+    expect(mockFunction).toHaveBeenCalledWith(
+      "/mpra-quality-metrics/a0696f31-1422-4946-ddea-21da73f7d04a/",
+      expect.anything()
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockResult);
   });
 });

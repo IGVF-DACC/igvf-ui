@@ -40,6 +40,7 @@ import {
   requestFileSets,
   requestFiles,
   requestPublications,
+  requestQualityMetrics,
   requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -64,6 +65,7 @@ export default function AnalysisSet({
   measurementSets,
   constructLibrarySets,
   samples,
+  qualityMetrics,
   attribution = null,
   isJson,
 }) {
@@ -211,6 +213,7 @@ export default function AnalysisSet({
                 files={files}
                 fileFileSets={fileFileSets}
                 derivedFromFiles={derivedFromFiles}
+                qualityMetrics={qualityMetrics}
               />
             </>
           )}
@@ -304,6 +307,8 @@ AnalysisSet.propTypes = {
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples from analysis set `samples` property that doesn't embed enough properties to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Quality metrics associated with this analysis set
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this analysis set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
@@ -487,6 +492,19 @@ export async function getServerSideProps({ params, req, query }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
+    let qualityMetrics = [];
+    if (files.length > 0) {
+      const qualityMetricsPaths = files.reduce((acc, file) => {
+        return file.quality_metrics?.length > 0
+          ? acc.concat(file.quality_metrics)
+          : acc;
+      }, []);
+      qualityMetrics =
+        qualityMetricsPaths.length > 0
+          ? await requestQualityMetrics(qualityMetricsPaths, request)
+          : [];
+    }
+
     const attribution = await buildAttribution(analysisSet, req.headers.cookie);
     return {
       props: {
@@ -506,6 +524,7 @@ export async function getServerSideProps({ params, req, query }) {
         measurementSets,
         constructLibrarySets,
         samples,
+        qualityMetrics,
         pageContext: { title: analysisSet.accession },
         attribution,
         isJson,

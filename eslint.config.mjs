@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
+import jest from "eslint-plugin-jest";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -130,6 +131,20 @@ export default defineConfig([
           caughtErrorsIgnorePattern: "^_",
         },
       ],
+    },
+  },
+  {
+    files: ["**/*.test.{js,ts,jsx,tsx}", "**/*.spec.{js,ts,jsx,tsx}"],
+    plugins: {
+      jest,
+    },
+    languageOptions: {
+      globals: {
+        ...jest.environments.globals.globals,
+      },
+    },
+    rules: {
+      ...jest.configs.recommended.rules,
     },
   },
 ]);

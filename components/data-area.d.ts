@@ -20,8 +20,10 @@ export function DataPanel({
 }): React.ReactElement | null;
 
 export function DataArea({
+  isSmall,
   children,
 }: {
+  isSmall?: boolean;
   children: React.ReactNode;
 }): React.ReactElement | null;
 
@@ -65,34 +67,38 @@ export function DataAreaTitleLink({
 
 export function DataItemLabel({
   className,
+  isSmall,
   children,
 }: {
-  className?: string; // Additional Tailwind CSS classes
-  children: React.ReactNode; // Label to display
+  className?: string;
+  isSmall?: boolean;
+  children: React.ReactNode;
 }): React.ReactElement | null;
 
 export function DataItemValue({
   className,
+  isSmall,
   children,
 }: {
-  className?: string; // Additional Tailwind CSS classes
-  children: React.ReactNode; // Value to display
+  className?: string;
+  isSmall?: boolean;
+  children: React.ReactNode;
 }): React.ReactElement | null;
 
 export function DataItemValueBoolean({
   className,
   children,
 }: {
-  className?: string; // Additional Tailwind CSS classes
-  children?: boolean; // Boolean value to display
+  className?: string;
+  children?: boolean;
 }): React.ReactElement | null;
 
 export function DataItemValueUrl({
   className,
   children,
 }: {
-  className?: string; // Additional Tailwind CSS classes
-  children: React.ReactNode; // URL to display
+  className?: string;
+  children: React.ReactNode;
 }): React.ReactElement | null;
 
 export function DataItemList({
