@@ -24,10 +24,8 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
-  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
-import { collectFileFileSetSamples } from "../../lib/files";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
@@ -42,7 +40,6 @@ export default function ImageFile({
   derivedFrom,
   derivedFromFileSets,
   inputFileFor,
-  fileSetSamples,
   fileFormatSpecifications,
   isJson,
 }) {
@@ -76,8 +73,8 @@ export default function ImageFile({
               panelId="file-format-specifications"
             />
           )}
-          {fileSetSamples.length > 0 && (
-            <SampleTable samples={fileSetSamples} />
+          {imageFile.file_set.samples?.length > 0 && (
+            <SampleTable samples={imageFile.file_set.samples} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -115,8 +112,6 @@ ImageFile.propTypes = {
   derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
-  // Samples associated with this file's file set
-  fileSetSamples: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -173,14 +168,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = imageFile.reference_files
       ? await requestFiles(imageFile.reference_files, request)
       : [];
-    const embeddedFileSetSamples = collectFileFileSetSamples(imageFile);
-    const fileSetSamplePaths = embeddedFileSetSamples.map(
-      (sample) => sample["@id"]
-    );
-    const fileSetSamples =
-      fileSetSamplePaths.length > 0
-        ? await requestSamples(fileSetSamplePaths, request)
-        : [];
     const attribution = await buildAttribution(imageFile, req.headers.cookie);
     return {
       props: {
@@ -189,7 +176,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         derivedFromFileSets,
         inputFileFor,
-        fileSetSamples,
         fileFormatSpecifications,
         pageContext: { title: imageFile.accession },
         attribution,

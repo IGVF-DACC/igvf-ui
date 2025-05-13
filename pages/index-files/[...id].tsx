@@ -32,10 +32,8 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
-  requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
-import { collectFileFileSetSamples } from "../../lib/files";
 import FetchRequest from "../../lib/fetch-request";
 import { type ErrorObject } from "../../lib/fetch-request.d";
 import {
@@ -60,7 +58,6 @@ export default function IndexFile({
   derivedFrom,
   derivedFromFileSets,
   inputFileFor,
-  fileSetSamples,
   fileFormatSpecifications,
   isJson,
 }: {
@@ -70,7 +67,6 @@ export default function IndexFile({
   derivedFrom: any[];
   derivedFromFileSets: FileSetObject[];
   inputFileFor: FileObject[];
-  fileSetSamples: any[];
   fileFormatSpecifications: any[];
   isJson: boolean;
 }) {
@@ -79,6 +75,7 @@ export default function IndexFile({
   const hasReferencePanel =
     indexFile.assembly || indexFile.transcriptome_annotation;
   const hasAlignmentPanel = "filtered" in indexFile || "redacted" in indexFile;
+  const fileSet = indexFile.file_set as FileSetObject;
 
   return (
     <>
@@ -161,8 +158,8 @@ export default function IndexFile({
               panelId="file-format-specifications"
             />
           )}
-          {fileSetSamples.length > 0 && (
-            <SampleTable samples={fileSetSamples} />
+          {fileSet.samples?.length > 0 && (
+            <SampleTable samples={fileSet.samples as object[]} />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -248,16 +245,6 @@ export async function getServerSideProps(
       );
     }
 
-    const embeddedFileSetSamples = collectFileFileSetSamples(indexFile);
-
-    const fileSetSamplePaths = embeddedFileSetSamples.map(
-      (sample) => sample["@id"]
-    );
-    const fileSetSamples =
-      fileSetSamplePaths.length > 0
-        ? await requestSamples(fileSetSamplePaths, request)
-        : [];
-
     const attribution = await buildAttribution(indexFile, req.headers.cookie);
 
     return {
@@ -267,7 +254,6 @@ export async function getServerSideProps(
         derivedFrom,
         derivedFromFileSets,
         inputFileFor,
-        fileSetSamples,
         fileFormatSpecifications,
         pageContext: { title: indexFile.accession },
         attribution,
