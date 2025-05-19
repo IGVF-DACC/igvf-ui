@@ -796,6 +796,18 @@ function SingleCellRnaSeqPanel({
         </>
       )}
 
+      {qualityMetric.rnaseq_kb_info && (
+        <>
+          <DataItemLabel isSmall>RNA-seq KB Info</DataItemLabel>
+          <DataItemValue isSmall>
+            <QualityMetricAttachmentLink
+              qualityMetric={qualityMetric}
+              attachment={qualityMetric.rnaseq_kb_info}
+            />
+          </DataItemValue>
+        </>
+      )}
+
       {qualityMetric.total_umis !== undefined && (
         <>
           <DataItemLabel isSmall>Total UMIs</DataItemLabel>

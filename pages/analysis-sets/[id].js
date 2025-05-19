@@ -494,11 +494,12 @@ export async function getServerSideProps({ params, req, query }) {
 
     let qualityMetrics = [];
     if (files.length > 0) {
-      const qualityMetricsPaths = files.reduce((acc, file) => {
+      let qualityMetricsPaths = files.reduce((acc, file) => {
         return file.quality_metrics?.length > 0
           ? acc.concat(file.quality_metrics)
           : acc;
       }, []);
+      qualityMetricsPaths = [...new Set(qualityMetricsPaths)];
       qualityMetrics =
         qualityMetricsPaths.length > 0
           ? await requestQualityMetrics(qualityMetricsPaths, request)
