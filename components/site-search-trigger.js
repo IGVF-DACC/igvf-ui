@@ -5,9 +5,10 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 // components
 import SearchModal from "./search-modal";
+import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { UC } from "../lib/constants";
-import { encodeUriElement } from "../lib/query-encoding";
+import { idSearchPath, siteSearchPath } from "../lib/special-search";
 
 /**
  * Displays the search trigger for when the navigation is expanded.
@@ -61,6 +62,7 @@ export default function SiteSearchTrigger({ isExpanded }) {
   // True if the search input modal is open
   const [isInputOpen, setIsInputOpen] = useState(false);
   const router = useRouter();
+  const tooltipAttr = useTooltip("site-search-help");
 
   // Called to close the search input modal and clear its value for next time.
   function closeModal() {
@@ -71,8 +73,17 @@ export default function SiteSearchTrigger({ isExpanded }) {
   // term gets saved to sessionStorage.
   function closeModalAndExecuteSearch(searchTerm) {
     closeModal();
+
+    // If `searchTerm` has the form "/{type}/{identifier}/", redirect to the corresponding object
+    // page using the id-search mechanism. Otherwise, redirect to the site-search page.
+    if (searchTerm.match(/\/[^/]+\/[^/]+\/$/)) {
+      router.push(idSearchPath(searchTerm));
+      return;
+    }
+
+    // Do a regular term search.
     if (searchTerm) {
-      router.push(`/site-search/?query=${encodeUriElement(searchTerm)}`);
+      router.push(siteSearchPath(searchTerm));
     }
   }
 
@@ -101,11 +112,18 @@ export default function SiteSearchTrigger({ isExpanded }) {
 
   return (
     <>
-      {isExpanded ? (
-        <SearchTriggerExpanded onClick={() => setIsInputOpen(true)} />
-      ) : (
-        <SearchTriggerCollapsed onClick={() => setIsInputOpen(true)} />
-      )}
+      <TooltipRef tooltipAttr={tooltipAttr}>
+        <div className="w-full">
+          {isExpanded ? (
+            <SearchTriggerExpanded onClick={() => setIsInputOpen(true)} />
+          ) : (
+            <SearchTriggerCollapsed onClick={() => setIsInputOpen(true)} />
+          )}
+        </div>
+      </TooltipRef>
+      <Tooltip tooltipAttr={tooltipAttr}>
+        Search for objects containing specific text
+      </Tooltip>
       <SearchModal
         isInputOpen={isInputOpen}
         closeModal={closeModal}

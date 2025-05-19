@@ -4,9 +4,10 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 // components
 import SearchModal from "./search-modal";
+import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { UC } from "../lib/constants";
-import { encodeUriElement } from "../lib/query-encoding";
+import { idSearchPath } from "../lib/special-search";
 
 /**
  * Display the ID search icon.
@@ -53,6 +54,7 @@ export default function IdSearchTrigger() {
   const [isInputOpen, setIsInputOpen] = useState(false);
 
   const router = useRouter();
+  const tooltipAttr = useTooltip("id-search-help");
 
   // Called when the user clicks the ID search trigger button.
   function onTriggerClick() {
@@ -69,7 +71,7 @@ export default function IdSearchTrigger() {
   function closeModalAndExecuteSearch(searchTerm) {
     closeModal();
     if (searchTerm) {
-      router.push(`/id-search?id=${encodeUriElement(searchTerm)}`);
+      router.push(idSearchPath(searchTerm));
     }
   }
 
@@ -97,14 +99,22 @@ export default function IdSearchTrigger() {
 
   return (
     <>
-      <button
-        onClick={onTriggerClick}
-        className="grow-0 rounded"
-        data-testid="id-search-trigger"
-        title={`Go to an item${UC.rsquo}s page from its identifier (${UC.cmd}${UC.shift}K or ${UC.ctrl}${UC.shift}K)`}
-      >
-        <IdSearchIcon className="h-8 w-8 fill-gray-500" />
-      </button>
+      <TooltipRef tooltipAttr={tooltipAttr}>
+        <div>
+          <button
+            onClick={onTriggerClick}
+            className="grow-0 rounded"
+            data-testid="id-search-trigger"
+            title={`Go to an item${UC.rsquo}s page from its identifier (${UC.cmd}${UC.shift}K or ${UC.ctrl}${UC.shift}K)`}
+          >
+            <IdSearchIcon className="h-8 w-8 fill-gray-500" />
+          </button>
+        </div>
+      </TooltipRef>
+      <Tooltip tooltipAttr={tooltipAttr}>
+        Go to the page for an item by its identifier (e.g. accession, uuid,
+        alias).
+      </Tooltip>
       <SearchModal
         isInputOpen={isInputOpen}
         closeModal={closeModal}
