@@ -10,6 +10,8 @@ import {
   type FileSetNodeType,
   type NodeData,
 } from "./types";
+// lib
+import { type QualityMetricObject } from "../../lib/quality-metric";
 // root
 import { FileObject, FileSetObject } from "../../globals.d";
 
@@ -21,7 +23,7 @@ export const NODE_WIDTH = 156;
 /**
  * Height of a node in the graph in pixels.
  */
-export const NODE_HEIGHT = 44;
+export const NODE_HEIGHT = 60;
 
 /**
  * xxhashjs seed for hashing strings; generate randomly.
@@ -151,4 +153,21 @@ export function generateGraphData(
   }, [] as FileSetNodeData[]);
 
   return graphData.concat(fileSetNodes);
+}
+
+/**
+ * Find the quality metrics for a file from the list of quality metrics for all files in the file
+ * graph.
+ * @param file The file object to get the quality metrics for
+ * @param qualityMetrics Full quality metrics objects for all files in the file set
+ * @returns Objects from `qualityMetrics` that are associated with `file`
+ */
+export function getFileMetrics(
+  file: FileObject,
+  qualityMetrics: QualityMetricObject[]
+): QualityMetricObject[] {
+  const fileMetricPaths = file.quality_metrics as string[];
+  return qualityMetrics.filter((metric) =>
+    fileMetricPaths.includes(metric["@id"])
+  );
 }

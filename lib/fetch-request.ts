@@ -459,7 +459,7 @@ export default class FetchRequest {
    * entries for failed requests. It instead either returns an array of successfully requested
    * objects, or a single error value.
    * @param {Array<string>} paths Path of each object to request
-   * @param {Array<string>} fields Properties of each object to retrieve
+   * @param {Array<string>} fields Properties of each object to retrieve; if none; all properties
    * @returns {Promise<Result<Array<DataProviderObject>, ErrorObject>>} Array of requested objects
    */
   async getMultipleObjectsBulk(
@@ -473,7 +473,10 @@ export default class FetchRequest {
     }
 
     // Generate the query string for the needed fields of each object.
-    const fieldQuery = fields.map((field) => `field=${field}`).join("&");
+    const fieldQuery =
+      fields.length > 0
+        ? fields.map((field) => `field=${field}`).join("&")
+        : "";
 
     // Break the paths into groups of MAX_PATH_GROUP_SIZE, each group mapping to a data-provider
     // request. This reduces the lengths of the query strings to fit within the data provider's

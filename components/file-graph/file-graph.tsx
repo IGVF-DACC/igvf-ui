@@ -11,9 +11,11 @@ import { DataAreaTitle, DataPanel } from "../data-area";
 import { Button } from "../form-elements";
 import GlobalContext from "../global-context";
 import Icon from "../icon";
+import { QualityMetricModal } from "../quality-metric-modal";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { truncateText } from "../../lib/general";
+import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
 import { FileModal } from "./file-modal";
 import { FileSetModal } from "./file-set-modal";
@@ -21,6 +23,7 @@ import { Legend } from "./legend";
 import {
   collectRelevantFileSetTypes,
   generateGraphData,
+  getFileMetrics,
   NODE_HEIGHT,
   NODE_WIDTH,
   trimIsolatedNodes,
@@ -44,6 +47,24 @@ import type {
  * Horizontal offset of arrowhead from the target node.
  */
 const LINK_ARROWHEAD_X_OFFSET = -88;
+
+/**
+ * Dimensions of the quality metric trigger rectangle within a file node.
+ */
+const QUALITY_METRIC_DIMENSIONS = {
+  width: 40,
+  height: 16,
+} as const;
+
+/**
+ * y-offsets for the text labels in file and file-set nodes. Each array element corresponds to a
+ * different text line number in the node. `withoutMetrics` is used when the node does not
+ * contain quality metrics, and `withMetrics` is used when the node does contain quality metrics.
+ */
+const lineOffsetsMap = {
+  withoutMetrics: ["-8px", "6px", "18px"],
+  withMetrics: ["-18px", "-4px", "8px"],
+} as const;
 
 /**
  * Display a selectable node in the graph, for either a file or a file set node. Put the contents
@@ -90,7 +111,7 @@ function GraphNode({
     strokeWidth: 1,
     ...(isRounded ? { rx: 10, ry: 10 } : {}),
     ...(!isGraphDownload && {
-      className: `stroke-gray-800 dark:stroke-gray-400 ${background.fill}`,
+      className: `stroke-file-graph-node ${background.fill}`,
     }),
     ...(isGraphDownload && {
       style: { stroke: "#1f2937", fill: background.color },
@@ -116,7 +137,7 @@ function GraphNode({
           y={-NODE_HEIGHT / 2 - 4}
           fill="transparent"
           opacity={1}
-          className="stroke-gray-800 dark:stroke-white"
+          className="stroke-file-graph-node"
           strokeWidth={3}
           {...(isRounded ? { rx: 14, ry: 14 } : {})}
         />
@@ -164,11 +185,67 @@ function LinkArrowHead({
 }
 
 /**
+ * Display a button within a file node that the user can click to display the quality metrics for
+ * the file.
+ * @param file File object that the given quality metrics belong to
+ * @param fileMetrics Quality metric objects for the currently rendering file
+ * @param onClick Function to call when the user clicks on the quality metric trigger
+ */
+function QCMetricTrigger({
+  file,
+  fileMetrics,
+  onClick,
+}: {
+  file: FileObject;
+  fileMetrics: QualityMetricObject[];
+  onClick: (file: FileObject, qcMetrics: QualityMetricObject[]) => void;
+}) {
+  // Called when the user clicks on the quality metric trigger button. This button is an enclave
+  // within the file node, so stop the event from propagating to the node click handler.
+  function clickHandler(e: React.MouseEvent<SVGRectElement>) {
+    e.stopPropagation();
+    onClick(file, fileMetrics);
+  }
+
+  if (fileMetrics.length > 0) {
+    return (
+      <g aria-label={`Quality metrics for file ${file.accession}`}>
+        <rect
+          x={-QUALITY_METRIC_DIMENSIONS.width / 2}
+          y={NODE_HEIGHT / 2 - QUALITY_METRIC_DIMENSIONS.height - 2}
+          width={QUALITY_METRIC_DIMENSIONS.width}
+          height={QUALITY_METRIC_DIMENSIONS.height}
+          rx={2}
+          ry={2}
+          fill="lightgray"
+          role="button"
+          className="fill-file-graph-qc-trigger stroke-file-graph-node"
+          onClick={clickHandler}
+          tabIndex={0}
+        />
+        <text
+          x={0}
+          y={NODE_HEIGHT / 2 - QUALITY_METRIC_DIMENSIONS.height + 10}
+          fontSize={10}
+          textAnchor="middle"
+          className="pointer-events-none fill-file-graph-qc-trigger-text"
+          fill="black"
+          fontWeight="bold"
+        >
+          QC
+        </text>
+      </g>
+    );
+  }
+}
+
+/**
  * Display a graph of file associations for a file set. The graph is a directed acyclic graph (DAG)
  * where each node represents a file and each edge represents a `derived_from` relationship between
  * files.
  * @param fileSet The file set object for the page the user views
  * @param nativeFiles Files belonging to the file set the user views
+ * @param qualityMetrics Quality metrics for `nativeFiles`
  * @param graphData List of nodes to include in the graph
  * @param onReady Called when the graph is ready to be displayed
  * @param isGraphDownload True to download graph in SVG file, false to display in browser
@@ -176,12 +253,14 @@ function LinkArrowHead({
 function Graph({
   fileSet,
   nativeFiles,
+  qualityMetrics = [],
   graphData,
   onReady = () => {},
   isGraphDownload = false,
 }: {
   fileSet: FileSetObject;
   nativeFiles: FileObject[];
+  qualityMetrics?: QualityMetricObject[];
   graphData: NodeData[];
   onReady?: (svg: SVGSVGElement) => void;
   isGraphDownload?: boolean;
@@ -198,6 +277,15 @@ function Graph({
   const [layoutWidth, setLayoutWidth] = useState(0);
   // Holds the node that the user has clicked on to display a modal
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
+  // When the user clicks on a nodes quality metrics, hold the selected node's metrics
+  const [selectedQualityMetrics, setSelectedQualityMetrics] = useState<
+    QualityMetricObject[]
+  >([]);
+  // File that the user clicked the quality metrics trigger for
+  const [qualityMetricFile, setQualityMetricFile] = useState<FileObject | null>(
+    null
+  );
+
   // Reference to the SVG element that holds the graph; useful for saving the graph to a file
   const svgRef = useRef<SVGSVGElement>(null);
   // Timer to periodically monitor when svgRef gets filled in with the SVG element
@@ -227,7 +315,7 @@ function Graph({
         .layering(d3Dag.layeringLongestPath())
         .nodeSize((node) => {
           // Might have to play with the adjustment factors if you change the size of the nodes.
-          return node ? [NODE_HEIGHT * 2, NODE_WIDTH * 1.8] : [0, 0];
+          return node ? [NODE_HEIGHT * 1.4, NODE_WIDTH * 1.8] : [0, 0];
         });
       const { width, height } = layout(dag as any);
       setLoadedDag(dag);
@@ -246,6 +334,20 @@ function Graph({
       clearTimeout(svgReadyTimer);
     };
   }, []);
+
+  /**
+   * Called when the user clicks on a quality metric trigger in a file node. By setting the
+   * `selectedQualityMetrics` state, the modal showing the quality metrics gets displayed.
+   * @param file File object that the quality-metric button user clicked on belongs to
+   * @param qcMetrics Quality metrics for the file that the user clicked on
+   */
+  function qcMetricClickHandler(
+    file: FileObject,
+    qcMetrics: QualityMetricObject[]
+  ) {
+    setQualityMetricFile(file);
+    setSelectedQualityMetrics(qcMetrics);
+  }
 
   /**
    * Handle when the user clicks on a node in the graph to display a modal.
@@ -307,6 +409,14 @@ function Graph({
                 fileSetTypeColorMap.unknown;
               const foreground =
                 darkMode.enabled && !isGraphDownload ? "#ffffff" : "#000000";
+              const fileMetrics = getFileMetrics(
+                graphNode.file,
+                qualityMetrics
+              );
+              const lineOffsets =
+                fileMetrics.length > 0
+                  ? lineOffsetsMap.withMetrics
+                  : lineOffsetsMap.withoutMetrics;
               return (
                 <GraphNode
                   key={i}
@@ -326,7 +436,7 @@ function Graph({
                     height={16}
                   />
                   <text
-                    y="-8px"
+                    y={lineOffsets[0]}
                     fontSize={12}
                     textAnchor="middle"
                     fontWeight="bold"
@@ -335,7 +445,7 @@ function Graph({
                     {graphNode.file.accession}
                   </text>
                   <text
-                    y="6px"
+                    y={lineOffsets[1]}
                     fontSize={12}
                     textAnchor="middle"
                     fill={foreground}
@@ -343,13 +453,18 @@ function Graph({
                     {graphNode.file.file_format}
                   </text>
                   <text
-                    y="18px"
+                    y={lineOffsets[2]}
                     fontSize={12}
                     textAnchor="middle"
                     fill={foreground}
                   >
                     {truncateText(graphNode.file.content_type, 24)}
                   </text>
+                  <QCMetricTrigger
+                    file={graphNode.file}
+                    fileMetrics={fileMetrics}
+                    onClick={qcMetricClickHandler}
+                  />
                 </GraphNode>
               );
             }
@@ -359,6 +474,7 @@ function Graph({
                 fileSetTypeColorMap[graphNode.fileSet["@type"][0]] ||
                 fileSetTypeColorMap.unknown;
               const foreground = darkMode.enabled ? "#ffffff" : "#000000";
+              const lineOffsets = lineOffsetsMap.withoutMetrics;
               return (
                 <GraphNode
                   key={i}
@@ -378,7 +494,7 @@ function Graph({
                     height={16}
                   />
                   <text
-                    y="-8px"
+                    y={lineOffsets[0]}
                     fontSize={12}
                     textAnchor="middle"
                     fontWeight="bold"
@@ -387,7 +503,7 @@ function Graph({
                     {graphNode.fileSet.accession}
                   </text>
                   <text
-                    y="6px"
+                    y={lineOffsets[1]}
                     fontSize={12}
                     textAnchor="middle"
                     fill={foreground}
@@ -397,7 +513,7 @@ function Graph({
                   </text>
                   {graphNode.fileSet.file_set_type && (
                     <text
-                      y="18px"
+                      y={lineOffsets[2]}
                       fontSize={12}
                       textAnchor="middle"
                       fill={foreground}
@@ -431,6 +547,16 @@ function Graph({
           onClose={() => setSelectedNode(null)}
         />
       )}
+      {selectedQualityMetrics.length > 0 && (
+        <QualityMetricModal
+          file={qualityMetricFile}
+          qualityMetrics={selectedQualityMetrics}
+          onClose={() => {
+            setSelectedQualityMetrics([]);
+            setQualityMetricFile(null);
+          }}
+        />
+      )}
     </div>
   ) : (
     <div className="flex h-16 items-center justify-center italic">
@@ -442,6 +568,7 @@ function Graph({
 /**
  * Save an SVG element as an SVG file.
  * @param svgElement SVG element to save as an SVG file
+ * @param fileSet File set object the user views
  */
 async function saveSvg(
   svgElement: SVGSVGElement,
@@ -565,6 +692,7 @@ function SaveSvgTrigger({
  * @param files Files included directly in `fileSet`
  * @param derivedFromFiles Files in other file sets that `files` derive from
  * @param fileFileSets File sets aside from `fileSet` that `files` belong to
+ * @param qualityMetrics Quality metrics for `files`
  * @param title Title that appears above the graph panel
  * @param pagePanels The page panels controller
  * @param pagePanelId The ID of the file-graph panel unique on the page
@@ -574,6 +702,7 @@ export function FileGraph({
   files,
   derivedFromFiles,
   fileFileSets,
+  qualityMetrics,
   title = "File Association Graph",
   panelId = "file-graph",
 }: {
@@ -581,6 +710,7 @@ export function FileGraph({
   files: DatabaseObject[];
   fileFileSets: DatabaseObject[];
   derivedFromFiles: DatabaseObject[];
+  qualityMetrics: QualityMetricObject[];
   title?: string;
   panelId?: string;
 }) {
@@ -613,6 +743,7 @@ export function FileGraph({
                 <Graph
                   fileSet={fileSet as FileSetObject}
                   nativeFiles={files as FileObject[]}
+                  qualityMetrics={qualityMetrics}
                   graphData={trimmedData}
                 />
                 <Legend fileSetTypes={relevantFileSetTypes} />

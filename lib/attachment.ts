@@ -1,11 +1,7 @@
 // lib
 import { API_URL } from "./constants";
-
-export interface Attachment {
-  type: string;
-  download: string;
-  href: string;
-}
+// root
+import type { Attachment } from "../globals.d";
 
 /**
  * Generate the full URL of the given attachment.

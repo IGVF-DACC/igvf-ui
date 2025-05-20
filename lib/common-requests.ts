@@ -118,6 +118,7 @@ export async function requestFiles(
       "lab.@id",
       "lab.title",
       "lane",
+      "quality_metrics",
       "read_names",
       "seqspecs",
       "seqspec_document",
@@ -508,4 +509,24 @@ export async function requestPages(
   return (
     await request.getMultipleObjectsBulk(paths, ["name", "title", "status"])
   ).unwrap_or([]);
+}
+
+/**
+ * Retrieve the quality-metrics objects for the given paths from the data provider. Every sub-type
+ * of quality-metrics object has very different properties, so this function gets all properties
+ * for each object. We have to use getMultipleObjects instead of getMultipleObjectsBulk because the
+ * former returns full objects regardless of the properties within, while the latter only returns
+ * the properties specifically requested.
+ * @param paths Paths to the quality-metrics objects to request
+ * @param request Request object to use to make the request
+ * @returns Requested quality-metrics objects
+ */
+export async function requestQualityMetrics(
+  paths: string[],
+  request: FetchRequest
+): Promise<DataProviderObject[]> {
+  return (await request.getMultipleObjects(paths, { filterErrors: true })).map(
+    // getMultipleObjects already filtered out errors, so we can safely unwrap all elements.
+    (result) => result.unwrap()
+  );
 }
