@@ -23,12 +23,17 @@ import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFiles,
+  requestQualityMetrics,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { type ErrorObject } from "../../lib/fetch-request.d";
@@ -36,6 +41,7 @@ import {
   checkForFileDownloadPath,
   convertFileDownloadPathToFilePagePath,
 } from "../../lib/files";
+import { type QualityMetricObject } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
 // root
 import type { FileObject, FileSetObject } from "../../globals.d";
@@ -54,6 +60,7 @@ export default function IndexFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  qualityMetrics,
   isJson,
 }: {
   indexFile: IndexFileObject;
@@ -62,6 +69,7 @@ export default function IndexFile({
   derivedFrom: any[];
   inputFileFor: FileObject[];
   fileFormatSpecifications: any[];
+  qualityMetrics: QualityMetricObject[];
   isJson: boolean;
 }) {
   const sections = useSecDir();
@@ -172,6 +180,7 @@ export default function IndexFile({
               panelId="input-file-for"
             />
           )}
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -229,6 +238,11 @@ export async function getServerSideProps(
       );
     }
 
+    const qualityMetrics =
+      indexFile.quality_metrics.length > 0
+        ? await requestQualityMetrics(indexFile.quality_metrics, request)
+        : [];
+
     const attribution = await buildAttribution(indexFile, req.headers.cookie);
 
     return {
@@ -238,6 +252,7 @@ export async function getServerSideProps(
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        qualityMetrics,
         pageContext: { title: indexFile.accession },
         attribution,
         isJson,

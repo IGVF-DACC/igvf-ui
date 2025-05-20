@@ -418,7 +418,7 @@ const tailwindConfig: Config = {
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",
         "data-item": "fit-content(200px) 1fr",
-        "data-item-small": "fit-content(160px) 1fr",
+        "data-item-small": "fit-content(140px) 1fr",
       },
       maxHeight: {
         "column-select-modal": "calc(100vh - 300px)",

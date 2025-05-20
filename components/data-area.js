@@ -61,7 +61,7 @@ DataPanel.propTypes = {
  */
 export function DataArea({ isSmall = false, children }) {
   const containerClasses = isSmall
-    ? "@sm:grid @sm:grid-cols-data-item-small @sm:gap-2 text-sm"
+    ? "@xs:grid @xs:grid-cols-data-item-small @xs:gap-2 text-sm"
     : "@md:grid @md:grid-cols-data-item @md:gap-4";
 
   return (
@@ -133,7 +133,7 @@ DataAreaTitleLink.propTypes = {
  * Display the label of a data item label/value pair.
  */
 export function DataItemLabel({ className = "", isSmall = false, children }) {
-  const containerClasses = isSmall ? "mt-2 @sm:mt-0" : "mt-4 @md:mt-0";
+  const containerClasses = isSmall ? "mt-2 @xs:mt-0" : "mt-4 @xs:mt-0";
   return (
     <div
       className={`break-words font-semibold text-data-label first:mt-0 dark:text-gray-400 ${containerClasses} ${className}`}
@@ -156,7 +156,7 @@ DataItemLabel.propTypes = {
  */
 export function DataItemValue({ className = "", isSmall = false, children }) {
   const containerClasses = isSmall
-    ? "mb-2 @sm:mb-0 @sm:min-w-0"
+    ? "mb-2 @xs:mb-0 @xs:min-w-0"
     : "mb-4 @md:mb-0 @md:min-w-0";
   return (
     <div

@@ -23,6 +23,7 @@ import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { SeqspecDocumentLink } from "../../components/seqspec-document";
 import { useSecDir } from "../../components/section-directory";
@@ -32,6 +33,7 @@ import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
+  requestQualityMetrics,
   requestSeqspecFiles,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -50,6 +52,7 @@ export default function SequenceFile({
   inputFileFor,
   fileFormatSpecifications,
   seqspecDocument,
+  qualityMetrics,
   attribution = null,
   isJson,
   seqspecs,
@@ -192,6 +195,7 @@ export default function SequenceFile({
               panelId="seqspec"
             />
           )}
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -212,6 +216,8 @@ SequenceFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // seqspec document associated with this file
   seqspecDocument: PropTypes.object,
+  // Quality metrics associated with this file
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -265,6 +271,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const seqspecDocuments = sequenceFile.seqspec_document
       ? await requestDocuments([sequenceFile.seqspec_document], request)
       : null;
+    const qualityMetrics =
+      sequenceFile.quality_metrics.length > 0
+        ? await requestQualityMetrics(sequenceFile.quality_metrics, request)
+        : [];
     const attribution = await buildAttribution(
       sequenceFile,
       req.headers.cookie
@@ -277,6 +287,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         seqspecDocument: seqspecDocuments ? seqspecDocuments[0] : null,
+        qualityMetrics,
         pageContext: { title: sequenceFile.accession },
         attribution,
         isJson,

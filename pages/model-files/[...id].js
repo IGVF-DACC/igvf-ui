@@ -16,12 +16,17 @@ import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFiles,
+  requestQualityMetrics,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
@@ -37,6 +42,7 @@ export default function ModelFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  qualityMetrics,
   isJson,
 }) {
   const sections = useSecDir();
@@ -90,6 +96,7 @@ export default function ModelFile({
               panelId="input-file-for"
             />
           )}
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -108,6 +115,8 @@ ModelFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // File specification documents
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Quality metrics associated with this file
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Is the format JSON?
@@ -154,6 +163,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
+    const qualityMetrics =
+      modelFile.quality_metrics.length > 0
+        ? await requestQualityMetrics(modelFile.quality_metrics, request)
+        : [];
     const attribution = await buildAttribution(modelFile, req.headers.cookie);
     return {
       props: {
@@ -162,6 +175,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        qualityMetrics,
         pageContext: { title: modelFile.accession },
         attribution,
         isJson,

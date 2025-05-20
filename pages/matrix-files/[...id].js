@@ -21,12 +21,17 @@ import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFiles,
+  requestQualityMetrics,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
@@ -43,6 +48,7 @@ export default function MatrixFile({
   inputFileFor,
   fileFormatSpecifications,
   referenceFiles,
+  qualityMetrics,
   isJson,
 }) {
   const sections = useSecDir();
@@ -112,6 +118,7 @@ export default function MatrixFile({
               panelId="input-file-for"
             />
           )}
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -130,6 +137,8 @@ MatrixFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Quality metrics associated with this file
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Reference files used to generate this file
@@ -180,6 +189,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = matrixFile.reference_files
       ? await requestFiles(matrixFile.reference_files, request)
       : [];
+    const qualityMetrics =
+      matrixFile.quality_metrics.length > 0
+        ? await requestQualityMetrics(matrixFile.quality_metrics, request)
+        : [];
     const attribution = await buildAttribution(matrixFile, req.headers.cookie);
     return {
       props: {
@@ -188,6 +201,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        qualityMetrics,
         pageContext: { title: matrixFile.accession },
         attribution,
         referenceFiles,

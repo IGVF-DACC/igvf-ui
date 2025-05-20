@@ -15,13 +15,18 @@ import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SequencingFileTable from "../../components/sequencing-file-table";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFiles,
+  requestQualityMetrics,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
@@ -38,6 +43,7 @@ export default function ConfigurationFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  qualityMetrics,
   isJson,
 }) {
   const sections = useSecDir();
@@ -99,6 +105,7 @@ export default function ConfigurationFile({
               panelId="input-file-for"
             />
           )}
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -119,6 +126,8 @@ ConfigurationFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Quality metrics for this file
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Is the format JSON?
@@ -167,6 +176,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
+    const qualityMetrics =
+      configurationFile.quality_metrics.length > 0
+        ? await requestQualityMetrics(
+            configurationFile.quality_metrics,
+            request
+          )
+        : [];
     const attribution = await buildAttribution(
       configurationFile,
       req.headers.cookie
@@ -179,6 +195,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        qualityMetrics,
         pageContext: { title: configurationFile.accession },
         attribution,
         isJson,
