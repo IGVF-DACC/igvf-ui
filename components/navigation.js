@@ -633,6 +633,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             Processed Data Sets
           </NavigationHrefItem>
           <NavigationHrefItem
+            id="prediction-datasets"
+            href={`/search/?type=PredictionSet${extraQueries}`}
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Prediction Data Sets
+          </NavigationHrefItem>
+          <NavigationHrefItem
             id="files"
             href={`/search/?type=File${extraQueries}`}
             navigationClick={navigationClick}
