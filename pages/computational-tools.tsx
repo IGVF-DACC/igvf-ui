@@ -256,11 +256,13 @@ function PublicationCell({
           const publication = publications.find(
             (publication) => publication["@id"] === publicationFragment["@id"]
           );
-          return (
-            <Link key={publication["@id"]} href={publication["@id"]}>
-              {publication.title}
-            </Link>
-          );
+          if (publication) {
+            return (
+              <Link key={publication["@id"]} href={publication["@id"]}>
+                {publication.title}
+              </Link>
+            );
+          }
         })}
       </SeparatedList>
     );
