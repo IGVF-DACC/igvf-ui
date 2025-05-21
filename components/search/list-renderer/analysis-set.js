@@ -30,10 +30,16 @@ export default function AnalysisSet({
   const isUniformPipeline = workflows.some(
     (workflow) => workflow.uniform_pipeline
   );
+  // Collect all files.content_type and deduplicate
+  const fileContentType =
+    analysisSet.files.length > 0
+      ? [...new Set(analysisSet.files.map((file) => file.content_type))].sort()
+      : [];
 
   const isSupplementsVisible =
-    analysisSet.alternate_accessions?.length > 0 ||
+    analysisSet.alternate_accessions ||
     analysisSet.sample_summary ||
+    fileContentType ||
     isUniformPipeline;
 
   return (
@@ -53,6 +59,16 @@ export default function AnalysisSet({
         {isSupplementsVisible && (
           <SearchListItemSupplement>
             <SearchListItemSupplementAlternateAccessions item={analysisSet} />
+            {fileContentType.length > 0 && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Files
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {fileContentType.join(", ")}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
             {analysisSet.sample_summary && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>

@@ -8,6 +8,9 @@ import {
   SearchListItemQuality,
   SearchListItemSupplement,
   SearchListItemSupplementAlternateAccessions,
+  SearchListItemSupplementContent,
+  SearchListItemSupplementLabel,
+  SearchListItemSupplementSection,
   SearchListItemTitle,
   SearchListItemType,
   SearchListItemUniqueId,
@@ -17,7 +20,13 @@ import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 
 export default function PredictionSet({ item: predictionSet }) {
-  const isSupplementsVisible = predictionSet.alternate_accessions?.length > 0;
+  // Collect all files.content_type and deduplicate
+  const fileContentType = predictionSet.files
+    ? [...new Set(predictionSet.files.map((file) => file.content_type))].sort()
+    : [];
+
+  const isSupplementsVisible =
+    predictionSet.alternate_accessions || fileContentType;
 
   return (
     <SearchListItemContent>
@@ -38,6 +47,16 @@ export default function PredictionSet({ item: predictionSet }) {
         {isSupplementsVisible && (
           <SearchListItemSupplement>
             <SearchListItemSupplementAlternateAccessions item={predictionSet} />
+            {fileContentType.length > 0 && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Files
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {fileContentType.join(", ")}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>

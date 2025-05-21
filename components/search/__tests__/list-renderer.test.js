@@ -1456,7 +1456,7 @@ describe("Test File component", () => {
 });
 
 describe("Test the AnalysisSet component", () => {
-  it("renders an AnalysisSet item with alternate accession", () => {
+  it("renders an AnalysisSet item with alternate accession and files", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
@@ -1468,6 +1468,7 @@ describe("Test the AnalysisSet component", () => {
       lab: {
         title: "J. Michael Cherry, Stanford",
       },
+      files: [{ content_type: "alignments" }, { content_type: "fragments" }],
       status: "released",
       summary: "primary analysis of data",
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
@@ -1491,11 +1492,17 @@ describe("Test the AnalysisSet component", () => {
     const supplement = screen.getByTestId("search-list-item-supplement");
     expect(supplement).toHaveTextContent("Alternate Accessions");
 
+    const [alternateAccessionContent, filesContent] = screen.getAllByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(alternateAccessionContent).toHaveTextContent("IGVFDS3099XPLO");
+    expect(filesContent).toHaveTextContent("alignments, fragments");
+
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders an AnalysisSet item without alternate accessions", () => {
+  it("renders an AnalysisSet item without alternate accessions and no files", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
@@ -1503,6 +1510,7 @@ describe("Test the AnalysisSet component", () => {
       aliases: ["igvf:basic_analysis_set_2"],
       award: "/awards/HG012012/",
       file_set_type: "primary analysis",
+      files: [],
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
@@ -2489,7 +2497,7 @@ describe("Test Workflow component", () => {
   });
 });
 
-describe("Test Prediction Set component", () => {
+describe("Test Prediction Set component with files but no alternate_accessions", () => {
   it("renders a prediction set item", () => {
     const item = {
       "@id": "/prediction-sets/IGVFDS8323PSET/",
@@ -2502,6 +2510,7 @@ describe("Test Prediction Set component", () => {
       },
       status: "released",
       file_set_type: "functional effect",
+      files: [{ content_type: "alignments" }, { content_type: "fragments" }],
       summary: "IGVFDS8323PSET",
       scope: "genes",
       samples: [
@@ -2538,6 +2547,80 @@ describe("Test Prediction Set component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent("functional effect prediction");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("genes");
+
+    const supplementContent = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplementContent).toHaveTextContent("alignments, fragments");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Prediction Set component with no files but with alternate_accession", () => {
+  it("renders a prediction set item", () => {
+    const item = {
+      "@id": "/prediction-sets/IGVFDS8323PSEU/",
+      "@type": ["PredictionSet", "FileSet", "Item"],
+      accession: "IGVFDS8323PSEU",
+      alternate_accessions: ["IGVFDS3099XPLP"],
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      files: [],
+      status: "released",
+      file_set_type: "functional effect",
+      summary: "IGVFDS8323PSEU",
+      scope: "genes",
+      samples: [
+        {
+          "@id": "/tissues/IGVFSM0001DDDD/",
+          accession: "IGVFSM0001DDDD",
+          aliases: ["igvf:treated_tissue"],
+          donors: [
+            {
+              "@id": "/rodent-donors/IGVFDO6583PZIO/",
+              accession: "IGVFDO6583PZIO",
+              aliases: ["igvf:alias_rodent_donor_2"],
+              summary: "IGVFDO6583PZIO",
+              taxa: "Mus musculus",
+            },
+          ],
+          sample_terms: ["/sample-terms/UBERON_0002048/"],
+          summary: "lung tissue, Mus musculus (10-20 weeks)",
+          taxa: "Mus musculus",
+        },
+      ],
+      uuid: "a076232c2-d4db-4a51-ad73-4c53c824937f",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PredictionSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Prediction Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSEU/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("functional effect prediction");
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent("Alternate Accessions");
+
+    const alternateAccessionContent = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(alternateAccessionContent).toHaveTextContent("IGVFDS3099XPLP");
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
