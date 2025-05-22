@@ -28,11 +28,7 @@ import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import {
-  requestDocuments,
-  requestFileSets,
-  requestFiles,
-} from "../../lib/common-requests";
+import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { type ErrorObject } from "../../lib/fetch-request.d";
@@ -56,7 +52,6 @@ export default function IndexFile({
   attribution,
   documents,
   derivedFrom,
-  derivedFromFileSets,
   inputFileFor,
   fileFormatSpecifications,
   isJson,
@@ -65,7 +60,6 @@ export default function IndexFile({
   attribution: any;
   documents: any[];
   derivedFrom: any[];
-  derivedFromFileSets: FileSetObject[];
   inputFileFor: FileObject[];
   fileFormatSpecifications: any[];
   isJson: boolean;
@@ -164,7 +158,6 @@ export default function IndexFile({
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
-              derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${indexFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
@@ -221,15 +214,6 @@ export async function getServerSideProps(
       ? await requestFiles(indexFile.derived_from, request)
       : [];
 
-    const derivedFromFileSetPaths = derivedFrom
-      .map((file) => file.file_set as string)
-      .filter((fileSet) => fileSet);
-    const uniqueDerivedFromFileSetPaths = [...new Set(derivedFromFileSetPaths)];
-    const derivedFromFileSets =
-      uniqueDerivedFromFileSetPaths.length > 0
-        ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
-        : [];
-
     const inputFileFor =
       indexFile.input_file_for.length > 0
         ? await requestFiles(indexFile.input_file_for as string[], request)
@@ -252,7 +236,6 @@ export async function getServerSideProps(
         indexFile,
         documents,
         derivedFrom,
-        derivedFromFileSets,
         inputFileFor,
         fileFormatSpecifications,
         pageContext: { title: indexFile.accession },

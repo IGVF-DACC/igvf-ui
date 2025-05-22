@@ -31,7 +31,6 @@ import { StatusPreviewDetail } from "../../components/status";
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
-  requestFileSets,
   requestFiles,
   requestSeqspecFiles,
 } from "../../lib/common-requests";
@@ -48,7 +47,6 @@ export default function SequenceFile({
   sequenceFile,
   documents,
   derivedFrom,
-  derivedFromFileSets,
   inputFileFor,
   fileFormatSpecifications,
   seqspecDocument,
@@ -172,7 +170,6 @@ export default function SequenceFile({
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
-              derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${sequenceFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
@@ -209,8 +206,6 @@ SequenceFile.propTypes = {
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
-  // Filesets derived from files belong to
-  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
@@ -248,14 +243,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const derivedFrom = sequenceFile.derived_from
       ? await requestFiles(sequenceFile.derived_from, request)
       : [];
-    const derivedFromFileSetPaths = derivedFrom
-      .map((file) => file.file_set)
-      .filter((fileSet) => fileSet);
-    const uniqueDerivedFromFileSetPaths = [...new Set(derivedFromFileSetPaths)];
-    const derivedFromFileSets =
-      uniqueDerivedFromFileSetPaths.length > 0
-        ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
-        : [];
     const inputFileFor =
       sequenceFile.input_file_for.length > 0
         ? await requestFiles(sequenceFile.input_file_for, request)
@@ -287,7 +274,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         sequenceFile,
         documents,
         derivedFrom,
-        derivedFromFileSets,
         inputFileFor,
         fileFormatSpecifications,
         seqspecDocument: seqspecDocuments ? seqspecDocuments[0] : null,
