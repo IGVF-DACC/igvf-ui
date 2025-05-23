@@ -32,7 +32,7 @@ export default function AnalysisSet({
   );
   // Collect all files.content_type and deduplicate
   const fileContentType =
-    analysisSet.files.length > 0
+    analysisSet.files?.length > 0
       ? [...new Set(analysisSet.files.map((file) => file.content_type))].sort()
       : [];
 
@@ -59,7 +59,7 @@ export default function AnalysisSet({
         {isSupplementsVisible && (
           <SearchListItemSupplement>
             <SearchListItemSupplementAlternateAccessions item={analysisSet} />
-            {fileContentType.length > 0 && (
+            {fileContentType && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Files
