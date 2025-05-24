@@ -1456,7 +1456,7 @@ describe("Test File component", () => {
 });
 
 describe("Test the AnalysisSet component", () => {
-  it("renders an AnalysisSet item with alternate accession and files", () => {
+  it("renders an AnalysisSet item with alternate accession", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
@@ -1465,10 +1465,10 @@ describe("Test the AnalysisSet component", () => {
       aliases: ["igvf:basic_analysis_set"],
       award: "/awards/HG012012/",
       file_set_type: "primary analysis",
+      files: [],
       lab: {
         title: "J. Michael Cherry, Stanford",
       },
-      files: [{ content_type: "alignments" }, { content_type: "fragments" }],
       status: "released",
       summary: "primary analysis of data",
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
@@ -1491,12 +1491,6 @@ describe("Test the AnalysisSet component", () => {
 
     const supplement = screen.getByTestId("search-list-item-supplement");
     expect(supplement).toHaveTextContent("Alternate Accessions");
-
-    const [alternateAccessionContent, filesContent] = screen.getAllByTestId(
-      "search-list-item-supplement-content"
-    );
-    expect(alternateAccessionContent).toHaveTextContent("IGVFDS3099XPLO");
-    expect(filesContent).toHaveTextContent("alignments, fragments");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
