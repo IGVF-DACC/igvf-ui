@@ -66,7 +66,6 @@ const columns = [
  */
 export default function DerivedFromTable({
   derivedFrom,
-  derivedFromFileSets = [],
   reportLink = null,
   reportLabel = null,
   title = "Derived From",
@@ -86,7 +85,6 @@ export default function DerivedFromTable({
         <SortableGrid
           data={derivedFrom}
           columns={columns}
-          meta={{ derivedFromFileSets }}
           pager={{}}
           keyProp="@id"
         />
@@ -98,8 +96,6 @@ export default function DerivedFromTable({
 DerivedFromTable.propTypes = {
   // Files to display in the table
   derivedFrom: PropTypes.array.isRequired,
-  // File sets of the files
-  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object),
   // Optional link to a report of the files
   reportLink: PropTypes.string,
   // Optional label for the report link

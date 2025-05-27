@@ -26,11 +26,7 @@ import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import {
-  requestDocuments,
-  requestFileSets,
-  requestFiles,
-} from "../../lib/common-requests";
+import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
@@ -44,7 +40,6 @@ export default function MatrixFile({
   attribution,
   documents,
   derivedFrom,
-  derivedFromFileSets,
   inputFileFor,
   fileFormatSpecifications,
   referenceFiles,
@@ -103,7 +98,6 @@ export default function MatrixFile({
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
-              derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${matrixFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
@@ -132,8 +126,6 @@ MatrixFile.propTypes = {
   documents: PropTypes.array.isRequired,
   // The file is derived from
   derivedFrom: PropTypes.array.isRequired,
-  // FileSets derived from files belong to
-  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
@@ -170,14 +162,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const derivedFrom = matrixFile.derived_from
       ? await requestFiles(matrixFile.derived_from, request)
       : [];
-    const derivedFromFileSetPaths = derivedFrom
-      .map((file) => file.file_set)
-      .filter((fileSet) => fileSet);
-    const uniqueDerivedFromFileSetPaths = [...new Set(derivedFromFileSetPaths)];
-    const derivedFromFileSets =
-      uniqueDerivedFromFileSetPaths.length > 0
-        ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
-        : [];
     const inputFileFor =
       matrixFile.input_file_for.length > 0
         ? await requestFiles(matrixFile.input_file_for, request)
@@ -202,7 +186,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         matrixFile,
         documents,
         derivedFrom,
-        derivedFromFileSets,
         inputFileFor,
         fileFormatSpecifications,
         pageContext: { title: matrixFile.accession },

@@ -47,7 +47,6 @@ export default function TabularFile({
   barcodeMapFor,
   documents,
   derivedFrom,
-  derivedFromFileSets,
   inputFileFor,
   fileFormatSpecifications,
   integratedIn,
@@ -116,7 +115,6 @@ export default function TabularFile({
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
-              derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${tabularFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
@@ -165,8 +163,6 @@ TabularFile.propTypes = {
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
-  // FileSets derived from files belong to
-  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
@@ -202,14 +198,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const derivedFrom = tabularFile.derived_from
       ? await requestFiles(tabularFile.derived_from, request)
       : [];
-    const derivedFromFileSetPaths = derivedFrom
-      .map((file) => file.file_set)
-      .filter((fileSet) => fileSet);
-    const uniqueDerivedFromFileSetPaths = [...new Set(derivedFromFileSetPaths)];
-    const derivedFromFileSets =
-      uniqueDerivedFromFileSetPaths.length > 0
-        ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
-        : [];
     const barcodeMapFor =
       tabularFile.barcode_map_for.length > 0
         ? await requestSamples(tabularFile.barcode_map_for, request)
@@ -243,7 +231,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         barcodeMapFor,
         documents,
         derivedFrom,
-        derivedFromFileSets,
         inputFileFor,
         fileFormatSpecifications,
         integratedIn,

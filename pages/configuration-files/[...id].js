@@ -21,11 +21,7 @@ import SequencingFileTable from "../../components/sequencing-file-table";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import {
-  requestDocuments,
-  requestFileSets,
-  requestFiles,
-} from "../../lib/common-requests";
+import { requestDocuments, requestFiles } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
@@ -40,7 +36,6 @@ export default function ConfigurationFile({
   seqspecOf,
   documents,
   derivedFrom,
-  derivedFromFileSets,
   inputFileFor,
   fileFormatSpecifications,
   isJson,
@@ -90,7 +85,6 @@ export default function ConfigurationFile({
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
-              derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${configurationFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
@@ -121,8 +115,6 @@ ConfigurationFile.propTypes = {
   documents: PropTypes.array.isRequired,
   // The file is derived from
   derivedFrom: PropTypes.array.isRequired,
-  // Filesets derived from files belong to
-  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
@@ -160,14 +152,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const derivedFrom = configurationFile.derived_from
       ? await requestFiles(configurationFile.derived_from, request)
       : [];
-    const derivedFromFileSetPaths = derivedFrom
-      .map((file) => file.file_set)
-      .filter((fileSet) => fileSet);
-    const uniqueDerivedFromFileSetPaths = [...new Set(derivedFromFileSetPaths)];
-    const derivedFromFileSets =
-      uniqueDerivedFromFileSetPaths.length > 0
-        ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
-        : [];
     const inputFileFor =
       configurationFile.input_file_for.length > 0
         ? await requestFiles(configurationFile.input_file_for, request)
@@ -193,7 +177,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         seqspecOf,
         documents,
         derivedFrom,
-        derivedFromFileSets,
         inputFileFor,
         fileFormatSpecifications,
         pageContext: { title: configurationFile.accession },

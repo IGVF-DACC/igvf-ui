@@ -46,7 +46,6 @@ export default function ReferenceFile({
   referenceFile,
   documents,
   derivedFrom,
-  derivedFromFileSets,
   inputFileFor,
   fileFormatSpecifications,
   integratedIn,
@@ -131,7 +130,6 @@ export default function ReferenceFile({
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
-              derivedFromFileSets={derivedFromFileSets}
               reportLink={`/multireport/?type=File&input_file_for=${referenceFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
@@ -169,8 +167,6 @@ ReferenceFile.propTypes = {
   documents: PropTypes.array,
   // The file is derived from
   derivedFrom: PropTypes.array,
-  // Filesets derived from files belong to
-  derivedFromFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
@@ -206,14 +202,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const derivedFrom = referenceFile.derived_from
       ? await requestFiles(referenceFile.derived_from, request)
       : [];
-    const derivedFromFileSetPaths = derivedFrom
-      .map((file) => file.file_set)
-      .filter((fileSet) => fileSet);
-    const uniqueDerivedFromFileSetPaths = [...new Set(derivedFromFileSetPaths)];
-    const derivedFromFileSets =
-      uniqueDerivedFromFileSetPaths.length > 0
-        ? await requestFileSets(uniqueDerivedFromFileSetPaths, request)
-        : [];
     const inputFileFor =
       referenceFile.input_file_for.length > 0
         ? await requestFiles(referenceFile.input_file_for, request)
@@ -245,7 +233,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         referenceFile,
         documents,
         derivedFrom,
-        derivedFromFileSets,
         inputFileFor,
         fileFormatSpecifications,
         integratedIn,
