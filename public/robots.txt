@@ -21,6 +21,3 @@ Allow: /multireport/$
 # Standard exclusions
 Disallow: /api/
 Disallow: /_next/
-
-# Allow help paths
-Allow: /help/
