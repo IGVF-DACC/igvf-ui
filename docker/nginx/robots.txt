@@ -6,10 +6,16 @@ Allow: /
 # downloads
 Disallow: */@@download/
 
-# searches
-Disallow: /search?*
+# limit=all for anything should be disallowed
+Disallow: /*?*limit=all
+
+# searches without params and all multireports
+Disallow: /search/
 Disallow: /multireport?*
 
 # internal routes
 Disallow: /api/
 Disallow: /_next/
+
+# permit specific searches
+Allow: /search/?type=MeasurementSet&status=released
