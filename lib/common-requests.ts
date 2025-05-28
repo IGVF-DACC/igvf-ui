@@ -15,15 +15,19 @@ export async function requestAnalysisSteps(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "aliases",
-      "input_content_types",
-      "name",
-      "output_content_types",
-      "status",
-      "step_label",
-      "title",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "aliases",
+        "input_content_types",
+        "name",
+        "output_content_types",
+        "status",
+        "step_label",
+        "title",
+      ],
+      "AnalysisStep"
+    )
   ).unwrap_or([]);
 }
 
@@ -38,7 +42,7 @@ export async function requestAwards(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["name", "url"])
+    await request.getMultipleObjectsBulk(paths, ["name", "url"], "Award")
   ).unwrap_or([]);
 }
 
@@ -53,14 +57,18 @@ export async function requestBiomarkers(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "aliases",
-      "classification",
-      "name",
-      "quantification",
-      "status",
-      "synonyms",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "aliases",
+        "classification",
+        "name",
+        "quantification",
+        "status",
+        "synonyms",
+      ],
+      "Biomarker"
+    )
   ).unwrap_or([]);
 }
 
@@ -75,13 +83,11 @@ export async function requestBiosamples(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "accession",
-      "disease_terms",
-      "sample_terms",
-      "status",
-      "summary",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      ["accession", "disease_terms", "sample_terms", "status", "summary"],
+      "BioSample"
+    )
   ).unwrap_or([]);
 }
 
@@ -96,42 +102,46 @@ export async function requestFiles(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "@type",
-      "accession",
-      "aliases",
-      "content_type",
-      "controlled_access",
-      "creation_timestamp",
-      "derived_from",
-      "external_host_url",
-      "externally_hosted",
-      "file_format",
-      "file_size",
-      "file_set",
-      "filtered",
-      "flowcell_id",
-      "href",
-      "illumina_read_type",
-      "index",
-      "input_file_for",
-      "lab.@id",
-      "lab.title",
-      "lane",
-      "quality_metrics",
-      "read_names",
-      "seqspecs",
-      "seqspec_document",
-      "sequencing_platform",
-      "sequencing_run",
-      "submitted_file_name",
-      "status",
-      "summary",
-      "workflow.@id",
-      "workflow.name",
-      "workflow.uniform_pipeline",
-      "upload_status",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "@type",
+        "accession",
+        "aliases",
+        "content_type",
+        "controlled_access",
+        "creation_timestamp",
+        "derived_from",
+        "external_host_url",
+        "externally_hosted",
+        "file_format",
+        "file_size",
+        "file_set",
+        "filtered",
+        "flowcell_id",
+        "href",
+        "illumina_read_type",
+        "index",
+        "input_file_for",
+        "lab.@id",
+        "lab.title",
+        "lane",
+        "quality_metrics",
+        "read_names",
+        "seqspecs",
+        "seqspec_document",
+        "sequencing_platform",
+        "sequencing_run",
+        "submitted_file_name",
+        "status",
+        "summary",
+        "workflow.@id",
+        "workflow.name",
+        "workflow.uniform_pipeline",
+        "upload_status",
+      ],
+      "File"
+    )
   ).unwrap_or([]);
 }
 
@@ -196,7 +206,8 @@ export async function requestFileSets(
         "samples",
         "status",
         "summary",
-      ].concat(addedProperties)
+      ].concat(addedProperties),
+      "FileSet"
     )
   ).unwrap_or([]);
 }
@@ -212,13 +223,17 @@ export async function requestDocuments(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "attachment",
-      "description",
-      "document_type",
-      "standardized_file_format",
-      "uuid",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "attachment",
+        "description",
+        "document_type",
+        "standardized_file_format",
+        "uuid",
+      ],
+      "Document"
+    )
   ).unwrap_or([]);
 }
 
@@ -233,13 +248,11 @@ export async function requestDonors(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "accession",
-      "aliases",
-      "sex",
-      "status",
-      "taxa",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      ["accession", "aliases", "sex", "status", "taxa"],
+      "Donor"
+    )
   ).unwrap_or([]);
 }
 
@@ -254,7 +267,7 @@ export async function requestGenes(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["geneid", "symbol"])
+    await request.getMultipleObjectsBulk(paths, ["geneid", "symbol"], "Gene")
   ).unwrap_or([]);
 }
 
@@ -269,13 +282,17 @@ export async function requestInstitutionalCertificates(
   request: FetchRequest
 ): Promise<DataProviderObject[]> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "certificate_identifier",
-      "controlled_access",
-      "data_use_limitation_summary",
-      "lab",
-      "status",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "certificate_identifier",
+        "controlled_access",
+        "data_use_limitation_summary",
+        "lab",
+        "status",
+      ],
+      "InstitutionalCertificate"
+    )
   ).unwrap_or([]);
 }
 
@@ -290,7 +307,11 @@ export async function requestOntologyTerms(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["term_id", "term_name"])
+    await request.getMultipleObjectsBulk(
+      paths,
+      ["term_id", "term_name"],
+      "OntologyTerm"
+    )
   ).unwrap_or([]);
 }
 
@@ -306,15 +327,19 @@ export async function requestPhenotypicFeatures(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "feature.@id",
-      "feature.term_id",
-      "feature.term_name",
-      "observation_date",
-      "quantity",
-      "quantity_units",
-      "status",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "feature.@id",
+        "feature.term_id",
+        "feature.term_name",
+        "observation_date",
+        "quantity",
+        "quantity_units",
+        "status",
+      ],
+      "PhenotypicFeature"
+    )
   ).unwrap_or([]);
 }
 
@@ -329,15 +354,19 @@ export async function requestSamples(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "accession",
-      "construct_library_sets",
-      "disease_terms",
-      "protocols",
-      "sample_terms",
-      "status",
-      "summary",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "accession",
+        "construct_library_sets",
+        "disease_terms",
+        "protocols",
+        "sample_terms",
+        "status",
+        "summary",
+      ],
+      "Sample"
+    )
   ).unwrap_or([]);
 }
 
@@ -352,15 +381,19 @@ export async function requestSoftware(
   request: FetchRequest
 ): Promise<DataProviderObject[]> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "aliases",
-      "description",
-      "lab",
-      "name",
-      "source_url",
-      "status",
-      "title",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "aliases",
+        "description",
+        "lab",
+        "name",
+        "source_url",
+        "status",
+        "title",
+      ],
+      "Software"
+    )
   ).unwrap_or([]);
 }
 
@@ -376,12 +409,11 @@ export async function requestSoftwareVersions(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "downloaded_url",
-      "name",
-      "status",
-      "version",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      ["downloaded_url", "name", "status", "version"],
+      "SoftwareVersion"
+    )
   ).unwrap_or([]);
 }
 
@@ -396,13 +428,11 @@ export async function requestTreatments(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "purpose",
-      "status",
-      "summary",
-      "treatment_term_name",
-      "treatment_type",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      ["purpose", "status", "summary", "treatment_term_name", "treatment_type"],
+      "Treatment"
+    )
   ).unwrap_or([]);
 }
 
@@ -416,7 +446,9 @@ export async function requestUsers(
   paths: Array<string>,
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
-  return (await request.getMultipleObjectsBulk(paths, ["title"])).unwrap_or([]);
+  return (
+    await request.getMultipleObjectsBulk(paths, ["title"], "User")
+  ).unwrap_or([]);
 }
 
 /**
@@ -430,7 +462,11 @@ export async function requestSources(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["name", "url", "lab.title"])
+    await request.getMultipleObjectsBulk(
+      paths,
+      ["name", "url", "lab.title"],
+      "Source"
+    )
   ).unwrap_or([]);
 }
 
@@ -459,14 +495,11 @@ export async function requestWorkflows(
   request: FetchRequest
 ): Promise<DataProviderObject[]> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "accession",
-      "aliases",
-      "lab",
-      "name",
-      "source_url",
-      "status",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      ["accession", "aliases", "lab", "name", "source_url", "status"],
+      "Workflow"
+    )
   ).unwrap_or([]);
 }
 
@@ -481,17 +514,21 @@ export async function requestPublications(
   request: FetchRequest
 ): Promise<DataProviderObject[]> {
   return (
-    await request.getMultipleObjectsBulk(paths, [
-      "aliases",
-      "authors",
-      "date_published",
-      "issue",
-      "journal",
-      "page",
-      "publication_identifiers",
-      "title",
-      "volume",
-    ])
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "aliases",
+        "authors",
+        "date_published",
+        "issue",
+        "journal",
+        "page",
+        "publication_identifiers",
+        "title",
+        "volume",
+      ],
+      "Publication"
+    )
   ).unwrap_or([]);
 }
 
@@ -507,7 +544,11 @@ export async function requestPages(
   request: FetchRequest
 ): Promise<DataProviderObject[]> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["name", "title", "status"])
+    await request.getMultipleObjectsBulk(
+      paths,
+      ["name", "title", "status"],
+      "Page"
+    )
   ).unwrap_or([]);
 }
 
