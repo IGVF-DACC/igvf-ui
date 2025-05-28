@@ -11,7 +11,6 @@ Disallow: /summary
 Disallow: /batch_download
 Disallow: /metadata
 Disallow: /user-profile
-Disallow: /profiles
 
 Disallow: /api
 Disallow: /_next
