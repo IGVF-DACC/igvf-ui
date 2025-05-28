@@ -11,7 +11,7 @@ Disallow: /*?*limit=all
 
 # searches without params and all multireports
 Disallow: /search/
-Disallow: /multireport?*
+Disallow: /multireport?
 
 # internal routes
 Disallow: /api/
