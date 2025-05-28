@@ -3,21 +3,13 @@ User-agent: *
 # Allow basic pages and static content
 Allow: /
 
-# Disallow file downloads (@@download URLs)
+# downloads
 Disallow: */@@download/
 
-# Disallow search and report pages with query parameters
+# searches
 Disallow: /search?*
-Disallow: /search/?*
 Disallow: /multireport?*
-Disallow: /multireport/?*
 
-# Allow search and report base pages without parameters
-Allow: /search$
-Allow: /search/$
-Allow: /multireport$
-Allow: /multireport/$
-
-# Standard exclusions
+# internal routes
 Disallow: /api/
 Disallow: /_next/
