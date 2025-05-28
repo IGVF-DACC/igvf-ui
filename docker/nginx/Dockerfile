@@ -4,4 +4,4 @@ RUN rm /etc/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY ./production.conf /etc/nginx/nginx.conf
 
-COPY ./robots.txt /etc/nginx/static/robots.txt
+COPY ./robots.txt /var/www/html/robots.txt
