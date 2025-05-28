@@ -13,7 +13,7 @@ Disallow: /user-profile
 
 Disallow: /api
 Disallow: /_next
-Disallow: */@@download
+Disallow: /*/@@download/*
 
 Allow: /$
 
