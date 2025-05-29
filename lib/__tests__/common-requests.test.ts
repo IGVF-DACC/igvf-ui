@@ -30,7 +30,6 @@ import FetchRequest from "../fetch-request";
 describe("Test all the common requests", () => {
   test("requestAnalysisSteps function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/analysis-steps/IGVFWF0000WORK-example-analysis-step/",
@@ -44,13 +43,6 @@ describe("Test all the common requests", () => {
           title: "Example Analysis Step",
         },
       ],
-      "@id":
-        "/search/?type=AnalysisStep&field=aliases&field=input_content_types&field=name&field=output_content_types&field=status&field=step_label&field=title",
-      "@type": ["Search"],
-      clear_filters: "/search/?type=AnalysisStep",
-      notification: "Success",
-      title: "Search",
-      total: 1,
     };
 
     const mockFunction = jest.fn();
@@ -67,7 +59,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=AnalysisStep&field=aliases&field=input_content_types&field=name&field=output_content_types&field=status&field=step_label&field=title&@id=/analysis-steps/IGVFWF0000WORK-example-analysis-step/&limit=1",
+      "/search-quick/?type=AnalysisStep&field=aliases&field=input_content_types&field=name&field=output_content_types&field=status&field=step_label&field=title&@id=/analysis-steps/IGVFWF0000WORK-example-analysis-step/&limit=1",
       expect.anything()
     );
     expect(result).toHaveLength(1);
@@ -77,7 +69,6 @@ describe("Test all the common requests", () => {
 
   test("requestAward function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/awards/HG012047/",
@@ -92,13 +83,6 @@ describe("Test all the common requests", () => {
           url: "https://reporter.nih.gov/search/un-s4Qo4g0i7DNOYC2kBlw/project-details/10480924",
         },
       ],
-      "@id": "/search/?type=Award&field=%40id&field=url&field=name",
-      "@type": ["Search"],
-      all: "/search/?type=Award&field=%40id&field=url&field=name&limit=all",
-      clear_filters: "/search/?type=Award",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -115,7 +99,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Award&field=name&field=url&@id=/awards/HG012047/&@id=/awards/HG012022/&limit=2",
+      "/search-quick/?type=Award&field=name&field=url&@id=/awards/HG012047/&@id=/awards/HG012022/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -125,7 +109,6 @@ describe("Test all the common requests", () => {
 
   test("requestBiomarkers function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/biomarkers/e8aa7ffe-e075-46d2-8a09-9707bf0b190d/",
@@ -144,13 +127,6 @@ describe("Test all the common requests", () => {
           status: "in progress",
         },
       ],
-      "@id":
-        "/search/?type=Biomarker&field=aliases&field=classification&field=name&field=quantification&field=status&field=synonyms",
-      "@type": ["Search"],
-      clear_filters: "/search/?type=Biomarker",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -170,7 +146,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Biomarker&field=aliases&field=classification&field=name&field=quantification&field=status&field=synonyms&@id=/biomarkers/e8aa7ffe-e075-46d2-8a09-9707bf0b190d/&@id=/biomarkers/d97ce0ce-0125-4639-8084-94d081bea6c3/&limit=2",
+      "/search-quick/?type=Biomarker&field=aliases&field=classification&field=name&field=quantification&field=status&field=synonyms&@id=/biomarkers/e8aa7ffe-e075-46d2-8a09-9707bf0b190d/&@id=/biomarkers/d97ce0ce-0125-4639-8084-94d081bea6c3/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -180,7 +156,6 @@ describe("Test all the common requests", () => {
 
   test("requestBiosamples function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/in-vitro-systems/IGVFSM0405BZBU/",
@@ -211,14 +186,6 @@ describe("Test all the common requests", () => {
             "mouse embryonic stem differentiated cell specimen, male, Mus musculus WD44",
         },
       ],
-      "@id":
-        "/search/?type=Biosample&field=accession&field=disease_terms&field=sample_terms&field=status&field=summary&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=Biosample&field=accession&field=disease_terms&field=sample_terms&field=status&field=summary&limit=all",
-      clear_filters: "/search/?type=Biosample",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -238,7 +205,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=BioSample&field=accession&field=disease_terms&field=sample_terms&field=status&field=summary&@id=/in-vitro-systems/IGVFSM0405BZBU/&@id=/in-vitro-systems/IGVFSM1671CSBE/&limit=2",
+      "/search-quick/?type=BioSample&field=accession&field=disease_terms&field=sample_terms&field=status&field=summary&@id=/in-vitro-systems/IGVFSM0405BZBU/&@id=/in-vitro-systems/IGVFSM1671CSBE/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -248,7 +215,6 @@ describe("Test all the common requests", () => {
 
   test("requestFiles function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/sequence-files/IGVFFI4067OVRO/",
@@ -292,14 +258,6 @@ describe("Test all the common requests", () => {
           upload_status: "validated",
         },
       ],
-      "@id":
-        "/search/?type=File&&field=accession&field=content_type&field=creation_timestamp&field=file_format&field=file_size&field=file_set&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=lab.title&field=lane&field=seqspecs&field=sequencing_platform&field=sequencing_run&field=status&field=upload_status&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=File&field=accession&field=content_type&field=creation_timestamp&field=file_format&field=file_size&field=file_set&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=lab.title&field=lane&field=seqspecs&field=sequencing_platform&field=sequencing_run&field=status&field=upload_status&limit=all",
-      clear_filters: "/search/?type=File",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -316,7 +274,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=File&field=@type&field=accession&field=aliases&field=content_type&field=controlled_access&field=creation_timestamp&field=derived_from&field=external_host_url&field=externally_hosted&field=file_format&field=file_size&field=file_set&field=filtered&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=quality_metrics&field=read_names&field=seqspecs&field=seqspec_document&field=sequencing_platform&field=sequencing_run&field=submitted_file_name&field=status&field=summary&field=workflow.@id&field=workflow.name&field=workflow.uniform_pipeline&field=upload_status&@id=/sequence-files/IGVFFI4067OVRO/&@id=/sequence-files/IGVFFI1165AJSO/&limit=2",
+      "/search-quick/?type=File&field=@type&field=accession&field=aliases&field=content_type&field=controlled_access&field=creation_timestamp&field=derived_from&field=external_host_url&field=externally_hosted&field=file_format&field=file_size&field=file_set&field=filtered&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=quality_metrics&field=read_names&field=seqspecs&field=seqspec_document&field=sequencing_platform&field=sequencing_run&field=submitted_file_name&field=status&field=summary&field=workflow.@id&field=workflow.name&field=workflow.uniform_pipeline&field=upload_status&@id=/sequence-files/IGVFFI4067OVRO/&@id=/sequence-files/IGVFFI1165AJSO/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -368,7 +326,6 @@ describe("Test all the common requests", () => {
       },
     ];
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/configuration-files/IGVFFI6521QYYB/",
@@ -387,13 +344,6 @@ describe("Test all the common requests", () => {
           upload_status: "validated",
         },
       ],
-      "@id":
-        "/search/?@id=/configuration-files/IGVFFI6521QYYB/&seqspecs!=*&field=accession&field=content_type&field=creation_timestamp&field=file_format&field=file_size&field=file_set&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=lab.title&field=lane&field=seqspecs&field=sequencing_platform&field=sequencing_run&field=status&field=upload_status&limit=2",
-      "@type": ["Search"],
-      clear_filters: "/search/",
-      notification: "Success",
-      title: "Search",
-      total: 1,
     };
 
     const mockFunction = jest.fn();
@@ -575,7 +525,6 @@ describe("Test all the common requests", () => {
 
   test("requestFileSets function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/auxiliary-sets/IGVFDS0001AUXI/",
@@ -658,14 +607,6 @@ describe("Test all the common requests", () => {
           summary: "single-cell RNA sequencing assay (Parse SPLiT-seq)",
         },
       ],
-      "@id":
-        "/search/?type=FileSet&field=accession&field=aliases&field=lab.title&field=samples&field=status&field=summary&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=FileSet&field=accession&field=aliases&field=lab.title&field=samples&field=status&field=summary&limit=all",
-      clear_filters: "/search/?type=FileSet",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -682,7 +623,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=FileSet&field=@type&field=accession&field=aliases&field=file_set_type&field=lab.title&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
+      "/search-quick/?type=FileSet&field=@type&field=accession&field=aliases&field=file_set_type&field=lab.title&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -692,7 +633,6 @@ describe("Test all the common requests", () => {
 
   test("requestDocuments function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/documents/7988b40d-f7fc-4dc2-a7d4-95936e61be5c/",
@@ -721,13 +661,6 @@ describe("Test all the common requests", () => {
           uuid: "3508c752-4a9f-46e0-a5b6-099cd8a71428",
         },
       ],
-      "@id":
-        "/search/?type=Document&field=attachment&field=description&field=document_type&field=uuid",
-      "@type": ["Search"],
-      clear_filters: "/search/?type=Document",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -747,7 +680,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Document&field=attachment&field=description&field=document_type&field=standardized_file_format&field=uuid&@id=/documents/7988b40d-f7fc-4dc2-a7d4-95936e61be5c/&@id=/documents/3508c752-4a9f-46e0-a5b6-099cd8a71428/&limit=2",
+      "/search-quick/?type=Document&field=attachment&field=description&field=document_type&field=standardized_file_format&field=uuid&@id=/documents/7988b40d-f7fc-4dc2-a7d4-95936e61be5c/&@id=/documents/3508c752-4a9f-46e0-a5b6-099cd8a71428/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -757,7 +690,6 @@ describe("Test all the common requests", () => {
 
   test("requestDonors function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/human-donors/IGVFDO3718JLGW/",
@@ -781,14 +713,6 @@ describe("Test all the common requests", () => {
           taxa: "Mus musculus",
         },
       ],
-      "@id":
-        "/search/?type=Donor&field=accession&field=aliases&field=sex&field=status&field=taxa&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=Donor&field=accession&field=aliases&field=sex&field=status&field=taxa&limit=all",
-      clear_filters: "/search/?type=Donor",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -805,7 +729,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Donor&field=accession&field=aliases&field=sex&field=status&field=taxa&@id=/human-donors/IGVFDO3718JLGW/&@id=/rodent-donors/IGVFDO4122GLOB/&limit=2",
+      "/search-quick/?type=Donor&field=accession&field=aliases&field=sex&field=status&field=taxa&@id=/human-donors/IGVFDO3718JLGW/&@id=/rodent-donors/IGVFDO4122GLOB/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -815,7 +739,6 @@ describe("Test all the common requests", () => {
 
   test("requestGenes function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/genes/ENSG00000163930/",
@@ -828,13 +751,6 @@ describe("Test all the common requests", () => {
           geneid: "ENSG00000207705",
         },
       ],
-      "@id": "/search/?type=Gene&field=geneid&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=Gene&field=geneid&limit=all",
-      clear_filters: "/search/?type=Gene",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -851,7 +767,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Gene&field=geneid&field=symbol&@id=/genes/ENSG00000163930/&@id=/genes/ENSG00000207705/&limit=2",
+      "/search-quick/?type=Gene&field=geneid&field=symbol&@id=/genes/ENSG00000163930/&@id=/genes/ENSG00000207705/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -861,7 +777,6 @@ describe("Test all the common requests", () => {
 
   test("requestInstitutionalCertificates function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id":
@@ -871,13 +786,6 @@ describe("Test all the common requests", () => {
           status: "released",
         },
       ],
-      "@id":
-        "/search/?field=certificate_identifier&field=controlled_access&field=data_use_limitation_summary&field=lab&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
-      "@type": ["Search"],
-      clear_filters: "/search/",
-      notification: "Success",
-      title: "Search",
-      total: 1,
     };
 
     const mockFunction = jest.fn();
@@ -894,7 +802,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=InstitutionalCertificate&field=certificate_identifier&field=controlled_access&field=data_use_limitation_summary&field=lab&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
+      "/search-quick/?type=InstitutionalCertificate&field=certificate_identifier&field=controlled_access&field=data_use_limitation_summary&field=lab&field=status&@id=/institutional-certificates/ed7bb4fd-b1d5-442b-a4ab-4de1291d07b5/&limit=1",
       expect.anything()
     );
     expect(result).toHaveLength(1);
@@ -903,7 +811,6 @@ describe("Test all the common requests", () => {
 
   test("requestOntologyTerms function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/phenotype-terms/NCIT_C92648/",
@@ -918,13 +825,6 @@ describe("Test all the common requests", () => {
           term_name: "definitive endoderm",
         },
       ],
-      "@id": "/search/?type=OntologyTerm&field=term_id&field=term_name&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=OntologyTerm&field=term_id&field=term_name&limit=all",
-      clear_filters: "/search/?type=OntologyTerm",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -941,7 +841,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=OntologyTerm&field=term_id&field=term_name&@id=/phenotype-terms/NCIT_C92648/&@id=/sample-terms/UBERON_0005439/&limit=2",
+      "/search-quick/?type=OntologyTerm&field=term_id&field=term_name&@id=/phenotype-terms/NCIT_C92648/&@id=/sample-terms/UBERON_0005439/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -951,7 +851,6 @@ describe("Test all the common requests", () => {
 
   test("requestPhenotypicFeatures function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/phenotypic-features/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa/",
@@ -980,14 +879,6 @@ describe("Test all the common requests", () => {
           status: "released",
         },
       ],
-      "@id":
-        "/search/?type=PhenotypicFeature&field=feature.@id&field=feature.term_id&field=feature.term_name&field=observation_date&field=quantity&field=quantity_units&field=status&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=PhenotypicFeature&field=feature.%40id&field=feature.term_id&field=feature.term_name&field=observation_date&field=quantity&field=quantity_units&field=status&limit=all",
-      clear_filters: "/search/?type=PhenotypicFeature",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -1007,7 +898,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=PhenotypicFeature&field=feature.@id&field=feature.term_id&field=feature.term_name&field=observation_date&field=quantity&field=quantity_units&field=status&@id=/phenotypic-features/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa/&@id=/phenotypic-features/847d7bdc-8fb3-11ed-a1eb-0242ac120002/&limit=2",
+      "/search-quick/?type=PhenotypicFeature&field=feature.@id&field=feature.term_id&field=feature.term_name&field=observation_date&field=quantity&field=quantity_units&field=status&@id=/phenotypic-features/ae1b4a0b-78e6-af0a-8e6d-c0c9b45905fa/&@id=/phenotypic-features/847d7bdc-8fb3-11ed-a1eb-0242ac120002/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -1017,7 +908,6 @@ describe("Test all the common requests", () => {
 
   test("requestSamples function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/tissues/IGVFSM0003DDDD/",
@@ -1046,14 +936,6 @@ describe("Test all the common requests", () => {
           summary: "organic cell",
         },
       ],
-      "@id":
-        "/search/?type=Sample&field=accession&field=construct_library_sets&field=protocols&field=sample_terms&field=status&field=summary",
-      "@type": ["Search"],
-      all: "/search/?type=Sample&field=accession&field=construct_library_sets&field=protocols&field=sample_terms&field=status&field=summary",
-      clear_filters: "/search/?type=Sample",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -1070,7 +952,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Sample&field=accession&field=construct_library_sets&field=disease_terms&field=protocols&field=sample_terms&field=status&field=summary&@id=/tissues/IGVFSM0003DDDD/&@id=/technical-samples/IGVFSM3106NGJL/&limit=2",
+      "/search-quick/?type=Sample&field=accession&field=construct_library_sets&field=disease_terms&field=protocols&field=sample_terms&field=status&field=summary&@id=/tissues/IGVFSM0003DDDD/&@id=/technical-samples/IGVFSM3106NGJL/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -1080,7 +962,6 @@ describe("Test all the common requests", () => {
 
   test("requestSoftware function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/software/bowtie2/",
@@ -1097,13 +978,6 @@ describe("Test all the common requests", () => {
           status: "released",
         },
       ],
-      "@id":
-        "/search/?type=SoftwareVersion&field=aliases&field=description&field=lab&field=name&field=source_url&field=status&field=title",
-      "@type": ["Search"],
-      clear_filters: "/search/?type=Software",
-      notification: "Success",
-      title: "Search",
-      total: 1,
     };
 
     const mockFunction = jest.fn();
@@ -1117,7 +991,7 @@ describe("Test all the common requests", () => {
     const request = new FetchRequest();
     const result = await requestSoftware(["/software/bowtie2/"], request);
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Software&field=aliases&field=description&field=lab&field=name&field=source_url&field=status&field=title&@id=/software/bowtie2/&limit=1",
+      "/search-quick/?type=Software&field=aliases&field=description&field=lab&field=name&field=source_url&field=status&field=title&@id=/software/bowtie2/&limit=1",
       expect.anything()
     );
     expect(result).toHaveLength(1);
@@ -1126,7 +1000,6 @@ describe("Test all the common requests", () => {
 
   test("requestSoftwareVersions function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/software-versions/bowtie2-v2.4.4/",
@@ -1138,13 +1011,6 @@ describe("Test all the common requests", () => {
           version: "v2.4.4",
         },
       ],
-      "@id":
-        "/search/?type=SoftwareVersion&field=downloaded_url&field=name&field=status&field=version",
-      "@type": ["Search"],
-      clear_filters: "/search/?type=SoftwareVersion",
-      notification: "Success",
-      title: "Search",
-      total: 1,
     };
 
     const mockFunction = jest.fn();
@@ -1161,7 +1027,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=SoftwareVersion&field=downloaded_url&field=name&field=status&field=version&@id=/software-versions/bowtie2-v2.4.4/&limit=1",
+      "/search-quick/?type=SoftwareVersion&field=downloaded_url&field=name&field=status&field=version&@id=/software-versions/bowtie2-v2.4.4/&limit=1",
       expect.anything()
     );
     expect(result).toHaveLength(1);
@@ -1170,7 +1036,6 @@ describe("Test all the common requests", () => {
 
   test("requestTreatments function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/treatments/d7562e66-c218-46e8-b0e2-ea6d89978b32/",
@@ -1191,14 +1056,6 @@ describe("Test all the common requests", () => {
           treatment_type: "protein",
         },
       ],
-      "@id":
-        "/search/?type=Treatment&field=purpose&field=status&field=summary&field=treatment_term_name&field=treatment_type&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=Treatment&field=purpose&field=status&field=summary&field=treatment_term_name&field=treatment_type&limit=all",
-      clear_filters: "/search/?type=Treatment",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -1218,7 +1075,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Treatment&field=purpose&field=status&field=summary&field=treatment_term_name&field=treatment_type&@id=/treatments/d7562e66-c218-46e8-b0e2-ea6d89978b32/&@id=/treatments/bd2cb34e-c72c-11ec-9d64-0242ac120002/&limit=2",
+      "/search-quick/?type=Treatment&field=purpose&field=status&field=summary&field=treatment_term_name&field=treatment_type&@id=/treatments/d7562e66-c218-46e8-b0e2-ea6d89978b32/&@id=/treatments/bd2cb34e-c72c-11ec-9d64-0242ac120002/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -1228,7 +1085,6 @@ describe("Test all the common requests", () => {
 
   test("requestUsers function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/users/fa9feeb4-28ba-4356-8c24-50f4e6562029/",
@@ -1241,14 +1097,6 @@ describe("Test all the common requests", () => {
           title: "Jason Ernst",
         },
       ],
-      "@id": "/search/?type=User&field=title&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=User&field=title&limit=all",
-      clear_filters: "/search/?type=User",
-      facet_groups: [],
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -1268,7 +1116,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=User&field=title&@id=/users/fa9feeb4-28ba-4356-8c24-50f4e6562029/&@id=/users/fa43a796-163c-488a-aa8e-5472a458232c/&limit=2",
+      "/search-quick/?type=User&field=title&@id=/users/fa9feeb4-28ba-4356-8c24-50f4e6562029/&@id=/users/fa43a796-163c-488a-aa8e-5472a458232c/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -1278,7 +1126,6 @@ describe("Test all the common requests", () => {
 
   test("requestSources function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/sources/aviva/",
@@ -1293,14 +1140,6 @@ describe("Test all the common requests", () => {
           url: "http://www.sigmaaldrich.com",
         },
       ],
-      "@id":
-        "/search/?type=Source&field=name&field=url&field=lab.title&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=Source&field=name&field=url&field=lab.title&limit=all",
-      clear_filters: "/search/?type=Source",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -1317,7 +1156,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Source&field=name&field=url&field=lab.title&@id=/sources/aviva/&@id=/sources/sigma/&limit=2",
+      "/search-quick/?type=Source&field=name&field=url&field=lab.title&@id=/sources/aviva/&@id=/sources/sigma/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -1327,7 +1166,6 @@ describe("Test all the common requests", () => {
 
   test("requestPages function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/help/donors/human-donors/",
@@ -1344,13 +1182,6 @@ describe("Test all the common requests", () => {
           title: "Phenotypes",
         },
       ],
-      "@id": "/search/?type=Page&field=name&field=title&field=status&limit=2",
-      "@type": ["Search"],
-      all: "/search/?type=Page&field=name&field=title&field=status&limit=all",
-      clear_filters: "/search/?type=Page",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -1367,7 +1198,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Page&field=name&field=title&field=status&@id=/help/donors/human-donors/&@id=/help/ontologies/phenotypes/&limit=2",
+      "/search-quick/?type=Page&field=name&field=title&field=status&@id=/help/donors/human-donors/&@id=/help/ontologies/phenotypes/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -1424,7 +1255,6 @@ describe("Test all the common requests", () => {
 
   test("requestWorkflows function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/workflows/IGVFWF0000WORK/",
@@ -1440,13 +1270,6 @@ describe("Test all the common requests", () => {
           status: "released",
         },
       ],
-      "@id":
-        "/search/?type=Workflow&field=accession&field=aliases&field=lab&field=name&field=source_url&field=status&limit=1",
-      "@type": ["Search"],
-      clear_filters: "/search/?type=Workflow",
-      notification: "Success",
-      title: "Search",
-      total: 1,
     };
 
     const mockFunction = jest.fn();
@@ -1463,7 +1286,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Workflow&field=accession&field=aliases&field=lab&field=name&field=source_url&field=status&@id=/workflows/IGVFWF0000WORK/&limit=1",
+      "/search-quick/?type=Workflow&field=accession&field=aliases&field=lab&field=name&field=source_url&field=status&@id=/workflows/IGVFWF0000WORK/&limit=1",
       expect.anything()
     );
     expect(result).toHaveLength(1);
@@ -1472,7 +1295,6 @@ describe("Test all the common requests", () => {
 
   test("requestPublications function", async () => {
     const mockResult = {
-      "@context": "/terms/",
       "@graph": [
         {
           "@id": "/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/",
@@ -1498,13 +1320,6 @@ describe("Test all the common requests", () => {
             "Chromatin interaction aware gene regulatory modeling with graph attention networks",
         },
       ],
-      "@id":
-        "/search/?type=Publication&field=aliases&field=authors&field=date_published&field=issue&field=journal&field=page&field=publication_identifiers&field=title&field=volume&limit=2",
-      "@type": ["Search"],
-      clear_filters: "/search/?type=Publication",
-      notification: "Success",
-      title: "Search",
-      total: 2,
     };
 
     const mockFunction = jest.fn();
@@ -1524,7 +1339,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search/?type=Publication&field=aliases&field=authors&field=date_published&field=issue&field=journal&field=page&field=publication_identifiers&field=title&field=volume&@id=/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/&@id=/publications/244ec9fc-ddda-4f38-b72d-3430929111e4/&limit=2",
+      "/search-quick/?type=Publication&field=aliases&field=authors&field=date_published&field=issue&field=journal&field=page&field=publication_identifiers&field=title&field=volume&@id=/publications/936b0798-3d6b-4b2f-a357-2bd59faae506/&@id=/publications/244ec9fc-ddda-4f38-b72d-3430929111e4/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);

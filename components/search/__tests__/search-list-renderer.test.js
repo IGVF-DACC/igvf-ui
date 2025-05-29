@@ -378,7 +378,9 @@ describe("Test search-result utility functions", () => {
     };
 
     window.fetch = jest.fn().mockImplementation((id) => {
-      const path = id.match(/^\/search\/\?field=\S+&@id=(\S+\/)&limit=1/)[1];
+      const path = id.match(
+        /^\/search-quick\/\?field=\S+&@id=(\S+\/)&limit=1/
+      )[1];
       const collection = path.match(/^\/(\S+)\/\S+\/$/)[1];
       const accessoryDataObject =
         collection === "users"
