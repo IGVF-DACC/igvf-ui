@@ -495,7 +495,7 @@ export default class FetchRequest {
         const pathQuery = group.map((path) => `@id=${path}`).join("&");
         const query = `${fieldQuery ? `${fieldQuery}&` : ""}${pathQuery}`;
         const response = await this.getObject(
-          `/search/?${typeQuery}${query}&limit=${group.length}`
+          `/search-quick/?${typeQuery}${query}&limit=${group.length}`
         );
         return response.map((g) => g["@graph"] as Array<DataProviderObject>);
       })
