@@ -1,5 +1,3 @@
-// node_modules
-import Link from "next/link";
 // root
 import { FileObject } from "../globals.d";
 
@@ -14,14 +12,14 @@ export function CheckfilesVersion({ file }: { file: FileObject }) {
 
   if (file.checkfiles_version) {
     return (
-      <Link
+      <a
         href={`https://github.com/IGVF-DACC/checkfiles/releases/tag/${file.checkfiles_version}`}
         className={`${className} rounded-sm no-underline`}
         target="_blank"
         rel="noopener noreferrer"
       >
         {file.checkfiles_version}
-      </Link>
+      </a>
     );
   }
 
@@ -34,14 +32,14 @@ export function CheckfilesVersion({ file }: { file: FileObject }) {
     file.upload_status === "invalidated"
   ) {
     return (
-      <Link
+      <a
         href="https://github.com/IGVF-DACC/checkfiles/tags"
         className={`${className} rounded-sm no-underline`}
         target="_blank"
         rel="noopener noreferrer"
       >
         Legacy version of checkfiles
-      </Link>
+      </a>
     );
   }
 

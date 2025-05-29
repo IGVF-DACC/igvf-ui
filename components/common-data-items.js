@@ -13,7 +13,6 @@
 // node_modules
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import Link from "next/link";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
@@ -26,6 +25,7 @@ import {
   DataItemValueUrl,
 } from "./data-area";
 import DbxrefList from "./dbxref-list";
+import Link from "./link-no-prefetch";
 import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
@@ -567,7 +567,6 @@ export function FileDataItems({ item, children = null }) {
               <Link
                 href={item.file_set["@id"]}
                 aria-label={`FileSet ${item.file_set.accession}`}
-                key={item.file_set["@id"]}
               >
                 {item.file_set.accession}
               </Link>

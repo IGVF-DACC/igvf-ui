@@ -1,8 +1,9 @@
 // node_modules
 import _ from "lodash";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import PropTypes from "prop-types";
+// components
+import Link from "./link-no-prefetch";
 // lib
 import {
   abbreviateNumber,
@@ -109,11 +110,7 @@ CustomXTick.propTypes = {
  * `shouldIncludeLinks` is true.
  */
 function BarLink({ path, children }) {
-  return (
-    <Link href={path} prefetch={false}>
-      {children}
-    </Link>
-  );
+  return <Link href={path}>{children}</Link>;
 }
 
 BarLink.propTypes = {

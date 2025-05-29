@@ -1,5 +1,4 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 // components
@@ -7,6 +6,7 @@ import ChartFileSetLab from "../components/chart-file-set-lab";
 import { DataPanel } from "../components/data-area";
 import HomeTitle from "../components/home-title";
 import Icon from "../components/icon";
+import Link from "../components/link-no-prefetch";
 import { TabGroup, TabList, TabTitle } from "../components/tabs";
 // lib
 import { ServerCache } from "../lib/cache";

@@ -1,5 +1,4 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -10,6 +9,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
+import Link from "../../components/link-no-prefetch";
 import NoContent from "../../components/no-content";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";

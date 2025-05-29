@@ -7,7 +7,6 @@ import {
   PlusIcon,
   QuestionMarkCircleIcon,
 } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import PropTypes from "prop-types";
 import React, {
   Children,
@@ -28,6 +27,7 @@ import GlobalContext from "./global-context";
 import Icon from "./icon";
 import IdSearchTrigger from "./id-search-trigger";
 import IndexerState from "./indexer-state";
+import Link from "./link-no-prefetch";
 import { CreativeCommons, Email, Twitter } from "./site-info";
 import SiteLogo from "./logo";
 import Modal from "./modal";

@@ -1,9 +1,9 @@
 // node_modules
-import Link from "next/link";
 import { PropTypes } from "prop-types";
 import { useContext } from "react";
 // components
 import GlobalContext from "./global-context";
+import Link from "./link-no-prefetch";
 import SeparatedList from "./separated-list";
 import SessionContext from "./session-context";
 // lib

@@ -1,6 +1,5 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 // components
 import AliasList from "../alias-list";
 import {
@@ -12,6 +11,7 @@ import {
 } from "../data-area";
 import { FileAccessionAndDownload } from "../file-download";
 import { HostedFilePreview } from "../hosted-file-preview";
+import Link from "../link-no-prefetch";
 import Modal from "../modal";
 import SeparatedList from "../separated-list";
 import SortableGrid from "../sortable-grid";

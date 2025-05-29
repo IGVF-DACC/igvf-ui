@@ -1,6 +1,5 @@
 // node_modules
 import PropTypes from "prop-types";
-import Link from "next/link";
 import { useContext } from "react";
 // components/search/list-renderer
 import {
@@ -19,6 +18,7 @@ import {
 } from "./search-list-item";
 // components
 import { ExternallyHostedBadge } from "../../common-pill-badges";
+import Link from "../../link-no-prefetch";
 import SeparatedList from "../../separated-list";
 import SessionContext from "../../session-context";
 

@@ -1,8 +1,8 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
+import Link from "./link-no-prefetch";
 import SeparatedList from "./separated-list";
 
 /**

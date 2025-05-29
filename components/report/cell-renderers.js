@@ -7,7 +7,6 @@
 
 // node_modules
 import _ from "lodash";
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import ChromosomeLocations from "../chromosome-locations";
@@ -17,6 +16,7 @@ import {
   DEFAULT_MAX_COLLAPSE_ITEMS_VERTICAL,
   useCollapseControl,
 } from "../collapse-control";
+import Link from "../link-no-prefetch";
 import MarkdownSection from "../markdown-section";
 import SeparatedList from "../separated-list";
 import { AliasesCell } from "../table-cells";
