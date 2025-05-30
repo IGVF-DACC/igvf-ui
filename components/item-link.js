@@ -1,7 +1,8 @@
 // node_modules
 import { ChevronDoubleRightIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import PropTypes from "prop-types";
+// components
+import Link from "./link-no-prefetch";
 
 /**
  * Displays the link to an object page, with a double-right chevron icon.

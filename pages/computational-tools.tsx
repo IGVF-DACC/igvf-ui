@@ -1,10 +1,10 @@
 // node_modules
 import _ from "lodash";
-import Link from "next/link";
 // components
 import { DataTable } from "../components/data-table";
 import { ButtonLink } from "../components/form-elements";
 import Icon from "../components/icon";
+import Link from "../components/link-no-prefetch";
 import PagePreamble from "../components/page-preamble";
 import SeparatedList from "../components/separated-list";
 // lib

@@ -1,7 +1,8 @@
 // node_modules
 import _ from "lodash";
 import Image from "next/image";
-import Link from "next/link";
+// components
+import Link from "./link-no-prefetch";
 
 /**
  * Type for the collection map object. The keys are collection names from the schema enum and the

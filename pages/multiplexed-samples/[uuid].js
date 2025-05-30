@@ -1,6 +1,5 @@
 // node_modules
 import { Fragment } from "react";
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -20,6 +19,7 @@ import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import { InstitutionalCertificateTable } from "../../components/institutional-certificate-table";
 import JsonDisplay from "../../components/json-display";
+import Link from "../../components/link-no-prefetch";
 import ModificationTable from "../../components/modification-table";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";

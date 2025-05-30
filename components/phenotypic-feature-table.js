@@ -1,8 +1,8 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataAreaTitle } from "./data-area";
+import Link from "./link-no-prefetch";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
 // lib

@@ -1,7 +1,8 @@
 // node_modules
 import DOMPurify from "isomorphic-dompurify";
-import Link from "next/link";
 import PropTypes from "prop-types";
+// components
+import Link from "../link-no-prefetch";
 // lib
 import { isValidPath, isValidUrl } from "../../lib/general";
 import MarkdownSection from "../markdown-section";

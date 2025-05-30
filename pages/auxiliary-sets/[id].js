@@ -1,6 +1,5 @@
 // node_modules
 import _ from "lodash";
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -23,6 +22,7 @@ import FileSetFilesTables from "../../components/file-set-files-tables";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
+import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";

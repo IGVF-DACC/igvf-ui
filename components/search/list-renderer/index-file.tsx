@@ -1,8 +1,8 @@
 // node_modules
 import PropTypes from "prop-types";
-import Link from "next/link";
 import { useContext } from "react";
 // components
+import Link from "../../link-no-prefetch";
 import SessionContext from "../../session-context";
 // components/search/list-renderer
 import {

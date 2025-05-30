@@ -1,8 +1,8 @@
 // node_modules
-import Link from "next/link";
 // components
 import Collections from "./collections";
 import { DataItemLabel, DataItemValue } from "./data-area";
+import Link from "./link-no-prefetch";
 import SeparatedList from "./separated-list";
 // lib
 import { type Attribution } from "../lib/attribution";

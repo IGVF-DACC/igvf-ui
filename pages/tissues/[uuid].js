@@ -1,5 +1,4 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -119,11 +118,13 @@ export default function Tissue({
                     <DataItemLabel>
                       Common Coordinate Framework Identifier
                     </DataItemLabel>
-                    <Link
+                    <a
                       href={`https://portal.hubmapconsortium.org/browse/sample/${tissue.ccf_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       {tissue.ccf_id}
-                    </Link>
+                    </a>
                   </>
                 )}
               </BiosampleDataItems>

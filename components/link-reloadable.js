@@ -1,5 +1,5 @@
 // node_imports
-import Link from "next/link";
+import Link from "./link-no-prefetch";
 import { useContext } from "react";
 // components
 import GlobalContext from "../components/global-context";

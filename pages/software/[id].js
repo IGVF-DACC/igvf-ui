@@ -1,7 +1,7 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import AliasList from "../../components/alias-list";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -14,20 +14,20 @@ import {
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
 import SoftwareVersionTable from "../../components/software-version-table";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
+import buildAttribution from "../../lib/attribution";
 import {
   requestPublications,
   requestSoftwareVersions,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import AliasList from "../../components/alias-list";
-import buildAttribution from "../../lib/attribution";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Software({

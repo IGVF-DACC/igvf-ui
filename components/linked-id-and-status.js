@@ -1,7 +1,7 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
+import Link from "./link-no-prefetch";
 import Status from "./status";
 
 /**

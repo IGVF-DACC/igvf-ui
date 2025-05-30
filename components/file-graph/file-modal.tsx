@@ -1,6 +1,5 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 // components
 import AliasList from "../alias-list";
 import {
@@ -12,6 +11,7 @@ import {
 import { FileDownload } from "../file-download";
 import { ButtonLink } from "../form-elements";
 import { HostedFilePreview } from "../hosted-file-preview";
+import Link from "../link-no-prefetch";
 import Modal from "../modal";
 import Status from "../status";
 // local

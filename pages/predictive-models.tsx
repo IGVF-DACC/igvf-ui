@@ -1,8 +1,8 @@
 // node_modules
 import _ from "lodash";
-import Link from "next/link";
 // components
 import { DataCellWithClasses, DataTable } from "../components/data-table";
+import Link from "../components/link-no-prefetch";
 import PagePreamble from "../components/page-preamble";
 import { CellLink } from "../components/static-table";
 // lib

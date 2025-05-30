@@ -1,10 +1,11 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components/facets
 import facetRegistry from "./facet-registry";
+// components
+import Link from "../link-no-prefetch";
 // lib
 import {
   collectAllChildFacets,

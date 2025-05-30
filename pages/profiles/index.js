@@ -1,6 +1,5 @@
 // node_modules
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import router from "next/router";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
@@ -16,6 +15,7 @@ import {
   FormLabel,
 } from "../../components/form-elements";
 import HelpTip from "../../components/help-tip";
+import Link from "../../components/link-no-prefetch";
 import PagePreamble from "../../components/page-preamble";
 import {
   SchemaSearchField,
@@ -249,11 +249,10 @@ function SubTree({
               className={`block scroll-mt-28 @xl:scroll-mt-24 ${
                 isTitleHighlighted ? "bg-schema-name-highlight" : ""
               }`}
-              prefetch={false}
             >
               {title}
             </Link>
-            <SchemaVersion schema={schema} prefetch={false} isLinked />
+            <SchemaVersion schema={schema} isLinked />
             <TooltipRef tooltipAttr={tooltipAttr}>
               <button>
                 <QuestionMarkCircleIcon className="h-4 w-4 cursor-pointer" />
@@ -262,25 +261,13 @@ function SubTree({
             <Tooltip tooltipAttr={tooltipAttr}>
               {schema.description || "No description available"}
             </Tooltip>
-            <SearchAndReportType
-              type={objectType}
-              title={title}
-              prefetch={false}
-            />
-            <AddLink
-              schema={schema}
-              label={`Add ${schema.title}`}
-              prefetch={false}
-            />
+            <SearchAndReportType type={objectType} title={title} />
+            <AddLink schema={schema} label={`Add ${schema.title}`} />
           </>
         ) : (
           <>
             {title}
-            <SearchAndReportType
-              type={objectType}
-              title={title}
-              prefetch={false}
-            />
+            <SearchAndReportType type={objectType} title={title} />
           </>
         )}
       </div>

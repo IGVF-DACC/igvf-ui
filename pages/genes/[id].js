@@ -1,9 +1,9 @@
 // node_modules
 import _ from "lodash";
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
+import ChromosomeLocations from "../../components/chromosome-locations";
 import Collections from "../../components/collections";
 import {
   DataArea,
@@ -12,10 +12,10 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
-import ChromosomeLocations from "../../components/chromosome-locations";
 import { EditableItem } from "../../components/edit";
 import EnsemblLink from "../../components/ensemble-link";
 import JsonDisplay from "../../components/json-display";
+import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { StatusPreviewDetail } from "../../components/status";
