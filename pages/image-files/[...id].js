@@ -15,12 +15,17 @@ import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestDocuments, requestFiles } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestFiles,
+  requestQualityMetrics,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
@@ -36,6 +41,7 @@ export default function ImageFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  qualityMetrics,
   isJson,
 }) {
   const sections = useSecDir();
@@ -88,6 +94,7 @@ export default function ImageFile({
               panelId="input-file-for"
             />
           )}
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -106,6 +113,8 @@ ImageFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Quality metrics for this file
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Is the format JSON?
@@ -152,6 +161,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = imageFile.reference_files
       ? await requestFiles(imageFile.reference_files, request)
       : [];
+    const qualityMetrics =
+      imageFile.quality_metrics.length > 0
+        ? await requestQualityMetrics(imageFile.quality_metrics, request)
+        : [];
     const attribution = await buildAttribution(imageFile, req.headers.cookie);
     return {
       props: {
@@ -161,6 +174,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         pageContext: { title: imageFile.accession },
+        qualityMetrics,
         attribution,
         referenceFiles,
         isJson,

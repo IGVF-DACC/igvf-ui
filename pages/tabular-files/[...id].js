@@ -23,6 +23,7 @@ import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
@@ -32,6 +33,7 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
+  requestQualityMetrics,
   requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -50,6 +52,7 @@ export default function TabularFile({
   inputFileFor,
   fileFormatSpecifications,
   integratedIn,
+  qualityMetrics,
   attribution = null,
   isJson,
 }) {
@@ -147,6 +150,7 @@ export default function TabularFile({
               panelId="barcode-map-for"
             />
           )}
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -169,6 +173,8 @@ TabularFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // ConstructLibraryset this file was integrated in
   integratedIn: PropTypes.arrayOf(PropTypes.object),
+  // Quality metrics for this file
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -224,6 +230,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
       integratedIn = await requestFileSets(integratedInPaths, request);
     }
+    const qualityMetrics =
+      tabularFile.quality_metrics.length > 0
+        ? await requestQualityMetrics(tabularFile.quality_metrics, request)
+        : [];
     const attribution = await buildAttribution(tabularFile, req.headers.cookie);
     return {
       props: {
@@ -234,6 +244,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         integratedIn,
+        qualityMetrics,
         pageContext: { title: tabularFile.accession },
         attribution,
         isJson,

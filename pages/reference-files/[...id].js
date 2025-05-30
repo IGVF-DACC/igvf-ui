@@ -24,6 +24,7 @@ import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
@@ -33,6 +34,7 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
+  requestQualityMetrics,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -49,6 +51,7 @@ export default function ReferenceFile({
   inputFileFor,
   fileFormatSpecifications,
   integratedIn,
+  qualityMetrics,
   attribution = null,
   isJson,
 }) {
@@ -153,6 +156,7 @@ export default function ReferenceFile({
               panelId="integrated-in"
             />
           )}
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -173,6 +177,8 @@ ReferenceFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // ConstructLibraryset this file was integrated in
   integratedIn: PropTypes.arrayOf(PropTypes.object),
+  // Quality metrics associated with this file
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -224,6 +230,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
       integratedIn = await requestFileSets(integratedInPaths, request);
     }
+    const qualityMetrics =
+      referenceFile.quality_metrics.length > 0
+        ? await requestQualityMetrics(referenceFile.quality_metrics, request)
+        : [];
     const attribution = await buildAttribution(
       referenceFile,
       req.headers.cookie
@@ -236,6 +246,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         integratedIn,
+        qualityMetrics,
         pageContext: { title: referenceFile.accession },
         attribution,
         isJson,

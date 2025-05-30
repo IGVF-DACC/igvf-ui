@@ -11,7 +11,7 @@ import { DataAreaTitle, DataPanel } from "../data-area";
 import { Button } from "../form-elements";
 import GlobalContext from "../global-context";
 import Icon from "../icon";
-import { QualityMetricModal } from "../quality-metric-modal";
+import { QualityMetricModal } from "../quality-metric";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { truncateText } from "../../lib/general";
