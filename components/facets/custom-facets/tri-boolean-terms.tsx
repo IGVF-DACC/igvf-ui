@@ -108,9 +108,9 @@ export default function TriBooleanTerms({
         >
           <Radio
             value={term.key}
-            className="group flex size-4 items-center justify-center rounded-full border bg-white data-[checked]:bg-gray-500"
+            className="group flex size-4 items-center justify-center rounded-full border bg-white data-checked:bg-gray-500"
           >
-            <span className="invisible size-1.5 rounded-full bg-white group-data-[checked]:visible" />
+            <span className="invisible size-1.5 rounded-full bg-white group-data-checked:visible" />
           </Radio>
           <Label
             className="flex w-full cursor-pointer justify-between text-sm"

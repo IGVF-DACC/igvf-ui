@@ -70,7 +70,7 @@ function FixedHeaderCell({
 }) {
   return (
     <th
-      className={`bg-assay-summary-matrix-data-column-header sticky top-0 z-[2] border-b border-r border-panel p-2 text-left align-bottom last:border-r-0 ${widthClasses}`}
+      className={`bg-assay-summary-matrix-data-column-header sticky top-0 z-2 border-b border-r border-panel p-2 text-left align-bottom last:border-r-0 ${widthClasses}`}
     >
       {children}
     </th>
@@ -82,7 +82,7 @@ function FixedHeaderCell({
  */
 function CounterHeaderCell({ children }: { children: React.ReactNode }) {
   return (
-    <th className="bg-assay-summary-matrix-data-column-header sticky top-0 z-[2] w-[50px] whitespace-nowrap border-b border-r border-panel px-1 py-2 align-bottom font-semibold text-black last:border-r-0">
+    <th className="bg-assay-summary-matrix-data-column-header sticky top-0 z-2 w-[50px] whitespace-nowrap border-b border-r border-panel px-1 py-2 align-bottom font-semibold text-black last:border-r-0">
       <div className="mx-auto inline-flex rotate-180 justify-self-center text-start text-black [writing-mode:vertical-lr] dark:text-white">
         {children}
       </div>

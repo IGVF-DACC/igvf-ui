@@ -65,7 +65,7 @@ export default function ImageItem({ item, accessoryData = null }) {
                     <img
                       src={imageUrl}
                       alt={`Preview image of ${image.summary}`}
-                      className="h-auto max-h-40 w-full object-contain object-left-top"
+                      className="h-auto max-h-40 w-full object-contain object-top-left"
                     />
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-const tailwindConfig: Config = {
+const tailwindConfig = {
   darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,tsx}",
@@ -560,6 +560,6 @@ const tailwindConfig: Config = {
       });
     },
   ],
-};
+} as unknown as Config;
 
 export default tailwindConfig;

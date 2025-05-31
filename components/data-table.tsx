@@ -43,7 +43,7 @@ function DefaultHeaderCell({
 }) {
   return (
     <th
-      className="sticky top-0 z-[2] border-b border-r border-panel bg-table-header-cell p-2 text-left align-bottom last:border-r-0"
+      className="sticky top-0 z-2 border-b border-r border-panel bg-table-header-cell p-2 text-left align-bottom last:border-r-0"
       {...(rowSpan > 1 ? { rowSpan } : {})}
       {...(colSpan > 1 ? { colSpan } : {})}
     >
