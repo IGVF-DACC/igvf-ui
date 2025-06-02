@@ -420,6 +420,10 @@ def test_constructs_frontend_initialize_frontend_construct(stack, instance_type,
             ]
         }
     )
+    template.resource_count_is(
+        'AWS::WAFv2::WebACLAssociation',
+        1
+    )
 
 
 def test_constructs_frontend_frontend_define_domain_name(stack, instance_type, existing_resources, vpc, config, redis_multiplexer):
