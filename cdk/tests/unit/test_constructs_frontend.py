@@ -479,6 +479,7 @@ def test_constructs_frontend_get_url_prefix():
         backend_url='abc.123',
         redis={},
         frontend={},
+        waf={},
         tags=[],
     )
     url_prefix = get_url_prefix(config_without_prefix)
@@ -489,6 +490,7 @@ def test_constructs_frontend_get_url_prefix():
         backend_url='abc.123',
         redis={},
         frontend={},
+        waf={},
         tags=[],
         url_prefix='some-prefix',
     )

@@ -6,6 +6,8 @@ from aws_cdk.aws_wafv2 import CfnWebACLAssociation
 
 from infrastructure.config import Config
 
+from dataclasses import dataclass
+
 from typing import Any
 
 
