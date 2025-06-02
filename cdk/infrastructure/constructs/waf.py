@@ -17,7 +17,7 @@ class WAFProps:
 
 
 class WAF(Construct):
-    
+
     props: WAFProps
 
     def __init__(
