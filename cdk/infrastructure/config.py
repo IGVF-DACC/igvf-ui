@@ -65,6 +65,10 @@ config: Dict[str, Any] = {
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
             },
+            'waf': {
+                'enabled': True,
+                'arn': '',
+            },
             'tags': [
                 ('time-to-live-hours', '60'),
                 ('turn-off-on-friday-night', 'yes'),
@@ -89,6 +93,10 @@ config: Dict[str, Any] = {
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
             },
+            'waf': {
+                'enabled': True,
+                'arn': '',
+            },
             'backend_url': 'https://igvfd-dev.demo.igvf.org',
             'tags': [
             ],
@@ -111,6 +119,10 @@ config: Dict[str, Any] = {
                 'memory_limit_mib': 2048,
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
+            },
+            'waf': {
+                'enabled': True,
+                'arn': '',
             },
             'backend_url': 'https://api.staging.igvf.org',
             'use_subdomain': False,
@@ -136,6 +148,10 @@ config: Dict[str, Any] = {
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
             },
+            'waf': {
+                'enabled': True,
+                'arn': '',
+            },
             'backend_url': 'https://api.sandbox.igvf.org',
             'use_subdomain': False,
             'tags': [
@@ -159,6 +175,10 @@ config: Dict[str, Any] = {
                 'memory_limit_mib': 2048,
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
+            },
+            'waf': {
+                'enabled': True,
+                'arn': '',
             },
             'backend_url': 'https://api.data.igvf.org',
             'use_subdomain': False,
@@ -184,6 +204,7 @@ class Config:
     backend_url: str
     redis: Dict[str, Any]
     frontend: Dict[str, Any]
+    waf: Dict[str, Any]
     tags: List[Tuple[str, str]]
     url_prefix: Optional[str] = None
     use_subdomain: bool = True
