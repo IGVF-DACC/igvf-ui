@@ -37,6 +37,8 @@ class WAF(Construct):
     def _maybe_add_association(self) -> None:
         if self.props.enabled is not True:
             return
+        if not self.props.arn:
+            return
         CfnWebACLAssociation(
             self,
             'CfnWebACLAssociation',
