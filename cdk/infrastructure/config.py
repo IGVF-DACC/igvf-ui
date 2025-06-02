@@ -67,7 +67,7 @@ config: Dict[str, Any] = {
             },
             'waf': {
                 'enabled': True,
-                'arn': '',
+                'arn': 'arn:aws:wafv2:us-west-2:109189702753:regional/webacl/IgvfUiDemoWaf-HGyhnH6Z5X0B/84cce4ee-629b-41e1-9918-feb83b50f187',
             },
             'tags': [
                 ('time-to-live-hours', '60'),
@@ -95,7 +95,7 @@ config: Dict[str, Any] = {
             },
             'waf': {
                 'enabled': True,
-                'arn': '',
+                'arn': 'arn:aws:wafv2:us-west-2:109189702753:regional/webacl/IgvfUiDemoWaf-HGyhnH6Z5X0B/84cce4ee-629b-41e1-9918-feb83b50f187',
             },
             'backend_url': 'https://igvfd-dev.demo.igvf.org',
             'tags': [
