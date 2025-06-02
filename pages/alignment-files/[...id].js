@@ -1,6 +1,5 @@
 // node_modules
 import PropTypes from "prop-types";
-import Link from "next/link";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
@@ -21,6 +20,7 @@ import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
+import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { QualityMetricPanel } from "../../components/quality-metric";

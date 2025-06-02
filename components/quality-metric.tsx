@@ -12,7 +12,6 @@
  */
 
 // node_modules
-import Link from "next/link";
 import { useContext } from "react";
 // components
 import {
@@ -22,6 +21,7 @@ import {
   DataItemLabel,
   DataItemValue,
 } from "./data-area";
+import Link from "./link-no-prefetch";
 import Modal from "./modal";
 import SessionContext from "./session-context";
 // lib

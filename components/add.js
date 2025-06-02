@@ -85,9 +85,9 @@ function schemaToName(schema) {
 
 /**
  * Generates a button link to the #!add url for the given collection.
- * A custom label can be suplied with the `label` prop.
+ * A custom label can be supplied with the `label` prop.
  */
-export function AddLink({ schema, label = null, prefetch = true }) {
+export function AddLink({ schema, label = null }) {
   const { isAuthenticated } = useAuth0();
   if (isAuthenticated && canEdit(schema)) {
     const schemaName = schemaToName(schema);
@@ -104,7 +104,6 @@ export function AddLink({ schema, label = null, prefetch = true }) {
           size="sm"
           type="secondary"
           hasIconOnly
-          prefetch={prefetch}
         >
           <PlusIcon />
         </ButtonLink>
@@ -119,8 +118,6 @@ AddLink.propTypes = {
   schema: PropTypes.object.isRequired,
   // Label for the Add button
   label: PropTypes.string,
-  // False to disable link prefetching
-  prefetch: PropTypes.bool,
 };
 
 export function AddInstancePage({ collection }) {

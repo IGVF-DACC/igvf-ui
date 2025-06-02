@@ -1,10 +1,10 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
+import Link from "./link-no-prefetch";
 import SeparatedList from "./separated-list";
 import SortableGrid from "./sortable-grid";
 

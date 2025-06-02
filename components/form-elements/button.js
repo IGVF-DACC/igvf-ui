@@ -19,9 +19,10 @@
  */
 
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 import React from "react";
+// components
+import Link from "../link-no-prefetch";
 // lib
 import { LINK_INLINE_STYLE } from "../../lib/constants";
 import { generateButtonClasses } from "../../lib/form-elements";
@@ -117,10 +118,9 @@ Button.displayName = "Button";
  */
 function LinkElement(props) {
   const { isExternal } = props;
-  const prefetch = props.prefetch ?? true;
 
-  // Make a copy of `props` but without `isExternal` nor `prefetch` in case it was included.
-  const { isExternal: _, prefetch: __, ...propsWithoutExceptions } = props;
+  // Make a copy of `props` but without `isExternal` in case it was included.
+  const { isExternal: _, ...propsWithoutExceptions } = props;
 
   if (isExternal) {
     return (
@@ -131,19 +131,12 @@ function LinkElement(props) {
       />
     );
   }
-  return (
-    <Link
-      {...propsWithoutExceptions}
-      {...(prefetch === false ? { prefetch: false } : {})}
-    />
-  );
+  return <Link {...propsWithoutExceptions} />;
 }
 
 LinkElement.propTypes = {
   // True for external links
   isExternal: PropTypes.bool,
-  // True to prefetch the link
-  prefetch: PropTypes.bool,
 };
 
 /**
@@ -165,7 +158,6 @@ export function ButtonLink({
   isInline = false,
   isDisabled = false,
   isExternal = false,
-  prefetch = true,
   className = "",
   children,
 }) {
@@ -190,7 +182,6 @@ export function ButtonLink({
   ) : (
     <LinkElement
       isExternal={isExternal}
-      prefetch={prefetch}
       href={href}
       aria-label={label}
       id={id}
@@ -224,8 +215,6 @@ ButtonLink.propTypes = {
   isDisabled: PropTypes.bool,
   // True if the link is external
   isExternal: PropTypes.bool,
-  // True to prefetch the link
-  prefetch: PropTypes.bool,
   // Additional Tailwind CSS classes to apply to the <button> element
   className: PropTypes.string,
 };

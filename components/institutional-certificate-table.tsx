@@ -1,10 +1,10 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 // components
 import { ControlledAccessIndicator } from "./controlled-access";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { DataUseLimitationStatus } from "./data-use-limitation-status";
+import Link from "./link-no-prefetch";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
 // lib

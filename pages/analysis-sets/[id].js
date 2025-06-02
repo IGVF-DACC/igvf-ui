@@ -1,10 +1,10 @@
 // node_modules
 import _ from "lodash";
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
+import AnalysisSetFileTable from "../../components/analysis-set-file-table";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { ConstructLibraryTable } from "../../components/construct-library-table";
@@ -24,9 +24,9 @@ import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import { FileGraph } from "../../components/file-graph";
 import FileSetTable from "../../components/file-set-table";
-import AnalysisSetFileTable from "../../components/analysis-set-file-table";
 import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
+import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";

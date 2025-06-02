@@ -4,10 +4,10 @@ import {
   TableCellsIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components
 import { AttachedButtons, ButtonLink, TextField } from "./form-elements";
+import Link from "./link-no-prefetch";
 import { useBrowserStateQuery } from "./presentation-status";
 // lib
 import { schemaToPath, SEARCH_MODE_TITLE } from "../lib/profiles";
@@ -67,7 +67,7 @@ SchemaSearchField.propTypes = {
 /**
  * Displays links to the search-list and report pages for the given schema object type.
  */
-export function SearchAndReportType({ type, title, prefetch = true }) {
+export function SearchAndReportType({ type, title }) {
   // Extra query-string parameters for list/report pages
   let extraQueries = useBrowserStateQuery();
   if (typesWithoutExtraQueries.includes(type)) {
@@ -82,7 +82,6 @@ export function SearchAndReportType({ type, title, prefetch = true }) {
         type="secondary"
         size="sm"
         hasIconOnly
-        prefetch={prefetch}
       >
         <Bars4Icon />
       </ButtonLink>
@@ -92,7 +91,6 @@ export function SearchAndReportType({ type, title, prefetch = true }) {
         type="secondary"
         size="sm"
         hasIconOnly
-        prefetch={prefetch}
       >
         <TableCellsIcon />
       </ButtonLink>
@@ -105,14 +103,12 @@ SearchAndReportType.propTypes = {
   type: PropTypes.string.isRequired,
   // Human-readable title for the schema
   title: PropTypes.string.isRequired,
-  // False to disable link prefetching
-  prefetch: PropTypes.bool,
 };
 
 /**
  * Display a schema's version number.
  */
-export function SchemaVersion({ schema, isLinked = false, prefetch = true }) {
+export function SchemaVersion({ schema, isLinked = false }) {
   const version = schema.properties.schema_version.default;
   const path = schemaToPath(schema);
   const className =
@@ -122,7 +118,6 @@ export function SchemaVersion({ schema, isLinked = false, prefetch = true }) {
       <Link
         href={`${path}/changelog`}
         className={`${className} rounded-sm`}
-        prefetch={prefetch}
       >{`v${version}`}</Link>
     );
   }
@@ -134,6 +129,4 @@ SchemaVersion.propTypes = {
   schema: PropTypes.object.isRequired,
   // True to link to the changelog page, false to just display the version number
   isLinked: PropTypes.bool,
-  // False to disable link prefetching
-  prefetch: PropTypes.bool,
 };

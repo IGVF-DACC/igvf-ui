@@ -1,6 +1,5 @@
 // node_modules
 import { GetServerSidePropsContext } from "next";
-import Link from "next/link";
 // components
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -15,6 +14,7 @@ import {
 import { DataUseLimitationStatus } from "../../components/data-use-limitation-status";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
+import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";

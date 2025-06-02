@@ -1,10 +1,10 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import PropTypes from "prop-types";
 import { useContext } from "react";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
+import Link from "./link-no-prefetch";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SeparatedList from "./separated-list";
 import SessionContext from "./session-context";

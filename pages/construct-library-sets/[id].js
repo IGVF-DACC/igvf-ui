@@ -1,5 +1,4 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
@@ -20,6 +19,7 @@ import FileSetFilesTables from "../../components/file-set-files-tables";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
+import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
@@ -284,13 +284,16 @@ export default function ConstructLibrarySet({
                   <>
                     <DataItemLabel>Product ID</DataItemLabel>
                     <DataItemValue>
-                      <Link
+                      <a
                         href={`https://www.addgene.org/${
                           constructLibrarySet.product_id.split(":")[1]
                         }/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={`Addgene product page for ${constructLibrarySet.product_id}`}
                       >
                         {constructLibrarySet.product_id}
-                      </Link>
+                      </a>
                     </DataItemValue>
                   </>
                 )}

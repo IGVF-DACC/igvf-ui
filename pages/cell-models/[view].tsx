@@ -1,6 +1,5 @@
 // node_modules
 import _ from "lodash";
-import Link from "next/link";
 import { useRouter } from "next/router";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -9,6 +8,7 @@ import DataGrid, {
   type DataGridFormat,
   type Row,
 } from "../../components/data-grid";
+import Link from "../../components/link-no-prefetch";
 import { LabelXAxis, LabelYAxis } from "../../components/matrix";
 import PagePreamble from "../../components/page-preamble";
 import { TabGroup, TabList, TabTitle } from "../../components/tabs";

@@ -1,11 +1,9 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
-import Link from "next/link";
 import PropTypes from "prop-types";
-import { useContext } from "react";
 // components
 import { ButtonAsLink } from "./form-elements";
-import SessionContext from "./session-context";
+import Link from "./link-no-prefetch";
 // lib
 import { loginAuthProvider } from "../lib/authentication";
 import { LINK_INLINE_STYLE } from "../lib/constants";

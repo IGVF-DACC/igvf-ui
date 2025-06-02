@@ -1,5 +1,4 @@
 // node_modules
-import Link from "next/link";
 import PropTypes from "prop-types";
 // components/search/list-renderer
 import {
@@ -16,6 +15,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 // components
+import Link from "../../link-no-prefetch";
 import SeparatedList from "../../separated-list";
 
 export default function OpenReadingFrame({ item: openReadingFrame }) {
