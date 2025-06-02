@@ -4,6 +4,7 @@ import {
   formatDateApaStyle,
   formatDateRange,
   formatLongDate,
+  getSystemDateRange,
   iso8601ToDateOnly,
   stringToDate,
 } from "../dates";
@@ -92,5 +93,42 @@ describe("Test stringToDate", () => {
     const dateString = "2023-08-01T12:34:56.000Z";
     const actual = stringToDate(dateString);
     expect(actual.getTime()).toBe(dateFns.parseISO("2023-08-01").getTime());
+  });
+});
+
+describe("Test getSystemDates", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("should return the correct start and end limits for 2025-01-31", () => {
+    jest.setSystemTime(new Date("2025-01-31T12:00:00Z"));
+
+    const { startLimit, endLimit } = getSystemDateRange();
+
+    expect(startLimit.toISOString()).toBe("2023-01-01T00:00:00.000Z");
+    expect(endLimit.toISOString()).toBe("2025-05-01T00:00:00.000Z");
+  });
+
+  it("should return the correct start and end limits for 2025-11-01", () => {
+    jest.setSystemTime(new Date("2025-11-01T12:00:00Z"));
+
+    const { startLimit, endLimit } = getSystemDateRange();
+
+    expect(startLimit.toISOString()).toBe("2023-01-01T00:00:00.000Z");
+    expect(endLimit.toISOString()).toBe("2026-01-30T00:00:00.000Z");
+  });
+
+  it("should return the correct start and end limits for 2024-02-15, including leap year", () => {
+    jest.setSystemTime(new Date("2024-02-15T12:00:00Z"));
+
+    const { startLimit, endLimit } = getSystemDateRange();
+
+    expect(startLimit.toISOString()).toBe("2023-01-01T00:00:00.000Z");
+    expect(endLimit.toISOString()).toBe("2024-05-15T00:00:00.000Z");
   });
 });

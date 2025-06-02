@@ -10,7 +10,7 @@ import { DateRange } from "react-date-range";
 import { Button } from "../../form-elements";
 import Modal from "../../modal";
 // lib
-import { formatLongDate } from "../../../lib/dates";
+import { formatLongDate, getSystemDateRange } from "../../../lib/dates";
 import QueryString from "../../../lib/query-string";
 import { splitPathAndQueryString } from "../../../lib/query-utils";
 // root
@@ -40,17 +40,23 @@ type Range = {
  * picker doesn't render during a Jest test, so we can't test the function.
  * @param startDate - Start date of the range
  * @param endDate - End date of the range
+ * @param startLimit - Earliest date that can be selected
+ * @param endLimit - Latest date that can be selected
  * @param onClose - Function to call when the modal is closed without applying changes
  * @param onDateRangeChange - Function to call when the user selects a new date range
  */
 function DateRangeModal({
   startDate,
   endDate,
+  startLimit,
+  endLimit,
   onClose,
   onDateRangeChange,
 }: {
   startDate: Date;
   endDate: Date;
+  startLimit: Date;
+  endLimit: Date;
   onClose: () => void;
   onDateRangeChange: (newStartDate: Date, newEndDate: Date) => void;
 }) {
@@ -82,6 +88,8 @@ function DateRangeModal({
         months={2}
         ranges={dateRange}
         rangeColors={["#bfa678"]}
+        minDate={startLimit}
+        maxDate={endLimit}
         direction="vertical"
         scroll={{ enabled: true }}
       />
@@ -136,6 +144,9 @@ export default function DateRangeTerms({
   function onDateRangeTrigger() {
     setIsOpen(true);
   }
+
+  // Set endDateLimit to today's date plus one month.
+  const { startLimit, endLimit } = getSystemDateRange();
 
   // Called when the user applies a new date range from the modal.
   function onDateRangeApply(newStartDate: Date, newEndDate: Date) {
@@ -208,6 +219,8 @@ export default function DateRangeTerms({
             onClose={() => setIsOpen(false)}
             startDate={startDate}
             endDate={endDate}
+            startLimit={startLimit}
+            endLimit={endLimit}
             onDateRangeChange={(newStartDate, newEndDate) => {
               setIsOpen(false);
               onDateRangeApply(newStartDate, newEndDate);

@@ -95,3 +95,31 @@ export function stringToDate(dateString: string): Date {
   const dateWithoutTime = dateString.split("T")[0];
   return dateFns.parse(dateWithoutTime, "yyyy-MM-dd", new Date());
 }
+
+/**
+ * Get the system date limits for the date range picker. The start limit is set to January 1,
+ * 2023, and the end limit is set to 90 days after today's date in UTC.
+ * @returns An object containing the start and end limits as Date objects
+ */
+export function getSystemDateRange(): {
+  startLimit: Date;
+  endLimit: Date;
+} {
+  // Today's date in UTC with time zeroed out.
+  const today = new Date();
+  const todayUTC = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+  );
+
+  // Add 90 days.
+  const endLimit = new Date(todayUTC);
+  endLimit.setUTCDate(endLimit.getUTCDate() + 90);
+
+  // Fixed start date on January 1, 2023.
+  const startLimit = new Date(Date.UTC(2023, 0, 1));
+
+  return {
+    startLimit,
+    endLimit,
+  };
+}
