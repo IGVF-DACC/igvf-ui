@@ -39,5 +39,5 @@ class WAF(Construct):
             self,
             'CfnWebACLAssociation',
             resource_arn=self.props.alb.load_balancer_arn,
-            web_acl_arn=props.arn,
+            web_acl_arn=self.props.arn,
         )
