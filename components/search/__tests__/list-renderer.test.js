@@ -27,6 +27,7 @@ import Page from "../list-renderer/page";
 import PhenotypicFeature from "../list-renderer/phenotypic-feature";
 import PredictionSet from "../list-renderer/prediction-set";
 import Publication from "../list-renderer/publication";
+import QualityMetric from "../list-renderer/quality-metric";
 import RodentDonor from "../list-renderer/rodent-donor";
 import Software from "../list-renderer/software";
 import SoftwareVersion from "../list-renderer/software-version";
@@ -2011,6 +2012,125 @@ describe("Test the Publication component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test the QualityMetric component", () => {
+  it("renders a QualityMetric item with a description", () => {
+    const item = {
+      "@id": "/mpra-quality-metric/1",
+      "@type": ["MpraQualityMetric", "QualityMetric", "Item"],
+      analysis_step_version: "/analysis_steps/1",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      summary: "Quality metric of /tabular-files/IGVFFI0001PKBD/",
+      quality_metric_of: ["/files/1"],
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <QualityMetric
+          item={item}
+          accessoryData={{
+            "/mpra-quality-metric/1": {
+              "@id": "/mpra-quality-metric/1",
+              "@type": ["MpraQualityMetric", "QualityMetric", "Item"],
+              description: "This is a quality metric for MPRA.",
+            },
+          }}
+        />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^MpraQualityMetric$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^This is a quality metric for MPRA.$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const paths = QualityMetric.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      {
+        type: "QualityMetric",
+        paths: ["/mpra-quality-metric/1"],
+        fields: ["description"],
+      },
+    ]);
+  });
+
+  it("renders a QualityMetric item without a description", () => {
+    const item = {
+      "@id": "/mpra-quality-metric/1",
+      "@type": ["MpraQualityMetric", "QualityMetric", "Item"],
+      analysis_step_version: "/analysis_steps/1",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      summary: "Quality metric of /tabular-files/IGVFFI0001PKBD/",
+      quality_metric_of: ["/files/1"],
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <QualityMetric
+          item={item}
+          accessoryData={{
+            "/mpra-quality-metric/1": {
+              "@id": "/mpra-quality-metric/1",
+              "@type": ["MpraQualityMetric", "QualityMetric", "Item"],
+            },
+          }}
+        />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^MpraQualityMetric$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^Quality metric of \/tabular-files\/IGVFFI0001PKBD\/$/
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+  });
+
+  it("renders a QualityMetric item without accessory data", () => {
+    const item = {
+      "@id": "/mpra-quality-metric/1",
+      "@type": ["MpraQualityMetric", "QualityMetric", "Item"],
+      analysis_step_version: "/analysis_steps/1",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      summary: "Quality metric of /tabular-files/IGVFFI0001PKBD/",
+      quality_metric_of: ["/files/1"],
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <QualityMetric item={item} accessoryData={null} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^MpraQualityMetric$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^Quality metric of \/tabular-files\/IGVFFI0001PKBD\/$/
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
   });
 });
 
