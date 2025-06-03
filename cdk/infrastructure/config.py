@@ -122,7 +122,7 @@ config: Dict[str, Any] = {
             },
             'waf': {
                 'enabled': True,
-                'arn': '',
+                'arn': 'arn:aws:wafv2:us-west-2:920073238245:regional/webacl/IgvfUiStagingWaf-WnewgDLfB3IZ/4f006eae-a919-4b1f-a613-b1c7d035c7f1',
             },
             'backend_url': 'https://api.staging.igvf.org',
             'use_subdomain': False,
@@ -150,7 +150,7 @@ config: Dict[str, Any] = {
             },
             'waf': {
                 'enabled': True,
-                'arn': '',
+                'arn': 'arn:aws:wafv2:us-west-2:920073238245:regional/webacl/IgvfUiSandboxWaf-Cerl8Iy9s9Np/6f4843e4-4f8b-4ba5-b384-a1f02f29f0fc',
             },
             'backend_url': 'https://api.sandbox.igvf.org',
             'use_subdomain': False,
@@ -178,7 +178,7 @@ config: Dict[str, Any] = {
             },
             'waf': {
                 'enabled': True,
-                'arn': '',
+                'arn': 'arn:aws:wafv2:us-west-2:035226225042:regional/webacl/IgvfUiProdWaf-xj9DJbn3w2dx/180d8c06-6708-4f18-a7d2-c3c1d09c7019',
             },
             'backend_url': 'https://api.data.igvf.org',
             'use_subdomain': False,
