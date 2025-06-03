@@ -151,6 +151,10 @@ def config():
             'max_capacity': 4,
             'use_redis_named': 'Redis71',
         },
+        waf={
+            'enabled': True,
+            'arn': 'some-waf-arn',
+        },
         backend_url='https://igvfd-some-test-backend.demo.igvf.org',
         tags=[
             ('test', 'tag')

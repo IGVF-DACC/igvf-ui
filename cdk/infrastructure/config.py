@@ -65,6 +65,10 @@ config: Dict[str, Any] = {
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
             },
+            'waf': {
+                'enabled': True,
+                'arn': 'arn:aws:wafv2:us-west-2:109189702753:regional/webacl/IgvfUiDemoWaf-HGyhnH6Z5X0B/84cce4ee-629b-41e1-9918-feb83b50f187',
+            },
             'tags': [
                 ('time-to-live-hours', '60'),
                 ('turn-off-on-friday-night', 'yes'),
@@ -89,6 +93,10 @@ config: Dict[str, Any] = {
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
             },
+            'waf': {
+                'enabled': True,
+                'arn': 'arn:aws:wafv2:us-west-2:109189702753:regional/webacl/IgvfUiDemoWaf-HGyhnH6Z5X0B/84cce4ee-629b-41e1-9918-feb83b50f187',
+            },
             'backend_url': 'https://igvfd-dev.demo.igvf.org',
             'tags': [
             ],
@@ -111,6 +119,10 @@ config: Dict[str, Any] = {
                 'memory_limit_mib': 2048,
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
+            },
+            'waf': {
+                'enabled': True,
+                'arn': 'arn:aws:wafv2:us-west-2:920073238245:regional/webacl/IgvfUiStagingWaf-WnewgDLfB3IZ/4f006eae-a919-4b1f-a613-b1c7d035c7f1',
             },
             'backend_url': 'https://api.staging.igvf.org',
             'use_subdomain': False,
@@ -136,6 +148,10 @@ config: Dict[str, Any] = {
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
             },
+            'waf': {
+                'enabled': True,
+                'arn': 'arn:aws:wafv2:us-west-2:920073238245:regional/webacl/IgvfUiSandboxWaf-Cerl8Iy9s9Np/6f4843e4-4f8b-4ba5-b384-a1f02f29f0fc',
+            },
             'backend_url': 'https://api.sandbox.igvf.org',
             'use_subdomain': False,
             'tags': [
@@ -159,6 +175,10 @@ config: Dict[str, Any] = {
                 'memory_limit_mib': 2048,
                 'max_capacity': 4,
                 'use_redis_named': 'Redis71',
+            },
+            'waf': {
+                'enabled': True,
+                'arn': 'arn:aws:wafv2:us-west-2:035226225042:regional/webacl/IgvfUiProdWaf-xj9DJbn3w2dx/180d8c06-6708-4f18-a7d2-c3c1d09c7019',
             },
             'backend_url': 'https://api.data.igvf.org',
             'use_subdomain': False,
@@ -184,6 +204,7 @@ class Config:
     backend_url: str
     redis: Dict[str, Any]
     frontend: Dict[str, Any]
+    waf: Dict[str, Any]
     tags: List[Tuple[str, str]]
     url_prefix: Optional[str] = None
     use_subdomain: bool = True

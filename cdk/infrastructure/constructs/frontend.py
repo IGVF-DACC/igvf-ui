@@ -29,6 +29,9 @@ from infrastructure.constructs.redis import Redis
 from infrastructure.constructs.alarms.frontend import FrontendAlarmsProps
 from infrastructure.constructs.alarms.frontend import FrontendAlarms
 
+from infrastructure.constructs.waf import WAFProps
+from infrastructure.constructs.waf import WAF
+
 from infrastructure.constructs.existing.types import ExistingResources
 
 from typing import Any
@@ -84,6 +87,7 @@ class Frontend(Construct):
         self._enable_exec_command()
         self._configure_task_scaling()
         self._add_alarms()
+        self._add_waf()
 
     def _define_redis(self) -> None:
         self.redis = cast(
@@ -219,5 +223,15 @@ class Frontend(Construct):
                 config=self.props.config,
                 existing_resources=self.props.existing_resources,
                 fargate_service=self.fargate_service
+            )
+        )
+
+    def _add_waf(self) -> None:
+        WAF(
+            self,
+            'WAF',
+            props=WAFProps(
+                **self.props.config.waf,
+                alb=self.fargate_service.load_balancer,
             )
         )

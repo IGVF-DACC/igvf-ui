@@ -21,6 +21,7 @@ def test_config_config_dataclass():
         branch='xyz-branch',
         redis={},
         frontend={},
+        waf={},
         backend_url='https://test.backend.org',
         tags=[
             ('test', 'tag'),
@@ -31,6 +32,7 @@ def test_config_config_dataclass():
     assert config.branch == 'xyz-branch'
     assert config.redis == {}
     assert config.frontend == {}
+    assert config.waf == {}
     assert config.backend_url == 'https://test.backend.org'
     assert config.tags == [('test', 'tag')]
 
@@ -69,12 +71,14 @@ def test_config_build_config_from_name():
         backend_url='http://my-specific-endpoint.org',
         redis={},
         frontend={},
+        waf={}
     )
     assert config.common.organization_name == 'igvf-dacc'
     assert config.common.project_name == 'igvf-ui'
     assert config.branch == 'my-branch'
     assert config.redis == {}
     assert config.frontend == {}
+    assert config.waf == {}
     assert config.name == 'demo'
     assert config.backend_url == 'http://my-specific-endpoint.org'
     config = build_config_from_name(
@@ -96,6 +100,7 @@ def test_config_build_config_from_name_demo(mocker):
         return_value={
             'redis': {},
             'frontend': {},
+            'waf': {},
             'branch': 'my-branch',
             'name': 'demo',
             'tags': [('time-to-live-hours', '3')]
@@ -106,6 +111,7 @@ def test_config_build_config_from_name_demo(mocker):
         branch='my-branch',
         # Overrides.
         frontend={},
+        waf={},
         redis={},
     )
     assert config.backend_url == 'https://igvfd-my-branch.demo.igvf.org'
@@ -176,6 +182,7 @@ def test_config_get_raw_config_from_name_demo():
         branch='my-branch',
         redis={},
         frontend={},
+        waf={},
     )
     assert raw_config['branch'] == 'my-branch'
     assert raw_config['frontend'] == {}
@@ -185,6 +192,7 @@ def test_config_get_raw_config_from_name_demo():
         branch='my-branch',
         redis={},
         frontend={},
+        waf={},
         backend_url='http://my-specific-endpoint.org',
         tags=[('abc', '123')]
     )
@@ -218,6 +226,7 @@ def test_config_fill_in_calculated_config():
         branch='my-branch',
         redis={},
         frontend={},
+        waf={},
         tags=[('xyz', '123')],
     )
     raw_config.pop('backend_url', None)
@@ -225,6 +234,7 @@ def test_config_fill_in_calculated_config():
     assert calculated_config == {
         'redis': {},
         'frontend': {},
+        'waf': {},
         'branch': 'my-branch',
         'name': 'demo',
         'backend_url': 'https://igvfd-my-branch.demo.igvf.org',
@@ -242,6 +252,7 @@ def test_config_config_factory_init():
         'branch': 'some-branch',
         'redis': {},
         'frontend': {},
+        'waf': {},
         'backend_url': 'some-backend-url',
         'tags': [('abc', '123')]
     }
