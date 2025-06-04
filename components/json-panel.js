@@ -118,12 +118,19 @@ export default function JsonPanel({
         } ${className}`}
         lineNumberStyle={{ display: "none" }}
         lineProps={(lineNumber) => {
-          const isHighlighted = highlightedLines.includes(lineNumber);
-          return isHighlighted
-            ? {
-                class: "bg-yellow-300 dark:bg-blue-800",
-              }
-            : {};
+          const isAdded = highlightedLines.includes(lineNumber);
+          if (isAdded) {
+            return {
+              className: "bg-yellow-300 dark:bg-blue-800",
+            };
+          }
+          const isDeleted = highlightedLines.includes(-lineNumber);
+          if (isDeleted) {
+            return {
+              className: "border-t-4 border-red-500 dark:border-red-800",
+            };
+          }
+          return {};
         }}
         showLineNumbers
         wrapLines
