@@ -40,6 +40,7 @@ import {
   requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
+import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -320,7 +321,7 @@ export async function getServerSideProps({ params, req, query }) {
         multiplexedInSamples,
         barcodeMap,
         pageContext: {
-          title: `${multiplexedSample.sample_terms[0].term_name} — ${multiplexedSample.accession}`,
+          title: `${multiplexedSample.accession} ${UC.mdash} ${multiplexedSample.summary}`,
         },
         attribution,
         isJson,

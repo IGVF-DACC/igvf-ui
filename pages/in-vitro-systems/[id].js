@@ -39,6 +39,7 @@ import {
   requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
+import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
@@ -480,7 +481,7 @@ export async function getServerSideProps({ params, req, query }) {
         multiplexedInSamples,
         institutionalCertificates,
         pageContext: {
-          title: `${inVitroSystem.sample_terms[0].term_name} — ${inVitroSystem.accession}`,
+          title: `${inVitroSystem.accession} ${UC.mdash} ${inVitroSystem.sample_terms[0].term_name}`,
         },
         attribution,
         isJson,

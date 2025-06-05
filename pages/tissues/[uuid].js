@@ -38,6 +38,7 @@ import {
   requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
+import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -376,7 +377,7 @@ export async function getServerSideProps({ params, req, query }) {
         multiplexedInSamples,
         institutionalCertificates,
         pageContext: {
-          title: `${tissue.sample_terms[0].term_name} — ${tissue.accession}`,
+          title: `${tissue.accession} ${UC.mdash} ${tissue.sample_terms[0].term_name}`,
         },
         attribution,
         isJson,

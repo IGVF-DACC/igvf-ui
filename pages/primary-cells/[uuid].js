@@ -38,6 +38,7 @@ import {
   requestPublications,
   requestTreatments,
 } from "../../lib/common-requests";
+import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
@@ -350,7 +351,7 @@ export async function getServerSideProps({ params, req, query }) {
         multiplexedInSamples,
         institutionalCertificates,
         pageContext: {
-          title: `${primaryCell.sample_terms[0].term_name} — ${primaryCell.accession}`,
+          title: `${primaryCell.accession} ${UC.mdash} ${primaryCell.sample_terms[0].term_name}`,
         },
         attribution,
         isJson,

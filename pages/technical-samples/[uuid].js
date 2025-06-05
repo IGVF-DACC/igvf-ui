@@ -31,6 +31,7 @@ import {
   requestInstitutionalCertificates,
   requestPublications,
 } from "../../lib/common-requests";
+import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -213,7 +214,7 @@ export async function getServerSideProps({ params, req, query }) {
         sources,
         multiplexedInSamples,
         pageContext: {
-          title: `${sample.sample_terms[0].term_name} — ${sample.accession}`,
+          title: `${sample.accession} ${UC.mdash} ${sample.sample_terms[0].term_name}`,
         },
         attribution,
         isJson,
