@@ -21,9 +21,12 @@ import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 
 export default function PredictionSet({ item: predictionSet }) {
   // Collect all files.content_type and deduplicate
-  const fileContentType = predictionSet.files
-    ? [...new Set(predictionSet.files.map((file) => file.content_type))].sort()
-    : [];
+  const fileContentType =
+    predictionSet.files.length > 0
+      ? [
+          ...new Set(predictionSet.files.map((file) => file.content_type)),
+        ].sort()
+      : [];
 
   const isSupplementsVisible =
     predictionSet.alternate_accessions || fileContentType;

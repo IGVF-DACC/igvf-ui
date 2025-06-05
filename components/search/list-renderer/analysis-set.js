@@ -39,7 +39,7 @@ export default function AnalysisSet({
   const isSupplementsVisible =
     analysisSet.alternate_accessions ||
     analysisSet.sample_summary ||
-    fileContentType ||
+    fileContentType.length > 0 ||
     isUniformPipeline;
 
   return (
