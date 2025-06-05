@@ -35,7 +35,8 @@ export type HistoryObject = {
 
 /**
  * Compare two JSON strings and generate an array of 1-based line numbers where they differ. The
- * JSON string must contain newlines for this line numbering to work.
+ * JSON string must contain newlines for this line numbering to work. Deleted lines appear as
+ * negative numbers, while added lines appear as positive numbers.
  * @param originalText - Original JSON string
  * @param modifiedText - Modified JSON string
  * @returns Array of 1-based line numbers where the JSON strings differ
@@ -47,7 +48,7 @@ export function jsonLineDiff(
   const differences = Diff.diffJson(originalText, modifiedText);
 
   let lineCountModified = 0;
-  const changedLines = new Set<number>();
+  const changedLines: number[] = [];
 
   // Go through the differences and condense them into line numbers for added lines and deleted
   // lines. Diff treats changed lines as a deletion followed by an addition, and results in a
@@ -58,11 +59,11 @@ export function jsonLineDiff(
 
     if (part.removed) {
       for (let i = 0; i < lineCount; i++) {
-        changedLines.add(lineCountModified + 1);
+        changedLines.push(-(lineCountModified + 1));
       }
     } else if (part.added) {
       for (let i = 0; i < lineCount; i++) {
-        changedLines.add(lineCountModified + 1);
+        changedLines.push(lineCountModified + 1);
         lineCountModified += 1;
       }
     } else {
@@ -71,5 +72,12 @@ export function jsonLineDiff(
     }
   });
 
-  return _.sortBy([...changedLines]);
+  // If both negative (deleted) and positive (changed/added) of the same absolute value exist
+  // (indicating a modified line), remove the negative value because we represent both added and
+  // modified lines with the same highlight. Negative values without the same positive value stay.
+  const sanitizedChangedLines = changedLines.filter(
+    (line, _, self) => line > 0 || !self.includes(-line)
+  );
+
+  return _.uniq(sanitizedChangedLines);
 }

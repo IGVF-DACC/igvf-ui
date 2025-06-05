@@ -58,7 +58,7 @@ describe("Test jsonLineDiff", () => {
   "d": 4
 }`;
 
-    expect(jsonLineDiff(a, b)).toEqual([4]);
+    expect(jsonLineDiff(a, b)).toEqual([-4]);
   });
 
   it("should return multiple line number with insertion of a multiline object", () => {
@@ -92,6 +92,6 @@ describe("Test jsonLineDiff", () => {
   "b": 2
 }`;
 
-    expect(jsonLineDiff(a, b)).toEqual([4]);
+    expect(jsonLineDiff(a, b)).toEqual([-4]);
   });
 });
