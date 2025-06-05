@@ -153,6 +153,7 @@ export default function IndexFile({
               </DataPanel>
             </>
           )}
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
@@ -180,7 +181,6 @@ export default function IndexFile({
               panelId="input-file-for"
             />
           )}
-          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>

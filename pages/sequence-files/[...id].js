@@ -160,6 +160,7 @@ export default function SequenceFile({
               )}
             </DataArea>
           </DataPanel>
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
@@ -195,7 +196,6 @@ export default function SequenceFile({
               panelId="seqspec"
             />
           )}
-          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>

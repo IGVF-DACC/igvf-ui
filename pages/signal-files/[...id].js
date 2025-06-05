@@ -109,6 +109,7 @@ export default function SignalFile({
               )}
             </DataArea>
           </DataPanel>
+          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
               documents={fileFormatSpecifications}
@@ -143,7 +144,6 @@ export default function SignalFile({
               panelId="reference"
             />
           )}
-          <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>

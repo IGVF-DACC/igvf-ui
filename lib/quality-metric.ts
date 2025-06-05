@@ -136,11 +136,6 @@ export const mpraFields: QualityMetricFieldAttr[] = [
     type: "string",
   },
   {
-    name: "summary",
-    title: "Summary",
-    type: "string",
-  },
-  {
     name: "attachment",
     title: "Attachment",
     type: "attachment",
@@ -184,11 +179,6 @@ export const perturbSeqFields: QualityMetricFieldAttr[] = [
   {
     name: "description",
     title: "Description",
-    type: "string",
-  },
-  {
-    name: "summary",
-    title: "Summary",
     type: "string",
   },
   {
@@ -270,11 +260,6 @@ export const singleCellAtacSeqFields: QualityMetricFieldAttr[] = [
   {
     name: "description",
     title: "Description",
-    type: "string",
-  },
-  {
-    name: "summary",
-    title: "Summary",
     type: "string",
   },
   {
@@ -381,11 +366,6 @@ export const singleCellRnaSeqFields: QualityMetricFieldAttr[] = [
   {
     name: "description",
     title: "Description",
-    type: "string",
-  },
-  {
-    name: "summary",
-    title: "Summary",
     type: "string",
   },
   {
@@ -522,11 +502,6 @@ export const starrSeqFields: QualityMetricFieldAttr[] = [
   {
     name: "description",
     title: "Description",
-    type: "string",
-  },
-  {
-    name: "summary",
-    title: "Summary",
     type: "string",
   },
   {
