@@ -59,7 +59,7 @@ export default function AnalysisSet({
         {isSupplementsVisible && (
           <SearchListItemSupplement>
             <SearchListItemSupplementAlternateAccessions item={analysisSet} />
-            {fileContentType && (
+            {fileContentType.length > 0 && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Files
