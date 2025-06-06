@@ -6,11 +6,11 @@
 // node_modules
 import type { NextApiRequest, NextApiResponse } from "next";
 // lib
+import { ServerCache } from "../../lib/cache";
 import { requestDatasetSummary } from "../../lib/common-requests";
 import FetchRequest from "../../lib/fetch-request";
 import { type LabData } from "../../lib/home";
 import { getQueryStringFromServerQuery } from "../../lib/query-utils";
-import { ServerCache } from "../../lib/cache";
 
 /**
  * Server cache key for the home page lab chart.
