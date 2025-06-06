@@ -13,7 +13,7 @@ import { abbreviateNumber } from "../lib/general";
 /**
  * Interval in milliseconds to request the indexer state from the data provider.
  */
-const INDEXER_STATE_REQUEST_INTERVAL = 300_000;
+const INDEXER_STATE_REQUEST_INTERVAL = 90_000;
 
 /**
  * Duration in milliseconds to display the indexer state request indicator.
