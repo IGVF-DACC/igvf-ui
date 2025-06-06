@@ -15,7 +15,7 @@ describe("Exercise access keys", () => {
     cy.contains("Access Key ID").should("exist");
     cy.contains("Access Key Secret").should("exist");
     cy.contains("button", "Close").click();
-    cy.delayForIndexing();
+    cy.delayForIndexing(false);
 
     // Should contain a single access key on the display.
     cy.get(`[aria-label^="Reset access key"]`).should("have.length", 1);
@@ -35,7 +35,7 @@ describe("Exercise access keys", () => {
     cy.contains("Access Key ID").should("exist");
     cy.contains("Access Key Secret").should("exist");
     cy.contains("button", "Close").click();
-    cy.delayForIndexing();
+    cy.delayForIndexing(false);
 
     // Should contain two access keys on the display.
     cy.get(`[aria-label^="Reset access key"]`).should("have.length", 2);
