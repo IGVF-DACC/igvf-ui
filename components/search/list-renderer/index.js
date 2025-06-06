@@ -74,6 +74,7 @@ import Page from "./page";
 import PhenotypicFeature from "./phenotypic-feature";
 import PredictionSet from "./prediction-set";
 import Publication from "./publication";
+import QualityMetric from "./quality-metric";
 import RodentDonor from "./rodent-donor";
 import Software from "./software";
 import SoftwareVersion from "./software-version";
@@ -111,9 +112,11 @@ const renderers = {
   MeasurementSet,
   ModelFile: File,
   ModelSet,
+  MpraQualityMetric: QualityMetric,
   MultiplexedSample,
   OpenReadingFrame,
   Page,
+  PerturbSeqQualityMetric: QualityMetric,
   PhenotypeTerm: OntologyTerm,
   PhenotypicFeature,
   PlatformTerm: OntologyTerm,
@@ -125,9 +128,12 @@ const renderers = {
   SampleTerm: OntologyTerm,
   SequenceFile: File,
   SignalFile: File,
+  SingleCellAtacSeqQualityMetric: QualityMetric,
+  SingleCellRnaSeqQualityMetric: QualityMetric,
   Software,
   SoftwareVersion,
   Source,
+  StarrSeqQualityMetric: QualityMetric,
   TabularFile: File,
   TechnicalSample,
   Tissue: Biosample,
