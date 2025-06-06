@@ -1551,7 +1551,7 @@ describe("Test the AnalysisSet component", () => {
 
     const supplementContent = screen.getAllByTestId(
       "search-list-item-supplement-content"
-    )[1];
+    )[0];
     expect(supplementContent).toHaveTextContent(
       "Homo sapiens lung tissue, transfected with a reporter library"
     );
