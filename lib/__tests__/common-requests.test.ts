@@ -11,6 +11,7 @@ import {
   requestFileSets,
   requestGenes,
   requestInstitutionalCertificates,
+  requestLabs,
   requestOntologyTerms,
   requestPages,
   requestPhenotypicFeatures,
@@ -275,6 +276,44 @@ describe("Test all the common requests", () => {
     );
     expect(mockFunction).toHaveBeenCalledWith(
       "/search-quick/?type=File&field=@type&field=accession&field=aliases&field=content_type&field=controlled_access&field=creation_timestamp&field=derived_from&field=external_host_url&field=externally_hosted&field=file_format&field=file_size&field=file_set&field=filtered&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=quality_metrics&field=read_names&field=seqspecs&field=seqspec_document&field=sequencing_platform&field=sequencing_run&field=submitted_file_name&field=status&field=summary&field=workflow.@id&field=workflow.name&field=workflow.uniform_pipeline&field=upload_status&@id=/sequence-files/IGVFFI4067OVRO/&@id=/sequence-files/IGVFFI1165AJSO/&limit=2",
+      expect.anything()
+    );
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual(mockResult["@graph"][0]);
+    expect(result[1]).toEqual(mockResult["@graph"][1]);
+  });
+
+  test("requestLabs function", async () => {
+    const mockResult = {
+      "@graph": [
+        {
+          "@id": "/labs/jesse-engreitz-stanford/",
+          "@type": ["Lab", "Item"],
+          title: "Jesse Engreitz, Stanford",
+        },
+        {
+          "@id": "/labs/j-michael-cherry",
+          "@type": ["Lab", "Item"],
+          title: "J. Michael Cherry, Stanford",
+        },
+      ],
+    };
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockResult),
+      })
+    );
+
+    const request = new FetchRequest();
+    const result = await requestLabs(
+      ["/labs/jesse-engreitz-stanford/", "/labs/j-michael-cherry"],
+      request
+    );
+    expect(mockFunction).toHaveBeenCalledWith(
+      "/search-quick/?type=Lab&field=title&@id=/labs/jesse-engreitz-stanford/&@id=/labs/j-michael-cherry&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);

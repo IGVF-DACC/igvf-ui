@@ -10,6 +10,9 @@ export interface InstitutionalCertificateObject extends DatabaseObject {
   data_use_limitation?: string;
   data_use_limitation_modifiers?: string[];
   data_use_limitation_summary?: string;
+  description?: string;
+  partner_awards?: string[];
+  partner_labs?: string[];
   samples?: string[];
   summary: string;
   urls: string[];
