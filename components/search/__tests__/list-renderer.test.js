@@ -1466,6 +1466,7 @@ describe("Test the AnalysisSet component", () => {
       aliases: ["igvf:basic_analysis_set"],
       award: "/awards/HG012012/",
       file_set_type: "primary analysis",
+      files: [],
       lab: {
         title: "J. Michael Cherry, Stanford",
       },
@@ -1496,13 +1497,78 @@ describe("Test the AnalysisSet component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders an AnalysisSet item without alternate accessions", () => {
+  it("renders an AnalysisSet item with sample_summary", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
       accession: "IGVFDS0390NOLS",
       aliases: ["igvf:basic_analysis_set_2"],
       award: "/awards/HG012012/",
+      sample_summary:
+        "Homo sapiens lung tissue, transfected with a reporter library",
+      file_set_type: "primary analysis",
+      files: [],
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      summary: "primary analysis of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    const accessoryData = {
+      "/analysis-sets/IGVFDS0390NOLS/": {
+        "@id": "/analysis-sets/IGVFDS9006PQTA/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+        workflows: [
+          {
+            "@id": "/workflows/IGVFWF0000WORK/",
+            accession: "IGVFWF0000WORK",
+            name: "Perturb-seq Pipeline",
+            uniform_pipeline: true,
+          },
+        ],
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisSet item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^primary Analysis Set IGVFDS0390NOLS$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^primary analysis of data$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent(/^J. Michael Cherry, Stanford/);
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent("Samples");
+
+    const supplementContent = screen.getAllByTestId(
+      "search-list-item-supplement-content"
+    )[0];
+    expect(supplementContent).toHaveTextContent(
+      "Homo sapiens lung tissue, transfected with a reporter library"
+    );
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders an AnalysisSet item with files", () => {
+    const item = {
+      "@id": "/analysis-sets/IGVFDS0390NOLS/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS0390NOLS",
+      aliases: ["igvf:basic_analysis_set_2"],
+      award: "/awards/HG012012/",
+      files: [{ content_type: "alignments" }, { content_type: "fragments" }],
       file_set_type: "primary analysis",
       lab: {
         "@id": "/labs/j-michael-cherry/",
@@ -1543,8 +1609,75 @@ describe("Test the AnalysisSet component", () => {
     const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent(/^J. Michael Cherry, Stanford/);
 
+    expect(screen.getByTestId("search-list-item-supplement")).toHaveTextContent(
+      "Files"
+    );
+
+    const supplementContent = screen.getAllByTestId(
+      "search-list-item-supplement-content"
+    )[0];
+    expect(supplementContent).toHaveTextContent("alignments, fragments");
+
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+  });
+
+  it("renders an AnalysisSet item with workflows", () => {
+    const item = {
+      "@id": "/analysis-sets/IGVFDS0390NOLS/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS0390NOLS",
+      aliases: ["igvf:basic_analysis_set_2"],
+      award: "/awards/HG012012/",
+      workflows: [
+        {
+          uniform_pipeline: true,
+        },
+      ],
+      file_set_type: "primary analysis",
+      files: [],
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      summary: "primary analysis of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    const accessoryData = {
+      "/analysis-sets/IGVFDS0390NOLS/": {
+        "@id": "/analysis-sets/IGVFDS9006PQTA/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+        workflows: [
+          {
+            "@id": "/workflows/IGVFWF0000WORK/",
+            accession: "IGVFWF0000WORK",
+            name: "Perturb-seq Pipeline",
+            uniform_pipeline: true,
+          },
+        ],
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisSet item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^primary Analysis Set IGVFDS0390NOLS$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^primary analysis of data$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent(/^J. Michael Cherry, Stanford/);
+
+    const qualityItem = screen.getByTestId("search-list-item-quality");
+    expect(qualityItem).toHaveTextContent("released");
+    expect(qualityItem).toHaveTextContent("uniformly processed");
   });
 });
 
@@ -2609,7 +2742,7 @@ describe("Test Workflow component", () => {
   });
 });
 
-describe("Test Prediction Set component", () => {
+describe("Test Prediction Set component with files but no alternate_accessions", () => {
   it("renders a prediction set item", () => {
     const item = {
       "@id": "/prediction-sets/IGVFDS8323PSET/",
@@ -2622,6 +2755,7 @@ describe("Test Prediction Set component", () => {
       },
       status: "released",
       file_set_type: "functional effect",
+      files: [{ content_type: "alignments" }, { content_type: "fragments" }],
       summary: "IGVFDS8323PSET",
       scope: "genes",
       samples: [
@@ -2658,6 +2792,148 @@ describe("Test Prediction Set component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent("functional effect prediction");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("genes");
+
+    const supplementContent = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplementContent).toHaveTextContent("alignments, fragments");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Prediction Set component with no files (zero length) but with alternate_accession", () => {
+  it("renders a prediction set item", () => {
+    const item = {
+      "@id": "/prediction-sets/IGVFDS8323PSEU/",
+      "@type": ["PredictionSet", "FileSet", "Item"],
+      accession: "IGVFDS8323PSEU",
+      alternate_accessions: ["IGVFDS3099XPLP"],
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      files: [],
+      status: "released",
+      file_set_type: "functional effect",
+      summary: "IGVFDS8323PSEU",
+      scope: "genes",
+      samples: [
+        {
+          "@id": "/tissues/IGVFSM0001DDDD/",
+          accession: "IGVFSM0001DDDD",
+          aliases: ["igvf:treated_tissue"],
+          donors: [
+            {
+              "@id": "/rodent-donors/IGVFDO6583PZIO/",
+              accession: "IGVFDO6583PZIO",
+              aliases: ["igvf:alias_rodent_donor_2"],
+              summary: "IGVFDO6583PZIO",
+              taxa: "Mus musculus",
+            },
+          ],
+          sample_terms: ["/sample-terms/UBERON_0002048/"],
+          summary: "lung tissue, Mus musculus (10-20 weeks)",
+          taxa: "Mus musculus",
+        },
+      ],
+      uuid: "a076232c2-d4db-4a51-ad73-4c53c824937f",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PredictionSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Prediction Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSEU/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("functional effect prediction");
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent("Alternate Accessions");
+
+    const alternateAccessionContent = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(alternateAccessionContent).toHaveTextContent("IGVFDS3099XPLP");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("genes");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Prediction Set component with no files at all but with alternate_accession", () => {
+  it("renders a prediction set item", () => {
+    const item = {
+      "@id": "/prediction-sets/IGVFDS8323PSEU/",
+      "@type": ["PredictionSet", "FileSet", "Item"],
+      accession: "IGVFDS8323PSEU",
+      alternate_accessions: ["IGVFDS3099XPLP"],
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      file_set_type: "functional effect",
+      summary: "IGVFDS8323PSEU",
+      scope: "genes",
+      samples: [
+        {
+          "@id": "/tissues/IGVFSM0001DDDD/",
+          accession: "IGVFSM0001DDDD",
+          aliases: ["igvf:treated_tissue"],
+          donors: [
+            {
+              "@id": "/rodent-donors/IGVFDO6583PZIO/",
+              accession: "IGVFDO6583PZIO",
+              aliases: ["igvf:alias_rodent_donor_2"],
+              summary: "IGVFDO6583PZIO",
+              taxa: "Mus musculus",
+            },
+          ],
+          sample_terms: ["/sample-terms/UBERON_0002048/"],
+          summary: "lung tissue, Mus musculus (10-20 weeks)",
+          taxa: "Mus musculus",
+        },
+      ],
+      uuid: "a076232c2-d4db-4a51-ad73-4c53c824937f",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PredictionSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Prediction Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSEU/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("functional effect prediction");
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent("Alternate Accessions");
+
+    const alternateAccessionContent = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(alternateAccessionContent).toHaveTextContent("IGVFDS3099XPLP");
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
