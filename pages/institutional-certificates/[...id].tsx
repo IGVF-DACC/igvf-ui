@@ -18,9 +18,10 @@ import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
+import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestSamples } from "../../lib/common-requests";
+import { requestLabs, requestSamples } from "../../lib/common-requests";
 import { type InstitutionalCertificateObject } from "../../lib/data-use-limitation";
 import { formatDate } from "../../lib/dates";
 import { errorObjectToProps } from "../../lib/errors";
@@ -29,16 +30,18 @@ import { type ErrorObject } from "../../lib/fetch-request.d";
 import PagePreamble from "../../components/page-preamble";
 import { isJsonFormat } from "../../lib/query-utils";
 // root
-import type { SampleObject, UserObject } from "../../globals";
+import type { LabObject, SampleObject, UserObject } from "../../globals";
 
 export default function InstitutionalCertificate({
   institutionalCertificate,
   samples,
+  partnerLabs,
   attribution,
   isJson,
 }: {
   institutionalCertificate: InstitutionalCertificateObject;
   samples: SampleObject[];
+  partnerLabs: LabObject[];
   attribution: any;
   isJson: boolean;
 }) {
@@ -103,6 +106,21 @@ export default function InstitutionalCertificate({
                 </>
               )}
               <Attribution attribution={attribution} />
+
+              {partnerLabs.length > 0 && (
+                <>
+                  <DataItemLabel>Partner Labs</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {partnerLabs.map((lab) => (
+                        <Link key={lab["@id"]} href={lab["@id"]}>
+                          {lab.title}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
             </DataArea>
           </DataPanel>
           {samples.length > 0 && <SampleTable samples={samples} />}
@@ -128,10 +146,16 @@ export async function getServerSideProps(
   if (FetchRequest.isResponseSuccess(item)) {
     const institutionalCertificate =
       item as unknown as InstitutionalCertificateObject;
+
     const samples =
       institutionalCertificate.samples?.length > 0
         ? await requestSamples(institutionalCertificate.samples, request)
         : [];
+
+    const partnerLabs = institutionalCertificate.partner_labs
+      ? await requestLabs(institutionalCertificate.partner_labs, request)
+      : [];
+
     const attribution = await buildAttribution(
       institutionalCertificate,
       req.headers.cookie
@@ -141,6 +165,7 @@ export async function getServerSideProps(
       props: {
         institutionalCertificate,
         samples,
+        partnerLabs,
         pageContext: {
           title: item.summary,
         },

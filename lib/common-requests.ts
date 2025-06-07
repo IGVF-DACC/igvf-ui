@@ -2,7 +2,7 @@
 import FetchRequest from "./fetch-request";
 import { type DatasetSummary } from "./home";
 // root
-import type { DatabaseObject, DataProviderObject } from "../globals";
+import type { DatabaseObject, DataProviderObject, LabObject } from "../globals";
 
 /**
  * Retrieve the analysis step objects for the given analysis step paths from the data provider.
@@ -143,6 +143,21 @@ export async function requestFiles(
       "File"
     )
   ).unwrap_or([]);
+}
+
+/**
+ * Retrieve the lab objects for the given lab paths from the data provider.
+ * @param paths - Paths to the lab objects to request
+ * @param request - The request object to use to make the request
+ * @returns The lab objects requested
+ */
+export async function requestLabs(
+  paths: string[],
+  request: FetchRequest
+): Promise<LabObject[]> {
+  return (
+    await request.getMultipleObjectsBulk(paths, ["title"], "Lab")
+  ).unwrap_or([]) as LabObject[];
 }
 
 /**
