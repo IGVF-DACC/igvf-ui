@@ -229,8 +229,17 @@ export function convertLabDataToChartData(labData: LabData): LabChartData {
     return acc.concat(labItems);
   }, [] as LabChartItem[]);
 
-  return {
+  // Sort the chart data by value (least to greatest) and then by assay title (last to first) case-
+  // insensitive. The nivo bar chart displays the bars in reverse order, resulting in value
+  // greatest to least, and assay title first to last.
+  const sortedChartData = _.orderBy(
     chartData,
+    [(item) => item.value, (item) => item.title.split("|")[1].toLowerCase()],
+    ["asc", "desc"]
+  );
+
+  return {
+    chartData: sortedChartData,
     maxCount: labData.doc_count,
   };
 }
