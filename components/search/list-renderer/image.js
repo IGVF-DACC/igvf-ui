@@ -39,7 +39,7 @@ export default function ImageItem({ item, accessoryData = null }) {
           {image?.uuid || item["@id"]}
         </SearchListItemUniqueId>
         <SearchListItemTitle>
-          <div className="break-anywhere">
+          <div className="wrap-anywhere">
             {attachment?.download || item["@id"]}
           </div>
         </SearchListItemTitle>
@@ -61,11 +61,11 @@ export default function ImageItem({ item, accessoryData = null }) {
             <SearchListItemSupplementContent>
               <div className="max-h-40 w-full max-w-sm">
                 <div className="relative h-full w-full">
-                  <div className="inline-block border border-data-border bg-white">
+                  <div className="border-data-border inline-block border bg-white">
                     <img
                       src={imageUrl}
                       alt={`Preview image of ${image.summary}`}
-                      className="h-auto max-h-40 w-full object-contain object-left-top"
+                      className="h-auto max-h-40 w-full object-contain object-top-left"
                     />
                   </div>
                 </div>

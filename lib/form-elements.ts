@@ -17,18 +17,18 @@ const iconSizes = {
  * Tailwind CSS classes for each of the button sizes.
  */
 const buttonSizeClasses = {
-  sm: `px-2 rounded text-xs h-6 ${iconSizes.sm}`,
-  md: `px-4 rounded text-sm h-8 ${iconSizes.md}`,
-  lg: `px-6 rounded text-base h-10 ${iconSizes.lg}`,
+  sm: `px-2 rounded-sm text-xs h-6 ${iconSizes.sm}`,
+  md: `px-4 rounded-sm text-sm h-8 ${iconSizes.md}`,
+  lg: `px-6 rounded-sm text-base h-10 ${iconSizes.lg}`,
 };
 
 /**
  * Tailwind CSS classes for each of the icon-only button sizes.
  */
 const iconButtonSizeClasses = {
-  sm: `px-1.5 rounded form-element-height-sm ${iconSizes.sm}`,
-  md: `px-2 rounded form-element-height-md ${iconSizes.md}`,
-  lg: `px-3 rounded form-element-height-lg ${iconSizes.lg}`,
+  sm: `px-1.5 rounded-sm form-element-height-sm ${iconSizes.sm}`,
+  md: `px-2 rounded-sm form-element-height-md ${iconSizes.md}`,
+  lg: `px-3 rounded-sm form-element-height-lg ${iconSizes.lg}`,
 };
 
 /**

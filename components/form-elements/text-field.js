@@ -55,7 +55,7 @@ export default function TextField({
         </FormLabel>
       )}
       <input
-        className={`block w-full rounded border border-form-element bg-form-element text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled ${sizeClasses[size]}`}
+        className={`block w-full rounded-sm border border-form-element bg-form-element text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled ${sizeClasses[size]}`}
         aria-label={fieldLabel || label}
         name={name}
         id={name}

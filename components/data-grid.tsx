@@ -114,7 +114,7 @@ export const DataGridContainer = forwardRef(function DataGridContainer(
     <div
       ref={ref}
       role={role}
-      className={`border-1 grid w-full gap-px overflow-x-auto border border-panel bg-gray-300 text-sm dark:outline-gray-700 dark:bg-gray-700${
+      className={`border grid w-full gap-px overflow-x-auto border border-panel bg-gray-300 text-sm dark:outline-gray-700 dark:bg-gray-700${
         className ? ` ${className}` : ""
       }`}
     >

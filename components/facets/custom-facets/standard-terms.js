@@ -33,7 +33,7 @@ function TermsSelectorsButton({ onClick, label, children }) {
   return (
     <button
       onClick={onClick}
-      className="h-5 grow rounded border border-button-secondary bg-button-secondary fill-button-secondary text-xs text-button-secondary"
+      className="h-5 grow rounded-sm border border-button-secondary bg-button-secondary fill-button-secondary text-xs text-button-secondary"
       aria-label={label}
       type="button"
     >

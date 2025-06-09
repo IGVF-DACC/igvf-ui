@@ -167,7 +167,7 @@ describe("Test the Tailwind CSS classes resulting from using the `hasIconOnly` f
         <Circle />
       </Button>
     );
-    expect(container.firstChild).toHaveClass("px-2 rounded");
+    expect(container.firstChild).toHaveClass("px-2 rounded-sm");
   });
 
   it("renders an icon-only link button with the correct classes", () => {
@@ -176,7 +176,7 @@ describe("Test the Tailwind CSS classes resulting from using the `hasIconOnly` f
         <Circle />
       </ButtonLink>
     );
-    expect(container.firstChild).toHaveClass("px-2 rounded");
+    expect(container.firstChild).toHaveClass("px-2 rounded-sm");
   });
 });
 
@@ -194,13 +194,13 @@ describe("Test AttachedButtons wrapper component", () => {
     const buttons = screen.getAllByRole("button");
     expect(buttons.length).toBe(3);
     expect(buttons[0]).toHaveClass(
-      "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r"
+      "flex items-center justify-center border font-semibold leading-none px-4 rounded-sm text-sm h-8 [&>svg]:h-4 [&>svg]:w-4 bg-button-primary border-button-primary text-button-primary fill-button-primary disabled:bg-button-primary-disabled disabled:border-button-primary-disabled disabled:text-button-primary-disabled disabled:fill-button-primary-disabled border-r-0 last:border-r !rounded-none first:!rounded-l-sm last:!rounded-r-sm"
     );
     expect(buttons[1]).toHaveClass(
-      "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r"
+      "flex items-center justify-center border font-semibold leading-none px-4 rounded-sm text-sm h-8 [&>svg]:h-4 [&>svg]:w-4 bg-button-primary border-button-primary text-button-primary fill-button-primary disabled:bg-button-primary-disabled disabled:border-button-primary-disabled disabled:text-button-primary-disabled disabled:fill-button-primary-disabled border-r-0 last:border-r !rounded-none first:!rounded-l-sm last:!rounded-r-sm"
     );
     expect(buttons[2]).toHaveClass(
-      "border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r"
+      "flex items-center justify-center border font-semibold leading-none px-4 rounded-sm text-sm h-8 [&>svg]:h-4 [&>svg]:w-4 bg-button-primary border-button-primary text-button-primary fill-button-primary disabled:bg-button-primary-disabled disabled:border-button-primary-disabled disabled:text-button-primary-disabled disabled:fill-button-primary-disabled border-r-0 last:border-r !rounded-none first:!rounded-l-sm last:!rounded-r-sm"
     );
   });
 

@@ -117,7 +117,7 @@ export function SchemaVersion({ schema, isLinked = false }) {
     return (
       <Link
         href={`${path}/changelog`}
-        className={`${className} rounded-sm`}
+        className={`${className} rounded-xs`}
       >{`v${version}`}</Link>
     );
   }

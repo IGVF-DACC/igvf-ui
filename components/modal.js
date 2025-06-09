@@ -48,7 +48,7 @@ export default function Modal({
       />
       <div className="fixed inset-0 overflow-y-auto">
         <Dialog.Panel
-          className={`mx-auto my-5 max-w-4xl overflow-hidden rounded-xl border border-modal-border bg-white drop-shadow-lg dark:bg-gray-900 xl:my-20 ${widthClasses}`}
+          className={`border-modal-border mx-auto my-5 max-w-4xl overflow-hidden rounded-xl border bg-white drop-shadow-lg xl:my-20 dark:bg-gray-900 ${widthClasses}`}
         >
           {children}
         </Dialog.Panel>
@@ -96,7 +96,7 @@ function Header({
 
   return (
     <div
-      className={`flex items-center justify-between border-b border-modal-border p-2 ${className}`}
+      className={`border-modal-border flex items-center justify-between border-b p-2 ${className}`}
     >
       {headerChildren}
       {onClose ? <CloseButton label={closeLabel} onClick={onClose} /> : null}
@@ -117,7 +117,7 @@ Header.propTypes = {
  * Wraps the contents of a modal to provide a standard padding. You can skip using this if you
  * don't want padding, or non-standard padding.
  */
-function Body({ className = null, children }) {
+function Body({ className = "", children }) {
   return (
     <div className={className}>
       <div className="p-2">{children}</div>
@@ -135,7 +135,7 @@ Body.propTypes = {
  */
 function Footer({ children }) {
   return (
-    <div className="flex justify-end gap-1 border-t border-modal-border bg-gray-50 p-1.5 dark:bg-gray-800">
+    <div className="border-modal-border flex justify-end gap-1 border-t bg-gray-50 p-1.5 dark:bg-gray-800">
       {children}
     </div>
   );

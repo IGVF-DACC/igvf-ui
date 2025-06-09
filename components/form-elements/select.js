@@ -45,7 +45,7 @@ export default function Select({
       )}
       <div className="relative">
         <select
-          className={`block w-full appearance-none rounded border border-form-element bg-form-element py-0 pl-1 pr-5 font-medium text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled ${selectSizeClasses[size]}`}
+          className={`block w-full appearance-none rounded-sm border border-form-element bg-form-element py-0 pl-1 pr-5 font-medium text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled ${selectSizeClasses[size]}`}
           id={name}
           name={name}
           value={value}

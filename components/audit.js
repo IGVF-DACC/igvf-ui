@@ -183,7 +183,7 @@ function AuditNarrative({ level, category, detail }) {
         level
       )}-${toShishkebabCase(category)}`}
     >
-      <MarkdownSection className="ml-5 prose-p:text-sm">
+      <MarkdownSection className="prose-p:text-sm ml-5">
         {detail}
       </MarkdownSection>
     </div>
@@ -211,7 +211,7 @@ function AuditCategory({ level, category, categoryAudits, children }) {
   return (
     <li>
       <button
-        className="flex items-center gap-1 text-sm font-semibold"
+        className="flex cursor-pointer items-center gap-1 text-sm font-semibold"
         onClick={() => setOpenedCategories(!isCategoryOpen)}
         aria-label={`${
           isCategoryOpen ? "Close" : "Open"
@@ -272,11 +272,11 @@ function AuditLevel({ level, levelAudits, children }) {
 
   return (
     <li
-      className={`my-0.5 rounded border border-data-border`}
+      className={`border-data-border my-0.5 rounded-sm border`}
       data-testid={`audit-level-${toShishkebabCase(level)}`}
     >
       <h2
-        className={`flex items-center gap-1 rounded-t-sm border-b border-data-border px-1 py-0.5 text-sm font-semibold ${background}`}
+        className={`border-data-border flex items-center gap-1 rounded-t-sm border-b px-1 py-0.5 text-sm font-semibold ${background}`}
       >
         <Icon className={`h-4 w-4 ${color}`} />
         {humanReadable}
@@ -390,7 +390,7 @@ export function AuditStatus({ item, auditState }) {
     return (
       <button
         onClick={auditState.toggleDetailsOpen}
-        className={`flex h-[22px] shrink items-center rounded-full border border-audit px-1 ${
+        className={`border-audit flex h-[22px] shrink cursor-pointer items-center rounded-full border px-1 ${
           auditState.isDetailOpen
             ? "bg-button-audit-open"
             : "bg-button-audit-closed"

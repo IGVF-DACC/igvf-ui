@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 export default function StandardTermLabel({ term, isNegative, isChildTerm }) {
   return (
     <div
-      className={`flex grow items-center justify-between gap-2 leading-[1.1] [&>div:first-child]:break-anywhere ${
+      className={`flex grow items-center justify-between gap-2 leading-[1.1] [&>div:first-child]:wrap-anywhere ${
         isChildTerm ? "text-xs font-light" : "text-sm font-normal"
       }`}
     >

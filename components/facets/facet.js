@@ -19,12 +19,12 @@ export default function Facet({
   return (
     <div
       key={facet.field}
-      className="border-t border-panel"
+      className="border-panel border-t"
       data-testid={`facet-container-${facet.field}`}
     >
       <button
         onClick={updateOpen}
-        className={`w-full px-4 pb-2 pt-2 ${
+        className={`w-full cursor-pointer px-4 pt-2 pb-2 ${
           isFacetOpen ? "bg-gray-600 dark:bg-gray-400" : ""
         }`}
         data-testid={`facettrigger-${facet.field}`}

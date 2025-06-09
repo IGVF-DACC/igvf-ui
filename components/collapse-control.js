@@ -101,7 +101,7 @@ export function CollapseControlInline({ length, isCollapsed, setIsCollapsed }) {
   return (
     <button
       onClick={() => setIsCollapsed(!isCollapsed)}
-      className="ml-1 inline items-center rounded-sm border border-collapse-ctrl bg-collapse-ctrl pl-1.5 pr-1 text-xs font-bold text-collapse-ctrl"
+      className="ml-1 inline items-center rounded-xs border border-collapse-ctrl bg-collapse-ctrl pl-1.5 pr-1 text-xs font-bold text-collapse-ctrl"
       data-testid="collapse-control-inline"
       aria-label={label}
     >
@@ -143,7 +143,7 @@ export function CollapseControlVertical({
     ? `Show all ${length} items in list`
     : `Show fewer items in list`;
   const borderClass = isFullBorder
-    ? "border rounded-sm"
+    ? "border rounded-xs"
     : "border-b border-l border-r rounded-b-sm";
 
   return (
