@@ -8,6 +8,7 @@ import {
   type FileNodeType,
   type FileSetNodeData,
   type FileSetNodeType,
+  type FileSetStats,
   type NodeData,
 } from "./types";
 // lib
@@ -47,23 +48,28 @@ export function trimIsolatedNodes(graphData: NodeData[]) {
 }
 
 /**
- * Collect a deduplicated list of all file set types that appear in the graph, given the node data
- * for the graph.
+ * Collect all the file-set types that appear in `graphData` and return them along with a count of
+ * the number of times each type appears in `graphData`. Also include the file set type of the
+ * file set the user currently views.
  * @param graphData All nodes in the graph, probably after trimming
  * @param fileSet File set object for the page the user is viewing
  * @returns List of file set types that appear in the graph
  */
-export function collectRelevantFileSetTypes(
+export function collectRelevantFileSetStats(
   graphData: NodeData[],
   fileSet: FileSetObject
-): string[] {
-  const fileSetTypes = new Set<string>([fileSet["@type"][0]]);
-  graphData.forEach((node) => {
+): FileSetStats {
+  const fileSetTypes = graphData.reduce((acc, node) => {
     if (isFileSetNodeData(node)) {
-      fileSetTypes.add(node.fileSet["@type"][0]);
+      return acc.concat(node.fileSet["@type"][0]);
     }
-  });
-  return [...fileSetTypes];
+    return acc;
+  }, [] as string[]);
+  fileSetTypes.push(fileSet["@type"][0]);
+
+  // Make array of FileSetStats objects, with each type found in `fileSetTypes` and with count
+  // set to the number of times that type appears in `fileSetTypes`.
+  return _.countBy(fileSetTypes) as FileSetStats;
 }
 
 /**
@@ -77,7 +83,7 @@ export function generateGraphData(
   nativeFiles: FileObject[],
   fileFileSets: FileSetObject[],
   derivedFromFiles: FileObject[]
-) {
+): NodeData[] {
   const nativeFilePaths = nativeFiles.map((file) => file["@id"]);
 
   // Generate the graph node data for the native files.

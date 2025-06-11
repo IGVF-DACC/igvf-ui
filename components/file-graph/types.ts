@@ -52,10 +52,11 @@ export interface FileNodeData extends GenericNodeData {
 /**
  * Represents a node in the graph for an external file set -- a file set outside the one the user
  * is viewing that contains files that native files derive from.
- * @property {FileSetNodeType} type Code indicating this node represents a file set in the graph
- * @property {FileSetObject} fileSet File set object that this node represents
- * @property {FileObject[]} files Files in the file set that a native file derives from
- * @property {FileObject} childFile File that these files are input file sets for in the graph
+ * @property type - Code indicating this node represents a file set in the graph
+ * @property fileSetType - Type of file set (e.g., "AnalysisSet", "MeasurementSet")
+ * @property fileSet - File set object that this node represents
+ * @property files - Files in the file set that a native file derives from
+ * @property childFile - File that these files are input file sets for in the graph
  */
 export interface FileSetNodeData extends GenericNodeData {
   type: FileSetNodeType;
@@ -80,6 +81,14 @@ export type FileSetTypeColorMapSpec = {
  */
 export type FileSetTypeColorMap = {
   readonly [key: string]: FileSetTypeColorMapSpec;
+};
+
+/**
+ * Basic statistics for file sets in the graph. Each key is a file set type, and the value is the
+ * number of file sets of that type in the graph.
+ */
+export type FileSetStats = {
+  [key: string]: number;
 };
 
 /**
