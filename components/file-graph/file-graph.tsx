@@ -21,7 +21,7 @@ import { FileModal } from "./file-modal";
 import { FileSetModal } from "./file-set-modal";
 import { Legend } from "./legend";
 import {
-  collectRelevantFileSetTypes,
+  collectRelevantFileSetStats,
   generateGraphData,
   getFileMetrics,
   NODE_HEIGHT,
@@ -33,6 +33,7 @@ import {
   isFileNodeData,
   isFileSetNodeData,
   MAX_NODES_TO_DISPLAY,
+  type FileSetStats,
   type FileSetTypeColorMapSpec,
   type NodeData,
 } from "./types";
@@ -722,8 +723,8 @@ export function FileGraph({
   const trimmedData = trimIsolatedNodes(data);
   const isGraphTooLarge = trimmedData.length > MAX_NODES_TO_DISPLAY;
   const relevantFileSetTypes = !isGraphTooLarge
-    ? collectRelevantFileSetTypes(trimmedData, fileSet as FileSetObject)
-    : [];
+    ? collectRelevantFileSetStats(trimmedData)
+    : ({} as FileSetStats);
 
   if (trimmedData.length > 0) {
     return (
@@ -746,7 +747,7 @@ export function FileGraph({
                   qualityMetrics={qualityMetrics}
                   graphData={trimmedData}
                 />
-                <Legend fileSetTypes={relevantFileSetTypes} />
+                <Legend stats={relevantFileSetTypes} />
               </>
             ) : (
               <div className="p-4 text-center italic">

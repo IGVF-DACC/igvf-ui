@@ -144,15 +144,26 @@ const tailwindConfig: Config = {
         "menu-items": "var(--color-menu-items-background)",
         "menu-item-hover": "var(--color-menu-item-background-hover)",
 
+        // File graph node and legend colors
         "file-graph-analysis": "var(--color-file-graph-analysis)",
+        "file-graph-analysis-count": "var(--color-file-graph-analysis-count)",
         "file-graph-auxiliary": "var(--color-file-graph-auxiliary)",
+        "file-graph-auxiliary-count": "var(--color-file-graph-auxiliary-count)",
         "file-graph-construct-library":
           "var(--color-file-graph-construct-library)",
+        "file-graph-construct-library-count":
+          "var(--color-file-graph-construct-library-count)",
         "file-graph-curated": "var(--color-file-graph-curated)",
+        "file-graph-curated-count": "var(--color-file-graph-curated-count)",
         "file-graph-measurement": "var(--color-file-graph-measurement)",
+        "file-graph-measurement-count":
+          "var(--color-file-graph-measurement-count)",
         "file-graph-model": "var(--color-file-graph-model)",
+        "file-graph-model-count": "var(--color-file-graph-model-count)",
         "file-graph-prediction": "var(--color-file-graph-prediction)",
-        "file-graph-unknown": "var(--color-file-graph-unknown)",
+        "file-graph-prediction-count":
+          "var(--color-file-graph-prediction-count)",
+        "file-graph-unknown-count": "var(--color-file-graph-unknown-count)",
 
         "section-directory": "var(--color-section-directory-highlight)",
 
@@ -403,6 +414,7 @@ const tailwindConfig: Config = {
         "audit-internal-action": "var(--color-audit-internal-action-fill)",
         "audit-facet": "var(--color-audit-facet-fill)",
 
+        // File graph node colors
         "file-graph-analysis": "var(--color-file-graph-analysis)",
         "file-graph-auxiliary": "var(--color-file-graph-auxiliary)",
         "file-graph-construct-library":
