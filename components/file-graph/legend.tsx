@@ -37,10 +37,12 @@ export function Legend({ stats }: { stats: FileSetStats }) {
           return (
             <div
               key={fileSetType}
-              className={`${color.bg} flex items-center gap-1 border border-gray-800 px-1 py-0.5 text-xs font-semibold text-black dark:border-gray-400 dark:text-white`}
+              className={`${color.bg} flex border border-gray-800 text-xs font-semibold text-black dark:border-gray-400 dark:text-white`}
             >
-              <div>{collectionTitles?.[fileSetType] || fileSetType}</div>
-              <div className="min-w-4 rounded-full bg-black px-1 text-center text-white">
+              <div className="flex items-center justify-center px-1 py-0.5">
+                {collectionTitles?.[fileSetType] || fileSetType}
+              </div>
+              <div className="flex h-full min-w-4 items-center justify-center bg-black px-1.5 text-white">
                 {count}
               </div>
             </div>
