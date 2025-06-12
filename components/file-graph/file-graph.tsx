@@ -723,7 +723,7 @@ export function FileGraph({
   const trimmedData = trimIsolatedNodes(data);
   const isGraphTooLarge = trimmedData.length > MAX_NODES_TO_DISPLAY;
   const relevantFileSetTypes = !isGraphTooLarge
-    ? collectRelevantFileSetStats(trimmedData, fileSet as FileSetObject)
+    ? collectRelevantFileSetStats(trimmedData)
     : ({} as FileSetStats);
 
   if (trimmedData.length > 0) {

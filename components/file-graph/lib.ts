@@ -56,8 +56,7 @@ export function trimIsolatedNodes(graphData: NodeData[]) {
  * @returns List of file set types that appear in the graph
  */
 export function collectRelevantFileSetStats(
-  graphData: NodeData[],
-  fileSet: FileSetObject
+  graphData: NodeData[]
 ): FileSetStats {
   const fileSetTypes = graphData.reduce((acc, node) => {
     if (isFileSetNodeData(node)) {
@@ -65,7 +64,6 @@ export function collectRelevantFileSetStats(
     }
     return acc;
   }, [] as string[]);
-  fileSetTypes.push(fileSet["@type"][0]);
 
   // Make array of FileSetStats objects, with each type found in `fileSetTypes` and with count
   // set to the number of times that type appears in `fileSetTypes`.
@@ -123,34 +121,39 @@ export function generateGraphData(
             (fileSet) => fileSet["@id"] === fileSetPath
           );
 
-          // Make a hash from the combined file paths in the file set. This lets us have multiple
-          // file-set nodes for the same file set, but with a different set of files.
-          const combinedFilePaths = files
-            .map((file) => file["@id"])
-            .sort()
-            .join("");
-          const hash = XXH.h32(combinedFilePaths, HASH_SEED).toString(16);
-          const fileSetNodeId = `${fileSetPath}-${hash}`;
+          let newFileSetNode: FileSetNodeData = null;
+          if (fileSet) {
+            // Make a hash from the combined file paths in the file set. This lets us have multiple
+            // file-set nodes for the same file set, but with a different set of files.
+            const combinedFilePaths = files
+              .map((file) => file["@id"])
+              .sort()
+              .join("");
+            const hash = XXH.h32(combinedFilePaths, HASH_SEED).toString(16);
+            const fileSetNodeId = `${fileSetPath}-${hash}`;
 
-          // See if a file-set node already exists with the same file set path and hash.
-          const fileSetNodeExists = Boolean(
-            acc.find((node) => node.id === fileSetNodeId)
-          );
-          if (fileSetNodeExists) {
-            // If a file-set node already exists, add its ID to the native file node's parent IDs.
-            fileNode.parentIds.push(fileSetNodeId);
-            return fileSetNodeAcc;
+            // See if a file-set node already exists with the same file set path and hash.
+            const fileSetNodeExists = Boolean(
+              acc.find((node) => node.id === fileSetNodeId)
+            );
+            if (fileSetNodeExists) {
+              // If a file-set node already exists, add its ID to the native file node's parent IDs.
+              fileNode.parentIds.push(fileSetNodeId);
+              return fileSetNodeAcc;
+            }
+            newFileSetNode = {
+              id: `${fileSetPath}-${hash}`,
+              parentIds: [],
+              type: "file-set" as FileSetNodeType,
+              fileSet,
+              files,
+              childFile: fileNode.file,
+            } as FileSetNodeData;
+            fileNode.parentIds.push(newFileSetNode.id);
           }
-          const newFileSetNode = {
-            id: `${fileSetPath}-${hash}`,
-            parentIds: [],
-            type: "file-set" as FileSetNodeType,
-            fileSet,
-            files,
-            childFile: fileNode.file,
-          } as FileSetNodeData;
-          fileNode.parentIds.push(newFileSetNode.id);
-          return fileSetNodeAcc.concat(newFileSetNode);
+          return newFileSetNode
+            ? fileSetNodeAcc.concat(newFileSetNode)
+            : fileSetNodeAcc;
         },
         [] as FileSetNodeData[]
       );

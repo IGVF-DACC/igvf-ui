@@ -40,7 +40,7 @@ export function Legend({ stats }: { stats: FileSetStats }) {
               className={`${color.bg} flex items-center gap-1 border border-gray-800 px-1 py-0.5 text-xs font-semibold text-black dark:border-gray-400 dark:text-white`}
             >
               <div>{collectionTitles?.[fileSetType] || fileSetType}</div>
-              <div className="rounded-full bg-black px-1 text-white">
+              <div className="min-w-4 rounded-full bg-black px-1 text-center text-white">
                 {count}
               </div>
             </div>
