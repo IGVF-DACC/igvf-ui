@@ -8,11 +8,12 @@ import {
   DataItemLabel,
   DataItemValue,
 } from "../data-area";
-import { FileDownload } from "../file-download";
+import { FileAccessionAndDownload, FileDownload } from "../file-download";
 import { ButtonLink } from "../form-elements";
 import { HostedFilePreview } from "../hosted-file-preview";
 import Link from "../link-no-prefetch";
 import Modal from "../modal";
+import SeparatedList from "../separated-list";
 import Status from "../status";
 // local
 import { FileModalTitle } from "./file-modal-title";
@@ -20,7 +21,7 @@ import { type FileNodeData } from "./types";
 // lib
 import { dataSize, truthyOrZero } from "../../lib/general";
 // root
-import { DatabaseObject } from "../../globals.d";
+import type { DatabaseObject, FileObject } from "../../globals";
 
 /**
  * Display a modal with detailed information about a file when the user clicks on a node in the
@@ -30,13 +31,20 @@ import { DatabaseObject } from "../../globals.d";
  */
 export function FileModal({
   node,
+  referenceFiles,
   onClose,
 }: {
   node: FileNodeData;
+  referenceFiles: FileObject[];
   onClose: () => void;
 }) {
   const { file } = node;
   const derivedFromReportLink = `/multireport/?type=File&input_file_for=${file["@id"]}`;
+
+  const fileReferenceFilePaths = (file.reference_files as string[]) || [];
+  const fileReferenceFiles = referenceFiles.filter((referenceFile) =>
+    fileReferenceFilePaths.includes(referenceFile["@id"])
+  );
 
   return (
     <Modal isOpen={true} onClose={onClose}>
@@ -73,6 +81,23 @@ export function FileModal({
           )}
           <DataItemLabel>Summary</DataItemLabel>
           <DataItemValue>{file.summary}</DataItemValue>
+          {fileReferenceFiles.length > 0 && (
+            <>
+              <DataItemLabel>Reference Files</DataItemLabel>
+              <DataItemValue>
+                <SeparatedList isCollapsible>
+                  {fileReferenceFiles.map((file) => (
+                    <FileAccessionAndDownload
+                      key={file["@id"]}
+                      file={file}
+                      isTargetBlank
+                      isInline
+                    />
+                  ))}
+                </SeparatedList>
+              </DataItemValue>
+            </>
+          )}
           {file.lab && (
             <>
               <DataItemLabel>Lab</DataItemLabel>

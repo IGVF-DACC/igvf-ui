@@ -121,19 +121,24 @@ export function FileHeaderDownload({
 export function FileAccessionAndDownload({
   file,
   isTargetBlank = false,
+  isInline = false,
 }: {
   file: FileObject;
   isTargetBlank?: boolean;
+  isInline?: boolean;
 }) {
   return (
-    <div>
-      <div className="flex items-center gap-1">
+    <>
+      <div
+        className={`${isInline ? "inline-flex" : "flex"} items-center gap-1`}
+        data-testid="file-accession-and-download"
+      >
         <LinkedIdAndStatus item={file} isTargetBlank={isTargetBlank}>
           {file.accession}
         </LinkedIdAndStatus>
         <FileDownload file={file} />
       </div>
       {file.externally_hosted && <ExternallyHostedBadge className="mt-1" />}
-    </div>
+    </>
   );
 }
