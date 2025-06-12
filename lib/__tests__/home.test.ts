@@ -55,11 +55,11 @@ describe("Test convertLabDataToChartData function", () => {
     const labChartData = convertLabDataToChartData(labData);
     expect(labChartData).toEqual({
       chartData: [
-        { title: "J. Michael Cherry, Stanford|10x multiome", value: 2 },
         {
           title: "J. Michael Cherry, Stanford|10x multiome with MULTI-seq",
           value: 1,
         },
+        { title: "J. Michael Cherry, Stanford|10x multiome", value: 2 },
       ],
       maxCount: 27,
     });
@@ -111,11 +111,11 @@ describe("Test convertLabDataToChartData function", () => {
     const labChartData = convertLabDataToChartData(labData);
     expect(labChartData).toEqual({
       chartData: [
-        { title: "J. Michael Cherry, Stanford|unspecified assay", value: 3 },
         {
           title: "J. Michael Cherry, Stanford|SUPERSTARR",
           value: 1,
         },
+        { title: "J. Michael Cherry, Stanford|unspecified assay", value: 3 },
       ],
       maxCount: 5,
     });
