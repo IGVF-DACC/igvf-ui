@@ -128,7 +128,7 @@ export default function SearchModal({
               value={searchTerm}
               onChange={onChange}
               onKeyDown={onKeyDown}
-              className="block w-full border-none bg-transparent py-3 text-black outline-none dark:text-white"
+              className="block w-full border-none bg-transparent py-3 text-black outline-hidden dark:text-white"
               data-autofocus
             />
             <button

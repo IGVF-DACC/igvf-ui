@@ -20,7 +20,7 @@ describe("Test the Select component", () => {
     const select = screen.getByRole("combobox");
     expect(select).toBeInTheDocument();
     expect(select).toHaveClass(
-      "block w-full appearance-none rounded border border-form-element bg-form-element py-0 pl-1 pr-5 font-medium text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled text-sm h-8 leading-[180%]"
+      "block w-full appearance-none rounded-sm border border-form-element bg-form-element py-0 pl-1 pr-5 font-medium text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled text-sm h-8 leading-[180%]"
     );
 
     // Selecting an option should call the onChange handler.

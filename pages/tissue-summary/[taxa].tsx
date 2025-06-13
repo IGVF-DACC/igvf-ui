@@ -390,7 +390,7 @@ function PanelContent({
           <LabelYAxis label={yLabel} />
           <div
             role="table"
-            className="border-1 grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
+            className="border grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
           >
             <DataGrid data={dataGrid} meta={{ taxa }} />
           </div>

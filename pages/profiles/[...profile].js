@@ -127,7 +127,7 @@ function SchemaJsonPanel({
         >
           <JsonPanel
             id={`schema-json-property-${attributeId}`}
-            className="ml-5 border border-panel text-xs"
+            className="border-panel ml-5 border text-xs"
             isLowContrast
           >
             {JSON.stringify(attribute, null, 2)}
@@ -166,7 +166,7 @@ function CopyAttributeNameControl({ attributeName }) {
   return (
     <>
       <TooltipRef tooltipAttr={tooltipAttr}>
-        <button onClick={initiateCopy}>
+        <button onClick={initiateCopy} className="cursor-pointer">
           {isCopied ? (
             <CheckCircleIcon className="h-3 w-3" />
           ) : (
@@ -206,7 +206,7 @@ function Dependency({
         <button
           id={dependencyControlId}
           onClick={(e) => setJsonDetailOpen(dependencyId, e.altKey)}
-          className="flex items-center text-sm font-bold text-schema-prop"
+          className="text-schema-prop flex items-center text-sm font-bold"
           aria-label={`${dependencyId} dependency`}
           aria-expanded={isJsonDetailOpen}
           aria-controls={dependencyPanelId}
@@ -216,11 +216,11 @@ function Dependency({
           ) : (
             <PlusIcon className="mr-1 h-4 w-4" />
           )}
-          <div className="break-all text-left">{dependencyId}</div>
+          <div className="text-left break-all">{dependencyId}</div>
         </button>
         <CopyAttributeNameControl attributeName={dependencyId} />
       </div>
-      <div className="ml-5 text-sm text-schema-prop-description">
+      <div className="text-schema-prop-description ml-5 text-sm">
         {dependency.comment}
       </div>
       <SchemaJsonPanel
@@ -446,7 +446,7 @@ function SchemaProperty({
         <button
           id={propertyControlId}
           onClick={(e) => setJsonDetailOpen(propertyId, e.altKey)}
-          className="flex items-center text-sm font-bold text-schema-prop"
+          className="text-schema-prop flex cursor-pointer items-center text-sm font-bold"
           aria-label={`${propertyId} property${
             isHighlighted ? " (highlighted)" : ""
           }`}
@@ -459,7 +459,7 @@ function SchemaProperty({
             <PlusIcon className="mr-1 h-4 w-4" />
           )}
           <div
-            className={`scroll-mt-40 break-all text-left @2xl:scroll-mt-32 ${
+            className={`scroll-mt-40 text-left break-all @2xl:scroll-mt-32 ${
               isHighlighted ? "bg-schema-name-highlight" : ""
             }`}
           >
@@ -473,7 +473,7 @@ function SchemaProperty({
         </div>
       </div>
       {property.description && (
-        <div className="ml-5 text-sm text-schema-prop-description">
+        <div className="text-schema-prop-description ml-5 text-sm">
           {property.description}
         </div>
       )}
@@ -567,7 +567,7 @@ function SchemaProperties({
 
   return (
     <>
-      <section className="sticky top-[37px] z-10 border-b border-panel bg-schema-search px-4 py-2">
+      <section className="border-panel bg-schema-search sticky top-[37px] z-10 border-b px-4 py-2">
         <FormLabel>Search Schema Properties</FormLabel>
         <div className="mb-4">
           <SchemaSearchField
@@ -761,7 +761,7 @@ function SchemaTab({ id, tabTitle, tabUrl = "", children }) {
       <TooltipRef tooltipAttr={tooltipAttr}>
         <button
           onClick={initiateCopy}
-          className="absolute bottom-0 right-1 top-0 my-auto"
+          className="absolute top-0 right-1 bottom-0 my-auto"
         >
           {isCopied ? (
             <CheckCircleIcon className="h-3 w-3" />

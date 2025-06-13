@@ -190,7 +190,7 @@ function Option({
   children,
 }) {
   const selectedButtonStyle = selected ? "bg-slate-200 dark:bg-slate-800" : "";
-  const roundedCheckStyle = isMultiple ? "rounded-sm" : "rounded-full";
+  const roundedCheckStyle = isMultiple ? "rounded-xs" : "rounded-full";
   const selectedCheckStyle = selected
     ? "bg-slate-500"
     : "border border-form-element";
@@ -199,7 +199,7 @@ function Option({
     <button
       id={id}
       onClick={() => onClick(id)}
-      className={`my-0.5 flex w-full items-center rounded p-1 px-2 ${selectedButtonStyle}`}
+      className={`my-0.5 flex w-full items-center rounded-sm p-1 px-2 ${selectedButtonStyle}`}
       aria-label={`${parentLabel ? `${parentLabel} ` : ""}${label}${
         selected ? " selected" : ""
       } list item`}

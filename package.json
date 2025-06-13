@@ -59,6 +59,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.25.1",
+    "@tailwindcss/postcss": "^4.1.8",
     "@tailwindcss/typography": "^0.5.4",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
@@ -67,7 +68,6 @@
     "@types/jest": "^29.5.3",
     "@types/lodash": "^4.14.195",
     "auth0-js": "^9.19.0",
-    "autoprefixer": "^10.4.7",
     "coveralls": "^3.1.1",
     "cypress": "^13.3.3",
     "eslint": "^9.25.1",
@@ -80,8 +80,8 @@
     "jest-environment-jsdom": "^29.0.2",
     "postcss": "^8.4.14",
     "prettier": "^3.0.0",
-    "prettier-plugin-tailwindcss": "^0.6.5",
+    "prettier-plugin-tailwindcss": "^0.6.12",
     "pretty-format": "^29.5.0",
-    "tailwindcss": "^3.4.10"
+    "tailwindcss": "^4.1.8"
   }
 }

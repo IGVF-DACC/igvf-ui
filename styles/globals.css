@@ -1,16 +1,19 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@config '../tailwind.config.ts';
 
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
 @layer base {
   html,
   body {
     height: 100vh;
-  }
-
-  a {
-    color: inherit;
-    text-decoration: none;
   }
 
   * {
@@ -28,47 +31,50 @@
     background-color: var(--color-tooltip-code-background);
     color: var(--color-tooltip-code-text);
   }
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  a {
+    @apply underline;
+  }
 }
 
-@layer components {
-  .form-element-height-sm {
-    min-height: 1.25rem;
-  }
+@utility form-element-height-sm {
+  min-height: 1.25rem;
+}
 
-  .form-element-height-md {
-    min-height: 1.75rem;
-  }
+@utility form-element-height-md {
+  min-height: 1.75rem;
+}
 
-  .form-element-height-lg {
-    min-height: 2.5rem;
-  }
+@utility form-element-height-lg {
+  min-height: 2.5rem;
 }
 
 /** Colors to represent different fileset types */
-@layer utilities {
-  .fore-fileset-type-analysis {
-    @apply fill-sky-600;
-  }
-
-  .fore-fileset-type-prediction {
-    @apply fill-teal-600;
-  }
-
-  .fore-fileset-type-measurement {
-    @apply fill-yellow-600;
-  }
-
-  .back-fileset-type-analysis {
-    @apply border-sky-600 bg-sky-100 hover:bg-sky-200 dark:bg-sky-900 dark:hover:bg-sky-800;
-  }
-
-  .back-fileset-type-prediction {
-    @apply border-teal-600 bg-teal-200 hover:bg-teal-300 dark:bg-teal-900 dark:hover:bg-teal-800;
-  }
-
-  .back-fileset-type-measurement {
-    @apply border-yellow-600 bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900 dark:hover:bg-yellow-800;
-  }
+@utility fore-fileset-type-analysis {
+  @apply fill-sky-600;
+}
+@utility fore-fileset-type-prediction {
+  @apply fill-teal-600;
+}
+@utility fore-fileset-type-measurement {
+  @apply fill-yellow-600;
+}
+@utility back-fileset-type-analysis {
+  @apply border-sky-600 bg-sky-100 hover:bg-sky-200 dark:bg-sky-900 dark:hover:bg-sky-800;
+}
+@utility back-fileset-type-prediction {
+  @apply border-teal-600 bg-teal-200 hover:bg-teal-300 dark:bg-teal-900 dark:hover:bg-teal-800;
+}
+@utility back-fileset-type-measurement {
+  @apply border-yellow-600 bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900 dark:hover:bg-yellow-800;
 }
 
 :root {
@@ -585,10 +591,6 @@
   --color-computational-tools-category-unknown: #606060;
 }
 
-a {
-  @apply underline;
-}
-
 /**
  * #page-content styles apply to the markdown content of Page objects.
  */
@@ -819,4 +821,9 @@ a {
 .dark .rdrStartEdge,
 .dark .rdrEndEdge {
   background-color: #7c6c4e;
+}
+
+/** Mask the right end of the term count "LEDs" to fade out */
+.facet-term-count-mask {
+  @apply [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)] [--webkit-mask-image:linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)];
 }

@@ -174,7 +174,7 @@ export function Dropdown({ dropdownAttr, className = null, children }) {
             data-testid={dropdownAttr.id}
             aria-labelledby={`${dropdownAttr.id}-ref`}
             className={
-              className || "rounded border border-panel bg-panel shadow-lg"
+              className || "rounded-sm border border-panel bg-panel shadow-lg"
             }
             ref={dropdownAttr.dropdownEl}
             style={dropdownAttr.styles}

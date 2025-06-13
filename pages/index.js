@@ -98,7 +98,7 @@ PredictionsIcon.propTypes = {
 function Statistic({ graphic, label, value, query, colorClass }) {
   return (
     <div
-      className={`my-4 grow basis-1/3 rounded border @xl/home:my-0 ${colorClass}`}
+      className={`my-4 grow basis-1/3 rounded-sm border @xl/home:my-0 ${colorClass}`}
     >
       <Link
         href={`/search/?${query}`}

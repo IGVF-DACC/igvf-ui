@@ -83,7 +83,13 @@ CopyButton.propTypes = {
  * Supply a function as the child of this button that takes an argument that gets set to true for
  * two seconds after the user clicks the copy button.
  */
-function Icon({ target, label, size = "md", className = "", children }) {
+function Icon({
+  target,
+  label,
+  size = "md",
+  className = "cursor-pointer",
+  children,
+}) {
   const { isCopied, initiateCopy } = useCopyAction(target);
 
   return (

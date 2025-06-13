@@ -14,7 +14,7 @@ export function CheckfilesVersion({ file }: { file: FileObject }) {
     return (
       <a
         href={`https://github.com/IGVF-DACC/checkfiles/releases/tag/${file.checkfiles_version}`}
-        className={`${className} rounded-sm no-underline`}
+        className={`${className} rounded-xs no-underline`}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -34,7 +34,7 @@ export function CheckfilesVersion({ file }: { file: FileObject }) {
     return (
       <a
         href="https://github.com/IGVF-DACC/checkfiles/tags"
-        className={`${className} rounded-sm no-underline`}
+        className={`${className} rounded-xs no-underline`}
         target="_blank"
         rel="noopener noreferrer"
       >

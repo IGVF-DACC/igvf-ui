@@ -20,7 +20,7 @@ function ScrollIndicator({ className = "", children }) {
           props: {
             ...child.props,
             className:
-              "h-8 w-8 text-white rounded-full bg-brand opacity-70 hover:opacity-100 focus:opacity-100 focus:outline-none",
+              "h-8 w-8 text-white rounded-full bg-brand opacity-70 hover:opacity-100 focus:opacity-100 focus:outline-hidden",
           },
         }
       : child;

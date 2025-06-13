@@ -242,7 +242,7 @@ export function AttachedButtons({ testid = null, className = "", children }) {
       return React.cloneElement(child, {
         className: `${
           child.props.className || ""
-        } border-r-0 last:border-r rounded-none first:rounded-l last:rounded-r`,
+        } border-r-0 last:border-r !rounded-none first:!rounded-l-sm last:!rounded-r-sm`,
       });
     }
     return child;

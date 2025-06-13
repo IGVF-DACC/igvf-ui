@@ -50,7 +50,7 @@ function NavExpandIcon({ className = null, testid = "icon-nav-expand" }) {
       stroke="currentColor"
       data-testid={testid}
     >
-      <g className="fill-none stroke-nav-collapse stroke-1">
+      <g className="stroke-nav-collapse fill-none stroke-1">
         <path
           d="M13.1,15.5H6.9c-1.3,0-2.4-1.1-2.4-2.4V6.9c0-1.3,1.1-2.4,2.4-2.4h6.2c1.3,0,2.4,1.1,2.4,2.4v6.2
 	C15.5,14.4,14.4,15.5,13.1,15.5z"
@@ -81,7 +81,7 @@ function NavCollapseIcon({ className = null, testid = "icon-nav-collapse" }) {
       stroke="currentColor"
       data-testid={testid}
     >
-      <g className="fill-none stroke-nav-collapse stroke-1">
+      <g className="stroke-nav-collapse fill-none stroke-1">
         <path
           d="M13.1,15.5H6.9c-1.3,0-2.4-1.1-2.4-2.4V6.9c0-1.3,1.1-2.4,2.4-2.4h6.2c1.3,0,2.4,1.1,2.4,2.4v6.2
 	C15.5,14.4,14.4,15.5,13.1,15.5z"
@@ -167,7 +167,7 @@ function navigationClasses(isNarrowNav, isChildItem) {
   const childClasses = isChildItem
     ? "text-sm font-normal"
     : "text-base font-medium";
-  return `flex w-full items-center rounded-full border border-transparent px-2 py-1 text-left text-white no-underline hover:bg-nav-highlight disabled:text-gray-500 md:text-black md:hover:border md:hover:border-nav-border md:hover:bg-nav-highlight md:dark:text-gray-200 ${childClasses}`;
+  return `cursor-pointer flex w-full items-center rounded-full border border-transparent px-2 py-1 text-left text-white no-underline hover:bg-nav-highlight disabled:text-gray-500 md:text-black md:hover:border md:hover:border-nav-border md:hover:bg-nav-highlight md:dark:text-gray-200 ${childClasses}`;
 }
 
 /**
@@ -857,7 +857,7 @@ function NavigationCollapsed({ navigationClick, toggleNavCollapsed }) {
   const { isAuthenticated } = useAuth0();
 
   return (
-    <NavigationList className="w-full [&>ul>li]:my-2 [&>ul]:flex [&>ul]:flex-col [&>ul]:items-center">
+    <NavigationList className="w-full [&>ul]:flex [&>ul]:flex-col [&>ul]:items-center [&>ul>li]:my-2">
       <NavigationCollapseItem
         toggleNavCollapsed={toggleNavCollapsed}
         isNavCollapsed

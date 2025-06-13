@@ -20,7 +20,7 @@ import {
  * Displays the buttons to hide or show all columns at once.
  */
 function ChangeAllControls({ onChangeAll }) {
-  const className = "flex-grow md:flex-grow-0";
+  const className = "grow md:grow-0";
   return (
     <div className="flex gap-1">
       <Button className={className} onClick={() => onChangeAll(true)}>
@@ -145,7 +145,7 @@ ColumnCheckboxes.propTypes = {
 function Note({ className = "", children }) {
   return (
     <div
-      className={`text-center text-sm text-gray-500 dark:text-gray-300 md:flex-grow md:text-left ${className}`}
+      className={`text-center text-sm text-gray-500 dark:text-gray-300 md:grow md:text-left ${className}`}
     >
       {children}
     </div>

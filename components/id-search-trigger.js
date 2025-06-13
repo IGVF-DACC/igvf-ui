@@ -103,7 +103,7 @@ export default function IdSearchTrigger() {
         <div>
           <button
             onClick={onTriggerClick}
-            className="grow-0 rounded"
+            className="grow-0 rounded-sm"
             data-testid="id-search-trigger"
             title={`Go to an item${UC.rsquo}s page from its identifier (${UC.cmd}${UC.shift}K or ${UC.ctrl}${UC.shift}K)`}
           >

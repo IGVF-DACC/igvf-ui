@@ -15,7 +15,7 @@ describe("Test dropdown components", () => {
         <div>
           <div>
             <DropdownRef dropdownAttr={dropdownAttr}>
-              <button className="h-6 rounded border border-button-primary bg-button-primary px-2 text-xs text-button-primary">
+              <button className="h-6 rounded-sm border border-button-primary bg-button-primary px-2 text-xs text-button-primary">
                 Selector
               </button>
             </DropdownRef>
@@ -112,7 +112,7 @@ describe("Test error conditions in the dropdown components", () => {
         <div>
           <div>
             <DropdownRef dropdownAttr={dropdownAttr}>
-              <button className="h-6 rounded border border-button-primary bg-button-primary px-2 text-xs text-button-primary">
+              <button className="h-6 rounded-sm border border-button-primary bg-button-primary px-2 text-xs text-button-primary">
                 Selector
               </button>
             </DropdownRef>

@@ -2,19 +2,21 @@ import type { Config } from "tailwindcss";
 
 const tailwindConfig: Config = {
   darkMode: "class",
-  content: [
-    "./pages/**/*.{js,ts,tsx}",
-    "./components/**/*.{js,ts,tsx}",
-    "./lib/**/*.{js,ts,tsx}",
-  ],
-  safelist: [
-    "fore-fileset-type-analysis",
-    "back-fileset-type-analysis",
-    "fore-fileset-type-prediction",
-    "back-fileset-type-prediction",
-    "fore-fileset-type-measurement",
-    "back-fileset-type-measurement",
-  ],
+  content: {
+    files: [
+      "./pages/**/*.{js,ts,tsx}",
+      "./components/**/*.{js,ts,tsx}",
+      "./lib/**/*.{js,ts,tsx}",
+    ],
+    safelist: [
+      "fore-fileset-type-analysis",
+      "back-fileset-type-analysis",
+      "fore-fileset-type-prediction",
+      "back-fileset-type-prediction",
+      "fore-fileset-type-measurement",
+      "back-fileset-type-measurement",
+    ],
+  },
   variants: {
     extend: {
       width: ["only"],
@@ -523,43 +525,6 @@ const tailwindConfig: Config = {
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/container-queries"),
-
-    function ({ addVariant }) {
-      addVariant("only-child", "&:only-child");
-    },
-
-    // Add .break-anywhere class until this gets built into Tailwind CSS. A PR exists for this but
-    // it hasn't been merged yet:
-    // https://github.com/tailwindlabs/tailwindcss/pull/12128
-    function ({ addUtilities }) {
-      const newUtilities = {
-        ".break-anywhere": {
-          "@supports (overflow-wrap: anywhere)": {
-            "overflow-wrap": "anywhere",
-          },
-          "@supports not (overflow-wrap: anywhere)": {
-            "word-break": "break-word",
-          },
-        },
-      };
-      addUtilities(newUtilities);
-    },
-
-    // Mask to fade the facet term count indicators on the right edge.
-    function ({ addUtilities }) {
-      addUtilities({
-        ".facet-term-count-mask": {
-          maskImage:
-            "linear-gradient(to right, rgba(0, 0, 0, 1) calc(100% - 30px), rgba(0, 0, 0, 0) 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to right, rgba(0, 0, 0, 1) calc(100% - 30px), rgba(0, 0, 0, 0) 100%)",
-        },
-      });
-    },
-  ],
-};
+} as unknown as Config;
 
 export default tailwindConfig;

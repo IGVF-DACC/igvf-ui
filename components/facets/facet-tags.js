@@ -46,7 +46,7 @@ function FacetTag({ filter, facets }) {
   return (
     <Link
       href={filter.remove}
-      className={`flex items-center rounded border py-0.5 pl-1 pr-0 text-facet-tag no-underline ${tagClassName}`}
+      className={`flex items-center rounded-sm border py-0.5 pl-1 pr-0 text-facet-tag no-underline ${tagClassName}`}
       aria-label={`Clear ${title} filter for ${filter.term}`}
       key={filter.field}
     >

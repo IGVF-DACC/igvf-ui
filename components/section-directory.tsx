@@ -246,7 +246,7 @@ export function SecDir({ sections }: { sections: SectionList }) {
           <>
             <TooltipRef tooltipAttr={tooltipAttr}>
               <MenuButton
-                className="flex justify-center rounded-t-sm bg-menu-trigger p-1 data-[hover]:bg-menu-trigger-hover data-[open]:bg-menu-trigger-open"
+                className="bg-menu-trigger data-hover:bg-menu-trigger-hover data-open:bg-menu-trigger-open flex cursor-pointer justify-center rounded-t-sm p-1"
                 aria-label="Open section directory menu"
                 aria-expanded={open}
                 onPointerEnter={onPointerEnter}
@@ -257,7 +257,7 @@ export function SecDir({ sections }: { sections: SectionList }) {
             </TooltipRef>
             <MenuItems
               anchor="bottom end"
-              className="z-20 rounded-b-lg border border-menu-items bg-menu-items shadow-lg"
+              className="border-menu-items bg-menu-items z-20 rounded-b-lg border shadow-lg"
               onPointerEnter={onPointerEnter}
               onPointerLeave={() => onPointerLeave(close)}
             >
@@ -266,7 +266,7 @@ export function SecDir({ sections }: { sections: SectionList }) {
                   <a
                     href={`#${section.id}`}
                     onClick={(e) => onItemClick(e, close)}
-                    className="block px-4 py-0.5 text-sm font-medium text-menu-item no-underline hover:bg-menu-item-hover hover:text-menu-item-hover data-[focus]:bg-menu-item-hover data-[focus]:text-menu-item-hover"
+                    className="text-menu-item hover:bg-menu-item-hover hover:text-menu-item-hover data-focus:bg-menu-item-hover data-focus:text-menu-item-hover block px-4 py-0.5 text-sm font-medium no-underline"
                   >
                     {ItemRenderer ? (
                       <ItemRenderer
