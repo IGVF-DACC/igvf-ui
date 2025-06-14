@@ -128,6 +128,7 @@ export async function requestFiles(
         "lane",
         "quality_metrics",
         "read_names",
+        "reference_files",
         "seqspecs",
         "seqspec_document",
         "sequencing_platform",

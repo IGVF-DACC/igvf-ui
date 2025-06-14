@@ -253,6 +253,7 @@ function QCMetricTrigger({
 function Graph({
   fileSet,
   nativeFiles,
+  referenceFiles,
   qualityMetrics = [],
   graphData,
   onReady = () => {},
@@ -260,6 +261,7 @@ function Graph({
 }: {
   fileSet: FileSetObject;
   nativeFiles: FileObject[];
+  referenceFiles: FileObject[];
   qualityMetrics?: QualityMetricObject[];
   graphData: NodeData[];
   onReady?: (svg: SVGSVGElement) => void;
@@ -538,7 +540,11 @@ function Graph({
         </Group>
       </svg>
       {selectedNode && isFileNodeData(selectedNode) && (
-        <FileModal node={selectedNode} onClose={() => setSelectedNode(null)} />
+        <FileModal
+          node={selectedNode}
+          referenceFiles={referenceFiles}
+          onClose={() => setSelectedNode(null)}
+        />
       )}
       {selectedNode && isFileSetNodeData(selectedNode) && (
         <FileSetModal
@@ -622,10 +628,12 @@ async function saveSvg(
 function SaveSvgTrigger({
   fileSet,
   nativeFiles,
+  referenceFiles,
   trimmedData,
 }: {
   fileSet: FileSetObject;
   nativeFiles: FileObject[];
+  referenceFiles: FileObject[];
   trimmedData: NodeData[];
 }) {
   const tooltipAttr = useTooltip("graph-download");
@@ -645,6 +653,7 @@ function SaveSvgTrigger({
       <Graph
         fileSet={fileSet}
         nativeFiles={nativeFiles}
+        referenceFiles={referenceFiles}
         graphData={trimmedData}
         onReady={(svgElement) => {
           if (svgElement) {
@@ -701,6 +710,7 @@ export function FileGraph({
   fileSet,
   files,
   derivedFromFiles,
+  referenceFiles,
   fileFileSets,
   qualityMetrics,
   title = "File Association Graph",
@@ -708,6 +718,7 @@ export function FileGraph({
 }: {
   fileSet: DatabaseObject;
   files: DatabaseObject[];
+  referenceFiles: FileObject[];
   fileFileSets: DatabaseObject[];
   derivedFromFiles: DatabaseObject[];
   qualityMetrics: QualityMetricObject[];
@@ -733,6 +744,7 @@ export function FileGraph({
           <SaveSvgTrigger
             fileSet={fileSet as FileSetObject}
             nativeFiles={files as FileObject[]}
+            referenceFiles={referenceFiles}
             trimmedData={trimmedData}
           />
         </DataAreaTitle>
@@ -743,6 +755,7 @@ export function FileGraph({
                 <Graph
                   fileSet={fileSet as FileSetObject}
                   nativeFiles={files as FileObject[]}
+                  referenceFiles={referenceFiles}
                   qualityMetrics={qualityMetrics}
                   graphData={trimmedData}
                 />
