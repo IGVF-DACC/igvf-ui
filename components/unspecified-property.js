@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
@@ -25,10 +26,14 @@ JsonDisplay.propTypes = {
  * property gets displayed as a JSON string, truncated to 200 characters.
  */
 export default function UnspecifiedProperty({ properties }) {
+  const sortedProperties = _.sortBy(properties, (property) => {
+    return property.toLowerCase();
+  });
+
   return (
     <div>
       <SeparatedList>
-        {properties.map((property, index) => {
+        {sortedProperties.map((property, index) => {
           // If the string property starts and ends with curly braces, display it as a JSON string that breaks on any character
           if (property.match(/^\{.*\}$/)) {
             return <JsonDisplay key={index} property={property} />;
