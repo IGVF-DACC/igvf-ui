@@ -784,7 +784,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="github-issues"
-            href="https://github.com/orgs/IGVF/projects/1/views/2?filterQuery=front-end%3A%22Data+Portal%22&visibleFields=%5B%22Title%22%2C%22Assignees%22%2C%22Status%22%2C114383190%5D"
+            href="/github-project-board"
             navigationClick={navigationClick}
             isChildItem
             isExternal
