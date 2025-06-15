@@ -2501,45 +2501,6 @@ describe("Test PhenotypicFeature component", () => {
 });
 
 describe("Test the ModelSet component", () => {
-  it("renders a model-set item without a summary", () => {
-    const item = {
-      "@id": "/models/IGVFDS1234MODL/",
-      "@type": ["ModelSet", "FileSet", "Item"],
-      accession: "IGVFDS1234MODL",
-      alternate_accessions: ["IGVFDS1234MODM"],
-      aliases: ["igvf:xpresso"],
-      award: { "@id": "/awards/HG012012/", component: "data coordination" },
-      lab: {
-        "@id": "/labs/j-michael-cherry/",
-        title: "J. Michael Cherry, Stanford",
-      },
-      model_name: "Xpresso",
-      prediction_objects: ["genes", "coding variants"],
-      status: "released",
-      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <ModelSet item={item} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/ModelSet/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS1234MODL$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/Xpresso/);
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-    expect(meta).not.toHaveTextContent("IGVFDS1234MODL");
-
-    const status = screen.getByTestId("search-list-item-quality");
-    expect(status).toHaveTextContent("released");
-  });
-
   it("renders a model-set item with a summary", () => {
     const item = {
       "@id": "/models/IGVFDS1234MODL/",
@@ -2554,7 +2515,8 @@ describe("Test the ModelSet component", () => {
       },
       model_name: "Xpresso",
       prediction_objects: ["genes", "coding variants"],
-      summary: "IGVFDS1234MODL",
+      summary:
+        "Xpresso v1.0.0 variant binding effect for SRF predicting all variants",
       status: "released",
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
     };
@@ -2579,13 +2541,139 @@ describe("Test the ModelSet component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDS1234MODL$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/Xpresso/);
+    expect(title).toHaveTextContent(
+      /Xpresso v1.0.0 variant binding effect for SRF predicting all variants/
+    );
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+
+    const paths = ModelSet.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      {
+        type: "ModelSet",
+        paths: ["/models/IGVFDS1234MODL/"],
+        fields: ["externally_hosted"],
+      },
+    ]);
+  });
+
+  it("renders a model-set without accessoryData and without alternate_accessions", () => {
+    const item = {
+      "@id": "/models/IGVFDS5678MODL/",
+      "@type": ["ModelSet", "FileSet", "Item"],
+      accession: "IGVFDS5678MODL",
+      aliases: ["igvf:SEMpl"],
+      award: { "@id": "/awards/HG012012/", component: "data coordination" },
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      model_name: "SEMpl",
+      prediction_objects: ["genes", "coding variants"],
+      summary:
+        "SEMpl v1.0.0 variant binding effect for SRF predicting all variants",
+      status: "released",
+      uuid: "abcd1234-ef56-7890-gh12-ijkl34567890",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <ModelSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/ModelSet/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS5678MODL$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /SEMpl v1.0.0 variant binding effect for SRF predicting all variants/
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+
+    const quality = screen.getByTestId("search-list-item-quality");
+    expect(quality).not.toHaveTextContent("Externally Hosted");
+
+    expect(
+      screen.queryByTestId("search-list-item-supplement")
+    ).not.toBeInTheDocument();
+
+    const paths = ModelSet.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      {
+        type: "ModelSet",
+        paths: ["/models/IGVFDS5678MODL/"],
+        fields: ["externally_hosted"],
+      },
+    ]);
+  });
+
+  it("renders a model-set when externally_hosted is missing in accessoryData", () => {
+    const item = {
+      "@id": "/models/IGVFDS1234MODL/",
+      "@type": ["ModelSet", "FileSet", "Item"],
+      accession: "IGVFDS1234MODL",
+      aliases: ["igvf:SEMpl_2"],
+      alternate_accessions: [],
+      award: { "@id": "/awards/HG012012/", component: "data coordination" },
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      model_name: "SEMpl",
+      prediction_objects: ["transcripts"],
+      summary:
+        "SEMpl v1.0.0 variant binding effect for SRF predicting all variants",
+      status: "released",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <ModelSet
+          item={item}
+          accessoryData={{
+            "/models/IGVFDS1234MODL/": {
+              "@id": "/models/IGVFDS1234MODL/",
+              "@type": ["ModelSet", "FileSet", "Item"],
+              // no externally_hosted
+            },
+          }}
+        />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/ModelSet/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS1234MODL$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /SEMpl v1.0.0 variant binding effect for SRF predicting all variants/
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+
+    const quality = screen.getByTestId("search-list-item-quality");
+    expect(quality).not.toHaveTextContent("Externally Hosted");
+
+    expect(
+      screen.queryByTestId("search-list-item-supplement")
+    ).not.toBeInTheDocument();
 
     const paths = ModelSet.getAccessoryDataPaths([item]);
     expect(paths).toEqual([
@@ -2756,7 +2844,7 @@ describe("Test Prediction Set component with files but no alternate_accessions",
       status: "released",
       file_set_type: "functional effect",
       files: [{ content_type: "alignments" }, { content_type: "fragments" }],
-      summary: "IGVFDS8323PSET",
+      summary: "binding effect prediction for FOXM1 using SEMVAR v1.0.0",
       scope: "genes",
       samples: [
         {
@@ -2791,7 +2879,9 @@ describe("Test Prediction Set component with files but no alternate_accessions",
     expect(uniqueId).toHaveTextContent(/IGVFDS8323PSET/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent("functional effect prediction");
+    expect(title).toHaveTextContent(
+      "binding effect prediction for FOXM1 using SEMVAR v1.0.0"
+    );
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
@@ -2822,7 +2912,7 @@ describe("Test Prediction Set component with no files (zero length) but with alt
       files: [],
       status: "released",
       file_set_type: "functional effect",
-      summary: "IGVFDS8323PSEU",
+      summary: "binding effect prediction for NFIA using SEMVAR v1.0.0",
       scope: "genes",
       samples: [
         {
@@ -2857,7 +2947,9 @@ describe("Test Prediction Set component with no files (zero length) but with alt
     expect(uniqueId).toHaveTextContent(/IGVFDS8323PSEU/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent("functional effect prediction");
+    expect(title).toHaveTextContent(
+      "binding effect prediction for NFIA using SEMVAR v1.0.0"
+    );
 
     const supplement = screen.getByTestId("search-list-item-supplement");
     expect(supplement).toHaveTextContent("Alternate Accessions");
@@ -2890,7 +2982,7 @@ describe("Test Prediction Set component with no files at all but with alternate_
       },
       status: "released",
       file_set_type: "functional effect",
-      summary: "IGVFDS8323PSEU",
+      summary: "binding effect prediction for TAL1, TCF4 using SEMVAR v1.0.0",
       scope: "genes",
       samples: [
         {
@@ -2925,7 +3017,9 @@ describe("Test Prediction Set component with no files at all but with alternate_
     expect(uniqueId).toHaveTextContent(/IGVFDS8323PSEU/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent("functional effect prediction");
+    expect(title).toHaveTextContent(
+      "binding effect prediction for TAL1, TCF4 using SEMVAR v1.0.0"
+    );
 
     const supplement = screen.getByTestId("search-list-item-supplement");
     expect(supplement).toHaveTextContent("Alternate Accessions");

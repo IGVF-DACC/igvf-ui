@@ -38,9 +38,7 @@ export default function PredictionSet({ item: predictionSet }) {
           <SearchListItemType item={predictionSet} />
           {predictionSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>
-          {predictionSet.file_set_type} prediction
-        </SearchListItemTitle>
+        <SearchListItemTitle>{predictionSet.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <span key="lab">{predictionSet.lab.title}</span>
           {predictionSet.scope && (
