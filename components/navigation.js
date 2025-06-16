@@ -771,6 +771,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             href="https://igvf.org/affiliate-membership/"
             navigationClick={navigationClick}
             isChildItem
+            isExternal
           >
             Affiliate Membership
           </NavigationHrefItem>
