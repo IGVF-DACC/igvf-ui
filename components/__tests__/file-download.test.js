@@ -163,6 +163,9 @@ describe("Test FileAccessionAndDownload component", () => {
 
     render(<FileAccessionAndDownload file={file} />);
 
+    const outerDiv = screen.getByTestId("file-accession-and-download");
+    expect(outerDiv).toHaveClass("flex items-center gap-1");
+
     const accessionLinks = screen.getAllByRole("link");
     expect(accessionLinks[0]).toHaveAttribute(
       "href",
@@ -177,6 +180,27 @@ describe("Test FileAccessionAndDownload component", () => {
       "href",
       "/reference-files/IGVFFI0001SQBR/@@download/IGVFFI0001SQBR.txt.gz"
     );
+  });
+
+  it("renders the file access and download link as an inline flex", () => {
+    const file = {
+      "@id": "/reference-files/IGVFFI0001SQBR/",
+      "@type": ["ReferenceFile", "File", "Item"],
+      accession: "IGVFFI0001SQBR",
+      file_format: "txt",
+      href: "/reference-files/IGVFFI0001SQBR/@@download/IGVFFI0001SQBR.txt.gz",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      upload_status: "validated",
+    };
+
+    render(<FileAccessionAndDownload file={file} isInline />);
+
+    const outerDiv = screen.getByTestId("file-accession-and-download");
+    expect(outerDiv).toHaveClass("inline-flex items-center gap-1");
   });
 });
 
