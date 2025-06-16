@@ -360,7 +360,7 @@ function Graph({
   }
 
   return loadedDag ? (
-    <div className="overflow-x-auto">
+    <div className="max-h-[calc(100vh-8rem)] overflow-y-auto">
       <svg
         className="mx-auto"
         width={layoutWidth}
@@ -748,7 +748,7 @@ export function FileGraph({
             trimmedData={trimmedData}
           />
         </DataAreaTitle>
-        <div className="overflow-hidden [&>div]:p-0">
+        <div className="[&>div]:p-0">
           <DataPanel>
             {!isGraphTooLarge ? (
               <>
