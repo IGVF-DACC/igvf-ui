@@ -33,7 +33,6 @@ import {
   isFileNodeData,
   isFileSetNodeData,
   MAX_NODES_TO_DISPLAY,
-  type FileSetStats,
   type FileSetTypeColorMapSpec,
   type NodeData,
 } from "./types";
@@ -229,7 +228,7 @@ function QCMetricTrigger({
           y={NODE_HEIGHT / 2 - QUALITY_METRIC_DIMENSIONS.height + 10}
           fontSize={10}
           textAnchor="middle"
-          className="pointer-events-none fill-file-graph-qc-trigger-text"
+          className="fill-file-graph-qc-trigger-text pointer-events-none"
           fill="black"
           fontWeight="bold"
         >
@@ -722,9 +721,7 @@ export function FileGraph({
   );
   const trimmedData = trimIsolatedNodes(data);
   const isGraphTooLarge = trimmedData.length > MAX_NODES_TO_DISPLAY;
-  const relevantFileSetTypes = !isGraphTooLarge
-    ? collectRelevantFileSetStats(trimmedData)
-    : ({} as FileSetStats);
+  const relevantFileSetTypes = collectRelevantFileSetStats(trimmedData);
 
   if (trimmedData.length > 0) {
     return (
@@ -747,13 +744,13 @@ export function FileGraph({
                   qualityMetrics={qualityMetrics}
                   graphData={trimmedData}
                 />
-                <Legend stats={relevantFileSetTypes} />
               </>
             ) : (
               <div className="p-4 text-center italic">
                 Graph too large to display
               </div>
             )}
+            <Legend stats={relevantFileSetTypes} />
           </DataPanel>
         </div>
       </section>
