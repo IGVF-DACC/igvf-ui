@@ -29,7 +29,7 @@ export default function ModelSet({ item: modelSet, accessoryData = null }) {
           <SearchListItemType item={modelSet} />
           {modelSet.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{modelSet.model_name}</SearchListItemTitle>
+        <SearchListItemTitle>{modelSet.summary}</SearchListItemTitle>
         <SearchListItemMeta>
           <span key="lab">{modelSet.lab.title}</span>
         </SearchListItemMeta>
