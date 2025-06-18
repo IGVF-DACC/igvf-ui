@@ -45,4 +45,10 @@ describe("Test UnspecifiedProperty component", () => {
     render(<UnspecifiedProperty properties={properties} />);
     expect(screen.getByRole("link")).toHaveTextContent("http://example.com");
   });
+
+  it("renders an embedded object with no @id as JSON", () => {
+    const properties = [JSON.stringify({ name: "example" })];
+    render(<UnspecifiedProperty properties={properties} />);
+    expect(screen.getByText('{"name":"example"}')).toBeInTheDocument();
+  });
 });

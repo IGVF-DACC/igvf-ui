@@ -1,5 +1,6 @@
 // node_modules
 import _ from "lodash";
+import { ComponentType } from "react";
 // lib
 import QueryString from "./query-string";
 import { splitPathAndQueryString } from "./query-utils";
@@ -76,6 +77,8 @@ export interface ColumnSpec {
   id: string;
   // Column title, which is the human-readable name of the column; e.g. "ID"
   title: string;
+  // React component to render the column's cells; used for custom cell rendering
+  display?: ComponentType;
 }
 
 /**
@@ -364,15 +367,15 @@ export function mergeColumnSpecs(
 /**
  * Get the property specified by a field from the item a row of the report displays and return a
  * string from that. This includes dotted-notation properties and can descend arrays of properties.
- * @param {DatabaseObject} item Item displayed on a row of the report
  * @param {string} propertyName Dotted-notation property name in `item` to get the value of
+ * @param {DatabaseObject} item Item displayed on a row of the report
  * @returns {string[]} Values of the extracted property in `item`
  */
 export function getUnknownProperty(
   propertyName: string,
   item: DatabaseObject
-): string[] {
-  let output: string[] = [];
+): unknown[] {
+  let output: unknown[] = [];
   let nodes = [item];
   const nameElements = propertyName.split(".");
 
@@ -392,18 +395,16 @@ export function getUnknownProperty(
 
   if (nodes.length > 0) {
     if (nodes[0]["@id"]) {
-      // The property is an array of objects with an `@id` property, display that.
+      // The property is an array of objects with an `@id` property; return the `@id` paths.
       output = nodes.map((node) => node["@id"]);
     } else {
       // The property is a simple value, so display that value; or an object without @ids, so
       // display the JSON representation of the object.
-      output = nodes.map((item) =>
-        typeof item === "object" ? JSON.stringify(item) : String(item)
-      );
+      output = nodes;
     }
   }
 
-  return [...new Set(output)];
+  return output;
 }
 
 /**

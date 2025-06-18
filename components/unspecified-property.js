@@ -5,12 +5,14 @@ import { Fragment } from "react";
 // components
 import Link from "./link-no-prefetch";
 import SeparatedList from "./separated-list";
+// lib
+import { isValidPath, isValidUrl } from "../lib/general";
 
 /**
  * Display a property of an item as a JSON string.
  */
 function JsonDisplay({ property }) {
-  return <div className="break-all font-mono text-sm">{property}</div>;
+  return <div className="font-mono text-sm break-all">{property}</div>;
 }
 
 JsonDisplay.propTypes = {
@@ -40,7 +42,7 @@ export default function UnspecifiedProperty({ properties }) {
           }
 
           // If the property looks like a URL, display it as an external link
-          if (property.match(/^https?:\/\//)) {
+          if (isValidUrl(property)) {
             return (
               <a
                 key={index}
@@ -55,7 +57,7 @@ export default function UnspecifiedProperty({ properties }) {
           }
 
           // If the property looks like path, display it as an internal link
-          if (property.match(/^\//)) {
+          if (isValidPath(property)) {
             return (
               <Link key={index} href={property} className="break-all">
                 {property}

@@ -256,7 +256,7 @@ describe("Test cell renderers in search results", () => {
       );
 
       // Check boolean properties render as "true" or "false".
-      expect(cells[COLUMN_VIRTUAL]).toHaveTextContent("true");
+      expect(cells[COLUMN_VIRTUAL]).toHaveTextContent("yes");
     });
   });
 });
@@ -996,9 +996,7 @@ describe("Page cell-rendering tests", () => {
     expect(parentLink).toHaveAttribute("href", "/help");
 
     // Layout should show truncated JSON.
-    const unknown = within(cells[COLUMN_LAYOUT]).getByTestId(
-      "cell-type-unknown-object"
-    );
+    const unknown = within(cells[COLUMN_LAYOUT]).getByTestId("cell-type-json");
     expect(unknown).toHaveTextContent(
       '{"blocks":[{"@id":"#block1","body":"# Donor Help This is some help text about donors.","@type":"markdown","direction":"ltr"}]}'
     );
@@ -2072,6 +2070,75 @@ describe("`files.href` cell rendering tests", () => {
   });
 });
 
+describe("File href cell rendering tests", () => {
+  it("renders the file href columns", () => {
+    const COLUMN_FILES_HREF = 1;
+    const searchResults = {
+      "@id": "/multireport/?type=File&field=%40id&field=href",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/alignment-files/IGVFFI0000ALGN/",
+          "@type": ["AlignmentFile", "File", "Item"],
+          href: "/alignment-files/IGVFFI0000ALGN/@@download/IGVFFI0000ALGN.bam",
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        href: {
+          title: "File Href",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          remove: "/multireport/?field=%40id&field=href",
+          term: "File",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      [],
+      profiles.Document.properties
+    );
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+
+    const cells = screen.getAllByRole("cell");
+    const filesHref = cells[COLUMN_FILES_HREF];
+    expect(filesHref).toHaveTextContent(
+      "/alignment-files/IGVFFI0000ALGN/@@download/IGVFFI0000ALGN.bam"
+    );
+  });
+});
+
 describe("file_size cell rendering tests", () => {
   it("renders the file_size columns", () => {
     const COLUMN_FILES_FILE_SIZE = 1;
@@ -2295,5 +2362,153 @@ describe("audit category and detail cell rendering tests", () => {
     const cells = screen.getAllByRole("cell");
     const auditCell = cells[COLUMN_AUDIT];
     expect(auditCell).toHaveTextContent("");
+  });
+});
+
+describe("Test HumanDonor `related_donors` cell rendering", () => {
+  it("renders the related_donors columns", () => {
+    const COLUMN_RELATED_DONORS = 1;
+
+    const searchResults = {
+      "@id": "/multireport?type=HumanDonor&field=%40id&field=related_donors",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO1080XFGV/",
+          "@type": ["HumanDonor", "Item"],
+          related_donors: [
+            {
+              donor: {
+                accession: "IGVFDO3983KFST",
+                "@id": "/human-donors/IGVFDO3983KFST/",
+              },
+              relationship_type: "aunt",
+            },
+            {
+              donor: {
+                accession: "IGVFDO8802DONO",
+                "@id": "/human-donors/IGVFDO8802DONO/",
+              },
+              relationship_type: "sibling",
+            },
+          ],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        related_donors: {
+          title: "Related Donors",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/multireport/?field=%40id&field=related_donors",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      [],
+      profiles.HumanDonor.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Test that the related_donors field has the correct contents.
+    expect(cells[COLUMN_RELATED_DONORS]).toHaveTextContent(
+      "IGVFDO3983KFST (aunt), IGVFDO8802DONO (sibling)"
+    );
+  });
+
+  it("renders an empty related_donors column when the data doesn't exist", () => {
+    const COLUMN_RELATED_DONORS = 1;
+
+    const searchResults = {
+      "@id": "/multireport?type=HumanDonor&field=%40id&field=related_donors",
+      "@type": ["Report"],
+      "@graph": [
+        {
+          "@id": "/human-donors/IGVFDO1080XFGV/",
+          "@type": ["HumanDonor", "Item"],
+        },
+      ],
+      result_columns: {
+        "@id": {
+          title: "ID",
+        },
+        related_donors: {
+          title: "Related Donors",
+        },
+      },
+      filters: [
+        {
+          field: "type",
+          term: "HumanDonor",
+          remove: "/multireport/?field=%40id&field=related_donors",
+        },
+      ],
+    };
+
+    const onHeaderCellClick = jest.fn();
+    const sortedColumnId = getSortColumn(searchResults);
+    const selectedTypes = getSelectedTypes(searchResults);
+    const visibleColumnSpecs = columnsToColumnSpecs(
+      searchResults.result_columns
+    );
+    const columns = generateColumns(
+      selectedTypes,
+      visibleColumnSpecs,
+      [],
+      profiles.HumanDonor.properties
+    );
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <DataGridContainer>
+          <SortableGrid
+            data={searchResults["@graph"]}
+            columns={columns}
+            initialSort={{ isSortingSuppressed: true }}
+            meta={{
+              onHeaderCellClick,
+              sortedColumnId,
+              nonSortableColumnIds: searchResults.non_sortable || [],
+            }}
+            CustomHeaderCell={ReportHeaderCell}
+          />
+        </DataGridContainer>
+      </SessionContext.Provider>
+    );
+    const cells = screen.getAllByRole("cell");
+
+    // Make sure the cell is empty.
+    expect(cells[COLUMN_RELATED_DONORS]).not.toHaveTextContent();
   });
 });

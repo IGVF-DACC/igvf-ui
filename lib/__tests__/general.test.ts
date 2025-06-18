@@ -14,6 +14,7 @@ import {
   toShishkebabCase,
   truncateJson,
   truncateText,
+  truthyOrZero,
   urlWithoutParams,
 } from "../general";
 
@@ -90,6 +91,15 @@ describe("Test the removeTrailingSlash utility function", () => {
   it("Should remove a trailing slash from a string", () => {
     expect(removeTrailingSlash("/path/object/")).toBe("/path/object");
     expect(removeTrailingSlash("/path/object")).toBe("/path/object");
+  });
+});
+
+describe("Test truthyOrZero utility function", () => {
+  it("should return the value if it's truthy, or zero if it's falsy", () => {
+    expect(truthyOrZero(1)).toBe(true);
+    expect(truthyOrZero(0)).toBe(true);
+    expect(truthyOrZero(null)).toBe(false);
+    expect(truthyOrZero(undefined)).toBe(false);
   });
 });
 
