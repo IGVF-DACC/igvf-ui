@@ -4,6 +4,7 @@ import XXH from "xxhashjs";
 // local
 import {
   isFileSetNodeData,
+  type D3DagErrorObject,
   type FileNodeData,
   type FileNodeType,
   type FileSetNodeData,
@@ -12,6 +13,7 @@ import {
   type NodeData,
 } from "./types";
 // lib
+import { pathToId } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // root
 import { FileObject, FileSetObject } from "../../globals.d";
@@ -177,4 +179,50 @@ export function getFileMetrics(
   return qualityMetrics.filter((metric) =>
     fileMetricPaths.includes(metric["@id"])
   );
+}
+
+/**
+ * The d3-dag module returns errors as strings that could include one or more JSON strings. This
+ * function extracts those JSON strings and returns them as objects. This returns an empty array if
+ * `error` contains no valid JSON strings.
+ * @param error Error string from d3-dag
+ * @returns Parsed d3-dag error objects if the string contains valid JSON strings; [] if not
+ */
+export function extractD3DagErrorObject(error: string): D3DagErrorObject[] {
+  // Match all occurrences of JSON strings with '{...}' in the error string, which can contain
+  // newlines.
+  const matches = [...error.matchAll(/'(\{[^]*?\})'/g)];
+  const results = matches.reduce((acc, match) => {
+    try {
+      const jsonString = match[1];
+      const parsedObject = JSON.parse(jsonString) as D3DagErrorObject;
+      return acc.concat(parsedObject);
+    } catch (_) {
+      // If parsing fails, ignore this match.
+      return acc;
+    }
+  }, [] as D3DagErrorObject[]);
+
+  // Deduplicate objects that have the same `id` property.
+  const seenIds = new Set<string>();
+  const filteredResults = results.filter((result) => {
+    if (!seenIds.has(result.id)) {
+      seenIds.add(result.id);
+      return true;
+    }
+    return false;
+  });
+  return filteredResults;
+}
+
+/**
+ * Extracts the ids (usually object accessions) contained within the error objects from a d3-dag
+ * error string. This is useful for identifying the nodes that caused the error in the graph.
+ * Returns an empty array if no valid JSON strings are found in the error string.
+ * @param error Error string from d3-dag that might contain one or more JSON strings
+ * @returns Array of ids within the error objects extracted from the error string
+ */
+export function extractD3DagErrorObjectIds(error: string): string[] {
+  const errorObjects = extractD3DagErrorObject(error);
+  return errorObjects.map((errorObject) => pathToId(errorObject.id));
 }

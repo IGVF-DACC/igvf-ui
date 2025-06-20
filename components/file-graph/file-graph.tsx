@@ -14,6 +14,7 @@ import Icon from "../icon";
 import { QualityMetricModal } from "../quality-metric";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
+import { UC } from "../../lib/constants";
 import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
@@ -22,6 +23,7 @@ import { FileSetModal } from "./file-set-modal";
 import { Legend } from "./legend";
 import {
   collectRelevantFileSetStats,
+  extractD3DagErrorObjectIds,
   generateGraphData,
   getFileMetrics,
   NODE_HEIGHT,
@@ -287,6 +289,10 @@ function Graph({
   const [qualityMetricFile, setQualityMetricFile] = useState<FileObject | null>(
     null
   );
+  // Displays a message instead of the graph, like "Loading" or error messages.
+  const [graphingMessage, setGraphingMessage] = useState<string | null>(
+    `Loading${UC.hellip}`
+  );
 
   // Reference to the SVG element that holds the graph; useful for saving the graph to a file
   const svgRef = useRef<SVGSVGElement>(null);
@@ -308,24 +314,53 @@ function Graph({
     // useEffect hides the d3-dag code from the NextJS server because d3-dag requires the browser's
     // DOM to run. Use a timer to give React a cycle to render the "Loading..." message before
     // running the d3-dag code.
-    const loadingTimer = setTimeout(() => {
-      const dag = d3Dag.dagStratify()(graphData);
-      const layout = d3Dag
-        .sugiyama()
-        .coord(d3Dag.coordGreedy())
-        .decross(d3Dag.decrossOpt().large("large"))
-        .layering(d3Dag.layeringLongestPath())
-        .nodeSize((node) => {
-          // Might have to play with the adjustment factors if you change the size of the nodes.
-          return node ? [NODE_HEIGHT * 1.4, NODE_WIDTH * 1.8] : [0, 0];
-        });
-      const { width, height } = layout(dag as any);
-      setLoadedDag(dag);
+    let dag: d3Dag.Dag<NodeData, undefined>;
+    let layout: d3Dag.SugiyamaOperator = undefined as any;
 
-      // d3-dag sugiyama lays out the graph vertically, so swap the width and height to fit a
-      // horizontal display.
-      setLayoutHeight(width);
-      setLayoutWidth(height);
+    const loadingTimer = setTimeout(() => {
+      try {
+        dag = d3Dag.dagStratify()(graphData);
+        layout = d3Dag
+          .sugiyama()
+          .coord(d3Dag.coordGreedy())
+          .decross(d3Dag.decrossOpt().large("large"))
+          .layering(d3Dag.layeringLongestPath())
+          .nodeSize((node) => {
+            // Might have to play with the adjustment factors if you change the size of the nodes.
+            return node ? [NODE_HEIGHT * 1.4, NODE_WIDTH * 1.8] : [0, 0];
+          });
+        const { width, height } = layout(dag as any);
+        setLoadedDag(dag);
+
+        // d3-dag sugiyama lays out the graph vertically, so swap the width and height to fit a
+        // horizontal display.
+        setLayoutHeight(width);
+        setLayoutWidth(height);
+      } catch (error) {
+        const { message } = error;
+        let userMessage = "The graph could not be generated from this data.";
+        const errorObjectIds = extractD3DagErrorObjectIds(message);
+
+        if (message.includes("self loop")) {
+          if (errorObjectIds.length > 0) {
+            userMessage = `File ${errorObjectIds[0]} refers to itself as its parent.`;
+          } else {
+            userMessage = "A file refers to itself as its parent.";
+          }
+        } else if (message.includes("cycle")) {
+          if (errorObjectIds.length > 0) {
+            userMessage = `The files ${errorObjectIds.join(
+              ", "
+            )} are part of a derived-from loop.`;
+          } else {
+            userMessage = "The files form a derived-from loop.";
+          }
+        }
+        setLoadedDag(null);
+        setLayoutHeight(0);
+        setLayoutWidth(0);
+        setGraphingMessage(`Error generating graph: ${userMessage}`);
+      }
     }, 0);
 
     // Start waiting for the SVG graph to finish rendering.
@@ -565,8 +600,8 @@ function Graph({
       )}
     </div>
   ) : (
-    <div className="flex h-16 items-center justify-center italic">
-      Loading&hellip;
+    <div className="flex h-16 items-center justify-center p-2 italic">
+      {graphingMessage}
     </div>
   );
 }
