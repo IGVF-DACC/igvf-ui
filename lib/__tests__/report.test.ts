@@ -830,6 +830,7 @@ describe("Test `getUnknownProperty()`", () => {
       "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       award: {
         "@id": "/awards/1UM1HG012077-01/",
+        "@type": ["Award", "Item"],
         component: "mapping",
         contact_pi: {
           name: "ali-mortazavi",
@@ -841,7 +842,7 @@ describe("Test `getUnknownProperty()`", () => {
 
     const propertyValue = getUnknownProperty("award.contact_pi", item);
     expect(propertyValue).toEqual([
-      '{"name":"ali-mortazavi","title":"Ali Mortazavi"}',
+      { name: "ali-mortazavi", title: "Ali Mortazavi" },
     ]);
   });
 

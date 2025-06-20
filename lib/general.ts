@@ -31,10 +31,10 @@ export function pathToId(path: string): string {
 /**
  * Check whether the input string is a path or not.
  * @param input String to check if it is a path
- * @returns True if the input is a path
+ * @returns True if the input is a valid path
  */
 export function isValidPath(input: string): boolean {
-  return input.startsWith("/");
+  return typeof input === "string" && input.startsWith("/");
 }
 
 /**
@@ -45,11 +45,11 @@ export function isValidPath(input: string): boolean {
  */
 export function isValidUrl(url: string): boolean {
   try {
-    new URL(url);
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
   } catch (_e) {
     return false;
   }
-  return true;
 }
 
 /**
@@ -180,10 +180,10 @@ const MAX_CELL_JSON_LENGTH = 200;
  * @returns {string} Truncated JSON
  */
 export function truncateJson(
-  obj: JSON,
+  obj: JSON | string,
   maxOutputLength: number = MAX_CELL_JSON_LENGTH
 ): string {
-  const json = JSON.stringify(obj);
+  const json = typeof obj !== "string" ? JSON.stringify(obj) : obj;
   return json.length > maxOutputLength
     ? `${json.substring(0, maxOutputLength)}...`
     : json;

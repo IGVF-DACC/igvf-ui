@@ -349,9 +349,34 @@ export interface FileObject extends DatabaseObject {
 export interface FileSetObject extends DatabaseObject {
   aliases?: string[];
   file_set_type?: string;
-  files: string[];
+  files: string[] | FileObject[];
   samples?: string[] | SampleObject[];
   summary: string;
+}
+
+export type GeneLocation = {
+  assembly: string;
+  chromosome: string;
+  start: number;
+  end: number;
+};
+
+export interface GeneObject extends DatabaseObject {
+  aliases?: string[];
+  collections?: string[];
+  description?: string;
+  dbxrefs?: string[];
+  geneid: string;
+  geneid_with_version?: string;
+  locations?: GeneLocation[];
+  name?: string;
+  notes?: string;
+  study_sets?: string[];
+  symbol: string;
+  taxa: string;
+  title?: string;
+  transcriptome_annotation: string;
+  version_number: string;
 }
 
 /**
@@ -381,12 +406,91 @@ export interface AwardObject extends DatabaseObject {
   viewing_group?: string;
 }
 
+export type RelatedDonorObject = {
+  donor: HumanDonorObject;
+  relationship_type: string;
+};
+
+export interface HumanDonorObject extends DatabaseObject {
+  aliases?: string[];
+  dbxrefs?: string[];
+  description?: string;
+  documents: string[] | DocumentObject[];
+  ethnicities?: string[];
+  human_donor_identifiers?: string[];
+  notes?: string;
+  phenotypic_features?: string[];
+  publications?: string[] | PublicationObject[];
+  related_donors?: RelatedDonorObject[];
+  sex?: string;
+  taxa: string;
+  url?: string;
+  virtual?: boolean;
+}
+
 /**
  * Data structure common to all sample object types.
  */
 export interface SampleObject extends DatabaseObject {
   aliases?: string[];
+  collections?: string[];
+  dbxrefs?: string[];
   institutional_certificates?: string[] | InstitutionalCertificateObject[];
+  name?: string;
+  notes?: string;
+  study_sets?: string[];
+  submitter_comment?: string;
+  summary?: string;
+  taxa?: string;
+  title?: string;
+  transcriptome_annotation?: string;
+}
+
+export interface OntologyTermObject extends DatabaseObject {
+  aliases?: string[];
+  ancestors?: string[];
+  assay_slims?: string[];
+  category_slims?: string[];
+  cell_slims?: string[];
+  comments?: string[];
+  company?: string;
+  definition?: string;
+  deprecated_ntr_terms?: string[];
+  description?: string;
+  is_a?: string[] | OntologyTermObject[];
+  name?: string;
+  notes?: string;
+  objective_slims?: string[];
+  ontology?: string;
+  organ_slims?: string[];
+  preferred_assay_titles?: string[];
+  sequencing_kits?: string[];
+  summary?: string;
+  synonyms?: string[];
+  system_slims?: string[];
+  term_id: string;
+  term_name: string;
+}
+
+export interface PageObject extends DatabaseObject {
+  aliases?: string[];
+  canonical_uri?: string;
+  description?: string;
+  layout?: {
+    block: [
+      {
+        "@id": string;
+        "@type": string;
+        body: string;
+        direction?: "ltr" | "rtl";
+      },
+    ];
+  };
+  name: string;
+  notes?: string;
+  parent?: string;
+  summary?: string;
+  title: string;
 }
 
 /**
