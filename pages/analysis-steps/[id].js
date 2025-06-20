@@ -59,12 +59,6 @@ export default function AnalysisStep({
               <DataItemValue>
                 {analysisStep.analysis_step_types.join(", ")}
               </DataItemValue>
-              <DataItemLabel>Workflow</DataItemLabel>
-              <DataItemValue>
-                <Link href={analysisStep.workflow["@id"]}>
-                  {analysisStep.workflow.accession}
-                </Link>
-              </DataItemValue>
               <DataItemLabel>Input Content Types</DataItemLabel>
               <DataItemValue>
                 <SeparatedList isCollapsible>
