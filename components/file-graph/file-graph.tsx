@@ -710,7 +710,7 @@ export function FileGraph({
   fileSet,
   files,
   derivedFromFiles,
-  referenceFiles,
+  referenceFiles = [],
   fileFileSets,
   qualityMetrics,
   title = "File Association Graph",
@@ -718,7 +718,7 @@ export function FileGraph({
 }: {
   fileSet: DatabaseObject;
   files: DatabaseObject[];
-  referenceFiles: FileObject[];
+  referenceFiles?: FileObject[];
   fileFileSets: DatabaseObject[];
   derivedFromFiles: DatabaseObject[];
   qualityMetrics: QualityMetricObject[];

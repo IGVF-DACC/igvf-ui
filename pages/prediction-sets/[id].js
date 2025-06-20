@@ -37,6 +37,7 @@ import {
   requestFileSets,
   requestGenes,
   requestPublications,
+  requestQualityMetrics,
   requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -57,6 +58,7 @@ export default function PredictionSet({
   derivedFromFiles,
   samples,
   assessedGenes,
+  qualityMetrics,
   attribution = null,
   isJson,
 }) {
@@ -186,6 +188,7 @@ export default function PredictionSet({
                 files={files}
                 fileFileSets={fileFileSets}
                 derivedFromFiles={derivedFromFiles}
+                qualityMetrics={qualityMetrics}
               />
             </>
           )}
@@ -262,6 +265,8 @@ PredictionSet.propTypes = {
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this prediction set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Quality metrics associated with this analysis set
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this prediction set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this prediction set
@@ -336,6 +341,20 @@ export async function getServerSideProps({ params, req, query }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
+    let qualityMetrics = [];
+    if (files.length > 0) {
+      let qualityMetricsPaths = files.reduce((acc, file) => {
+        return file.quality_metrics?.length > 0
+          ? acc.concat(file.quality_metrics)
+          : acc;
+      }, []);
+      qualityMetricsPaths = [...new Set(qualityMetricsPaths)];
+      qualityMetrics =
+        qualityMetricsPaths.length > 0
+          ? await requestQualityMetrics(qualityMetricsPaths, request)
+          : [];
+    }
+
     const attribution = await buildAttribution(
       predictionSet,
       req.headers.cookie
@@ -353,6 +372,7 @@ export async function getServerSideProps({ params, req, query }) {
         fileFileSets,
         derivedFromFiles,
         samples,
+        qualityMetrics,
         pageContext: { title: predictionSet.accession },
         attribution,
         isJson,
