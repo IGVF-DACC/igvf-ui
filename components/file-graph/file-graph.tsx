@@ -287,6 +287,10 @@ function Graph({
   const [qualityMetricFile, setQualityMetricFile] = useState<FileObject | null>(
     null
   );
+  // Displays a message instead of the graph, like "Loading" or error messages.
+  const [graphingMessage, setGraphingMessage] = useState<string | null>(
+    "Loading&hellip;"
+  );
 
   // Reference to the SVG element that holds the graph; useful for saving the graph to a file
   const svgRef = useRef<SVGSVGElement>(null);
@@ -308,24 +312,44 @@ function Graph({
     // useEffect hides the d3-dag code from the NextJS server because d3-dag requires the browser's
     // DOM to run. Use a timer to give React a cycle to render the "Loading..." message before
     // running the d3-dag code.
-    const loadingTimer = setTimeout(() => {
-      const dag = d3Dag.dagStratify()(graphData);
-      const layout = d3Dag
-        .sugiyama()
-        .coord(d3Dag.coordGreedy())
-        .decross(d3Dag.decrossOpt().large("large"))
-        .layering(d3Dag.layeringLongestPath())
-        .nodeSize((node) => {
-          // Might have to play with the adjustment factors if you change the size of the nodes.
-          return node ? [NODE_HEIGHT * 1.4, NODE_WIDTH * 1.8] : [0, 0];
-        });
-      const { width, height } = layout(dag as any);
-      setLoadedDag(dag);
+    let dag: d3Dag.Dag<NodeData, undefined>;
+    let layout: d3Dag.SugiyamaOperator = undefined as any;
 
-      // d3-dag sugiyama lays out the graph vertically, so swap the width and height to fit a
-      // horizontal display.
-      setLayoutHeight(width);
-      setLayoutWidth(height);
+    const loadingTimer = setTimeout(() => {
+      try {
+        dag = d3Dag.dagStratify()(graphData);
+        layout = d3Dag
+          .sugiyama()
+          .coord(d3Dag.coordGreedy())
+          .decross(d3Dag.decrossOpt().large("large"))
+          .layering(d3Dag.layeringLongestPath())
+          .nodeSize((node) => {
+            // Might have to play with the adjustment factors if you change the size of the nodes.
+            return node ? [NODE_HEIGHT * 1.4, NODE_WIDTH * 1.8] : [0, 0];
+          });
+        const { width, height } = layout(dag as any);
+        setLoadedDag(dag);
+
+        // d3-dag sugiyama lays out the graph vertically, so swap the width and height to fit a
+        // horizontal display.
+        setLayoutHeight(width);
+        setLayoutWidth(height);
+      } catch (error) {
+        const msg = error.message;
+        let userMessage = "The graph could not be generated from this data.";
+
+        if (msg.includes("self loop")) {
+          userMessage =
+            "A file refers to itself as its parent. Please remove self-loops.";
+        } else if (msg.includes("cycle")) {
+          userMessage =
+            "The files form a derived-from loop. Please remove the loop.";
+        }
+        setLoadedDag(null);
+        setLayoutHeight(0);
+        setLayoutWidth(0);
+        setGraphingMessage(`Error generating graph: ${userMessage}`);
+      }
     }, 0);
 
     // Start waiting for the SVG graph to finish rendering.
@@ -566,7 +590,7 @@ function Graph({
     </div>
   ) : (
     <div className="flex h-16 items-center justify-center italic">
-      Loading&hellip;
+      {graphingMessage}
     </div>
   );
 }
