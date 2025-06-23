@@ -19,10 +19,15 @@ import PagePreamble from "../../components/page-preamble";
 import ProductInfo from "../../components/product-info";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
+import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import { requestDocuments, requestSamples } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestGenes,
+  requestSamples,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -30,9 +35,9 @@ import { Ok } from "../../lib/result";
 
 export default function CrisprModification({
   modification,
-  gene,
   biosamplesModified,
   sources,
+  taggedProteins,
   documents,
   isJson,
   attribution = null,
@@ -63,13 +68,17 @@ export default function CrisprModification({
                   <DataItemValue>{modification.fused_domain}</DataItemValue>
                 </>
               )}
-              {modification.tagged_protein && (
+              {taggedProteins.length > 0 && (
                 <>
-                  <DataItemLabel>Tagged Protein</DataItemLabel>
+                  <DataItemLabel>Tagged Proteins</DataItemLabel>
                   <DataItemValue>
-                    <Link href={modification.tagged_protein}>
-                      {gene.symbol}
-                    </Link>
+                    <SeparatedList>
+                      {taggedProteins.map((protein) => (
+                        <Link key={protein["@id"]} href={protein["@id"]}>
+                          {protein.geneid}
+                        </Link>
+                      ))}
+                    </SeparatedList>
                   </DataItemValue>
                 </>
               )}
@@ -134,8 +143,8 @@ CrisprModification.propTypes = {
   biosamplesModified: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents treatment
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // The gene referenced by the Modification
-  gene: PropTypes.object,
+  // The tagged proteins referenced by the modification
+  taggedProteins: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for the modification
   attribution: PropTypes.object,
   // Source lab or source for this sample
@@ -151,9 +160,9 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/crispr-modifications/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(modification)) {
-    const gene = modification.tagged_protein
-      ? (await request.getObject(modification.tagged_protein)).optional()
-      : null;
+    const taggedProteins = modification.tagged_proteins
+      ? await requestGenes(modification.tagged_proteins, request)
+      : [];
 
     let sources = [];
     if (modification.sources?.length > 0) {
@@ -182,8 +191,8 @@ export async function getServerSideProps({ params, req, query }) {
         modification,
         biosamplesModified,
         documents,
-        gene,
         sources,
+        taggedProteins,
         pageContext: {
           title: modification.summary,
         },
