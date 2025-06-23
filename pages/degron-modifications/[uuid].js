@@ -53,20 +53,16 @@ export default function DegronModification({
               <DataItemValue>{modification.summary}</DataItemValue>
               <DataItemLabel>Degron System</DataItemLabel>
               <DataItemValue>{modification.degron_system}</DataItemValue>
-              {modification.tagged_proteins.length > 0 && (
-                <>
-                  <DataItemLabel>Tagged Proteins</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {modification.tagged_proteins.map((protein) => (
-                        <Link key={protein["@id"]} href={protein["@id"]}>
-                          {protein.symbol}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
+              <DataItemLabel>Tagged Proteins</DataItemLabel>
+              <DataItemValue>
+                <SeparatedList>
+                  {modification.tagged_proteins.map((protein) => (
+                    <Link key={protein["@id"]} href={protein["@id"]}>
+                      {protein.symbol}
+                    </Link>
+                  ))}
+                </SeparatedList>
+              </DataItemValue>
               {"activated" in modification && (
                 <>
                   <DataItemLabel>Activated</DataItemLabel>

@@ -63,7 +63,7 @@ export default function CrisprModification({
                   <DataItemValue>{modification.fused_domain}</DataItemValue>
                 </>
               )}
-              {modification.tagged_proteins.length > 0 && (
+              {modification.tagged_proteins && (
                 <>
                   <DataItemLabel>Tagged Proteins</DataItemLabel>
                   <DataItemValue>
