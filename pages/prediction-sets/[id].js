@@ -18,6 +18,7 @@ import {
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
+import { FileAccessionAndDownload } from "../../components/file-download";
 import { FileGraph } from "../../components/file-graph";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
@@ -37,6 +38,7 @@ import {
   requestFileSets,
   requestGenes,
   requestPublications,
+  requestQualityMetrics,
   requestSamples,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -54,9 +56,11 @@ export default function PredictionSet({
   publications,
   files,
   fileFileSets,
+  referenceFiles,
   derivedFromFiles,
   samples,
   assessedGenes,
+  qualityMetrics,
   attribution = null,
   isJson,
 }) {
@@ -169,6 +173,22 @@ export default function PredictionSet({
                     </DataItemValue>
                   </>
                 )}
+                {referenceFiles.length > 0 && (
+                  <>
+                    <DataItemLabel>Reference Files</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {referenceFiles.map((file) => (
+                          <FileAccessionAndDownload
+                            key={file["@id"]}
+                            file={file}
+                            isInline
+                          />
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
               </FileSetDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
@@ -184,8 +204,10 @@ export default function PredictionSet({
               <FileGraph
                 fileSet={predictionSet}
                 files={files}
+                referenceFiles={referenceFiles}
                 fileFileSets={fileFileSets}
                 derivedFromFiles={derivedFromFiles}
+                qualityMetrics={qualityMetrics}
               />
             </>
           )}
@@ -254,6 +276,8 @@ PredictionSet.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets that `files` refer to in their `file_sets` property
   fileFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Reference files to display
+  referenceFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // All derived_from files not included in `files`
   derivedFromFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Genes that are assessed in this prediction set
@@ -262,6 +286,8 @@ PredictionSet.propTypes = {
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this prediction set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Quality metrics associated with this analysis set
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this prediction set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this prediction set
@@ -336,6 +362,36 @@ export async function getServerSideProps({ params, req, query }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
+    let qualityMetrics = [];
+    if (files.length > 0) {
+      let qualityMetricsPaths = files.reduce((acc, file) => {
+        return file.quality_metrics?.length > 0
+          ? acc.concat(file.quality_metrics)
+          : acc;
+      }, []);
+      qualityMetricsPaths = [...new Set(qualityMetricsPaths)];
+      qualityMetrics =
+        qualityMetricsPaths.length > 0
+          ? await requestQualityMetrics(qualityMetricsPaths, request)
+          : [];
+    }
+
+    // Get all reference file paths from the files in the prediction set, then request those files
+    // from the server. `reference_files` has a `minItems` of 1, so just check its existence.
+    const referenceFilePathsSet = files.reduce((acc, file) => {
+      if (file.reference_files) {
+        file.reference_files.forEach((referenceFilePath) => {
+          acc.add(referenceFilePath);
+        });
+      }
+      return acc;
+    }, new Set());
+    const referenceFilePaths = [...referenceFilePathsSet];
+    const referenceFiles =
+      referenceFilePaths.length > 0
+        ? await requestFiles(referenceFilePaths, request)
+        : [];
+
     const attribution = await buildAttribution(
       predictionSet,
       req.headers.cookie
@@ -351,8 +407,10 @@ export async function getServerSideProps({ params, req, query }) {
         publications,
         files,
         fileFileSets,
+        referenceFiles,
         derivedFromFiles,
         samples,
+        qualityMetrics,
         pageContext: { title: predictionSet.accession },
         attribution,
         isJson,
