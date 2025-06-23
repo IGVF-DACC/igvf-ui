@@ -23,11 +23,7 @@ import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import {
-  requestDocuments,
-  requestGenes,
-  requestSamples,
-} from "../../lib/common-requests";
+import { requestDocuments, requestSamples } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -37,7 +33,6 @@ export default function CrisprModification({
   modification,
   biosamplesModified,
   sources,
-  taggedProteins,
   documents,
   isJson,
   attribution = null,
@@ -68,14 +63,14 @@ export default function CrisprModification({
                   <DataItemValue>{modification.fused_domain}</DataItemValue>
                 </>
               )}
-              {taggedProteins.length > 0 && (
+              {modification.tagged_proteins.length > 0 && (
                 <>
                   <DataItemLabel>Tagged Proteins</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {taggedProteins.map((protein) => (
+                      {modification.tagged_proteins.map((protein) => (
                         <Link key={protein["@id"]} href={protein["@id"]}>
-                          {protein.geneid}
+                          {protein.symbol}
                         </Link>
                       ))}
                     </SeparatedList>
@@ -143,8 +138,6 @@ CrisprModification.propTypes = {
   biosamplesModified: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents treatment
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // The tagged proteins referenced by the modification
-  taggedProteins: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for the modification
   attribution: PropTypes.object,
   // Source lab or source for this sample
@@ -160,10 +153,6 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/crispr-modifications/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(modification)) {
-    const taggedProteins = modification.tagged_proteins
-      ? await requestGenes(modification.tagged_proteins, request)
-      : [];
-
     let sources = [];
     if (modification.sources?.length > 0) {
       sources = Ok.all(
@@ -192,7 +181,6 @@ export async function getServerSideProps({ params, req, query }) {
         biosamplesModified,
         documents,
         sources,
-        taggedProteins,
         pageContext: {
           title: modification.summary,
         },
