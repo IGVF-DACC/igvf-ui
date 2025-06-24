@@ -23,11 +23,7 @@ import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
-import {
-  requestDocuments,
-  requestGenes,
-  requestSamples,
-} from "../../lib/common-requests";
+import { requestDocuments, requestSamples } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -35,7 +31,6 @@ import { Ok } from "../../lib/result";
 
 export default function DegronModification({
   modification,
-  taggedProteins,
   biosamplesModified,
   sources,
   documents,
@@ -58,20 +53,16 @@ export default function DegronModification({
               <DataItemValue>{modification.summary}</DataItemValue>
               <DataItemLabel>Degron System</DataItemLabel>
               <DataItemValue>{modification.degron_system}</DataItemValue>
-              {taggedProteins.length > 0 && (
-                <>
-                  <DataItemLabel>Tagged Proteins</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {taggedProteins.map((protein) => (
-                        <Link key={protein["@id"]} href={protein["@id"]}>
-                          {protein.geneid}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
+              <DataItemLabel>Tagged Proteins</DataItemLabel>
+              <DataItemValue>
+                <SeparatedList>
+                  {modification.tagged_proteins.map((protein) => (
+                    <Link key={protein["@id"]} href={protein["@id"]}>
+                      {protein.symbol}
+                    </Link>
+                  ))}
+                </SeparatedList>
+              </DataItemValue>
               {"activated" in modification && (
                 <>
                   <DataItemLabel>Activated</DataItemLabel>
@@ -141,8 +132,6 @@ DegronModification.propTypes = {
   biosamplesModified: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents treatment
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // The tagged proteins referenced by the modification
-  taggedProteins: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for the modification
   attribution: PropTypes.object,
   // Source lab or source for this sample
@@ -158,10 +147,6 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/degron-modifications/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(modification)) {
-    const taggedProteins = modification.tagged_proteins
-      ? await requestGenes(modification.tagged_proteins, request)
-      : [];
-
     let sources = [];
     if (modification.sources?.length > 0) {
       sources = Ok.all(
@@ -186,7 +171,6 @@ export async function getServerSideProps({ params, req, query }) {
     return {
       props: {
         modification,
-        taggedProteins,
         biosamplesModified,
         documents,
         pageContext: {
