@@ -4,7 +4,6 @@ describe("Exercise access keys", () => {
   it("It should sign in through auth0", () => {
     cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
     cy.contains("Cypress Testing");
-    cy.wait(1000);
 
     // Go to the user profile page.
     cy.get("[data-testid=navigation-authenticate]").click();
@@ -22,7 +21,6 @@ describe("Exercise access keys", () => {
 
     // Reset access key
     cy.get(`[aria-label^="Reset access key"]`).click();
-    cy.wait(2000);
     cy.contains("Access Key ID").should("exist");
     cy.contains("Access Key Secret").should("exist");
     cy.contains("button", "Close").click();
@@ -42,7 +40,6 @@ describe("Exercise access keys", () => {
 
     // Delete the first access key.
     cy.get(`[aria-label^="Delete access key"]`).first().click();
-    cy.wait(2000);
     cy.contains("button", /^Delete$/).click();
 
     // Should contain one access key on the display.
@@ -50,7 +47,6 @@ describe("Exercise access keys", () => {
 
     // Delete the remaining access key.
     cy.get(`[aria-label^="Delete access key"]`).first().click();
-    cy.wait(2000);
     cy.contains("button", /^Delete$/).click();
 
     // Should contain no access keys on the display.

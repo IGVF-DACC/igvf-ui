@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 // ***********************************************************
 // This example support/index.js is processed and
 // loaded automatically before your test files.
@@ -16,5 +18,32 @@
 // Import commands.js using ES2015 syntax:
 import "./commands";
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+/**
+ * Handle the Cypress crash about performance marks by ignoring those harmless errors.
+ */
+Cypress.on("uncaught:exception", (err) => {
+  if (
+    err.message.includes(
+      "Failed to execute 'measure' on 'Performance': The mark 'beforeRender' does not exist"
+    )
+  ) {
+    // Returning false here prevents Cypress from failing the test.
+    return false;
+  }
+});
+
+/**
+ * Forward console errors to Cypress so they can be logged in the test output.
+ */
+Cypress.on("fail", (err) => {
+  cy.get("@consoleError").then((spy) => {
+    if (spy?.calls?.count?.() > 0) {
+      console.log("***** Console errors:");
+      spy.getCalls().forEach((call, i) => {
+        console.log(`[${i + 1}]`, ...call.args);
+      });
+    }
+  });
+
+  throw err;
+});
