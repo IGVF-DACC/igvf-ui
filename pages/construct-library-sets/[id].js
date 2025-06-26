@@ -38,7 +38,7 @@ import {
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { convertTextToTitleCase } from "../../lib/general";
+import { convertTextToTitleCase, sortedSeparatedList } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 /**
@@ -255,6 +255,7 @@ export default function ConstructLibrarySet({
   documents,
   publications,
   files,
+  fileSets,
   seqspecFiles,
   seqspecDocuments,
   integratedContentFiles,
@@ -280,6 +281,14 @@ export default function ConstructLibrarySet({
                 item={constructLibrarySet}
                 publications={publications}
               >
+                {constructLibrarySet.assay_titles && (
+                  <>
+                    <DataItemLabel>Assay Titles</DataItemLabel>
+                    <DataItemValue>
+                      {sortedSeparatedList(constructLibrarySet.assay_titles)}
+                    </DataItemValue>
+                  </>
+                )}
                 {constructLibrarySet.product_id && (
                   <>
                     <DataItemLabel>Product ID</DataItemLabel>
@@ -322,6 +331,15 @@ export default function ConstructLibrarySet({
             seqspecFiles={seqspecFiles}
             seqspecDocuments={seqspecDocuments}
           />
+          {fileSets.length > 0 && (
+            <FileSetTable
+              fileSets={fileSets}
+              reportLink={`/multireport/?type=FileSet&construct_library_sets.@id=${constructLibrarySet["@id"]}`}
+              reportLabel="Report of file sets associated with this construct library set"
+              title="File Sets Using This Construct Library Set"
+              panelId="file-sets"
+            />
+          )}
           {integratedContentFiles.length > 0 && (
             <FileTable
               files={integratedContentFiles}
@@ -373,6 +391,8 @@ ConstructLibrarySet.propTypes = {
   inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets associated with this construct library set
+  fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec documents associated with `files`
@@ -418,6 +438,10 @@ export async function getServerSideProps({ params, req, query }) {
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
 
+    const fileSets = constructLibrarySet.file_sets
+      ? await requestFileSets(constructLibrarySet.file_sets, request)
+      : [];
+
     let integratedContentFiles = [];
     if (constructLibrarySet.integrated_content_files?.length > 0) {
       const filePaths = constructLibrarySet.integrated_content_files.map(
@@ -459,6 +483,7 @@ export async function getServerSideProps({ params, req, query }) {
         inputFileSetFor,
         documents,
         files,
+        fileSets,
         seqspecFiles,
         seqspecDocuments,
         integratedContentFiles,
