@@ -12,10 +12,11 @@ import {
   LogoutOptions,
 } from "@auth0/auth0-react";
 // lib
-import { DataProviderObject } from "../globals";
 import { AUTH0_CLIENT_ID, AUTH_ERROR_URI } from "./constants";
 import FetchRequest from "./fetch-request";
 import { ErrorObject } from "./fetch-request.d";
+// root
+import type { DataProviderObject } from "../globals";
 
 /**
  * Request the session object from the server, which contains the browser CSRF token.
@@ -98,10 +99,9 @@ export async function loginAuthProvider(
   // Get a URL to return to after logging in. If we're already on the error page, just return to
   // the home page so that the user doesn't see an authentication error page after successfully
   // logging in.
-  const returnUrl =
-    window.location.pathname === AUTH_ERROR_URI
-      ? "/"
-      : `${window.location.pathname}${window.location.search}`;
+  const returnUrl = checkAuthErrorUri(window.location.pathname)
+    ? "/"
+    : `${window.location.pathname}${window.location.search}`;
 
   // Trigger the login process. Pass the current URL as the returnTo parameter so that Auth0
   // redirects back to the current page after login.
@@ -128,4 +128,14 @@ export function logoutAuthProvider(
       returnTo: `${window.location.origin}${altPath}`,
     },
   });
+}
+
+/**
+ * Check if the given path is the same as the authentication error path. This matches regardless of
+ * whether the path has a trailing slash or not.
+ * @param path Path to check for the authentication error path
+ * @returns True if the path is the same as the AUTH_ERROR_URI constant
+ */
+export function checkAuthErrorUri(path: string): boolean {
+  return path.replace(/\/$/, "") === AUTH_ERROR_URI.replace(/\/$/, "");
 }

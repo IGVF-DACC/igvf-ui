@@ -48,7 +48,7 @@ export const BRAND_COLOR: string = "#337788";
 /**
  * Path for authorization error page
  */
-export const AUTH_ERROR_URI: string = "/auth-error";
+export const AUTH_ERROR_URI: string = "/auth-error/";
 
 /**
  * List of `@type`s to ignore. This needs updating when deprecated schemas get removed from igvfd.
