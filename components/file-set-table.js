@@ -10,6 +10,7 @@ import SeparatedList from "./separated-list";
 import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
 import { AliasesCell } from "./table-cells";
+import { is } from "date-fns/locale";
 
 const fileSetColumns = [
   {
@@ -35,7 +36,7 @@ const fileSetColumns = [
   {
     id: "summary",
     title: "Summary",
-    sorter: (item) => item.summary.toLowerCase(),
+    isSortable: false,
   },
   {
     id: "files",
