@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 // ***********************************************************
 // This example support/index.js is processed and
 // loaded automatically before your test files.
@@ -16,5 +18,42 @@
 // Import commands.js using ES2015 syntax:
 import "./commands";
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+/**
+ * Forward console errors to Cypress so they can be logged in the test output.
+ */
+Cypress.on("fail", (err) => {
+  cy.get("@consoleError").then((spy) => {
+    if (spy?.calls?.count?.() > 0) {
+      spy.getCalls().forEach((call, i) => {
+        console.log(`[${i + 1}]`, ...call.args);
+      });
+    }
+  });
+
+  throw err;
+});
+
+Cypress.on("window:before:load", (win) => {
+  const originalMeasure = win.performance.measure;
+  win.performance.measure = function (name, ...args) {
+    if (typeof name === "string" && name.includes("beforeRender")) {
+      // Skip the problematic measure entirely
+      return;
+    }
+    return originalMeasure.call(this, name, ...args);
+  };
+});
+
+/**
+ * Suppress known benign errors related to performance marks, specifically the error:
+ * SyntaxError: Failed to execute 'measure' on 'Performance': The mark 'beforeRender' does not
+ * exist.
+ */
+Cypress.on("uncaught:exception", (err) => {
+  if (
+    err.message.includes("Failed to execute 'measure' on 'Performance'") &&
+    err.message.includes("beforeRender")
+  ) {
+    return false;
+  }
+});

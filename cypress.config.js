@@ -1,7 +1,6 @@
 import { defineConfig } from "cypress";
 
 export default defineConfig({
-  // ... your existing config
   projectId: "3vpsct",
   defaultCommandTimeout: 30000,
   video: true,
@@ -9,12 +8,19 @@ export default defineConfig({
     runMode: 2,
     openMode: 0,
   },
+  env: {
+    // Disable internal instrumentation that might rely on missing marks.
+    CYPRESS_INTERNAL_ENV: "production",
+  },
   e2e: {
     baseUrl: "http://localhost:3000",
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
+    viewportWidth: 1280,
+    viewportHeight: 800,
     experimentalRunAllSpecs: true,
+    experimentalMemoryManagement: true,
     setupNodeEvents(on) {
-      on("before:browser:launch", (browser = {}, launchOptions) => {
+      on("before:browser:launch", (browser, launchOptions) => {
         if (browser.name === "chrome") {
           launchOptions.args.push("--no-sandbox");
           launchOptions.args.push("--disable-dev-shm-usage");
