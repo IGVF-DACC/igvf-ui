@@ -101,6 +101,14 @@ export type FileSetStats = {
 };
 
 /**
+ * d3-dag error messages sometimes contain a JSON string that can be parsed to an object. This type
+ * describes a portion of that object.
+ */
+export type D3DagErrorObject = {
+  id: string;
+};
+
+/**
  * Maps file-set types to colors of nodes on the graph.
  */
 export const fileSetTypeColorMap: FileSetTypeColorMap = {
