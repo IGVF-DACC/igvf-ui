@@ -30,6 +30,7 @@ import {
   requestFileSets,
   requestInstitutionalCertificates,
   requestPublications,
+  requestSamples,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
@@ -192,16 +193,10 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
-    let multiplexedInSamples = [];
-    if (sample.multiplexed_in.length > 0) {
-      const multiplexedInPaths = sample.multiplexed_in.map(
-        (sample) => sample["@id"]
-      );
-      multiplexedInSamples = await requestBiosamples(
-        multiplexedInPaths,
-        request
-      );
-    }
+    const multiplexedInSamples =
+      sample.multiplexed_in.length > 0
+        ? await requestSamples(sample.multiplexed_in, request)
+        : [];
     const attribution = await buildAttribution(sample, req.headers.cookie);
     return {
       props: {

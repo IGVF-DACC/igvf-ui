@@ -206,7 +206,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFunction).toHaveBeenCalledWith(
-      "/search-quick/?type=BioSample&field=accession&field=disease_terms&field=sample_terms&field=status&field=summary&@id=/in-vitro-systems/IGVFSM0405BZBU/&@id=/in-vitro-systems/IGVFSM1671CSBE/&limit=2",
+      "/search-quick/?type=Biosample&field=accession&field=disease_terms&field=sample_terms&field=status&field=summary&@id=/in-vitro-systems/IGVFSM0405BZBU/&@id=/in-vitro-systems/IGVFSM1671CSBE/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);

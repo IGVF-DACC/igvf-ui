@@ -36,6 +36,7 @@ import {
   requestInstitutionalCertificates,
   requestOntologyTerms,
   requestPublications,
+  requestSamples,
   requestTreatments,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
@@ -49,6 +50,7 @@ export default function Tissue({
   biomarkers,
   constructLibrarySets,
   donors,
+  originOf,
   documents,
   diseaseTerms,
   parts,
@@ -176,6 +178,15 @@ export default function Tissue({
               panelId="sample-parts"
             />
           )}
+          {originOf.length > 0 && (
+            <SampleTable
+              samples={originOf}
+              reportLink={`/multireport/?type=Biosample&originated_from.@id=${tissue["@id"]}`}
+              reportLabel="Report of samples which originate from this sample"
+              title="Origin Sample Of"
+              panelId="origin-of"
+            />
+          )}
           {tissue.modifications?.length > 0 && (
             <ModificationTable
               modifications={tissue.modifications}
@@ -233,6 +244,8 @@ Tissue.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Origin of sample
+  originOf: PropTypes.arrayOf(PropTypes.object),
   // Part of Sample
   partOf: PropTypes.object,
   // Sample parts
@@ -299,6 +312,10 @@ export async function getServerSideProps({ params, req, query }) {
       tissue.pooled_in?.length > 0
         ? await requestBiosamples(tissue.pooled_in, request)
         : [];
+    const originOf =
+      tissue.origin_of?.length > 0
+        ? await requestBiosamples(tissue.origin_of, request)
+        : [];
     const sortedFractions =
       tissue.sorted_fractions?.length > 0
         ? await requestBiosamples(tissue.sorted_fractions, request)
@@ -334,10 +351,7 @@ export async function getServerSideProps({ params, req, query }) {
       const multiplexedInPaths = tissue.multiplexed_in.map(
         (sample) => sample["@id"]
       );
-      multiplexedInSamples = await requestBiosamples(
-        multiplexedInPaths,
-        request
-      );
+      multiplexedInSamples = await requestSamples(multiplexedInPaths, request);
     }
     let institutionalCertificates = [];
     if (tissue.institutional_certificates?.length > 0) {
@@ -366,6 +380,7 @@ export async function getServerSideProps({ params, req, query }) {
         diseaseTerms,
         documents,
         donors,
+        originOf,
         parts,
         partOf,
         pooledFrom,

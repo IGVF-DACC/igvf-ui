@@ -36,6 +36,7 @@ import {
   requestInstitutionalCertificates,
   requestOntologyTerms,
   requestPublications,
+  requestSamples,
   requestTreatments,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
@@ -52,6 +53,7 @@ export default function PrimaryCell({
   diseaseTerms,
   documents,
   donors,
+  originOf,
   partOf,
   parts,
   pooledFrom,
@@ -146,6 +148,15 @@ export default function PrimaryCell({
               panelId="sample-parts"
             />
           )}
+          {originOf.length > 0 && (
+            <SampleTable
+              samples={originOf}
+              reportLink={`/multireport/?type=Biosample&originated_from.@id=${primaryCell["@id"]}`}
+              reportLabel="Report of samples which originate from this sample"
+              title="Origin Sample Of"
+              panelId="origin-of"
+            />
+          )}
           {primaryCell.modifications?.length > 0 && (
             <ModificationTable
               modifications={primaryCell.modifications}
@@ -203,6 +214,8 @@ PrimaryCell.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Origin of sample
+  originOf: PropTypes.arrayOf(PropTypes.object),
   // Part of Sample
   partOf: PropTypes.object,
   // Sample parts
@@ -273,6 +286,10 @@ export async function getServerSideProps({ params, req, query }) {
       primaryCell.pooled_in?.length > 0
         ? await requestBiosamples(primaryCell.pooled_in, request)
         : [];
+    const originOf =
+      primaryCell.origin_of?.length > 0
+        ? await requestBiosamples(primaryCell.origin_of, request)
+        : [];
     const sortedFractions =
       primaryCell.sorted_fractions?.length > 0
         ? await requestBiosamples(primaryCell.sorted_fractions, request)
@@ -308,10 +325,7 @@ export async function getServerSideProps({ params, req, query }) {
       const multiplexedInPaths = primaryCell.multiplexed_in.map(
         (sample) => sample["@id"]
       );
-      multiplexedInSamples = await requestBiosamples(
-        multiplexedInPaths,
-        request
-      );
+      multiplexedInSamples = await requestSamples(multiplexedInPaths, request);
     }
     let institutionalCertificates = [];
     if (primaryCell.institutional_certificates?.length > 0) {
@@ -340,6 +354,7 @@ export async function getServerSideProps({ params, req, query }) {
         diseaseTerms,
         documents,
         donors,
+        originOf,
         partOf,
         parts,
         pooledFrom,
