@@ -86,7 +86,7 @@ export async function requestBiosamples(
     await request.getMultipleObjectsBulk(
       paths,
       ["accession", "disease_terms", "sample_terms", "status", "summary"],
-      "BioSample"
+      "Biosample"
     )
   ).unwrap_or([]);
 }
