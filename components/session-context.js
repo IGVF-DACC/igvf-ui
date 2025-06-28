@@ -24,6 +24,7 @@ import {
   logoutDataProvider,
 } from "../lib/authentication";
 import getCollectionTitles from "../lib/collection-titles";
+import { AUTH_ERROR_URI } from "../lib/constants";
 import { getProfiles } from "../lib/profiles";
 /* istanbul ignore file */
 
@@ -129,7 +130,7 @@ export function Session({ postLoginRedirectUri, children }) {
           ) {
             // Auth0 authenticated successfully, but we couldn't authenticate with igvfd. Log back
             // out of Auth0 and go to an error page.
-            logoutAuthProvider(logout, "/auth-error");
+            logoutAuthProvider(logout, AUTH_ERROR_URI);
             return null;
           }
           return sessionPropertiesResponse;

@@ -6,6 +6,7 @@ import Script from "next/script";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 // lib
+import { checkAuthErrorUri } from "../lib/authentication";
 import {
   AUTH0_AUDIENCE,
   AUTH0_CLIENT_ID,
@@ -22,6 +23,11 @@ import { Session } from "../components/session-context";
 import ViewportOverlay from "../components/viewport-overlay";
 // CSS
 import "../styles/globals.css";
+
+/**
+ * Location to store the Auth0 cache.
+ */
+const AUTH0_CACHE_LOCATION = "localstorage";
 
 /**
  * List of domains for servers that contain test data and should display a warning banner to users,
@@ -161,7 +167,7 @@ function Site({ Component, pageProps, postLoginRedirectUri }) {
           <Session postLoginRedirectUri={postLoginRedirectUri}>
             <div className="md:flex">
               <NavigationSection />
-              <div className="min-w-0 shrink grow px-3 py-2 @container/main md:px-8">
+              <div className="@container/main min-w-0 shrink grow px-3 py-2 md:px-8">
                 {pageProps.serverSideError ? (
                   <Error
                     statusCode={pageProps.serverSideError.code}
@@ -190,7 +196,6 @@ Site.propTypes = {
 
 export default function App(props) {
   const [postLoginRedirectUri, setPostLoginRedirectUri] = useState("/");
-  // const router = useRouter();
 
   /**
    * Called after the user signs in and auth0 redirects back to the application. We set the
@@ -200,7 +205,9 @@ export default function App(props) {
    */
   function onRedirectCallback(appState) {
     if (appState?.returnTo) {
-      setPostLoginRedirectUri(appState.returnTo);
+      if (!checkAuthErrorUri(appState.returnTo)) {
+        setPostLoginRedirectUri(appState.returnTo);
+      }
     }
   }
 
@@ -214,6 +221,7 @@ export default function App(props) {
       domain={AUTH0_ISSUER_BASE_DOMAIN}
       clientId={AUTH0_CLIENT_ID}
       onRedirectCallback={onRedirectCallback}
+      cacheLocation={AUTH0_CACHE_LOCATION}
       authorizationParams={{
         redirect_uri: typeof window !== "undefined" && window.location.origin,
         audience: AUTH0_AUDIENCE,
