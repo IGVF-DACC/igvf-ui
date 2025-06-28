@@ -36,6 +36,7 @@ import {
   requestInstitutionalCertificates,
   requestOntologyTerms,
   requestPublications,
+  requestSamples,
   requestTreatments,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
@@ -308,10 +309,7 @@ export async function getServerSideProps({ params, req, query }) {
       const multiplexedInPaths = primaryCell.multiplexed_in.map(
         (sample) => sample["@id"]
       );
-      multiplexedInSamples = await requestBiosamples(
-        multiplexedInPaths,
-        request
-      );
+      multiplexedInSamples = await requestSamples(multiplexedInPaths, request);
     }
     let institutionalCertificates = [];
     if (primaryCell.institutional_certificates?.length > 0) {

@@ -38,6 +38,7 @@ import {
   requestFileSets,
   requestInstitutionalCertificates,
   requestPublications,
+  requestSamples,
   requestTreatments,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
@@ -294,10 +295,7 @@ export async function getServerSideProps({ params, req, query }) {
       const multiplexedInPaths = multiplexedSample.multiplexed_in.map(
         (sample) => sample["@id"]
       );
-      multiplexedInSamples = await requestBiosamples(
-        multiplexedInPaths,
-        request
-      );
+      multiplexedInSamples = await requestSamples(multiplexedInPaths, request);
     }
     const barcodeMap = multiplexedSample.barcode_map
       ? (await request.getObject(multiplexedSample.barcode_map)).optional()
