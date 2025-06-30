@@ -1,4 +1,5 @@
 import {
+  checkAuthErrorUri,
   getDataProviderUrl,
   getSession,
   getSessionProperties,
@@ -150,14 +151,31 @@ describe("Test authentication utility functions", () => {
 describe("Test logging in and out of Auth0", () => {
   const { window } = global;
 
-  it("should log in to Auth0 at home path", () => {
-    const location = new URL("http://localhost");
-    location.assign = jest.fn();
-    location.replace = jest.fn();
-    location.reload = jest.fn();
-    delete window.location;
-    window.location = location;
+  beforeEach(() => {
+    const locationMock = {
+      href: "http://localhost",
+      assign: jest.fn(),
+      replace: jest.fn(),
+      reload: jest.fn(),
+      hash: "",
+      host: "localhost",
+      hostname: "localhost",
+      origin: "http://localhost",
+      pathname: "/",
+      port: "",
+      protocol: "http:",
+      search: "",
+      toString: () => "http://localhost",
+    } as unknown as Location;
 
+    Object.defineProperty(window, "location", {
+      value: locationMock,
+      writable: true,
+    });
+  });
+
+  it("should log in to Auth0 at home path", () => {
+    window.location.pathname = "/";
     const loginWithRedirect = jest.fn().mockImplementation(() => {});
 
     loginAuthProvider(loginWithRedirect);
@@ -165,13 +183,7 @@ describe("Test logging in and out of Auth0", () => {
   });
 
   it("should log in to Auth0 at error path", () => {
-    const location = new URL("http://localhost/auth-error");
-    location.assign = jest.fn();
-    location.replace = jest.fn();
-    location.reload = jest.fn();
-    delete window.location;
-    window.location = location;
-
+    window.location.pathname = "/auth-error/";
     const loginWithRedirect = jest.fn().mockImplementation(() => {});
 
     loginAuthProvider(loginWithRedirect);
@@ -202,5 +214,22 @@ describe("Test logging in and out of Auth0", () => {
     // Make sure mockCallback gets called.
     logoutAuthProvider(logout, "/alternate-path");
     expect(logout).toHaveBeenCalled();
+  });
+});
+
+describe("Test checkAuthErrorUri()", () => {
+  it("should return true for the AUTH_ERROR_URI", () => {
+    const result = checkAuthErrorUri("/auth-error/");
+    expect(result).toBe(true);
+  });
+
+  it("should return true for the AUTH_ERROR_URI without trailing slash", () => {
+    const result = checkAuthErrorUri("/auth-error");
+    expect(result).toBe(true);
+  });
+
+  it("should return false for a different path", () => {
+    const result = checkAuthErrorUri("/some-other-path");
+    expect(result).toBe(false);
   });
 });
