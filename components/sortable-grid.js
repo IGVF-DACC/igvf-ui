@@ -130,7 +130,7 @@ function SortableHeaderCell({
     <button
       type="button"
       onClick={onClick}
-      className={`justify-between hover:bg-gray-300 dark:hover:bg-gray-700 ${className}`}
+      className={`cursor-pointer justify-between hover:bg-gray-300 dark:hover:bg-gray-700 ${className}`}
     >
       <div className="flex-auto">{children}</div>
       <div className="flex-initial">
@@ -255,7 +255,7 @@ function TablePager({
   if (totalPages > 1) {
     return (
       <div
-        className="flex justify-center border-l border-r border-panel bg-gray-100 py-0.5 dark:bg-gray-900"
+        className="border-panel flex justify-center border-r border-l bg-gray-100 py-0.5 dark:bg-gray-900"
         data-testid="table-pager"
       >
         <Pager

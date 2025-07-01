@@ -130,11 +130,7 @@ export default function MultiplexedSample({
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
           {multiplexedSample.file_sets.length > 0 && (
-            <FileSetTable
-              fileSets={multiplexedSample.file_sets}
-              reportLink={`/multireport/?type=FileSet&samples.@id=${multiplexedSample["@id"]}`}
-              reportLabel="Report of file sets associated with this sample"
-            />
+            <FileSetTable fileSets={multiplexedSample.file_sets} />
           )}
           {multiplexedSample.multiplexed_samples.length > 0 && (
             <SampleTable

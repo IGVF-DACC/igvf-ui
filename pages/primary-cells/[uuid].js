@@ -106,11 +106,7 @@ export default function PrimaryCell({
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
           {primaryCell.file_sets.length > 0 && (
-            <FileSetTable
-              fileSets={primaryCell.file_sets}
-              reportLink={`/multireport/?type=FileSet&samples.@id=${primaryCell["@id"]}`}
-              reportLabel="Report of file sets associated with this sample"
-            />
+            <FileSetTable fileSets={primaryCell.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
             <SampleTable

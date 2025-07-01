@@ -136,11 +136,7 @@ export default function Tissue({
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
           {tissue.file_sets.length > 0 && (
-            <FileSetTable
-              fileSets={tissue.file_sets}
-              reportLink={`/multireport/?type=FileSet&samples.@id=${tissue["@id"]}`}
-              reportLabel="Report of file sets containing this sample"
-            />
+            <FileSetTable fileSets={tissue.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
             <SampleTable
