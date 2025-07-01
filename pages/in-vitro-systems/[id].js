@@ -37,6 +37,7 @@ import {
   requestInstitutionalCertificates,
   requestOntologyTerms,
   requestPublications,
+  requestSamples,
   requestTreatments,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
@@ -386,7 +387,7 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
     const sortedFractions =
       inVitroSystem.sorted_fractions?.length > 0
-        ? await requestBiosamples(inVitroSystem.sorted_fractions, request)
+        ? await requestSamples(inVitroSystem.sorted_fractions, request)
         : [];
     let sources = [];
     if (inVitroSystem.sources?.length > 0) {
@@ -430,10 +431,7 @@ export async function getServerSideProps({ params, req, query }) {
       const multiplexedInPaths = inVitroSystem.multiplexed_in.map(
         (sample) => sample["@id"]
       );
-      multiplexedInSamples = await requestBiosamples(
-        multiplexedInPaths,
-        request
-      );
+      multiplexedInSamples = await requestSamples(multiplexedInPaths, request);
     }
     let institutionalCertificates = [];
     if (inVitroSystem.institutional_certificates?.length > 0) {
