@@ -25,7 +25,6 @@ import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
-  requestBiosamples,
   requestDocuments,
   requestFileSets,
   requestInstitutionalCertificates,
@@ -165,7 +164,7 @@ export async function getServerSideProps({ params, req, query }) {
       : [];
     const sortedFractions =
       sample.sorted_fractions?.length > 0
-        ? await requestBiosamples(sample.sorted_fractions, request)
+        ? await requestSamples(sample.sorted_fractions, request)
         : [];
     const institutionalCertificates =
       sample.institutional_certificates.length > 0

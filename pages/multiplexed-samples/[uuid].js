@@ -32,7 +32,6 @@ import TreatmentTable from "../../components/treatment-table";
 import buildAttribution from "../../lib/attribution";
 import {
   requestBiomarkers,
-  requestBiosamples,
   requestDocuments,
   requestDonors,
   requestFileSets,
@@ -267,7 +266,7 @@ export async function getServerSideProps({ params, req, query }) {
       : [];
     const sortedFractions =
       multiplexedSample.sorted_fractions?.length > 0
-        ? await requestBiosamples(multiplexedSample.sorted_fractions, request)
+        ? await requestSamples(multiplexedSample.sorted_fractions, request)
         : [];
 
     // Use getMultipleObjects for sources instead of getMultipleObjectBulk. Sources point at both

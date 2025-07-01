@@ -257,7 +257,7 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
     const sortedFractions =
       sample.sorted_fractions?.length > 0
-        ? await requestBiosamples(sample.sorted_fractions, request)
+        ? await requestSamples(sample.sorted_fractions, request)
         : [];
     let treatments = [];
     if (sample.treatments?.length > 0) {

@@ -318,7 +318,7 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
     const sortedFractions =
       tissue.sorted_fractions?.length > 0
-        ? await requestBiosamples(tissue.sorted_fractions, request)
+        ? await requestSamples(tissue.sorted_fractions, request)
         : [];
     let sources = [];
     if (tissue.sources?.length > 0) {

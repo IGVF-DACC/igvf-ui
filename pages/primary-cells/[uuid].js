@@ -292,7 +292,7 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
     const sortedFractions =
       primaryCell.sorted_fractions?.length > 0
-        ? await requestBiosamples(primaryCell.sorted_fractions, request)
+        ? await requestSamples(primaryCell.sorted_fractions, request)
         : [];
     let sources = [];
     if (primaryCell.sources?.length > 0) {

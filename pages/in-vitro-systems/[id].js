@@ -387,7 +387,7 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
     const sortedFractions =
       inVitroSystem.sorted_fractions?.length > 0
-        ? await requestBiosamples(inVitroSystem.sorted_fractions, request)
+        ? await requestSamples(inVitroSystem.sorted_fractions, request)
         : [];
     let sources = [];
     if (inVitroSystem.sources?.length > 0) {
