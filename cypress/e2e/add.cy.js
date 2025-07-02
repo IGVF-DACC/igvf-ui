@@ -11,7 +11,7 @@ const json = `{
   "name": "lab-${Date.now()}",
   "pi": "/users/4a63f82a-2e25-4790-bfcc-d183f8ca8869/",
   "institute_label": "Very Good University"
-}`;
+`;
 
 describe("Test Add button", () => {
   it("Profiles Page has buttons, can create object", () => {
@@ -25,8 +25,7 @@ describe("Test Add button", () => {
     // editor does not initialize properly, and the test fails.
     cy.url().should("include", "/lab/#!add");
     cy.get('[id="JSON Editor"]', { timeout: 30000 }).should("exist");
-    cy.reload();
-    cy.wait(5000);
+    cy.reloadWithDelay(5000);
 
     // Now check for ACE editor line content to appear.
     cy.get("#JSON\\ Editor .ace_line", { timeout: 10000 }).should("be.visible");
@@ -35,8 +34,8 @@ describe("Test Add button", () => {
     cy.window().then((win) => {
       const editor = win.ace.edit("JSON Editor");
       editor.setValue("", -1);
+      cy.wait(1000);
     });
-    cy.wait(1000);
 
     // Enter some JSON into the editor. Have to use force: true because the editor is not visible
     // when the page is first loaded.
