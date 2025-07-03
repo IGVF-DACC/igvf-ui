@@ -164,11 +164,7 @@ export default function InVitroSystem({
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
           {inVitroSystem.file_sets.length > 0 && (
-            <FileSetTable
-              fileSets={inVitroSystem.file_sets}
-              reportLink={`/multireport/?type=FileSet&samples.@id=${inVitroSystem["@id"]}`}
-              reportLabel="Report of file sets associated with this sample"
-            />
+            <FileSetTable fileSets={inVitroSystem.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
             <SampleTable

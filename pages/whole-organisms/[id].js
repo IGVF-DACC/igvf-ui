@@ -91,11 +91,7 @@ export default function WholeOrganism({
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
           {sample.file_sets.length > 0 && (
-            <FileSetTable
-              fileSets={sample.file_sets}
-              reportLink={`/multireport/?type=FileSet&samples.@id=${sample["@id"]}`}
-              reportLabel="Report of file sets containing this sample"
-            />
+            <FileSetTable fileSets={sample.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
             <SampleTable

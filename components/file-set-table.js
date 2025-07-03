@@ -20,17 +20,9 @@ const fileSetColumns = [
     ),
   },
   {
-    id: "@type",
-    title: "Type",
-    display: ({ source, meta }) => {
-      // Unlikely we'll have no @type after passing `hide()`, but not impossible.
-      const type = source["@type"]?.[0] || "";
-      if (type) {
-        return meta.collectionTitles?.[type] || type;
-      }
-    },
-    sorter: (item) => item["@type"]?.[0].toLowerCase(),
-    hide: (data) => !data.some((item) => Boolean(item["@type"])),
+    id: "file_set_type",
+    title: "File Set Type",
+    sorter: (item) => item.file_set_type.toLowerCase(),
   },
   {
     id: "summary",

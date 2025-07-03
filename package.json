@@ -13,7 +13,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.0.2",
     "@floating-ui/react": "0.27.4",
-    "@headlessui/react": "^2.0.1",
+    "@headlessui/react": "2.0.1",
     "@heroicons/react": "^2.0.10",
     "@nivo/bar": "^0.87.0",
     "@nivo/core": "^0.87.0",
@@ -36,7 +36,7 @@
     "empty-schema": "^0.1.5",
     "find-duplicated-property-keys": "^1.2.9",
     "framer-motion": "^10.10.0",
-    "isomorphic-dompurify": "^2.3.0",
+    "isomorphic-dompurify": "2.22.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "marked-react": "^3.0.0",
