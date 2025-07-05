@@ -121,6 +121,7 @@ export default function MeasurementSet({
   samples,
   seqspecFiles,
   seqspecDocuments,
+  primerDesigns,
   attribution = null,
   isJson,
 }) {
@@ -247,6 +248,14 @@ export default function MeasurementSet({
                     </DataItemList>
                   </>
                 )}
+                {measurementSet.strand_specificity && (
+                  <>
+                    <DataItemLabel>Strand Specificity</DataItemLabel>
+                    <DataItemValue>
+                      {measurementSet.strand_specificity}
+                    </DataItemValue>
+                  </>
+                )}
                 {measurementSet.external_image_url && (
                   <>
                     <DataItemLabel className="flex items-center gap-1">
@@ -362,6 +371,15 @@ export default function MeasurementSet({
               panelId="auxiliary-sets"
             />
           )}
+          {primerDesigns.length > 0 && (
+            <FileTable
+              files={primerDesigns}
+              title="Primer Designs"
+              reportLink={`/multireport/?type=TabularFile&primer_design_for=${measurementSet["@id"]}`}
+              reportLabel="Report of primer designs for this measurement set"
+              panelId="primer-designs"
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -392,6 +410,8 @@ MeasurementSet.propTypes = {
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec documents associated with `files`
   seqspecDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Primer designs tabular files associated with the measurement set
+  primerDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this measurement set
@@ -490,6 +510,14 @@ export async function getServerSideProps({ params, req, query }) {
       }
     }
 
+    const primerDesigns = measurementSet.primer_designs
+      ? await requestFiles(
+          measurementSet.primer_designs,
+          request,
+          "TabularFile"
+        )
+      : [];
+
     let publications = [];
     if (measurementSet.publications?.length > 0) {
       const publicationPaths = measurementSet.publications.map(
@@ -517,6 +545,7 @@ export async function getServerSideProps({ params, req, query }) {
         samples,
         seqspecFiles,
         seqspecDocuments,
+        primerDesigns,
         pageContext: { title: measurementSet.accession },
         attribution,
         isJson,

@@ -7,6 +7,9 @@ describe("Home page", () => {
     cy.viewport("macbook-13");
     cy.visit("/");
 
+    cy.wait(10_000);
+    cy.reload();
+
     // At least five bar elements in the default "processed" chart.
     cy.get('[id^="bar-"]').should("have.length.greaterThan", 2);
 

@@ -35,7 +35,7 @@ export function UniformlyProcessedBadge({
   return (
     <PillBadge
       testid="uniform-pipeline-badge"
-      className={`bg-amber-300 text-black shadow-amber-500 dark:bg-amber-800 dark:text-white [&>svg]:fill-black dark:[&>svg]:fill-white ${className}`}
+      className={`bg-amber-300 text-black ring-amber-500 dark:bg-amber-800 dark:text-white [&>svg]:fill-black dark:[&>svg]:fill-white ${className}`}
       iconPosition="left"
     >
       <UniformlyProcessedIcon className="h-4 w-4" />
@@ -64,7 +64,7 @@ export function ExternallyHostedBadge({ className }: { className?: string }) {
   return (
     <PillBadge
       testid="externally-hosted-badge"
-      className={`bg-blue-200 text-black shadow-blue-500 dark:bg-blue-800 dark:text-white [&>svg]:fill-black dark:[&>svg]:fill-white ${className}`}
+      className={`bg-blue-200 text-black ring-blue-500 dark:bg-blue-800 dark:text-white [&>svg]:fill-black dark:[&>svg]:fill-white ${className}`}
       iconPosition="left"
     >
       <ExternallyHostedIcon className="h-4 w-4" />

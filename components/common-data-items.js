@@ -32,7 +32,7 @@ import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { checkCheckfilesVersionVisible } from "../lib/checkfiles-version";
 import { formatDate } from "../lib/dates";
-import { dataSize, truthyOrZero } from "../lib/general";
+import { dataSize, sortedSeparatedList, truthyOrZero } from "../lib/general";
 
 /**
  * Display the data items common to all donor-derived objects.
@@ -158,6 +158,17 @@ export function SampleDataItems({
               </Fragment>
             ))}
           </DataItemList>
+        </>
+      )}
+      {item.time_post_library_delivery && (
+        <>
+          <DataItemLabel>Time Post Library Delivery</DataItemLabel>
+          <DataItemValue>
+            {item.time_post_library_delivery}{" "}
+            {item.time_post_library_delivery > 1
+              ? `${item.time_post_library_delivery_units}s`
+              : item.time_post_library_delivery_units}
+          </DataItemValue>
         </>
       )}
       {item.virtual && (
@@ -332,6 +343,7 @@ export function BiosampleDataItems({
   classifications = null,
   constructLibrarySets = [],
   diseaseTerms = null,
+  annotatedFrom = null,
   partOf = null,
   sampleTerms = null,
   sources = null,
@@ -393,6 +405,14 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
+      {annotatedFrom && (
+        <>
+          <DataItemLabel>Annotated From</DataItemLabel>
+          <DataItemValue>
+            <Link href={annotatedFrom["@id"]}>{annotatedFrom.accession}</Link>
+          </DataItemValue>
+        </>
+      )}
       <>
         <DataItemLabel>Age</DataItemLabel>
         <DataItemValue>
@@ -450,6 +470,8 @@ BiosampleDataItems.propTypes = {
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object),
   // Disease ontology for the biosample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object),
+  // Annotated from sample
+  annotatedFrom: PropTypes.object,
   // Part of Sample
   partOf: PropTypes.object,
   // Sample ontology for the biosample
@@ -463,6 +485,7 @@ BiosampleDataItems.propTypes = {
 BiosampleDataItems.commonProperties = [
   "age",
   "age_units",
+  "annotated_from",
   "cellular_sub_pool",
   "institutional_certificates",
   "embryonic",
@@ -589,6 +612,12 @@ export function FileDataItems({ item, children = null }) {
       )}
       <DataItemLabel>File Format</DataItemLabel>
       <DataItemValue>{item.file_format}</DataItemValue>
+      {item.file_format_type && (
+        <>
+          <DataItemLabel>File Format Type</DataItemLabel>
+          <DataItemValue>{item.file_format_type}</DataItemValue>
+        </>
+      )}
       <DataItemLabel>Content Type</DataItemLabel>
       <DataItemValue>{item.content_type}</DataItemValue>
       {item.external_host_url && (
@@ -732,10 +761,12 @@ export function FileSetDataItems({ item, publications = [], children }) {
           <DataItemValue>{item.file_set_type}</DataItemValue>
         </>
       )}
-      {item.control_type && (
+      {item.control_types && (
         <>
-          <DataItemLabel>Control Type</DataItemLabel>
-          <DataItemValue>{item.control_type}</DataItemValue>
+          <DataItemLabel>Control Types</DataItemLabel>
+          <DataItemValue>
+            {sortedSeparatedList(item.control_types)}
+          </DataItemValue>
         </>
       )}
       {item.summary && (

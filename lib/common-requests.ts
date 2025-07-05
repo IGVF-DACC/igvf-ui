@@ -93,14 +93,16 @@ export async function requestBiosamples(
 
 /**
  * Retrieve the file objects for the given file paths from the data provider.
- * @param {Array<string>} paths Paths to the file objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The file objects requested
+ * @param paths - Paths to the file objects to request
+ * @param request - Request object to use to make the request
+ * @param type - Type of file to request, defaults to "File"
+ * @returns File objects requested
  */
 export async function requestFiles(
-  paths: Array<string>,
-  request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+  paths: string[],
+  request: FetchRequest,
+  type = "File"
+): Promise<DataProviderObject[]> {
   return (
     await request.getMultipleObjectsBulk(
       paths,
@@ -141,7 +143,7 @@ export async function requestFiles(
         "workflow.uniform_pipeline",
         "upload_status",
       ],
-      "File"
+      type
     )
   ).unwrap_or([]);
 }

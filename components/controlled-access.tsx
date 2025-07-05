@@ -19,7 +19,7 @@ export function ControlledAccessIndicator({ item }: { item: DatabaseObject }) {
         <TooltipRef tooltipAttr={tooltipAttr}>
           <div>
             <PillBadge
-              className="bg-[#ed1c24] shadow-[#c6171d]"
+              className="bg-[#ed1c24] ring-[#c6171d]"
               testid="controlled-access-badge"
             >
               <LockClosedIcon className="h-3 w-3 fill-white" />

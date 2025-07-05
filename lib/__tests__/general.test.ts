@@ -10,6 +10,7 @@ import {
   removeTrailingSlash,
   snakeCaseToHuman,
   snakeCaseToPascalCase,
+  sortedSeparatedList,
   sortObjectProps,
   toShishkebabCase,
   truncateJson,
@@ -346,6 +347,48 @@ describe("Test the sortObjectProps function", () => {
     };
     const sortedObj = sortObjectProps(obj);
     expect(JSON.stringify(sortedObj)).toEqual(JSON.stringify(expected));
+  });
+});
+
+describe("Test the sortedSeparatedList function", () => {
+  it("should correctly sort an array of strings", () => {
+    const arr = ["Banana", "apple", "cherry"];
+    const expected = "apple, Banana, cherry";
+    const sortedArr = sortedSeparatedList(arr);
+    expect(sortedArr).toEqual(expected);
+  });
+
+  it("should correctly sort an array of numbers", () => {
+    const arr = [3, 1, 2];
+    const expected = "1, 2, 3";
+    const sortedArr = sortedSeparatedList(arr);
+    expect(sortedArr).toEqual(expected);
+  });
+
+  it("should correctly sort an array of mixed strings and numbers with custom separator", () => {
+    const arr = ["Banana", 3, "apple", 1, "cherry", 2];
+    const expected = "1 : 2 : 3 : apple : Banana : cherry";
+    const sortedArr = sortedSeparatedList(arr, " : ");
+    expect(sortedArr).toEqual(expected);
+  });
+
+  it("should return an empty string for an empty array", () => {
+    const arr: string[] = [];
+    let sortedArr = sortedSeparatedList(arr);
+    expect(sortedArr).toBe("");
+
+    sortedArr = sortedSeparatedList(arr, " : ");
+    expect(sortedArr).toBe("");
+  });
+
+  it("should return an empty string for a non-array input", () => {
+    const notAStringArray = "not an array";
+    let sortedArr = sortedSeparatedList(notAStringArray as unknown as string[]);
+    expect(sortedArr).toBe("");
+
+    const notANumberArray = 12345;
+    sortedArr = sortedSeparatedList(notANumberArray as unknown as number[]);
+    expect(sortedArr).toBe("");
   });
 });
 

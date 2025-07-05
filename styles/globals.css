@@ -357,6 +357,10 @@
   --color-computational-tools-category-reporter-assays: #e5c7a1;
   --color-computational-tools-category-single-cell: #a1e4e5;
   --color-computational-tools-category-unknown: #a0a0a0;
+
+  /** Document standardized file format badge colors */
+  --color-standardized-file-format-background: oklch(0.8056 0.1488 56.4585);
+  --color-standardized-file-format-ring: oklch(0.7552 0.181171 56.4585);
 }
 
 /**
@@ -606,6 +610,10 @@
   --color-computational-tools-category-reporter-assays: #806e59;
   --color-computational-tools-category-single-cell: #4d7f80;
   --color-computational-tools-category-unknown: #606060;
+
+  /** Document standardized file format badge colors */
+  --color-standardized-file-format-background: oklch(0.5801 0.1565 56.4585);
+  --color-standardized-file-format-ring: oklch(0.6217 0.1652 56.4585);
 }
 
 /**

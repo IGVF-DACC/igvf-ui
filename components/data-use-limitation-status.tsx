@@ -228,7 +228,7 @@ export function DataUseLimitationStatus({
         <TooltipRef tooltipAttr={tooltipAttr}>
           <div>
             <PillBadge
-              className="bg-stone-700 text-white shadow-stone-800"
+              className="bg-stone-700 text-white ring-stone-800"
               testid={`dul-badge-${toShishkebabCase(localLimitation)}`}
             >
               <Icon className="ml-[-4px]" />

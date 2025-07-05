@@ -14,7 +14,7 @@ import { toShishkebabCase } from "../lib/general";
  */
 const statusStyles = {
   fallback: {
-    styles: "bg-[#d0d0d0] text-black shadow-[#a0a0a0] [&>svg]:fill-black",
+    styles: "bg-[#d0d0d0] text-black ring-[#a0a0a0] [&>svg]:fill-black",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +31,7 @@ const statusStyles = {
   },
 
   current: {
-    styles: "bg-[#00a99d] text-white shadow-[#007f76] [&>svg]:fill-white",
+    styles: "bg-[#00a99d] text-white ring-[#007f76] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +45,7 @@ const statusStyles = {
   },
 
   deleted: {
-    styles: "bg-[#ed1c24] text-white shadow-[#c6171d] [&>svg]:fill-white",
+    styles: "bg-[#ed1c24] text-white ring-[#c6171d] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +59,7 @@ const statusStyles = {
   },
 
   archived: {
-    styles: "bg-[#c09e62] text-black shadow-[#997e4e] [&>svg]:fill-black",
+    styles: "bg-[#c09e62] text-black ring-[#997e4e] [&>svg]:fill-black",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +73,7 @@ const statusStyles = {
   },
 
   disabled: {
-    styles: "bg-[#ed145b] text-white shadow-[#c4114b] [&>svg]:fill-white",
+    styles: "bg-[#ed145b] text-white ring-[#c4114b] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -90,7 +90,7 @@ const statusStyles = {
   },
 
   filtered: {
-    styles: "bg-violet-400 text-white shadow-violet-500 [&>svg]:fill-white",
+    styles: "bg-violet-400 text-white ring-violet-500 [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +109,7 @@ const statusStyles = {
   },
 
   standardized: {
-    styles: "bg-[#00a99d] text-white shadow-[#007f76] [&>svg]:fill-white",
+    styles: "bg-[#00a99d] text-white ring-[#007f76] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +128,7 @@ const statusStyles = {
   },
 
   "in progress": {
-    styles: "bg-[#0072bc] text-white shadow-[#00578f] [&>svg]:fill-white",
+    styles: "bg-[#0072bc] text-white ring-[#00578f] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +145,7 @@ const statusStyles = {
   },
 
   released: {
-    styles: "bg-[#00a651] text-white shadow-[#007d3d] [&>svg]:fill-white",
+    styles: "bg-[#00a651] text-white ring-[#007d3d] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -159,7 +159,7 @@ const statusStyles = {
   },
 
   replaced: {
-    styles: "bg-[#f26522] text-white shadow-[#cd541b] [&>svg]:fill-white",
+    styles: "bg-[#f26522] text-white ring-[#cd541b] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -177,7 +177,7 @@ const statusStyles = {
   },
 
   revoked: {
-    styles: "bg-[#ed145b] text-white shadow-[#c4114b] [&>svg]:fill-white",
+    styles: "bg-[#ed145b] text-white ring-[#c4114b] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -194,7 +194,7 @@ const statusStyles = {
   },
 
   validated: {
-    styles: "bg-[#00a651] text-white shadow-[#007d3d] [&>svg]:fill-white",
+    styles: "bg-[#00a651] text-white ring-[#007d3d] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -211,7 +211,7 @@ const statusStyles = {
   },
 
   invalidated: {
-    styles: "bg-[#ed145b] text-white shadow-[#c4114b] [&>svg]:fill-white",
+    styles: "bg-[#ed145b] text-white ring-[#c4114b] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -230,7 +230,7 @@ const statusStyles = {
   },
 
   "file not found": {
-    styles: "bg-[#ed145b] text-white shadow-[#c4114b] [&>svg]:fill-white",
+    styles: "bg-[#ed145b] text-white ring-[#c4114b] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -248,7 +248,7 @@ const statusStyles = {
   },
 
   pending: {
-    styles: "bg-[#0072bc] text-white shadow-[#00578f] [&>svg]:fill-white",
+    styles: "bg-[#0072bc] text-white ring-[#00578f] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -266,12 +266,12 @@ const statusStyles = {
 
   preview: {
     styles:
-      "bg-amber-300 text-black dark:bg-amber-700 dark:text-white shadow-amber-400 [&>svg]:fill-black dark:[&>svg]:fill-white dark:shadow-amber-600",
+      "bg-amber-300 text-black dark:bg-amber-700 dark:text-white ring-amber-400 [&>svg]:fill-black dark:[&>svg]:fill-white dark:shadow-amber-600",
     Icon: () => <EyeIcon className="mx-0.5 h-4 w-4" />,
   },
 
   "validation exempted": {
-    styles: "bg-[#00a651] text-white shadow-[#007d3d] [&>svg]:fill-white",
+    styles: "bg-[#00a651] text-white ring-[#007d3d] [&>svg]:fill-white",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -301,7 +301,7 @@ export default function Status({ status, isAbbreviated = false }) {
       <>
         <TooltipRef tooltipAttr={tooltipAttr}>
           <div
-            className={`h-5 w-5 rounded-full border border-white shadow-status ${styles}`}
+            className={`h-5 w-5 rounded-full border-1 border-white ring ${styles}`}
             data-testid={`status-pill-${status.replace(/\s/g, "-")}`}
           >
             <Icon />
@@ -338,7 +338,7 @@ Status.propTypes = {
 export function StatusPreviewDetail({ item }) {
   if (item.status === "preview") {
     return (
-      <div className="${className} border-l border-r border-t border-panel">
+      <div className="${className} border-panel border-t border-r border-l">
         <div className="bg-amber-300 px-2 py-0.5 text-center text-sm text-black dark:bg-amber-700 dark:text-white">
           This object is in preview status. Metadata is subject to change until
           this object is released.

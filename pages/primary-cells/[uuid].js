@@ -51,6 +51,7 @@ export default function PrimaryCell({
   biomarkers,
   constructLibrarySets,
   diseaseTerms,
+  annotatedFrom,
   documents,
   donors,
   originOf,
@@ -86,6 +87,7 @@ export default function PrimaryCell({
                 item={primaryCell}
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
+                annotatedFrom={annotatedFrom}
                 partOf={partOf}
                 publications={publications}
                 sampleTerms={primaryCell.sample_terms}
@@ -206,6 +208,8 @@ PrimaryCell.propTypes = {
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Annotated from sample
+  annotatedFrom: PropTypes.object,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
@@ -334,6 +338,9 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    const annotatedFrom = primaryCell.annotated_from
+      ? (await request.getObject(primaryCell.annotated_from)).optional()
+      : null;
     let publications = [];
     if (primaryCell.publications?.length > 0) {
       const publicationPaths = primaryCell.publications.map(
@@ -347,6 +354,7 @@ export async function getServerSideProps({ params, req, query }) {
         primaryCell,
         biomarkers,
         constructLibrarySets,
+        annotatedFrom,
         diseaseTerms,
         documents,
         donors,

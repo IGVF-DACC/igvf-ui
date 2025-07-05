@@ -53,6 +53,7 @@ export default function Tissue({
   originOf,
   documents,
   diseaseTerms,
+  annotatedFrom,
   parts,
   partOf,
   pooledFrom,
@@ -85,6 +86,7 @@ export default function Tissue({
                 item={tissue}
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
+                annotatedFrom={annotatedFrom}
                 partOf={partOf}
                 publications={publications}
                 sampleTerms={tissue.sample_terms}
@@ -236,6 +238,8 @@ Tissue.propTypes = {
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Annotated from sample
+  annotatedFrom: PropTypes.object,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
@@ -360,6 +364,9 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    const annotatedFrom = tissue.annotated_from
+      ? (await request.getObject(tissue.annotated_from)).optional()
+      : null;
     let publications = [];
     if (tissue.publications?.length > 0) {
       const publicationPaths = tissue.publications.map(
@@ -374,6 +381,7 @@ export async function getServerSideProps({ params, req, query }) {
         biomarkers,
         constructLibrarySets,
         diseaseTerms,
+        annotatedFrom,
         documents,
         donors,
         originOf,

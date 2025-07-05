@@ -17,6 +17,7 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { PillBadge } from "../../components/pill-badge";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
@@ -37,7 +38,13 @@ export default function Document({ document, attribution = null, isJson }) {
       />
       <EditableItem item={document}>
         <PagePreamble sections={sections} />
-        <ObjectPageHeader item={document} isJsonFormat={isJson} />
+        <ObjectPageHeader item={document} isJsonFormat={isJson}>
+          {document.standardized_file_format && (
+            <PillBadge className="bg-standardized-file-format ring-standardized-file-format">
+              Standardized File Format
+            </PillBadge>
+          )}
+        </ObjectPageHeader>
         <JsonDisplay item={document} isJsonFormat={isJson}>
           <StatusPreviewDetail item={document} />
           <DataPanel>

@@ -45,6 +45,7 @@ export default function WholeOrganism({
   biomarkers,
   constructLibrarySets,
   diseaseTerms,
+  annotatedFrom,
   documents,
   donors,
   originOf,
@@ -78,6 +79,7 @@ export default function WholeOrganism({
                 item={sample}
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
+                annotatedFrom={annotatedFrom}
                 donors={donors}
                 publications={publications}
                 sampleTerms={sample.sample_terms}
@@ -182,6 +184,8 @@ WholeOrganism.propTypes = {
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Annotated from sample
+  annotatedFrom: PropTypes.object,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
@@ -299,6 +303,9 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    const annotatedFrom = sample.annotated_from
+      ? (await request.getObject(sample.annotated_from)).optional()
+      : null;
     let publications = [];
     if (sample.publications?.length > 0) {
       const publicationPaths = sample.publications.map(
@@ -313,6 +320,7 @@ export async function getServerSideProps({ params, req, query }) {
         biomarkers,
         constructLibrarySets,
         diseaseTerms,
+        annotatedFrom,
         documents,
         donors,
         originOf,
