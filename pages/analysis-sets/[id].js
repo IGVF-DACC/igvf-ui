@@ -148,6 +148,20 @@ export default function AnalysisSet({
                   </DataItemValue>
                 </>
               )}
+              {analysisSet.targeted_genes && (
+                <>
+                  <DataItemLabel>Targeted Genes</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList isCollapsible>
+                      {analysisSet.targeted_genes.map((gene) => (
+                        <Link href={gene["@id"]} key={gene["@id"]}>
+                          {gene.symbol}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
               {analysisSet.external_image_data_url && (
                 <>
                   <DataItemLabel>External Image Data URL</DataItemLabel>
