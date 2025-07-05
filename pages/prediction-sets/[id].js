@@ -173,6 +173,25 @@ export default function PredictionSet({
                     </DataItemValue>
                   </>
                 )}
+                {predictionSet.associated_phenotypes && (
+                  <>
+                    <DataItemLabel>Associated Phenotypes</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {predictionSet.associated_phenotypes.map(
+                          (phenotype) => (
+                            <Link
+                              href={phenotype["@id"]}
+                              key={phenotype["@id"]}
+                            >
+                              {phenotype.term_name}
+                            </Link>
+                          )
+                        )}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
                 {referenceFiles.length > 0 && (
                   <>
                     <DataItemLabel>Reference Files</DataItemLabel>
