@@ -70,7 +70,22 @@ export default function MatrixFile({
           <StatusPreviewDetail item={matrixFile} />
           <DataPanel>
             <DataArea>
-              <FileDataItems item={matrixFile} />
+              <FileDataItems item={matrixFile}>
+                {matrixFile.assembly && (
+                  <>
+                    <DataItemLabel>Genome Assembly</DataItemLabel>
+                    <DataItemValue>{matrixFile.assembly}</DataItemValue>
+                  </>
+                )}
+                {matrixFile.transcriptome_annotation && (
+                  <>
+                    <DataItemLabel>Transcriptome Annotation</DataItemLabel>
+                    <DataItemValue>
+                      {matrixFile.transcriptome_annotation}
+                    </DataItemValue>
+                  </>
+                )}
+              </FileDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
