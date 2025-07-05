@@ -43,6 +43,7 @@ import {
   checkForFileDownloadPath,
   convertFileDownloadPathToFilePagePath,
 } from "../../lib/files";
+import { sortedSeparatedList } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function TabularFile({
@@ -83,9 +84,7 @@ export default function TabularFile({
                   <>
                     <DataItemLabel>Base Modifications</DataItemLabel>
                     <DataItemValue>
-                      {_.sortBy(tabularFile.base_modifications, (mod) =>
-                        mod.toLowerCase()
-                      ).join(", ")}
+                      {sortedSeparatedList(tabularFile.base_modifications)}
                     </DataItemValue>
                   </>
                 )}

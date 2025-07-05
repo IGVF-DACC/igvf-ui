@@ -1,3 +1,5 @@
+// node_modules
+import _ from "lodash";
 // lib
 import { UC } from "./constants";
 
@@ -133,6 +135,27 @@ export function sortObjectProps(obj: object): object {
         [key]: prop,
       };
     }, {});
+}
+
+/**
+ * Sort an array of strings or numbers and return it as a single string containing the contents of
+ * the sorted array with a separator between each item. The sort is case insensitive for strings,
+ * and numbers are sorted numerically. The array can hold strings, numbers, or a mix of both. If
+ * the array is empty or isn't an array at all, this returns an empty string. For mixes of strings
+ * and numbers, the sorting is done by converting each number to a string and sorting them in with
+ * actual strings in the list.
+ * @param list - Array of strings or numbers to sort and separate
+ * @returns String containing `list` sorted and separated by the `separator`
+ */
+export function sortedSeparatedList(
+  list: (string | number)[],
+  separator = ", "
+): string {
+  if (Array.isArray(list) && list.length > 0) {
+    const sortedList = _.sortBy(list, (item) => String(item).toLowerCase());
+    return sortedList.join(separator);
+  }
+  return "";
 }
 
 /**

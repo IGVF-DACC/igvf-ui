@@ -32,7 +32,7 @@ import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { checkCheckfilesVersionVisible } from "../lib/checkfiles-version";
 import { formatDate } from "../lib/dates";
-import { dataSize, truthyOrZero } from "../lib/general";
+import { dataSize, sortedSeparatedList, truthyOrZero } from "../lib/general";
 
 /**
  * Display the data items common to all donor-derived objects.
@@ -738,10 +738,12 @@ export function FileSetDataItems({ item, publications = [], children }) {
           <DataItemValue>{item.file_set_type}</DataItemValue>
         </>
       )}
-      {item.control_type && (
+      {item.control_types && (
         <>
-          <DataItemLabel>Control Type</DataItemLabel>
-          <DataItemValue>{item.control_type}</DataItemValue>
+          <DataItemLabel>Control Types</DataItemLabel>
+          <DataItemValue>
+            {sortedSeparatedList(item.control_types)}
+          </DataItemValue>
         </>
       )}
       {item.summary && (
