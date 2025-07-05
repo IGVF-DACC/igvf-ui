@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -52,6 +53,7 @@ export default function TabularFile({
   inputFileFor,
   fileFormatSpecifications,
   integratedIn,
+  primerDesignFor,
   qualityMetrics,
   attribution = null,
   isJson,
@@ -76,7 +78,18 @@ export default function TabularFile({
           <StatusPreviewDetail item={tabularFile} />
           <DataPanel>
             <DataArea>
-              <FileDataItems item={tabularFile} />
+              <FileDataItems item={tabularFile}>
+                {tabularFile.base_modifications && (
+                  <>
+                    <DataItemLabel>Base Modifications</DataItemLabel>
+                    <DataItemValue>
+                      {_.sortBy(tabularFile.base_modifications, (mod) =>
+                        mod.toLowerCase()
+                      ).join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
+              </FileDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
@@ -151,6 +164,15 @@ export default function TabularFile({
               panelId="barcode-map-for"
             />
           )}
+          {primerDesignFor.length > 0 && (
+            <FileSetTable
+              fileSets={primerDesignFor}
+              title="Primer Design For"
+              reportLink={`/multireport/?type=MeasurementSet&primer_designs=${tabularFile["@id"]}`}
+              reportLabel="Report of measurement sets using this file as a primer design"
+              panelId="primer-design-for"
+            />
+          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -173,6 +195,8 @@ TabularFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // ConstructLibraryset this file was integrated in
   integratedIn: PropTypes.arrayOf(PropTypes.object),
+  // Primer design files for this file
+  primerDesignFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics for this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
@@ -230,6 +254,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
       integratedIn = await requestFileSets(integratedInPaths, request);
     }
+    const primerDesignFor =
+      tabularFile.primer_design_for.length > 0
+        ? await requestFileSets(tabularFile.primer_design_for, request)
+        : [];
     const qualityMetrics =
       tabularFile.quality_metrics.length > 0
         ? await requestQualityMetrics(tabularFile.quality_metrics, request)
@@ -244,6 +272,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         integratedIn,
+        primerDesignFor,
         qualityMetrics,
         pageContext: { title: tabularFile.accession },
         attribution,

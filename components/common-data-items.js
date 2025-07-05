@@ -589,6 +589,12 @@ export function FileDataItems({ item, children = null }) {
       )}
       <DataItemLabel>File Format</DataItemLabel>
       <DataItemValue>{item.file_format}</DataItemValue>
+      {item.file_format_type && (
+        <>
+          <DataItemLabel>File Format Type</DataItemLabel>
+          <DataItemValue>{item.file_format_type}</DataItemValue>
+        </>
+      )}
       <DataItemLabel>Content Type</DataItemLabel>
       <DataItemValue>{item.content_type}</DataItemValue>
       {item.external_host_url && (
