@@ -27,7 +27,7 @@ export function PillBadge({
 }) {
   return (
     <div
-      className={`flex h-5 w-fit items-center whitespace-nowrap rounded-full border border-white text-xs font-semibold uppercase shadow-status ${className} ${iconPositionClasses[iconPosition]}`}
+      className={`flex h-5 w-fit items-center rounded-full border border-white text-xs font-semibold whitespace-nowrap uppercase ring-1 ${className} ${iconPositionClasses[iconPosition]}`}
       data-testid={testid}
       role="status"
     >

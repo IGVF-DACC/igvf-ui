@@ -54,6 +54,7 @@ export default function InVitroSystem({
   demultiplexedFrom,
   demultiplexedTo,
   diseaseTerms,
+  annotatedFrom,
   documents,
   donors,
   originOf,
@@ -92,6 +93,7 @@ export default function InVitroSystem({
                 classifications={inVitroSystem.classifications}
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
+                annotatedFrom={annotatedFrom}
                 parts={parts}
                 partOf={partOf}
                 publications={publications}
@@ -123,12 +125,10 @@ export default function InVitroSystem({
                   <>
                     <DataItemLabel>Time Post Change</DataItemLabel>
                     <DataItemValue>
-                      {inVitroSystem.time_post_change}
-                      {inVitroSystem.time_post_change_units ? (
-                        <> {inVitroSystem.time_post_change_units}</>
-                      ) : (
-                        ""
-                      )}
+                      {inVitroSystem.time_post_change}{" "}
+                      {inVitroSystem.time_post_change > 1
+                        ? `${inVitroSystem.time_post_change_units}s`
+                        : inVitroSystem.time_post_change_units}
                     </DataItemValue>
                   </>
                 )}
@@ -286,6 +286,8 @@ InVitroSystem.propTypes = {
   demultiplexedTo: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Disease ontology for this sample
   diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Annotated from sample
+  annotatedFrom: PropTypes.object,
   // Documents associated with the sample
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with the sample
@@ -440,6 +442,9 @@ export async function getServerSideProps({ params, req, query }) {
         request
       );
     }
+    const annotatedFrom = inVitroSystem.annotated_from
+      ? (await request.getObject(inVitroSystem.annotated_from)).optional()
+      : null;
     let publications = [];
     if (inVitroSystem.publications?.length > 0) {
       const publicationPaths = inVitroSystem.publications.map(
@@ -459,6 +464,7 @@ export async function getServerSideProps({ params, req, query }) {
         constructLibrarySets,
         demultiplexedFrom,
         demultiplexedTo,
+        annotatedFrom,
         diseaseTerms,
         documents,
         donors,

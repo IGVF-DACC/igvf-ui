@@ -236,6 +236,9 @@ const tailwindConfig: Config = {
           "var(--color-computational-tools-category-single-cell)",
         "computational-tools-category-unknown":
           "var(--color-computational-tools-category-unknown)",
+
+        "standardized-file-format":
+          "var(--color-standardized-file-format-background)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",
@@ -373,9 +376,10 @@ const tailwindConfig: Config = {
         "computational-tools-header":
           "var(--color-computational-tools-header-foreground)",
       },
-      boxShadow: {
-        // Status badges
-        status: "0 0 0 1px #a0a0a0",
+      ringColor: {
+        "standardized-file-format":
+          "var(--color-standardized-file-format-ring)",
+        status: "#a0a0a0",
       },
       fill: {
         "button-primary": "var(--color-button-primary-label)",

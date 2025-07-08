@@ -1,15 +1,29 @@
 import { defineConfig } from "cypress";
 
-module.exports = defineConfig({
+export default defineConfig({
+  // ... your existing config
   projectId: "3vpsct",
   defaultCommandTimeout: 30000,
-  viewportWidth: 1282,
-  viewportHeight: 800,
-  watchForFileChanges: true,
   video: true,
+  retries: {
+    runMode: 2,
+    openMode: 0,
+  },
   e2e: {
-    experimentalRunAllSpecs: true,
     baseUrl: "http://localhost:3000",
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
+    experimentalRunAllSpecs: true,
+    setupNodeEvents(on) {
+      on("before:browser:launch", (browser = {}, launchOptions) => {
+        if (browser.name === "chrome") {
+          launchOptions.args.push("--no-sandbox");
+          launchOptions.args.push("--disable-dev-shm-usage");
+          launchOptions.args.push("--disable-gpu");
+          launchOptions.args.push("--disable-software-rasterizer");
+          launchOptions.args.push("--mute-audio");
+        }
+        return launchOptions;
+      });
+    },
   },
 });
