@@ -60,7 +60,7 @@ export default function WholeOrganism({
   attribution = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

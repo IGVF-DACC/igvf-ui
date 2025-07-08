@@ -37,7 +37,7 @@ export default function DegronModification({
   isJson,
   attribution = null,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

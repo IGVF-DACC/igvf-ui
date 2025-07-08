@@ -46,7 +46,7 @@ export default function ConfigurationFile({
   qualityMetrics,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

@@ -34,7 +34,7 @@ export default function PerturbSeqQualityMetric({
   qualityMetricOf: FileObject[];
   isJson: boolean;
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

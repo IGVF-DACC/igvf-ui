@@ -168,9 +168,9 @@ function handleSelect(
   // Add a CSS class to the element to highlight it when scrolling to it. After a short time,
   // remove it.
   if (!isScrollToTop) {
-    element.classList.add("bg-section-directory");
+    element.classList.add("sec-dir-highlight");
     setTimeout(() => {
-      element.classList.remove("bg-section-directory");
+      element.classList.remove("sec-dir-highlight");
     }, ANCHOR_HIGHLIGHT_TIME);
   }
 }
@@ -302,17 +302,32 @@ export function SecDir({ sections }: { sections: SectionList }) {
  * If the section titles can change as the page loads or any other reason, you can pass an
  * arbitrary string in `hash` to this hook to collect the section titles again whenever the hash
  * changes. If you don't pass a hash, this hook will only collect the sections once on page load.
+ *
+ * The `isJson` property can be used in place of `hash` to trigger collecting the sections, but
+ * specifically for the JSON switch. This is useful when the page has a JSON switch that changes
+ * the content of the page, and you want to collect the sections again when the user switches
+ * between JSON and object formats. `hash` is ignored if `isJson` is provided with either `true`
+ * or `false` values.
  * @param renderer React component to render each item in the section directory menu
  * @param hash Hash to use to trigger this hook to collect the sections again
+ * @param isJson Use in place of `hash` to trigger collecting the sections, but for the JSON switch
  * @returns List of sections on the page to pass to SecDir
  */
 export function useSecDir({
   renderer = null,
   hash = "",
+  isJson,
 }: {
   renderer?: RendererComponent;
   hash?: string;
+  isJson?: boolean;
 } = {}): SectionList {
+  // If isJson is provided (true or false), use it as the basis for the hash. Otherwise use the
+  // hash (if any) as is.
+  if (typeof isJson === "boolean") {
+    hash = isJson ? "json" : "object";
+  }
+
   // Use the session properties `auth.userid` property to detect the user login so we can update
   // the section directory in case new panels appear.
   const { sessionProperties } = useContext(SessionContext as any) as {

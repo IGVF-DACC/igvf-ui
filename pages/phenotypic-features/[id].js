@@ -29,7 +29,7 @@ export default function PhenotypicFeature({
   isJson,
   attribution = null,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   const title = getPhenotypicFeatureTitle(phenotypicFeature);
   const feature = `${phenotypicFeature.feature.term_name} (${phenotypicFeature.feature.term_id})`;

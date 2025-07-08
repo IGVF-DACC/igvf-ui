@@ -67,7 +67,7 @@ interface MockSessionProviderProps {
   value: any; // Replace `any` with the type used in your context
 }
 
-export function MockSessionProvider({
+function MockSessionProvider({
   children,
   value,
 }: MockSessionProviderProps): JSX.Element {
@@ -124,9 +124,43 @@ describe("Test useSecDir() custom React hook", () => {
     ]);
   });
 
-  it("should update the sections based on the DOM elements", () => {
+  it("should update the sections based on the DOM elements with empty context", () => {
     const { result } = renderHook(() => useSecDir(), {
       wrapper: WrapperEmpty,
+    });
+
+    act(() => {
+      // Force React to re-evaluate the effect.
+      jest.runAllTimers();
+    });
+
+    // Assert the sections are updated
+    expect(result.current?.items).toEqual([
+      { id: "sec-dir-section-1", title: "Section 1" },
+      { id: "sec-dir-section-2", title: "Section 2" },
+    ]);
+  });
+
+  it("should update the sections with `isJson` set to true", () => {
+    const { result } = renderHook(() => useSecDir({ isJson: true }), {
+      wrapper: Wrapper,
+    });
+
+    act(() => {
+      // Force React to re-evaluate the effect.
+      jest.runAllTimers();
+    });
+
+    // Assert the sections are updated
+    expect(result.current?.items).toEqual([
+      { id: "sec-dir-section-1", title: "Section 1" },
+      { id: "sec-dir-section-2", title: "Section 2" },
+    ]);
+  });
+
+  it("should update the sections with `isJson` set to false", () => {
+    const { result } = renderHook(() => useSecDir({ isJson: false }), {
+      wrapper: Wrapper,
     });
 
     act(() => {

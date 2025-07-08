@@ -42,7 +42,7 @@ export default function RodentDonor({
   sources = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

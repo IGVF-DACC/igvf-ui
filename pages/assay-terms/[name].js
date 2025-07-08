@@ -22,7 +22,7 @@ import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>
