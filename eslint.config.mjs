@@ -1,5 +1,6 @@
 import { defineConfig } from "eslint/config";
 import testingLibrary from "eslint-plugin-testing-library";
+import cypress from "eslint-plugin-cypress";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
@@ -145,6 +146,31 @@ export default defineConfig([
     },
     rules: {
       ...jest.configs.recommended.rules,
+    },
+  },
+  {
+    files: [
+      "cypress.config.{js,mjs,cjs}",
+      "cypress/**/*.cy.{js,ts,jsx,tsx}",
+      "cypress/support/**/*.{js,ts,jsx,tsx}",
+    ],
+    plugins: {
+      cypress,
+    },
+    languageOptions: {
+      globals: {
+        ...cypress.environments.globals.globals,
+        describe: "readonly",
+        it: "readonly",
+        before: "readonly",
+        after: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+      },
+    },
+    rules: {
+      ...cypress.configs.recommended.rules,
+      "cypress/no-unnecessary-waiting": "off",
     },
   },
 ]);
