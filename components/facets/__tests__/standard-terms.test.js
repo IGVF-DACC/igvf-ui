@@ -291,4 +291,61 @@ describe("Test the StandardTerms component", () => {
     await user.click(childCheckbox);
     expect(updateQuery).toHaveBeenCalledWith("type=MeasurementSet");
   });
+
+  it("detects a boolean facet and renders it correctly", () => {
+    const searchResults = {
+      "@context": "/terms/",
+      "@graph": [],
+      "@id": "/search/?type=Item",
+      "@type": ["Search"],
+      facets: [
+        {
+          field: "controlled_access",
+          title: "Controlled Access",
+          terms: [
+            {
+              key: 1,
+              key_as_string: "true",
+              doc_count: 6,
+            },
+            {
+              key: 0,
+              key_as_string: "false",
+              doc_count: 5,
+            },
+          ],
+          total: 11,
+          type: "terms",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          term: "InstitutionalCertificate",
+          remove: "/search/?status%21=deleted",
+        },
+      ],
+    };
+    const facet = searchResults.facets[0];
+
+    render(
+      <StandardTerms
+        searchResults={searchResults}
+        facet={facet}
+        updateQuery={() => {}}
+      />
+    );
+
+    const radioButtons = screen.getAllByRole("radio");
+    expect(radioButtons).toHaveLength(3);
+    expect(radioButtons[0].nextElementSibling).toHaveTextContent("true");
+    expect(radioButtons[0].nextElementSibling).toHaveTextContent("6");
+    expect(radioButtons[1].nextElementSibling).toHaveTextContent("false");
+    expect(radioButtons[1].nextElementSibling).toHaveTextContent("5");
+    expect(radioButtons[2].nextElementSibling).toHaveTextContent("any");
+    expect(radioButtons[2].nextElementSibling).toHaveTextContent("11");
+    expect(radioButtons[0]).not.toBeChecked();
+    expect(radioButtons[1]).not.toBeChecked();
+    expect(radioButtons[2]).toBeChecked();
+  });
 });

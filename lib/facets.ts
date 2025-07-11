@@ -280,3 +280,25 @@ export async function setFacetConfig(
   const apiPath = generateFacetConfigApiPath(userUuid, selectedType);
   await request.postObject(apiPath, facetConfig);
 }
+
+/**
+ * Check if a facet appears to be a boolean facet. A boolean facet has one or two terms, either
+ * with `key_as_string` of "false" and `key` of 0, or with `key_as_string` of "true" and `key` of
+ * 1, or both. The schema `type` property does not get carried over to the facet terms, so we can't
+ * just check for the type.
+ * @param facet Facet to check if it is a boolean facet
+ * @returns True if the facet is a boolean facet, false otherwise
+ */
+export function checkForBooleanFacet(facet: SearchResultsFacet): boolean {
+  const facetTerms = facet.terms as SearchResultsFacetTerm[];
+  if (facetTerms.length <= 2) {
+    const falseTerms = facetTerms.filter(
+      (term) => term.key_as_string === "false" && term.key === 0
+    );
+    const trueTerms = facetTerms.filter(
+      (term) => term.key_as_string === "true" && term.key === 1
+    );
+    return falseTerms.length === 1 || trueTerms.length === 1;
+  }
+  return false;
+}

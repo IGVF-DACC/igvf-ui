@@ -1,9 +1,10 @@
 // node_modules
-import _ from "lodash";
 import { motion, AnimatePresence } from "framer-motion";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
+// components/facet/custom-facets
+import TriBooleanTerms from "./tri-boolean-terms";
 // components/facets
 import FacetTerm from "../facet-term";
 // components
@@ -13,6 +14,7 @@ import {
 } from "../../animation";
 import Icon from "../../icon";
 // lib
+import { checkForBooleanFacet } from "../../../lib/facets";
 import QueryString from "../../../lib/query-string";
 import { splitPathAndQueryString } from "../../../lib/query-utils";
 
@@ -33,7 +35,7 @@ function TermsSelectorsButton({ onClick, label, children }) {
   return (
     <button
       onClick={onClick}
-      className="h-5 grow rounded-sm border border-button-secondary bg-button-secondary fill-button-secondary text-xs text-button-secondary"
+      className="border-button-secondary bg-button-secondary fill-button-secondary text-button-secondary h-5 grow rounded-sm border text-xs"
       aria-label={label}
       type="button"
     >
@@ -94,7 +96,7 @@ function TermFilter({ id, currentFilter, setCurrentFilter }) {
     >
       <Icon.Filter className={`h-5 w-5 ${filterIconStyles}`} />
       <input
-        className="w-full border-b border-facet-filter bg-transparent px-1 py-0.5 text-sm text-facet-filter placeholder:text-xs placeholder:text-gray-300 focus:border-facet-filter-focus focus:text-facet-filter-focus dark:placeholder:text-gray-600"
+        className="border-facet-filter text-facet-filter focus:border-facet-filter-focus focus:text-facet-filter-focus w-full border-b bg-transparent px-1 py-0.5 text-sm placeholder:text-xs placeholder:text-gray-300 dark:placeholder:text-gray-600"
         type="text"
         placeholder="Term filter"
         value={currentFilter}
@@ -105,7 +107,7 @@ function TermFilter({ id, currentFilter, setCurrentFilter }) {
         onClick={() => setCurrentFilter("")}
         data-testid={`facet-term-clear-${id}`}
       >
-        <XCircleIcon className="h-5 w-5 fill-facet-clear-filter-icon" />
+        <XCircleIcon className="fill-facet-clear-filter-icon h-5 w-5" />
         <div className="sr-only">Clear term filter</div>
       </button>
     </div>
@@ -128,7 +130,7 @@ TermFilter.propTypes = {
 function CollapseControl({ id, totalTermCount, isExpanded, setIsExpanded }) {
   return (
     <button
-      className="mx-2 text-xs font-bold uppercase text-gray-500"
+      className="mx-2 text-xs font-bold text-gray-500 uppercase"
       data-testid={`facet-term-collapse-${id}`}
       onClick={() => setIsExpanded(!isExpanded)}
     >
@@ -299,7 +301,7 @@ function processTermClick(field, term, isNegative, parent, query, updateQuery) {
   updateQuery(query.format());
 }
 
-export default function StandardTerms({ searchResults, facet, updateQuery }) {
+function StandardTermsCore({ searchResults, facet, updateQuery }) {
   // User-typed term to filter the facet terms
   const [filterTerm, setFilterTerm] = useState("");
   // True if the facet has enough terms to expand/collapse, and it's currently expanded
@@ -395,11 +397,63 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
           )}
         </>
       ) : (
-        <p className="text-center text-sm italic text-gray-500">
+        <p className="text-center text-sm text-gray-500 italic">
           Filter matches no terms.
         </p>
       )}
     </div>
+  );
+}
+
+StandardTermsCore.propTypes = {
+  // Search results from data provider
+  searchResults: PropTypes.object.isRequired,
+  // Facet object from search results
+  facet: PropTypes.shape({
+    // Object property the facet displays
+    field: PropTypes.string.isRequired,
+    // Facet title
+    title: PropTypes.string.isRequired,
+    // Relevant selectable terms for the facet
+    terms: PropTypes.arrayOf(
+      PropTypes.shape({
+        // Label for the facet term
+        key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+          .isRequired,
+        // Number of results for the facet term
+        doc_count: PropTypes.number,
+        // Label for the facet term as a string when available
+        key_as_string: PropTypes.string,
+      })
+    ).isRequired,
+  }).isRequired,
+  // Called to return the updated query string from the facet user selection
+  updateQuery: PropTypes.func.isRequired,
+};
+
+/**
+ * Wrapper component for the standard terms facet. It handles boolean facets by using the
+ * TriBooleanTerms component, and otherwise uses the StandardTermsCore component to display the
+ * terms.
+ */
+export default function StandardTerms({ searchResults, facet, updateQuery }) {
+  // Facets that appear to be boolean facets should use the TriBooleanTerms component.
+  if (checkForBooleanFacet(facet)) {
+    return (
+      <TriBooleanTerms
+        searchResults={searchResults}
+        facet={facet}
+        updateQuery={updateQuery}
+      />
+    );
+  }
+
+  return (
+    <StandardTermsCore
+      searchResults={searchResults}
+      facet={facet}
+      updateQuery={updateQuery}
+    />
   );
 }
 

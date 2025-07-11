@@ -18,6 +18,7 @@ const compat = new FlatCompat({
 });
 
 export default defineConfig([
+  // Shared base config
   {
     extends: compat.extends(
       "next",
@@ -32,11 +33,6 @@ export default defineConfig([
       "@typescript-eslint": typescriptEslint,
     },
 
-    languageOptions: {
-      globals: {},
-      parser: tsParser,
-    },
-
     rules: {
       camelcase: [
         "error",
@@ -44,7 +40,6 @@ export default defineConfig([
           properties: "never",
         },
       ],
-
       "comma-dangle": [
         "error",
         {
@@ -55,19 +50,16 @@ export default defineConfig([
           functions: "ignore",
         },
       ],
-
       curly: "error",
       "dot-notation": ["error"],
       eqeqeq: ["error"],
       "func-style": ["error", "declaration"],
-
       "no-else-return": [
         "error",
         {
           allowElseIf: false,
         },
       ],
-
       "no-multiple-empty-lines": [
         "error",
         {
@@ -75,28 +67,24 @@ export default defineConfig([
           maxEOF: 0,
         },
       ],
-
       "no-trailing-spaces": ["error"],
       "no-useless-constructor": ["error"],
       "object-curly-spacing": ["error", "always"],
       "object-shorthand": ["error"],
       "prefer-const": ["error"],
       "prefer-template": "error",
-
       "react/no-unused-prop-types": [
         "error",
         {
           skipShapeProps: true,
         },
       ],
-
       "react/prop-types": [
         "error",
         {
           ignore: ["children"],
         },
       ],
-
       "react/self-closing-comp": [
         "error",
         {
@@ -104,11 +92,9 @@ export default defineConfig([
           html: true,
         },
       ],
-
       "react-hooks/exhaustive-deps": "off",
       semi: ["error", "always"],
       "space-before-blocks": ["error", "always"],
-
       "space-before-function-paren": [
         "error",
         {
@@ -117,13 +103,21 @@ export default defineConfig([
           asyncArrow: "always",
         },
       ],
-
       "testing-library/await-async-queries": "error",
       "testing-library/no-debugging-utils": "warn",
       "testing-library/no-dom-import": "off",
+    },
+  },
+
+  // TypeScript-specific config
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    languageOptions: {
+      parser: tsParser,
+    },
+    rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-require-imports": "off",
-
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -134,6 +128,23 @@ export default defineConfig([
       ],
     },
   },
+
+  // JavaScript-specific config
+  {
+    files: ["**/*.js", "**/*.jsx"],
+    rules: {
+      "no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
+
+  // Test file overrides
   {
     files: ["**/*.test.{js,ts,jsx,tsx}", "**/*.spec.{js,ts,jsx,tsx}"],
     plugins: {
