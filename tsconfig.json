@@ -11,6 +11,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "noEmit": true,
+    "noUnusedLocals": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": false,
@@ -19,11 +20,12 @@
     "types": ["jest", "node"],
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "pages/**/*.tsx", "components/**/*.tsx", "lib"],
   "exclude": [
-    "cypress.config.js",
-    "cypress/e2e/*.cy.js",
     "node_modules",
-    "components/**/*.js"
+    ".next",
+    "coverage",
+    "cypress.config.js",
+    "cypress/e2e/*.cy.js"
   ]
 }

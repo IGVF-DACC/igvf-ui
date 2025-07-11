@@ -179,7 +179,7 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {measurementSet.targeted_genes?.length > 0 && (
+                {measurementSet.targeted_genes && (
                   <>
                     <DataItemLabel>Targeted Genes</DataItemLabel>
                     <DataItemValue>

@@ -16,8 +16,9 @@ cypress.env.json
 /.next/
 /out/
 
-# production
+# build output
 /build
+/tsconfig.tsbuildinfo
 
 # misc
 .DS_Store
