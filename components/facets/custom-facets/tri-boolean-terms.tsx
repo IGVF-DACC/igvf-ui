@@ -17,7 +17,7 @@ import type {
 const enum TriBoolean {
   False = 0,
   True = 1,
-  Either = 2,
+  Any = 2,
 }
 
 /**
@@ -35,7 +35,7 @@ function currentSelection(
     (filter) => filter.field === field
   );
   if (fieldFilters.length === 0) {
-    return TriBoolean.Either;
+    return TriBoolean.Any;
   }
   if (fieldFilters.every((filter) => filter.term === "false")) {
     return TriBoolean.False;
@@ -43,15 +43,15 @@ function currentSelection(
   if (fieldFilters.every((filter) => filter.term === "true")) {
     return TriBoolean.True;
   }
-  return TriBoolean.Either;
+  return TriBoolean.Any;
 }
 
 /**
  * Custom facet terms component for boolean facets. This component renders a radio group with three
- * options: "true", "false", and "either". The "either" option is selected when the query string
- * doesn't contain any elements relevant to the current facet field. The "true" and "false" options
- * are selected when the query string contains the corresponding value for the current facet field.
- * In addition, a mix of "true" and "false" values will result in the "either" option being selected.
+ * options: "true", "false", and "any". The "any" option is selected when the query string doesn't
+ * contain any elements relevant to the current facet field. The "true" and "false" options are
+ * selected when the query string contains the corresponding value for the current facet field. In
+ * addition, a mix of "true" and "false" values will result in the "any" option being selected.
  * @param searchResults - Entire search results object from the data provider
  * @param facet - Facet object for the current field
  * @param updateQuery - Function to update the query string in the URL
@@ -70,7 +70,7 @@ export default function TriBooleanTerms({
   const query = new QueryString(queryString);
 
   function onChange(clickedValue: number) {
-    // Clear all filters for the current facet field, then add the selected value if not "either".
+    // Clear all filters for the current facet field, then add the selected value if not "any".
     query.deleteKeyValue(facet.field);
     if (clickedValue === TriBoolean.False) {
       query.addKeyValue(facet.field, "false");
@@ -82,14 +82,14 @@ export default function TriBooleanTerms({
     updateQuery(query.format());
   }
 
-  // Build array of available boolean terms as well as "either"
-  const eitherTerm: SearchResultsFacetTerm = {
+  // Build array of available boolean terms as well as "any"
+  const anyTerm: SearchResultsFacetTerm = {
     doc_count: facet.total,
-    key: TriBoolean.Either,
-    key_as_string: "either",
+    key: TriBoolean.Any,
+    key_as_string: "any",
   };
   let terms = facet.terms as SearchResultsFacetTerm[];
-  terms = terms.concat(eitherTerm);
+  terms = terms.concat(anyTerm);
 
   // Determine the selected term.
   const selectedValue = currentSelection(facet.field, searchResults);
@@ -104,7 +104,7 @@ export default function TriBooleanTerms({
       {terms.map((term) => (
         <Field
           key={term.key}
-          className="flex cursor-pointer items-center gap-2 rounded-sm border border-transparent px-2 hover:border-data-border"
+          className="hover:border-data-border flex cursor-pointer items-center gap-2 rounded-sm border border-transparent px-2"
         >
           <Radio
             value={term.key}

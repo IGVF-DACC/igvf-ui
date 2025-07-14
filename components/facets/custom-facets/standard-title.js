@@ -1,8 +1,12 @@
 // node_modules
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
+// components/facets/custom-facets
+import NoTermCountTitle from "./no-term-count-title";
 // components/facets
 import { FacetTermCount } from "../facet-term-count";
+// lib
+import { checkForBooleanFacet } from "../../../lib/facets";
 
 /**
  * Alternate facet title renderers can use this to display the standard title collapse/expand
@@ -12,7 +16,7 @@ import { FacetTermCount } from "../facet-term-count";
 export function StandardTitleElement({ field, isFacetOpen, children }) {
   return (
     <h2
-      className={`flex items-center justify-between text-base font-normal text-facet-title ${
+      className={`text-facet-title flex items-center justify-between text-base font-normal ${
         isFacetOpen ? "text-white dark:text-black" : ""
       }`}
       data-testid={`facettitle-${field}`}
@@ -40,6 +44,17 @@ StandardTitleElement.propTypes = {
  * Displays the standard facet title, using the `title` property of the displayed facet.
  */
 export default function StandardTitle({ facet, searchResults, isFacetOpen }) {
+  // Facets that appear to be boolean facets should not display a term count.
+  if (checkForBooleanFacet(facet)) {
+    return (
+      <NoTermCountTitle
+        facet={facet}
+        searchResults={searchResults}
+        isFacetOpen={isFacetOpen}
+      />
+    );
+  }
+
   return (
     <>
       <StandardTitleElement field={facet.field} isFacetOpen={isFacetOpen}>

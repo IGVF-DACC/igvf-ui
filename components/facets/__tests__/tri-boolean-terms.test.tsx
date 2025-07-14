@@ -31,6 +31,7 @@ const searchResults: SearchResults = {
         },
       ],
       total: 11,
+      type: "terms",
     },
   ],
   filters: [
@@ -71,7 +72,7 @@ describe("Test TriBooleanTerms component", () => {
     expect(radioButtons[0].nextElementSibling).toHaveTextContent("6");
     expect(radioButtons[1].nextElementSibling).toHaveTextContent("false");
     expect(radioButtons[1].nextElementSibling).toHaveTextContent("5");
-    expect(radioButtons[2].nextElementSibling).toHaveTextContent("either");
+    expect(radioButtons[2].nextElementSibling).toHaveTextContent("any");
     expect(radioButtons[2].nextElementSibling).toHaveTextContent("11");
     expect(radioButtons[0]).not.toBeChecked();
     expect(radioButtons[1]).not.toBeChecked();
@@ -124,7 +125,7 @@ describe("Test TriBooleanTerms component", () => {
     expect(radioButtons[0].nextElementSibling).toHaveTextContent("6");
     expect(radioButtons[1].nextElementSibling).toHaveTextContent("false");
     expect(radioButtons[1].nextElementSibling).toHaveTextContent("5");
-    expect(radioButtons[2].nextElementSibling).toHaveTextContent("either");
+    expect(radioButtons[2].nextElementSibling).toHaveTextContent("any");
     expect(radioButtons[2].nextElementSibling).toHaveTextContent("11");
     expect(radioButtons[0]).not.toBeChecked();
     expect(radioButtons[1]).toBeChecked();
@@ -176,7 +177,7 @@ describe("Test TriBooleanTerms component", () => {
     expect(radioButtons[0].nextElementSibling).toHaveTextContent("6");
     expect(radioButtons[1].nextElementSibling).toHaveTextContent("false");
     expect(radioButtons[1].nextElementSibling).toHaveTextContent("5");
-    expect(radioButtons[2].nextElementSibling).toHaveTextContent("either");
+    expect(radioButtons[2].nextElementSibling).toHaveTextContent("any");
     expect(radioButtons[2].nextElementSibling).toHaveTextContent("11");
     expect(radioButtons[0]).toBeChecked();
     expect(radioButtons[1]).not.toBeChecked();
@@ -235,6 +236,7 @@ describe("Test TriBooleanTerms component", () => {
           doc_count: 5,
         },
       ],
+      type: "terms",
       total: 6,
     };
 
@@ -255,7 +257,7 @@ describe("Test TriBooleanTerms component", () => {
     expect(radioButtons[0].nextElementSibling).toHaveTextContent("1");
     expect(radioButtons[1].nextElementSibling).toHaveTextContent("false");
     expect(radioButtons[1].nextElementSibling).toHaveTextContent("5");
-    expect(radioButtons[2].nextElementSibling).toHaveTextContent("either");
+    expect(radioButtons[2].nextElementSibling).toHaveTextContent("any");
     expect(radioButtons[2].nextElementSibling).toHaveTextContent("6");
     expect(radioButtons[0]).not.toBeChecked();
     expect(radioButtons[1]).not.toBeChecked();

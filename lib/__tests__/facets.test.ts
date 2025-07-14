@@ -1,4 +1,5 @@
 import {
+  checkForBooleanFacet,
   checkHierarchicalFacet,
   collectAllChildFacets,
   filterOutChildFacets,
@@ -724,7 +725,7 @@ describe("Test the generateFacetStoreKey function", () => {
 });
 
 describe("Test the getFacetConfig / setFacetConfig functions", () => {
-  it("should get the facet configuration for the user and object type", () => {
+  it("should get the facet configuration for the user and object type", async () => {
     const mockResult = { taxa: true };
 
     const mockFunction = jest.fn();
@@ -738,7 +739,7 @@ describe("Test the getFacetConfig / setFacetConfig functions", () => {
     const request = new FetchRequest();
     const uuid = "123";
     const selectedType = "InVitroSystem";
-    expect(getFacetConfig(uuid, selectedType, request)).resolves.toEqual(
+    await expect(getFacetConfig(uuid, selectedType, request)).resolves.toEqual(
       mockResult
     );
   });
@@ -759,5 +760,115 @@ describe("Test the getFacetConfig / setFacetConfig functions", () => {
     const selectedType = "InVitroSystem";
     const config = { taxa: true };
     setFacetConfig(uuid, selectedType, config, request);
+
+    expect(mockFunction).toHaveBeenCalledWith(
+      `/api/facet-config/${uuid}/?type=${selectedType}`,
+      {
+        body: JSON.stringify(config),
+        credentials: "include",
+        headers: expect.any(Headers),
+        method: "POST",
+        redirect: "follow",
+      }
+    );
+  });
+});
+
+describe("Test the checkForBooleanFacet function", () => {
+  it("should return true for boolean facets where true is first", () => {
+    const facet: SearchResultsFacet = {
+      field: "standardized_file_format",
+      title: "Standardized File Format",
+      terms: [
+        { key: 1, key_as_string: "true", doc_count: 10 },
+        { key: 0, key_as_string: "false", doc_count: 5 },
+      ],
+      type: "terms",
+      total: 15,
+    };
+    expect(checkForBooleanFacet(facet)).toBe(true);
+  });
+
+  it("should return true for boolean facets where false is first", () => {
+    const facet: SearchResultsFacet = {
+      field: "standardized_file_format",
+      title: "Standardized File Format",
+      terms: [
+        { key: 0, key_as_string: "false", doc_count: 5 },
+        { key: 1, key_as_string: "true", doc_count: 10 },
+      ],
+      type: "terms",
+      total: 15,
+    };
+    expect(checkForBooleanFacet(facet)).toBe(true);
+  });
+
+  it("should return true for a boolean facet with just true", () => {
+    const facet: SearchResultsFacet = {
+      field: "standardized_file_format",
+      title: "Standardized File Format",
+      terms: [{ key: 1, key_as_string: "true", doc_count: 10 }],
+      type: "terms",
+      total: 10,
+    };
+    expect(checkForBooleanFacet(facet)).toBe(true);
+  });
+
+  it("should return true for a boolean facet with just false", () => {
+    const facet: SearchResultsFacet = {
+      field: "standardized_file_format",
+      title: "Standardized File Format",
+      terms: [{ key: 0, key_as_string: "false", doc_count: 5 }],
+      type: "terms",
+      total: 5,
+    };
+    expect(checkForBooleanFacet(facet)).toBe(true);
+  });
+
+  it("should return false for a terms facet with two true terms", () => {
+    const facet: SearchResultsFacet = {
+      field: "standardized_file_format",
+      title: "Standardized File Format",
+      terms: [
+        { key: 0, key_as_string: "false", doc_count: 5 },
+        { key: 1, key_as_string: "true", doc_count: 10 },
+        { key: 1, key_as_string: "true", doc_count: 15 },
+      ],
+      type: "terms",
+      total: 30,
+    };
+    expect(checkForBooleanFacet(facet)).toBe(false);
+  });
+
+  it("should return false for a terms facet", () => {
+    const facet: SearchResultsFacet = {
+      field: "type",
+      title: "Object Type",
+      terms: [
+        { key: "InVitroSystem", doc_count: 1 },
+        { key: "MeasurementSet", doc_count: 2 },
+      ],
+      type: "terms",
+      total: 3,
+    };
+    expect(checkForBooleanFacet(facet)).toBe(false);
+  });
+
+  it("should return false for stats facets", () => {
+    const facet: SearchResultsFacet = {
+      field: "file_size",
+      title: "File Size",
+      terms: {
+        count: 2,
+        min: 9828031,
+        max: 98280399,
+        avg: 54054215,
+        sum: 108108430,
+      },
+      total: 2,
+      type: "stats",
+      appended: false,
+    };
+    expect(checkForBooleanFacet(facet)).toBe(false);
   });
 });

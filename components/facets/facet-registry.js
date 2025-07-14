@@ -12,7 +12,6 @@ import StandardTitle from "./custom-facets/standard-title";
 import FileSizeTagLabel from "./custom-facets/file-size-tag-label";
 import TaxaTagLabel from "./custom-facets/taxa-tag-label";
 import TaxaTermLabel from "./custom-facets/taxa-term-label";
-import TriBooleanTerms from "./custom-facets/tri-boolean-terms";
 
 /**
  * Registry of custom facet components for the term label, terms (basically the entire facet sans
@@ -41,7 +40,6 @@ const facetRegistry = {
   // Custom terms, basically controlling the appearance of the entire facet sans title.
   terms: {
     "audit.INTERNAL_ACTION.category": InternalActionAuditTerms,
-    controlled_access: TriBooleanTerms,
     creation_timestamp: DateRangeTerms,
     file_size: FileSizeTerms,
     release_timestamp: DateRangeTerms,
