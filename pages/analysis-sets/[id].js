@@ -148,7 +148,7 @@ export default function AnalysisSet({
                   </DataItemValue>
                 </>
               )}
-              {analysisSet.targeted_genes && (
+              {analysisSet.targeted_genes?.length > 0 && (
                 <>
                   <DataItemLabel>Targeted Genes</DataItemLabel>
                   <DataItemValue>
