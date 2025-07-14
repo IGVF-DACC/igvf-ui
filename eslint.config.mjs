@@ -1,6 +1,7 @@
 import { defineConfig } from "eslint/config";
 import testingLibrary from "eslint-plugin-testing-library";
 import cypress from "eslint-plugin-cypress";
+import reactPlugin from "eslint-plugin-react";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
@@ -25,10 +26,12 @@ export default defineConfig([
       "prettier",
       "eslint:recommended",
       "next/core-web-vitals",
+      "plugin:react/recommended",
       "plugin:@typescript-eslint/recommended"
     ),
 
     plugins: {
+      react: reactPlugin,
       "testing-library": testingLibrary,
       "@typescript-eslint": typescriptEslint,
     },
@@ -73,6 +76,7 @@ export default defineConfig([
       "object-shorthand": ["error"],
       "prefer-const": ["error"],
       "prefer-template": "error",
+      "react/jsx-no-undef": "error",
       "react/no-unused-prop-types": [
         "error",
         {
@@ -85,6 +89,7 @@ export default defineConfig([
           ignore: ["children"],
         },
       ],
+      "react/react-in-jsx-scope": "off",
       "react/self-closing-comp": [
         "error",
         {
@@ -144,6 +149,8 @@ export default defineConfig([
     },
   },
 
+  ...compat.extends("plugin:jest/recommended"),
+
   // Test file overrides
   {
     files: ["**/*.test.{js,ts,jsx,tsx}", "**/*.spec.{js,ts,jsx,tsx}"],
@@ -152,11 +159,16 @@ export default defineConfig([
     },
     languageOptions: {
       globals: {
-        ...jest.environments.globals.globals,
+        afterAll: "readonly",
+        afterEach: "readonly",
+        beforeAll: "readonly",
+        beforeEach: "readonly",
+        describe: "readonly",
+        expect: "readonly",
+        it: "readonly",
+        jest: "readonly",
+        test: "readonly",
       },
-    },
-    rules: {
-      ...jest.configs.recommended.rules,
     },
   },
   {
@@ -170,7 +182,7 @@ export default defineConfig([
     },
     languageOptions: {
       globals: {
-        ...cypress.environments.globals.globals,
+        Cypress: "readonly",
         describe: "readonly",
         it: "readonly",
         before: "readonly",

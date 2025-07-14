@@ -116,16 +116,18 @@ export default function AnalysisSet({
               {referenceFiles.length > 0 && (
                 <>
                   <DataItemLabel>Reference Files</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
+                  <DataItemValue className="@container/ref-file">
+                    <DataItemList isCollapsible>
                       {referenceFiles.map((file) => (
-                        <FileAccessionAndDownload
+                        <div
+                          className="@md/ref-file:flex @md/ref-file:gap-1"
                           key={file["@id"]}
-                          file={file}
-                          isInline
-                        />
+                        >
+                          <FileAccessionAndDownload file={file} isInline />
+                          <div>{file.summary}</div>
+                        </div>
                       ))}
-                    </SeparatedList>
+                    </DataItemList>
                   </DataItemValue>
                 </>
               )}
