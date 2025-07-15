@@ -1,6 +1,5 @@
 // node_modules
 import PropTypes from "prop-types";
-import { Fragment } from "react";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
@@ -12,6 +11,7 @@ import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
   DataItemLabel,
+  DataItemList,
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
@@ -195,16 +195,18 @@ export default function PredictionSet({
                 {referenceFiles.length > 0 && (
                   <>
                     <DataItemLabel>Reference Files</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList isCollapsible>
+                    <DataItemValue className="@container/ref-file">
+                      <DataItemList isCollapsible>
                         {referenceFiles.map((file) => (
-                          <FileAccessionAndDownload
+                          <div
+                            className="@md/ref-file:flex @md/ref-file:gap-1"
                             key={file["@id"]}
-                            file={file}
-                            isInline
-                          />
+                          >
+                            <FileAccessionAndDownload file={file} isInline />
+                            <div>{file.summary}</div>
+                          </div>
                         ))}
-                      </SeparatedList>
+                      </DataItemList>
                     </DataItemValue>
                   </>
                 )}
