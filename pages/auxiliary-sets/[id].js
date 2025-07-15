@@ -57,7 +57,7 @@ export default function AuxiliarySet({
   attribution = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   // Split the files into those with an @type of TabularFile and all others.
   const groupedFiles = _.groupBy(files, (file) =>

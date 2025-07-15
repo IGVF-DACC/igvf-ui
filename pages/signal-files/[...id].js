@@ -51,7 +51,7 @@ export default function SignalFile({
   qualityMetrics,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

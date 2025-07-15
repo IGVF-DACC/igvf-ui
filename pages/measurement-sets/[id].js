@@ -126,7 +126,7 @@ export default function MeasurementSet({
   isJson,
 }) {
   const tooltipAttr = useTooltip("external-image-url");
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   // Split the files into those with an @type of ImageFile and all others.
   const groupedFiles = _.groupBy(files, (file) =>

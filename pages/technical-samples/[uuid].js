@@ -49,7 +49,7 @@ export default function TechnicalSample({
   multiplexedInSamples,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

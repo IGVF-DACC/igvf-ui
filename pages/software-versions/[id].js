@@ -32,7 +32,7 @@ export default function SoftwareVersion({
   attribution = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

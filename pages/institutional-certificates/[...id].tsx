@@ -45,7 +45,7 @@ export default function InstitutionalCertificate({
   attribution: any;
   isJson: boolean;
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
   const submittedBy = institutionalCertificate.submitted_by as UserObject;
 
   // Array but schema allows exactly one URL.

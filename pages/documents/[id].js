@@ -28,7 +28,7 @@ import { truncateText } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function Document({ document, attribution = null, isJson }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

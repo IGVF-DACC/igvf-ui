@@ -57,7 +57,7 @@ export default function SequenceFile({
   isJson,
   seqspecs,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

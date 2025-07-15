@@ -678,22 +678,45 @@
 }
 
 /**
- * For highlighting the a section directory anchor when the user selects it. It appears with a
- * background color, then fading to transparent.
+ * For highlighting the a section directory anchor when the user selects it. This shows a flashing
+ * dot to the left of the section directory anchor.
  */
-.bg-section-directory {
-  animation: highlight 2s linear;
-}
+@layer utilities {
+  @keyframes flash-multi {
+    0%,
+    20%,
+    40%,
+    60%,
+    80%,
+    100% {
+      opacity: 0;
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      opacity: 1;
+    }
+  }
 
-@keyframes highlight {
-  0% {
-    background-color: var(--color-section-directory-highlight);
+  .sec-dir-highlight {
+    position: relative;
   }
-  60% {
-    background-color: var(--color-section-directory-highlight);
-  }
-  100% {
-    background-color: transparent;
+
+  .sec-dir-highlight::before {
+    content: "";
+    position: absolute;
+    left: -1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.8rem;
+    height: 0.8rem;
+    background-color: oklch(62.3% 0.214 259.815);
+    border-radius: 9999px;
+    opacity: 0;
+    animation: flash-multi 2s ease-in-out forwards;
+    pointer-events: none;
   }
 }
 

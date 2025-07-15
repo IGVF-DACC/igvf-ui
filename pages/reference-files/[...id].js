@@ -55,7 +55,7 @@ export default function ReferenceFile({
   attribution = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

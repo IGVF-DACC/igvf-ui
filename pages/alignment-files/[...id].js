@@ -54,7 +54,7 @@ export default function AlignmentFile({
   qualityMetrics,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

@@ -34,7 +34,7 @@ export default function MpraQualityMetric({
   qualityMetricOf: FileObject[];
   isJson: boolean;
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

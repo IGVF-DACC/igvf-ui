@@ -58,7 +58,7 @@ export default function TabularFile({
   attribution = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

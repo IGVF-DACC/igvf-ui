@@ -50,7 +50,7 @@ export default function CuratedSet({
   attribution = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

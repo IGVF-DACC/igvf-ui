@@ -51,7 +51,7 @@ export default function MatrixFile({
   qualityMetrics,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

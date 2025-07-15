@@ -73,7 +73,7 @@ export default function InVitroSystem({
   attribution = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

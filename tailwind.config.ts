@@ -2,25 +2,17 @@ import type { Config } from "tailwindcss";
 
 const tailwindConfig: Config = {
   darkMode: "class",
-  content: {
-    files: [
-      "./pages/**/*.{js,ts,tsx}",
-      "./components/**/*.{js,ts,tsx}",
-      "./lib/**/*.{js,ts,tsx}",
-    ],
-    safelist: [
-      "fore-fileset-type-analysis",
-      "back-fileset-type-analysis",
-      "fore-fileset-type-prediction",
-      "back-fileset-type-prediction",
-      "fore-fileset-type-measurement",
-      "back-fileset-type-measurement",
-    ],
-  },
-  variants: {
-    extend: {
-      width: ["only"],
-    },
+  content: ["./pages/**/*.{js,tsx}", "./components/**/*.{js,tsx}"],
+  safelist: [
+    "fore-fileset-type-analysis",
+    "back-fileset-type-analysis",
+    "fore-fileset-type-prediction",
+    "back-fileset-type-prediction",
+    "fore-fileset-type-measurement",
+    "back-fileset-type-measurement",
+  ],
+  compilerOptions: {
+    moduleResolution: "bundler",
   },
   theme: {
     container: {

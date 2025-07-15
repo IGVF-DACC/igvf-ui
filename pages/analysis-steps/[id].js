@@ -30,7 +30,7 @@ export default function AnalysisStep({
   attribution = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

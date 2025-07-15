@@ -72,7 +72,7 @@ export default function IndexFile({
   qualityMetrics: QualityMetricObject[];
   isJson: boolean;
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   const hasReferencePanel =
     indexFile.assembly || indexFile.transcriptome_annotation;

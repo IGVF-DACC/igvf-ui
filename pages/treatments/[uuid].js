@@ -37,7 +37,7 @@ export default function Treatment({
   sources,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>

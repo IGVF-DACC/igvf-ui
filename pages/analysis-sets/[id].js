@@ -71,7 +71,7 @@ export default function AnalysisSet({
   attribution = null,
   isJson,
 }) {
-  const sections = useSecDir();
+  const sections = useSecDir({ isJson });
 
   return (
     <>
