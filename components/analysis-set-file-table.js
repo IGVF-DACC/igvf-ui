@@ -71,7 +71,7 @@ const filesColumns = [
         <UniformlyProcessedBadge workflow={source.workflow} />
       ) : null;
     },
-    sorter: (item) => (item.workflow.uniform_pipeline ? 0 : 1),
+    sorter: (item) => (item.workflow?.uniform_pipeline ? 0 : 1),
   },
   {
     id: "filtered",
