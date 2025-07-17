@@ -21,7 +21,7 @@ import type {
  * (3700 - 40 for the protocol and domain - 500 for a long facet query) / 30 for a typical column
  * specifier length.
  */
-export const MAXIMUM_VISIBLE_COLUMNS = 120;
+export const MAXIMUM_VISIBLE_COLUMNS = 80;
 
 /**
  * IDs of audits that the user can see while not logged in.
@@ -255,15 +255,21 @@ export function sortColumnSpecs(columnSpecs: ColumnSpec[]): ColumnSpec[] {
 export function columnsToColumnSpecs(
   schemaColumns: SearchResultsColumns
 ): ColumnSpec[] {
-  const columnSpecs: ColumnSpec[] = Object.keys(schemaColumns).map(
-    (columnId) => {
-      const columnSpec: ColumnSpec = {
-        id: columnId,
-        title: schemaColumns[columnId].title,
-      };
-      return columnSpec;
-    }
+  // Trim `schemaColumns` to the maximum number of allowed columns.
+  const trimmedSchemaColumnIds = Object.keys(schemaColumns).slice(
+    0,
+    MAXIMUM_VISIBLE_COLUMNS
   );
+
+  // Generate the columnSpecs for the trimmed schema columns. The `id` of each columnSpec is
+  // the column ID, and the `title` is the title of the column in the schema.
+  const columnSpecs: ColumnSpec[] = trimmedSchemaColumnIds.map((columnId) => {
+    const columnSpec: ColumnSpec = {
+      id: columnId,
+      title: schemaColumns[columnId].title,
+    };
+    return columnSpec;
+  });
   return sortColumnSpecs(columnSpecs);
 }
 
