@@ -1,6 +1,5 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
-import _ from "lodash";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";

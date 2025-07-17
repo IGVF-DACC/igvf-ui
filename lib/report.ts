@@ -21,7 +21,7 @@ import type {
  * (3700 - 40 for the protocol and domain - 500 for a long facet query) / 30 for a typical column
  * specifier length.
  */
-export const MAXIMUM_VISIBLE_COLUMNS = 120;
+export const MAXIMUM_VISIBLE_COLUMNS = 80;
 
 /**
  * IDs of audits that the user can see while not logged in.
