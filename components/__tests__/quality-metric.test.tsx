@@ -1,10 +1,12 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import {
   QCMetricPanel,
   QualityMetricField,
   QualityMetricModal,
   QualityMetricPanel,
 } from "../quality-metric";
+import { ModalManagerProvider } from "../modal-manager";
 import {
   type QualityMetricFieldAttr,
   type QualityMetricObject,
@@ -302,11 +304,13 @@ describe("Test QualityMetricModal component", () => {
     const onClose = jest.fn();
 
     render(
-      <QualityMetricModal
-        file={file}
-        qualityMetrics={[qualityMetric]}
-        onClose={onClose}
-      />
+      <ModalManagerProvider>
+        <QualityMetricModal
+          file={file}
+          qualityMetrics={[qualityMetric]}
+          onClose={onClose}
+        />
+      </ModalManagerProvider>
     );
     await waitFor(() => {
       // some assertion or just wait for the transition effect to settle

@@ -18,6 +18,7 @@ import DarkModeManager from "../lib/dark-mode-manager";
 // components
 import Error from "../components/error";
 import GlobalContext from "../components/global-context";
+import { ModalManagerProvider } from "../components/modal-manager";
 import NavigationSection from "../components/navigation";
 import { Session } from "../components/session-context";
 import ViewportOverlay from "../components/viewport-overlay";
@@ -165,19 +166,21 @@ function Site({ Component, pageProps, postLoginRedirectUri }) {
       <div className="md:container">
         <GlobalContext.Provider value={globalContext}>
           <Session postLoginRedirectUri={postLoginRedirectUri}>
-            <div className="md:flex">
-              <NavigationSection />
-              <div className="@container/main min-w-0 shrink grow px-3 py-2 md:px-8">
-                {pageProps.serverSideError ? (
-                  <Error
-                    statusCode={pageProps.serverSideError.code}
-                    title={pageProps.serverSideError.description}
-                  />
-                ) : (
-                  <Component {...pageProps} />
-                )}
+            <ModalManagerProvider>
+              <div className="md:flex">
+                <NavigationSection />
+                <div className="@container/main min-w-0 shrink grow px-3 py-2 md:px-8">
+                  {pageProps.serverSideError ? (
+                    <Error
+                      statusCode={pageProps.serverSideError.code}
+                      title={pageProps.serverSideError.description}
+                    />
+                  ) : (
+                    <Component {...pageProps} />
+                  )}
+                </div>
               </div>
-            </div>
+            </ModalManagerProvider>
           </Session>
         </GlobalContext.Provider>
       </div>
