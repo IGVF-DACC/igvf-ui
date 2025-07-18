@@ -12,7 +12,6 @@
 
 // node_modules
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
-import _ from "lodash";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
@@ -604,8 +603,8 @@ export function FileDataItems({ item, children = null }) {
         <>
           <DataItemLabel>Analysis Step Version</DataItemLabel>
           <DataItemValueUrl>
-            <Link href={item.analysis_step_version}>
-              {item.analysis_step_version}
+            <Link href={item.analysis_step_version["@id"]}>
+              {item.analysis_step_version["@id"]}
             </Link>
           </DataItemValueUrl>
         </>
