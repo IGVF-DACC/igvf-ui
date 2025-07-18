@@ -255,15 +255,19 @@ export function sortColumnSpecs(columnSpecs: ColumnSpec[]): ColumnSpec[] {
 export function columnsToColumnSpecs(
   schemaColumns: SearchResultsColumns
 ): ColumnSpec[] {
-  const columnSpecs: ColumnSpec[] = Object.keys(schemaColumns).map(
-    (columnId) => {
-      const columnSpec: ColumnSpec = {
-        id: columnId,
-        title: schemaColumns[columnId].title,
-      };
-      return columnSpec;
-    }
+  // Trim `schemaColumns` to the maximum number of allowed columns.
+  const trimmedSchemaColumnIds = Object.keys(schemaColumns).slice(
+    0,
+    MAXIMUM_VISIBLE_COLUMNS
   );
+
+  const columnSpecs: ColumnSpec[] = trimmedSchemaColumnIds.map((columnId) => {
+    const columnSpec: ColumnSpec = {
+      id: columnId,
+      title: schemaColumns[columnId].title,
+    };
+    return columnSpec;
+  });
   return sortColumnSpecs(columnSpecs);
 }
 
@@ -298,7 +302,9 @@ export function getAllAuditColumnIds(auditColumnSpecs: ColumnSpec[]): string[] {
 }
 
 /**
- * From the search-results columns, separate the visible columns from the audit columns.
+ * From the search-results columns, separate the visible columns from the audit columns. In unusual
+ * situations, limit the number of visible columns so selecting columns doesn't exceed the maximum
+ * URL length.
  * @param {SearchResultsColumns} columns Columns from the report query string
  * @returns {object} Has `visibleColumns` with normal columns and `visibleAuditColumns` with audit
  *     columns
@@ -316,6 +322,7 @@ export function columnsToNormalAndAuditColumns(columns: SearchResultsColumns): {
       visibleColumns[key] = value;
     }
   });
+
   return { visibleColumns, visibleAuditColumns };
 }
 
