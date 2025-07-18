@@ -303,8 +303,9 @@
   --color-file-graph-qc-trigger-bg: oklch(1 0 0);
   --color-file-graph-qc-trigger-text: oklch(0 0 0);
 
-  /** Modal borders */
+  /** Modal */
   --color-modal-border: #cecfd3;
+  --color-modal-backdrop: oklch(0 0 0 / 30%);
 
   /** Typography */
   --color-code-background: #e0e0e0;
@@ -565,6 +566,7 @@
   --color-file-graph-qc-trigger-text: oklch(1 0 0);
 
   --color-modal-border: #68799c;
+  --color-modal-backdrop: oklch(0 0 0 / 60%);
 
   --color-section-directory-highlight: #365314;
   --color-section-directory: #d9f99d;

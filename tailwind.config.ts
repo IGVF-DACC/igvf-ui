@@ -231,6 +231,7 @@ const tailwindConfig: Config = {
 
         "standardized-file-format":
           "var(--color-standardized-file-format-background)",
+        "modal-backdrop": "var(--color-modal-backdrop)",
       },
       borderColor: {
         panel: "var(--color-panel-border)",

@@ -1,6 +1,8 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
+import { ModalManagerProvider } from "../../modal-manager";
 import DateRangeTerms from "../custom-facets/date-range-terms";
 import { SearchResults } from "../../../globals";
 
@@ -113,11 +115,13 @@ describe("Test DateRangeTerms component", () => {
 
     const updateQuery = jest.fn();
     render(
-      <DateRangeTerms
-        searchResults={searchResults}
-        facet={facet}
-        updateQuery={updateQuery}
-      />
+      <ModalManagerProvider>
+        <DateRangeTerms
+          searchResults={searchResults}
+          facet={facet}
+          updateQuery={updateQuery}
+        />
+      </ModalManagerProvider>
     );
 
     // Check that it rendered a button containing the earliest and latest dates from the facet data.
@@ -243,11 +247,13 @@ describe("Test DateRangeTerms component", () => {
 
     const updateQuery = jest.fn();
     render(
-      <DateRangeTerms
-        searchResults={searchResults}
-        facet={facet}
-        updateQuery={updateQuery}
-      />
+      <ModalManagerProvider>
+        <DateRangeTerms
+          searchResults={searchResults}
+          facet={facet}
+          updateQuery={updateQuery}
+        />
+      </ModalManagerProvider>
     );
 
     // Check that it rendered a button containing the earliest and latest dates from the facet data.
@@ -355,11 +361,13 @@ describe("Test DateRangeTerms component", () => {
 
     const updateQuery = jest.fn();
     render(
-      <DateRangeTerms
-        searchResults={searchResults}
-        facet={facet}
-        updateQuery={updateQuery}
-      />
+      <ModalManagerProvider>
+        <DateRangeTerms
+          searchResults={searchResults}
+          facet={facet}
+          updateQuery={updateQuery}
+        />
+      </ModalManagerProvider>
     );
 
     // Check that it rendered a button containing the earliest and latest dates from the facet data.
@@ -443,11 +451,13 @@ describe("Test DateRangeTerms component", () => {
 
     const updateQuery = jest.fn();
     render(
-      <DateRangeTerms
-        searchResults={searchResults}
-        facet={facet}
-        updateQuery={updateQuery}
-      />
+      <ModalManagerProvider>
+        <DateRangeTerms
+          searchResults={searchResults}
+          facet={facet}
+          updateQuery={updateQuery}
+        />
+      </ModalManagerProvider>
     );
 
     // Check that it rendered a button containing the earliest and latest dates from the facet data.

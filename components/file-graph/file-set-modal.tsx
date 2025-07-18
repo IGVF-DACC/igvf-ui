@@ -111,7 +111,7 @@ export function FileSetModal({
   const reportLink = `/multireport/?type=File&file_set.@id=${fileSet["@id"]}&input_file_for=${childFile["@id"]}`;
 
   return (
-    <Modal isOpen={true} onClose={onClose}>
+    <Modal isOpen={true} onClose={onClose} testid="file-set-modal">
       <Modal.Header onClose={onClose}>
         <FileModalTitle item={fileSet}>
           <Link href={fileSet["@id"]} target="_blank" rel="noopener noreferrer">
