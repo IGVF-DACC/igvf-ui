@@ -27,6 +27,12 @@ export default function PredictionSet({ item: predictionSet }) {
           ...new Set(predictionSet.files.map((file) => file.content_type)),
         ].sort()
       : [];
+  const sampleSummaries =
+    predictionSet.samples?.length > 0
+      ? [
+          ...new Set(predictionSet.samples.map((sample) => sample.summary)),
+        ].sort()
+      : [];
 
   const isSupplementsVisible =
     predictionSet.alternate_accessions ||
@@ -66,12 +72,8 @@ export default function PredictionSet({ item: predictionSet }) {
                   Samples
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  {[
-                    ...new Set(
-                      predictionSet.samples.map((sample) => sample.summary)
-                    ),
-                  ].map((summary, index) => (
-                    <div key={index}>{summary}</div>
+                  {sampleSummaries.map((summary) => (
+                    <div key={summary}>{summary}</div>
                   ))}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
