@@ -29,7 +29,9 @@ export default function PredictionSet({ item: predictionSet }) {
       : [];
 
   const isSupplementsVisible =
-    predictionSet.alternate_accessions || fileContentType;
+    predictionSet.alternate_accessions ||
+    fileContentType ||
+    predictionSet.samples;
 
   return (
     <SearchListItemContent>

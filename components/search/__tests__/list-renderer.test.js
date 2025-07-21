@@ -3038,6 +3038,78 @@ describe("Test Prediction Set component with no files at all but with alternate_
   });
 });
 
+describe("Test Prediction Set component with no files at all but with samples.summary", () => {
+  it("renders a prediction set item", () => {
+    const item = {
+      "@id": "/prediction-sets/IGVFDS8323PSEU/",
+      "@type": ["PredictionSet", "FileSet", "Item"],
+      accession: "IGVFDS8323PSEU",
+      alternate_accessions: ["IGVFDS3099XPLP"],
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      file_set_type: "functional effect",
+      summary: "binding effect prediction for TAL1, TCF4 using SEMVAR v1.0.0",
+      scope: "genes",
+      samples: [
+        {
+          "@id": "/tissues/IGVFSM0001DDDD/",
+          accession: "IGVFSM0001DDDD",
+          aliases: ["igvf:treated_tissue"],
+          donors: [
+            {
+              "@id": "/rodent-donors/IGVFDO6583PZIO/",
+              accession: "IGVFDO6583PZIO",
+              aliases: ["igvf:alias_rodent_donor_2"],
+              summary: "IGVFDO6583PZIO",
+              taxa: "Mus musculus",
+            },
+          ],
+          sample_terms: ["/sample-terms/UBERON_0002048/"],
+          summary: "lung tissue, Mus musculus (10-20 weeks)",
+          taxa: "Mus musculus",
+        },
+      ],
+      uuid: "a076232c2-d4db-4a51-ad73-4c53c824937f",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PredictionSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Prediction Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSEU/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      "binding effect prediction for TAL1, TCF4 using SEMVAR v1.0.0"
+    );
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent("Samples");
+
+    const supplementContent = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplementContent).toHaveTextContent(
+      "lung tissue, Mus musculus (10-20 weeks)"
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("genes");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
 describe("Test Analysis Step component", () => {
   it("renders an analysis step item", () => {
     const item = {
