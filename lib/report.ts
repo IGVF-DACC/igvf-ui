@@ -419,16 +419,27 @@ export function getUnknownProperty(
  * @param columnId Column ID to add or remove from the query string
  * @param isVisible True if the column for `columnId` is now visible
  * @param defaultColumnSpecs Column specs for the default columns of the report's schema
+ * @param visibleColumnSpecs Column specs for the currently visible columns
+ * @param visibleAuditColumnSpecs Column specs for the currently visible audit columns
  * @returns `queryString` with the `columnId` column added or removed
  */
 export function updateColumnVisibilityQuery(
   queryString: string,
   columnId: string,
   isVisible: boolean,
-  defaultColumnSpecs: ColumnSpec[]
+  defaultColumnSpecs: ColumnSpec[],
+  visibleColumnSpecs: ColumnSpec[],
+  visibleAuditColumnSpecs: ColumnSpec[]
 ): string {
   const query = new QueryString(queryString);
   const hasSpecificFields = query.getKeyValues("field").length > 0;
+  const allVisibleColumnSpecs = mergeColumnSpecs(
+    visibleColumnSpecs,
+    visibleAuditColumnSpecs
+  );
+  const allVisibleColumnIds = allVisibleColumnSpecs.map(
+    (columnSpec) => columnSpec.id
+  );
   const defaultColumnIds = defaultColumnSpecs.map(
     (columnSpec) => columnSpec.id
   );
@@ -438,7 +449,7 @@ export function updateColumnVisibilityQuery(
   // string that doesn't have any "field=" parameters into one that has all the default columns as
   // "field=" parameters.
   if (!hasSpecificFields) {
-    defaultColumnIds.forEach((columnId) => {
+    allVisibleColumnIds.forEach((columnId) => {
       query.addKeyValue("field", columnId);
     });
   }

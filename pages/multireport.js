@@ -100,7 +100,9 @@ export default function MultiReport({ searchResults }) {
       queryString,
       columnId,
       isVisible,
-      defaultColumnSpecs
+      defaultColumnSpecs,
+      visibleColumnSpecs,
+      visibleAuditColumnSpecs
     );
     router.push(`${path}?${updatedQueryString}`);
   }
