@@ -58,6 +58,18 @@ export default function PredictionSet({ item: predictionSet }) {
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
+            {predictionSet.samples && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Samples
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {predictionSet.samples.map((sample) => (
+                    <p key={sample.accession}>{sample.summary}</p>
+                  ))}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
           </SearchListItemSupplement>
         )}
       </SearchListItemMain>
