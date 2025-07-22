@@ -343,10 +343,10 @@ export default function ConstructLibrarySet({
           {integratedContentFiles.length > 0 && (
             <FileTable
               files={integratedContentFiles}
-              title="Integrated Content Files"
+              title="Library Design Files"
               reportLink={`/multireport/?type=File&integrated_in.@id=${constructLibrarySet["@id"]}`}
-              reportLabel="Report of files that have integrated in this construct library set"
-              panelId="integrated-content"
+              reportLabel="Report of library design files in this construct library set"
+              panelId="library-design-files"
             />
           )}
           {inputFileSetFor.length > 0 && (

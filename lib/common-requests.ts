@@ -2,7 +2,13 @@
 import FetchRequest from "./fetch-request";
 import { type DatasetSummary } from "./home";
 // root
-import type { DatabaseObject, DataProviderObject, LabObject } from "../globals";
+import type {
+  DatabaseObject,
+  DataProviderObject,
+  FileObject,
+  FileSetObject,
+  LabObject,
+} from "../globals";
 
 /**
  * Retrieve the analysis step objects for the given analysis step paths from the data provider.
@@ -26,7 +32,7 @@ export async function requestAnalysisSteps(
         "step_label",
         "title",
       ],
-      "AnalysisStep"
+      ["AnalysisStep"]
     )
   ).unwrap_or([]);
 }
@@ -42,7 +48,7 @@ export async function requestAwards(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["name", "url"], "Award")
+    await request.getMultipleObjectsBulk(paths, ["name", "url"], ["Award"])
   ).unwrap_or([]);
 }
 
@@ -67,7 +73,7 @@ export async function requestBiomarkers(
         "status",
         "synonyms",
       ],
-      "Biomarker"
+      ["Biomarker"]
     )
   ).unwrap_or([]);
 }
@@ -86,7 +92,7 @@ export async function requestBiosamples(
     await request.getMultipleObjectsBulk(
       paths,
       ["accession", "disease_terms", "sample_terms", "status", "summary"],
-      "Biosample"
+      ["Biosample"]
     )
   ).unwrap_or([]);
 }
@@ -101,7 +107,7 @@ export async function requestBiosamples(
 export async function requestFiles(
   paths: string[],
   request: FetchRequest,
-  type = "File"
+  types = ["File"]
 ): Promise<DataProviderObject[]> {
   return (
     await request.getMultipleObjectsBulk(
@@ -143,7 +149,7 @@ export async function requestFiles(
         "workflow.uniform_pipeline",
         "upload_status",
       ],
-      type
+      types
     )
   ).unwrap_or([]);
 }
@@ -159,7 +165,7 @@ export async function requestLabs(
   request: FetchRequest
 ): Promise<LabObject[]> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["title"], "Lab")
+    await request.getMultipleObjectsBulk(paths, ["title"], ["Lab"])
   ).unwrap_or([]) as LabObject[];
 }
 
@@ -225,7 +231,7 @@ export async function requestFileSets(
         "status",
         "summary",
       ].concat(addedProperties),
-      "FileSet"
+      ["FileSet"]
     )
   ).unwrap_or([]);
 }
@@ -250,7 +256,7 @@ export async function requestDocuments(
         "standardized_file_format",
         "uuid",
       ],
-      "Document"
+      ["Document"]
     )
   ).unwrap_or([]);
 }
@@ -269,7 +275,7 @@ export async function requestDonors(
     await request.getMultipleObjectsBulk(
       paths,
       ["accession", "aliases", "sex", "status", "taxa"],
-      "Donor"
+      ["Donor"]
     )
   ).unwrap_or([]);
 }
@@ -285,7 +291,7 @@ export async function requestGenes(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["geneid", "symbol"], "Gene")
+    await request.getMultipleObjectsBulk(paths, ["geneid", "symbol"], ["Gene"])
   ).unwrap_or([]);
 }
 
@@ -309,7 +315,7 @@ export async function requestInstitutionalCertificates(
         "lab",
         "status",
       ],
-      "InstitutionalCertificate"
+      ["InstitutionalCertificate"]
     )
   ).unwrap_or([]);
 }
@@ -328,7 +334,7 @@ export async function requestOntologyTerms(
     await request.getMultipleObjectsBulk(
       paths,
       ["term_id", "term_name"],
-      "OntologyTerm"
+      ["OntologyTerm"]
     )
   ).unwrap_or([]);
 }
@@ -356,7 +362,7 @@ export async function requestPhenotypicFeatures(
         "quantity_units",
         "status",
       ],
-      "PhenotypicFeature"
+      ["PhenotypicFeature"]
     )
   ).unwrap_or([]);
 }
@@ -383,7 +389,7 @@ export async function requestSamples(
         "status",
         "summary",
       ],
-      "Sample"
+      ["Sample"]
     )
   ).unwrap_or([]);
 }
@@ -410,7 +416,7 @@ export async function requestSoftware(
         "status",
         "title",
       ],
-      "Software"
+      ["Software"]
     )
   ).unwrap_or([]);
 }
@@ -430,7 +436,7 @@ export async function requestSoftwareVersions(
     await request.getMultipleObjectsBulk(
       paths,
       ["downloaded_url", "name", "status", "version"],
-      "SoftwareVersion"
+      ["SoftwareVersion"]
     )
   ).unwrap_or([]);
 }
@@ -449,7 +455,7 @@ export async function requestTreatments(
     await request.getMultipleObjectsBulk(
       paths,
       ["purpose", "status", "summary", "treatment_term_name", "treatment_type"],
-      "Treatment"
+      ["Treatment"]
     )
   ).unwrap_or([]);
 }
@@ -465,7 +471,7 @@ export async function requestUsers(
   request: FetchRequest
 ): Promise<Array<DataProviderObject>> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["title"], "User")
+    await request.getMultipleObjectsBulk(paths, ["title"], ["User"])
   ).unwrap_or([]);
 }
 
@@ -483,7 +489,7 @@ export async function requestSources(
     await request.getMultipleObjectsBulk(
       paths,
       ["name", "url", "lab.title"],
-      "Source"
+      ["Source"]
     )
   ).unwrap_or([]);
 }
@@ -516,7 +522,7 @@ export async function requestWorkflows(
     await request.getMultipleObjectsBulk(
       paths,
       ["accession", "aliases", "lab", "name", "source_url", "status"],
-      "Workflow"
+      ["Workflow"]
     )
   ).unwrap_or([]);
 }
@@ -545,7 +551,7 @@ export async function requestPublications(
         "title",
         "volume",
       ],
-      "Publication"
+      ["Publication"]
     )
   ).unwrap_or([]);
 }
@@ -565,7 +571,7 @@ export async function requestPages(
     await request.getMultipleObjectsBulk(
       paths,
       ["name", "title", "status"],
-      "Page"
+      ["Page"]
     )
   ).unwrap_or([]);
 }
@@ -588,4 +594,70 @@ export async function requestQualityMetrics(
     // getMultipleObjects already filtered out errors, so we can safely unwrap all elements.
     (result) => result.unwrap()
   );
+}
+
+/**
+ * Type guard to check if the construct library sets are embedded objects or paths.
+ * @param constructLibrarySets - Construct library sets to check embedded objects or paths
+ * @returns True if all construct library sets are embedded objects, false if they are paths
+ */
+function constructLibrarySetsAreEmbedded(
+  constructLibrarySets: string[] | FileSetObject[]
+): constructLibrarySets is FileSetObject[] {
+  return constructLibrarySets.every((set) => typeof set === "object");
+}
+
+/**
+ * Type guard to check if the integrated content files are embedded objects or paths.
+ * @param integratedContentFiles - Integrated content files to check if they are embedded or paths
+ * @returns True if all integrated content files are embedded objects, false if they are paths
+ */
+function integratedContentFilesAreEmbedded(
+  integratedContentFiles: string[] | FileObject[]
+): integratedContentFiles is FileObject[] {
+  return integratedContentFiles.every((file) => typeof file === "object");
+}
+
+/**
+ * Request the library design files for a given FileSet object. Get these from the file set's
+ * construct library sets' `integrated_content_files`, which are both expected to be embedded within
+ * the file-set object. If the file set has no construct library sets, or if they do not have
+ * `integrated_content_files`, then this returns an empty array. If the database server hasn't
+ * completed indexing, `construct_library_sets` might not be present or might exist as an array of
+ * paths instead of embedded objects, so treat this condition as if no construct library sets
+ * exist within the file set.
+ * @param fileSet - FileSet object to request the library design files from
+ * @param request - Request object to use to make the request
+ * @returns Requested library design files, or an empty array if none found
+ */
+export async function requestLibraryDesignFiles(
+  fileSet: FileSetObject,
+  request: FetchRequest
+): Promise<FileObject[]> {
+  const constructLibrarySets = fileSet.construct_library_sets || [];
+  if (
+    constructLibrarySets.length > 0 &&
+    constructLibrarySetsAreEmbedded(constructLibrarySets)
+  ) {
+    const integratedContentFilePaths = constructLibrarySets.flatMap((cls) => {
+      const integratedContentFiles = cls.integrated_content_files || [];
+      if (
+        integratedContentFiles.length > 0 &&
+        integratedContentFilesAreEmbedded(integratedContentFiles)
+      ) {
+        return integratedContentFiles.map((file) => file["@id"]);
+      }
+      return [];
+    });
+    const uniqueIntegratedContentFilePaths = [
+      ...new Set(integratedContentFilePaths),
+    ];
+    if (uniqueIntegratedContentFilePaths.length > 0) {
+      return (await requestFiles(uniqueIntegratedContentFilePaths, request, [
+        "TabularFile",
+        "ReferenceFile",
+      ])) as FileObject[];
+    }
+  }
+  return [];
 }
