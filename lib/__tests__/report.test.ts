@@ -177,7 +177,6 @@ describe("Test `getSelectedTypes()`", () => {
         {
           appended: false,
           field: "type",
-          open_on_load: false,
           terms: [
             {
               doc_count: 5,
@@ -238,7 +237,6 @@ describe("Test `getSelectedTypes()`", () => {
         {
           appended: false,
           field: "type",
-          open_on_load: false,
           terms: [
             {
               doc_count: 5,
@@ -305,7 +303,6 @@ describe("Test `getSelectedTypes()`", () => {
         {
           appended: false,
           field: "type",
-          open_on_load: false,
           terms: [
             {
               doc_count: 5,
@@ -371,7 +368,6 @@ describe("Test `getSelectedTypes()`", () => {
         {
           appended: false,
           field: "type",
-          open_on_load: false,
           terms: [
             {
               doc_count: 5,
@@ -540,7 +536,6 @@ describe("Test `getSortColumn()`", () => {
         {
           appended: false,
           field: "type",
-          open_on_load: false,
           terms: [
             {
               doc_count: 5,
@@ -602,7 +597,6 @@ describe("Test `getSortColumn()`", () => {
         {
           appended: false,
           field: "type",
-          open_on_load: false,
           terms: [
             {
               doc_count: 5,
@@ -718,6 +712,7 @@ describe("Test `getUnknownProperty()`", () => {
       "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       award: {
         "@id": "/awards/1UM1HG012077-01/",
+        ["@type"]: ["Award", "Item"],
         component: "mapping",
         contact_pi: {
           "@id": "/users/e4cadd5e-0e61-4a99-abc8-84734232e271/",
@@ -776,6 +771,7 @@ describe("Test `getUnknownProperty()`", () => {
       "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       award: {
         "@id": "/awards/1UM1HG012077-01/",
+        "@type": ["Award", "Item"],
         component: "mapping",
         contact_pi: {
           "@id": "/users/e4cadd5e-0e61-4a99-abc8-84734232e271/",
@@ -864,6 +860,7 @@ describe("Test `getUnknownProperty()`", () => {
       "@type": ["PrimaryCell", "Biosample", "Sample", "Item"],
       award: {
         "@id": "/awards/1UM1HG012077-01/",
+        "@type": ["Award", "Item"],
         component: "mapping",
         contact_pi: {
           "@id": "/users/e4cadd5e-0e61-4a99-abc8-84734232e271/",
@@ -884,13 +881,19 @@ describe("Test updateColumnVisibilityQuery()", () => {
       { id: "@id", title: "ID" },
       { id: "accession", title: "Accession" },
     ];
+    const visibleColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+    ];
 
     // Add `alternate_accessions` field to query string with a field= in it already.
     let updatedQuery = updateColumnVisibilityQuery(
       "type=InVitroSystem&field=%40id",
       "alternate_accessions",
       false,
-      defaultColumnSpecs
+      defaultColumnSpecs,
+      visibleColumnSpecs,
+      []
     );
     expect(updatedQuery).toEqual(
       "type=InVitroSystem&field=%40id&field=alternate_accessions"
@@ -901,7 +904,9 @@ describe("Test updateColumnVisibilityQuery()", () => {
       updatedQuery,
       "alternate_accessions",
       true,
-      defaultColumnSpecs
+      defaultColumnSpecs,
+      visibleColumnSpecs,
+      []
     );
     expect(updatedQuery).toEqual("type=InVitroSystem&field=%40id");
   });
@@ -911,13 +916,19 @@ describe("Test updateColumnVisibilityQuery()", () => {
       { id: "@id", title: "ID" },
       { id: "accession", title: "Accession" },
     ];
+    const visibleColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+    ];
 
     // Add `alternate_accessions` field to query string without a field= in it already.
     let updatedQuery = updateColumnVisibilityQuery(
       "type=InVitroSystem",
       "alternate_accessions",
       false,
-      defaultColumnSpecs
+      defaultColumnSpecs,
+      visibleColumnSpecs,
+      []
     );
     expect(updatedQuery).toEqual(
       "type=InVitroSystem&field=%40id&field=accession&field=alternate_accessions"
@@ -928,7 +939,9 @@ describe("Test updateColumnVisibilityQuery()", () => {
       updatedQuery,
       "alternate_accessions",
       true,
-      defaultColumnSpecs
+      defaultColumnSpecs,
+      visibleColumnSpecs,
+      []
     );
     expect(updatedQuery).toEqual("type=InVitroSystem");
   });
@@ -938,13 +951,19 @@ describe("Test updateColumnVisibilityQuery()", () => {
       { id: "@id", title: "ID" },
       { id: "accession", title: "Accession" },
     ];
+    const visibleColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+    ];
 
     // Add `alternate_accessions` field to query string without a field= in it already.
     let updatedQuery = updateColumnVisibilityQuery(
       "type=InVitroSystem&field=accession",
       "alternate_accessions",
       false,
-      defaultColumnSpecs
+      defaultColumnSpecs,
+      visibleColumnSpecs,
+      []
     );
     expect(updatedQuery).toEqual(
       "type=InVitroSystem&field=accession&field=alternate_accessions&field=%40id"
@@ -955,7 +974,9 @@ describe("Test updateColumnVisibilityQuery()", () => {
       updatedQuery,
       "alternate_accessions",
       true,
-      defaultColumnSpecs
+      defaultColumnSpecs,
+      visibleColumnSpecs,
+      []
     );
     expect(updatedQuery).toEqual("type=InVitroSystem");
   });
@@ -967,13 +988,19 @@ describe("Test updateColumnVisibilityQuery()", () => {
       { id: "audit.ERROR.path", title: "audit.ERROR.path" },
       { id: "audit.ERROR.detail", title: "audit.ERROR.detail" },
     ];
+    const visibleColumnSpecs: ColumnSpec[] = [
+      { id: "@id", title: "ID" },
+      { id: "accession", title: "Accession" },
+    ];
 
     // Add audit properties to query string.
     let updatedQuery = updateColumnVisibilityQuery(
       "type=InVitroSystem",
       "audit.ERROR",
       false,
-      defaultColumnSpecs
+      defaultColumnSpecs,
+      visibleColumnSpecs,
+      []
     );
     expect(updatedQuery).toEqual(
       "type=InVitroSystem&field=%40id&field=accession&field=audit.ERROR.path&field=audit.ERROR.detail&field=audit.ERROR.category"
@@ -984,7 +1011,9 @@ describe("Test updateColumnVisibilityQuery()", () => {
       updatedQuery,
       "audit.ERROR",
       true,
-      defaultColumnSpecs
+      defaultColumnSpecs,
+      visibleColumnSpecs,
+      []
     );
     expect(updatedQuery).toEqual(
       "type=InVitroSystem&field=%40id&field=accession"

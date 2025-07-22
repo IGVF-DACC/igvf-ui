@@ -182,6 +182,7 @@ export default defineConfig([
     },
     languageOptions: {
       globals: {
+        cy: "readonly",
         Cypress: "readonly",
         describe: "readonly",
         it: "readonly",
@@ -194,6 +195,7 @@ export default defineConfig([
     rules: {
       ...cypress.configs.recommended.rules,
       "cypress/no-unnecessary-waiting": "off",
+      "jest/expect-expect": "off",
     },
   },
 ]);
