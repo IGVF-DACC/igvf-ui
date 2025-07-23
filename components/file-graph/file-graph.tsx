@@ -320,15 +320,28 @@ function Graph({
     const loadingTimer = setTimeout(() => {
       try {
         dag = d3Dag.dagStratify()(graphData);
+
+        // Determine the sizes of each node to allow for the size of grouped file nodes.
+        const nodeSizeMap = new Map<
+          d3Dag.DagNode<NodeData>,
+          [number, number]
+        >();
+        for (const node of dag.idescendants()) {
+          const isLarge = isFileSetNodeData(node.data);
+          const size: [number, number] = isLarge
+            ? [NODE_HEIGHT * 4, NODE_WIDTH * 4]
+            : [NODE_HEIGHT * 1.4, NODE_WIDTH * 1.8];
+          nodeSizeMap.set(node, size);
+        }
+
         layout = d3Dag
           .sugiyama()
           .coord(d3Dag.coordGreedy())
           .decross(d3Dag.decrossOpt().large("large"))
           .layering(d3Dag.layeringLongestPath())
-          .nodeSize((node) => {
-            // Might have to play with the adjustment factors if you change the size of the nodes.
-            return node ? [NODE_HEIGHT * 1.4, NODE_WIDTH * 1.8] : [0, 0];
-          });
+          .nodeSize(
+            (node) => nodeSizeMap.get(node) ?? [NODE_HEIGHT, NODE_WIDTH]
+          );
         const { width, height } = layout(dag as any);
         setLoadedDag(dag);
 
