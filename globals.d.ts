@@ -97,6 +97,7 @@ export interface SchemaProperty {
   items?: SchemaProperty;
   properties?: SchemaProperties;
   enum?: string[];
+  enum_descriptions?: Record<string, string>;
   anyOf?: object[];
   oneOf?: object[];
   notSubmittable?: boolean;
@@ -137,7 +138,6 @@ export interface Schema {
  * Describes the /profiles endpoint object, which is an object with `@type`s as its keys and
  * the corresponding schemas for each type as the values.
  */
-
 export interface ProfilesProps {
   "@type": string[];
   _hierarchy: {
@@ -154,7 +154,7 @@ export interface ProfilesGeneric {
   [key: string]: Schema;
 }
 
-export type Profiles = ProfilesProps | ProfilesGeneric;
+export type Profiles = ProfilesProps & ProfilesGeneric;
 
 /**
  * Describes the search-results object returned by the data provider.
@@ -349,6 +349,8 @@ export interface FileObject extends DatabaseObject {
 export interface FileSetObject extends DatabaseObject {
   aliases?: string[];
   construct_library_sets?: string[] | FileSetObject[];
+  assay_term?: string | OntologyTermObject;
+  assay_titles?: string[];
   file_set_type?: string;
   files: string[] | FileObject[];
   integrated_content_files?: string[] | FileObject[];

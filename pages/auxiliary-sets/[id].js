@@ -1,6 +1,7 @@
 // node_modules
 import _ from "lodash";
 import PropTypes from "prop-types";
+import { useContext } from "react";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
@@ -27,6 +28,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
+import SessionContext from "../../components/session-context";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -40,6 +42,10 @@ import {
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import {
+  getAssayTitleDescriptionMap,
+  getPreferredAssayTitleDescriptionMap,
+} from "../../lib/ontology-terms";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function AuxiliarySet({
@@ -54,10 +60,14 @@ export default function AuxiliarySet({
   inputFileSetFor,
   controlFor,
   samples,
+  assayTitleDescriptionMap,
   attribution = null,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
+  const { profiles } = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    getPreferredAssayTitleDescriptionMap(profiles);
 
   // Split the files into those with an @type of TabularFile and all others.
   const groupedFiles = _.groupBy(files, (file) =>
@@ -85,6 +95,10 @@ export default function AuxiliarySet({
               <FileSetDataItems
                 item={auxiliarySet}
                 publications={publications}
+                assayTitleDescriptionMap={assayTitleDescriptionMap}
+                preferredAssayTitleDescriptionMap={
+                  preferredAssayTitleDescriptionMap
+                }
               />
               {barcodeMap && (
                 <>
@@ -183,6 +197,8 @@ AuxiliarySet.propTypes = {
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples associated with this file set
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Assay title description map for this analysis set
+  assayTitleDescriptionMap: PropTypes.object.isRequired,
   // Publications associated with this file set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
@@ -262,6 +278,11 @@ export async function getServerSideProps({ params, req, query }) {
       ? (await request.getObject(auxiliarySet.barcode_map)).optional()
       : null;
 
+    const assayTitleDescriptionMap =
+      auxiliarySet.assay_titles?.length > 0
+        ? await getAssayTitleDescriptionMap(auxiliarySet.assay_titles, request)
+        : {};
+
     const attribution = await buildAttribution(
       auxiliarySet,
       req.headers.cookie
@@ -279,6 +300,7 @@ export async function getServerSideProps({ params, req, query }) {
         inputFileSetFor,
         samples,
         controlFor,
+        assayTitleDescriptionMap,
         pageContext: { title: auxiliarySet.accession },
         attribution,
         isJson,
