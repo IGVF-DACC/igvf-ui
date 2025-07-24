@@ -466,9 +466,12 @@ export default class FetchRequest {
   async getMultipleObjectsBulk(
     paths: Array<string>,
     fields: Array<string>,
-    type: string = ""
+    types: string[] = []
   ): Promise<Result<Array<DataProviderObject>, ErrorObject>> {
-    logRequest("getMultipleObjectsBulk", `type:${type} [${paths.join(", ")}]`);
+    logRequest(
+      "getMultipleObjectsBulk",
+      `types:${types.join()} [${paths.join(", ")}]`
+    );
 
     if (paths.length === 0) {
       return ok([]);
@@ -486,7 +489,8 @@ export default class FetchRequest {
     const pathGroups = this.pathsIntoPathGroups(paths, fieldQuery.length);
 
     // If the type is given, add it to the query string.
-    const typeQuery = type ? `type=${type}&` : "";
+    const typeQuery =
+      types.length > 0 ? types.map((type) => `type=${type}&`).join("") : "";
 
     // For each group of paths, request the objects as search results. Send these requests in
     // parallel.

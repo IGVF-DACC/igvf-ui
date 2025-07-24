@@ -1,5 +1,4 @@
 // node_modules
-import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import AliasList from "../../components/alias-list";
@@ -25,6 +24,7 @@ import { EditableItem } from "../../components/edit";
 import { FileAccessionAndDownload } from "../../components/file-download";
 import { FileGraph } from "../../components/file-graph";
 import FileSetTable from "../../components/file-set-table";
+import FileTable from "../../components/file-table";
 import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
 import Link from "../../components/link-no-prefetch";
@@ -40,6 +40,7 @@ import {
   requestDocuments,
   requestFileSets,
   requestFiles,
+  requestLibraryDesignFiles,
   requestPublications,
   requestQualityMetrics,
   requestSamples,
@@ -66,6 +67,7 @@ export default function AnalysisSet({
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
+  libraryDesignFiles,
   samples,
   qualityMetrics,
   attribution = null,
@@ -274,6 +276,14 @@ export default function AnalysisSet({
             />
           )}
 
+          {libraryDesignFiles.length > 0 && (
+            <FileTable
+              files={libraryDesignFiles}
+              title="Library Design Files"
+              panelId="library-design-files"
+            />
+          )}
+
           {inputFileSets.length > 0 && (
             <InputFileSets
               thisFileSet={analysisSet}
@@ -342,6 +352,8 @@ AnalysisSet.propTypes = {
   measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // ConstructLibrarySets to display
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Library design files associated with this analysis set
+  libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples from analysis set `samples` property that doesn't embed enough properties to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this analysis set
@@ -537,6 +549,11 @@ export async function getServerSideProps({ params, req, query }) {
       }
     }
 
+    const libraryDesignFiles = await requestLibraryDesignFiles(
+      analysisSet,
+      request
+    );
+
     let publications = [];
     if (analysisSet.publications?.length > 0) {
       const publicationPaths = analysisSet.publications.map(
@@ -578,6 +595,7 @@ export async function getServerSideProps({ params, req, query }) {
         auxiliarySets,
         measurementSets,
         constructLibrarySets,
+        libraryDesignFiles,
         samples,
         qualityMetrics,
         pageContext: { title: analysisSet.accession },

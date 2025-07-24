@@ -42,6 +42,7 @@ import {
   requestDocuments,
   requestFiles,
   requestFileSets,
+  requestLibraryDesignFiles,
   requestPublications,
   requestSamples,
   requestSeqspecFiles,
@@ -122,6 +123,7 @@ export default function MeasurementSet({
   seqspecFiles,
   seqspecDocuments,
   primerDesigns,
+  libraryDesignFiles,
   attribution = null,
   isJson,
 }) {
@@ -317,6 +319,13 @@ export default function MeasurementSet({
               panelId="associated-construct-library-sets"
             />
           )}
+          {libraryDesignFiles.length > 0 && (
+            <FileTable
+              files={libraryDesignFiles}
+              title="Library Design Files"
+              panelId="library-design-files"
+            />
+          )}
           <AssayDetails measurementSet={measurementSet} />
           {controlFileSets.length > 0 && (
             <FileSetTable
@@ -412,6 +421,8 @@ MeasurementSet.propTypes = {
   seqspecDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Primer designs tabular files associated with the measurement set
   primerDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Library design files associated with the measurement set's construct library sets
+  libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this measurement set
@@ -511,12 +522,15 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     const primerDesigns = measurementSet.primer_designs
-      ? await requestFiles(
-          measurementSet.primer_designs,
-          request,
-          "TabularFile"
-        )
+      ? await requestFiles(measurementSet.primer_designs, request, [
+          "TabularFile",
+        ])
       : [];
+
+    const libraryDesignFiles = await requestLibraryDesignFiles(
+      measurementSet,
+      request
+    );
 
     let publications = [];
     if (measurementSet.publications?.length > 0) {
@@ -546,6 +560,7 @@ export async function getServerSideProps({ params, req, query }) {
         seqspecFiles,
         seqspecDocuments,
         primerDesigns,
+        libraryDesignFiles,
         pageContext: { title: measurementSet.accession },
         attribution,
         isJson,

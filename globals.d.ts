@@ -348,8 +348,10 @@ export interface FileObject extends DatabaseObject {
  */
 export interface FileSetObject extends DatabaseObject {
   aliases?: string[];
+  construct_library_sets?: string[] | FileSetObject[];
   file_set_type?: string;
   files: string[] | FileObject[];
+  integrated_content_files?: string[] | FileObject[];
   samples?: string[] | SampleObject[];
   summary: string;
 }
