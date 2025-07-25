@@ -25,6 +25,7 @@ import {
 } from "./data-area";
 import DbxrefList from "./dbxref-list";
 import Link from "./link-no-prefetch";
+import { AssayTitles } from "./ontology-terms";
 import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
@@ -751,7 +752,13 @@ FileDataItems.commonProperties = [
 /**
  * Display data items common to all FileSet objects.
  */
-export function FileSetDataItems({ item, publications = [], children }) {
+export function FileSetDataItems({
+  item,
+  publications = [],
+  assayTitleDescriptionMap = {},
+  preferredAssayTitleDescriptionMap = {},
+  children,
+}) {
   return (
     <>
       {item.file_set_type && (
@@ -778,6 +785,28 @@ export function FileSetDataItems({ item, publications = [], children }) {
         <>
           <DataItemLabel>Description</DataItemLabel>
           <DataItemValue>{item.description}</DataItemValue>
+        </>
+      )}
+      {item.assay_titles?.length > 0 && (
+        <>
+          <DataItemLabel>Assay Term Names</DataItemLabel>
+          <DataItemValue>
+            <AssayTitles
+              titles={item.assay_titles}
+              descriptionMap={assayTitleDescriptionMap}
+            />
+          </DataItemValue>
+        </>
+      )}
+      {item.preferred_assay_titles?.length > 0 && (
+        <>
+          <DataItemLabel>Preferred Assay Titles</DataItemLabel>
+          <DataItemValue>
+            <AssayTitles
+              titles={item.preferred_assay_titles}
+              descriptionMap={preferredAssayTitleDescriptionMap}
+            />
+          </DataItemValue>
         </>
       )}
       {children}
@@ -840,6 +869,10 @@ FileSetDataItems.propTypes = {
   item: PropTypes.object.isRequired,
   // Publications associated with this file set
   publications: PropTypes.arrayOf(PropTypes.object),
+  // Map of assay titles to corresponding descriptions
+  assayTitleDescriptionMap: PropTypes.object,
+  // Map of preferred assay titles to corresponding descriptions
+  preferredAssayTitleDescriptionMap: PropTypes.object,
 };
 
 FileSetDataItems.commonProperties = [

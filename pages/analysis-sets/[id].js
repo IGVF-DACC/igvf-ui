@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { useContext } from "react";
 // components
 import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -29,10 +30,12 @@ import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
 import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
+import { AssayTitles } from "../../components/ontology-terms";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
+import SessionContext from "../../components/session-context";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -48,6 +51,10 @@ import {
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { getAllDerivedFromFiles } from "../../lib/files";
+import {
+  getAssayTitleDescriptionMap,
+  getPreferredAssayTitleDescriptionMap,
+} from "../../lib/ontology-terms";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function AnalysisSet({
@@ -70,10 +77,14 @@ export default function AnalysisSet({
   libraryDesignFiles,
   samples,
   qualityMetrics,
+  assayTitleDescriptionMap,
   attribution = null,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
+  const { profiles } = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    getPreferredAssayTitleDescriptionMap(profiles);
 
   return (
     <>
@@ -113,6 +124,28 @@ export default function AnalysisSet({
                 <>
                   <DataItemLabel>Description</DataItemLabel>
                   <DataItemValue>{analysisSet.description}</DataItemValue>
+                </>
+              )}
+              {analysisSet.assay_titles?.length > 0 && (
+                <>
+                  <DataItemLabel>Assay Term Names</DataItemLabel>
+                  <DataItemValue>
+                    <AssayTitles
+                      titles={analysisSet.assay_titles}
+                      descriptionMap={assayTitleDescriptionMap}
+                    />
+                  </DataItemValue>
+                </>
+              )}
+              {analysisSet.preferred_assay_titles?.length > 0 && (
+                <>
+                  <DataItemLabel>Preferred Assay Titles</DataItemLabel>
+                  <DataItemValue>
+                    <AssayTitles
+                      titles={analysisSet.preferred_assay_titles}
+                      descriptionMap={preferredAssayTitleDescriptionMap}
+                    />
+                  </DataItemValue>
                 </>
               )}
               {referenceFiles.length > 0 && (
@@ -358,6 +391,8 @@ AnalysisSet.propTypes = {
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this analysis set
   qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Assay title description map for this analysis set
+  assayTitleDescriptionMap: PropTypes.object.isRequired,
   // Publications associated with this analysis set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
@@ -576,6 +611,11 @@ export async function getServerSideProps({ params, req, query }) {
           : [];
     }
 
+    const assayTitleDescriptionMap =
+      analysisSet.assay_titles?.length > 0
+        ? await getAssayTitleDescriptionMap(analysisSet.assay_titles, request)
+        : {};
+
     const attribution = await buildAttribution(analysisSet, req.headers.cookie);
     return {
       props: {
@@ -598,6 +638,7 @@ export async function getServerSideProps({ params, req, query }) {
         libraryDesignFiles,
         samples,
         qualityMetrics,
+        assayTitleDescriptionMap,
         pageContext: { title: analysisSet.accession },
         attribution,
         isJson,
