@@ -29,7 +29,9 @@ export default function PredictionSet({ item: predictionSet }) {
       : [];
 
   const isSupplementsVisible =
-    predictionSet.alternate_accessions || fileContentType;
+    predictionSet.alternate_accessions ||
+    fileContentType ||
+    predictionSet.samples;
 
   return (
     <SearchListItemContent>
@@ -55,6 +57,22 @@ export default function PredictionSet({ item: predictionSet }) {
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   {fileContentType.join(", ")}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+            {predictionSet.samples && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Samples
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {[
+                    ...new Set(
+                      predictionSet.samples.map((sample) => sample.summary)
+                    ),
+                  ].map((summary, index) => (
+                    <div key={index}>{summary}</div>
+                  ))}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
