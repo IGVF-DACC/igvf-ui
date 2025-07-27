@@ -36,7 +36,7 @@ export default function PredictionSet({ item: predictionSet }) {
 
   const isSupplementsVisible =
     predictionSet.alternate_accessions ||
-    fileContentType ||
+    fileContentType.length > 0 ||
     predictionSet.samples;
 
   return (

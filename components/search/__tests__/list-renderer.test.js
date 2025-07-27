@@ -2842,6 +2842,7 @@ describe("Test Prediction Set component with alternate_accessions but no files o
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
       },
+      files: [],
       status: "released",
       file_set_type: "functional effect",
       summary: "binding effect prediction for FOXM1 using SEMVAR v1.0.0",
@@ -2937,6 +2938,7 @@ describe("Test Prediction Set component with samples but no files or alternate_a
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
       },
+      files: [],
       status: "released",
       file_set_type: "functional effect",
       samples: [
@@ -3005,6 +3007,7 @@ describe("Test Prediction Set component with no samples,  no files or alternate_
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
       },
+      files: [],
       status: "released",
       file_set_type: "functional effect",
       summary: "binding effect prediction for FOXM1 using SEMVAR v1.0.0",
