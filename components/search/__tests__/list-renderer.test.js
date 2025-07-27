@@ -3034,9 +3034,8 @@ describe("Test Prediction Set component with no samples,  no files or alternate_
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("genes");
 
-    const supplement = screen.getByTestId("search-list-item-supplement");
-    expect(supplement).toBeInTheDocument();
-    expect(supplement).toBeEmptyDOMElement();
+    const supplement = screen.queryByTestId("search-list-item-supplement");
+    expect(supplement).not.toBeInTheDocument();
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
