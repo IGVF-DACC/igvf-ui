@@ -37,7 +37,7 @@ export default function PredictionSet({ item: predictionSet }) {
   const isSupplementsVisible =
     predictionSet.alternate_accessions ||
     fileContentType.length > 0 ||
-    predictionSet.samples;
+    sampleSummaries.length > 0;
 
   return (
     <SearchListItemContent>
@@ -66,15 +66,13 @@ export default function PredictionSet({ item: predictionSet }) {
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {predictionSet.samples && (
+            {sampleSummaries.length > 0 && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Samples
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  {sampleSummaries.map((summary) => (
-                    <div key={summary}>{summary}</div>
-                  ))}
+                  {sampleSummaries.join(", ")}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
