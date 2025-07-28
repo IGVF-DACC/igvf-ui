@@ -1,6 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
@@ -25,6 +25,7 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
+import SessionContext from "../../components/session-context";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
@@ -39,6 +40,10 @@ import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { convertTextToTitleCase, sortedSeparatedList } from "../../lib/general";
+import {
+  getAssayTitleDescriptionMap,
+  getPreferredAssayTitleDescriptionMap,
+} from "../../lib/ontology-terms";
 import { isJsonFormat } from "../../lib/query-utils";
 
 /**
@@ -259,10 +264,14 @@ export default function ConstructLibrarySet({
   seqspecFiles,
   seqspecDocuments,
   integratedContentFiles,
+  assayTitleDescriptionMap,
   attribution = null,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
+  const { profiles } = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    getPreferredAssayTitleDescriptionMap(profiles);
 
   return (
     <>
@@ -280,6 +289,10 @@ export default function ConstructLibrarySet({
               <FileSetDataItems
                 item={constructLibrarySet}
                 publications={publications}
+                assayTitleDescriptionMap={assayTitleDescriptionMap}
+                preferredAssayTitleDescriptionMap={
+                  preferredAssayTitleDescriptionMap
+                }
               >
                 {constructLibrarySet.assay_titles && (
                   <>
@@ -403,6 +416,8 @@ ConstructLibrarySet.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this construct library
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Map of assay titles to corresponding descriptions
+  assayTitleDescriptionMap: PropTypes.object.isRequired,
   // Attribution for this analysis set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -472,6 +487,14 @@ export async function getServerSideProps({ params, req, query }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
+    const assayTitleDescriptionMap =
+      constructLibrarySet.assay_titles?.length > 0
+        ? await getAssayTitleDescriptionMap(
+            constructLibrarySet.assay_titles,
+            request
+          )
+        : {};
+
     const attribution = await buildAttribution(
       constructLibrarySet,
       req.headers.cookie
@@ -488,6 +511,7 @@ export async function getServerSideProps({ params, req, query }) {
         seqspecDocuments,
         integratedContentFiles,
         publications,
+        assayTitleDescriptionMap,
         pageContext: { title: constructLibrarySet.accession },
         attribution,
         isJson,

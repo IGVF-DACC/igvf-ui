@@ -2,6 +2,7 @@
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import PropTypes from "prop-types";
+import { useContext } from "react";
 import { Fragment } from "react";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -34,6 +35,7 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
+import SessionContext from "../../components/session-context";
 import { StatusPreviewDetail } from "../../components/status";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
@@ -49,6 +51,10 @@ import {
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import {
+  getMeasurementSetAssayTitleDescriptionMap,
+  getPreferredAssayTitleDescriptionMap,
+} from "../../lib/ontology-terms";
 import { isJsonFormat } from "../../lib/query-utils";
 
 /**
@@ -124,11 +130,15 @@ export default function MeasurementSet({
   seqspecDocuments,
   primerDesigns,
   libraryDesignFiles,
+  assayTitleDescriptionMap,
   attribution = null,
   isJson,
 }) {
   const tooltipAttr = useTooltip("external-image-url");
   const sections = useSecDir({ isJson });
+  const { profiles } = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    getPreferredAssayTitleDescriptionMap(profiles);
 
   // Split the files into those with an @type of ImageFile and all others.
   const groupedFiles = _.groupBy(files, (file) =>
@@ -172,6 +182,10 @@ export default function MeasurementSet({
               <FileSetDataItems
                 item={measurementSet}
                 publications={publications}
+                assayTitleDescriptionMap={assayTitleDescriptionMap}
+                preferredAssayTitleDescriptionMap={
+                  preferredAssayTitleDescriptionMap
+                }
               >
                 {assayTerm && (
                   <>
@@ -427,6 +441,8 @@ MeasurementSet.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this measurement set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Map of assay term titles to their descriptions
+  assayTitleDescriptionMap: PropTypes.object.isRequired,
   // Attribution for this measurement set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -540,6 +556,9 @@ export async function getServerSideProps({ params, req, query }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
+    const assayTitleDescriptionMap =
+      await getMeasurementSetAssayTitleDescriptionMap(measurementSet, request);
+
     const attribution = await buildAttribution(
       measurementSet,
       req.headers.cookie
@@ -561,6 +580,7 @@ export async function getServerSideProps({ params, req, query }) {
         seqspecDocuments,
         primerDesigns,
         libraryDesignFiles,
+        assayTitleDescriptionMap,
         pageContext: { title: measurementSet.accession },
         attribution,
         isJson,
