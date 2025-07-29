@@ -2624,7 +2624,6 @@ describe("Test the ModelSet component", () => {
       "@type": ["ModelSet", "FileSet", "Item"],
       accession: "IGVFDS1234MODL",
       aliases: ["igvf:SEMpl_2"],
-      alternate_accessions: [],
       award: { "@id": "/awards/HG012012/", component: "data coordination" },
       lab: {
         "@id": "/labs/j-michael-cherry/",

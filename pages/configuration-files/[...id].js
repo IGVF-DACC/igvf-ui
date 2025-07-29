@@ -44,6 +44,7 @@ export default function ConfigurationFile({
   inputFileFor,
   fileFormatSpecifications,
   qualityMetrics,
+  analysisStepVersion,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
@@ -65,7 +66,10 @@ export default function ConfigurationFile({
           <StatusPreviewDetail item={configurationFile} />
           <DataPanel>
             <DataArea>
-              <FileDataItems item={configurationFile} />
+              <FileDataItems
+                item={configurationFile}
+                analysisStepVersion={analysisStepVersion}
+              />
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
@@ -128,6 +132,8 @@ ConfigurationFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Quality metrics for this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
+  // Analysis step version for this file
+  analysisStepVersion: PropTypes.object,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Is the format JSON?
@@ -152,17 +158,20 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/configuration-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(configurationFile)) {
-    const seqspecOf = configurationFile.seqspec_of
-      ? await requestFiles(configurationFile.seqspec_of, request)
-      : [];
-    const documents = configurationFile.documents
-      ? await requestDocuments(configurationFile.documents, request)
-      : [];
-    const derivedFrom = configurationFile.derived_from
-      ? await requestFiles(configurationFile.derived_from, request)
-      : [];
+    const seqspecOf =
+      configurationFile.seqspec_of?.length > 0
+        ? await requestFiles(configurationFile.seqspec_of, request)
+        : [];
+    const documents =
+      configurationFile.documents?.length > 0
+        ? await requestDocuments(configurationFile.documents, request)
+        : [];
+    const derivedFrom =
+      configurationFile.derived_from?.length > 0
+        ? await requestFiles(configurationFile.derived_from, request)
+        : [];
     const inputFileFor =
-      configurationFile.input_file_for.length > 0
+      configurationFile.input_file_for?.length > 0
         ? await requestFiles(configurationFile.input_file_for, request)
         : [];
     let fileFormatSpecifications = [];
@@ -177,12 +186,17 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
     }
     const qualityMetrics =
-      configurationFile.quality_metrics.length > 0
+      configurationFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(
             configurationFile.quality_metrics,
             request
           )
         : [];
+    const analysisStepVersion = configurationFile.analysis_step_version
+      ? (
+          await request.getObject(configurationFile.analysis_step_version)
+        ).optional()
+      : null;
     const attribution = await buildAttribution(
       configurationFile,
       req.headers.cookie
@@ -196,6 +210,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         qualityMetrics,
+        analysisStepVersion,
         pageContext: { title: configurationFile.accession },
         attribution,
         isJson,

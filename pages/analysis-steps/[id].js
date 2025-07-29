@@ -108,7 +108,7 @@ export default function AnalysisStep({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          {analysisStep.analysis_step_versions.length > 0 && (
+          {analysisStep.analysis_step_versions?.length > 0 && (
             <AnalysisStepVersionTable
               analysisStepVersions={analysisStep.analysis_step_versions}
               reportLink={`/multireport/?type=AnalysisStepVersion&analysis_step.@id=${analysisStep["@id"]}`}

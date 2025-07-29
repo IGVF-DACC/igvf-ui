@@ -121,7 +121,7 @@ SearchListItemSupplementSummary.propTypes = {
 export function SearchListItemTitle({ children }) {
   return (
     <div
-      className="text-lg font-semibold leading-tight text-gray-600 dark:text-gray-300"
+      className="text-lg leading-tight font-semibold text-gray-600 dark:text-gray-300"
       data-testid="search-list-item-title"
     >
       {children}
@@ -181,7 +181,7 @@ export function SearchListItemSupplementSection({ children }) {
 export function SearchListItemSupplementLabel({ children }) {
   return (
     <div
-      className="mr-1 text-xs font-semibold uppercase text-gray-800 dark:text-gray-200"
+      className="mr-1 text-xs font-semibold text-gray-800 uppercase dark:text-gray-200"
       data-testid="search-list-item-supplement-label"
     >
       {children}

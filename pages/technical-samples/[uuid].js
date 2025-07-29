@@ -82,7 +82,7 @@ export default function TechnicalSample({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          {sample.file_sets.length > 0 && (
+          {sample.file_sets?.length > 0 && (
             <FileSetTable fileSets={sample.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -155,15 +155,16 @@ export async function getServerSideProps({ params, req, query }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
-    const documents = sample.documents
-      ? await requestDocuments(sample.documents, request)
-      : [];
+    const documents =
+      sample.documents?.length > 0
+        ? await requestDocuments(sample.documents, request)
+        : [];
     const sortedFractions =
       sample.sorted_fractions?.length > 0
         ? await requestSamples(sample.sorted_fractions, request)
         : [];
     const institutionalCertificates =
-      sample.institutional_certificates.length > 0
+      sample.institutional_certificates?.length > 0
         ? await requestInstitutionalCertificates(
             sample.institutional_certificates,
             request
@@ -189,7 +190,7 @@ export async function getServerSideProps({ params, req, query }) {
       );
     }
     const multiplexedInSamples =
-      sample.multiplexed_in.length > 0
+      sample.multiplexed_in?.length > 0
         ? await requestSamples(sample.multiplexed_in, request)
         : [];
     const attribution = await buildAttribution(sample, req.headers.cookie);

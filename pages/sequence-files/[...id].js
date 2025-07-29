@@ -250,7 +250,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(sequenceFile.derived_from, request)
       : [];
     const inputFileFor =
-      sequenceFile.input_file_for.length > 0
+      sequenceFile.input_file_for?.length > 0
         ? await requestFiles(sequenceFile.input_file_for, request)
         : [];
     let fileFormatSpecifications = [];
@@ -272,7 +272,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestDocuments([sequenceFile.seqspec_document], request)
       : null;
     const qualityMetrics =
-      sequenceFile.quality_metrics.length > 0
+      sequenceFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(sequenceFile.quality_metrics, request)
         : [];
     const attribution = await buildAttribution(

@@ -33,7 +33,7 @@ const fileSetColumns = [
     id: "files",
     title: "Files",
     display: ({ source, meta }) => {
-      if (source.files.length > 0) {
+      if (source.files?.length > 0) {
         const files = meta.fileSetMeta?.fileFilter
           ? meta.fileSetMeta.fileFilter(source.files)
           : source.files;

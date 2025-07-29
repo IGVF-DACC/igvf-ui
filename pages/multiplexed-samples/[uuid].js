@@ -92,7 +92,7 @@ export default function MultiplexedSample({
                     </DataItemValue>
                   </>
                 )}
-                {sources?.length > 0 && (
+                {sources.length > 0 && (
                   <>
                     <DataItemLabel>Sources</DataItemLabel>
                     <DataItemValue>
@@ -129,7 +129,7 @@ export default function MultiplexedSample({
             </DataArea>
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
-          {multiplexedSample.file_sets.length > 0 && (
+          {multiplexedSample.file_sets?.length > 0 && (
             <FileSetTable fileSets={multiplexedSample.file_sets} />
           )}
           {multiplexedSample.multiplexed_samples.length > 0 && (
@@ -286,7 +286,7 @@ export async function getServerSideProps({ params, req, query }) {
       treatments = await requestTreatments(treatmentPaths, request);
     }
     let multiplexedInSamples = [];
-    if (multiplexedSample.multiplexed_in.length > 0) {
+    if (multiplexedSample.multiplexed_in?.length > 0) {
       const multiplexedInPaths = multiplexedSample.multiplexed_in.map(
         (sample) => sample["@id"]
       );

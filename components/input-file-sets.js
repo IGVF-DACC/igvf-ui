@@ -370,7 +370,7 @@ FileSetsDisplay.propTypes = {
  */
 function SampleAliasesDisplay({ samples = [] }) {
   const allSamplesAliases = samples.reduce((acc, sample) => {
-    return sample.aliases?.length > 0 ? acc.concat(sample.aliases) : acc;
+    return sample.aliases ? acc.concat(sample.aliases) : acc;
   }, []);
 
   return allSamplesAliases.length > 0 ? (

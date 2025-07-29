@@ -335,8 +335,12 @@ function QualityMetricContent({
 
   return (
     <>
-      <h2 className="mb-2 mt-[-4px] text-center font-semibold">
-        <a href={qualityMetric["@id"]} target="_blank">
+      <h2 className="mt-[-4px] mb-2 text-center font-semibold">
+        <a
+          href={qualityMetric["@id"]}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
           {title}
         </a>
       </h2>
@@ -391,12 +395,12 @@ export function QualityMetricModal({
       <Modal.Header onClose={onClose}>
         <h2>
           Quality Metrics for{" "}
-          <a href={file["@id"]} target="_blank">
+          <a href={file["@id"]} rel="noopener noreferrer" target="_blank">
             {file.accession}
           </a>
         </h2>
       </Modal.Header>
-      <div className="flex max-h-[80svh] flex-wrap gap-2 overflow-y-auto p-4 @container/qc-panel md:max-h-[calc(80dvh-7rem)]">
+      <div className="@container/qc-panel flex max-h-[80svh] flex-wrap gap-2 overflow-y-auto p-4 md:max-h-[calc(80dvh-7rem)]">
         {qualityMetrics.map((metric) => {
           return (
             <SubPanelWrapper
@@ -432,7 +436,7 @@ export function QualityMetricPanel({
     return (
       <>
         <DataAreaTitle id={id}>Quality Metrics</DataAreaTitle>
-        <DataPanel className="flex flex-wrap gap-2 @container/qc-panel">
+        <DataPanel className="@container/qc-panel flex flex-wrap gap-2">
           {qualityMetrics.map((metric) => {
             let title =
               collectionTitles?.[metric["@type"][0]] || metric["@type"][0];
@@ -443,7 +447,7 @@ export function QualityMetricPanel({
                 key={metric["@id"]}
                 isInSubPanel={qualityMetrics.length > 1}
               >
-                <h2 className="mb-2 mt-[-4px] text-center font-semibold">
+                <h2 className="mt-[-4px] mb-2 text-center font-semibold">
                   <Link href={metric["@id"]}>{title}</Link>
                 </h2>
                 <QCMetricPanel qualityMetric={metric} />

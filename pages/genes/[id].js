@@ -27,9 +27,10 @@ import { isJsonFormat } from "../../lib/query-utils";
 import SeparatedList from "../../components/separated-list";
 
 export default function Gene({ gene, isJson }) {
-  const sortedStudySets = _.sortBy(gene.study_sets, (studySet) =>
-    studySet.toLowerCase()
-  );
+  const sortedStudySets =
+    gene.study_sets?.length > 0
+      ? _.sortBy(gene.study_sets, (studySet) => studySet.toLowerCase())
+      : [];
 
   return (
     <>

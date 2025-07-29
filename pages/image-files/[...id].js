@@ -146,7 +146,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(imageFile.derived_from, request)
       : [];
     const inputFileFor =
-      imageFile.input_file_for.length > 0
+      imageFile.input_file_for?.length > 0
         ? await requestFiles(imageFile.input_file_for, request)
         : [];
     let fileFormatSpecifications = [];
@@ -158,11 +158,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
-    const referenceFiles = imageFile.reference_files
-      ? await requestFiles(imageFile.reference_files, request)
-      : [];
     const qualityMetrics =
-      imageFile.quality_metrics.length > 0
+      imageFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(imageFile.quality_metrics, request)
         : [];
     const attribution = await buildAttribution(imageFile, req.headers.cookie);
@@ -176,7 +173,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         pageContext: { title: imageFile.accession },
         qualityMetrics,
         attribution,
-        referenceFiles,
         isJson,
       },
     };

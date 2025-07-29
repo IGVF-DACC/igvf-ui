@@ -66,7 +66,6 @@ export default function InVitroSystem({
   sortedFractions,
   sources,
   treatments,
-  cellFateChangeTreatments,
   biomarkers,
   multiplexedInSamples,
   institutionalCertificates,
@@ -163,7 +162,7 @@ export default function InVitroSystem({
             </DataArea>
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
-          {inVitroSystem.file_sets.length > 0 && (
+          {inVitroSystem.file_sets?.length > 0 && (
             <FileSetTable fileSets={inVitroSystem.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -250,13 +249,6 @@ export default function InVitroSystem({
               reportLabel={`Report of treatments applied to the biosample ${inVitroSystem.accession}`}
             />
           )}
-          {cellFateChangeTreatments.length > 0 && (
-            <TreatmentTable
-              treatments={cellFateChangeTreatments}
-              title="Cell Fate Change Treatments"
-              panelId="cell-fate-change-treatments"
-            />
-          )}
           {institutionalCertificates.length > 0 && (
             <InstitutionalCertificateTable
               institutionalCertificates={institutionalCertificates}
@@ -310,8 +302,6 @@ InVitroSystem.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Treatments of the sample
   treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Treatments for cell fate change of the sample
-  cellFateChangeTreatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Institutional certificates referencing this sample
@@ -403,17 +393,6 @@ export async function getServerSideProps({ params, req, query }) {
       );
       treatments = await requestTreatments(treatmentPaths, request);
     }
-    let cellFateChangeTreatments = [];
-    if (inVitroSystem.cell_fate_change_treatments?.length > 0) {
-      const cellFateChangeTreatmentPaths =
-        inVitroSystem.cell_fate_change_treatments.map(
-          (treatment) => treatment["@id"]
-        );
-      cellFateChangeTreatments = await requestTreatments(
-        cellFateChangeTreatmentPaths,
-        request
-      );
-    }
     let constructLibrarySets = [];
     if (inVitroSystem.construct_library_sets?.length > 0) {
       const constructLibrarySetPaths = inVitroSystem.construct_library_sets.map(
@@ -425,7 +404,7 @@ export async function getServerSideProps({ params, req, query }) {
       );
     }
     let multiplexedInSamples = [];
-    if (inVitroSystem.multiplexed_in.length > 0) {
+    if (inVitroSystem.multiplexed_in?.length > 0) {
       const multiplexedInPaths = inVitroSystem.multiplexed_in.map(
         (sample) => sample["@id"]
       );
@@ -477,7 +456,6 @@ export async function getServerSideProps({ params, req, query }) {
         sortedFractions,
         sources,
         treatments,
-        cellFateChangeTreatments,
         multiplexedInSamples,
         institutionalCertificates,
         pageContext: {

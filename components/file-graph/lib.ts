@@ -175,7 +175,9 @@ export function getFileMetrics(
   file: FileObject,
   qualityMetrics: QualityMetricObject[]
 ): QualityMetricObject[] {
-  const fileMetricPaths = file.quality_metrics as string[];
+  const fileMetricPaths = (
+    file.quality_metrics?.length > 0 ? file.quality_metrics : []
+  ) as string[];
   return qualityMetrics.filter((metric) =>
     fileMetricPaths.includes(metric["@id"])
   );

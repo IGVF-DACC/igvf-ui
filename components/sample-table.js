@@ -88,7 +88,7 @@ const sampleColumns = [
     display: ({ source }) => {
       return (
         <>
-          {source.construct_library_sets && (
+          {source.construct_library_sets?.length > 0 && (
             <LinkedIdAndStatusStack items={source.construct_library_sets}>
               {(fileSet) => fileSet.accession}
             </LinkedIdAndStatusStack>

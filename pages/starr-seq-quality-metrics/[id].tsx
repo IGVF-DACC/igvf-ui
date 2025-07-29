@@ -83,7 +83,7 @@ export async function getServerSideProps({ params, req, query }) {
     const qualityMetric = item as QualityMetricObject;
 
     const qualityMetricOf =
-      qualityMetric.quality_metric_of.length > 0
+      qualityMetric.quality_metric_of?.length > 0
         ? await requestFiles(
             qualityMetric.quality_metric_of as string[],
             request

@@ -209,7 +209,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(referenceFile.derived_from, request)
       : [];
     const inputFileFor =
-      referenceFile.input_file_for.length > 0
+      referenceFile.input_file_for?.length > 0
         ? await requestFiles(referenceFile.input_file_for, request)
         : [];
     let fileFormatSpecifications = [];
@@ -224,14 +224,14 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
     }
     let integratedIn = [];
-    if (referenceFile.integrated_in.length > 0) {
+    if (referenceFile.integrated_in?.length > 0) {
       const integratedInPaths = referenceFile.integrated_in.map(
         (fileSet) => fileSet["@id"]
       );
       integratedIn = await requestFileSets(integratedInPaths, request);
     }
     const qualityMetrics =
-      referenceFile.quality_metrics.length > 0
+      referenceFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(referenceFile.quality_metrics, request)
         : [];
     const attribution = await buildAttribution(

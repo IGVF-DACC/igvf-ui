@@ -18,7 +18,6 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
-import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
@@ -166,7 +165,7 @@ export default function AnalysisSet({
                   </DataItemValue>
                 </>
               )}
-              {analysisSet.functional_assay_mechanisms.length > 0 && (
+              {analysisSet.functional_assay_mechanisms?.length > 0 && (
                 <>
                   <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
                   <DataItemValue>
@@ -211,17 +210,6 @@ export default function AnalysisSet({
                       {analysisSet.external_image_data_url}
                     </a>
                   </DataItemValueUrl>
-                </>
-              )}
-              {analysisSet.publication_identifiers?.length > 0 && (
-                <>
-                  <DataItemLabel>Publication Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList
-                      dbxrefs={analysisSet.publication_identifiers}
-                      isCollapsible
-                    />
-                  </DataItemValue>
                 </>
               )}
               {publications.length > 0 && (
@@ -414,7 +402,10 @@ export async function getServerSideProps({ params, req, query }) {
       ? await requestDocuments(analysisSet.documents, request)
       : [];
 
-    const filePaths = analysisSet.files.map((file) => file["@id"]);
+    const filePaths =
+      analysisSet.files?.length > 0
+        ? analysisSet.files.map((file) => file["@id"])
+        : [];
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
 
@@ -467,12 +458,12 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     const inputFileSetFor =
-      analysisSet.input_for.length > 0
+      analysisSet.input_for?.length > 0
         ? await requestFileSets(analysisSet.input_for, request)
         : [];
 
     let controlFor = [];
-    if (analysisSet.control_for.length > 0) {
+    if (analysisSet.control_for?.length > 0) {
       const controlForPaths = analysisSet.control_for.map(
         (control) => control["@id"]
       );

@@ -109,9 +109,9 @@ export async function getMeasurementSetAssayTitleDescriptionMap(
   request: FetchRequest
 ): Promise<Record<string, string>> {
   if (
-    measurementSet.assay_term !== null &&
+    measurementSet.assay_term &&
     typeof measurementSet.assay_term === "object" &&
-    measurementSet.assay_titles.length > 0
+    measurementSet.assay_titles?.length > 0
   ) {
     const assayTermDescription = await getAssayTitleDescription(
       measurementSet.assay_term["@id"],

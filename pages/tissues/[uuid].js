@@ -137,7 +137,7 @@ export default function Tissue({
             </DataArea>
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
-          {tissue.file_sets.length > 0 && (
+          {tissue.file_sets?.length > 0 && (
             <FileSetTable fileSets={tissue.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -347,7 +347,7 @@ export async function getServerSideProps({ params, req, query }) {
       );
     }
     let multiplexedInSamples = [];
-    if (tissue.multiplexed_in.length > 0) {
+    if (tissue.multiplexed_in?.length > 0) {
       const multiplexedInPaths = tissue.multiplexed_in.map(
         (sample) => sample["@id"]
       );

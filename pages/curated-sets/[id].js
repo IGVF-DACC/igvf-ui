@@ -14,7 +14,6 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
-import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
@@ -75,17 +74,6 @@ export default function CuratedSet({
                   <>
                     <DataItemLabel>Taxa</DataItemLabel>
                     <DataItemValue>{curatedSet.taxa}</DataItemValue>
-                  </>
-                )}
-                {curatedSet.publication_identifiers?.length > 0 && (
-                  <>
-                    <DataItemLabel>Publication Identifiers</DataItemLabel>
-                    <DataItemValue>
-                      <DbxrefList
-                        dbxrefs={curatedSet.publication_identifiers}
-                        isCollapsible
-                      />
-                    </DataItemValue>
                   </>
                 )}
                 {curatedSet.assemblies?.length > 0 && (
@@ -189,17 +177,20 @@ export async function getServerSideProps({ params, req, query }) {
       ? await requestDocuments(curatedSet.documents, request)
       : [];
 
-    const filePaths = curatedSet.files.map((file) => file["@id"]);
-    const files =
-      filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
+    let files = [];
+    if (curatedSet.files?.length > 0) {
+      const filePaths = curatedSet.files.map((file) => file["@id"]);
+      files =
+        filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
+    }
 
     const inputFileSetFor =
-      curatedSet.input_for.length > 0
+      curatedSet.input_for?.length > 0
         ? await requestFileSets(curatedSet.input_for, request)
         : [];
 
     let controlFor = [];
-    if (curatedSet.control_for.length > 0) {
+    if (curatedSet.control_for?.length > 0) {
       const controlForPaths = curatedSet.control_for.map(
         (controlFor) => controlFor["@id"]
       );

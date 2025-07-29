@@ -39,7 +39,7 @@ export default function RodentDonor({
   publications,
   documents,
   attribution = null,
-  sources = null,
+  sources,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
@@ -70,7 +70,7 @@ export default function RodentDonor({
                     <DataItemValue>{donor.genotype}</DataItemValue>
                   </>
                 )}
-                {(donor.sources?.length > 0 || donor.lot_id) && (
+                {(sources.length > 0 || donor.lot_id) && (
                   <>
                     <DataItemLabel>Sources</DataItemLabel>
                     <DataItemValue>
@@ -116,7 +116,7 @@ RodentDonor.propTypes = {
   // Attribution for this donor
   attribution: PropTypes.object,
   // Source of donor
-  sources: PropTypes.arrayOf(PropTypes.object),
+  sources: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
 };

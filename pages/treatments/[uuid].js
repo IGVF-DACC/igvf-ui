@@ -178,9 +178,10 @@ export async function getServerSideProps({ params, req, query }) {
     await request.getObject(`/treatments/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(treatment)) {
-    const biosamplesTreated = treatment.biosamples_treated
-      ? await requestBiosamples(treatment.biosamples_treated, request)
-      : [];
+    const biosamplesTreated =
+      treatment.biosamples_treated?.length > 0
+        ? await requestBiosamples(treatment.biosamples_treated, request)
+        : [];
     const documents = treatment.documents
       ? await requestDocuments(treatment.documents, request)
       : [];

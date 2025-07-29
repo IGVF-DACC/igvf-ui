@@ -15,7 +15,7 @@ import {
 } from "./search-list-item";
 
 export default function OntologyTerm({ item: ontologyTerm }) {
-  const isSupplementsVisible = ontologyTerm.synonyms.length > 0;
+  const isSupplementsVisible = ontologyTerm.synonyms?.length > 0;
 
   return (
     <SearchListItemContent>
