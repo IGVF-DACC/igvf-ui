@@ -2830,41 +2830,23 @@ describe("Test Workflow component", () => {
   });
 });
 
-describe("Test Prediction Set component with files but no alternate_accessions", () => {
+describe("Test Prediction Set component with alternate_accessions but no files or samples.summary", () => {
   it("renders a prediction set item", () => {
     const item = {
       "@id": "/prediction-sets/IGVFDS8323PSET/",
       "@type": ["PredictionSet", "FileSet", "Item"],
       accession: "IGVFDS8323PSET",
+      alternate_accessions: ["IGVFDS8323PSEU"],
       award: "/awards/HG012012/",
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
       },
+      files: [],
       status: "released",
       file_set_type: "functional effect",
-      files: [{ content_type: "alignments" }, { content_type: "fragments" }],
       summary: "binding effect prediction for FOXM1 using SEMVAR v1.0.0",
       scope: "genes",
-      samples: [
-        {
-          "@id": "/tissues/IGVFSM0001DDDD/",
-          accession: "IGVFSM0001DDDD",
-          aliases: ["igvf:treated_tissue"],
-          donors: [
-            {
-              "@id": "/rodent-donors/IGVFDO6583PZIO/",
-              accession: "IGVFDO6583PZIO",
-              aliases: ["igvf:alias_rodent_donor_2"],
-              summary: "IGVFDO6583PZIO",
-              taxa: "Mus musculus",
-            },
-          ],
-          sample_terms: ["/sample-terms/UBERON_0002048/"],
-          summary: "lung tissue, Mus musculus (10-20 weeks)",
-          taxa: "Mus musculus",
-        },
-      ],
       uuid: "a053168a-82aa-4f7e-10e3-c19fa3cd13f6",
     };
 
@@ -2887,23 +2869,70 @@ describe("Test Prediction Set component with files but no alternate_accessions",
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("genes");
 
-    const supplementContent = screen.getByTestId(
+    const supplementContent = screen.getAllByTestId(
       "search-list-item-supplement-content"
     );
-    expect(supplementContent).toHaveTextContent("alignments, fragments");
+    expect(supplementContent[0]).toHaveTextContent("IGVFDS8323PSEU");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
 
-describe("Test Prediction Set component with no files (zero length) but with alternate_accession", () => {
+describe("Test Prediction Set component with files but no alternate_accessions or samples", () => {
   it("renders a prediction set item", () => {
     const item = {
-      "@id": "/prediction-sets/IGVFDS8323PSEU/",
+      "@id": "/prediction-sets/IGVFDS8323PSET/",
       "@type": ["PredictionSet", "FileSet", "Item"],
-      accession: "IGVFDS8323PSEU",
-      alternate_accessions: ["IGVFDS3099XPLP"],
+      accession: "IGVFDS8323PSET",
+      award: "/awards/HG012012/",
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      file_set_type: "functional effect",
+      files: [{ content_type: "alignments" }, { content_type: "fragments" }],
+      summary: "binding effect prediction for FOXM1 using SEMVAR v1.0.0",
+      scope: "genes",
+      uuid: "a053168a-82aa-4f7e-10e3-c19fa3cd13f6",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PredictionSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Prediction Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSET/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      "binding effect prediction for FOXM1 using SEMVAR v1.0.0"
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+    expect(meta).toHaveTextContent("genes");
+
+    const supplementContent = screen.getAllByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplementContent[0]).toHaveTextContent("alignments, fragments");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+});
+
+describe("Test Prediction Set component with samples but no files or alternate_accessions", () => {
+  it("renders a prediction set item", () => {
+    const item = {
+      "@id": "/prediction-sets/IGVFDS8323PSET/",
+      "@type": ["PredictionSet", "FileSet", "Item"],
+      accession: "IGVFDS8323PSET",
       award: "/awards/HG012012/",
       lab: {
         "@id": "/labs/j-michael-cherry/",
@@ -2912,8 +2941,6 @@ describe("Test Prediction Set component with no files (zero length) but with alt
       files: [],
       status: "released",
       file_set_type: "functional effect",
-      summary: "binding effect prediction for NFIA using SEMVAR v1.0.0",
-      scope: "genes",
       samples: [
         {
           "@id": "/tissues/IGVFSM0001DDDD/",
@@ -2933,7 +2960,9 @@ describe("Test Prediction Set component with no files (zero length) but with alt
           taxa: "Mus musculus",
         },
       ],
-      uuid: "a076232c2-d4db-4a51-ad73-4c53c824937f",
+      summary: "binding effect prediction for FOXM1 using SEMVAR v1.0.0",
+      scope: "genes",
+      uuid: "a053168a-82aa-4f7e-10e3-c19fa3cd13f6",
     };
 
     render(
@@ -2944,66 +2973,46 @@ describe("Test Prediction Set component with no files (zero length) but with alt
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/Prediction Set/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSEU/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSET/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      "binding effect prediction for NFIA using SEMVAR v1.0.0"
+      "binding effect prediction for FOXM1 using SEMVAR v1.0.0"
     );
-
-    const supplement = screen.getByTestId("search-list-item-supplement");
-    expect(supplement).toHaveTextContent("Alternate Accessions");
-
-    const alternateAccessionContent = screen.getByTestId(
-      "search-list-item-supplement-content"
-    );
-    expect(alternateAccessionContent).toHaveTextContent("IGVFDS3099XPLP");
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("genes");
+
+    const supplementContent = screen.getAllByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplementContent[0]).toHaveTextContent(
+      "lung tissue, Mus musculus (10-20 weeks)"
+    );
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
 });
 
-describe("Test Prediction Set component with no files at all but with alternate_accession", () => {
+describe("Test Prediction Set component with no samples,  no files or alternate_accessions", () => {
   it("renders a prediction set item", () => {
     const item = {
-      "@id": "/prediction-sets/IGVFDS8323PSEU/",
+      "@id": "/prediction-sets/IGVFDS8323PSET/",
       "@type": ["PredictionSet", "FileSet", "Item"],
-      accession: "IGVFDS8323PSEU",
-      alternate_accessions: ["IGVFDS3099XPLP"],
+      accession: "IGVFDS8323PSET",
       award: "/awards/HG012012/",
       lab: {
         "@id": "/labs/j-michael-cherry/",
         title: "J. Michael Cherry, Stanford",
       },
+      files: [],
       status: "released",
       file_set_type: "functional effect",
-      summary: "binding effect prediction for TAL1, TCF4 using SEMVAR v1.0.0",
+      summary: "binding effect prediction for FOXM1 using SEMVAR v1.0.0",
       scope: "genes",
-      samples: [
-        {
-          "@id": "/tissues/IGVFSM0001DDDD/",
-          accession: "IGVFSM0001DDDD",
-          aliases: ["igvf:treated_tissue"],
-          donors: [
-            {
-              "@id": "/rodent-donors/IGVFDO6583PZIO/",
-              accession: "IGVFDO6583PZIO",
-              aliases: ["igvf:alias_rodent_donor_2"],
-              summary: "IGVFDO6583PZIO",
-              taxa: "Mus musculus",
-            },
-          ],
-          sample_terms: ["/sample-terms/UBERON_0002048/"],
-          summary: "lung tissue, Mus musculus (10-20 weeks)",
-          taxa: "Mus musculus",
-        },
-      ],
-      uuid: "a076232c2-d4db-4a51-ad73-4c53c824937f",
+      uuid: "a053168a-82aa-4f7e-10e3-c19fa3cd13f6",
     };
 
     render(
@@ -3014,24 +3023,19 @@ describe("Test Prediction Set component with no files at all but with alternate_
 
     const uniqueId = screen.getByTestId("search-list-item-unique-id");
     expect(uniqueId).toHaveTextContent(/Prediction Set/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSEU/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSET/);
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      "binding effect prediction for TAL1, TCF4 using SEMVAR v1.0.0"
+      "binding effect prediction for FOXM1 using SEMVAR v1.0.0"
     );
-
-    const supplement = screen.getByTestId("search-list-item-supplement");
-    expect(supplement).toHaveTextContent("Alternate Accessions");
-
-    const alternateAccessionContent = screen.getByTestId(
-      "search-list-item-supplement-content"
-    );
-    expect(alternateAccessionContent).toHaveTextContent("IGVFDS3099XPLP");
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
     expect(meta).toHaveTextContent("genes");
+
+    const supplement = screen.queryByTestId("search-list-item-supplement");
+    expect(supplement).not.toBeInTheDocument();
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
