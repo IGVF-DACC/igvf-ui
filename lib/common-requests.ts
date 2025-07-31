@@ -144,9 +144,7 @@ export async function requestFiles(
         "submitted_file_name",
         "status",
         "summary",
-        "workflow.@id",
-        "workflow.name",
-        "workflow.uniform_pipeline",
+        "workflows",
         "upload_status",
       ],
       types
@@ -521,7 +519,16 @@ export async function requestWorkflows(
   return (
     await request.getMultipleObjectsBulk(
       paths,
-      ["accession", "aliases", "lab", "name", "source_url", "status"],
+      [
+        "accession",
+        "aliases",
+        "lab",
+        "name",
+        "source_url",
+        "status",
+        "uniform_pipeline",
+        "workflow_version",
+      ],
       ["Workflow"]
     )
   ).unwrap_or([]);

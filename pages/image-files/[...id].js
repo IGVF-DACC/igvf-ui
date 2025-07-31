@@ -19,12 +19,14 @@ import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -41,6 +43,7 @@ export default function ImageFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  workflows,
   qualityMetrics,
   isJson,
 }) {
@@ -95,6 +98,7 @@ export default function ImageFile({
               panelId="input-file-for"
             />
           )}
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -113,6 +117,8 @@ ImageFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Workflows that processed this file
+  workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics for this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -158,6 +164,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
+    let workflows = [];
+    if (imageFile.workflows?.length > 0) {
+      const workflowPaths = imageFile.workflows.map(
+        (workflow) => workflow["@id"]
+      );
+      workflows = await requestWorkflows(workflowPaths, request);
+    }
     const qualityMetrics =
       imageFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(imageFile.quality_metrics, request)
@@ -170,6 +183,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        workflows,
         pageContext: { title: imageFile.accession },
         qualityMetrics,
         attribution,

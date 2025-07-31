@@ -14,6 +14,7 @@ import {
 } from "./search-list-item";
 // components
 import { UniformlyProcessedBadge } from "../../common-pill-badges";
+import { WorkflowTitle } from "../../workflow";
 
 export default function Workflow({ item: workflow }) {
   const isSupplementVisible = workflow.alternate_accessions?.length > 0;
@@ -25,7 +26,9 @@ export default function Workflow({ item: workflow }) {
           <SearchListItemType item={workflow} />
           {workflow.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{workflow.name}</SearchListItemTitle>
+        <SearchListItemTitle>
+          <WorkflowTitle workflow={workflow} />
+        </SearchListItemTitle>
         <SearchListItemMeta>
           <div key="lab">{workflow.lab.title}</div>
         </SearchListItemMeta>

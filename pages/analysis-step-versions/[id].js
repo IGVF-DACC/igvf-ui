@@ -51,14 +51,9 @@ export default function AnalysisStepVersion({
                 <>
                   <DataItemLabel>Analysis Step</DataItemLabel>
                   <DataItemValue>
-                    {
-                      <Link
-                        key={analysisStepVersion.analysis_step["@id"]}
-                        href={analysisStepVersion.analysis_step["@id"]}
-                      >
-                        {analysisStepVersion.analysis_step.name}
-                      </Link>
-                    }
+                    <Link href={analysisStepVersion.analysis_step["@id"]}>
+                      {analysisStepVersion.analysis_step.title}
+                    </Link>
                   </DataItemValue>
                 </>
               )}

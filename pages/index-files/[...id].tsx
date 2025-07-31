@@ -26,12 +26,14 @@ import PagePreamble from "../../components/page-preamble";
 import { QualityMetricPanel } from "../../components/quality-metric";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -42,6 +44,7 @@ import {
 } from "../../lib/files";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
+import { type WorkflowObject } from "../../lib/workflow";
 // root
 import type { FileObject } from "../../globals.d";
 
@@ -59,6 +62,7 @@ export default function IndexFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  workflows,
   qualityMetrics,
   isJson,
 }: {
@@ -68,6 +72,7 @@ export default function IndexFile({
   derivedFrom: any[];
   inputFileFor: FileObject[];
   fileFormatSpecifications: any[];
+  workflows: WorkflowObject[];
   qualityMetrics: QualityMetricObject[];
   isJson: boolean;
 }) {
@@ -176,6 +181,7 @@ export default function IndexFile({
               panelId="input-file-for"
             />
           )}
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -233,6 +239,16 @@ export async function getServerSideProps(
       );
     }
 
+    let workflows: WorkflowObject[] = [];
+    const fileWorkflows = (indexFile.workflows || []) as WorkflowObject[];
+    if (fileWorkflows.length > 0) {
+      const workflowPaths = fileWorkflows.map((workflow) => workflow["@id"]);
+      workflows = (await requestWorkflows(
+        workflowPaths,
+        request
+      )) as WorkflowObject[];
+    }
+
     const qualityMetrics =
       indexFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(indexFile.quality_metrics, request)
@@ -247,6 +263,7 @@ export async function getServerSideProps(
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        workflows,
         qualityMetrics,
         pageContext: { title: indexFile.accession },
         attribution,
