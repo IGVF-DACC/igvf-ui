@@ -521,7 +521,15 @@ export async function requestWorkflows(
   return (
     await request.getMultipleObjectsBulk(
       paths,
-      ["accession", "aliases", "lab", "name", "source_url", "status"],
+      [
+        "accession",
+        "aliases",
+        "lab",
+        "name",
+        "source_url",
+        "status",
+        "uniform_pipeline",
+      ],
       ["Workflow"]
     )
   ).unwrap_or([]);

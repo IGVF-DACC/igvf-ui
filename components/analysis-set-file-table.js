@@ -80,6 +80,10 @@ const filesColumns = [
         );
       }
     },
+    hide: (data) => {
+      const anyWorkflows = data.some((item) => item.workflows?.length > 0);
+      return !anyWorkflows;
+    },
     isSortable: false,
   },
   {

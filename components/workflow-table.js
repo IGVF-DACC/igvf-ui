@@ -2,6 +2,7 @@
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
+import { UniformlyProcessedBadge } from "./common-pill-badges";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
@@ -34,6 +35,20 @@ const columns = [
         {source.source_url}
       </a>
     ),
+  },
+  {
+    id: "uniform_pipeline",
+    title: "Uniform Pipeline",
+    display: ({ source }) => {
+      if (source.uniform_pipeline) {
+        return <UniformlyProcessedBadge />;
+      }
+    },
+    hide: (data) => {
+      const anyUniformPipeline = data.some((item) => item.uniform_pipeline);
+      return !anyUniformPipeline;
+    },
+    sorter: (item) => (item.uniform_pipeline ? 0 : 1),
   },
   {
     id: "lab",
