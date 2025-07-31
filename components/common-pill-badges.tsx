@@ -28,18 +28,21 @@ function UniformlyProcessedIcon({ className }: { className?: string }) {
 export function UniformlyProcessedBadge({
   className,
   label = "uniformly processed",
+  isAbbreviated = false,
 }: {
   className?: string;
   label?: string;
+  isAbbreviated?: boolean;
 }) {
   return (
     <PillBadge
       testid="uniform-pipeline-badge"
       className={`bg-amber-300 text-black ring-amber-500 dark:bg-amber-800 dark:text-white [&>svg]:fill-black dark:[&>svg]:fill-white ${className}`}
       iconPosition="left"
+      abbreviatedLabel={isAbbreviated ? label : ""}
     >
       <UniformlyProcessedIcon className="h-4 w-4" />
-      <div className="py-px">{label}</div>
+      {!isAbbreviated && <div className="py-px">{label}</div>}
     </PillBadge>
   );
 }

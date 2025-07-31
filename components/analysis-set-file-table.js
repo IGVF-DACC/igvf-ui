@@ -1,5 +1,6 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
+import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import { BatchDownloadActuator } from "./batch-download";
@@ -52,26 +53,34 @@ const filesColumns = [
       truthyOrZero(source.file_size) ? dataSize(source.file_size) : "",
   },
   {
-    id: "workflow",
-    title: "Workflow",
+    id: "workflows",
+    title: "Workflows",
     display: ({ source }) => {
-      return source.workflow ? (
-        <Link key={source.workflow} href={source.workflow["@id"]}>
-          {source.workflow.name}
-        </Link>
-      ) : null;
+      if (source.workflows?.length > 0) {
+        const sortedWorkflows = _.sortBy(source.workflows, (workflow) =>
+          workflow.name.toLowerCase()
+        );
+        return (
+          <div className="min-w-50">
+            {sortedWorkflows.map((workflow) => (
+              <div
+                key={workflow["@id"]}
+                className="my-1.5 block first:mt-0 last:mb-0"
+              >
+                <Link href={workflow["@id"]}>{workflow.name}</Link>
+                {workflow.uniform_pipeline && (
+                  <UniformlyProcessedBadge
+                    className="ml-1 inline-block align-middle"
+                    isAbbreviated
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        );
+      }
     },
-    sorter: (item) => (item.workflow ? item.workflow.name.toLowerCase() : ""),
-  },
-  {
-    id: "uniform_pipeline",
-    title: "Uniform Pipeline",
-    display: ({ source }) => {
-      return source.workflow?.uniform_pipeline === true ? (
-        <UniformlyProcessedBadge workflow={source.workflow} />
-      ) : null;
-    },
-    sorter: (item) => (item.workflow?.uniform_pipeline ? 0 : 1),
+    isSortable: false,
   },
   {
     id: "filtered",

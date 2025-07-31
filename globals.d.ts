@@ -598,7 +598,6 @@ export interface AnalysisStepObject extends DatabaseObject {
   output_content_types: string[];
   step_label: string;
   title: string;
-  workflow: string | WorkflowObject;
 }
 
 export interface AnalysisStepVersionObject extends DatabaseObject {

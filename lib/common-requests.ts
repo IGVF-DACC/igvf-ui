@@ -144,9 +144,9 @@ export async function requestFiles(
         "submitted_file_name",
         "status",
         "summary",
-        "workflow.@id",
-        "workflow.name",
-        "workflow.uniform_pipeline",
+        "workflows.@id",
+        "workflows.name",
+        "workflows.uniform_pipeline",
         "upload_status",
       ],
       types
