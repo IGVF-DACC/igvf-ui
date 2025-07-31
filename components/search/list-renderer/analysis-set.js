@@ -83,7 +83,7 @@ export default function AnalysisSet({
         )}
       </SearchListItemMain>
       <SearchListItemQuality item={analysisSet}>
-        {isUniformPipeline && <UniformlyProcessedBadge workflow={workflows} />}
+        {isUniformPipeline && <UniformlyProcessedBadge />}
         <ControlledAccessIndicator item={analysisSet} />
         <DataUseLimitationSummaries
           summaries={analysisSet.data_use_limitation_summaries}
