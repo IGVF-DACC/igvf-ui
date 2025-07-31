@@ -122,7 +122,7 @@ export async function getServerSideProps({ params, req, query }) {
     const lab = (await request.getObject(software.lab["@id"])).optional();
 
     const versions =
-      software.versions.length > 0
+      software.versions?.length > 0
         ? await requestSoftwareVersions(software.versions, request)
         : [];
 

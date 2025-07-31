@@ -148,7 +148,7 @@ export default function Workflow({
               reportLabel="Analysis Steps that link to this workflow"
             />
           )}
-          {documents?.length > 0 && <DocumentTable documents={documents} />}
+          {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
     </>
@@ -183,7 +183,7 @@ export async function getServerSideProps({ params, req, query }) {
       : [];
 
     let analysisSteps = [];
-    if (workflow.analysis_steps.length > 0) {
+    if (workflow.analysis_steps?.length > 0) {
       const analysisStepPaths = workflow.analysis_steps.map(
         (analysisStep) => analysisStep["@id"]
       );

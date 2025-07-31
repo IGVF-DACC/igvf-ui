@@ -35,7 +35,7 @@ export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
           <DataPanel>
             <DataArea>
               <OntologyTermDataItems item={assayOntologyTerm} isA={isA}>
-                {assayOntologyTerm.category_slims.length > 0 && (
+                {assayOntologyTerm.category_slims?.length > 0 && (
                   <>
                     <DataItemLabel>Assay Category</DataItemLabel>
                     <DataItemValue>
@@ -43,7 +43,7 @@ export default function AssayOntologyTerm({ assayOntologyTerm, isA, isJson }) {
                     </DataItemValue>
                   </>
                 )}
-                {assayOntologyTerm.preferred_assay_titles && (
+                {assayOntologyTerm.preferred_assay_titles?.length > 0 && (
                   <>
                     <DataItemLabel>Preferred Assay Title</DataItemLabel>
                     <DataItemValue>

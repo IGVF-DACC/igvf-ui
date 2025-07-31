@@ -21,7 +21,6 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
-import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
@@ -209,17 +208,6 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {measurementSet.publication_identifiers?.length > 0 && (
-                  <>
-                    <DataItemLabel>Publication Identifiers</DataItemLabel>
-                    <DataItemValue>
-                      <DbxrefList
-                        dbxrefs={measurementSet.publication_identifiers}
-                        isCollapsible
-                      />
-                    </DataItemValue>
-                  </>
-                )}
                 {uniqueSampleSummaries.length > 0 && (
                   <>
                     <DataItemLabel>Sample Summaries</DataItemLabel>
@@ -314,7 +302,7 @@ export default function MeasurementSet({
               />
             )}
           </FileSetFilesTables>
-          {samples?.length > 0 && (
+          {samples.length > 0 && (
             <SampleTable
               samples={samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${measurementSet["@id"]}`}
@@ -463,7 +451,7 @@ export async function getServerSideProps({ params, req, query }) {
       ? await requestDocuments(measurementSet.documents, request)
       : [];
     let files = [];
-    if (measurementSet.files.length > 0) {
+    if (measurementSet.files?.length > 0) {
       const filePaths = measurementSet.files.map((file) => file["@id"]) || [];
       files = await requestFiles(filePaths, request);
     }
@@ -476,12 +464,12 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     const inputFileSetFor =
-      measurementSet.input_for.length > 0
+      measurementSet.input_for?.length > 0
         ? await requestFileSets(measurementSet.input_for, request)
         : [];
 
     let controlFor = [];
-    if (measurementSet.control_for.length > 0) {
+    if (measurementSet.control_for?.length > 0) {
       const controlForPaths = measurementSet.control_for.map(
         (controlFor) => controlFor["@id"]
       );

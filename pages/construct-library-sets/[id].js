@@ -39,7 +39,7 @@ import {
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { convertTextToTitleCase, sortedSeparatedList } from "../../lib/general";
+import { convertTextToTitleCase } from "../../lib/general";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
@@ -294,14 +294,6 @@ export default function ConstructLibrarySet({
                   preferredAssayTitleDescriptionMap
                 }
               >
-                {constructLibrarySet.assay_titles && (
-                  <>
-                    <DataItemLabel>Assay Titles</DataItemLabel>
-                    <DataItemValue>
-                      {sortedSeparatedList(constructLibrarySet.assay_titles)}
-                    </DataItemValue>
-                  </>
-                )}
                 {constructLibrarySet.product_id && (
                   <>
                     <DataItemLabel>Product ID</DataItemLabel>
@@ -319,7 +311,7 @@ export default function ConstructLibrarySet({
                     </DataItemValue>
                   </>
                 )}
-                {constructLibrarySet.sources && (
+                {constructLibrarySet.sources?.length > 0 && (
                   <>
                     <DataItemLabel>Sources</DataItemLabel>
                     <DataItemValue>
@@ -380,7 +372,7 @@ export default function ConstructLibrarySet({
               panelId="control-for"
             />
           )}
-          {constructLibrarySet.applied_to_samples.length > 0 && (
+          {constructLibrarySet.applied_to_samples?.length > 0 && (
             <SampleTable
               samples={constructLibrarySet.applied_to_samples}
               reportLink={`/multireport/?type=Sample&construct_library_sets.@id=${constructLibrarySet["@id"]}`}
@@ -436,12 +428,12 @@ export async function getServerSideProps({ params, req, query }) {
       : [];
 
     const inputFileSetFor =
-      constructLibrarySet.input_for.length > 0
+      constructLibrarySet.input_for?.length > 0
         ? await requestFileSets(constructLibrarySet.input_for, request)
         : [];
 
     let controlFor = [];
-    if (constructLibrarySet.control_for.length > 0) {
+    if (constructLibrarySet.control_for?.length > 0) {
       const controlForPaths = constructLibrarySet.control_for.map(
         (controlFor) => controlFor["@id"]
       );
@@ -449,13 +441,17 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     // Request files and their sequencing platforms.
-    const filePaths = constructLibrarySet.files.map((file) => file["@id"]);
+    const filePaths =
+      constructLibrarySet.files?.length > 0
+        ? constructLibrarySet.files.map((file) => file["@id"])
+        : [];
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
 
-    const fileSets = constructLibrarySet.file_sets
-      ? await requestFileSets(constructLibrarySet.file_sets, request)
-      : [];
+    const fileSets =
+      constructLibrarySet.file_sets?.length > 0
+        ? await requestFileSets(constructLibrarySet.file_sets, request)
+        : [];
 
     let integratedContentFiles = [];
     if (constructLibrarySet.integrated_content_files?.length > 0) {
@@ -470,8 +466,12 @@ export async function getServerSideProps({ params, req, query }) {
 
     let seqspecDocuments = [];
     if (files.length > 0) {
-      const seqspecDocumentPaths = files.map(
-        (seqspecFile) => seqspecFile.seqspec_document
+      const seqspecDocumentPaths = files.reduce(
+        (acc, seqspecFile) =>
+          seqspecFile.seqspec_document
+            ? acc.concat(seqspecFile.seqspec_document)
+            : acc,
+        []
       );
       if (seqspecDocumentPaths.length > 0) {
         const uniqueDocumentPaths = [...new Set(seqspecDocumentPaths)];

@@ -197,7 +197,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(signalFile.derived_from, request)
       : [];
     const inputFileFor =
-      signalFile.input_file_for.length > 0
+      signalFile.input_file_for?.length > 0
         ? await requestFiles(signalFile.input_file_for, request)
         : [];
     let fileFormatSpecifications = [];
@@ -215,7 +215,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(signalFile.reference_files, request)
       : [];
     const qualityMetrics =
-      signalFile.quality_metrics.length > 0
+      signalFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(signalFile.quality_metrics, request)
         : [];
     const attribution = await buildAttribution(signalFile, req.headers.cookie);

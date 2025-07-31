@@ -36,7 +36,7 @@ export default function SampleOntologyTerm({
           <DataPanel>
             <DataArea>
               <OntologyTermDataItems item={sampleOntologyTerm} isA={isA}>
-                {sampleOntologyTerm.organ_slims.length > 0 && (
+                {sampleOntologyTerm.organ_slims?.length > 0 && (
                   <>
                     <DataItemLabel>Organs</DataItemLabel>
                     <DataItemValue>
@@ -44,7 +44,7 @@ export default function SampleOntologyTerm({
                     </DataItemValue>
                   </>
                 )}
-                {sampleOntologyTerm.cell_slims.length > 0 && (
+                {sampleOntologyTerm.cell_slims?.length > 0 && (
                   <>
                     <DataItemLabel>Cells</DataItemLabel>
                     <DataItemValue>
@@ -52,7 +52,7 @@ export default function SampleOntologyTerm({
                     </DataItemValue>
                   </>
                 )}
-                {sampleOntologyTerm.developmental_slims.length > 0 && (
+                {sampleOntologyTerm.developmental_slims?.length > 0 && (
                   <>
                     <DataItemLabel>Developmental Slims</DataItemLabel>
                     <DataItemValue>
@@ -60,7 +60,7 @@ export default function SampleOntologyTerm({
                     </DataItemValue>
                   </>
                 )}
-                {sampleOntologyTerm.system_slims.length > 0 && (
+                {sampleOntologyTerm.system_slims?.length > 0 && (
                   <>
                     <DataItemLabel>System Slims</DataItemLabel>
                     <DataItemValue>

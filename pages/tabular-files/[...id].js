@@ -79,7 +79,7 @@ export default function TabularFile({
           <DataPanel>
             <DataArea>
               <FileDataItems item={tabularFile}>
-                {tabularFile.base_modifications && (
+                {tabularFile.base_modifications?.length > 0 && (
                   <>
                     <DataItemLabel>Base Modifications</DataItemLabel>
                     <DataItemValue>
@@ -227,11 +227,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(tabularFile.derived_from, request)
       : [];
     const barcodeMapFor =
-      tabularFile.barcode_map_for.length > 0
+      tabularFile.barcode_map_for?.length > 0
         ? await requestSamples(tabularFile.barcode_map_for, request)
         : [];
     const inputFileFor =
-      tabularFile.input_file_for.length > 0
+      tabularFile.input_file_for?.length > 0
         ? await requestFiles(tabularFile.input_file_for, request)
         : [];
     let fileFormatSpecifications = [];
@@ -246,18 +246,18 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
     }
     let integratedIn = [];
-    if (tabularFile.integrated_in.length > 0) {
+    if (tabularFile.integrated_in?.length > 0) {
       const integratedInPaths = tabularFile.integrated_in.map(
         (fileSet) => fileSet["@id"]
       );
       integratedIn = await requestFileSets(integratedInPaths, request);
     }
     const primerDesignFor =
-      tabularFile.primer_design_for.length > 0
+      tabularFile.primer_design_for?.length > 0
         ? await requestFileSets(tabularFile.primer_design_for, request)
         : [];
     const qualityMetrics =
-      tabularFile.quality_metrics.length > 0
+      tabularFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(tabularFile.quality_metrics, request)
         : [];
     const attribution = await buildAttribution(tabularFile, req.headers.cookie);

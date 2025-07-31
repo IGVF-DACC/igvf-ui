@@ -14,7 +14,6 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
-import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
@@ -92,7 +91,7 @@ export default function ModelSet({
                 )}
                 <DataItemLabel>Model Version</DataItemLabel>
                 <DataItemValue>{modelSet.model_version}</DataItemValue>
-                {modelSet.prediction_objects.length > 0 && (
+                {modelSet.prediction_objects?.length > 0 && (
                   <>
                     <DataItemLabel>Prediction Objects</DataItemLabel>
                     <DataItemValue>
@@ -100,7 +99,7 @@ export default function ModelSet({
                     </DataItemValue>
                   </>
                 )}
-                {modelSet.software_versions && (
+                {modelSet.software_versions?.length > 0 && (
                   <>
                     <DataItemLabel>Software Versions</DataItemLabel>
                     <DataItemValue>
@@ -135,17 +134,6 @@ export default function ModelSet({
                       <Link href={externalInputData["@id"]}>
                         {externalInputData.accession}
                       </Link>
-                    </DataItemValue>
-                  </>
-                )}
-                {modelSet.publication_identifiers?.length > 0 && (
-                  <>
-                    <DataItemLabel>Publication Identifiers</DataItemLabel>
-                    <DataItemValue>
-                      <DbxrefList
-                        dbxrefs={modelSet.publication_identifiers}
-                        isCollapsible
-                      />
                     </DataItemValue>
                   </>
                 )}
@@ -258,7 +246,10 @@ export async function getServerSideProps({ params, req, query }) {
       ? (await request.getObject(modelSet.external_input_data)).optional()
       : null;
 
-    const filePaths = modelSet.files.map((file) => file["@id"]);
+    const filePaths =
+      modelSet.files?.length > 0
+        ? modelSet.files.map((file) => file["@id"])
+        : [];
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
 
@@ -271,12 +262,12 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     const inputFileSetFor =
-      modelSet.input_for.length > 0
+      modelSet.input_for?.length > 0
         ? await requestFileSets(modelSet.input_for, request)
         : [];
 
     let controlFor = [];
-    if (modelSet.control_for.length > 0) {
+    if (modelSet.control_for?.length > 0) {
       const controlForPaths = modelSet.control_for.map(
         (controlFor) => controlFor["@id"]
       );

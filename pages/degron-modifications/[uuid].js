@@ -157,7 +157,7 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     const biosamplesModified =
-      modification.biosamples_modified.length > 0
+      modification.biosamples_modified?.length > 0
         ? await requestSamples(modification.biosamples_modified, request)
         : [];
 

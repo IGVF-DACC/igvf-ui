@@ -52,6 +52,7 @@ export default function AlignmentFile({
   fileFormatSpecifications,
   referenceFiles,
   qualityMetrics,
+  analysisStepVersion,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
@@ -74,7 +75,10 @@ export default function AlignmentFile({
           <StatusPreviewDetail item={alignmentFile} />
           <DataPanel>
             <DataArea>
-              <FileDataItems item={alignmentFile} />
+              <FileDataItems
+                item={alignmentFile}
+                analysisStepVersion={analysisStepVersion}
+              />
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
@@ -173,6 +177,8 @@ AlignmentFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
+  // Analysis step version associated with this file
+  analysisStepVersion: PropTypes.object,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Reference files used to generate this file
@@ -206,11 +212,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(alignmentFile.derived_from, request)
       : [];
     const inputFileFor =
-      alignmentFile.input_file_for.length > 0
+      alignmentFile.input_file_for?.length > 0
         ? await requestFiles(alignmentFile.input_file_for, request)
         : [];
     let fileFormatSpecifications = [];
-    if (alignmentFile.file_format_specifications?.length > 0) {
+    if (alignmentFile.file_format_specifications) {
       const fileFormatSpecificationsPaths =
         alignmentFile.file_format_specifications.map(
           (document) => document["@id"]
@@ -224,9 +230,14 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(alignmentFile.reference_files, request)
       : [];
     const qualityMetrics =
-      alignmentFile.quality_metrics.length > 0
+      alignmentFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(alignmentFile.quality_metrics, request)
         : [];
+    const analysisStepVersion = alignmentFile.analysis_step_version
+      ? (
+          await request.getObject(alignmentFile.analysis_step_version)
+        ).optional()
+      : null;
     const attribution = await buildAttribution(
       alignmentFile,
       req.headers.cookie
@@ -239,6 +250,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         qualityMetrics,
+        analysisStepVersion,
         pageContext: { title: alignmentFile.accession },
         attribution,
         referenceFiles,

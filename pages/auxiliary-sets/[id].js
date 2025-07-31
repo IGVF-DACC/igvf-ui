@@ -221,7 +221,7 @@ export async function getServerSideProps({ params, req, query }) {
       : [];
 
     let files = [];
-    if (auxiliarySet.files.length > 0) {
+    if (auxiliarySet.files?.length > 0) {
       const filePaths = auxiliarySet.files.map((file) => file["@id"]) || [];
       files = await requestFiles(filePaths, request);
     }
@@ -244,8 +244,12 @@ export async function getServerSideProps({ params, req, query }) {
 
     let seqspecDocuments = [];
     if (files.length > 0) {
-      const seqspecDocumentPaths = files.map(
-        (seqspecFile) => seqspecFile.seqspec_document
+      const seqspecDocumentPaths = files.reduce(
+        (acc, seqspecFile) =>
+          seqspecFile.seqspec_document
+            ? acc.concat(seqspecFile.seqspec_document)
+            : acc,
+        []
       );
       if (seqspecDocumentPaths.length > 0) {
         const uniqueDocumentPaths = [...new Set(seqspecDocumentPaths)];
@@ -254,12 +258,12 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     const inputFileSetFor =
-      auxiliarySet.input_for.length > 0
+      auxiliarySet.input_for?.length > 0
         ? await requestFileSets(auxiliarySet.input_for, request)
         : [];
 
     let controlFor = [];
-    if (auxiliarySet.control_for.length > 0) {
+    if (auxiliarySet.control_for?.length > 0) {
       const controlForPaths = auxiliarySet.control_for.map(
         (controlFor) => controlFor["@id"]
       );

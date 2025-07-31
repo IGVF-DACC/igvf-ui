@@ -150,7 +150,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       : [];
 
     const inputFileFor =
-      modelFile.input_file_for.length > 0
+      modelFile.input_file_for?.length > 0
         ? await requestFiles(modelFile.input_file_for, request)
         : [];
 
@@ -164,7 +164,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
     }
     const qualityMetrics =
-      modelFile.quality_metrics.length > 0
+      modelFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(modelFile.quality_metrics, request)
         : [];
     const attribution = await buildAttribution(modelFile, req.headers.cookie);

@@ -92,7 +92,7 @@ export default function WholeOrganism({
             </DataArea>
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
-          {sample.file_sets.length > 0 && (
+          {sample.file_sets?.length > 0 && (
             <FileSetTable fileSets={sample.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -286,7 +286,7 @@ export async function getServerSideProps({ params, req, query }) {
       );
     }
     let multiplexedInSamples = [];
-    if (sample.multiplexed_in.length > 0) {
+    if (sample.multiplexed_in?.length > 0) {
       const multiplexedInPaths = sample.multiplexed_in.map(
         (sample) => sample["@id"]
       );

@@ -340,12 +340,12 @@ export async function getServerSideProps({ params, req, query }) {
         : [];
 
     const inputFileSetFor =
-      predictionSet.input_for.length > 0
+      predictionSet.input_for?.length > 0
         ? await requestFileSets(predictionSet.input_for, request)
         : [];
 
     let controlFor = [];
-    if (predictionSet.control_for.length > 0) {
+    if (predictionSet.control_for?.length > 0) {
       const controlForPaths = predictionSet.control_for.map(
         (controlFor) => controlFor["@id"]
       );
@@ -353,7 +353,7 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     let files = [];
-    if (predictionSet.files.length > 0) {
+    if (predictionSet.files?.length > 0) {
       const filePaths = predictionSet.files.map((file) => file["@id"]) || [];
       files = await requestFiles(filePaths, request);
     }

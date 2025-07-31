@@ -24,7 +24,6 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { QualityMetricPanel } from "../../components/quality-metric";
-import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
@@ -44,7 +43,7 @@ import {
 import { type QualityMetricObject } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
 // root
-import type { FileObject, FileSetObject } from "../../globals.d";
+import type { FileObject } from "../../globals.d";
 
 interface IndexFileObject extends FileObject {
   assembly?: string;
@@ -77,7 +76,6 @@ export default function IndexFile({
   const hasReferencePanel =
     indexFile.assembly || indexFile.transcriptome_annotation;
   const hasAlignmentPanel = "filtered" in indexFile || "redacted" in indexFile;
-  const fileSet = indexFile.file_set as FileSetObject;
 
   return (
     <>
@@ -161,9 +159,6 @@ export default function IndexFile({
               panelId="file-format-specifications"
             />
           )}
-          {fileSet.samples?.length > 0 && (
-            <SampleTable samples={fileSet.samples as object[]} />
-          )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
@@ -224,7 +219,7 @@ export async function getServerSideProps(
       : [];
 
     const inputFileFor =
-      indexFile.input_file_for.length > 0
+      indexFile.input_file_for?.length > 0
         ? await requestFiles(indexFile.input_file_for as string[], request)
         : [];
 
@@ -239,7 +234,7 @@ export async function getServerSideProps(
     }
 
     const qualityMetrics =
-      indexFile.quality_metrics.length > 0
+      indexFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(indexFile.quality_metrics, request)
         : [];
 

@@ -107,7 +107,7 @@ export default function PrimaryCell({
             </DataArea>
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
-          {primaryCell.file_sets.length > 0 && (
+          {primaryCell.file_sets?.length > 0 && (
             <FileSetTable fileSets={primaryCell.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -321,7 +321,7 @@ export async function getServerSideProps({ params, req, query }) {
       );
     }
     let multiplexedInSamples = [];
-    if (primaryCell.multiplexed_in.length > 0) {
+    if (primaryCell.multiplexed_in?.length > 0) {
       const multiplexedInPaths = primaryCell.multiplexed_in.map(
         (sample) => sample["@id"]
       );

@@ -215,7 +215,7 @@ function ColumnHeaderCell({
       className={`grid h-full w-full place-items-end no-underline ${bgClass}`}
       prefetch={false}
     >
-      <div className="flex rotate-180 items-end whitespace-nowrap px-1 py-2 font-semibold [writing-mode:vertical-lr]">
+      <div className="flex rotate-180 items-end px-1 py-2 font-semibold whitespace-nowrap [writing-mode:vertical-lr]">
         {source.key}
       </div>
     </Link>
@@ -246,7 +246,7 @@ function DataCell({
           prefetch={false}
         />
         <div
-          className={`pointer-events-none absolute inset-0 group-hover:opacity-40 dark:group-hover:bg-opacity-30 ${hoverClass}`}
+          className={`dark:group-hover:bg-opacity-30 pointer-events-none absolute inset-0 group-hover:opacity-40 ${hoverClass}`}
         />
       </div>
     );
@@ -455,7 +455,7 @@ export default function TissueSummary({
             <LabelYAxis label={cellModel.matrix.y.label} />
             <div
               role="table"
-              className="border grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
+              className="border-panel grid w-max auto-rows-min gap-px overflow-x-auto border bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
             >
               <DataGrid data={dataGrid} meta={{ view }} />
             </div>

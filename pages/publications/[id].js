@@ -197,27 +197,27 @@ export async function getServerSideProps({ params, req, query }) {
   ).union();
   if (FetchRequest.isResponseSuccess(publication)) {
     const samples =
-      publication.samples.length > 0
+      publication.samples?.length > 0
         ? await requestSamples(publication.samples, request)
         : [];
     const donors =
-      publication.donors.length > 0
+      publication.donors?.length > 0
         ? await requestDonors(publication.donors, request)
         : [];
     const fileSets =
-      publication.file_sets.length > 0
+      publication.file_sets?.length > 0
         ? await requestFileSets(publication.file_sets, request)
         : [];
     const workflows =
-      publication.workflows.length > 0
+      publication.workflows?.length > 0
         ? await requestWorkflows(publication.workflows, request)
         : [];
     const software =
-      publication.software.length > 0
+      publication.software?.length > 0
         ? await requestSoftware(publication.software, request)
         : [];
     const softwareVersions =
-      publication.software_versions.length > 0
+      publication.software_versions?.length > 0
         ? await requestSoftwareVersions(publication.software_versions, request)
         : [];
     const attribution = await buildAttribution(publication, req.headers.cookie);

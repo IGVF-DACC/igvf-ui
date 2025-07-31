@@ -261,7 +261,7 @@ export function SampleDataItems({
           <DataItemValue>{item.revoke_detail}</DataItemValue>
         </>
       )}
-      {item.aliases && (
+      {item.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
           <DataItemValue>
@@ -340,12 +340,12 @@ SampleDataItems.commonProperties = [
  */
 export function BiosampleDataItems({
   item,
-  classifications = null,
+  classifications = [],
   constructLibrarySets = [],
-  diseaseTerms = null,
+  diseaseTerms = [],
   annotatedFrom = null,
   partOf = null,
-  sampleTerms = null,
+  sampleTerms = [],
   sources = null,
   publications = [],
   children,
@@ -357,7 +357,7 @@ export function BiosampleDataItems({
       sources={sources}
       publications={publications}
     >
-      {sampleTerms?.length > 0 && (
+      {sampleTerms.length > 0 && (
         <>
           <DataItemLabel>Sample Terms</DataItemLabel>
           <DataItemValue>
@@ -371,7 +371,7 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
-      {classifications?.length > 0 && (
+      {classifications.length > 0 && (
         <>
           <DataItemLabel>Classification</DataItemLabel>
           <DataItemValue>{classifications.join(", ")}</DataItemValue>
@@ -442,7 +442,7 @@ export function BiosampleDataItems({
           </DataItemValue>
         </>
       )}
-      {diseaseTerms?.length > 0 && (
+      {diseaseTerms.length > 0 && (
         <>
           <DataItemLabel>Disease Terms</DataItemLabel>
           <DataItemValue>
@@ -504,15 +504,7 @@ export function OntologyTermDataItems({ item, isA, children }) {
       <DataItemValue>
         <DbxrefList dbxrefs={[item.term_id]} />
       </DataItemValue>
-      {item.dbxrefs?.length > 0 && (
-        <>
-          <DataItemLabel>External Resources</DataItemLabel>
-          <DataItemValue>
-            <DbxrefList dbxrefs={item.dbxrefs} isCollapsible />
-          </DataItemValue>
-        </>
-      )}
-      {isA?.length > 0 && (
+      {isA.length > 0 && (
         <>
           <DataItemLabel>Is A</DataItemLabel>
           <DataItemValue>
@@ -526,7 +518,7 @@ export function OntologyTermDataItems({ item, isA, children }) {
           </DataItemValue>
         </>
       )}
-      {item.synonyms.length > 0 && (
+      {item.synonyms?.length > 0 && (
         <>
           <DataItemLabel>Synonyms</DataItemLabel>
           <DataItemValue>{item.synonyms.join(", ")}</DataItemValue>
@@ -577,7 +569,11 @@ OntologyTermDataItems.commonProperties = [
 /**
  * Display data items common to all file-derived objects.
  */
-export function FileDataItems({ item, children = null }) {
+export function FileDataItems({
+  item,
+  analysisStepVersion = null,
+  children = null,
+}) {
   const tooltipAttr = useTooltip("external-host-url");
 
   return (
@@ -600,12 +596,12 @@ export function FileDataItems({ item, children = null }) {
       )}
       <DataItemLabel>Summary</DataItemLabel>
       <DataItemValue>{item.summary}</DataItemValue>
-      {item.analysis_step_version && (
+      {analysisStepVersion && (
         <>
           <DataItemLabel>Analysis Step Version</DataItemLabel>
           <DataItemValueUrl>
-            <Link href={item.analysis_step_version["@id"]}>
-              {item.analysis_step_version["@id"]}
+            <Link href={analysisStepVersion["@id"]}>
+              {analysisStepVersion["@id"]}
             </Link>
           </DataItemValueUrl>
         </>
@@ -730,6 +726,8 @@ export function FileDataItems({ item, children = null }) {
 FileDataItems.propTypes = {
   // file object common for all file types
   item: PropTypes.object.isRequired,
+  // Analysis step version for this file
+  analysisStepVersion: PropTypes.object,
   // Children elements to render
   children: PropTypes.node,
 };

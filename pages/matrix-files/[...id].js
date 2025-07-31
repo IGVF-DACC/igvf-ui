@@ -187,7 +187,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(matrixFile.derived_from, request)
       : [];
     const inputFileFor =
-      matrixFile.input_file_for.length > 0
+      matrixFile.input_file_for?.length > 0
         ? await requestFiles(matrixFile.input_file_for, request)
         : [];
     let fileFormatSpecifications = [];
@@ -205,7 +205,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestFiles(matrixFile.reference_files, request)
       : [];
     const qualityMetrics =
-      matrixFile.quality_metrics.length > 0
+      matrixFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(matrixFile.quality_metrics, request)
         : [];
     const attribution = await buildAttribution(matrixFile, req.headers.cookie);

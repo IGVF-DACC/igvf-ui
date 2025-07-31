@@ -41,7 +41,7 @@ export default function OpenReadingFrame({ orf, isJson }) {
                   <DataItemValue>{orf.description}</DataItemValue>
                 </>
               )}
-              {orf.genes.length > 0 && (
+              {orf.genes?.length > 0 && (
                 <>
                   <DataItemLabel>ENSEMBL GeneIDs</DataItemLabel>
                   <DataItemValue>
