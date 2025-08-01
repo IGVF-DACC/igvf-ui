@@ -4,7 +4,6 @@ import { useContext } from "react";
 // components
 import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
-import AnalysisSetFileTable from "../../components/analysis-set-file-table";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { ConstructLibraryTable } from "../../components/construct-library-table";
@@ -259,7 +258,7 @@ export default function AnalysisSet({
 
           {files.length > 0 && (
             <>
-              <AnalysisSetFileTable
+              <FileTable
                 files={files}
                 fileSet={analysisSet}
                 isDownloadable

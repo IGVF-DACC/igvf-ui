@@ -9,8 +9,8 @@ import { WorkflowObject } from "../globals";
  */
 export function WorkflowTitle({ workflow }: { workflow: WorkflowObject }) {
   return (
-    <span className="inline-flex items-baseline gap-2">
-      {workflow.name}
+    <span>
+      {workflow.name}{" "}
       {workflow.workflow_version && (
         <VersionNumber version={workflow.workflow_version} />
       )}

@@ -1,13 +1,17 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
+import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import { BatchDownloadActuator } from "./batch-download";
+import { UniformlyProcessedBadge } from "./common-pill-badges";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
+import Link from "./link-no-prefetch";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
+import { VersionNumber } from "./version-number";
 // lib
 import { FileSetController } from "../lib/batch-download";
 import { dataSize, truthyOrZero } from "../lib/general";
@@ -36,6 +40,46 @@ const filesColumns = [
   {
     id: "summary",
     title: "Summary",
+  },
+  {
+    id: "workflows",
+    title: "Workflows",
+    display: ({ source }) => {
+      const workflows = source.workflows || [];
+      if (workflows.length > 0) {
+        const sortedWorkflows = _.sortBy(workflows, (workflow) =>
+          workflow.name.toLowerCase()
+        );
+        return (
+          <div className="min-w-50">
+            {sortedWorkflows.map((workflow) => (
+              <div
+                key={workflow["@id"]}
+                className="my-2 block first:mt-0 last:mb-0"
+              >
+                <Link href={workflow["@id"]} className="mr-1 inline-block">
+                  {workflow.name}
+                </Link>
+                <div className="no-wrap inline-flex">
+                  <VersionNumber version={workflow.workflow_version} />
+                  {workflow.uniform_pipeline && (
+                    <UniformlyProcessedBadge
+                      className="ml-1 inline-block align-middle"
+                      isAbbreviated
+                    />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      }
+    },
+    hide: (data) => {
+      const anyWorkflows = data.some((item) => item.workflows?.length > 0);
+      return !anyWorkflows;
+    },
+    isSortable: false,
   },
   {
     id: "lab",
