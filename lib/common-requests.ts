@@ -529,6 +529,7 @@ export async function requestWorkflows(
         "source_url",
         "status",
         "uniform_pipeline",
+        "workflow_version",
       ],
       ["Workflow"]
     )

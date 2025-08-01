@@ -523,6 +523,7 @@ export interface WorkflowObject extends DatabaseObject {
   name: string;
   source_url: string;
   uniform_pipeline?: boolean;
+  workflow_version?: string;
 }
 
 /**

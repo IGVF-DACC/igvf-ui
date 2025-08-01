@@ -23,6 +23,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import { WorkflowTitle } from "../../components/workflows";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -48,7 +49,10 @@ export default function Workflow({
     <>
       <Breadcrumbs item={workflow} />
       <EditableItem item={workflow}>
-        <PagePreamble sections={sections} />
+        <PagePreamble
+          pageTitle={<WorkflowTitle workflow={workflow} />}
+          sections={sections}
+        />
         <AlternateAccessions
           alternateAccessions={workflow.alternate_accessions}
         />
