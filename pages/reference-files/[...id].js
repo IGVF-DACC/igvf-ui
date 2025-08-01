@@ -28,6 +28,7 @@ import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -35,6 +36,7 @@ import {
   requestFileSets,
   requestFiles,
   requestQualityMetrics,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -51,6 +53,7 @@ export default function ReferenceFile({
   inputFileFor,
   fileFormatSpecifications,
   integratedIn,
+  workflows,
   qualityMetrics,
   attribution = null,
   isJson,
@@ -157,6 +160,7 @@ export default function ReferenceFile({
               panelId="integrated-in"
             />
           )}
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -177,6 +181,8 @@ ReferenceFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // ConstructLibraryset this file was integrated in
   integratedIn: PropTypes.arrayOf(PropTypes.object),
+  // Workflows that processed this file
+  workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
@@ -230,6 +236,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
       integratedIn = await requestFileSets(integratedInPaths, request);
     }
+    let workflows = [];
+    if (referenceFile.workflows?.length > 0) {
+      const workflowPaths = referenceFile.workflows.map(
+        (workflow) => workflow["@id"]
+      );
+      workflows = await requestWorkflows(workflowPaths, request);
+    }
     const qualityMetrics =
       referenceFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(referenceFile.quality_metrics, request)
@@ -246,6 +259,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         integratedIn,
+        workflows,
         qualityMetrics,
         pageContext: { title: referenceFile.accession },
         attribution,

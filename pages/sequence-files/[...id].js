@@ -28,6 +28,7 @@ import SampleTable from "../../components/sample-table";
 import { SeqspecDocumentLink } from "../../components/seqspec-document";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -35,6 +36,7 @@ import {
   requestFiles,
   requestQualityMetrics,
   requestSeqspecFiles,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -52,6 +54,7 @@ export default function SequenceFile({
   inputFileFor,
   fileFormatSpecifications,
   seqspecDocument,
+  workflows,
   qualityMetrics,
   attribution = null,
   isJson,
@@ -196,6 +199,7 @@ export default function SequenceFile({
               panelId="seqspec"
             />
           )}
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -216,6 +220,8 @@ SequenceFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // seqspec document associated with this file
   seqspecDocument: PropTypes.object,
+  // Workflows that processed this file
+  workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -271,6 +277,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const seqspecDocuments = sequenceFile.seqspec_document
       ? await requestDocuments([sequenceFile.seqspec_document], request)
       : null;
+    let workflows = [];
+    if (sequenceFile.workflows?.length > 0) {
+      const workflowPaths = sequenceFile.workflows.map(
+        (workflow) => workflow["@id"]
+      );
+      workflows = await requestWorkflows(workflowPaths, request);
+    }
     const qualityMetrics =
       sequenceFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(sequenceFile.quality_metrics, request)
@@ -287,6 +300,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         seqspecDocument: seqspecDocuments ? seqspecDocuments[0] : null,
+        workflows,
         qualityMetrics,
         pageContext: { title: sequenceFile.accession },
         attribution,

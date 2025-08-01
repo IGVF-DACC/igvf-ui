@@ -341,6 +341,7 @@ export interface FileObject extends DatabaseObject {
   reference_files: string[] | FileObject[];
   summary?: string;
   upload_status?: UploadStatus;
+  workflows?: string[] | WorkflowObject[];
 }
 
 /**

@@ -6,7 +6,7 @@ import { UniformlyProcessedBadge } from "./common-pill-badges";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid from "./sortable-grid";
-import { AliasesCell } from "./table-cells";
+import { WorkflowTitle } from "./workflows";
 
 const columns = [
   {
@@ -20,12 +20,11 @@ const columns = [
   {
     id: "name",
     title: "Name",
-  },
-  {
-    id: "aliases",
-    title: "Aliases",
-    display: ({ source }) => <AliasesCell source={source} />,
-    isSortable: false,
+    display: ({ source }) => (
+      <div className="min-w-60">
+        <WorkflowTitle workflow={source} />
+      </div>
+    ),
   },
   {
     id: "source_url",
@@ -35,6 +34,7 @@ const columns = [
         {source.source_url}
       </a>
     ),
+    isSortable: false,
   },
   {
     id: "uniform_pipeline",
