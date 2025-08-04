@@ -178,7 +178,7 @@ const constructLibrarySetColumns = [
       return (
         <SamplesDisplay
           fileSet={source}
-          samples={meta.Samples}
+          samples={meta.samples}
           propertyName="samples"
         />
       );
