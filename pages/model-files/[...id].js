@@ -72,6 +72,7 @@ export default function ModelFile({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
@@ -100,7 +101,6 @@ export default function ModelFile({
               panelId="input-file-for"
             />
           )}
-          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>

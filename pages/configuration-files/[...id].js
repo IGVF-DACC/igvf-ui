@@ -85,6 +85,7 @@ export default function ConfigurationFile({
               isSeqspecHidden
             />
           )}
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
@@ -113,7 +114,6 @@ export default function ConfigurationFile({
               panelId="input-file-for"
             />
           )}
-          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
