@@ -378,7 +378,7 @@ export default function ConstructLibrarySet({
               samples={constructLibrarySet.samples}
               reportLink={`/multireport/?type=Sample&construct_library_sets.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of samples that link to this construct library set"
-              title="Applied to Samples"
+              title="Samples"
             />
           )}
           {constructLibrarySet.donors?.length > 0 && (
