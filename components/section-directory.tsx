@@ -110,7 +110,7 @@ type RendererComponent = React.ComponentType<{
 /**
  * List of sections to display in the section directory.
  */
-type SectionList = {
+export type SectionList = {
   items: SectionItem[];
   renderer?: RendererComponent;
 };

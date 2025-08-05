@@ -23,6 +23,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import { WorkflowTitle } from "../../components/workflow";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -33,6 +34,7 @@ import {
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { workflowTextTitle } from "../../lib/workflow";
 
 export default function Workflow({
   workflow,
@@ -48,7 +50,11 @@ export default function Workflow({
     <>
       <Breadcrumbs item={workflow} />
       <EditableItem item={workflow}>
-        <PagePreamble sections={sections} />
+        <PagePreamble
+          pageTitle={workflowTextTitle(workflow)}
+          styledTitle={<WorkflowTitle workflow={workflow} />}
+          sections={sections}
+        />
         <AlternateAccessions
           alternateAccessions={workflow.alternate_accessions}
         />

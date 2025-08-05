@@ -8,6 +8,7 @@ import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
+import { WorkflowList } from "./workflow";
 // lib
 import { FileSetController } from "../lib/batch-download";
 import { dataSize, truthyOrZero } from "../lib/general";
@@ -36,6 +37,19 @@ const filesColumns = [
   {
     id: "summary",
     title: "Summary",
+  },
+  {
+    id: "workflows",
+    title: "Workflows",
+    display: ({ source }) => {
+      const workflows = source.workflows || [];
+      return <WorkflowList workflows={workflows} />;
+    },
+    hide: (data) => {
+      const anyWorkflows = data.some((item) => item.workflows?.length > 0);
+      return !anyWorkflows;
+    },
+    isSortable: false,
   },
   {
     id: "lab",

@@ -27,6 +27,7 @@ import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -35,6 +36,7 @@ import {
   requestFiles,
   requestQualityMetrics,
   requestSamples,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -54,6 +56,7 @@ export default function TabularFile({
   fileFormatSpecifications,
   integratedIn,
   primerDesignFor,
+  workflows,
   qualityMetrics,
   attribution = null,
   isJson,
@@ -116,6 +119,7 @@ export default function TabularFile({
               </DataPanel>
             </>
           )}
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
@@ -195,6 +199,8 @@ TabularFile.propTypes = {
   integratedIn: PropTypes.arrayOf(PropTypes.object),
   // Primer design files for this file
   primerDesignFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Workflows that processed this file
+  workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics for this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
@@ -256,6 +262,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       tabularFile.primer_design_for?.length > 0
         ? await requestFileSets(tabularFile.primer_design_for, request)
         : [];
+    let workflows = [];
+    if (tabularFile.workflows?.length > 0) {
+      const workflowPaths = tabularFile.workflows.map(
+        (workflow) => workflow["@id"]
+      );
+      workflows = await requestWorkflows(workflowPaths, request);
+    }
     const qualityMetrics =
       tabularFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(tabularFile.quality_metrics, request)
@@ -271,6 +284,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         fileFormatSpecifications,
         integratedIn,
         primerDesignFor,
+        workflows,
         qualityMetrics,
         pageContext: { title: tabularFile.accession },
         attribution,

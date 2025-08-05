@@ -53,7 +53,7 @@ import { useState } from "react";
  */
 export function useCollapseControl(
   items,
-  maxItemsBeforeCollapse,
+  maxItemsBeforeCollapse = DEFAULT_MAX_COLLAPSE_ITEMS_INLINE,
   isCollapsible = true
 ) {
   // True if the list appears collapsed
@@ -101,7 +101,7 @@ export function CollapseControlInline({ length, isCollapsed, setIsCollapsed }) {
   return (
     <button
       onClick={() => setIsCollapsed(!isCollapsed)}
-      className="ml-1 inline items-center rounded-xs border border-collapse-ctrl bg-collapse-ctrl pl-1.5 pr-1 text-xs font-bold text-collapse-ctrl"
+      className="border-collapse-ctrl bg-collapse-ctrl text-collapse-ctrl ml-1 inline items-center rounded-xs border pr-1 pl-1.5 text-xs font-bold"
       data-testid="collapse-control-inline"
       aria-label={label}
     >
@@ -149,7 +149,7 @@ export function CollapseControlVertical({
   return (
     <button
       onClick={() => setIsCollapsed(!isCollapsed)}
-      className={`flex items-center border-collapse-ctrl bg-collapse-ctrl py-0.5 pl-2.5 pr-1.5 text-xs font-bold text-collapse-ctrl ${borderClass}`}
+      className={`border-collapse-ctrl bg-collapse-ctrl text-collapse-ctrl flex items-center py-0.5 pr-1.5 pl-2.5 text-xs font-bold ${borderClass}`}
       data-testid="collapse-control-vertical"
       aria-label={label}
     >

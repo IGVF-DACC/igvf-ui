@@ -25,12 +25,14 @@ import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -47,6 +49,7 @@ export default function MatrixFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  workflows,
   referenceFiles,
   qualityMetrics,
   isJson,
@@ -100,6 +103,7 @@ export default function MatrixFile({
               </DataItemValue>
             </DataArea>
           </DataPanel>
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
@@ -152,6 +156,8 @@ MatrixFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Workflows that processed this file
+  workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -204,6 +210,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = matrixFile.reference_files
       ? await requestFiles(matrixFile.reference_files, request)
       : [];
+    let workflows = [];
+    if (matrixFile.workflows?.length > 0) {
+      const workflowPaths = matrixFile.workflows.map(
+        (workflow) => workflow["@id"]
+      );
+      workflows = await requestWorkflows(workflowPaths, request);
+    }
     const qualityMetrics =
       matrixFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(matrixFile.quality_metrics, request)
@@ -216,6 +229,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        workflows,
         qualityMetrics,
         pageContext: { title: matrixFile.accession },
         attribution,

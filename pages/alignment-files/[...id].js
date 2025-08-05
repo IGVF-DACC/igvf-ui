@@ -28,12 +28,14 @@ import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -50,6 +52,7 @@ export default function AlignmentFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  workflows,
   referenceFiles,
   qualityMetrics,
   analysisStepVersion,
@@ -129,6 +132,7 @@ export default function AlignmentFile({
               )}
             </DataArea>
           </DataPanel>
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
@@ -175,6 +179,8 @@ AlignmentFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Workflows that processed this file
+  workflows: PropTypes.arrayOf(PropTypes.object),
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Analysis step version associated with this file
@@ -229,6 +235,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = alignmentFile.reference_files
       ? await requestFiles(alignmentFile.reference_files, request)
       : [];
+    let workflows = [];
+    if (alignmentFile.workflows?.length > 0) {
+      const workflowPaths = alignmentFile.workflows.map(
+        (workflow) => workflow["@id"]
+      );
+      workflows = await requestWorkflows(workflowPaths, request);
+    }
     const qualityMetrics =
       alignmentFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(alignmentFile.quality_metrics, request)
@@ -249,6 +262,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        workflows,
         qualityMetrics,
         analysisStepVersion,
         pageContext: { title: alignmentFile.accession },

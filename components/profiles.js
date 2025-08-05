@@ -7,8 +7,8 @@ import {
 import PropTypes from "prop-types";
 // components
 import { AttachedButtons, ButtonLink, TextField } from "./form-elements";
-import Link from "./link-no-prefetch";
 import { useBrowserStateQuery } from "./presentation-status";
+import { VersionNumber } from "./version-number";
 // lib
 import { schemaToPath, SEARCH_MODE_TITLE } from "../lib/profiles";
 
@@ -40,7 +40,7 @@ export function SchemaSearchField({
       />
       <button
         onClick={() => setSearchTerm("")}
-        className="absolute right-0 top-0 flex h-full w-8 cursor-pointer items-center justify-center"
+        className="absolute top-0 right-0 flex h-full w-8 cursor-pointer items-center justify-center"
         aria-label={
           searchMode === SEARCH_MODE_TITLE
             ? "Clear schema title search"
@@ -110,18 +110,9 @@ SearchAndReportType.propTypes = {
  */
 export function SchemaVersion({ schema, isLinked = false }) {
   const version = schema.properties.schema_version.default;
-  const path = schemaToPath(schema);
-  const className =
-    "border-schema-version inline-block border bg-schema-version px-1 text-xs font-semibold text-schema-version no-underline";
-  if (isLinked) {
-    return (
-      <Link
-        href={`${path}/changelog`}
-        className={`${className} rounded-xs`}
-      >{`v${version}`}</Link>
-    );
-  }
-  return <div className={className}>{`v${version}`}</div>;
+  const path = isLinked ? `${schemaToPath(schema)}/changelog` : "";
+
+  return <VersionNumber version={version} path={path} />;
 }
 
 SchemaVersion.propTypes = {

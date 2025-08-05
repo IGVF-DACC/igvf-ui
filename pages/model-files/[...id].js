@@ -20,12 +20,14 @@ import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -42,6 +44,7 @@ export default function ModelFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  workflows,
   qualityMetrics,
   isJson,
 }) {
@@ -69,6 +72,7 @@ export default function ModelFile({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
@@ -115,6 +119,8 @@ ModelFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // File specification documents
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Workflows that processed this file
+  workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -163,6 +169,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
+    let workflows = [];
+    if (modelFile.workflows?.length > 0) {
+      const workflowPaths = modelFile.workflows.map(
+        (workflow) => workflow["@id"]
+      );
+      workflows = await requestWorkflows(workflowPaths, request);
+    }
     const qualityMetrics =
       modelFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(modelFile.quality_metrics, request)
@@ -175,6 +188,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        workflows,
         qualityMetrics,
         pageContext: { title: modelFile.accession },
         attribution,

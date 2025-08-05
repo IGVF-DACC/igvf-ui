@@ -39,6 +39,7 @@ venv/
 
 # editors
 .vscode
+/.eslintrc.json
 
 # vercel
 .vercel

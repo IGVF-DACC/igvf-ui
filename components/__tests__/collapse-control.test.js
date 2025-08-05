@@ -146,7 +146,7 @@ describe("Test the vertical collapse control", () => {
 
     function Component() {
       const items = ["Test", "Test", "Test", "Test", "Test"];
-      const collapser = useCollapseControl(items, 6);
+      const collapser = useCollapseControl(items);
 
       return (
         <>

@@ -20,12 +20,14 @@ import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SequencingFileTable from "../../components/sequencing-file-table";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -43,6 +45,7 @@ export default function ConfigurationFile({
   derivedFrom,
   inputFileFor,
   fileFormatSpecifications,
+  workflows,
   qualityMetrics,
   analysisStepVersion,
   isJson,
@@ -82,6 +85,7 @@ export default function ConfigurationFile({
               isSeqspecHidden
             />
           )}
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
@@ -130,6 +134,8 @@ ConfigurationFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Workflows that processed this file
+  workflows: PropTypes.arrayOf(PropTypes.object),
   // Quality metrics for this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Analysis step version for this file
@@ -185,6 +191,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
+    let workflows = [];
+    if (configurationFile.workflows?.length > 0) {
+      const workflowPaths = configurationFile.workflows.map(
+        (workflow) => workflow["@id"]
+      );
+      workflows = await requestWorkflows(workflowPaths, request);
+    }
     const qualityMetrics =
       configurationFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(
@@ -209,6 +222,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        workflows,
         qualityMetrics,
         analysisStepVersion,
         pageContext: { title: configurationFile.accession },

@@ -341,6 +341,7 @@ export interface FileObject extends DatabaseObject {
   reference_files: string[] | FileObject[];
   summary?: string;
   upload_status?: UploadStatus;
+  workflows?: string[] | WorkflowObject[];
 }
 
 /**
@@ -517,15 +518,6 @@ export interface SoftwareObject extends DatabaseObject {
 }
 
 /**
- * Data structure common to all workflow object types.
- */
-export interface WorkflowObject extends DatabaseObject {
-  name: string;
-  source_url: string;
-  uniform_pipeline?: boolean;
-}
-
-/**
  * Data structure of the `User` object.
  */
 export interface UserObject extends DatabaseObject {
@@ -598,7 +590,6 @@ export interface AnalysisStepObject extends DatabaseObject {
   output_content_types: string[];
   step_label: string;
   title: string;
-  workflow: string | WorkflowObject;
 }
 
 export interface AnalysisStepVersionObject extends DatabaseObject {

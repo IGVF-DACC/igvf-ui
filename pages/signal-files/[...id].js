@@ -25,12 +25,14 @@ import { QualityMetricPanel } from "../../components/quality-metric";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -48,6 +50,7 @@ export default function SignalFile({
   inputFileFor,
   fileFormatSpecifications,
   referenceFiles,
+  workflows,
   qualityMetrics,
   isJson,
 }) {
@@ -109,6 +112,7 @@ export default function SignalFile({
               )}
             </DataArea>
           </DataPanel>
+          {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
             <DocumentTable
@@ -162,6 +166,8 @@ SignalFile.propTypes = {
   inputFileFor: PropTypes.array.isRequired,
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
+  // Workflows that processed this file
+  workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -214,6 +220,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const referenceFiles = signalFile.reference_files
       ? await requestFiles(signalFile.reference_files, request)
       : [];
+    let workflows = [];
+    if (signalFile.workflows?.length > 0) {
+      const workflowPaths = signalFile.workflows.map(
+        (workflow) => workflow["@id"]
+      );
+      workflows = await requestWorkflows(workflowPaths, request);
+    }
     const qualityMetrics =
       signalFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(signalFile.quality_metrics, request)
@@ -226,6 +239,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         derivedFrom,
         inputFileFor,
         fileFormatSpecifications,
+        workflows,
         qualityMetrics,
         pageContext: { title: signalFile.accession },
         attribution,
