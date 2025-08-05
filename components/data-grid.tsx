@@ -7,83 +7,8 @@
 
 // node_modules
 import { forwardRef } from "react";
-
-/**
- * The content of a cell in the data grid. It can be a string, number, JSX element, React component,
- * or a function returning a React component.
- */
-type CellContent =
-  | string
-  | number
-  | React.ReactNode
-  | ((props: any) => React.ReactNode);
-
-/**
- * Defines one cell in the data grid. The cell can contain a simple type or a React component. The
- * cell can span multiple columns.
- */
-export type Cell = {
-  /**
-   * Identifier for the cell unique throughout the row.
-   */
-  id: string;
-
-  /**
-   * Content of the cell.
-   */
-  content: CellContent;
-
-  /**
-   * Number of columns the cell spans. Default is 1.
-   */
-  columns?: number;
-
-  /**
-   * HTML role of the cell. Default is "cell".
-   */
-  role?: string;
-
-  /**
-   * Source of the cell. Used for custom cell renderers.
-   */
-  source?: unknown;
-
-  /**
-   * True to not wrap the cell content in a default cell wrapper.
-   */
-  noWrapper?: boolean;
-};
-
-/**
- * Defines one row in the data grid. The row can contain multiple cells and child rows. The row can
- * contain a custom React component to render the row.
- */
-export type Row = {
-  /**
-   * Identifier for the row unique throughout the data grid.
-   */
-  id: string;
-
-  /**
-   * Array of cells in the row.
-   */
-  cells: Cell[];
-
-  /**
-   * Array of child rows in the row when the cells span multiple rows to the right.
-   */
-  children?: Row[];
-
-  /**
-   * Custom React component to render the row.
-   */
-  RowComponent?: React.ComponentType<any>;
-};
-
-/**
- * Defines an entire data grid.
- */
-export type DataGridFormat = Row[];
+// lib
+import { type DataGridFormat } from "../lib/data-grid";
 
 /**
  * Default data grid cell. Custom data grid cells can use wrap or replace this.

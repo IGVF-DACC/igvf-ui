@@ -3,11 +3,7 @@ import _ from "lodash";
 import { useRouter } from "next/router";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
-import DataGrid, {
-  type Cell,
-  type DataGridFormat,
-  type Row,
-} from "../../components/data-grid";
+import DataGrid from "../../components/data-grid";
 import Link from "../../components/link-no-prefetch";
 import { LabelXAxis, LabelYAxis } from "../../components/matrix";
 import NoCollectionData from "../../components/no-collection-data";
@@ -20,6 +16,12 @@ import {
   TabTitle,
 } from "../../components/tabs";
 // lib
+import {
+  type Cell,
+  type DataGridFormat,
+  type Row,
+  type CellContentProps,
+} from "../../lib/data-grid";
 import FetchRequest from "../../lib/fetch-request";
 import { errorObjectToProps } from "../../lib/errors";
 import { toShishkebabCase } from "../../lib/general";
@@ -107,22 +109,18 @@ const acceptedTaxa = Object.keys(taxaQueries);
  * @param source - Source of data to render the cell
  * @param meta - Metadata for the entire matrix to render the cell
  */
-function RowHeaderCell({
-  source,
-  meta,
-}: {
-  source: CellSource;
-  meta: { taxa: string };
-}) {
-  const bgClass = taxaQueries[meta.taxa].rowHeaderCellClass;
+function RowHeaderCell({ source, meta }: CellContentProps) {
+  const cellSource = source as unknown as CellSource;
+  const cellMeta = meta as { taxa: string };
+  const bgClass = taxaQueries[cellMeta.taxa].rowHeaderCellClass;
 
   return (
     <Link
-      href={source.href}
+      href={cellSource.href}
       className={`flex h-full items-center px-2 py-0.5 font-semibold no-underline ${bgClass}`}
       prefetch={false}
     >
-      {source.key}
+      {cellSource.key}
     </Link>
   );
 }
@@ -132,24 +130,20 @@ function RowHeaderCell({
  * @param source - Source of data to render the cell
  * @param meta - Metadata for the entire matrix to render the cell
  */
-function RowSubheaderCell({
-  source,
-  meta,
-}: {
-  source: CellSource;
-  meta: { taxa: string };
-}) {
-  const bgClass = taxaQueries[meta.taxa].rowSubheaderCellClass;
-  const hoverClass = taxaQueries[meta.taxa].hoverCellClass;
+function RowSubheaderCell({ source, meta }: CellContentProps) {
+  const cellSource = source as unknown as CellSource;
+  const cellMeta = meta as { taxa: string };
+  const bgClass = taxaQueries[cellMeta.taxa].rowSubheaderCellClass;
+  const hoverClass = taxaQueries[cellMeta.taxa].hoverCellClass;
 
   return (
     <div className="relative h-full w-full">
       <Link
-        href={source.href}
+        href={cellSource.href}
         className={`flex h-full items-center px-2 py-0.5 text-gray-800 no-underline dark:text-gray-200 ${bgClass} ${hoverClass}`}
         prefetch={false}
       >
-        {source.key}
+        {cellSource.key}
       </Link>
     </div>
   );
@@ -160,23 +154,19 @@ function RowSubheaderCell({
  * @param source - Source of data to render the cell
  * @param meta - Metadata for the entire matrix to render the cell
  */
-function ColumnHeaderCell({
-  source,
-  meta,
-}: {
-  source: CellSource;
-  meta: { taxa: string };
-}) {
-  const bgClass = taxaQueries[meta.taxa].columnHeaderCellClass;
+function ColumnHeaderCell({ source, meta }: CellContentProps) {
+  const cellSource = source as unknown as CellSource;
+  const cellMeta = meta as { taxa: string };
+  const bgClass = taxaQueries[cellMeta.taxa].columnHeaderCellClass;
 
   return (
     <Link
-      href={source.href}
+      href={cellSource.href}
       className={`grid h-full w-full place-items-end no-underline ${bgClass}`}
       prefetch={false}
     >
-      <div className="flex rotate-180 items-end whitespace-nowrap px-1 py-2 font-semibold [writing-mode:vertical-lr]">
-        {source.key}
+      <div className="flex rotate-180 items-end px-1 py-2 font-semibold whitespace-nowrap [writing-mode:vertical-lr]">
+        {cellSource.key}
       </div>
     </Link>
   );
@@ -187,26 +177,22 @@ function ColumnHeaderCell({
  * @param source - Source of data to render the cell
  * @param meta - Metadata for the entire matrix to render the cell
  */
-function DataCell({
-  source,
-  meta,
-}: {
-  source: CellSource;
-  meta: { taxa: string };
-}) {
-  const bgClass = taxaQueries[meta.taxa].dataCellClass;
-  const hoverClass = taxaQueries[meta.taxa].hoverCellClass;
+function DataCell({ source, meta }: CellContentProps) {
+  const cellSource = source as unknown as CellSource;
+  const cellMeta = meta as { taxa: string };
+  const bgClass = taxaQueries[cellMeta.taxa].dataCellClass;
+  const hoverClass = taxaQueries[cellMeta.taxa].hoverCellClass;
 
-  if (source.href) {
+  if (cellSource.href) {
     return (
       <div className="relative h-full w-full">
         <Link
-          href={source.href}
+          href={cellSource.href}
           className={`block h-full w-full ${bgClass}`}
           prefetch={false}
         />
         <div
-          className={`pointer-events-none absolute inset-0 group-hover:opacity-40 dark:group-hover:bg-opacity-30 ${hoverClass}`}
+          className={`dark:group-hover:bg-opacity-30 pointer-events-none absolute inset-0 group-hover:opacity-40 ${hoverClass}`}
         />
       </div>
     );
@@ -390,7 +376,7 @@ function PanelContent({
           <LabelYAxis label={yLabel} />
           <div
             role="table"
-            className="border grid w-max auto-rows-min gap-px overflow-x-auto border border-panel bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
+            className="border-panel grid w-max auto-rows-min gap-px overflow-x-auto border bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
           >
             <DataGrid data={dataGrid} meta={{ taxa }} />
           </div>

@@ -5,7 +5,6 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import PropTypes from "prop-types";
 // components
 import { Button } from "./form-elements";
 
@@ -35,13 +34,27 @@ import { Button } from "./form-elements";
  * near end of the page range. This allowance keeps the width of the entire Pager component
  * consistent regardless of the current page number, so that the previous/next buttons don't shift
  * around horizontally.
+ * @param currentPage - Currently selected page number
+ * @param totalPages - Total number of pages
+ * @param onClick - Called when the user clicks a button in the pager; passes the new page number
+ * @param className - Tailwind CSS classes to add to the pager
  */
-export default function Pager({ currentPage, totalPages, onClick, className }) {
+export default function Pager({
+  currentPage,
+  totalPages,
+  onClick,
+  className,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onClick: (page: number) => void;
+  className?: string;
+}) {
   // Create the array of 1-based page numbers, with page 0 to represent an ellipsis before the
   // current page and page -1 to represent an ellipsis after the current page. No real difference
   // between these two ellipsis values, but Pager uses distinct values so we don't have duplicate
   // React keys.
-  let pageNumbers;
+  let pageNumbers: number[];
   if (totalPages <= 7) {
     // A total page count of seven or fewer has no ellipses -- just a straight array of
     // sequential numbers.
@@ -79,7 +92,7 @@ export default function Pager({ currentPage, totalPages, onClick, className }) {
   const pageNumberWidth = 10 + totalPages.toString().length * 10;
 
   // Called when the user clicks on a page number.
-  function pageNumberClick(pageNumber) {
+  function pageNumberClick(pageNumber: number) {
     if (pageNumber !== currentPage) {
       onClick(pageNumber);
     }
@@ -167,13 +180,21 @@ export default function Pager({ currentPage, totalPages, onClick, className }) {
   );
 }
 
-Pager.propTypes = {
-  // Currently selected page
-  currentPage: PropTypes.number.isRequired,
-  // Total number of pages
-  totalPages: PropTypes.number.isRequired,
-  // Called when the user clicks a button in the pager; passes the new page number
-  onClick: PropTypes.func.isRequired,
-  // Tailwind CSS classes to add to the pager
-  className: PropTypes.string,
-};
+/**
+ * Standard container for the Pager component, which applies a consistent look and feel to the
+ * pagination controls that appear within tables.
+ */
+export function TablePagerContainer({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="border-panel flex justify-center border-r border-l bg-gray-100 py-0.5 dark:bg-gray-900"
+      data-testid="table-pager"
+    >
+      {children}
+    </div>
+  );
+}
