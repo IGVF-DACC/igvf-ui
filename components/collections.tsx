@@ -26,6 +26,7 @@ const collectionMap: CollectionMapping = {
   "IGVF_catalog_beta_v0.3": "igvf-catalog-0.3.svg",
   "IGVF_catalog_beta_v0.4": "igvf-catalog-0.4.svg",
   "IGVF_catalog_beta_v0.5": "igvf-catalog-0.5.svg",
+  "IGVF_catalog_v1.0": "igvf-catalog-1.0.svg",
   "IGVF phase 1": "igvf-phase-1.svg",
   MaveDB: "mave-db.svg",
   Morphic: "morphic.svg",
@@ -84,7 +85,7 @@ export default function Collections({
             <li key={collection}>
               <Link
                 href={`/search/?type=${itemType}&collections=${collection}`}
-                className="block overflow-hidden border border-data-border bg-white no-underline dark:bg-gray-200"
+                className="border-data-border block overflow-hidden border bg-white no-underline dark:bg-gray-200"
               >
                 {imageFile ? (
                   <Image
@@ -95,7 +96,7 @@ export default function Collections({
                   />
                 ) : (
                   <div
-                    className="flex items-center justify-center break-all px-1 text-xs dark:text-black"
+                    className="flex items-center justify-center px-1 text-xs break-all dark:text-black"
                     style={{
                       width: COLLECTION_DIMENSIONS.WIDTH,
                       height: COLLECTION_DIMENSIONS.HEIGHT,
