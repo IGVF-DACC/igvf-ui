@@ -68,7 +68,6 @@ export default function AnalysisSet({
   inputFileSetFor,
   controlFileSets,
   controlFor,
-  appliedToSamples,
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
@@ -310,7 +309,6 @@ export default function AnalysisSet({
               fileSets={inputFileSets}
               samples={inputFileSetSamples}
               controlFileSets={controlFileSets}
-              appliedToSamples={appliedToSamples}
               auxiliarySets={auxiliarySets}
               measurementSets={measurementSets}
               constructLibrarySets={constructLibrarySets}
@@ -364,8 +362,6 @@ AnalysisSet.propTypes = {
   controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets controlled by this analysis set
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Applied-to samples to display
-  appliedToSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // AuxiliarySets to display
   auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // MeasurementSets to display
@@ -449,7 +445,6 @@ export async function getServerSideProps({ params, req, query }) {
         (fileSet) => fileSet["@id"]
       );
       inputFileSets = await requestFileSets(inputFileSetPaths, request, [
-        "applied_to_samples",
         "auxiliary_sets",
         "control_file_sets",
         "measurement_sets",
@@ -475,26 +470,10 @@ export async function getServerSideProps({ params, req, query }) {
       samples = await requestSamples(samplePaths, request);
     }
 
-    let appliedToSamples = [];
     let auxiliarySets = [];
     let controlFileSets = [];
     let measurementSets = [];
     if (inputFileSets.length > 0) {
-      // Retrieve the input file sets' applied to samples.
-      appliedToSamples = inputFileSets.reduce((acc, fileSet) => {
-        return fileSet.applied_to_samples?.length > 0
-          ? acc.concat(fileSet.applied_to_samples)
-          : acc;
-      }, []);
-      let appliedToSamplePaths = appliedToSamples.map(
-        (sample) => sample["@id"]
-      );
-      appliedToSamplePaths = [...new Set(appliedToSamplePaths)];
-      appliedToSamples =
-        appliedToSamplePaths.length > 0
-          ? await requestSamples(appliedToSamplePaths, request)
-          : [];
-
       // Retrieve the input file sets' auxiliary sets.
       let auxiliarySetsPaths = inputFileSets.reduce((acc, fileSet) => {
         return fileSet.auxiliary_sets?.length > 0
@@ -621,7 +600,6 @@ export async function getServerSideProps({ params, req, query }) {
         inputFileSetFor,
         controlFileSets,
         controlFor,
-        appliedToSamples,
         auxiliarySets,
         measurementSets,
         constructLibrarySets,

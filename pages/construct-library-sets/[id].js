@@ -14,6 +14,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetFilesTables from "../../components/file-set-files-tables";
 import FileSetTable from "../../components/file-set-table";
@@ -372,13 +373,16 @@ export default function ConstructLibrarySet({
               panelId="control-for"
             />
           )}
-          {constructLibrarySet.applied_to_samples?.length > 0 && (
+          {constructLibrarySet.samples?.length > 0 && (
             <SampleTable
-              samples={constructLibrarySet.applied_to_samples}
+              samples={constructLibrarySet.samples}
               reportLink={`/multireport/?type=Sample&construct_library_sets.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of samples that link to this construct library set"
-              title="Applied to Samples"
+              title="Samples"
             />
+          )}
+          {constructLibrarySet.donors?.length > 0 && (
+            <DonorTable donors={constructLibrarySet.donors} />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>

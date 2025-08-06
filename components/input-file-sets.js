@@ -172,19 +172,19 @@ const constructLibrarySetColumns = [
     sorter: (item) => item.accession,
   },
   {
-    id: "applied-to-samples",
-    title: "Applied To Samples",
+    id: "samples",
+    title: "Samples",
     display: ({ source, meta }) => {
       return (
         <SamplesDisplay
           fileSet={source}
-          samples={meta.appliedToSamples}
-          propertyName="applied_to_samples"
+          samples={meta.samples}
+          propertyName="samples"
         />
       );
     },
     hide: (constructLibrarySets) =>
-      columnHideCondition(constructLibrarySets, "applied_to_samples"),
+      columnHideCondition(constructLibrarySets, "samples"),
     sorter: (item) => item.summary.toLowerCase(),
   },
   {
@@ -409,7 +409,6 @@ function InputFileSetTable({
   fileSets,
   samples,
   controlFileSets,
-  appliedToSamples,
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
@@ -455,7 +454,6 @@ function InputFileSetTable({
             samples,
             isAliasesVisible,
             controlFileSets,
-            appliedToSamples,
             auxiliarySets,
             measurementSets,
             constructLibrarySets,
@@ -475,8 +473,6 @@ InputFileSetTable.propTypes = {
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Control file sets belonging to the file sets
   controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Applied-to samples belonging to the file sets
-  appliedToSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Auxiliary sets belonging to the file sets
   auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Measurement sets belonging to the file sets
@@ -497,7 +493,6 @@ export default function InputFileSets({
   fileSets,
   samples,
   controlFileSets,
-  appliedToSamples,
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
@@ -519,7 +514,6 @@ export default function InputFileSets({
             fileSets={fileSets}
             samples={samples}
             controlFileSets={controlFileSets}
-            appliedToSamples={appliedToSamples}
             auxiliarySets={auxiliarySets}
             measurementSets={measurementSets}
             constructLibrarySets={constructLibrarySets}
@@ -541,8 +535,6 @@ InputFileSets.propTypes = {
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Control file sets belonging to the file sets
   controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Applied-to samples belonging to the file sets
-  appliedToSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Auxiliary sets belonging to the file sets
   auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Measurement sets belonging to the file sets
