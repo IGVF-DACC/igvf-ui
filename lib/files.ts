@@ -3,8 +3,15 @@
  */
 // node_modules
 import _ from "lodash";
+import XXH from "xxhashjs";
 // lib
 import { requestFiles } from "./common-requests";
+import {
+  type Cell,
+  type DataGridFormat,
+  type Row,
+  type RowComponentProps,
+} from "./data-grid";
 import type FetchRequest from "./fetch-request";
 // root
 import type {
@@ -14,6 +21,28 @@ import type {
   SampleObject,
   UploadStatus,
 } from "../globals.d";
+
+/**
+ * Flag indicating a missing flowcell ID in a sequencing file group. Uses "z" to ensure
+ * missing values sort to the end alphabetically.
+ */
+const MISSING_FLOWCELL_ID_PLACEHOLDER = "z";
+
+/**
+ * Flag indicating a missing lane in a sequencing file group. Uses "z" to ensure
+ * missing values sort to the end alphabetically.
+ */
+const MISSING_LANE_PLACEHOLDER = "z";
+
+/**
+ * Key used for files that cannot be grouped due to missing required metadata.
+ */
+const INVALID_GROUP_KEY = "invalid";
+
+/**
+ * Cache seed for generating consistent hashes.
+ */
+const CACHE_SEED = 0x3a9ffcd0;
 
 /**
  * Set of file statuses that are not downloadable.
@@ -253,4 +282,210 @@ export function collectFileFileSetSamples(files: FileObject): SampleObject[] {
   }
 
   return _.uniqBy(samples, "@id");
+}
+
+/**
+ * Generate groups of sequencing files based on their sequencing run, flowcell ID, and lane. The
+ * keys of the returned map are formatted as `S{sequencing_run}-{flowcell_id}-L{lane}`. Each key
+ * holds an array of files that share the same sequencing run, flowcell ID, and lane. The files
+ * within each group are sorted by their `illumina_read_type`. Files without sequencing_run
+ * (undefined or null) are excluded. Files without flowcell_id or lane are included but grouped
+ * with "z" placeholder values to ensure they sort to the end alphabetically. Note that
+ * sequencing_run: 0 is treated as a valid value and will be included.
+ * @param files File objects to group
+ * @returns Map of sequencing file groups with keys sorted alphabetically
+ */
+export function generateSequenceFileGroups(
+  files: FileObject[]
+): Map<string, FileObject[]> {
+  // Group the array of files by a combination of their sequencing run, flowcell ID, and lane.
+  // Files missing the sequencing run get placed into the `invalid` group and do not get included
+  // in the groups.
+  const groups = _.groupBy(files, (file) => {
+    const sequencingRun =
+      file.sequencing_run !== undefined && file.sequencing_run !== null
+        ? `${file.sequencing_run}`
+        : "";
+    const flowcellId = file.flowcell_id || MISSING_FLOWCELL_ID_PLACEHOLDER;
+    const lane = `${file.lane || MISSING_LANE_PLACEHOLDER}`;
+
+    // Generate a group key. `sequencing_run` is required for inclusion in any group.
+    return sequencingRun !== ""
+      ? `S${sequencingRun}-${flowcellId}-L${lane}`
+      : INVALID_GROUP_KEY;
+  });
+
+  // Create Map with sorted keys, excluding files in the `invalid` group.
+  const sortedMap = new Map<string, FileObject[]>();
+  _.sortBy(Object.keys(groups))
+    .filter((key) => key !== INVALID_GROUP_KEY)
+    .forEach((key) => {
+      // Sort files within each group by illumina_read_type
+      const sortedFiles = _.sortBy(groups[key], "illumina_read_type");
+      sortedMap.set(key, sortedFiles);
+    });
+
+  return sortedMap;
+}
+
+/**
+ * Apply a file object to the `source` property of each cell in `cells`. Use this to generate the
+ * rows of the sequence file table data grid. The returned cells comprise copies of the given cells
+ * but with the `source` property set to the given file object.
+ * @param file File object to apply to the cells
+ * @param cells Cell definitions to apply the file object to
+ * @returns Copy of `cells` with the file object applied to their `source` property
+ */
+function applyFileToCells(file: FileObject, cells: Cell[]): Cell[] {
+  return cells.map((cell) => {
+    return {
+      ...cell,
+      source: file,
+    };
+  });
+}
+
+/**
+ * Convert a map of file groups to a data grid format. Each key in the map is a composition of the
+ * sequencing run, flowcell ID, and lane of the sequencing files within a group in the sequencing
+ * file table. The values are arrays of file objects within that group. This function returns a
+ * structure you can pass to `<DataGrid>` to render the sequencing file table with groups.
+ * @param fileGroups Map of file groups to convert to a data grid format
+ * @param columnDisplayConfig Column display configuration for the data grid
+ * @param alternateRowComponent Optional alternate row component for styling
+ * @returns Data grid format representation of the file groups
+ */
+export function fileGroupsToDataGridFormat(
+  fileGroups: Map<string, FileObject[]>,
+  columnDisplayConfig: Cell[],
+  alternateRowComponent?: React.ComponentType<RowComponentProps>
+): DataGridFormat {
+  const rows: Row[] = [];
+  const sortedKeys = Array.from(fileGroups.keys());
+
+  // Create a map for efficient key index lookups to avoid O(n^2) indexOf operations.
+  const keyIndexMap = new Map<string, number>();
+  sortedKeys.forEach((key, index) => {
+    keyIndexMap.set(key, index);
+  });
+
+  // This outer loop iterates once for each group of files in the file groups map.
+  fileGroups.forEach((files, key) => {
+    const keyIndex = keyIndexMap.get(key)!;
+    const shouldAddRowComponent = keyIndex % 2 !== 0;
+
+    // Generate the rows within a group.
+    const subRows = files.map((file) => {
+      const cells = applyFileToCells(file, columnDisplayConfig);
+      return {
+        id: file["@id"],
+        cells,
+        ...(shouldAddRowComponent &&
+          alternateRowComponent && {
+            RowComponent: alternateRowComponent,
+          }),
+      };
+    });
+    rows.push(...subRows);
+  });
+  return rows;
+}
+
+/**
+ * Split file groups into pages for pagination. Each page contains complete file groups -- no
+ * groups get split across pages. It returns an array of file group maps, each one representing
+ * a page of file groups. Pagination works similarly to other tables, but if a page hits the maximum
+ * page size (`pageSize`) in the middle of a group, it continues adding rows to the page until the
+ * entire group gets included. Each page, therefore, could have a different number of rows. This
+ * pagination can get expensive, so this function gets called through a memoization mechanism.
+ * @param fileGroups - Map of file groups to paginate
+ * @param pageSize - Number of file objects per page
+ * @return Array of file group maps, each element representing a page of file groups
+ */
+function paginateSequenceFileGroupsCore(
+  fileGroups: Map<string, FileObject[]>,
+  pageSize: number
+): Map<string, FileObject[]>[] {
+  // Each page of maps accumulates until the number of `FileObjects` exceeds `pageSize`. Then it
+  // starts a new page.
+  const pages: Map<string, FileObject[]>[] = [];
+  let currentPage: Map<string, FileObject[]> = new Map();
+  let currentCount = 0;
+
+  fileGroups.forEach((files, key) => {
+    // Add the current group to the page
+    currentPage.set(key, files);
+    currentCount += files.length;
+
+    // If adding this group has exceeded the page size, finish the current page and start a new one
+    if (currentCount >= pageSize) {
+      pages.push(currentPage);
+      currentPage = new Map();
+      currentCount = 0;
+    }
+  });
+
+  // Push the last page if it has any groups.
+  if (currentCount > 0) {
+    pages.push(currentPage);
+  }
+
+  return pages;
+}
+
+/**
+ * Create a hash from the file groups map for caching. Only the keys are used in the hash, not the
+ * arrays of files. The hash avoids storing long combinations of keys as the memoization key --
+ * just a short hex string representing a 32-bit value.
+ * @param fileGroups Map of file groups
+ * @returns Hash string
+ */
+function createMapKeyHash(fileGroups: Map<string, FileObject[]>) {
+  const keys = [...fileGroups.keys()];
+  const keyString = keys.join("|");
+  return XXH.h32(keyString, CACHE_SEED).toString(16);
+}
+
+/**
+ * Memoized version of the paginateSequenceFileGroupsCore function. External modules call this
+ * function instead of paginateSequenceFileGroupsCore. `_.memoize` is called once on page load. It
+ * calls the original function with the provided arguments on a cache miss. A cache miss would
+ * happen if any of the keys in the fileGroups map change, or the number of file groups change.
+ * @param fileGroups - Map of file groups to paginate
+ * @param pageSize - Number of file objects per page
+ * @return Array of file group maps, each element representing a page of file groups
+ */
+export const paginateSequenceFileGroups = _.memoize(
+  paginateSequenceFileGroupsCore,
+  (fileGroups, pageSize) => {
+    const hash = createMapKeyHash(fileGroups);
+    return `${hash}:${pageSize}`;
+  }
+);
+
+/**
+ * Extracts the sequence specifications associated with a given file from an array of seqspec file
+ * objects. The assumption here is that `file` either has non-embedded seqspecs or partially
+ * embedded seqspecs. `seqspecs` has complete seqspec file objects including those within `file` as
+ * well as those for other files. This function extracts the complete seqspecs from `seqspecs` that
+ * match the file's seqspecs.
+ * @param file - File object to extract seqspecs file objects from
+ * @param seqspecs - All available seqspec file objects
+ * @returns Array of matching seqspec file objects for the file
+ */
+export function extractSeqspecsForFile(
+  file: FileObject,
+  seqspecs: FileObject[]
+): FileObject[] {
+  let matchingSeqspecs: FileObject[] = [];
+  if (file.seqspecs?.length > 0) {
+    const fileSeqspecPaths =
+      typeof file.seqspecs[0] === "string"
+        ? (file.seqspecs as string[])
+        : file.seqspecs.map((seqspec) => (seqspec as { "@id": string })["@id"]);
+    matchingSeqspecs = seqspecs.filter((seqspec) =>
+      fileSeqspecPaths.includes(seqspec["@id"])
+    );
+  }
+  return _.sortBy(matchingSeqspecs, "accession");
 }

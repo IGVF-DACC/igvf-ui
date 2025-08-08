@@ -3,16 +3,18 @@ import _ from "lodash";
 import { useRouter } from "next/router";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
-import DataGrid, {
-  type Cell,
-  type DataGridFormat,
-  type Row,
-} from "../../components/data-grid";
+import DataGrid from "../../components/data-grid";
 import Link from "../../components/link-no-prefetch";
 import { LabelXAxis, LabelYAxis } from "../../components/matrix";
 import PagePreamble from "../../components/page-preamble";
 import { TabGroup, TabList, TabTitle } from "../../components/tabs";
 // lib
+import {
+  type Cell,
+  type DataGridFormat,
+  type Row,
+  type CellContentProps,
+} from "../../lib/data-grid";
 import FetchRequest from "../../lib/fetch-request";
 import { errorObjectToProps } from "../../lib/errors";
 import { toShishkebabCase } from "../../lib/general";
@@ -147,22 +149,18 @@ function generateMatrixColumnMap(
  * @param source - Source of data to render the cell
  * @param meta - Metadata for the entire matrix to render the cell
  */
-function RowHeaderCell({
-  source,
-  meta,
-}: {
-  source: CellSource;
-  meta: { view: string };
-}) {
-  const bgClass = viewQueries[meta.view].rowHeaderCellClass;
+function RowHeaderCell({ source, meta }: CellContentProps) {
+  const cellSource = source as unknown as CellSource;
+  const cellMeta = meta as { view: string };
+  const bgClass = viewQueries[cellMeta.view].rowHeaderCellClass;
 
   return (
     <Link
-      href={source.href}
+      href={cellSource.href}
       className={`flex h-full items-center px-2 py-0.5 font-semibold no-underline ${bgClass}`}
       prefetch={false}
     >
-      {source.key}
+      {cellSource.key}
     </Link>
   );
 }
@@ -172,24 +170,20 @@ function RowHeaderCell({
  * @param source - Source of data to render the cell
  * @param meta - Metadata for the entire matrix to render the cell
  */
-function RowSubheaderCell({
-  source,
-  meta,
-}: {
-  source: CellSource;
-  meta: { view: string };
-}) {
-  const bgClass = viewQueries[meta.view].rowSubheaderCellClass;
-  const hoverClass = viewQueries[meta.view].hoverCellClass;
+function RowSubheaderCell({ source, meta }: CellContentProps) {
+  const cellSource = source as unknown as CellSource;
+  const cellMeta = meta as { view: string };
+  const bgClass = viewQueries[cellMeta.view].rowSubheaderCellClass;
+  const hoverClass = viewQueries[cellMeta.view].hoverCellClass;
 
   return (
     <div className="relative h-full w-full">
       <Link
-        href={source.href}
+        href={cellSource.href}
         className={`flex h-full items-center px-2 py-0.5 text-gray-800 no-underline dark:text-gray-200 ${bgClass} ${hoverClass}`}
         prefetch={false}
       >
-        {source.key}
+        {cellSource.key}
       </Link>
     </div>
   );
@@ -200,23 +194,19 @@ function RowSubheaderCell({
  * @param source - Source of data to render the cell
  * @param meta - Metadata for the entire matrix to render the cell
  */
-function ColumnHeaderCell({
-  source,
-  meta,
-}: {
-  source: CellSource;
-  meta: { view: string };
-}) {
-  const bgClass = viewQueries[meta.view].columnHeaderCellClass;
+function ColumnHeaderCell({ source, meta }: CellContentProps) {
+  const cellSource = source as unknown as CellSource;
+  const cellMeta = meta as { view: string };
+  const bgClass = viewQueries[cellMeta.view].columnHeaderCellClass;
 
   return (
     <Link
-      href={source.href}
+      href={cellSource.href}
       className={`grid h-full w-full place-items-end no-underline ${bgClass}`}
       prefetch={false}
     >
       <div className="flex rotate-180 items-end px-1 py-2 font-semibold whitespace-nowrap [writing-mode:vertical-lr]">
-        {source.key}
+        {cellSource.key}
       </div>
     </Link>
   );
@@ -227,21 +217,17 @@ function ColumnHeaderCell({
  * @param source - Source of data to render the cell
  * @param meta - Metadata for the entire matrix to render the cell
  */
-function DataCell({
-  source,
-  meta,
-}: {
-  source: CellSource;
-  meta: { view: string };
-}) {
-  const bgClass = viewQueries[meta.view].dataCellClass;
-  const hoverClass = viewQueries[meta.view].hoverCellClass;
+function DataCell({ source, meta }: CellContentProps) {
+  const cellSource = source as unknown as CellSource;
+  const cellMeta = meta as { view: string };
+  const bgClass = viewQueries[cellMeta.view].dataCellClass;
+  const hoverClass = viewQueries[cellMeta.view].hoverCellClass;
 
-  if (source.href) {
+  if (cellSource.href) {
     return (
       <div className="relative h-full w-full">
         <Link
-          href={source.href}
+          href={cellSource.href}
           className={`block h-full w-full ${bgClass}`}
           prefetch={false}
         />

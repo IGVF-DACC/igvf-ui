@@ -335,10 +335,15 @@ export interface FileObject extends DatabaseObject {
   file_format_specifications?: string[];
   file_set: string | FileSetObject;
   file_size?: number;
+  flowcell_id?: string;
   href?: string;
+  illumina_read_type?: string;
   input_file_for?: string[] | FileObject[];
-  quality_metrics: string[] | QualityMetricObject[];
-  reference_files: string[] | FileObject[];
+  lane?: number;
+  quality_metrics?: string[] | QualityMetricObject[];
+  reference_files?: string[] | FileObject[];
+  seqspecs?: string[] | FileObject[];
+  sequencing_run?: number;
   summary?: string;
   upload_status?: UploadStatus;
   workflows?: string[] | WorkflowObject[];

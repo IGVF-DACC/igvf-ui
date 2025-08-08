@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
 import { Children, cloneElement, useRef, useState } from "react";
 // components
 import DataGrid, { DataGridContainer } from "./data-grid";
-import Pager from "./pager";
+import Pager, { TablePagerContainer } from "./pager";
 import GridScrollIndicators from "./grid-scroll-indicators";
 import TableCount from "./table-count";
 
@@ -254,16 +254,13 @@ function TablePager({
   const totalPages = Math.ceil(data.length / maxItemsPerPage);
   if (totalPages > 1) {
     return (
-      <div
-        className="border-panel flex justify-center border-r border-l bg-gray-100 py-0.5 dark:bg-gray-900"
-        data-testid="table-pager"
-      >
+      <TablePagerContainer>
         <Pager
           currentPage={currentPageIndex + 1}
           totalPages={totalPages}
           onClick={(newCurrentPage) => setCurrentPageIndex(newCurrentPage - 1)}
         />
-      </div>
+      </TablePagerContainer>
     );
   }
   return null;
