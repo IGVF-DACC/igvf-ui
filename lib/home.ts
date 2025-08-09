@@ -36,7 +36,7 @@ type FileSetTypeConfig = {
  */
 export const typeConfig: { [key in FileSetType]: FileSetTypeConfig } = {
   processed: {
-    dataQuery: "config=AssayTitlesSummary&status=released",
+    dataQuery: "config=PreferredAssayTitleSummary&status=released",
     typeQuery: "AnalysisSet",
     title: "Released Processed Datasets",
     termProp: "assay_titles",
