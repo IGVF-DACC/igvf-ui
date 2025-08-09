@@ -1,5 +1,4 @@
 // node_modules
-import _ from "lodash";
 import dynamic from "next/dynamic";
 import PropTypes from "prop-types";
 // components
@@ -27,7 +26,7 @@ const ResponsiveBar = dynamic(
 /**
  * Maximum number of characters to display in the file-set lab chart title.
  */
-const MAX_TERM_LENGTH = 64;
+const MAX_TERM_LENGTH = 50;
 
 /**
  * Width of the axis on the left side of the chart in pixels. This has to allow enough space for
