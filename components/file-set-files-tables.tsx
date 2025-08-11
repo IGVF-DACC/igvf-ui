@@ -1,13 +1,18 @@
 // node_modules
 import _ from "lodash";
-import PropTypes from "prop-types";
 // components
 import FileTable from "./file-table";
 import SequencingFileTable from "./sequencing-file-table";
+// root
+import type { FileObject, FileSetObject, DocumentObject } from "../globals";
 
 /**
  * Display tables of files associated with a file set for those file-set types that need different
  * tables for different types of files.
+ * @param files - The files to display in the tables
+ * @param fileSet - FileSet object for the page displaying these tables
+ * @param seqspecFiles - seqspec files associated with the files
+ * @param seqspecDocuments - seqspec documents associated with the files
  */
 export default function FileSetFilesTables({
   files = [],
@@ -15,6 +20,12 @@ export default function FileSetFilesTables({
   seqspecFiles,
   seqspecDocuments,
   children,
+}: {
+  files: FileObject[];
+  fileSet: FileSetObject;
+  seqspecFiles: FileObject[];
+  seqspecDocuments: DocumentObject[];
+  children?: React.ReactNode;
 }) {
   // Extract sequencing files from `files` and group them by characteristics to determine which
   // file table they should appear in, if any. Possible groups include:
@@ -56,7 +67,6 @@ export default function FileSetFilesTables({
           itemPath={fileSet["@id"]}
           seqspecFiles={seqspecFiles}
           seqspecDocuments={seqspecDocuments}
-          hasReadType
           panelId="sequencing-illumina"
         />
       )}
@@ -82,14 +92,3 @@ export default function FileSetFilesTables({
     </>
   );
 }
-
-FileSetFilesTables.propTypes = {
-  // The files to display in the tables
-  files: PropTypes.arrayOf(PropTypes.object),
-  // FileSet object for the page displaying these tables
-  fileSet: PropTypes.object.isRequired,
-  // seqspec files associated with the files
-  seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // seqspec documents associated with the files
-  seqspecDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
-};

@@ -3,18 +3,14 @@ import { EyeIcon } from "@heroicons/react/20/solid";
 import Papa from "papaparse";
 import { useState } from "react";
 // components
-import DataGrid, {
-  DataGridContainer,
-  type Cell,
-  type DataGridFormat,
-  type Row,
-} from "./data-grid";
+import DataGrid, { DataGridContainer } from "./data-grid";
 import { FileDownload } from "./file-download";
 import { Button } from "./form-elements";
 import Modal from "./modal";
 import Spinner from "./spinner";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
+import { type Cell, type DataGridFormat, type Row } from "../lib/data-grid";
 import { checkFileDownloadable } from "../lib/files";
 import { loadHostedFile } from "../lib/hosted-file";
 // root
@@ -109,7 +105,7 @@ function PreviewTsv({ text }: { text: string }) {
  * @param text - Text file to preview
  */
 function PreviewText({ text }: { text: string }) {
-  return <pre className="whitespace-break-spaces text-sm">{text}</pre>;
+  return <pre className="text-sm whitespace-break-spaces">{text}</pre>;
 }
 
 /**
