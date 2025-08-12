@@ -105,7 +105,8 @@ export const dbxrefPrefixMap = {
     },
   },
   HGNC: {
-    pattern: "https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={0}",
+    pattern:
+      "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:{0}",
   },
   hORFeome: {
     pattern: "http://horfdb.dfci.harvard.edu/index.php?page=showdetail&orf={0}",

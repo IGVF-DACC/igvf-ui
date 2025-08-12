@@ -81,7 +81,7 @@ describe("Test the conversion of dbxref strings to links", () => {
   it("converts HGNC dbxrefs to links correctly", () => {
     const dbxrefs = ["HGNC:1637"];
     const expected =
-      "https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=1637";
+      "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:1637";
 
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
