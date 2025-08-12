@@ -11,7 +11,7 @@ describe("Home page", () => {
     cy.reload();
 
     // At least five bar elements in the default "processed" chart.
-    cy.get('[id^="bar-"]').should("have.length.greaterThan", 2);
+    cy.get('[id^="bar-"]').should("have.length.greaterThan", 1);
 
     // The "predictions" tab should have the title "Released Predictions Datasets".
     cy.get("#tab-predictions").should(
