@@ -518,6 +518,81 @@ export default class FetchRequest {
   }
 
   /**
+   * Request multiple objects by searching for them by a query string or by a property and
+   * values for that property.
+   * @param type Database object type to search (e.g. MeasurementSet)
+   * @param fields Fields to retrieve for each object
+   * @param options Search options, comprising:
+   * @param options.query - Query string to search (mutually exclusive with property/values)
+   * @param options.property - Property name to search on (requires values array)
+   * @param options.values - Array of values for `property` to search for
+   * @returns Promise that resolves to an array of requested objects or an error
+   */
+  async getMultipleObjectsBySearch(
+    type: string,
+    fields: string[],
+    options: { query: string } | { property: string; values: string[] }
+  ): Promise<Result<Array<DataProviderObject>, ErrorObject>> {
+    if (!type.trim()) {
+      throw new Error("`type` parameter required");
+    }
+
+    // Get all possible properties within `options`.
+    const { query, property, values } =
+      "query" in options
+        ? { query: options.query.trim(), property: "", values: [] }
+        : {
+            query: "",
+            property: options.property.trim(),
+            values: options.values
+              .map((v) => v.trim())
+              .filter((v) => v.length > 0),
+          };
+
+    logRequest(
+      "getMultipleObjectsBySearch",
+      `type:${type} query:${query} property:${property} values:${values.join(
+        ","
+      )}`
+    );
+
+    // Ensure we have either `query` or `property` with `values`.
+    if (!query && (!property || values.length === 0)) {
+      throw new Error(
+        "Invalid search options: provide either a query string or property with values"
+      );
+    }
+
+    // Either use the given query string or build one from the property/values.
+    const searchQuery =
+      query ||
+      values
+        .map((value) => `${property}=${encodeURIComponent(value)}`)
+        .join("&");
+
+    // Include the fields to retrieve in the search query.
+    const searchFields =
+      fields.length > 0
+        ? fields.map((field) => `field=${encodeURIComponent(field)}`).join("&")
+        : "";
+
+    // Build the query string using the search elements as well as the object fields, if any.
+    const queryParts = [`type=${type}`, searchFields, searchQuery]
+      .filter(Boolean)
+      .join("&");
+    const finalUri = `/search-quick/?${queryParts}`;
+    if (finalUri.length > MAX_URL_LENGTH) {
+      throw new Error("Search query URI exceeds maximum length");
+    }
+
+    // Make the request to the search endpoint and extract the searched objects from the response.
+    const response = await this.getObject(finalUri);
+    return response.map(
+      (data) => (data["@graph"] || []) as Array<DataProviderObject>
+    );
+  }
+
+  /**
    * Request the collection (e.g. "users") with the given path.
    * @param {string} collection Name of the collection to request
    * @returns {Promise<Result<DataProviderObject, ErrorObject>>} Collection data including all its members in @graph

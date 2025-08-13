@@ -1,20 +1,29 @@
 // node_modules
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import {
   type GetServerSidePropsContext,
   type GetServerSidePropsResult,
 } from "next";
+import { useContext } from "react";
 // components
 import { DataTable } from "../components/data-table";
+import { getPreferredAssayTitleDescriptionMap } from "../lib/ontology-terms";
 import PagePreamble from "../components/page-preamble";
+import SessionContext from "../components/session-context";
+import { Tooltip, TooltipRef, useTooltip } from "../components/tooltip";
 // lib
 import { type Cell, type DataTableFormat, type Row } from "../lib/data-table";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
-import { abbreviateNumber, toShishkebabCase } from "../lib/general";
+import {
+  abbreviateNumber,
+  arbitraryTypeToText,
+  toShishkebabCase,
+} from "../lib/general";
 import { type ColumnMap, generateMatrixColumnMap } from "../lib/matrix";
-// import { tableData } from "../lib/temp-assay-data";
+import { getAssayTitleDescriptionMap } from "../lib/ontology-terms";
 // root
-import type { MatrixResults, MatrixResultsObject } from "../globals";
+import type { MatrixResults, MatrixResultsObject, Profiles } from "../globals";
 
 /**
  * List of sample classifications that should be hidden from the matrix data.
@@ -70,7 +79,7 @@ function FixedHeaderCell({
 }) {
   return (
     <th
-      className={`bg-assay-summary-matrix-data-column-header sticky top-0 z-2 border-b border-r border-panel p-2 text-left align-bottom last:border-r-0 ${widthClasses}`}
+      className={`bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 border-r border-b p-2 text-left align-bottom last:border-r-0 ${widthClasses}`}
     >
       {children}
     </th>
@@ -82,7 +91,7 @@ function FixedHeaderCell({
  */
 function CounterHeaderCell({ children }: { children: React.ReactNode }) {
   return (
-    <th className="bg-assay-summary-matrix-data-column-header sticky top-0 z-2 w-[50px] whitespace-nowrap border-b border-r border-panel px-1 py-2 align-bottom font-semibold text-black last:border-r-0">
+    <th className="bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 w-[50px] border-r border-b px-1 py-2 align-bottom font-semibold whitespace-nowrap text-black last:border-r-0">
       <div className="mx-auto inline-flex rotate-180 justify-self-center text-start text-black [writing-mode:vertical-lr] dark:text-white">
         {children}
       </div>
@@ -100,7 +109,7 @@ function CounterCell({ children }: { children: React.ReactNode }) {
         children
           ? "bg-assay-summary-matrix-data-cell"
           : "bg-white dark:bg-black"
-      } w-8 border-b border-r border-panel p-2 text-center align-middle last:border-r-0`}
+      } border-panel w-8 border-r border-b p-2 text-center align-middle last:border-r-0`}
       data-highlight
     >
       {children}
@@ -114,7 +123,7 @@ function CounterCell({ children }: { children: React.ReactNode }) {
 function TotalCell({ children }: { children: React.ReactNode }) {
   return (
     <td
-      className="bg-assay-summary-matrix-total-cell w-8 border-b border-r border-panel p-2 text-center align-middle font-semibold last:border-r-0"
+      className="bg-assay-summary-matrix-total-cell border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
       data-highlight
     >
       {children}
@@ -135,7 +144,7 @@ function RowHeaderCell({
 }) {
   return (
     <th
-      className="border-b border-r border-panel bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
+      className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
       {children}
@@ -144,24 +153,83 @@ function RowHeaderCell({
 }
 
 /**
- * Displays the header cell for the Preferred Assay Title column. This includes a hover highlight
- * data attribute.
- * @param rowSpan - Number of rows that the cell should span; for now always 1
+ * Displays the assay title cell with a tooltip for the corresponding definition, if any.
+ * @param rowSpan - Number of rows that the cell should span
+ * @param meta - Contains the Assay title to definition map
  */
-function PreferredAssayHeaderCell({
+function AssayCell({
   rowSpan,
+  meta,
   children,
 }: {
   rowSpan: number;
+  meta?: { assayTitleDescriptionMap: Record<string, string> };
   children: React.ReactNode;
 }) {
+  // Convert children to assayTitle regardless of type, and use that to get the corresponding
+  // definition.
+  const assayTitle = arbitraryTypeToText(children);
+  const definition = assayTitle
+    ? meta?.assayTitleDescriptionMap[assayTitle]
+    : "";
+
+  const tooltipAttr = useTooltip(`assay-${assayTitle || "none"}`);
+
   return (
     <th
-      className="border-b border-r border-panel bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
+      className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
+      {...(rowSpan > 1 ? { rowSpan } : {})}
+    >
+      {assayTitle}
+      {definition && (
+        <>
+          {" "}
+          <TooltipRef tooltipAttr={tooltipAttr}>
+            <QuestionMarkCircleIcon className="inline h-4 w-4" />
+          </TooltipRef>
+          <Tooltip tooltipAttr={tooltipAttr}>{definition}</Tooltip>
+        </>
+      )}
+    </th>
+  );
+}
+
+/**
+ * Displays the header cell for the Preferred Assay Title column. This includes a hover highlight
+ * data attribute.
+ * @param rowSpan - Number of rows that the cell should span; for now always 1
+ * @param meta - Contains the preferred assay title to description map
+ */
+function PreferredAssayHeaderCell({
+  rowSpan,
+  meta,
+  children,
+}: {
+  rowSpan: number;
+  meta?: { preferredAssayTitleDescriptionMap: Record<string, string> };
+  children: React.ReactNode;
+}) {
+  const preferredAssayTitle = arbitraryTypeToText(children);
+  const tooltipAttr = useTooltip(`preferred-assay-${preferredAssayTitle}`);
+  const definition =
+    meta?.preferredAssayTitleDescriptionMap[preferredAssayTitle];
+
+  return (
+    <th
+      className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
       {...(rowSpan > 1 ? { rowSpan } : {})}
       data-highlight
     >
-      {children}
+      {preferredAssayTitle}
+      {definition && (
+        <>
+          {" "}
+          <TooltipRef tooltipAttr={tooltipAttr}>
+            <QuestionMarkCircleIcon className="inline h-4 w-4" />
+          </TooltipRef>
+          <Tooltip tooltipAttr={tooltipAttr}>{definition}</Tooltip>
+        </>
+      )}
     </th>
   );
 }
@@ -178,7 +246,7 @@ function TermCategoryTotalsHeaderCell({
 }) {
   return (
     <td
-      className="bg-assay-summary-matrix-term-category-total border-b border-r border-panel px-2 py-1 text-left align-middle font-semibold last:border-r-0"
+      className="bg-assay-summary-matrix-term-category-total border-panel border-r border-b px-2 py-1 text-left align-middle font-semibold last:border-r-0"
       {...(colSpan > 1 ? { colSpan } : {})}
     >
       {children}
@@ -195,7 +263,7 @@ function TermCategoryTotalsDataCell({
   children: React.ReactNode;
 }) {
   return (
-    <td className="bg-assay-summary-matrix-term-category-total w-8 border-b border-r border-panel px-2 py-1 text-center align-middle font-semibold last:border-r-0">
+    <td className="bg-assay-summary-matrix-term-category-total border-panel w-8 border-r border-b px-2 py-1 text-center align-middle font-semibold last:border-r-0">
       {children}
     </td>
   );
@@ -258,7 +326,7 @@ function convertMatrixToDataTable(
       const assayCell: Cell = {
         id: toShishkebabCase(bucket1.key),
         content: bucket1.key,
-        component: RowHeaderCell,
+        component: AssayCell,
       };
 
       // Generate the preferred assay title child rows for the assay row.
@@ -364,9 +432,19 @@ function convertMatrixToDataTable(
  */
 export default function AssaySummary({
   assaySummary,
+  assayTitleDescriptionMap,
 }: {
   assaySummary: MatrixResultsObject;
+  assayTitleDescriptionMap: Record<string, string>;
 }) {
+  const sessionContext = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    sessionContext && "profiles" in sessionContext
+      ? getPreferredAssayTitleDescriptionMap(
+          sessionContext.profiles as Profiles
+        )
+      : {};
+
   const assayTableData = convertMatrixToDataTable(assaySummary);
 
   return (
@@ -377,7 +455,13 @@ export default function AssaySummary({
         role="table"
         className="overflow-x-auto text-xs"
       >
-        <DataTable data={assayTableData} />
+        <DataTable
+          data={assayTableData}
+          meta={{
+            assayTitleDescriptionMap,
+            preferredAssayTitleDescriptionMap,
+          }}
+        />
       </div>
     </div>
   );
@@ -385,9 +469,29 @@ export default function AssaySummary({
 
 interface Props {
   assaySummary: MatrixResultsObject;
+  assayTitleDescriptionMap: Record<string, string>;
   pageContext: {
     title: string;
   };
+}
+
+/**
+ * Get a list of unique assay term names from the assay summary matrix.
+ * @param assaySummary Assay matrix data
+ * @returns All unique assay term names found in the assay matrix
+ */
+function getAssayTerms(assaySummary: MatrixResultsObject): string[] {
+  const terms = new Set<string>();
+  const slimsProp = assaySummary.y.group_by[0];
+  const termNameProp = assaySummary.y.group_by[1];
+  if (slimsProp && termNameProp) {
+    assaySummary.y[slimsProp].buckets.forEach((bucket) => {
+      bucket[termNameProp].buckets.forEach((termBucket) => {
+        terms.add(termBucket.key);
+      });
+    });
+  }
+  return [...terms];
 }
 
 export async function getServerSideProps(
@@ -418,9 +522,16 @@ export async function getServerSideProps(
   ).union();
   if (FetchRequest.isResponseSuccess(results)) {
     const assaySummary = results as unknown as MatrixResults;
+    const assayTerms = getAssayTerms(assaySummary.matrix);
+    const assayTitleDescriptionMap = await getAssayTitleDescriptionMap(
+      assayTerms,
+      request
+    );
+
     return {
       props: {
         assaySummary: assaySummary.matrix,
+        assayTitleDescriptionMap,
         pageContext: { title: "Assay Summary" },
       },
     };

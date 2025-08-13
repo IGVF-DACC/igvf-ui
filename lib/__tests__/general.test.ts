@@ -1,5 +1,6 @@
 import {
   abbreviateNumber,
+  arbitraryTypeToText,
   convertTextToTitleCase,
   dataSize,
   isValidPath,
@@ -400,5 +401,91 @@ describe("Test the convertTextToTitleCase function", () => {
     expect(convertTextToTitleCase("hello_world")).toBe("Hello_world");
     expect(convertTextToTitleCase("helloworld")).toBe("Helloworld");
     expect(convertTextToTitleCase("")).toBe("");
+  });
+});
+
+describe("Test the arbitraryTypeToText function", () => {
+  it("should return strings as-is", () => {
+    expect(arbitraryTypeToText("hello world")).toBe("hello world");
+    expect(arbitraryTypeToText("")).toBe("");
+    expect(arbitraryTypeToText("test string")).toBe("test string");
+  });
+
+  it("should convert numbers to strings", () => {
+    expect(arbitraryTypeToText(42)).toBe("42");
+    expect(arbitraryTypeToText(0)).toBe("0");
+    expect(arbitraryTypeToText(-15)).toBe("-15");
+    expect(arbitraryTypeToText(3.14159)).toBe("3.14159");
+  });
+
+  it("should convert arrays to comma-separated strings", () => {
+    expect(arbitraryTypeToText(["a", "b", "c"])).toBe("a, b, c");
+    expect(arbitraryTypeToText([1, 2, 3])).toBe("1, 2, 3");
+    expect(arbitraryTypeToText([])).toBe("");
+    expect(arbitraryTypeToText(["single"])).toBe("single");
+  });
+
+  it("should handle nested arrays", () => {
+    expect(
+      arbitraryTypeToText([
+        ["a", "b"],
+        ["c", "d"],
+      ])
+    ).toBe("a, b, c, d");
+    expect(
+      arbitraryTypeToText([
+        [1, 2],
+        [3, 4],
+      ])
+    ).toBe("1, 2, 3, 4");
+  });
+
+  it("should handle mixed arrays", () => {
+    expect(arbitraryTypeToText(["string", 42, true])).toBe("string, 42, true");
+    expect(arbitraryTypeToText([null, undefined, "test"])).toBe(
+      "null, undefined, test"
+    );
+  });
+
+  it("should convert objects to JSON strings", () => {
+    expect(arbitraryTypeToText({ name: "test", value: 42 })).toBe(
+      '{"name":"test","value":42}'
+    );
+    expect(arbitraryTypeToText({})).toBe("{}");
+    expect(arbitraryTypeToText({ nested: { prop: "value" } })).toBe(
+      '{"nested":{"prop":"value"}}'
+    );
+  });
+
+  it("should handle null and undefined values", () => {
+    expect(arbitraryTypeToText(null)).toBe("null");
+    expect(arbitraryTypeToText(undefined)).toBe("undefined");
+  });
+
+  it("should handle boolean values", () => {
+    expect(arbitraryTypeToText(true)).toBe("true");
+    expect(arbitraryTypeToText(false)).toBe("false");
+  });
+
+  it("should handle special values", () => {
+    expect(arbitraryTypeToText(NaN)).toBe("NaN");
+    expect(arbitraryTypeToText(Infinity)).toBe("Infinity");
+    expect(arbitraryTypeToText(-Infinity)).toBe("-Infinity");
+  });
+
+  it("should handle complex nested structures", () => {
+    const complexValue = {
+      strings: ["a", "b"],
+      numbers: [1, 2],
+      nested: { prop: "value" },
+    };
+    expect(arbitraryTypeToText(complexValue)).toBe(
+      '{"strings":["a","b"],"numbers":[1,2],"nested":{"prop":"value"}}'
+    );
+  });
+
+  it("should handle arrays containing objects", () => {
+    const arrayWithObjects = [{ id: 1 }, { id: 2 }];
+    expect(arbitraryTypeToText(arrayWithObjects)).toBe('{"id":1}, {"id":2}');
   });
 });

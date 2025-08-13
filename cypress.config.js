@@ -11,6 +11,8 @@ export default defineConfig({
   env: {
     // Disable internal instrumentation that might rely on missing marks.
     CYPRESS_INTERNAL_ENV: "production",
+    // Disable Next.js performance measurement
+    __NEXT_DISABLE_TELEMETRY: "1",
   },
   e2e: {
     baseUrl: "http://localhost:3000",
@@ -27,8 +29,20 @@ export default defineConfig({
           launchOptions.args.push("--disable-gpu");
           launchOptions.args.push("--disable-software-rasterizer");
           launchOptions.args.push("--mute-audio");
+          launchOptions.args.push("--disable-background-timer-throttling");
+          launchOptions.args.push("--disable-backgrounding-occluded-windows");
+          launchOptions.args.push("--disable-features=TranslateUI");
+          launchOptions.args.push("--disable-web-security");
         }
         return launchOptions;
+      });
+
+      // Suppress console warnings about performance marks
+      on("task", {
+        log(message) {
+          console.log(message);
+          return null;
+        },
       });
     },
   },

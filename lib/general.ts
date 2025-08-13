@@ -328,3 +328,25 @@ export function convertTextToTitleCase(text: string): string {
     })
     .join(" ");
 }
+
+/**
+ * Convert an arbitrarily typed value to a string. Arrays of arbitrary types convert to a comma
+ * separated list of strings. Objects convert to their JSON representation.
+ * @param value Arbitrarily typed value to convert to a string
+ * @returns Value converted to a string
+ */
+export function arbitraryTypeToText(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return value.toString();
+  }
+  if (Array.isArray(value)) {
+    return value.map(arbitraryTypeToText).join(", ");
+  }
+  if (typeof value === "object" && value !== null) {
+    return JSON.stringify(value);
+  }
+  return String(value);
+}

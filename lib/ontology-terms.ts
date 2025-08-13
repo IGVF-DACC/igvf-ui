@@ -41,22 +41,25 @@ export async function getAssayTitleDescriptionMap(
   request: FetchRequest
 ): Promise<Record<string, string>> {
   if (titles.length > 0) {
-    const assayTermQueries = titles
-      .map((title) => `term_name=${encodeURIComponent(title)}`)
-      .join("&");
-    const response = (
-      await request.getObject(
-        `/search-quick/?type=AssayTerm&field=definition&field=term_name&${assayTermQueries}`
+    // Retrieve assay term objects corresponding to the given titles.
+    const assayTermObjects = (
+      await request.getMultipleObjectsBySearch(
+        "AssayTerm",
+        ["term_name", "definition"],
+        {
+          property: "term_name",
+          values: titles,
+        }
       )
-    ).optional();
-    const results = (response?.["@graph"] || []) as AssayTermObject[];
-    return results.reduce(
-      (acc, term) => ({
-        ...acc,
-        [term.term_name]: term.definition || "",
-      }),
-      {}
-    );
+    ).unwrap_or([]) as OntologyTermObject[];
+
+    // Build the map of assay term names to their definitions from the fetched assay ontology term
+    // objects.
+    const assayTermMap: { [key: string]: string } = {};
+    for (const term of assayTermObjects) {
+      assayTermMap[term.term_name] = term.definition || "";
+    }
+    return assayTermMap;
   }
   return {};
 }

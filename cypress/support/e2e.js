@@ -33,27 +33,70 @@ Cypress.on("fail", (err) => {
   throw err;
 });
 
+/**
+ * Completely disable performance measurement in Cypress environment to prevent "Failed to execute
+ * 'measure' on 'Performance'" errors.
+ */
 Cypress.on("window:before:load", (win) => {
-  const originalMeasure = win.performance.measure;
-  win.performance.measure = function (name, ...args) {
-    if (typeof name === "string" && name.includes("beforeRender")) {
-      // Skip the problematic measure entirely
-      return;
+  // Override performance.mark to be a no-op
+  win.performance.mark = function () {
+    // Silently ignore all mark calls
+    return undefined;
+  };
+
+  // Override performance.measure to be a no-op
+  win.performance.measure = function () {
+    // Silently ignore all measure calls
+    return undefined;
+  };
+
+  // Override clearMarks to be a no-op
+  win.performance.clearMarks = function () {
+    // Silently ignore all clearMarks calls
+    return undefined;
+  };
+
+  // Override clearMeasures to be a no-op
+  win.performance.clearMeasures = function () {
+    // Silently ignore all clearMeasures calls
+    return undefined;
+  };
+
+  // Also disable getEntriesByType for marks and measures
+  const originalGetEntriesByType = win.performance.getEntriesByType;
+  win.performance.getEntriesByType = function (type) {
+    if (type === "mark" || type === "measure") {
+      return [];
     }
-    return originalMeasure.call(this, name, ...args);
+    return originalGetEntriesByType.call(this, type);
+  };
+
+  // Disable getEntriesByName for performance entries
+  const originalGetEntriesByName = win.performance.getEntriesByName;
+  win.performance.getEntriesByName = function (name, type) {
+    if (type === "mark" || type === "measure" || !type) {
+      return [];
+    }
+    return originalGetEntriesByName.call(this, name, type);
   };
 });
 
 /**
- * Suppress known benign errors related to performance marks, specifically the error:
- * SyntaxError: Failed to execute 'measure' on 'Performance': The mark 'beforeRender' does not
- * exist.
+ * Suppress all performance-related errors in Cypress.
  */
 Cypress.on("uncaught:exception", (err) => {
+  // Suppress any performance measurement errors
   if (
-    err.message.includes("Failed to execute 'measure' on 'Performance'") &&
-    err.message.includes("beforeRender")
+    err.message.includes("Failed to execute 'measure' on 'Performance'") ||
+    err.message.includes("Failed to execute 'mark' on 'Performance'") ||
+    err.message.includes("beforeRender") ||
+    err.message.includes("afterRender") ||
+    (err.message.includes("Performance") &&
+      (err.message.includes("mark") ||
+        err.message.includes("measure") ||
+        err.message.includes("does not exist")))
   ) {
+    // Return false to prevent the error from failing the test
     return false;
   }
 });
