@@ -21,7 +21,7 @@ export function DataCellWithClasses({
   children: React.ReactNode;
 }) {
   return (
-    <td className={`min-w-40 border border-panel p-2 align-top ${className}`}>
+    <td className={`border-panel min-w-40 border p-2 align-top ${className}`}>
       {children}
     </td>
   );
@@ -43,7 +43,7 @@ function DefaultHeaderCell({
 }) {
   return (
     <th
-      className="sticky top-0 z-2 border-b border-r border-panel bg-table-header-cell p-2 text-left align-bottom last:border-r-0"
+      className="border-panel bg-table-header-cell sticky top-0 z-2 border-r border-b p-2 text-left align-bottom last:border-r-0"
       {...(rowSpan > 1 ? { rowSpan } : {})}
       {...(colSpan > 1 ? { colSpan } : {})}
     >
@@ -69,7 +69,7 @@ function DefaultDataCell({
 }) {
   return (
     <td
-      className="border-b border-r border-panel bg-table-data-cell p-2 align-top last:border-r-0"
+      className="border-panel bg-table-data-cell border-r border-b p-2 align-top last:border-r-0"
       {...(rowSpan > 1 ? { rowSpan } : {})}
       {...(colSpan > 1 ? { colSpan } : {})}
     >
@@ -98,16 +98,19 @@ function DataRowsWrapper({ children }: { children: React.ReactNode }) {
  * comprise an HTML row and not the data rows themselves.
  * @param cells - The cells that make up the HTML row
  * @param isHeaderSegment - True if the HTML row is a header row
+ * @param meta - Metadata object passed through to custom cell components
  */
-function SingleRow({
+function SingleRow<TMeta = unknown>({
   cells,
   isHeaderSegment,
+  meta,
 }: {
   cells: Cell[];
   isHeaderSegment: boolean;
+  meta?: TMeta;
 }) {
   return (
-    <tr className="last:[&>td]:border-b-0 [&>td]:last:border-r-0">
+    <tr className="[&>td]:last:border-r-0 last:[&>td]:border-b-0">
       {cells.map((cell) => {
         const DefaultCellWrapper =
           isHeaderSegment || cell.isHeaderCell
@@ -115,13 +118,22 @@ function SingleRow({
             : DefaultDataCell;
         const CellComponent = cell.component || DefaultCellWrapper;
 
+        // Pass meta only to custom components, not to default components
+        const cellProps = cell.component
+          ? {
+              rowSpan: cell._rowSpan,
+              colSpan: cell.colSpan,
+              meta,
+              ...cell.componentProps,
+            }
+          : {
+              rowSpan: cell._rowSpan,
+              colSpan: cell.colSpan,
+              ...cell.componentProps,
+            };
+
         return (
-          <CellComponent
-            key={cell.id}
-            rowSpan={cell._rowSpan}
-            colSpan={cell.colSpan}
-            {...cell.componentProps}
-          >
+          <CellComponent key={cell.id} {...cellProps}>
             {cell.content}
           </CellComponent>
         );
@@ -133,12 +145,19 @@ function SingleRow({
 /**
  * Main component to render a data table.
  * @param data - The data to render including the rows and their child rows
+ * @param meta - Metadata object passed through to custom cell components
  */
-export function DataTable({ data }: { data: DataTableFormat }) {
+export function DataTable<TMeta = unknown>({
+  data,
+  meta,
+}: {
+  data: DataTableFormat;
+  meta?: TMeta;
+}) {
   const rowsSegments = splitRowsIntoSegments(data);
 
   return (
-    <div className="max-h-[90vh] w-fit overflow-auto border border-panel">
+    <div className="border-panel max-h-[90vh] w-fit overflow-auto border">
       <table className="min-w-max table-fixed">
         {rowsSegments.map((rows) => {
           const { rows: flattenedCells } = flattenCells(rows);
@@ -158,6 +177,7 @@ export function DataTable({ data }: { data: DataTableFormat }) {
                     key={rowId}
                     cells={rowCells}
                     isHeaderSegment={isHeaderSegment}
+                    meta={meta}
                   />
                 );
               })}

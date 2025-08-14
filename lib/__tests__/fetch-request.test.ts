@@ -757,3 +757,451 @@ describe("Test getZippedPreviewText()", () => {
     expect(result.split("\n").length).toBeLessThanOrEqual(5);
   });
 });
+
+describe("Test getMultipleObjectsBySearch()", () => {
+  const mockSearchData = {
+    "@graph": [
+      {
+        "@id": "/assay-terms/OBI_0001271/",
+        "@type": ["AssayTerm", "OntologyTerm", "Item"],
+        term_name: "RNA-seq",
+        definition:
+          "A DNA sequencing assay that determines the order of nucleotides...",
+      },
+      {
+        "@id": "/assay-terms/OBI_0000716/",
+        "@type": ["AssayTerm", "OntologyTerm", "Item"],
+        term_name: "ChIP-seq",
+        definition:
+          "Chromatin immunoprecipitation followed by DNA sequencing...",
+      },
+    ],
+    "@id":
+      "/search-quick/?type=AssayTerm&field=term_name&field=definition&term_name=RNA-seq&term_name=ChIP-seq",
+    "@type": ["Search"],
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("retrieves objects using query string option", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSearchData),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["term_name", "definition"],
+      { query: "term_name=RNA-seq&term_name=ChIP-seq" }
+    );
+
+    expect(result.isOk()).toBeTruthy();
+    expect(result.unwrap()).toHaveLength(2);
+    expect(result.unwrap()[0].term_name).toBe("RNA-seq");
+    expect(result.unwrap()[1].term_name).toBe("ChIP-seq");
+
+    // Verify the correct URL was called
+    expect(window.fetch).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "/search-quick/?type=AssayTerm&field=term_name&field=definition&term_name=RNA-seq&term_name=ChIP-seq"
+      ),
+      expect.any(Object)
+    );
+  });
+
+  it("retrieves objects using property and values option", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSearchData),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["term_name", "definition"],
+      { property: "term_name", values: ["RNA-seq", "ChIP-seq"] }
+    );
+
+    expect(result.isOk()).toBeTruthy();
+    expect(result.unwrap()).toHaveLength(2);
+    expect(result.unwrap()[0].term_name).toBe("RNA-seq");
+
+    // Verify the correct URL was called with property/values format
+    expect(window.fetch).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "/search-quick/?type=AssayTerm&field=term_name&field=definition&term_name=RNA-seq&term_name=ChIP-seq"
+      ),
+      expect.any(Object)
+    );
+  });
+
+  it("handles empty fields array correctly", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSearchData),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch("AssayTerm", [], {
+      query: "term_name=RNA-seq",
+    });
+
+    expect(result.isOk()).toBeTruthy();
+
+    // Verify the URL doesn't include field parameters when fields array is empty
+    expect(window.fetch).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "/search-quick/?type=AssayTerm&term_name=RNA-seq"
+      ),
+      expect.any(Object)
+    );
+  });
+
+  it("trims whitespace from query string", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSearchData),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["term_name"],
+      { query: "  term_name=RNA-seq  " }
+    );
+
+    expect(result.isOk()).toBeTruthy();
+
+    // Verify trimmed query is used
+    expect(window.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("term_name=RNA-seq"),
+      expect.any(Object)
+    );
+    expect(window.fetch).not.toHaveBeenCalledWith(
+      expect.stringContaining("  term_name=RNA-seq  "),
+      expect.any(Object)
+    );
+  });
+
+  it("trims whitespace from property and filters empty values", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSearchData),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["term_name"],
+      {
+        property: "  term_name  ",
+        values: ["  RNA-seq  ", "", "  ChIP-seq  ", "   "],
+      }
+    );
+
+    expect(result.isOk()).toBeTruthy();
+
+    // Verify trimmed property is used and empty/whitespace values are filtered out, values are trimmed
+    expect(window.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("term_name=RNA-seq&term_name=ChIP-seq"),
+      expect.any(Object)
+    );
+  });
+
+  it("handles special characters in property values correctly", async () => {
+    const mockDataWithSpecialChars = {
+      "@graph": [
+        {
+          "@id": "/assay-terms/special/",
+          "@type": ["AssayTerm", "OntologyTerm", "Item"],
+          term_name: "RNA-seq & analysis",
+        },
+      ],
+      "@id": "/search-quick/",
+      "@type": ["Search"],
+    };
+
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockDataWithSpecialChars),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["term_name"],
+      { property: "term_name", values: ["RNA-seq & analysis", "test/value"] }
+    );
+
+    expect(result.isOk()).toBeTruthy();
+
+    // Verify URL encoding is applied to property values
+    expect(window.fetch).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "term_name=RNA-seq%20%26%20analysis&term_name=test%2Fvalue"
+      ),
+      expect.any(Object)
+    );
+  });
+
+  it("encodes field names correctly in URL", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSearchData),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["@id", "term_name", "description & notes"],
+      { query: "test" }
+    );
+
+    // Verify field names are properly encoded
+    expect(window.fetch).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "field=%40id&field=term_name&field=description%20%26%20notes"
+      ),
+      expect.any(Object)
+    );
+  });
+
+  it("handles server error responses correctly", async () => {
+    const mockError = {
+      "@type": ["HTTPNotFound", "Error"],
+      status: "error",
+      code: 404,
+      title: "Not Found",
+      description: "The resource could not be found.",
+      isError: true,
+    };
+
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve(mockError),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["term_name"],
+      { query: "nonexistent" }
+    );
+
+    expect(result.isErr()).toBeTruthy();
+    expect(result.unwrap_err().title).toBe("Not Found");
+  });
+
+  it("handles network errors correctly", async () => {
+    window.fetch = jest
+      .fn()
+      .mockImplementation(() => Promise.reject(new Error("Network error")));
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["term_name"],
+      { query: "test" }
+    );
+
+    expect(result.isErr()).toBeTruthy();
+    expect(result.unwrap_err().title).toBe("Unknown error");
+  });
+
+  it("handles missing @graph property correctly", async () => {
+    const mockDataWithoutGraph = {
+      "@id": "/search-quick/",
+      "@type": ["Search"],
+      // No @graph property
+    };
+
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockDataWithoutGraph),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["term_name"],
+      { query: "test" }
+    );
+
+    expect(result.isOk()).toBeTruthy();
+    expect(result.unwrap()).toEqual([]);
+  });
+
+  it("throws error when type parameter is empty", async () => {
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+
+    await expect(
+      request.getMultipleObjectsBySearch("", ["term_name"], { query: "test" })
+    ).rejects.toThrow("`type` parameter required");
+  });
+
+  it("throws error when type parameter is only whitespace", async () => {
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+
+    await expect(
+      request.getMultipleObjectsBySearch("   ", ["term_name"], {
+        query: "test",
+      })
+    ).rejects.toThrow("`type` parameter required");
+  });
+
+  it("throws error when neither query nor property/values provided", async () => {
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+
+    await expect(
+      request.getMultipleObjectsBySearch("AssayTerm", ["term_name"], {
+        query: "",
+      })
+    ).rejects.toThrow(
+      "Invalid search options: provide either a query string or property with values"
+    );
+  });
+
+  it("throws error when property provided without values", async () => {
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+
+    await expect(
+      request.getMultipleObjectsBySearch("AssayTerm", ["term_name"], {
+        property: "term_name",
+        values: [],
+      })
+    ).rejects.toThrow(
+      "Invalid search options: provide either a query string or property with values"
+    );
+  });
+
+  it("throws error when property is empty", async () => {
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+
+    await expect(
+      request.getMultipleObjectsBySearch("AssayTerm", ["term_name"], {
+        property: "",
+        values: ["test"],
+      })
+    ).rejects.toThrow(
+      "Invalid search options: provide either a query string or property with values"
+    );
+  });
+
+  it("throws error when all values are empty/whitespace", async () => {
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+
+    await expect(
+      request.getMultipleObjectsBySearch("AssayTerm", ["term_name"], {
+        property: "term_name",
+        values: ["", "   ", ""],
+      })
+    ).rejects.toThrow(
+      "Invalid search options: provide either a query string or property with values"
+    );
+  });
+
+  it("handles single value in property/values option correctly", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            "@graph": [mockSearchData["@graph"][0]],
+            "@id": "/search-quick/",
+            "@type": ["Search"],
+          }),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    const result = await request.getMultipleObjectsBySearch(
+      "AssayTerm",
+      ["term_name", "definition"],
+      { property: "term_name", values: ["RNA-seq"] }
+    );
+
+    expect(result.isOk()).toBeTruthy();
+    expect(result.unwrap()).toHaveLength(1);
+    expect(result.unwrap()[0].term_name).toBe("RNA-seq");
+
+    // Verify the correct URL was called with single value
+    expect(window.fetch).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "/search-quick/?type=AssayTerm&field=term_name&field=definition&term_name=RNA-seq"
+      ),
+      expect.any(Object)
+    );
+  });
+
+  it("builds URL correctly without double ampersands when fields are empty", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSearchData),
+      })
+    );
+
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+    await request.getMultipleObjectsBySearch("AssayTerm", [], {
+      property: "term_name",
+      values: ["RNA-seq"],
+    });
+
+    // Verify no double ampersands in URL
+    const lastCall = (window.fetch as jest.Mock).mock.calls[0][0];
+    expect(lastCall).not.toContain("&&");
+    expect(lastCall).toContain(
+      "/search-quick/?type=AssayTerm&term_name=RNA-seq"
+    );
+  });
+
+  it("handles query option with whitespace correctly", async () => {
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+
+    // Should throw error because trimmed query is empty
+    await expect(
+      request.getMultipleObjectsBySearch("AssayTerm", ["term_name"], {
+        query: "   ",
+      })
+    ).rejects.toThrow(
+      "Invalid search options: provide either a query string or property with values"
+    );
+  });
+
+  it("throws error when URI exceeds maximum length", async () => {
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
+
+    // Create a very long query that will exceed MAX_URL_LENGTH (4000 characters)
+    // The base URI is "/search-quick/?type=AssayTerm&field=term_name&term_name="
+    // which is about 65 characters, so we need a term_name value of over 3935 characters
+    const longValue = "a".repeat(4000);
+
+    await expect(
+      request.getMultipleObjectsBySearch("AssayTerm", ["term_name"], {
+        property: "term_name",
+        values: [longValue],
+      })
+    ).rejects.toThrow("Search query URI exceeds maximum length");
+  });
+});

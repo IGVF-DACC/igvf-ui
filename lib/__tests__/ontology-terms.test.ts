@@ -75,7 +75,7 @@ describe("ontology-terms", () => {
       );
 
       expect(mockFetch).toHaveBeenCalledWith(
-        "/search-quick/?type=AssayTerm&field=definition&field=term_name&term_name=imaging%20assay&term_name=in%20vitro%20CRISPR%20screen%20assay",
+        "/search-quick/?type=AssayTerm&field=term_name&field=definition&term_name=imaging%20assay&term_name=in%20vitro%20CRISPR%20screen%20assay",
         expect.anything()
       );
       expect(result).toEqual({
@@ -172,7 +172,7 @@ describe("ontology-terms", () => {
       );
 
       expect(mockFetch).toHaveBeenCalledWith(
-        "/search-quick/?type=AssayTerm&field=definition&field=term_name&term_name=RNA-seq%20%26%20ChIP-seq&term_name=test%2Ftitle",
+        "/search-quick/?type=AssayTerm&field=term_name&field=definition&term_name=RNA-seq%20%26%20ChIP-seq&term_name=test%2Ftitle",
         expect.anything()
       );
     });
