@@ -877,3 +877,10 @@
 .facet-term-count-mask {
   @apply [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)] [--webkit-mask-image:linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)];
 }
+
+/**
+ * React Flow styles
+ */
+.react-flow__attribution {
+  display: none;
+}
