@@ -1,11 +1,7 @@
-import React from "react";
-import ReactFlow, {
-  Background,
-  Controls,
-  MiniMap,
-  Position,
-  MarkerType,
-} from "reactflow";
+import { useEffect, useState } from "react";
+// Import ELK from the bundle in NextJS to avoid "web-worker" error on page load.
+import ELK from "elkjs/lib/elk.bundled.js";
+import ReactFlow, { MarkerType } from "reactflow";
 import "reactflow/dist/style.css";
 import { DataPanel } from "../components/data-area";
 
@@ -16,21 +12,24 @@ const initialNodes = [
     type: "default",
     data: { label: "Node 1" },
     position: { x: 100, y: 100 },
-    sourcePosition: Position.Right,
+    sourcePosition: "right",
+    targetPosition: "left",
   },
   {
     id: "2",
     type: "default",
     data: { label: "Node 2" },
     position: { x: 100, y: 300 },
-    sourcePosition: Position.Right,
+    sourcePosition: "right",
+    targetPosition: "left",
   },
   {
     id: "3",
     type: "default",
-    data: { label: "Target Node" },
-    position: { x: 400, y: 200 },
-    targetPosition: Position.Left,
+    data: { label: "Node 3" },
+    position: { x: 300, y: 200 },
+    sourcePosition: "right",
+    targetPosition: "left",
   },
 ];
 
@@ -56,24 +55,34 @@ const initialEdges = [
   },
 ];
 
+const elkConfig = {
+  id: "root",
+  layout: {
+    algorithm: "layered",
+  },
+  children: initialNodes.map((node) => ({
+    id: node.id,
+    width: 100,
+    height: 50,
+  })),
+  edges: initialEdges.map((edge) => ({
+    id: edge.id,
+    source: edge.source,
+    target: edge.target,
+  })),
+};
+
 export default function ReactFlowTest() {
+  const [elk] = useState(() => new ELK());
+
+  useEffect(() => {
+    elk.layout(elkConfig).then((layouted) => {
+      console.log(layouted);
+    });
+  }, [elk]);
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      <h1
-        style={{
-          position: "absolute",
-          top: 10,
-          left: 10,
-          zIndex: 10,
-          margin: 0,
-          padding: "10px",
-          backgroundColor: "white",
-          borderRadius: "4px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        }}
-      >
-        React Flow Test Page
-      </h1>
       <DataPanel className="h-[500px]">
         <ReactFlow
           nodes={initialNodes}
@@ -90,15 +99,7 @@ export default function ReactFlowTest() {
           fitViewOptions={{
             padding: 0.2,
           }}
-        >
-          <Background />
-          <Controls
-            showZoom={false}
-            showFitView={false}
-            showInteractive={false}
-          />
-          <MiniMap nodeColor={() => "#3b82f6"} maskColor="rgba(0, 0, 0, 0.2)" />
-        </ReactFlow>
+        />
       </DataPanel>
     </div>
   );
