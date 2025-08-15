@@ -53,6 +53,7 @@
     "react-svg-pan-zoom": "^3.12.1",
     "react-svg-pan-zoom-loader": "^1.6.1",
     "react-syntax-highlighter": "^15.5.0",
+    "reactflow": "^11.11.4",
     "redis": "^4.7.0",
     "typescript": "^5.8.3",
     "xxhashjs": "^0.2.2"
