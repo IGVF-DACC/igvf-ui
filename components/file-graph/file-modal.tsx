@@ -1,5 +1,6 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
+import { type Node } from "@xyflow/react";
 // components
 import AliasList from "../alias-list";
 import {
@@ -17,11 +18,11 @@ import SeparatedList from "../separated-list";
 import Status from "../status";
 // local
 import { FileModalTitle } from "./file-modal-title";
-import { type FileNodeData } from "./types";
+import { type FileMetadata } from "./types";
 // lib
 import { dataSize, truthyOrZero } from "../../lib/general";
 // root
-import type { DatabaseObject, FileObject } from "../../globals";
+import type { DatabaseObject } from "../../globals";
 
 /**
  * Display a modal with detailed information about a file when the user clicks on a node in the
@@ -31,20 +32,13 @@ import type { DatabaseObject, FileObject } from "../../globals";
  */
 export function FileModal({
   node,
-  referenceFiles,
   onClose,
 }: {
-  node: FileNodeData;
-  referenceFiles: FileObject[];
+  node: Node<FileMetadata>;
   onClose: () => void;
 }) {
-  const { file } = node;
+  const { file, referenceFiles } = node.data as FileMetadata;
   const derivedFromReportLink = `/multireport/?type=File&input_file_for=${file["@id"]}`;
-
-  const fileReferenceFilePaths = (file.reference_files as string[]) || [];
-  const fileReferenceFiles = referenceFiles.filter((referenceFile) =>
-    fileReferenceFilePaths.includes(referenceFile["@id"])
-  );
 
   return (
     <Modal isOpen={true} onClose={onClose}>
@@ -81,12 +75,12 @@ export function FileModal({
           )}
           <DataItemLabel>Summary</DataItemLabel>
           <DataItemValue>{file.summary}</DataItemValue>
-          {fileReferenceFiles.length > 0 && (
+          {referenceFiles.length > 0 && (
             <>
               <DataItemLabel>Reference Files</DataItemLabel>
               <DataItemValue>
                 <SeparatedList isCollapsible>
-                  {fileReferenceFiles.map((file) => (
+                  {referenceFiles.map((file) => (
                     <FileAccessionAndDownload
                       key={file["@id"]}
                       file={file}
