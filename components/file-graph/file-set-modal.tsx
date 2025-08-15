@@ -1,14 +1,15 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
+import { type Node } from "@xyflow/react";
 // components
 import AliasList from "../alias-list";
 import {
-  DataPanel,
   DataArea,
-  DataItemList,
   DataAreaTitleLink,
+  DataItemList,
   DataItemLabel,
   DataItemValue,
+  DataPanel,
 } from "../data-area";
 import { FileAccessionAndDownload } from "../file-download";
 import { HostedFilePreview } from "../hosted-file-preview";
@@ -19,9 +20,9 @@ import SortableGrid from "../sortable-grid";
 import Status from "../status";
 // local
 import { FileModalTitle } from "./file-modal-title";
-import { type FileSetNodeData } from "./types";
+import { type FileSetMetadata } from "./types";
 // root
-import type { FileObject } from "../../globals.d";
+import { FileObject } from "../../globals";
 
 /**
  * Defines the columns for the file table in the file set modal.
@@ -103,13 +104,13 @@ export function FileSetModal({
   nativeFiles,
   onClose,
 }: {
-  node: FileSetNodeData;
+  node: Node<FileSetMetadata>;
   nativeFiles: FileObject[];
   onClose: () => void;
 }) {
-  const { fileSet } = node;
-  const childFile = node.childFile;
-  const reportLink = `/multireport/?type=File&file_set.@id=${fileSet["@id"]}&input_file_for=${childFile["@id"]}`;
+  const { fileSet, externalFiles, downstreamFile } =
+    node.data as FileSetMetadata;
+  const reportLink = `/multireport/?type=File&file_set.@id=${fileSet["@id"]}&input_file_for=${downstreamFile["@id"]}`;
 
   // Collect all sample summaries and display them as a collapsible list.
   const sampleSummaries =
@@ -171,7 +172,7 @@ export function FileSetModal({
             </DataAreaTitleLink>
           </div>
           <SortableGrid
-            data={node.files}
+            data={externalFiles}
             columns={filesColumns}
             keyProp="@id"
             meta={{ nativeFiles }}
