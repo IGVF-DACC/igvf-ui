@@ -11,17 +11,20 @@ import {
 import "@xyflow/react/dist/style.css";
 import { DataPanel } from "../components/data-area";
 
-interface FileNodeData {
+type FileNodeData = {
   label: string;
-}
+};
 
-// Define the nodes - two source nodes and one target node
+/**
+ * React Flow Data Structure
+ * Define the nodes - two source nodes and one target node
+ */
 const initialNodes = [
   {
     id: "1",
     type: "file",
     data: { label: "Node 1" },
-    position: { x: 100, y: 100 },
+    position: { x: 0, y: 0 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -29,7 +32,7 @@ const initialNodes = [
     id: "2",
     type: "file",
     data: { label: "Node 2" },
-    position: { x: 100, y: 300 },
+    position: { x: 0, y: 0 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
@@ -37,17 +40,25 @@ const initialNodes = [
     id: "3",
     type: "file",
     data: { label: "Node 3" },
-    position: { x: 300, y: 200 },
+    position: { x: 0, y: 0 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   },
 ];
 
+/**
+ * React Flow Data Structure
+ * Allows nodes to render using a custom React component.
+ */
 const nodeTypes = {
   file: FileNodeContent,
 };
 
-// Define the edges - arrows from Node 1 and Node 2 to Target Node
+/**
+ * React Flow Data Structure
+ * Define the edges - arrows from Node 1 and Node 2 to Target Node
+ */
+
 const initialEdges = [
   {
     id: "e1-3",
@@ -73,17 +84,33 @@ const initialEdges = [
   },
 ];
 
+/**
+ * ELK Data Structure
+ * Defines the nodes as well as the relationships between nodes.
+ */
 const elkConfig = {
   id: "root",
   layoutOptions: {
     "elk.algorithm": "layered",
     "elk.direction": "RIGHT",
   },
-  children: initialNodes.map((node) => ({
-    id: node.id,
-    width: 100,
-    height: 50,
-  })),
+  children: [
+    {
+      id: "1",
+      width: 100,
+      height: 50,
+    },
+    {
+      id: "2",
+      width: 100,
+      height: 50,
+    },
+    {
+      id: "3",
+      width: 100,
+      height: 50,
+    },
+  ],
   edges: initialEdges.map((edge) => ({
     id: edge.id,
     sources: [edge.source],
@@ -135,17 +162,33 @@ function FileNodeContent(props: NodeProps) {
 
 export default function ReactFlowTest() {
   const [elk] = useState(() => new ELK());
+  const [positionedNodes, setPositionedNodes] = useState(initialNodes);
 
   useEffect(() => {
     elk.layout(elkConfig).then((layouted) => {
-      console.log(layouted);
+      // Copy the layouted positions back to the nodes
+      const updatedNodes = initialNodes.map((node) => {
+        const layoutNode = layouted.children.find((n) => n.id === node.id);
+        if (layoutNode) {
+          return {
+            ...node,
+            position: {
+              x: layoutNode.x || 0,
+              y: layoutNode.y || 0,
+            },
+          };
+        }
+        return node;
+      });
+      console.log("UPDATED NODES", updatedNodes);
+      setPositionedNodes(updatedNodes);
     });
   }, [elk]);
 
   return (
     <DataPanel className="h-[500px]">
       <ReactFlow
-        nodes={initialNodes}
+        nodes={positionedNodes}
         edges={initialEdges}
         nodeTypes={nodeTypes}
         nodesDraggable={false}
@@ -159,6 +202,9 @@ export default function ReactFlowTest() {
         fitView
         fitViewOptions={{
           padding: 0.2,
+          includeHiddenNodes: false,
+          minZoom: 0.1,
+          maxZoom: 2,
         }}
       />
     </DataPanel>
