@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 // Import ELK from the bundle in NextJS to avoid "web-worker" error on page load.
 import ELK from "elkjs/lib/elk.bundled.js";
-import type { ElkNode, ElkExtendedEdge } from "elkjs/lib/elk-api";
+import type { ElkNode } from "elkjs/lib/elk-api";
 import {
+  Edge,
   Handle,
+  MarkerType,
+  Node,
   Position,
   ReactFlow,
-  Node,
-  Edge,
-  MarkerType,
   type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -17,8 +17,6 @@ import { DataPanel } from "../components/data-area";
 type FileNodeData = {
   label: string;
 };
-
-type AbsNode = ElkNode & { ax: number; ay: number; parentId?: string };
 
 /**
  * React Flow Data Structure
@@ -38,7 +36,13 @@ const elkConfig: ElkNode = {
   layoutOptions: {
     "org.eclipse.elk.algorithm": "layered",
     "org.eclipse.elk.direction": "RIGHT",
-    // You can keep this — sometimes helps but not sufficient alone:
+    // === horizontal spacing between columns (most important) ===
+    // horizontal gap between columns (layers)
+    "org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": "100",
+
+    // extra clearance for edges between layers (adds to the above)
+    // "org.eclipse.elk.layered.spacing.edgeNodeBetweenLayers": "60",
+
     "org.eclipse.elk.layered.hierarchyHandling": "INCLUDE_CHILDREN",
     "org.eclipse.elk.padding": "[top=12,left=12,bottom=12,right=12]",
   },
@@ -48,6 +52,7 @@ const elkConfig: ElkNode = {
       children: [
         { id: "1", width: 100, height: 50 },
         { id: "2", width: 100, height: 50 },
+        { id: "4", width: 100, height: 50 },
       ],
     },
     { id: "3", width: 100, height: 50 },
@@ -55,164 +60,61 @@ const elkConfig: ElkNode = {
   edges: [
     { id: "e1-3", sources: ["1"], targets: ["3"] },
     { id: "e2-3", sources: ["2"], targets: ["3"] },
+    { id: "e4-3", sources: ["4"], targets: ["3"] },
 
     // 👇 layout-only helper so ELK layers group → 3
     { id: "__layout__g1-2->3", sources: ["g1-2"], targets: ["3"] },
   ],
 };
 
-// Collect edges from **all levels** (root and subgraphs), safely
-function getAllEdges(n: ElkNode): ElkExtendedEdge[] {
-  const edges = n.edges ? [...(n.edges as ElkExtendedEdge[])] : [];
-  const childEdges = (n.children || []).flatMap(getAllEdges);
-  return [...edges, ...childEdges];
-}
+function convertNodes(elkNodes: ElkNode[], parentId = ""): Node[] {
+  const rfNodes = [];
+  elkNodes.forEach((elkNode) => {
+    // Generate a React Flow node and add it to the cumulative array.
+    const rfNode = {
+      id: elkNode.id,
+      type: elkNode.children ? "group" : "file",
+      data: { label: elkNode.id },
+      position: { x: elkNode.x, y: elkNode.y },
+      style: { width: elkNode.width, height: elkNode.height },
+      draggable: false,
+      selectable: false,
+      ...(parentId ? { parentId } : {}),
+    };
+    rfNodes.push(rfNode);
 
-// Walk graph to compute ABS positions and index by id
-function walk(node: ElkNode, parent?: AbsNode): Map<string, AbsNode> {
-  const ax = (node.x ?? 0) + (parent?.ax ?? 0);
-  const ay = (node.y ?? 0) + (parent?.ay ?? 0);
-  const an: AbsNode = { ...node, ax, ay, parentId: parent?.id };
-
-  const result = new Map<string, AbsNode>();
-  result.set(node.id!, an);
-
-  // Merge all child maps
-  (node.children || []).forEach((child) => {
-    const childMap = walk(child, an);
-    childMap.forEach((value, key) => result.set(key, value));
+    // If the node has children, recursively process them and add them to the cumulative array.
+    if (elkNode.children) {
+      const childNodes = convertNodes(elkNode.children, elkNode.id);
+      rfNodes.push(...childNodes);
+    }
   });
-
-  return result;
+  return rfNodes;
 }
 
-/**
- * Convert a laid-out ELK graph to React Flow nodes/edges.
- * - Children inside a parent get parent-relative positions.
- * - Top-left normalization so the whole graph starts at (0,0).
- * - Group nodes are detected by presence of `children`.
- */
-export function elkToReactFlow(
-  elk: ElkNode,
-  opts?: {
-    rootId?: string; // id of the virtual root to skip (default: elk.id)
-    groupType?: string; // RF node type for groups
-    leafType?: string; // RF node type for leaves
-    normalize?: boolean; // shift so min x/y = 0 (default: true)
-  }
-): { nodes: Node[]; edges: Edge[] } {
-  const rootId = opts?.rootId ?? elk.id!;
-  const groupType = opts?.groupType ?? "group";
-  const leafType = opts?.leafType ?? "default";
-  const normalize = opts?.normalize ?? true;
-
-  const byId = walk(elk);
-
-  // Compute normalization shift from all **non-root** nodes
-  let minX = 0;
-  let minY = 0;
-  if (normalize) {
-    const all = Array.from(byId.values()).filter((n) => n.id !== rootId);
-    if (all.length) {
-      minX = Math.min(...all.map((n) => n.ax));
-      minY = Math.min(...all.map((n) => n.ay));
-      if (!isFinite(minX)) {
-        minX = 0;
-      }
-      if (!isFinite(minY)) {
-        minY = 0;
-      }
-    }
-  }
-
-  // Build React Flow nodes; SKIP the root
-  const nodes: Node[] = [];
-  for (const n of byId.values()) {
-    if (n.id === rootId) {
-      continue;
-    }
-
-    const isGroup = !!(n.children && n.children.length);
-    const width = n.width ?? (isGroup ? 200 : 120);
-    const height = n.height ?? (isGroup ? 120 : 40);
-
-    if (isGroup) {
-      // group nodes are placed absolutely (relative to canvas)
-      nodes.push({
-        id: n.id!,
-        type: groupType,
-        data: { label: n.id },
-        position: { x: n.ax - minX, y: n.ay - minY },
-        style: { width, height },
-        draggable: false,
-        selectable: true,
-      });
-    } else {
-      // leaf nodes: relative to parent if present
-      const parent = n.parentId ? byId.get(n.parentId) : undefined;
-      if (parent && parent.id !== rootId) {
-        const px = parent.ax - minX;
-        const py = parent.ay - minY;
-        nodes.push({
-          id: n.id!,
-          type: leafType,
-          data: { label: n.id },
-          position: { x: n.ax - minX - px, y: n.ay - minY - py },
-          style: {
-            width,
-            height,
-            padding: 0,
-            margin: 0,
-            boxSizing: "border-box",
-            borderWidth: 0,
-          },
-          parentId: parent.id!,
-          extent: "parent",
-        });
-      } else {
-        // no parent or parent is root → absolute
-        nodes.push({
-          id: n.id!,
-          type: leafType,
-          data: { label: n.id },
-          position: { x: n.ax - minX, y: n.ay - minY },
-          style: {
-            width,
-            height,
-            padding: 0,
-            margin: 0,
-            boxSizing: "border-box",
-            borderWidth: 0,
-          },
-        });
-      }
-    }
-  }
-
-  // Collect edges from **all levels** (root and subgraphs), safely
-  const elkEdges: ElkExtendedEdge[] = getAllEdges(elk);
-
-  const edges: Edge[] = elkEdges
-    // make the union explicit so TS knows it's (Edge | null)[]
-    .map<Edge | null>((e) => {
-      const [source] = e.sources ?? [];
-      const [target] = e.targets ?? [];
-      if (!source || !target) {
-        return null;
-      }
-
-      return {
-        id: e.id ?? `${source}->${target}`,
-        source,
-        target,
-        // pick whatever edge type you use:
-        // type: 'smoothstep',
-        markerEnd: { type: MarkerType.ArrowClosed },
+function convertEdges(elkNodes: ElkNode) {
+  const rfEdges: Edge[] = [];
+  elkNodes.edges.forEach((edge) => {
+    if (!edge.id.startsWith("__layout__")) {
+      const rfEdge: Edge = {
+        id: edge.id,
+        source: edge.sources[0],
+        target: edge.targets[0],
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 24, // make arrowhead larger
+          height: 24,
+        },
       };
-    })
-    // now the predicate is valid because param is Edge | null
-    .filter((x): x is Edge => x !== null);
+      rfEdges.push(rfEdge);
+    }
+  });
+  return rfEdges;
+}
 
+function elkToReactFlow(elkGraph: ElkNode): { nodes: Node[]; edges: Edge[] } {
+  const nodes = convertNodes(elkGraph.children || []);
+  const edges = convertEdges(elkGraph);
   return { nodes, edges };
 }
 
@@ -274,17 +176,12 @@ export default function ReactFlowTest() {
 
   useEffect(() => {
     elk.layout(elkConfig).then((layouted: ElkNode) => {
-      const { nodes, edges } = elkToReactFlow(layouted, {
-        rootId: "root",
-        groupType: "group",
-        leafType: "file",
-        normalize: true,
-      });
+      const { nodes: newNodes, edges: newEdges } = elkToReactFlow(layouted);
+      console.log("NODES", JSON.stringify(newNodes, null, 2));
+      console.log("EDGES", JSON.stringify(newEdges, null, 2));
 
-      console.log("UPDATED NODES", nodes);
-      console.log("UPDATED EDGES", edges);
-      setPositionedNodes(nodes);
-      setPositionedEdges(edges);
+      setPositionedNodes(newNodes);
+      setPositionedEdges(newEdges);
     });
   }, [elk]);
 
