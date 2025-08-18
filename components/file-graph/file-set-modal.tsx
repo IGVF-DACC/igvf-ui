@@ -5,6 +5,7 @@ import AliasList from "../alias-list";
 import {
   DataPanel,
   DataArea,
+  DataItemList,
   DataAreaTitleLink,
   DataItemLabel,
   DataItemValue,
@@ -110,6 +111,13 @@ export function FileSetModal({
   const childFile = node.childFile;
   const reportLink = `/multireport/?type=File&file_set.@id=${fileSet["@id"]}&input_file_for=${childFile["@id"]}`;
 
+  // Collect all sample summaries and display them as a collapsible list.
+  const sampleSummaries =
+    fileSet.samples?.length > 0
+      ? fileSet.samples.map((sample) => sample.summary)
+      : [];
+  const uniqueSampleSummaries = [...new Set(sampleSummaries)];
+
   return (
     <Modal isOpen={true} onClose={onClose} testid="file-set-modal">
       <Modal.Header onClose={onClose}>
@@ -121,14 +129,6 @@ export function FileSetModal({
       </Modal.Header>
       <DataPanel className="border-none">
         <DataArea>
-          {fileSet.aliases?.length > 0 && (
-            <>
-              <DataItemLabel>Aliases</DataItemLabel>
-              <DataItemValue>
-                <AliasList aliases={fileSet.aliases} />
-              </DataItemValue>
-            </>
-          )}
           {fileSet.file_set_type && (
             <>
               <DataItemLabel>File Set Type</DataItemLabel>
@@ -139,6 +139,20 @@ export function FileSetModal({
             <>
               <DataItemLabel>Summary</DataItemLabel>
               <DataItemValue>{fileSet.summary}</DataItemValue>
+            </>
+          )}
+          {uniqueSampleSummaries.length > 0 && (
+            <>
+              <DataItemLabel>Sample Summaries</DataItemLabel>
+              <DataItemList isCollapsible>{uniqueSampleSummaries}</DataItemList>
+            </>
+          )}
+          {fileSet.aliases?.length > 0 && (
+            <>
+              <DataItemLabel>Aliases</DataItemLabel>
+              <DataItemValue>
+                <AliasList aliases={fileSet.aliases} />
+              </DataItemValue>
             </>
           )}
           <DataItemLabel>Status</DataItemLabel>
