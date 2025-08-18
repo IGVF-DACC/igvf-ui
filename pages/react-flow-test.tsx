@@ -36,15 +36,8 @@ const elkConfig: ElkNode = {
   layoutOptions: {
     "org.eclipse.elk.algorithm": "layered",
     "org.eclipse.elk.direction": "RIGHT",
-    // === horizontal spacing between columns (most important) ===
-    // horizontal gap between columns (layers)
     "org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": "100",
-
-    // extra clearance for edges between layers (adds to the above)
-    // "org.eclipse.elk.layered.spacing.edgeNodeBetweenLayers": "60",
-
     "org.eclipse.elk.layered.hierarchyHandling": "INCLUDE_CHILDREN",
-    "org.eclipse.elk.padding": "[top=12,left=12,bottom=12,right=12]",
   },
   children: [
     {
@@ -177,9 +170,6 @@ export default function ReactFlowTest() {
   useEffect(() => {
     elk.layout(elkConfig).then((layouted: ElkNode) => {
       const { nodes: newNodes, edges: newEdges } = elkToReactFlow(layouted);
-      console.log("NODES", JSON.stringify(newNodes, null, 2));
-      console.log("EDGES", JSON.stringify(newEdges, null, 2));
-
       setPositionedNodes(newNodes);
       setPositionedEdges(newEdges);
     });
