@@ -884,3 +884,8 @@
 .react-flow__attribution {
   display: none;
 }
+
+.react-flow__node-group {
+  padding: 12px !important;
+  box-sizing: border-box;
+}
