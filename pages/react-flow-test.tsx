@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 // Import ELK from the bundle in NextJS to avoid "web-worker" error on page load.
-import ELK, {
-  type ElkNode,
-  type ElkExtendedEdge,
-} from "elkjs/lib/elk.bundled.js";
+import ELK from "elkjs/lib/elk.bundled.js";
+import type { ElkNode, ElkExtendedEdge } from "elkjs/lib/elk-api";
 import {
   Handle,
-  MarkerType,
   Position,
   ReactFlow,
   Node,
   Edge,
+  MarkerType,
   type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -22,81 +20,12 @@ type FileNodeData = {
 
 /**
  * React Flow Data Structure
- * Define the nodes - two source nodes and one target node
- */
-const initialNodes = [
-  {
-    id: "1",
-    type: "file",
-    data: { label: "Node 1" },
-    position: { x: 0, y: 0 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: "2",
-    type: "file",
-    data: { label: "Node 2" },
-    position: { x: 0, y: 0 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: "3",
-    type: "file",
-    data: { label: "Node 3" },
-    position: { x: 0, y: 0 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: "g1-2",
-    type: "group",
-    data: { label: "Group 1-2" },
-    position: { x: 0, y: 0 },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-];
-
-/**
- * React Flow Data Structure
  * Allows nodes to render using a custom React component.
  */
 const nodeTypes = {
   file: FileNodeContent,
   group: GroupNodeContent,
 };
-
-/**
- * React Flow Data Structure
- * Define the edges - arrows from Node 1 and Node 2 to Target Node
- */
-
-const initialEdges = [
-  {
-    id: "e1-3",
-    source: "1",
-    target: "3",
-    type: "default",
-    markerEnd: {
-      type: MarkerType.ArrowClosed,
-      color: "black",
-    },
-    style: { stroke: "black", strokeWidth: 1 }, // 👈 custom color/width
-  },
-  {
-    id: "e2-3",
-    source: "2",
-    target: "3",
-    type: "default",
-    markerEnd: {
-      type: MarkerType.ArrowClosed,
-      color: "black",
-    },
-    style: { stroke: "black", strokeWidth: 1 }, // 👈 custom color/width
-  },
-];
 
 /**
  * ELK Data Structure
@@ -109,6 +38,7 @@ const elkConfig: ElkNode = {
     "org.eclipse.elk.direction": "RIGHT",
     // You can keep this — sometimes helps but not sufficient alone:
     "org.eclipse.elk.layered.hierarchyHandling": "INCLUDE_CHILDREN",
+    "org.eclipse.elk.padding": "[top=12,left=12,bottom=12,right=12]",
   },
   children: [
     {
@@ -212,7 +142,14 @@ export function elkToReactFlow(
           type: leafType,
           data: { label: n.id },
           position: { x: n.ax - minX - px, y: n.ay - minY - py },
-          style: { width, height },
+          style: {
+            width,
+            height,
+            padding: 0,
+            margin: 0,
+            boxSizing: "border-box",
+            borderWidth: 0,
+          },
           parentId: parent.id!,
           extent: "parent",
         });
@@ -223,7 +160,14 @@ export function elkToReactFlow(
           type: leafType,
           data: { label: n.id },
           position: { x: n.ax - minX, y: n.ay - minY },
-          style: { width, height },
+          style: {
+            width,
+            height,
+            padding: 0,
+            margin: 0,
+            boxSizing: "border-box",
+            borderWidth: 0,
+          },
         });
       }
     }
@@ -238,22 +182,25 @@ export function elkToReactFlow(
     (n.children ?? []).forEach(collectEdges);
   })(elk);
 
-  const edges: Edge[] = elkEdges
-    .map((e) => {
+  const edges: Edge[] = (elkEdges ?? [])
+    // make the union explicit so TS knows it's (Edge | null)[]
+    .map<Edge | null>((e) => {
       const [source] = e.sources ?? [];
       const [target] = e.targets ?? [];
       if (!source || !target) {
         return null;
       }
+
       return {
         id: e.id ?? `${source}->${target}`,
         source,
         target,
-        // If you want arrows/smooth paths, add here:
-        // type: "smoothstep",
-        // markerEnd: { type: "arrowclosed" as const },
+        // pick whatever edge type you use:
+        // type: 'smoothstep',
+        markerEnd: { type: MarkerType.ArrowClosed },
       };
     })
+    // now the predicate is valid because param is Edge | null
     .filter((x): x is Edge => x !== null);
 
   return { nodes, edges };
@@ -263,7 +210,7 @@ function FileNodeContent(props: NodeProps) {
   const data = props.data as unknown as FileNodeData;
 
   return (
-    <div className="rounded-md border border-gray-300 bg-white p-2 text-xs shadow-sm">
+    <div className="h-full rounded-md border border-gray-300 bg-white p-2 text-xs shadow-sm dark:bg-black">
       Node <strong>{data.label}</strong>
       <Handle
         type="target"
@@ -304,7 +251,7 @@ function FileNodeContent(props: NodeProps) {
 function GroupNodeContent(props: NodeProps) {
   const data = props.data as unknown as FileNodeData;
   return (
-    <div className="rounded-md border border-gray-400 bg-gray-50 p-2 text-xs">
+    <div className="rounded-md border border-gray-400 bg-gray-50 text-xs">
       <strong>{data.label}</strong>
     </div>
   );
@@ -336,6 +283,10 @@ export default function ReactFlowTest() {
       <ReactFlow
         nodes={positionedNodes}
         edges={positionedEdges}
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+        minZoom={1}
+        maxZoom={1}
+        nodeOrigin={[0, 0]}
         nodeTypes={nodeTypes}
         nodesDraggable={false}
         nodesConnectable={false}
@@ -349,8 +300,8 @@ export default function ReactFlowTest() {
         fitViewOptions={{
           padding: 0.2,
           includeHiddenNodes: false,
-          minZoom: 0.1,
-          maxZoom: 2,
+          minZoom: 1,
+          maxZoom: 1,
         }}
       />
     </DataPanel>
