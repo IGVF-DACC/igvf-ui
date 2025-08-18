@@ -18,6 +18,8 @@ type FileNodeData = {
   label: string;
 };
 
+type AbsNode = ElkNode & { ax: number; ay: number; parentId?: string };
+
 /**
  * React Flow Data Structure
  * Allows nodes to render using a custom React component.
@@ -59,6 +61,31 @@ const elkConfig: ElkNode = {
   ],
 };
 
+// Collect edges from **all levels** (root and subgraphs), safely
+function getAllEdges(n: ElkNode): ElkExtendedEdge[] {
+  const edges = n.edges ? [...(n.edges as ElkExtendedEdge[])] : [];
+  const childEdges = (n.children || []).flatMap(getAllEdges);
+  return [...edges, ...childEdges];
+}
+
+// Walk graph to compute ABS positions and index by id
+function walk(node: ElkNode, parent?: AbsNode): Map<string, AbsNode> {
+  const ax = (node.x ?? 0) + (parent?.ax ?? 0);
+  const ay = (node.y ?? 0) + (parent?.ay ?? 0);
+  const an: AbsNode = { ...node, ax, ay, parentId: parent?.id };
+
+  const result = new Map<string, AbsNode>();
+  result.set(node.id!, an);
+
+  // Merge all child maps
+  (node.children || []).forEach((child) => {
+    const childMap = walk(child, an);
+    childMap.forEach((value, key) => result.set(key, value));
+  });
+
+  return result;
+}
+
 /**
  * Convert a laid-out ELK graph to React Flow nodes/edges.
  * - Children inside a parent get parent-relative positions.
@@ -79,22 +106,11 @@ export function elkToReactFlow(
   const leafType = opts?.leafType ?? "default";
   const normalize = opts?.normalize ?? true;
 
-  type AbsNode = ElkNode & { ax: number; ay: number; parentId?: string };
-  const byId = new Map<string, AbsNode>();
-
-  // Walk graph to compute ABS positions and index by id
-  function walk(n: ElkNode, parent?: AbsNode) {
-    const ax = (n.x ?? 0) + (parent?.ax ?? 0);
-    const ay = (n.y ?? 0) + (parent?.ay ?? 0);
-    const an: AbsNode = { ...n, ax, ay, parentId: parent?.id };
-    byId.set(n.id!, an);
-    (n.children ?? []).forEach((c) => walk(c, an));
-  }
-  walk(elk);
+  const byId = walk(elk);
 
   // Compute normalization shift from all **non-root** nodes
-  let minX = 0,
-    minY = 0;
+  let minX = 0;
+  let minY = 0;
   if (normalize) {
     const all = Array.from(byId.values()).filter((n) => n.id !== rootId);
     if (all.length) {
@@ -174,15 +190,9 @@ export function elkToReactFlow(
   }
 
   // Collect edges from **all levels** (root and subgraphs), safely
-  const elkEdges: ElkExtendedEdge[] = [];
-  (function collectEdges(n: ElkNode) {
-    if (n.edges) {
-      elkEdges.push(...(n.edges as ElkExtendedEdge[]));
-    }
-    (n.children ?? []).forEach(collectEdges);
-  })(elk);
+  const elkEdges: ElkExtendedEdge[] = getAllEdges(elk);
 
-  const edges: Edge[] = (elkEdges ?? [])
+  const edges: Edge[] = elkEdges
     // make the union explicit so TS knows it's (Edge | null)[]
     .map<Edge | null>((e) => {
       const [source] = e.sources ?? [];
