@@ -97,8 +97,8 @@ export function generateGraphData(
         ) || [],
       type: "file" as FileNodeType,
       file: nativeFile,
-      externalFiles: derivedFromFiles.filter(
-        (derivedFile) => nativeFile.derived_from?.includes(derivedFile["@id"])
+      externalFiles: derivedFromFiles.filter((derivedFile) =>
+        nativeFile.derived_from?.includes(derivedFile["@id"])
       ),
     } as FileNodeData;
   });
