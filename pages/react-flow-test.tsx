@@ -5,7 +5,6 @@ import type { ElkNode } from "elkjs/lib/elk-api";
 import {
   Edge,
   Handle,
-  MarkerType,
   Node,
   Position,
   ReactFlow,
@@ -15,6 +14,8 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { DataPanel } from "../components/data-area";
+// components
+import { elkToReactFlow } from "../components/file-graph/lib";
 
 type FileNodeData = {
   label: string;
@@ -32,12 +33,12 @@ const nodeTypes = {
 /**
  * Node width
  */
-const NODE_WIDTH = 120;
+const NODE_WIDTH = 156;
 
 /**
  * Node height
  */
-const NODE_HEIGHT = 50;
+const NODE_HEIGHT = 60;
 
 /**
  * ELK Data Structure
@@ -295,57 +296,6 @@ const elkConfig: ElkNode = {
     { id: "__layout__9->g5-7", sources: ["9"], targets: ["g5-7"] },
   ],
 };
-
-function convertNodes(elkNodes: ElkNode[], parentId = ""): Node[] {
-  const rfNodes = [];
-  elkNodes.forEach((elkNode) => {
-    // Generate a React Flow node and add it to the cumulative array.
-    const rfNode = {
-      id: elkNode.id,
-      type: elkNode.children ? "group" : "file",
-      data: { label: elkNode.id },
-      position: { x: elkNode.x, y: elkNode.y },
-      style: { width: elkNode.width, height: elkNode.height },
-      draggable: false,
-      selectable: false,
-      ...(parentId ? { parentId } : {}),
-    };
-    rfNodes.push(rfNode);
-
-    // If the node has children, recursively process them and add them to the cumulative array.
-    if (elkNode.children) {
-      const childNodes = convertNodes(elkNode.children, elkNode.id);
-      rfNodes.push(...childNodes);
-    }
-  });
-  return rfNodes;
-}
-
-function convertEdges(elkNodes: ElkNode) {
-  const rfEdges: Edge[] = [];
-  elkNodes.edges.forEach((edge) => {
-    if (!edge.id.startsWith("__layout__")) {
-      const rfEdge: Edge = {
-        id: edge.id,
-        source: edge.sources[0],
-        target: edge.targets[0],
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          width: 24, // make arrowhead larger
-          height: 24,
-        },
-      };
-      rfEdges.push(rfEdge);
-    }
-  });
-  return rfEdges;
-}
-
-function elkToReactFlow(elkGraph: ElkNode): { nodes: Node[]; edges: Edge[] } {
-  const nodes = convertNodes(elkGraph.children || []);
-  const edges = convertEdges(elkGraph);
-  return { nodes, edges };
-}
 
 function FileNodeContent(props: NodeProps) {
   const data = props.data as unknown as FileNodeData;

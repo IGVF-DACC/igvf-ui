@@ -1,4 +1,6 @@
 // node_modules
+import type { ElkNode } from "elkjs/lib/elk-api";
+import { MarkerType, type Edge, type Node } from "@xyflow/react";
 import _ from "lodash";
 import XXH from "xxhashjs";
 // local
@@ -227,4 +229,79 @@ export function extractD3DagErrorObject(error: string): D3DagErrorObject[] {
 export function extractD3DagErrorObjectIds(error: string): string[] {
   const errorObjects = extractD3DagErrorObject(error);
   return errorObjects.map((errorObject) => pathToId(errorObject.id));
+}
+
+/**
+ * Converts ELK nodes to React Flow nodes. As this can involve multiple levels of hierarchy, the
+ * `parentId` parameter is used to maintain the correct parent-child relationships. This uses
+ * recursion to process all child nodes, returning them as a flat array with group nodes positioned
+ * before their children.
+ * @param elkNodes - Nodes from the `children` property of an ELK object
+ * @param parentId - ID of the parent node if `elkNodes` are children of a node
+ * @returns Array of React Flow nodes ready to pass to <ReactFlow />
+ */
+function elkToReactFlowNodes(elkNodes: ElkNode[], parentId = ""): Node[] {
+  const rfNodes = [];
+  elkNodes.forEach((elkNode) => {
+    // Generate a React Flow node and add it to the cumulative array.
+    const rfNode = {
+      id: elkNode.id,
+      type: elkNode.children ? "group" : "file",
+      data: { label: elkNode.id },
+      position: { x: elkNode.x, y: elkNode.y },
+      style: { width: elkNode.width, height: elkNode.height },
+      draggable: false,
+      selectable: false,
+      ...(parentId ? { parentId } : {}),
+    };
+    rfNodes.push(rfNode);
+
+    // If the node has children, recursively process them and add them to the cumulative array.
+    if (elkNode.children) {
+      const childNodes = elkToReactFlowNodes(elkNode.children, elkNode.id);
+      rfNodes.push(...childNodes);
+    }
+  });
+  return rfNodes;
+}
+
+/**
+ * Converts ELK edges to React Flow edges. This is mostly a simple mapping.
+ * @param elkNodes - Nodes from the `children` property of an ELK object
+ * @returns Array of React Flow edges ready to pass to <ReactFlow />
+ */
+function elkToReactFlowEdges(elkNodes: ElkNode) {
+  const rfEdges: Edge[] = [];
+  elkNodes.edges.forEach((edge) => {
+    if (!edge.id.startsWith("__layout__")) {
+      const rfEdge: Edge = {
+        id: edge.id,
+        source: edge.sources[0],
+        target: edge.targets[0],
+        markerEnd: {
+          // Use an arrowhead at the end of each edge with a larger-than-default size.
+          type: MarkerType.ArrowClosed,
+          width: 24,
+          height: 24,
+        },
+      };
+      rfEdges.push(rfEdge);
+    }
+  });
+  return rfEdges;
+}
+
+/**
+ * Converts an ELK graph to React Flow format. You can pass the `nodes` and `edges` directly to
+ * <ReactFlow /> to render the graph.
+ * @param elkGraph - The ELK graph to convert
+ * @returns An object containing the converted nodes and edges
+ */
+export function elkToReactFlow(elkGraph: ElkNode): {
+  nodes: Node[];
+  edges: Edge[];
+} {
+  const nodes = elkToReactFlowNodes(elkGraph.children || []);
+  const edges = elkToReactFlowEdges(elkGraph);
+  return { nodes, edges };
 }
