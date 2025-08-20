@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import PropTypes from "prop-types";
 import { useContext } from "react";
 // components
@@ -49,6 +50,7 @@ import {
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { getAllDerivedFromFiles } from "../../lib/files";
+import { pathToType } from "../../lib/general";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
@@ -75,6 +77,9 @@ export default function AnalysisSet({
   samples,
   qualityMetrics,
   assayTitleDescriptionMap,
+  pipelineParametersDocuments,
+  pipelineParametersFiles,
+  primerDesigns,
   attribution = null,
   isJson,
 }) {
@@ -335,6 +340,30 @@ export default function AnalysisSet({
             />
           )}
 
+          {pipelineParametersDocuments.length > 0 && (
+            <DocumentTable
+              title="Pipeline Parameters Documents"
+              documents={pipelineParametersDocuments}
+              panelId="pipeline-parameters-documents"
+            />
+          )}
+
+          {pipelineParametersFiles.length > 0 && (
+            <FileTable
+              title="Pipeline Parameters Files"
+              files={pipelineParametersFiles}
+              panelId="pipeline-parameters-files"
+            />
+          )}
+
+          {primerDesigns.length > 0 && (
+            <FileTable
+              title="Primer Design Files"
+              files={primerDesigns}
+              panelId="primer-design-files"
+            />
+          )}
+
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -380,6 +409,12 @@ AnalysisSet.propTypes = {
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this analysis set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Pipeline parameters documents
+  pipelineParametersDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Pipeline parameters tabular files
+  pipelineParametersFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Primer design files
+  primerDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -580,6 +615,38 @@ export async function getServerSideProps({ params, req, query }) {
           : [];
     }
 
+    // `pipeline_parameters` can contain both `/documents/id` and `/tabular-files/id`. Put these
+    // into groups `documents` and `tabular-files`, then request the corresponding objects.
+    let pipelineParametersDocuments = [];
+    let pipelineParametersFiles = [];
+    if (analysisSet.pipeline_parameters?.length > 0) {
+      const pipelineParametersGroups = _.groupBy(
+        analysisSet.pipeline_parameters,
+        (parameter) => pathToType(parameter)
+      );
+
+      // Request Document objects if any exist in the group.
+      if (pipelineParametersGroups.documents) {
+        pipelineParametersDocuments = await requestDocuments(
+          pipelineParametersGroups.documents,
+          request
+        );
+      }
+
+      // Request Tabular File objects if any exist in the group.
+      if (pipelineParametersGroups["tabular-files"]) {
+        pipelineParametersFiles = await requestFiles(
+          pipelineParametersGroups["tabular-files"],
+          request
+        );
+      }
+    }
+
+    const primerDesigns =
+      analysisSet.primer_designs?.length > 0
+        ? await requestFiles(analysisSet.primer_designs, request)
+        : [];
+
     const assayTitleDescriptionMap =
       analysisSet.assay_titles?.length > 0
         ? await getAssayTitleDescriptionMap(analysisSet.assay_titles, request)
@@ -607,6 +674,9 @@ export async function getServerSideProps({ params, req, query }) {
         samples,
         qualityMetrics,
         assayTitleDescriptionMap,
+        pipelineParametersDocuments,
+        pipelineParametersFiles,
+        primerDesigns,
         pageContext: { title: analysisSet.accession },
         attribution,
         isJson,
