@@ -16,14 +16,32 @@ import { type QualityMetricObject } from "../../lib/quality-metric";
 import { FileObject } from "../../globals.d";
 
 /**
- * Metadata to attach to each ELK file node. ELK carries it through the layout process.
+ * Metadata to attach to each ELK and React Flow file node. ELK carries it through the layout
+ * process.
  */
 type FileMetadata = {
   kind: "file";
   file: FileObject;
 };
 
-type ElkNodeMetadata = FileMetadata;
+/**
+ * Metadata to attach to each ELK and React Flow node regardless of its kind.
+ */
+type NodeMetadata = FileMetadata;
+
+/**
+ * Extended ElkNode interface that includes metadata.
+ */
+interface ElkNodeEx extends ElkNode {
+  metadata?: NodeMetadata;
+}
+
+/**
+ * Extended React Flow Node interface that includes metadata.
+ */
+interface NodeEx extends Node {
+  metadata?: NodeMetadata;
+}
 
 /**
  * Width of a node in the graph in pixels.
@@ -61,9 +79,9 @@ const rootElkNode = {
  * @returns List of nodes that either have parents or are parents of other nodes
  */
 export function trimIsolatedNodes(
-  nodes: ElkNode[],
+  nodes: ElkNodeEx[],
   edges: ElkExtendedEdge[]
-): ElkNode[] {
+): ElkNodeEx[] {
   return nodes.filter((node) =>
     edges.some(
       (edge) => edge.sources[0] === node.id || edge.targets[0] === node.id
@@ -102,7 +120,7 @@ export function collectRelevantFileSetStats(
 export function generateGraphData(
   nativeFiles: FileObject[],
   externalFiles: FileObject[]
-): ElkNode {
+): ElkNodeEx {
   // Generate a list of external file objects that nativeFiles derives from.
   const externalFilePaths = externalFiles.map((file) => file["@id"]);
   const usedExternalFilePaths = new Set<string>();
@@ -123,25 +141,25 @@ export function generateGraphData(
   const nodes = allFiles.map((nativeFile) => {
     // Initialize the node data for the native file.
     return {
-      id: pathToElkId(nativeFile["@id"]),
+      id: nativeFile["@id"],
       width: NODE_WIDTH,
       height: NODE_HEIGHT,
-      // data: {
-      //   kind: "file",
-      //   file: nativeFile,
-      // } as ElkNodeMetadata,
+      metadata: {
+        kind: "file",
+        file: nativeFile,
+      } as NodeMetadata,
     } as ElkNode;
   });
 
   // Generate the graph edge data, each edge of type `ElkExtendedEdge`
   const edges = allFiles.flatMap((nativeFile) => {
     return (nativeFile.derived_from || []).map((derivedFromPath) => {
-      const nativeFileId = pathToElkId(nativeFile["@id"]);
-      const derivedFromId = pathToElkId(derivedFromPath);
+      const nativeFileId = nativeFile["@id"];
+      const derivedFromId = derivedFromPath;
       return {
         id: `${nativeFileId}-${derivedFromId}`,
-        targets: [derivedFromId],
         sources: [nativeFileId],
+        targets: [derivedFromId],
       } as ElkExtendedEdge;
     });
   });
@@ -219,11 +237,6 @@ export function extractD3DagErrorObjectIds(error: string): string[] {
   return errorObjects.map((errorObject) => pathToId(errorObject.id));
 }
 
-export function pathToElkId(path: string): string {
-  // Trim leading and trailing slashes, and turn middle slash into an underscore.
-  return path.replace(/^\/+|\/+$/g, "").replace(/\//g, "_");
-}
-
 /**
  * Converts ELK nodes to React Flow nodes. As this can involve multiple levels of hierarchy, the
  * `parentId` parameter is used to maintain the correct parent-child relationships. This uses
@@ -233,14 +246,15 @@ export function pathToElkId(path: string): string {
  * @param parentId - ID of the parent node if `elkNodes` are children of a node
  * @returns Array of React Flow nodes ready to pass to <ReactFlow />
  */
-function elkToReactFlowNodes(elkNodes: ElkNode[], parentId = ""): Node[] {
-  const rfNodes = [];
+function elkToReactFlowNodes(elkNodes: ElkNodeEx[], parentId = ""): NodeEx[] {
+  const rfNodes: NodeEx[] = [];
   elkNodes.forEach((elkNode) => {
     // Generate a React Flow node and add it to the cumulative array.
-    const rfNode = {
+    const rfNode: NodeEx = {
       id: elkNode.id,
       type: elkNode.children ? "group" : "file",
       data: { label: elkNode.id },
+      metadata: elkNode.metadata,
       position: { x: elkNode.x, y: elkNode.y },
       style: { width: elkNode.width, height: elkNode.height },
       draggable: false,

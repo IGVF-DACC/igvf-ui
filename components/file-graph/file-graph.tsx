@@ -1,11 +1,8 @@
 // node_modules
-import * as d3Dag from "d3-dag";
 import ELK from "elkjs/lib/elk.bundled.js";
 import type { ElkNode } from "elkjs/lib/elk-api";
-import { ArrowDownTrayIcon, DocumentTextIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import { ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
+import { useEffect, useState } from "react";
 import {
   Edge,
   Handle,
@@ -16,40 +13,17 @@ import {
   useReactFlow,
   type NodeProps,
 } from "@xyflow/react";
-import { Group } from "@visx/group";
-import { LinkHorizontal } from "@visx/shape";
 // components
 import { DataAreaTitle, DataPanel } from "../data-area";
-import { Button } from "../form-elements";
-import GlobalContext from "../global-context";
-import Icon from "../icon";
-import { QualityMetricModal } from "../quality-metric";
-import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
-import { UC } from "../../lib/constants";
-import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
-import { FileModal } from "./file-modal";
-import { FileSetModal } from "./file-set-modal";
-import { Legend } from "./legend";
 import {
-  collectRelevantFileSetStats,
   elkToReactFlow,
   generateGraphData,
   NODE_HEIGHT,
   NODE_WIDTH,
-  pathToElkId,
-  trimIsolatedNodes,
 } from "./lib";
-import {
-  fileSetTypeColorMap,
-  isFileNodeData,
-  isFileSetNodeData,
-  MAX_NODES_TO_DISPLAY,
-  type FileSetTypeColorMapSpec,
-  type NodeData,
-} from "./types";
 // root
 import type {
   DatabaseObject,
@@ -57,11 +31,6 @@ import type {
   FileSetObject,
 } from "../../globals.d";
 import "@xyflow/react/dist/style.css";
-
-/**
- * Horizontal offset of arrowhead from the target node.
- */
-const LINK_ARROWHEAD_X_OFFSET = -88;
 
 /**
  * React Flow Data Structure
@@ -72,27 +41,9 @@ const nodeTypes = {
   group: GroupNodeContent,
 };
 
-/**
- * Dimensions of the quality metric trigger rectangle within a file node.
- */
-const QUALITY_METRIC_DIMENSIONS = {
-  width: 40,
-  height: 16,
-} as const;
-
 type FileNodeData = {
   label: string;
 };
-
-/**
- * y-offsets for the text labels in file and file-set nodes. Each array element corresponds to a
- * different text line number in the node. `withoutMetrics` is used when the node does not
- * contain quality metrics, and `withMetrics` is used when the node does contain quality metrics.
- */
-const lineOffsetsMap = {
-  withoutMetrics: ["-8px", "6px", "18px"],
-  withMetrics: ["-18px", "-4px", "8px"],
-} as const;
 
 function FileNodeContent(props: NodeProps) {
   const data = props.data as unknown as FileNodeData;
@@ -146,142 +97,6 @@ function GroupNodeContent(props: NodeProps) {
 }
 
 /**
- * Display a selectable node in the graph, for either a file or a file set node. Put the contents
- * of the node as the children of this component.
- * @param node The node to display from d3-dag
- * @param onNodeClick Function to call when the user clicks on the node
- * @param background Background color of the node
- * @param label Aria label for the node
- * @param isNodeSelected Whether the node is selected
- */
-function GraphNode({
-  node,
-  onNodeClick,
-  background,
-  label,
-  isNodeSelected,
-  isRounded = false,
-  className = "",
-  isGraphDownload = false,
-  children,
-}: {
-  node: d3Dag.DagNode<
-    {
-      id: string;
-      parentIds: string[];
-    },
-    undefined
-  >;
-  onNodeClick: (nodeData: NodeData) => void;
-  background: FileSetTypeColorMapSpec;
-  label: string;
-  isNodeSelected: boolean;
-  isRounded?: boolean;
-  isGraphDownload?: boolean;
-  className?: string;
-  children: ReactNode;
-}) {
-  const rectProps = {
-    height: NODE_HEIGHT,
-    width: NODE_WIDTH,
-    x: -NODE_WIDTH / 2,
-    y: -NODE_HEIGHT / 2,
-    opacity: 1,
-    strokeWidth: 1,
-    ...(isRounded ? { rx: 10, ry: 10 } : {}),
-    ...(!isGraphDownload && {
-      className: `stroke-file-graph-node ${background.fill}`,
-    }),
-    ...(isGraphDownload && {
-      style: { stroke: "#1f2937", fill: background.color },
-    }),
-  };
-
-  return (
-    <Group
-      top={node.x}
-      left={node.y}
-      style={{ cursor: "pointer" }}
-      onClick={() => onNodeClick(node.data as NodeData)}
-      tabIndex={0}
-      aria-label={label}
-      className={className}
-    >
-      <rect {...rectProps} />
-      {isNodeSelected && (
-        <rect
-          height={NODE_HEIGHT + 8}
-          width={NODE_WIDTH + 8}
-          x={-NODE_WIDTH / 2 - 4}
-          y={-NODE_HEIGHT / 2 - 4}
-          fill="transparent"
-          opacity={1}
-          className="stroke-file-graph-node"
-          strokeWidth={3}
-          {...(isRounded ? { rx: 14, ry: 14 } : {})}
-        />
-      )}
-      {children}
-    </Group>
-  );
-}
-
-/**
- * Display a button within a file node that the user can click to display the quality metrics for
- * the file.
- * @param file File object that the given quality metrics belong to
- * @param fileMetrics Quality metric objects for the currently rendering file
- * @param onClick Function to call when the user clicks on the quality metric trigger
- */
-function QCMetricTrigger({
-  file,
-  fileMetrics,
-  onClick,
-}: {
-  file: FileObject;
-  fileMetrics: QualityMetricObject[];
-  onClick: (file: FileObject, qcMetrics: QualityMetricObject[]) => void;
-}) {
-  // Called when the user clicks on the quality metric trigger button. This button is an enclave
-  // within the file node, so stop the event from propagating to the node click handler.
-  function clickHandler(e: React.MouseEvent<SVGRectElement>) {
-    e.stopPropagation();
-    onClick(file, fileMetrics);
-  }
-
-  if (fileMetrics.length > 0) {
-    return (
-      <g aria-label={`Quality metrics for file ${file.accession}`}>
-        <rect
-          x={-QUALITY_METRIC_DIMENSIONS.width / 2}
-          y={NODE_HEIGHT / 2 - QUALITY_METRIC_DIMENSIONS.height - 2}
-          width={QUALITY_METRIC_DIMENSIONS.width}
-          height={QUALITY_METRIC_DIMENSIONS.height}
-          rx={2}
-          ry={2}
-          fill="lightgray"
-          role="button"
-          className="fill-file-graph-qc-trigger stroke-file-graph-node"
-          onClick={clickHandler}
-          tabIndex={0}
-        />
-        <text
-          x={0}
-          y={NODE_HEIGHT / 2 - QUALITY_METRIC_DIMENSIONS.height + 10}
-          fontSize={10}
-          textAnchor="middle"
-          className="fill-file-graph-qc-trigger-text pointer-events-none"
-          fill="black"
-          fontWeight="bold"
-        >
-          QC
-        </text>
-      </g>
-    );
-  }
-}
-
-/**
  * Display a graph of file associations for a file set. The graph is a directed acyclic graph (DAG)
  * where each node represents a file and each edge represents a `derived_from` relationship between
  * files.
@@ -292,57 +107,46 @@ function QCMetricTrigger({
  * @param onReady Called when the graph is ready to be displayed
  * @param isGraphDownload True to download graph in SVG file, false to display in browser
  */
-function GraphCore({
-  fileSet,
-  nativeFiles,
-  referenceFiles,
-  qualityMetrics = [],
-  graphData,
-  onReady = () => {},
-  isGraphDownload = false,
-}: {
-  fileSet: FileSetObject;
-  nativeFiles: FileObject[];
-  referenceFiles: FileObject[];
-  qualityMetrics?: QualityMetricObject[];
-  graphData: ElkNode;
-  onReady?: (svg: SVGSVGElement) => void;
-  isGraphDownload?: boolean;
-}) {
+function GraphCore({ graphData }: { graphData: ElkNode }) {
   const [elk] = useState(() => new ELK());
-  const [positionedNodes, setPositionedNodes] = useState<Node[]>([]);
-  const [positionedEdges, setPositionedEdges] = useState<Edge[]>([]);
+  const [laidOutNodes, setLaidOutNodes] = useState<Node[]>([]);
+  const [laidOutEdges, setLaidOutEdges] = useState<Edge[]>([]);
   const [graphHeight, setGraphHeight] = useState(0);
   const [graphWidth, setGraphWidth] = useState(0);
   const rf = useReactFlow();
 
   useEffect(() => {
+    // After Elk loads we can start layout with Elk. Do this inside useEffect so we can set the
+    // node and edge states and render the graph once layout finishes.
     elk.layout(graphData).then((graphDataWithLayout: ElkNode) => {
       const { nodes, edges } = elkToReactFlow(graphDataWithLayout);
-      setPositionedNodes(nodes);
-      setPositionedEdges(edges);
+      setLaidOutNodes(nodes);
+      setLaidOutEdges(edges);
     });
   }, [elk]);
 
   useEffect(() => {
-    // run after mount/paint so sizes are measured
+    // Runs after layout to determine the height of the graph so we can set the height of the
+    // container appropriately.
     requestAnimationFrame(() => {
-      const r = rf.getNodesBounds(rf.getNodes());
-      setGraphHeight(Math.ceil(r.y + r.height + NODE_HEIGHT + 12));
-      setGraphWidth(Math.ceil(r.x + r.width + NODE_WIDTH));
+      const graphBounds = rf.getNodesBounds(rf.getNodes());
+      setGraphHeight(
+        Math.ceil(graphBounds.y + graphBounds.height + NODE_HEIGHT + 12)
+      );
+      setGraphWidth(Math.ceil(graphBounds.x + graphBounds.width + NODE_WIDTH));
     });
-  }, [rf, positionedNodes, positionedEdges]);
+  }, [rf, laidOutNodes, laidOutEdges]);
 
   return (
     <div
       style={{
-        height: graphHeight + 500,
+        height: graphHeight,
         width: graphWidth,
       }}
     >
       <ReactFlow
-        nodes={positionedNodes}
-        edges={positionedEdges}
+        nodes={laidOutNodes}
+        edges={laidOutEdges}
         defaultViewport={{ x: 0, y: 0, zoom: 1 }}
         minZoom={1}
         maxZoom={1}
@@ -371,128 +175,6 @@ function Graph(props) {
 }
 
 /**
- * Save an SVG element as an SVG file.
- * @param svgElement SVG element to save as an SVG file
- * @param fileSet File set object the user views
- */
-async function saveSvg(
-  svgElement: SVGSVGElement,
-  fileSet: FileSetObject
-): Promise<void> {
-  const svgString = new XMLSerializer().serializeToString(svgElement);
-  const blob = new Blob([svgString], { type: "image/svg+xml" });
-
-  // Generate a suggested file name.
-  const filename = `${fileSet.accession}_graph.svg`;
-
-  if ("showSaveFilePicker" in window) {
-    // Use the File System Access API to save the SVG file using a Save As modal.
-    try {
-      const handle = await (window as any).showSaveFilePicker({
-        suggestedName: filename,
-        types: [
-          {
-            description: `File graph for file set ${fileSet.accession}`,
-            accept: { "image/svg+xml": [".svg"] },
-          },
-        ],
-      });
-      const writable = await handle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-    } catch (error) {
-      console.error("Save aborted:", error);
-    }
-  } else {
-    // The File System Access API is not available in this browser, so directly download the SVG
-    // file to the user's download directory as configured in their browser.
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-}
-
-/**
- * Handles the button to download the graph as an SVG file. It also directs the actual process of
- * saving the SVG file.
- * @param fileSet The file set object the user views
- * @param nativeFiles Files included directly in `fileSet`
- * @param trimmedData List of nodes to include in the graph
- */
-function SaveSvgTrigger({
-  fileSet,
-  nativeFiles,
-  referenceFiles,
-  trimmedData,
-}: {
-  fileSet: FileSetObject;
-  nativeFiles: FileObject[];
-  referenceFiles: FileObject[];
-  trimmedData: NodeData[];
-}) {
-  const tooltipAttr = useTooltip("graph-download");
-
-  // Set up the process to save the graph as an SVG file, and render the graph for a file instead
-  // of for the browser. The downloaded file doesn't use Tailwind CSS classes nor does it pay
-  // attention to dark mode.
-  function saveAsSvgSetup() {
-    // Create an off-screen container and create the React 18 root inside it.
-    const container = document.createElement("div");
-    document.body.appendChild(container);
-    const root = createRoot(container);
-
-    // Render <Graph /> inside the off-screen container, indicating we're rendering the graph for
-    // download.
-    root.render(
-      <Graph
-        fileSet={fileSet}
-        nativeFiles={nativeFiles}
-        referenceFiles={referenceFiles}
-        graphData={trimmedData}
-        onReady={(svgElement) => {
-          if (svgElement) {
-            saveSvg(svgElement, fileSet);
-          }
-
-          // Cleanup: Unmount the component and remove the container.
-          root.unmount();
-          document.body.removeChild(container);
-        }}
-        isGraphDownload
-      />
-    );
-  }
-
-  return (
-    <>
-      <TooltipRef tooltipAttr={tooltipAttr}>
-        <div>
-          <Button size="sm" onClick={saveAsSvgSetup}>
-            <ArrowDownTrayIcon className="h-4 w-4" />
-          </Button>
-        </div>
-      </TooltipRef>
-      <Tooltip tooltipAttr={tooltipAttr}>
-        Download graph as SVG file. See{" "}
-        <a
-          href="https://youtu.be/700ZwlFX41g"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          tutorial
-        </a>
-        .
-      </Tooltip>
-    </>
-  );
-}
-
-/**
  * Display a graph of the file associations for a file set in a collapsible panel. We use files in
  * `files` instead of those embedded in `fileSet` because the embedded file objects do not include
  * enough properties of the files to generate the graph.
@@ -510,7 +192,6 @@ export function FileGraph({
   files,
   derivedFromFiles,
   referenceFiles,
-  fileFileSets,
   qualityMetrics,
   title = "File Association Graph",
   panelId = "file-graph",
@@ -518,7 +199,6 @@ export function FileGraph({
   fileSet: DatabaseObject;
   files: DatabaseObject[];
   referenceFiles: FileObject[];
-  fileFileSets: DatabaseObject[];
   derivedFromFiles: DatabaseObject[];
   qualityMetrics: QualityMetricObject[];
   title?: string;
