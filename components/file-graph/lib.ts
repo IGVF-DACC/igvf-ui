@@ -27,19 +27,12 @@ type FileMetadata = {
 /**
  * Metadata to attach to each ELK and React Flow node regardless of its kind.
  */
-type NodeMetadata = FileMetadata;
+export type NodeMetadata = FileMetadata;
 
 /**
  * Extended ElkNode interface that includes metadata.
  */
 interface ElkNodeEx extends ElkNode {
-  metadata?: NodeMetadata;
-}
-
-/**
- * Extended React Flow Node interface that includes metadata.
- */
-interface NodeEx extends Node {
   metadata?: NodeMetadata;
 }
 
@@ -135,9 +128,8 @@ export function generateGraphData(
     usedExternalFilePaths.has(file["@id"])
   );
 
+  // Generate the graph node data for the native and external files.
   const allFiles = [...nativeFiles, ...usedExternalFiles];
-
-  // Generate the graph node data for the native files.
   const nodes = allFiles.map((nativeFile) => {
     // Initialize the node data for the native file.
     return {
@@ -168,7 +160,7 @@ export function generateGraphData(
   return {
     ...rootElkNode,
     children: trimIsolatedNodes(nodes, edges),
-    edges: [...edges],
+    edges,
   } as ElkNode;
 }
 
@@ -246,15 +238,14 @@ export function extractD3DagErrorObjectIds(error: string): string[] {
  * @param parentId - ID of the parent node if `elkNodes` are children of a node
  * @returns Array of React Flow nodes ready to pass to <ReactFlow />
  */
-function elkToReactFlowNodes(elkNodes: ElkNodeEx[], parentId = ""): NodeEx[] {
-  const rfNodes: NodeEx[] = [];
+function elkToReactFlowNodes(elkNodes: ElkNodeEx[], parentId = ""): Node[] {
+  const rfNodes: Node[] = [];
   elkNodes.forEach((elkNode) => {
     // Generate a React Flow node and add it to the cumulative array.
-    const rfNode: NodeEx = {
+    const rfNode: Node<NodeMetadata> = {
       id: elkNode.id,
       type: elkNode.children ? "group" : "file",
-      data: { label: elkNode.id },
-      metadata: elkNode.metadata,
+      data: elkNode.metadata,
       position: { x: elkNode.x, y: elkNode.y },
       style: { width: elkNode.width, height: elkNode.height },
       draggable: false,

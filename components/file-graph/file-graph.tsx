@@ -4,18 +4,19 @@ import type { ElkNode } from "elkjs/lib/elk-api";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import {
-  Edge,
   Handle,
-  Node,
   Position,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
+  type Edge,
+  type Node,
   type NodeProps,
 } from "@xyflow/react";
 // components
 import { DataAreaTitle, DataPanel } from "../data-area";
 // lib
+import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
 import {
@@ -23,6 +24,7 @@ import {
   generateGraphData,
   NODE_HEIGHT,
   NODE_WIDTH,
+  type NodeMetadata,
 } from "./lib";
 // root
 import type {
@@ -45,44 +47,52 @@ type FileNodeData = {
   label: string;
 };
 
+/**
+ * Styles for the node handles. This puts the handles in the correct place for the edges to hook up
+ * to, but hidden to avoid visual clutter.
+ */
+const NodeHandleStyle: React.CSSProperties = {
+  opacity: 0,
+  pointerEvents: "none",
+  left: 0,
+  right: 0,
+  top: "50%",
+  transform: "translate(0, -50%)",
+  width: 1,
+  height: 1,
+  border: 0,
+  background: "transparent",
+};
+
 function FileNodeContent(props: NodeProps) {
-  const data = props.data as unknown as FileNodeData;
+  const data = props.data as NodeMetadata;
+  const file = data.file;
 
   return (
-    <div className="h-full rounded-md border border-gray-800 bg-white p-2 text-xs dark:border-gray-200 dark:bg-black">
-      Node <strong>{data.label}</strong>
-      <Handle
-        type="target"
-        position={Position.Left}
-        style={{
-          opacity: 0,
-          pointerEvents: "none",
-          left: 0, // use left, cancel right
-          right: "auto",
-          top: "50%",
-          transform: "translate(0, -50%)", // no horizontal offset
-          width: 1,
-          height: 1,
-          border: 0,
-          background: "transparent",
-        }}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        style={{
-          opacity: 0,
-          pointerEvents: "none",
-          right: 0, // use right, cancel left
-          left: "auto",
-          top: "50%",
-          transform: "translate(0, -50%)", // no horizontal offset
-          width: 1,
-          height: 1,
-          border: 0,
-          background: "transparent",
-        }}
-      />
+    <div className="h-full border border-gray-800 bg-white px-1 py-0.5 dark:border-gray-200 dark:bg-black">
+      <div className="flex h-full flex-col items-center justify-center text-[0.67rem]">
+        <div className="font-bold">{file.accession}</div>
+        <div>{truncateText(file.file_format, 24)}</div>
+        <div>{truncateText(file.content_type, 24)}</div>
+      </div>
+      <div>
+        <Handle
+          type="target"
+          position={Position.Left}
+          style={{
+            ...NodeHandleStyle,
+            right: "auto",
+          }}
+        />
+        <Handle
+          type="source"
+          position={Position.Right}
+          style={{
+            ...NodeHandleStyle,
+            left: "auto",
+          }}
+        />
+      </div>
     </div>
   );
 }
