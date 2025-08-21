@@ -1,16 +1,11 @@
 // node_modules
-import type { ElkNode } from "elkjs/lib/elk-api";
+import type { ElkNode, ElkExtendedEdge } from "elkjs/lib/elk-api";
 import { MarkerType, type Edge, type Node } from "@xyflow/react";
 import _ from "lodash";
-import XXH from "xxhashjs";
 // local
 import {
   isFileSetNodeData,
   type D3DagErrorObject,
-  type FileNodeData,
-  type FileNodeType,
-  type FileSetNodeData,
-  type FileSetNodeType,
   type FileSetStats,
   type NodeData,
 } from "./types";
@@ -18,7 +13,17 @@ import {
 import { pathToId } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // root
-import { FileObject, FileSetObject } from "../../globals.d";
+import { FileObject } from "../../globals.d";
+
+/**
+ * Metadata to attach to each ELK file node. ELK carries it through the layout process.
+ */
+type FileMetadata = {
+  kind: "file";
+  file: FileObject;
+};
+
+type ElkNodeMetadata = FileMetadata;
 
 /**
  * Width of a node in the graph in pixels.
@@ -31,9 +36,23 @@ export const NODE_WIDTH = 156;
 export const NODE_HEIGHT = 60;
 
 /**
- * xxhashjs seed for hashing strings; generate randomly.
+ * Static root node of ELK graph.
  */
-const HASH_SEED = 0xe8c0f852;
+const rootElkNode = {
+  id: "root",
+  layoutOptions: {
+    "org.eclipse.elk.algorithm": "layered",
+    "org.eclipse.elk.layered.edgeRouting": "POLYLINE",
+    "org.eclipse.elk.direction": "RIGHT",
+    "org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": "100",
+    "org.eclipse.elk.layered.hierarchyHandling": "INCLUDE_CHILDREN",
+    "org.eclipse.elk.layered.nodePlacement.favorStraightEdges": "true",
+    "org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment": "BALANCED",
+    "org.eclipse.elk.padding": "[top=4,left=4,bottom=4,right=4]",
+  },
+  children: [],
+  edges: [],
+} as ElkNode;
 
 /**
  * Remove what would have appeared as isolated nodes in the graph, lacking any parent or child
@@ -41,13 +60,14 @@ const HASH_SEED = 0xe8c0f852;
  * @param graphData List of nodes with their parent nodes
  * @returns List of nodes that either have parents or are parents of other nodes
  */
-export function trimIsolatedNodes(graphData: NodeData[]) {
-  // Make a set of all parent IDs that appear across all nodes.
-  const parentIds = new Set(graphData.flatMap((node) => node.parentIds));
-
-  // Return only nodes with parents or that appear as parents of other nodes.
-  return graphData.filter(
-    (node) => node.parentIds.length > 0 || parentIds.has(node.id)
+export function trimIsolatedNodes(
+  nodes: ElkNode[],
+  edges: ElkExtendedEdge[]
+): ElkNode[] {
+  return nodes.filter((node) =>
+    edges.some(
+      (edge) => edge.sources[0] === node.id || edge.targets[0] === node.id
+    )
   );
 }
 
@@ -76,94 +96,62 @@ export function collectRelevantFileSetStats(
  * Generate d3-dag-compatible data from a list of files using their `derived_from` property.
  * @param nativeFiles Files belonging to the file set the user currently views
  * @param fileFileSets File sets that the `files` and `derivedFromFiles` belong to
- * @param derivedFromFiles Files that `files` derive from, including from other file sets
+ * @param externalFiles Files in other file sets that `nativeFiles` derive from
  * @returns List of nodes with their parent nodes
  */
 export function generateGraphData(
   nativeFiles: FileObject[],
-  fileFileSets: FileSetObject[],
-  derivedFromFiles: FileObject[]
-): NodeData[] {
-  const nativeFilePaths = nativeFiles.map((file) => file["@id"]);
+  externalFiles: FileObject[]
+): ElkNode {
+  // Generate a list of external file objects that nativeFiles derives from.
+  const externalFilePaths = externalFiles.map((file) => file["@id"]);
+  const usedExternalFilePaths = new Set<string>();
+  nativeFiles.forEach((nativeFile) => {
+    const externalDerivedFromPaths = _.intersection(
+      nativeFile.derived_from || [],
+      externalFilePaths
+    );
+    externalDerivedFromPaths.forEach((path) => usedExternalFilePaths.add(path));
+  });
+  const usedExternalFiles = externalFiles.filter((file) =>
+    usedExternalFilePaths.has(file["@id"])
+  );
+
+  const allFiles = [...nativeFiles, ...usedExternalFiles];
 
   // Generate the graph node data for the native files.
-  const graphData: NodeData[] = nativeFiles.map((nativeFile) => {
+  const nodes = allFiles.map((nativeFile) => {
     // Initialize the node data for the native file.
     return {
-      id: nativeFile["@id"],
-      parentIds:
-        nativeFile.derived_from?.filter((derivedFromPath) =>
-          nativeFilePaths.includes(derivedFromPath)
-        ) || [],
-      type: "file" as FileNodeType,
-      file: nativeFile,
-      externalFiles: derivedFromFiles.filter((derivedFile) =>
-        nativeFile.derived_from?.includes(derivedFile["@id"])
-      ),
-    } as FileNodeData;
+      id: pathToElkId(nativeFile["@id"]),
+      width: NODE_WIDTH,
+      height: NODE_HEIGHT,
+      // data: {
+      //   kind: "file",
+      //   file: nativeFile,
+      // } as ElkNodeMetadata,
+    } as ElkNode;
   });
 
-  // Generate the graph node data for the file sets for the external files that the native files
-  // derive from.
-  const fileSetNodes = graphData.reduce((acc, fileNode: FileNodeData) => {
-    // Group the external files that the node's native file derives from by the file set path they
-    // belong to.
-    let nodes: FileSetNodeData[] = [];
-    if (fileNode.externalFiles.length > 0) {
-      // Group the external files of `fileNode` by the paths of the file set they belong to.
-      const fileSetGroups = _.groupBy(
-        fileNode.externalFiles,
-        (file) => file.file_set["@id"]
-      );
+  // Generate the graph edge data, each edge of type `ElkExtendedEdge`
+  const edges = allFiles.flatMap((nativeFile) => {
+    return (nativeFile.derived_from || []).map((derivedFromPath) => {
+      const nativeFileId = pathToElkId(nativeFile["@id"]);
+      const derivedFromId = pathToElkId(derivedFromPath);
+      return {
+        id: `${nativeFileId}-${derivedFromId}`,
+        targets: [derivedFromId],
+        sources: [nativeFileId],
+      } as ElkExtendedEdge;
+    });
+  });
 
-      // For each file set group, create a file set node and add it to the list of nodes.
-      nodes = Object.entries(fileSetGroups).reduce(
-        (fileSetNodeAcc, [fileSetPath, files]) => {
-          const fileSet = fileFileSets.find(
-            (fileSet) => fileSet["@id"] === fileSetPath
-          );
-
-          let newFileSetNode: FileSetNodeData = null;
-          if (fileSet) {
-            // Make a hash from the combined file paths in the file set. This lets us have multiple
-            // file-set nodes for the same file set, but with a different set of files.
-            const combinedFilePaths = files
-              .map((file) => file["@id"])
-              .sort()
-              .join("");
-            const hash = XXH.h32(combinedFilePaths, HASH_SEED).toString(16);
-            const fileSetNodeId = `${fileSetPath}-${hash}`;
-
-            // See if a file-set node already exists with the same file set path and hash.
-            const fileSetNodeExists = Boolean(
-              acc.find((node) => node.id === fileSetNodeId)
-            );
-            if (fileSetNodeExists) {
-              // If a file-set node already exists, add its ID to the native file node's parent IDs.
-              fileNode.parentIds.push(fileSetNodeId);
-              return fileSetNodeAcc;
-            }
-            newFileSetNode = {
-              id: `${fileSetPath}-${hash}`,
-              parentIds: [],
-              type: "file-set" as FileSetNodeType,
-              fileSet,
-              files,
-              childFile: fileNode.file,
-            } as FileSetNodeData;
-            fileNode.parentIds.push(newFileSetNode.id);
-          }
-          return newFileSetNode
-            ? fileSetNodeAcc.concat(newFileSetNode)
-            : fileSetNodeAcc;
-        },
-        [] as FileSetNodeData[]
-      );
-    }
-    return acc.concat(nodes);
-  }, [] as FileSetNodeData[]);
-
-  return graphData.concat(fileSetNodes);
+  // Add nodes and edges to a copy of the static root node.
+  return {
+    ...rootElkNode,
+    children: trimIsolatedNodes(nodes, edges),
+    edges: [...edges],
+  } as ElkNode;
 }
 
 /**
@@ -229,6 +217,11 @@ export function extractD3DagErrorObject(error: string): D3DagErrorObject[] {
 export function extractD3DagErrorObjectIds(error: string): string[] {
   const errorObjects = extractD3DagErrorObject(error);
   return errorObjects.map((errorObject) => pathToId(errorObject.id));
+}
+
+export function pathToElkId(path: string): string {
+  // Trim leading and trailing slashes, and turn middle slash into an underscore.
+  return path.replace(/^\/+|\/+$/g, "").replace(/\//g, "_");
 }
 
 /**

@@ -1,9 +1,21 @@
 // node_modules
 import * as d3Dag from "d3-dag";
+import ELK from "elkjs/lib/elk.bundled.js";
+import type { ElkNode } from "elkjs/lib/elk-api";
 import { ArrowDownTrayIcon, DocumentTextIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import {
+  Edge,
+  Handle,
+  Node,
+  Position,
+  ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
+  type NodeProps,
+} from "@xyflow/react";
 import { Group } from "@visx/group";
 import { LinkHorizontal } from "@visx/shape";
 // components
@@ -23,11 +35,11 @@ import { FileSetModal } from "./file-set-modal";
 import { Legend } from "./legend";
 import {
   collectRelevantFileSetStats,
-  extractD3DagErrorObjectIds,
+  elkToReactFlow,
   generateGraphData,
-  getFileMetrics,
   NODE_HEIGHT,
   NODE_WIDTH,
+  pathToElkId,
   trimIsolatedNodes,
 } from "./lib";
 import {
@@ -44,11 +56,21 @@ import type {
   FileObject,
   FileSetObject,
 } from "../../globals.d";
+import "@xyflow/react/dist/style.css";
 
 /**
  * Horizontal offset of arrowhead from the target node.
  */
 const LINK_ARROWHEAD_X_OFFSET = -88;
+
+/**
+ * React Flow Data Structure
+ * Allows nodes to render using a custom React component.
+ */
+const nodeTypes = {
+  file: FileNodeContent,
+  group: GroupNodeContent,
+};
 
 /**
  * Dimensions of the quality metric trigger rectangle within a file node.
@@ -57,6 +79,10 @@ const QUALITY_METRIC_DIMENSIONS = {
   width: 40,
   height: 16,
 } as const;
+
+type FileNodeData = {
+  label: string;
+};
 
 /**
  * y-offsets for the text labels in file and file-set nodes. Each array element corresponds to a
@@ -67,6 +93,57 @@ const lineOffsetsMap = {
   withoutMetrics: ["-8px", "6px", "18px"],
   withMetrics: ["-18px", "-4px", "8px"],
 } as const;
+
+function FileNodeContent(props: NodeProps) {
+  const data = props.data as unknown as FileNodeData;
+
+  return (
+    <div className="h-full rounded-md border border-gray-800 bg-white p-2 text-xs dark:border-gray-200 dark:bg-black">
+      Node <strong>{data.label}</strong>
+      <Handle
+        type="target"
+        position={Position.Left}
+        style={{
+          opacity: 0,
+          pointerEvents: "none",
+          left: 0, // use left, cancel right
+          right: "auto",
+          top: "50%",
+          transform: "translate(0, -50%)", // no horizontal offset
+          width: 1,
+          height: 1,
+          border: 0,
+          background: "transparent",
+        }}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        style={{
+          opacity: 0,
+          pointerEvents: "none",
+          right: 0, // use right, cancel left
+          left: "auto",
+          top: "50%",
+          transform: "translate(0, -50%)", // no horizontal offset
+          width: 1,
+          height: 1,
+          border: 0,
+          background: "transparent",
+        }}
+      />
+    </div>
+  );
+}
+
+function GroupNodeContent(props: NodeProps) {
+  const data = props.data as unknown as FileNodeData;
+  return (
+    <div className="rounded-md border border-gray-400 bg-gray-50 text-xs">
+      <strong>{data.label}</strong>
+    </div>
+  );
+}
 
 /**
  * Display a selectable node in the graph, for either a file or a file set node. Put the contents
@@ -150,43 +227,6 @@ function GraphNode({
 }
 
 /**
- * Display an arrowhead at the end of a link between two nodes. The arrowhead is a triangle pointing
- * in the direction of the target node. `x` comes from `link.target.x` which -- in this graph
- * orientation -- specifies the vertical position of the target node. `y` comes from
- * `link.target.y` which specifies the horizontal position of the target node.
- * @param x X-coordinate of the arrowhead from the target node
- * @param y Y-coordinate of the arrowhead from the target node
- * @param angle Angle of the arrowhead in radians
- * @param isGraphDownload True if downloading graph as an SVG file, false if browser displayed
- */
-function LinkArrowHead({
-  x,
-  y,
-  angle,
-  isGraphDownload,
-}: {
-  x: number;
-  y: number;
-  angle: number;
-  isGraphDownload: boolean;
-}) {
-  return (
-    <polygon
-      points="0,-5 10,0 0,5"
-      transform={`translate(${
-        y + LINK_ARROWHEAD_X_OFFSET + Math.sin(angle) * 2.8
-      },${x - 10 * Math.sin(angle) * 1.3}) rotate(${(angle * 180) / Math.PI})`}
-      {...(!isGraphDownload && {
-        className: "stroke-black dark:stroke-white fill-black dark:fill-white",
-      })}
-      {...(isGraphDownload && {
-        style: { stroke: "black", fill: "black" },
-      })}
-    />
-  );
-}
-
-/**
  * Display a button within a file node that the user can click to display the quality metrics for
  * the file.
  * @param file File object that the given quality metrics belong to
@@ -252,7 +292,7 @@ function QCMetricTrigger({
  * @param onReady Called when the graph is ready to be displayed
  * @param isGraphDownload True to download graph in SVG file, false to display in browser
  */
-function Graph({
+function GraphCore({
   fileSet,
   nativeFiles,
   referenceFiles,
@@ -265,344 +305,68 @@ function Graph({
   nativeFiles: FileObject[];
   referenceFiles: FileObject[];
   qualityMetrics?: QualityMetricObject[];
-  graphData: NodeData[];
+  graphData: ElkNode;
   onReady?: (svg: SVGSVGElement) => void;
   isGraphDownload?: boolean;
 }) {
-  // Holds the DAG to render after it has been loaded in the browser
-  const [loadedDag, setLoadedDag] = useState<d3Dag.Dag<
-    { id: string; parentIds: string[] },
-    undefined
-  > | null>(null);
-  const { darkMode } = useContext(GlobalContext);
-  // Holds the height of the layout after it has been calculated
-  const [layoutHeight, setLayoutHeight] = useState(0);
-  // Holds the width of the layout after it has been calculated
-  const [layoutWidth, setLayoutWidth] = useState(0);
-  // Holds the node that the user has clicked on to display a modal
-  const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
-  // When the user clicks on a nodes quality metrics, hold the selected node's metrics
-  const [selectedQualityMetrics, setSelectedQualityMetrics] = useState<
-    QualityMetricObject[]
-  >([]);
-  // File that the user clicked the quality metrics trigger for
-  const [qualityMetricFile, setQualityMetricFile] = useState<FileObject | null>(
-    null
-  );
-  // Displays a message instead of the graph, like "Loading" or error messages.
-  const [graphingMessage, setGraphingMessage] = useState<string | null>(
-    `Loading${UC.hellip}`
-  );
-
-  // Reference to the SVG element that holds the graph; useful for saving the graph to a file
-  const svgRef = useRef<SVGSVGElement>(null);
-  // Timer to periodically monitor when svgRef gets filled in with the SVG element
-  let svgReadyTimer: NodeJS.Timeout;
-
-  // Poll the SVG element ref to know when the graph is ready to be displayed.
-  function waitForSvg() {
-    if (svgRef.current) {
-      // Notify the caller that the graph is ready to be displayed. Use this to download the chart
-      // to an SVG file.
-      onReady(svgRef.current);
-    } else {
-      svgReadyTimer = setTimeout(waitForSvg, 10);
-    }
-  }
+  const [elk] = useState(() => new ELK());
+  const [positionedNodes, setPositionedNodes] = useState<Node[]>([]);
+  const [positionedEdges, setPositionedEdges] = useState<Edge[]>([]);
+  const [graphHeight, setGraphHeight] = useState(0);
+  const [graphWidth, setGraphWidth] = useState(0);
+  const rf = useReactFlow();
 
   useEffect(() => {
-    // useEffect hides the d3-dag code from the NextJS server because d3-dag requires the browser's
-    // DOM to run. Use a timer to give React a cycle to render the "Loading..." message before
-    // running the d3-dag code.
-    let dag: d3Dag.Dag<NodeData, undefined>;
-    let layout: d3Dag.SugiyamaOperator = undefined as any;
+    elk.layout(graphData).then((graphDataWithLayout: ElkNode) => {
+      const { nodes, edges } = elkToReactFlow(graphDataWithLayout);
+      setPositionedNodes(nodes);
+      setPositionedEdges(edges);
+    });
+  }, [elk]);
 
-    const loadingTimer = setTimeout(() => {
-      try {
-        dag = d3Dag.dagStratify()(graphData);
-        layout = d3Dag
-          .sugiyama()
-          .coord(d3Dag.coordGreedy())
-          .decross(d3Dag.decrossOpt().large("large"))
-          .layering(d3Dag.layeringLongestPath())
-          .nodeSize((node) => {
-            // Might have to play with the adjustment factors if you change the size of the nodes.
-            return node ? [NODE_HEIGHT * 1.4, NODE_WIDTH * 1.8] : [0, 0];
-          });
-        const { width, height } = layout(dag as any);
-        setLoadedDag(dag);
+  useEffect(() => {
+    // run after mount/paint so sizes are measured
+    requestAnimationFrame(() => {
+      const r = rf.getNodesBounds(rf.getNodes());
+      setGraphHeight(Math.ceil(r.y + r.height + NODE_HEIGHT + 12));
+      setGraphWidth(Math.ceil(r.x + r.width + NODE_WIDTH));
+    });
+  }, [rf, positionedNodes, positionedEdges]);
 
-        // d3-dag sugiyama lays out the graph vertically, so swap the width and height to fit a
-        // horizontal display.
-        setLayoutHeight(width);
-        setLayoutWidth(height);
-      } catch (error) {
-        const { message } = error;
-        let userMessage = "The graph could not be generated from this data.";
-        const errorObjectIds = extractD3DagErrorObjectIds(message);
-
-        if (message.includes("self loop")) {
-          if (errorObjectIds.length > 0) {
-            userMessage = `File ${errorObjectIds[0]} refers to itself as its parent.`;
-          } else {
-            userMessage = "A file refers to itself as its parent.";
-          }
-        } else if (message.includes("cycle")) {
-          if (errorObjectIds.length > 0) {
-            userMessage = `The files ${errorObjectIds.join(
-              ", "
-            )} are part of a derived-from loop.`;
-          } else {
-            userMessage = "The files form a derived-from loop.";
-          }
-        }
-        setLoadedDag(null);
-        setLayoutHeight(0);
-        setLayoutWidth(0);
-        setGraphingMessage(`Error generating graph: ${userMessage}`);
-      }
-    }, 0);
-
-    // Start waiting for the SVG graph to finish rendering.
-    waitForSvg();
-
-    return () => {
-      clearTimeout(loadingTimer);
-      clearTimeout(svgReadyTimer);
-    };
-  }, []);
-
-  /**
-   * Called when the user clicks on a quality metric trigger in a file node. By setting the
-   * `selectedQualityMetrics` state, the modal showing the quality metrics gets displayed.
-   * @param file File object that the quality-metric button user clicked on belongs to
-   * @param qcMetrics Quality metrics for the file that the user clicked on
-   */
-  function qcMetricClickHandler(
-    file: FileObject,
-    qcMetrics: QualityMetricObject[]
-  ) {
-    setQualityMetricFile(file);
-    setSelectedQualityMetrics(qcMetrics);
-  }
-
-  /**
-   * Handle when the user clicks on a node in the graph to display a modal.
-   * @param {NodeData} nodeData The node that the user clicked on
-   */
-  function onNodeClick(nodeData: NodeData) {
-    setSelectedNode(nodeData);
-  }
-
-  return loadedDag ? (
-    <div className="max-h-[calc(100vh-8rem)] overflow-y-auto">
-      <svg
-        className="mx-auto"
-        width={layoutWidth}
-        height={layoutHeight}
-        ref={svgRef}
-      >
-        <Group top={0} left={0}>
-          {loadedDag.links().map((link, i) => {
-            const source = { x: link.source.x, y: link.source.y + 70 };
-            const target = { x: link.target.x, y: link.target.y - 70 };
-
-            // Calculate the angle of the arrowhead based on the link's source and target positions.
-            const dx = target.y - source.y;
-            const dy = target.x - source.x;
-            const angle = Math.atan2(dy, dx) * 0.4;
-
-            // Render the edges between nodes as lines.
-            return (
-              <g key={`link-${i}`}>
-                <LinkHorizontal
-                  data={link}
-                  {...(!isGraphDownload && {
-                    className: "stroke-black dark:stroke-white",
-                  })}
-                  {...(isGraphDownload && {
-                    style: { stroke: "black" },
-                  })}
-                  fill="none"
-                  source={() => source}
-                  target={() => target}
-                />
-                <LinkArrowHead
-                  x={link.target.x}
-                  y={link.target.y}
-                  angle={angle}
-                  isGraphDownload={isGraphDownload}
-                />
-              </g>
-            );
-          })}
-          {loadedDag.descendants().map((node, i) => {
-            // Render the nodes as rectangles.
-            const graphNode = node.data as NodeData;
-            if (isFileNodeData(graphNode)) {
-              const isNodeSelected = selectedNode?.id === graphNode.id;
-              const background =
-                fileSetTypeColorMap[fileSet["@type"][0]] ||
-                fileSetTypeColorMap.unknown;
-              const foreground =
-                darkMode.enabled && !isGraphDownload ? "#ffffff" : "#000000";
-              const fileMetrics = getFileMetrics(
-                graphNode.file,
-                qualityMetrics
-              );
-              const lineOffsets =
-                fileMetrics.length > 0
-                  ? lineOffsetsMap.withMetrics
-                  : lineOffsetsMap.withoutMetrics;
-              return (
-                <GraphNode
-                  key={i}
-                  node={node}
-                  onNodeClick={onNodeClick}
-                  background={background}
-                  label={`File ${graphNode.file.accession}, file format ${graphNode.file.file_format}, content type ${graphNode.file.content_type}`}
-                  isNodeSelected={isNodeSelected && !isGraphDownload}
-                  isGraphDownload={isGraphDownload}
-                  className="relative"
-                >
-                  <DocumentTextIcon
-                    className="absolute"
-                    x={NODE_WIDTH / 2 - 18}
-                    y={-NODE_HEIGHT / 2 + 2}
-                    width={16}
-                    height={16}
-                  />
-                  <text
-                    y={lineOffsets[0]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fontWeight="bold"
-                    fill={foreground}
-                  >
-                    {graphNode.file.accession}
-                  </text>
-                  <text
-                    y={lineOffsets[1]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fill={foreground}
-                  >
-                    {graphNode.file.file_format}
-                  </text>
-                  <text
-                    y={lineOffsets[2]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fill={foreground}
-                  >
-                    {truncateText(graphNode.file.content_type, 24)}
-                  </text>
-                  <QCMetricTrigger
-                    file={graphNode.file}
-                    fileMetrics={fileMetrics}
-                    onClick={qcMetricClickHandler}
-                  />
-                </GraphNode>
-              );
-            }
-            if (isFileSetNodeData(graphNode)) {
-              const isNodeSelected = selectedNode?.id === graphNode.id;
-              const background =
-                fileSetTypeColorMap[graphNode.fileSet["@type"][0]] ||
-                fileSetTypeColorMap.unknown;
-              const foreground = darkMode.enabled ? "#ffffff" : "#000000";
-              const lineOffsets = lineOffsetsMap.withoutMetrics;
-              return (
-                <GraphNode
-                  key={i}
-                  node={node}
-                  onNodeClick={onNodeClick}
-                  background={background}
-                  label={`File set ${graphNode.fileSet.title}`}
-                  isNodeSelected={isNodeSelected && !isGraphDownload}
-                  isGraphDownload={isGraphDownload}
-                  isRounded
-                >
-                  <Icon.FileSet
-                    className="absolute"
-                    x={NODE_WIDTH / 2 - 18}
-                    y={-NODE_HEIGHT / 2 + 1}
-                    width={16}
-                    height={16}
-                  />
-                  <text
-                    y={lineOffsets[0]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fontWeight="bold"
-                    fill={foreground}
-                  >
-                    {graphNode.fileSet.accession}
-                  </text>
-                  <text
-                    y={lineOffsets[1]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fill={foreground}
-                  >
-                    {graphNode.files.length}{" "}
-                    {graphNode.files.length === 1 ? "file" : "files"}
-                  </text>
-                  {graphNode.fileSet.file_set_type && (
-                    <text
-                      y={lineOffsets[2]}
-                      fontSize={12}
-                      textAnchor="middle"
-                      fill={foreground}
-                    >
-                      {truncateText(graphNode.fileSet.file_set_type, 24)}
-                    </text>
-                  )}
-                  <text
-                    y="6px"
-                    fontSize={12}
-                    textAnchor="middle"
-                    fill={foreground}
-                  >
-                    {graphNode.files.length}{" "}
-                    {graphNode.files.length === 1 ? "file" : "files"}
-                  </text>
-                </GraphNode>
-              );
-            }
-            return null;
-          })}
-        </Group>
-      </svg>
-      {selectedNode && isFileNodeData(selectedNode) && (
-        <FileModal
-          node={selectedNode}
-          referenceFiles={referenceFiles}
-          onClose={() => setSelectedNode(null)}
-        />
-      )}
-      {selectedNode && isFileSetNodeData(selectedNode) && (
-        <FileSetModal
-          node={selectedNode}
-          nativeFiles={nativeFiles}
-          onClose={() => setSelectedNode(null)}
-        />
-      )}
-      {selectedQualityMetrics.length > 0 && (
-        <QualityMetricModal
-          file={qualityMetricFile}
-          qualityMetrics={selectedQualityMetrics}
-          onClose={() => {
-            setSelectedQualityMetrics([]);
-            setQualityMetricFile(null);
-          }}
-        />
-      )}
+  return (
+    <div
+      style={{
+        height: graphHeight + 500,
+        width: graphWidth,
+      }}
+    >
+      <ReactFlow
+        nodes={positionedNodes}
+        edges={positionedEdges}
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+        minZoom={1}
+        maxZoom={1}
+        nodeOrigin={[0, 0]}
+        nodeTypes={nodeTypes}
+        nodesDraggable={false}
+        nodesConnectable={false}
+        elementsSelectable={false}
+        panOnDrag={false}
+        panOnScroll={false}
+        zoomOnScroll={false}
+        zoomOnPinch={false}
+        zoomOnDoubleClick={false}
+        preventScrolling={false}
+      />
     </div>
-  ) : (
-    <div className="flex h-16 items-center justify-center p-2 italic">
-      {graphingMessage}
-    </div>
+  );
+}
+
+function Graph(props) {
+  return (
+    <ReactFlowProvider>
+      <GraphCore {...props} />
+    </ReactFlowProvider>
   );
 }
 
@@ -760,48 +524,27 @@ export function FileGraph({
   title?: string;
   panelId?: string;
 }) {
-  const data = generateGraphData(
+  const graphData = generateGraphData(
     files as FileObject[],
-    fileFileSets as FileSetObject[],
     derivedFromFiles as FileObject[]
   );
-  const trimmedData = trimIsolatedNodes(data);
-  const isGraphTooLarge = trimmedData.length > MAX_NODES_TO_DISPLAY;
-  const relevantFileSetTypes = collectRelevantFileSetStats(trimmedData);
 
-  if (trimmedData.length > 0) {
-    return (
-      <section role="region" aria-labelledby="file-graph">
-        <DataAreaTitle id={panelId}>
-          <div id="file-graph">{title}</div>
-          <SaveSvgTrigger
+  return (
+    <section role="region" aria-labelledby="file-graph">
+      <DataAreaTitle id={panelId}>
+        <div id="file-graph">{title}</div>
+      </DataAreaTitle>
+      <div className="[&>div]:p-0">
+        <DataPanel>
+          <Graph
             fileSet={fileSet as FileSetObject}
             nativeFiles={files as FileObject[]}
             referenceFiles={referenceFiles}
-            trimmedData={trimmedData}
+            qualityMetrics={qualityMetrics}
+            graphData={graphData}
           />
-        </DataAreaTitle>
-        <div className="[&>div]:p-0">
-          <DataPanel>
-            {!isGraphTooLarge ? (
-              <>
-                <Graph
-                  fileSet={fileSet as FileSetObject}
-                  nativeFiles={files as FileObject[]}
-                  referenceFiles={referenceFiles}
-                  qualityMetrics={qualityMetrics}
-                  graphData={trimmedData}
-                />
-              </>
-            ) : (
-              <div className="p-4 text-center italic">
-                Graph too large to display
-              </div>
-            )}
-            <Legend stats={relevantFileSetTypes} />
-          </DataPanel>
-        </div>
-      </section>
-    );
-  }
+        </DataPanel>
+      </div>
+    </section>
+  );
 }
