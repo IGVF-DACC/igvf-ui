@@ -66,23 +66,6 @@ const rootElkNode = {
 } as ElkNode;
 
 /**
- * Remove what would have appeared as isolated nodes in the graph, lacking any parent or child
- * nodes.
- * @param graphData List of nodes with their parent nodes
- * @returns List of nodes that either have parents or are parents of other nodes
- */
-export function trimIsolatedNodes(
-  nodes: ElkNodeEx[],
-  edges: ElkExtendedEdge[]
-): ElkNodeEx[] {
-  return nodes.filter((node) =>
-    edges.some(
-      (edge) => edge.sources[0] === node.id || edge.targets[0] === node.id
-    )
-  );
-}
-
-/**
  * Collect all the file-set types that appear in `graphData` and return them along with a count of
  * the number of times each type appears in `graphData`.
  * @param graphData All nodes in the graph, probably after trimming
@@ -104,6 +87,44 @@ export function collectRelevantFileSetStats(
 }
 
 /**
+ * Remove files that would appear as isolated nodes in the graph (no connections to other files).
+ * A file is kept if it either:
+ * - derives from other files (has incoming edges - is a target)
+ * - other files derive from it (has outgoing edges - is a source)
+ * @param files - File objects to filter
+ * @returns File objects that have connections to other files in the graph
+ */
+export function trimIsolatedFiles(files: FileObject[]): FileObject[] {
+  // Collect all file IDs that are referenced in derived_from arrays.
+  const derivedFromFilePaths = new Set(
+    files.flatMap((file) => file.derived_from || [])
+  );
+
+  // Keep files that either have incoming or outgoing edges.
+  return files.filter(
+    (file) =>
+      derivedFromFilePaths.has(file["@id"]) || // File has outgoing edges
+      file.derived_from?.length > 0 // File has incoming edges
+  );
+}
+
+/**
+ * Find all external files that the given native files derive from.
+ * @param externalFiles - List of all external files
+ * @param nativeFiles - List of all native files
+ * @returns External files that are referenced in native files' derived_from arrays
+ */
+function findUsedExternalFiles(
+  externalFiles: FileObject[],
+  nativeFiles: FileObject[]
+): FileObject[] {
+  const derivedFromFilePaths = new Set(
+    nativeFiles.flatMap((file) => file.derived_from || [])
+  );
+  return externalFiles.filter((file) => derivedFromFilePaths.has(file["@id"]));
+}
+
+/**
  * Generate d3-dag-compatible data from a list of files using their `derived_from` property.
  * @param nativeFiles Files belonging to the file set the user currently views
  * @param fileFileSets File sets that the `files` and `derivedFromFiles` belong to
@@ -114,22 +135,18 @@ export function generateGraphData(
   nativeFiles: FileObject[],
   externalFiles: FileObject[]
 ): ElkNodeEx {
-  // Generate a list of external file objects that nativeFiles derives from.
-  const externalFilePaths = externalFiles.map((file) => file["@id"]);
-  const usedExternalFilePaths = new Set<string>();
-  nativeFiles.forEach((nativeFile) => {
-    const externalDerivedFromPaths = _.intersection(
-      nativeFile.derived_from || [],
-      externalFilePaths
-    );
-    externalDerivedFromPaths.forEach((path) => usedExternalFilePaths.add(path));
-  });
-  const usedExternalFiles = externalFiles.filter((file) =>
-    usedExternalFilePaths.has(file["@id"])
+  // Only consider native files that derive from other files or that other files derive from.
+  const includedNativeFiles = trimIsolatedFiles(nativeFiles);
+
+  // Generate a list of external file objects that nativeFiles derives from. These don't appear in
+  // the graph -- the file sets they belong to do.
+  const usedExternalFiles = findUsedExternalFiles(
+    externalFiles,
+    includedNativeFiles
   );
 
   // Generate the graph node data for the native and external files.
-  const allFiles = [...nativeFiles, ...usedExternalFiles];
+  const allFiles = [...includedNativeFiles, ...usedExternalFiles];
   const nodes = allFiles.map((nativeFile) => {
     // Initialize the node data for the native file.
     return {
@@ -144,13 +161,13 @@ export function generateGraphData(
   });
 
   // Generate the graph edge data, each edge of type `ElkExtendedEdge`
-  const edges = allFiles.flatMap((nativeFile) => {
-    return (nativeFile.derived_from || []).map((derivedFromPath) => {
-      const nativeFileId = nativeFile["@id"];
+  const edges = allFiles.flatMap((file) => {
+    return (file.derived_from || []).map((derivedFromPath) => {
+      const fileId = file["@id"];
       const derivedFromId = derivedFromPath;
       return {
-        id: `${nativeFileId}-${derivedFromId}`,
-        sources: [nativeFileId],
+        id: `${fileId}-${derivedFromId}`,
+        sources: [fileId],
         targets: [derivedFromId],
       } as ElkExtendedEdge;
     });
@@ -159,7 +176,7 @@ export function generateGraphData(
   // Add nodes and edges to a copy of the static root node.
   return {
     ...rootElkNode,
-    children: trimIsolatedNodes(nodes, edges),
+    children: nodes,
     edges,
   } as ElkNode;
 }
