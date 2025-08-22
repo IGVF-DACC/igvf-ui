@@ -98,42 +98,46 @@ export function collectRelevantFileSetStats(
  * A file is kept if it either:
  * - derives from other files (has incoming edges - is a target)
  * - other files derive from it (has outgoing edges - is a source)
- * @param files - File objects to filter
- * @returns File objects that have connections to other files in the graph
+ * @param nativeFiles - Native file objects to filter
+ * @param externalFiles - External derived-from file objects used in the graph
+ * @returns - Native file objects that have connections to other files in the graph
  */
 export function trimIsolatedFiles(
   nativeFiles: FileObject[],
   externalFiles: FileObject[]
 ): FileObject[] {
-  // Collect all native and external file paths in a set to check that a derived-from file object
-  // has loaded.
-  const allFilePaths = new Set(
-    nativeFiles
-      .map((file) => file["@id"])
-      .concat(externalFiles.map((file) => file["@id"]))
-  );
+  // Create a set of all available file paths to help make sure derived-from files have actually
+  // loaded.
+  const allFilePaths = new Set([
+    ...nativeFiles.map((file) => file["@id"]),
+    ...externalFiles.map((file) => file["@id"]),
+  ]);
 
-  // Collect all file paths that are referenced in derived_from arrays.
-  const derivedFromFilePaths = new Set(
-    nativeFiles.flatMap((file) => file.derived_from || [])
-  );
-
-  // Make a map of file paths to an array of that file's derived-from paths. Only include derived-
-  // from files included in native or external files -- important if the user hasn't logged in and
-  // therefore can't access all derived-from files.
-  const filePathToDerivedFroms = new Map<string, string[]>();
+  // Collect incoming and outgoing edges for every native file.
+  const filesWithOutgoingEdges = new Set<string>();
+  const filesWithIncomingEdges = new Set<string>();
   nativeFiles.forEach((file) => {
-    const knownDerivedFroms = (file.derived_from || []).filter((path) =>
+    // Get all derived_from paths for files that have loaded.
+    const loadedDerivedFromPaths = (file.derived_from || []).filter((path) =>
       allFilePaths.has(path)
     );
-    filePathToDerivedFroms.set(file["@id"], knownDerivedFroms);
+
+    // This file has incoming edges if it derives from loaded files.
+    if (loadedDerivedFromPaths.length > 0) {
+      filesWithIncomingEdges.add(file["@id"]);
+    }
+
+    // The files this file derives from have outgoing edges.
+    loadedDerivedFromPaths.forEach((path) => {
+      filesWithOutgoingEdges.add(path);
+    });
   });
 
-  // Keep files that either have incoming or outgoing edges.
+  // Filter out files that have no incoming nor outgoing edges.
   return nativeFiles.filter(
     (file) =>
-      derivedFromFilePaths.has(file["@id"]) || // File has outgoing edges
-      filePathToDerivedFroms.get(file["@id"])?.length > 0 // File has incoming edges
+      filesWithOutgoingEdges.has(file["@id"]) ||
+      filesWithIncomingEdges.has(file["@id"])
   );
 }
 
@@ -141,7 +145,7 @@ export function trimIsolatedFiles(
  * Find all external files that the given native files derive from.
  * @param externalFiles - List of all external files
  * @param nativeFiles - List of all native files
- * @returns External files that are referenced in native files' derived_from arrays
+ * @returns External files that native files derive from (appear in derived_from arrays)
  */
 function findUsedExternalFiles(
   externalFiles: FileObject[],
@@ -170,7 +174,9 @@ function getUpstreamFiles(
   externalFiles: FileObject[]
 ): { upstreamNativeFiles: FileObject[]; upstreamExternalFiles: FileObject[] } {
   const allDerivedFromPaths = file.derived_from || [];
-  const nativeFilePaths = new Set(nativeFiles.map((file) => file["@id"]));
+  const nativeFilePaths = new Set(
+    nativeFiles.map((nativeFile) => nativeFile["@id"])
+  );
 
   // Split the derived-from file paths into native and external file paths.
   const { nativePaths = [], externalPaths = [] } = _.groupBy(
@@ -204,9 +210,6 @@ export function generateGraphData(
   nativeFiles: FileObject[],
   externalFiles: FileObject[]
 ): ElkNodeEx {
-  console.log("NATIVE FILES", nativeFiles);
-  console.log("EXTERNAL FILES", externalFiles);
-
   // Only consider native files that derive from other files or that other files derive from.
   const includedNativeFiles = trimIsolatedFiles(nativeFiles, externalFiles);
 

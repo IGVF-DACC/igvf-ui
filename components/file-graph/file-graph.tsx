@@ -65,7 +65,7 @@ const NodeHandleStyle: React.CSSProperties = {
 };
 
 function FileNodeContent(props: NodeProps) {
-  const data = props.data as NodeMetadata;
+  const data = props.data as FileMetadata;
   const file = data.file;
 
   return (
