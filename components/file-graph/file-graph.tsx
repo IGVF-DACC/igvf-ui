@@ -24,7 +24,7 @@ import {
   generateGraphData,
   NODE_HEIGHT,
   NODE_WIDTH,
-  type NodeMetadata,
+  type FileMetadata,
 } from "./lib";
 // root
 import type {

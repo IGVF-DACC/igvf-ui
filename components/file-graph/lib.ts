@@ -19,15 +19,22 @@ import { FileObject } from "../../globals.d";
  * Metadata to attach to each ELK and React Flow file node. ELK carries it through the layout
  * process.
  */
-type FileMetadata = {
+export type FileMetadata = {
   kind: "file";
   file: FileObject;
+  upstreamNativeFiles: FileObject[];
+  upstreamExternalFiles: FileObject[];
+};
+
+export type FileSetMetadata = {
+  kind: "fileSet";
+  fileSet: FileObject[];
 };
 
 /**
  * Metadata to attach to each ELK and React Flow node regardless of its kind.
  */
-export type NodeMetadata = FileMetadata;
+export type NodeMetadata = FileMetadata | FileSetMetadata;
 
 /**
  * Extended ElkNode interface that includes metadata.
@@ -94,17 +101,39 @@ export function collectRelevantFileSetStats(
  * @param files - File objects to filter
  * @returns File objects that have connections to other files in the graph
  */
-export function trimIsolatedFiles(files: FileObject[]): FileObject[] {
-  // Collect all file IDs that are referenced in derived_from arrays.
-  const derivedFromFilePaths = new Set(
-    files.flatMap((file) => file.derived_from || [])
+export function trimIsolatedFiles(
+  nativeFiles: FileObject[],
+  externalFiles: FileObject[]
+): FileObject[] {
+  // Collect all native and external file paths in a set to check that a derived-from file object
+  // has loaded.
+  const allFilePaths = new Set(
+    nativeFiles
+      .map((file) => file["@id"])
+      .concat(externalFiles.map((file) => file["@id"]))
   );
 
+  // Collect all file paths that are referenced in derived_from arrays.
+  const derivedFromFilePaths = new Set(
+    nativeFiles.flatMap((file) => file.derived_from || [])
+  );
+
+  // Make a map of file paths to an array of that file's derived-from paths. Only include derived-
+  // from files included in native or external files -- important if the user hasn't logged in and
+  // therefore can't access all derived-from files.
+  const filePathToDerivedFroms = new Map<string, string[]>();
+  nativeFiles.forEach((file) => {
+    const knownDerivedFroms = (file.derived_from || []).filter((path) =>
+      allFilePaths.has(path)
+    );
+    filePathToDerivedFroms.set(file["@id"], knownDerivedFroms);
+  });
+
   // Keep files that either have incoming or outgoing edges.
-  return files.filter(
+  return nativeFiles.filter(
     (file) =>
       derivedFromFilePaths.has(file["@id"]) || // File has outgoing edges
-      file.derived_from?.length > 0 // File has incoming edges
+      filePathToDerivedFroms.get(file["@id"])?.length > 0 // File has incoming edges
   );
 }
 
@@ -125,6 +154,46 @@ function findUsedExternalFiles(
 }
 
 /**
+ * Get the upstream files for a given file, split into native upstream files and external upstream
+ * files. "Native" here means files that are included in the current file set. "External" means
+ * files that are included in some other file set.
+ * @param file - File to get upstream files for
+ * @param nativeFiles - All native upstream files
+ * @param externalFiles - All external upstream files
+ * @returns result - Upstream files categorized by type
+ * @returns result.upstreamNativeFiles - Files from the current file set that this file derives from
+ * @returns result.upstreamExternalFiles - Files from other file sets that this file derives from
+ */
+function getUpstreamFiles(
+  file: FileObject,
+  nativeFiles: FileObject[],
+  externalFiles: FileObject[]
+): { upstreamNativeFiles: FileObject[]; upstreamExternalFiles: FileObject[] } {
+  const allDerivedFromPaths = file.derived_from || [];
+  const nativeFilePaths = new Set(nativeFiles.map((file) => file["@id"]));
+
+  // Split the derived-from file paths into native and external file paths.
+  const { nativePaths = [], externalPaths = [] } = _.groupBy(
+    allDerivedFromPaths,
+    (filePath) =>
+      nativeFilePaths.has(filePath) ? "nativePaths" : "externalPaths"
+  );
+
+  // Map the native and external file paths into the corresponding file objects.
+  const upstreamNativeFiles = nativePaths
+    .map((path) => nativeFiles.find((file) => file["@id"] === path))
+    .filter(Boolean);
+  const upstreamExternalFiles = externalPaths
+    .map((path) => externalFiles.find((file) => file["@id"] === path))
+    .filter(Boolean);
+
+  return {
+    upstreamNativeFiles,
+    upstreamExternalFiles,
+  };
+}
+
+/**
  * Generate d3-dag-compatible data from a list of files using their `derived_from` property.
  * @param nativeFiles Files belonging to the file set the user currently views
  * @param fileFileSets File sets that the `files` and `derivedFromFiles` belong to
@@ -135,8 +204,11 @@ export function generateGraphData(
   nativeFiles: FileObject[],
   externalFiles: FileObject[]
 ): ElkNodeEx {
+  console.log("NATIVE FILES", nativeFiles);
+  console.log("EXTERNAL FILES", externalFiles);
+
   // Only consider native files that derive from other files or that other files derive from.
-  const includedNativeFiles = trimIsolatedFiles(nativeFiles);
+  const includedNativeFiles = trimIsolatedFiles(nativeFiles, externalFiles);
 
   // Generate a list of external file objects that nativeFiles derives from. These don't appear in
   // the graph -- the file sets they belong to do.
@@ -148,6 +220,12 @@ export function generateGraphData(
   // Generate the graph node data for the native and external files.
   const allFiles = [...includedNativeFiles, ...usedExternalFiles];
   const nodes = allFiles.map((nativeFile) => {
+    const { upstreamNativeFiles, upstreamExternalFiles } = getUpstreamFiles(
+      nativeFile,
+      includedNativeFiles,
+      usedExternalFiles
+    );
+
     // Initialize the node data for the native file.
     return {
       id: nativeFile["@id"],
@@ -156,6 +234,8 @@ export function generateGraphData(
       metadata: {
         kind: "file",
         file: nativeFile,
+        upstreamNativeFiles,
+        upstreamExternalFiles,
       } as NodeMetadata,
     } as ElkNode;
   });
@@ -167,8 +247,8 @@ export function generateGraphData(
       const derivedFromId = derivedFromPath;
       return {
         id: `${fileId}-${derivedFromId}`,
-        sources: [fileId],
-        targets: [derivedFromId],
+        sources: [derivedFromId],
+        targets: [fileId],
       } as ElkExtendedEdge;
     });
   });
