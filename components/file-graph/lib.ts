@@ -270,7 +270,7 @@ export function generateGraphData(
       upstreamFileSetNodes: [],
     };
     return {
-      id: pathToId(nativeFile["@id"]),
+      id: nativeFile["@id"],
       width: NODE_WIDTH,
       height: NODE_HEIGHT,
       metadata,
@@ -331,13 +331,16 @@ export function generateGraphData(
     );
   });
 
+  console.log("FILE NODES", fileNodes);
+  console.log("FILE SET NODES", fileSetNodes);
+
   // Generate the graph edge data, each edge of type `ElkExtendedEdge`
   const edges = allFiles.flatMap((file) => {
     return (file.derived_from || []).map((derivedFromPath) => {
-      const fileId = pathToId(file["@id"]);
-      const derivedFromId = pathToId(derivedFromPath);
+      const fileId = file["@id"];
+      const derivedFromId = derivedFromPath;
       return {
-        id: `${fileId}-${derivedFromId}`,
+        id: `${pathToId(fileId)}-${pathToId(derivedFromId)}`,
         sources: [derivedFromId],
         targets: [fileId],
       } as ElkExtendedEdge;
