@@ -27,11 +27,7 @@ import {
   type FileMetadata,
 } from "./lib";
 // root
-import type {
-  DatabaseObject,
-  FileObject,
-  FileSetObject,
-} from "../../globals.d";
+import type { FileObject, FileSetObject } from "../../globals.d";
 import "@xyflow/react/dist/style.css";
 
 /**
@@ -200,23 +196,26 @@ function Graph(props) {
 export function FileGraph({
   fileSet,
   files,
+  fileFileSets,
   derivedFromFiles,
   referenceFiles,
   qualityMetrics,
   title = "File Association Graph",
   panelId = "file-graph",
 }: {
-  fileSet: DatabaseObject;
-  files: DatabaseObject[];
+  fileSet: FileSetObject;
+  files: FileObject[];
+  fileFileSets: FileSetObject[];
   referenceFiles: FileObject[];
-  derivedFromFiles: DatabaseObject[];
+  derivedFromFiles: FileObject[];
   qualityMetrics: QualityMetricObject[];
   title?: string;
   panelId?: string;
 }) {
   const graphData = generateGraphData(
     files as FileObject[],
-    derivedFromFiles as FileObject[]
+    derivedFromFiles as FileObject[],
+    fileFileSets
   );
 
   return (
