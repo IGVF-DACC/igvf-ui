@@ -253,8 +253,7 @@ export function generateGraphData(
   );
 
   // Generate the graph node data for the native and external files.
-  const allFiles = [...includedNativeFiles, ...usedExternalFiles];
-  const fileNodes = allFiles.map((nativeFile) => {
+  const fileNodes = includedNativeFiles.map((nativeFile) => {
     const { upstreamNativeFiles, upstreamExternalFiles } = getUpstreamFiles(
       nativeFile,
       includedNativeFiles,
@@ -320,11 +319,10 @@ export function generateGraphData(
         }
 
         // Update the file node's upstream file set nodes with this new or updated file set node.
-        if (
-          !fileNodeMetadata.upstreamFileSetNodes.some(
-            (node) => node.id === fileSetNode.id
-          )
-        ) {
+        const isFileSetNodeInList = fileNodeMetadata.upstreamFileSetNodes.some(
+          (node) => node.id === fileSetNode.id
+        );
+        if (!isFileSetNodeInList) {
           fileNodeMetadata.upstreamFileSetNodes.push(fileSetNode);
         }
       }
@@ -335,22 +333,36 @@ export function generateGraphData(
   console.log("FILE SET NODES", fileSetNodes);
 
   // Generate the graph edge data, each edge of type `ElkExtendedEdge`
-  const edges = allFiles.flatMap((file) => {
-    return (file.derived_from || []).map((derivedFromPath) => {
-      const fileId = file["@id"];
-      const derivedFromId = derivedFromPath;
-      return {
-        id: `${pathToId(fileId)}-${pathToId(derivedFromId)}`,
-        sources: [derivedFromId],
-        targets: [fileId],
-      } as ElkExtendedEdge;
+  const edges: ElkExtendedEdge[] = [];
+  fileNodes.forEach((fileNode) => {
+    const fileNodeMetadata = fileNode.metadata as FileMetadata;
+    const upstreamNativeFiles = fileNodeMetadata.upstreamNativeFiles;
+    const upstreamFileSetNodes = fileNodeMetadata.upstreamFileSetNodes;
+    upstreamNativeFiles.forEach((nativeFile) => {
+      edges.push({
+        id: `${pathToId(fileNode.id)}-${pathToId(nativeFile["@id"])}`,
+        sources: [nativeFile["@id"]],
+        targets: [fileNode.id],
+      });
+    });
+    upstreamFileSetNodes.forEach((fileSetNode) => {
+      const fileSetMetadata = fileSetNode.metadata as FileSetMetadata;
+      const downstreamFileNodes = fileSetMetadata.downstreamFileNodes;
+      downstreamFileNodes.forEach((downstreamFileNode) => {
+        edges.push({
+          id: `${fileSetNode.id}-${downstreamFileNode.id}`,
+          sources: [fileSetNode.id],
+          targets: [downstreamFileNode.id],
+        });
+      });
     });
   });
+  console.log("EDGES", edges);
 
   // Add nodes and edges to a copy of the static root node.
   return {
     ...rootElkNode,
-    children: fileNodes,
+    children: [...fileNodes, ...fileSetNodes],
     edges,
   } as ElkNode;
 }
@@ -432,10 +444,12 @@ export function extractD3DagErrorObjectIds(error: string): string[] {
 function elkToReactFlowNodes(elkNodes: ElkNodeEx[], parentId = ""): Node[] {
   const rfNodes: Node[] = [];
   elkNodes.forEach((elkNode) => {
+    const elkNodeMetadata = elkNode.metadata;
+
     // Generate a React Flow node and add it to the cumulative array.
     const rfNode: Node<NodeMetadata> = {
       id: elkNode.id,
-      type: elkNode.children ? "group" : "file",
+      type: elkNodeMetadata.kind,
       data: elkNode.metadata,
       position: { x: elkNode.x, y: elkNode.y },
       style: { width: elkNode.width, height: elkNode.height },

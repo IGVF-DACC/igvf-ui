@@ -25,6 +25,7 @@ import {
   NODE_HEIGHT,
   NODE_WIDTH,
   type FileMetadata,
+  type FileSetMetadata,
 } from "./lib";
 // root
 import type { FileObject, FileSetObject } from "../../globals.d";
@@ -36,6 +37,7 @@ import "@xyflow/react/dist/style.css";
  */
 const nodeTypes = {
   file: FileNodeContent,
+  fileset: FileSetNodeContent,
   group: GroupNodeContent,
 };
 
@@ -70,6 +72,37 @@ function FileNodeContent(props: NodeProps) {
         <div className="font-bold">{file.accession}</div>
         <div>{truncateText(file.file_format, 24)}</div>
         <div>{truncateText(file.content_type, 24)}</div>
+      </div>
+      <div>
+        <Handle
+          type="target"
+          position={Position.Left}
+          style={{
+            ...NodeHandleStyle,
+            right: "auto",
+          }}
+        />
+        <Handle
+          type="source"
+          position={Position.Right}
+          style={{
+            ...NodeHandleStyle,
+            left: "auto",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function FileSetNodeContent(props: NodeProps) {
+  const data = props.data as FileSetMetadata;
+  const fileSet = data.fileSet;
+
+  return (
+    <div className="h-full border border-gray-800 bg-white px-1 py-0.5 dark:border-gray-200 dark:bg-black">
+      <div className="flex h-full flex-col items-center justify-center text-[0.67rem]">
+        <div className="font-bold">{fileSet.accession}</div>
       </div>
       <div>
         <Handle
