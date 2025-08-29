@@ -1,8 +1,6 @@
 // node_modules
-import { DocumentTextIcon } from "@heroicons/react/20/solid";
 import { useContext } from "react";
 // components
-import Icon from "../icon";
 import SessionContext from "../session-context";
 // local
 import { fileSetTypeColorMap, type FileSetStats } from "./types";
@@ -10,8 +8,9 @@ import { fileSetTypeColorMap, type FileSetStats } from "./types";
 import type { CollectionTitles } from "../../globals.d";
 
 /**
- * Draw the legend to show what colors correspond to each file set type.
- * @param fileSetTypes List of file set types that appear in the graph
+ * Draw the legend to show what colors correspond to each file-set type.
+ *
+ * @param fileSetTypes - List of file set types that appear in the graph
  */
 export function Legend({ stats }: { stats: FileSetStats }) {
   const { collectionTitles } = useContext(SessionContext as any) as {
@@ -21,12 +20,10 @@ export function Legend({ stats }: { stats: FileSetStats }) {
   return (
     <div className="border-data-border border-t py-2">
       <div className="mb-1 flex justify-center gap-1">
-        <div className="flex items-center gap-0.5 border border-gray-800 px-1 text-sm dark:border-gray-400">
-          <Icon.FileSet className="h-4 w-4" />
+        <div className="border-file-graph-analysis bg-file-graph-analysis items-center rounded-full border px-2.5 py-0.5 text-xs font-bold uppercase">
           File Set
         </div>
-        <div className="flex items-center gap-0.5 border border-gray-800 px-1 text-sm dark:border-gray-400">
-          <DocumentTextIcon className="h-4 w-4" />
+        <div className="bg-file-graph-file border-file-graph-file items-center border px-2 py-0.5 text-xs font-bold uppercase">
           File
         </div>
       </div>
@@ -37,15 +34,15 @@ export function Legend({ stats }: { stats: FileSetStats }) {
           return (
             <div
               key={fileSetType}
-              className="flex border border-gray-800 text-xs font-semibold text-black dark:border-gray-400 dark:text-white"
+              className={`flex rounded-full border text-xs font-semibold ${color.border}`}
             >
               <div
-                className={`${color.bg} flex items-center justify-center px-1 py-0.5`}
+                className={`${color.bg} flex items-center justify-center rounded-tl-full rounded-bl-full py-0.5 pr-1 pl-1.5`}
               >
                 {collectionTitles?.[fileSetType] || fileSetType}
               </div>
               <div
-                className={`${color.bgCount} flex h-full min-w-4 items-center justify-center bg-black px-1.5 text-white`}
+                className={`${color.bgCount} flex h-full min-w-4 items-center justify-center rounded-tr-full rounded-br-full bg-black px-1.5 text-white`}
               >
                 {count}
               </div>
