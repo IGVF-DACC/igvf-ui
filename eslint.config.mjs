@@ -74,6 +74,7 @@ export default defineConfig([
       "no-useless-constructor": ["error"],
       "object-curly-spacing": ["error", "always"],
       "object-shorthand": ["error"],
+      "one-var": ["error", "never"],
       "prefer-const": ["error"],
       "prefer-template": "error",
       "react/jsx-no-undef": "error",

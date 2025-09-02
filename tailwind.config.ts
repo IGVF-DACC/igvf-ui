@@ -156,6 +156,11 @@ const tailwindConfig: Config = {
         "file-graph-prediction-count":
           "var(--color-file-graph-prediction-count)",
         "file-graph-unknown-count": "var(--color-file-graph-unknown-count)",
+        "file-graph-unknown": "var(--color-file-graph-unknown)",
+        "file-graph-file": "var(--color-file-graph-file)",
+        "file-graph-file-count": "var(--color-file-graph-file-count)",
+        "file-graph-qc-trigger": "var(--color-file-graph-qc-trigger-bg)",
+        "file-graph-qc-trigger-text": "var(--color-file-graph-qc-trigger-text)",
 
         "section-directory": "var(--color-section-directory-highlight)",
 
@@ -307,6 +312,18 @@ const tailwindConfig: Config = {
         "indexing-state": "var(--color-indexing-state-border)",
 
         "menu-items": "var(--color-menu-items-border)",
+
+        // File graph borders
+        "file-graph-analysis": "var(--color-file-graph-analysis-border)",
+        "file-graph-auxiliary": "var(--color-file-graph-auxiliary-border)",
+        "file-graph-construct-library":
+          "var(--color-file-graph-construct-library-border)",
+        "file-graph-curated": "var(--color-file-graph-curated-border)",
+        "file-graph-measurement": "var(--color-file-graph-measurement-border)",
+        "file-graph-model": "var(--color-file-graph-model-border)",
+        "file-graph-prediction": "var(--color-file-graph-prediction-border)",
+        "file-graph-unknown": "var(--color-file-graph-unknown-border)",
+        "file-graph-file": "var(--color-file-graph-file-border)",
       },
       fontSize: {
         xxs: "0.7rem",
@@ -410,19 +427,6 @@ const tailwindConfig: Config = {
         "audit-not-compliant": "var(--color-audit-not-compliant-fill)",
         "audit-internal-action": "var(--color-audit-internal-action-fill)",
         "audit-facet": "var(--color-audit-facet-fill)",
-
-        // File graph node colors
-        "file-graph-analysis": "var(--color-file-graph-analysis)",
-        "file-graph-auxiliary": "var(--color-file-graph-auxiliary)",
-        "file-graph-construct-library":
-          "var(--color-file-graph-construct-library)",
-        "file-graph-curated": "var(--color-file-graph-curated)",
-        "file-graph-measurement": "var(--color-file-graph-measurement)",
-        "file-graph-model": "var(--color-file-graph-model)",
-        "file-graph-prediction": "var(--color-file-graph-prediction)",
-        "file-graph-unknown": "var(--color-file-graph-unknown)",
-        "file-graph-qc-trigger": "var(--color-file-graph-qc-trigger-bg)",
-        "file-graph-qc-trigger-text": "var(--color-file-graph-qc-trigger-text)",
 
         "section-directory": "var(--color-section-directory)",
       },

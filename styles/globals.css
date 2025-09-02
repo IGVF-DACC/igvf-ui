@@ -285,23 +285,35 @@
   /** File graph node colors */
   --color-file-graph-analysis: oklch(0.85 0.1344 324.5);
   --color-file-graph-analysis-count: oklch(0.65 0.1344 324.5);
+  --color-file-graph-analysis-border: oklch(0.65 0.1344 324.5);
   --color-file-graph-auxiliary: oklch(0.87 0.2213 145.4);
   --color-file-graph-auxiliary-count: oklch(0.67 0.2213 145.4);
+  --color-file-graph-auxiliary-border: oklch(0.67 0.2213 145.4);
   --color-file-graph-construct-library: oklch(0.76 0.1537 1.8);
   --color-file-graph-construct-library-count: oklch(0.57 0.1537 1.8);
+  --color-file-graph-construct-library-border: oklch(0.57 0.1537 1.8);
   --color-file-graph-curated: oklch(0.8 0.1301 63.4);
   --color-file-graph-curated-count: oklch(0.62 0.1301 63.4);
+  --color-file-graph-curated-border: oklch(0.62 0.1301 63.4);
   --color-file-graph-measurement: oklch(0.79 0.1138 247.6);
   --color-file-graph-measurement-count: oklch(0.61 0.1138 247.6);
+  --color-file-graph-measurement-border: oklch(0.61 0.1138 247.6);
   --color-file-graph-model: oklch(0.95 0.1726 111);
   --color-file-graph-model-count: oklch(0.73 0.1726 111);
+  --color-file-graph-model-border: oklch(0.73 0.1726 111);
   --color-file-graph-prediction: oklch(0.89 0.1255 198.3);
   --color-file-graph-prediction-count: oklch(0.68 0.1255 198.3);
+  --color-file-graph-prediction-border: oklch(0.68 0.1255 198.3);
   --color-file-graph-unknown: oklch(0.81 0 0);
   --color-file-graph-unknown-count: oklch(0.62 0 0);
+  --color-file-graph-unknown-border: oklch(0.62 0 0);
   --color-file-graph-node-stroke: oklch(0.28 0.0296 261.3);
   --color-file-graph-qc-trigger-bg: oklch(1 0 0);
   --color-file-graph-qc-trigger-text: oklch(0 0 0);
+  --color-file-graph-edge: oklch(0.4891 0 0);
+  --color-file-graph-file: oklch(0.9067 0 0);
+  --color-file-graph-file-count: oklch(0.5 0 0);
+  --color-file-graph-file-border: oklch(0.4891 0 0);
 
   /** Modal */
   --color-modal-border: #cecfd3;
@@ -547,23 +559,34 @@
   /** File graph node and legend colors */
   --color-file-graph-analysis: oklch(0.45 0.1344 324.5);
   --color-file-graph-analysis-count: oklch(0.35 0.1344 324.5);
+  --color-file-graph-analysis-border: oklch(0.69 0.1344 324.5);
   --color-file-graph-auxiliary: oklch(0.43 0.1845 145.4);
   --color-file-graph-auxiliary-count: oklch(0.33 0.1845 145.4);
+  --color-file-graph-auxiliary-border: oklch(0.67 0.1845 145.4);
   --color-file-graph-construct-library: oklch(0.44 0.1537 1.8);
   --color-file-graph-construct-library-count: oklch(0.34 0.1537 1.8);
+  --color-file-graph-construct-library-border: oklch(0.68 0.1537 1.8);
   --color-file-graph-curated: oklch(0.5 0.1301 63.4);
   --color-file-graph-curated-count: oklch(0.38 0.1301 63.4);
+  --color-file-graph-curated-border: oklch(0.74 0.1301 63.4);
   --color-file-graph-measurement: oklch(0.46 0.1138 247.6);
   --color-file-graph-measurement-count: oklch(0.35 0.1138 247.6);
+  --color-file-graph-measurement-border: oklch(0.7 0.1138 247.6);
   --color-file-graph-model: oklch(0.56 0.1416 111);
   --color-file-graph-model-count: oklch(0.43 0.1416 111);
+  --color-file-graph-model-border: oklch(0.8 0.1416 111);
   --color-file-graph-prediction: oklch(0.48 0.1087 198.3);
   --color-file-graph-prediction-count: oklch(0.37 0.1087 198.3);
+  --color-file-graph-prediction-border: oklch(0.72 0.1087 198.3);
   --color-file-graph-unknown: oklch(0.49 0 0);
   --color-file-graph-unknown-count: oklch(0.38 0 0);
+  --color-file-graph-unknown-border: oklch(0.73 0 0);
   --color-file-graph-node-stroke: oklch(0.71 0.0192 261.3);
   --color-file-graph-qc-trigger-bg: oklch(0 0 0);
   --color-file-graph-qc-trigger-text: oklch(1 0 0);
+  --color-file-graph-edge: oklch(0.8576 0 0);
+  --color-file-graph-file: oklch(0.3092 0 0);
+  --color-file-graph-file-border: oklch(0.8078 0 0);
 
   --color-modal-border: #68799c;
   --color-modal-backdrop: oklch(0 0 0 / 60%);
@@ -876,4 +899,16 @@
 /** Mask the right end of the term count "LEDs" to fade out */
 .facet-term-count-mask {
   @apply [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)] [--webkit-mask-image:linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)];
+}
+
+/**
+ * React Flow styles
+ */
+.react-flow__attribution {
+  display: none;
+}
+
+.react-flow__node-group {
+  padding: 12px !important;
+  box-sizing: border-box;
 }

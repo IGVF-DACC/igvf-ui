@@ -1,979 +1,927 @@
 import {
-  collectRelevantFileSetStats,
-  extractD3DagErrorObject,
-  extractD3DagErrorObjectIds,
-  generateGraphData,
-  getFileMetrics,
-  trimIsolatedNodes,
+  countFileNodes,
   NODE_WIDTH,
   NODE_HEIGHT,
+  trimIsolatedFiles,
+  collectRelevantFileSetStats,
+  generateGraphData,
+  getFileMetrics,
+  elkToReactFlow,
 } from "../lib";
+import { NODE_KINDS } from "../types";
 import type { FileObject, FileSetObject } from "../../../globals";
-import { type QualityMetricObject } from "../../../lib/quality-metric";
+import type { QualityMetricObject } from "../../../lib/quality-metric";
+import type { Node } from "@xyflow/react";
+import type { NodeMetadata } from "../types";
 
-describe("Test trimIsolatedNodes()", () => {
-  it("trims all files when all files are disconnected", () => {
-    const fileSets: FileSetObject[] = [
-      {
-        "@id": "/file-sets/IGVFFS0001FILS",
-        "@type": ["FileSet", "Item"],
-        files: ["/files/IGVFFI0001FSTQ"],
-        file_set_type: "file-set",
-        summary: "Test file set",
-      },
-    ];
-
-    const files: FileObject[] = [
-      {
-        "@id": "/files/IGVFFI0001FSTQ",
-        "@type": ["File", "Item"],
-        content_type: "alignments",
-        file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
-      },
-      {
-        "@id": "/files/IGVFFI0002FSTQ",
-        "@type": ["File", "Item"],
-        content_type: "alignments",
-        file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
-      },
-    ];
-    const results = generateGraphData(files, fileSets, []);
-    const trimmedResults = trimIsolatedNodes(results);
-    expect(trimmedResults).toEqual([]);
+// Test constants
+describe("Constants", () => {
+  it("should export correct node dimensions", () => {
+    expect(NODE_WIDTH).toBe(156);
+    expect(NODE_HEIGHT).toBe(60);
   });
 });
 
-describe("Test collectRelevantFileSetStats()", () => {
-  it("finds file-set types in a basic file configuration", () => {
-    const fileSets: FileSetObject[] = [
+describe("trimIsolatedFiles", () => {
+  it("should keep files that derive from other files", () => {
+    const nativeFiles: FileObject[] = [
       {
-        "@id": "/measurement-sets/IGVFFS0001MSET",
-        "@type": ["MeasurementSet", "FileSet", "Item"],
-        files: ["/files/IGVFFI0001FSTQ"],
-        file_set_type: "file-set",
-        summary: "Test file set",
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file2"],
       },
       {
-        "@id": "/analysis-sets/IGVFFS0001ASET",
-        "@type": ["AnalysisSet", "FileSet", "Item"],
-        files: ["/files/IGVFFI0001FSTQ"],
-        file_set_type: "file-set",
-        summary: "Test file set",
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: [],
       },
     ];
+    const externalFiles: FileObject[] = [];
 
-    const files: FileObject[] = [
+    const result = trimIsolatedFiles(nativeFiles, externalFiles);
+    expect(result).toHaveLength(2);
+    expect(result.map((f) => f["@id"])).toEqual([
+      "/files/file1",
+      "/files/file2",
+    ]);
+  });
+
+  it("should keep files that other files derive from", () => {
+    const nativeFiles: FileObject[] = [
       {
-        "@id": "/files/IGVFFI0001FSTQ",
+        "@id": "/files/file1",
         "@type": ["File", "Item"],
-        content_type: "alignments",
+        content_type: "reads",
         file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
+        file_set: "/file-sets/test",
+        derived_from: [],
       },
       {
-        "@id": "/files/IGVFFI0002FSTQ",
+        "@id": "/files/file2",
         "@type": ["File", "Item"],
-        content_type: "alignments",
-        derived_from: ["/files/IGVFFI0001FSTQ", "/files/IGVFFI0003FSTQ"],
+        content_type: "reads",
         file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file1"],
       },
     ];
+    const externalFiles: FileObject[] = [];
 
+    const result = trimIsolatedFiles(nativeFiles, externalFiles);
+    expect(result).toHaveLength(2);
+  });
+
+  it("should remove isolated files", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/isolated",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: [],
+      },
+      {
+        "@id": "/files/connected1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/connected2"],
+      },
+      {
+        "@id": "/files/connected2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: [],
+      },
+    ];
+    const externalFiles: FileObject[] = [];
+
+    const result = trimIsolatedFiles(nativeFiles, externalFiles);
+    expect(result).toHaveLength(2);
+    expect(result.map((f) => f["@id"])).toEqual([
+      "/files/connected1",
+      "/files/connected2",
+    ]);
+  });
+
+  it("should handle files with external dependencies", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/native",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/external"],
+      },
+    ];
     const externalFiles: FileObject[] = [
       {
-        "@id": "/files/IGVFFI0003FSTQ",
+        "@id": "/files/external",
         "@type": ["File", "Item"],
-        content_type: "alignments",
+        content_type: "reads",
         file_format: "fastq",
-        file_set: fileSets[1],
-        quality_metrics: [],
-        reference_files: [],
+        file_set: "/file-sets/other",
+        derived_from: [],
       },
     ];
-    const results = generateGraphData(files, fileSets, [
-      files[0],
-      externalFiles[0],
-    ]);
-    const stats = collectRelevantFileSetStats(results);
-    expect(stats).toEqual({
+
+    const result = trimIsolatedFiles(nativeFiles, externalFiles);
+    expect(result).toHaveLength(1);
+    expect(result[0]["@id"]).toBe("/files/native");
+  });
+
+  it("should handle files with undefined derived_from", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        // derived_from is undefined
+      },
+    ] as FileObject[];
+    const externalFiles: FileObject[] = [];
+
+    const result = trimIsolatedFiles(nativeFiles, externalFiles);
+    expect(result).toHaveLength(0);
+  });
+
+  it("should handle empty arrays", () => {
+    const result = trimIsolatedFiles([], []);
+    expect(result).toEqual([]);
+  });
+
+  it("should ignore derived_from files that haven't loaded", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/missing"], // This file doesn't exist in either array
+      },
+    ];
+    const externalFiles: FileObject[] = [];
+
+    const result = trimIsolatedFiles(nativeFiles, externalFiles);
+    expect(result).toHaveLength(0); // File should be isolated since derived_from file isn't loaded
+  });
+
+  it("should handle files with null derived_from", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: null, // Explicitly null instead of undefined
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file1"], // This file derives from file1
+      },
+    ] as FileObject[];
+    const externalFiles: FileObject[] = [];
+
+    const result = trimIsolatedFiles(nativeFiles, externalFiles);
+    expect(result).toHaveLength(2); // Both files should be kept (file1 is referenced by file2)
+  });
+});
+
+describe("collectRelevantFileSetStats", () => {
+  it("should count file set types correctly", () => {
+    const nodes: Node<NodeMetadata>[] = [
+      {
+        id: "fileset1",
+        type: "fileset",
+        position: { x: 0, y: 0 },
+        data: {
+          kind: NODE_KINDS.FILESET,
+          fileSet: {
+            "@id": "/file-sets/set1",
+            "@type": ["AnalysisSet", "FileSet", "Item"],
+            accession: "SET001",
+            files: [],
+            summary: "Test set 1",
+          } as FileSetObject,
+          externalFiles: [],
+          downstreamFile: {
+            "@id": "/files/file1",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test",
+          } as FileObject,
+        },
+      },
+      {
+        id: "fileset2",
+        type: "fileset",
+        position: { x: 0, y: 0 },
+        data: {
+          kind: NODE_KINDS.FILESET,
+          fileSet: {
+            "@id": "/file-sets/set2",
+            "@type": ["AnalysisSet", "FileSet", "Item"],
+            accession: "SET002",
+            files: [],
+            summary: "Test set 2",
+          } as FileSetObject,
+          externalFiles: [],
+          downstreamFile: {
+            "@id": "/files/file2",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test",
+          } as FileObject,
+        },
+      },
+      {
+        id: "fileset3",
+        type: "fileset",
+        position: { x: 0, y: 0 },
+        data: {
+          kind: NODE_KINDS.FILESET,
+          fileSet: {
+            "@id": "/file-sets/set3",
+            "@type": ["MeasurementSet", "FileSet", "Item"],
+            accession: "SET003",
+            files: [],
+            summary: "Test set 3",
+          } as FileSetObject,
+          externalFiles: [],
+          downstreamFile: {
+            "@id": "/files/file3",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test",
+          } as FileObject,
+        },
+      },
+      {
+        id: "file1",
+        type: "file",
+        position: { x: 0, y: 0 },
+        data: {
+          kind: NODE_KINDS.FILE,
+          file: {
+            "@id": "/files/file1",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test",
+          } as FileObject,
+          upstreamNativeFiles: [],
+          upstreamExternalFiles: [],
+          upstreamFileSetNodes: [],
+          referenceFiles: [],
+          qualityMetrics: [],
+        },
+      },
+    ];
+
+    const result = collectRelevantFileSetStats(nodes);
+    expect(result).toEqual({
+      AnalysisSet: 2,
       MeasurementSet: 1,
-      AnalysisSet: 1,
     });
   });
+
+  it("should handle empty nodes array", () => {
+    const result = collectRelevantFileSetStats([]);
+    expect(result).toEqual({});
+  });
+
+  it("should handle nodes with only file nodes (no file-set nodes)", () => {
+    const nodes: Node<NodeMetadata>[] = [
+      {
+        id: "file1",
+        type: "file",
+        position: { x: 0, y: 0 },
+        data: {
+          kind: NODE_KINDS.FILE,
+          file: {
+            "@id": "/files/file1",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test",
+          } as FileObject,
+          upstreamNativeFiles: [],
+          upstreamExternalFiles: [],
+          upstreamFileSetNodes: [],
+          referenceFiles: [],
+          qualityMetrics: [],
+        },
+      },
+    ];
+
+    const result = collectRelevantFileSetStats(nodes);
+    expect(result).toEqual({});
+  });
 });
 
-describe("Test generateGraphData()", () => {
-  it("should return an array of nodes for a basic file configuration", () => {
-    const fileSets: FileSetObject[] = [
+describe("getFileMetrics", () => {
+  it("should return metrics associated with a file", () => {
+    const file: FileObject = {
+      "@id": "/files/file1",
+      "@type": ["File", "Item"],
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/test",
+      quality_metrics: ["/quality-metrics/metric1", "/quality-metrics/metric2"],
+    };
+
+    const qualityMetrics: QualityMetricObject[] = [
       {
-        "@id": "/file-sets/IGVFFS0001FILS",
-        "@type": ["FileSet", "Item"],
-        files: ["/files/IGVFFI0001FSTQ"],
-        file_set_type: "file-set",
-        summary: "Test file set",
+        "@id": "/quality-metrics/metric1",
+        "@type": ["QualityMetric", "Item"],
+        quality_metric_of: ["/files/file1"],
+        analysis_step_version: "/analysis-step-versions/test",
+      },
+      {
+        "@id": "/quality-metrics/metric2",
+        "@type": ["QualityMetric", "Item"],
+        quality_metric_of: ["/files/file1"],
+        analysis_step_version: "/analysis-step-versions/test",
+      },
+      {
+        "@id": "/quality-metrics/metric3",
+        "@type": ["QualityMetric", "Item"],
+        quality_metric_of: ["/files/other"],
+        analysis_step_version: "/analysis-step-versions/test",
       },
     ];
 
-    const files: FileObject[] = [
-      {
-        "@id": "/files/IGVFFI0001FSTQ",
-        "@type": ["File", "Item"],
-        content_type: "alignments",
-        file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
-      },
-      {
-        "@id": "/files/IGVFFI0002FSTQ",
-        "@type": ["File", "Item"],
-        content_type: "alignments",
-        derived_from: ["/files/IGVFFI0001FSTQ"],
-        file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
-      },
-    ];
-    const results = generateGraphData(files, fileSets, [files[0]]);
-    expect(results).toEqual([
-      {
-        id: "/files/IGVFFI0001FSTQ",
-        parentIds: [],
-        type: "file",
-        file: {
-          "@id": "/files/IGVFFI0001FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-        externalFiles: [],
-      },
-      {
-        id: "/files/IGVFFI0002FSTQ",
-        parentIds: [
-          "/files/IGVFFI0001FSTQ",
-          "/file-sets/IGVFFS0001FILS-53cbacb7",
-        ],
-        type: "file",
-        file: {
-          "@id": "/files/IGVFFI0002FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          derived_from: ["/files/IGVFFI0001FSTQ"],
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-        externalFiles: [
-          {
-            "@id": "/files/IGVFFI0001FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0001FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0001FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-        ],
-      },
-      {
-        id: "/file-sets/IGVFFS0001FILS-53cbacb7",
-        parentIds: [],
-        type: "file-set",
-        fileSet: {
-          "@id": "/file-sets/IGVFFS0001FILS",
-          "@type": ["FileSet", "Item"],
-          files: ["/files/IGVFFI0001FSTQ"],
-          file_set_type: "file-set",
-          summary: "Test file set",
-        },
-        files: [
-          {
-            "@id": "/files/IGVFFI0001FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0001FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0001FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-        ],
-        childFile: {
-          "@id": "/files/IGVFFI0002FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          derived_from: ["/files/IGVFFI0001FSTQ"],
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-      },
+    const result = getFileMetrics(file, qualityMetrics);
+    expect(result).toHaveLength(2);
+    expect(result.map((m) => m["@id"])).toEqual([
+      "/quality-metrics/metric1",
+      "/quality-metrics/metric2",
     ]);
   });
 
-  it("should generate nodes with files in an external file set", () => {
-    const fileSets: FileSetObject[] = [
+  it("should return empty array when file has no quality metrics", () => {
+    const file: FileObject = {
+      "@id": "/files/file1",
+      "@type": ["File", "Item"],
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/test",
+      quality_metrics: [],
+    };
+
+    const qualityMetrics: QualityMetricObject[] = [
       {
-        "@id": "/file-sets/IGVFFS0001FILS",
-        "@type": ["FileSet", "Item"],
-        files: ["/files/IGVFFI0001FSTQ"],
-        file_set_type: "file-set",
-        summary: "Test file set",
-      },
-      {
-        "@id": "/file-sets/IGVFFS0002FILS",
-        "@type": ["FileSet", "Item"],
-        files: ["/files/IGVFFI0002FSTQ"],
-        file_set_type: "file-set",
-        summary: "Test file set 2",
+        "@id": "/quality-metrics/metric1",
+        "@type": ["QualityMetric", "Item"],
+        quality_metric_of: ["/files/other"],
+        analysis_step_version: "/analysis-step-versions/test",
       },
     ];
 
-    const files: FileObject[] = [
+    const result = getFileMetrics(file, qualityMetrics);
+    expect(result).toEqual([]);
+  });
+
+  it("should handle file with undefined quality_metrics", () => {
+    const file: FileObject = {
+      "@id": "/files/file1",
+      "@type": ["File", "Item"],
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/test",
+      // quality_metrics is undefined
+    };
+
+    const qualityMetrics: QualityMetricObject[] = [
       {
-        "@id": "/files/IGVFFI0001FSTQ",
+        "@id": "/quality-metrics/metric1",
+        "@type": ["QualityMetric", "Item"],
+        quality_metric_of: ["/files/file1"],
+        analysis_step_version: "/analysis-step-versions/test",
+      },
+    ];
+
+    const result = getFileMetrics(file, qualityMetrics);
+    expect(result).toEqual([]);
+  });
+
+  it("should handle empty quality metrics array", () => {
+    const file: FileObject = {
+      "@id": "/files/file1",
+      "@type": ["File", "Item"],
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/test",
+      quality_metrics: ["/quality-metrics/metric1"],
+    };
+
+    const result = getFileMetrics(file, []);
+    expect(result).toEqual([]);
+  });
+});
+
+describe("generateGraphData", () => {
+  it("should generate graph data for connected files", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/file1",
         "@type": ["File", "Item"],
-        content_type: "alignments",
+        content_type: "reads",
         file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file2"],
       },
       {
-        "@id": "/files/IGVFFI0002FSTQ",
+        "@id": "/files/file2",
         "@type": ["File", "Item"],
-        content_type: "alignments",
-        derived_from: [
-          "/files/IGVFFI0001FSTQ",
-          "/files/IGVFFI1003FSTQ",
-          "/files/IGVFFI1004FSTQ",
-        ],
+        content_type: "reads",
         file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
+        file_set: "/file-sets/test",
+        derived_from: [],
       },
+    ];
+    const externalFiles: FileObject[] = [];
+    const fileFileSets: FileSetObject[] = [];
+    const referenceFiles: FileObject[] = [];
+    const qualityMetrics: QualityMetricObject[] = [];
+
+    const result = generateGraphData(
+      nativeFiles,
+      externalFiles,
+      fileFileSets,
+      referenceFiles,
+      qualityMetrics
+    );
+
+    expect(result).not.toBeNull();
+    expect(result?.id).toBe("root");
+    expect(result?.children).toBeDefined();
+    expect(result?.edges).toBeDefined();
+  });
+
+  it("should generate graph data with external file sets", () => {
+    const nativeFiles: FileObject[] = [
       {
-        "@id": "/files/IGVFFI0003FSTQ",
+        "@id": "/files/native1",
         "@type": ["File", "Item"],
-        content_type: "alignments",
-        derived_from: ["/files/IGVFFI0002FSTQ"],
+        content_type: "reads",
         file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
-      },
-      {
-        "@id": "/files/IGVFFI0004FSTQ",
-        "@type": ["File", "Item"],
-        content_type: "alignments",
-        derived_from: ["/files/IGVFFI0002FSTQ"],
-        file_format: "fastq",
-        file_set: fileSets[0],
-        quality_metrics: [],
-        reference_files: [],
+        file_set: "/file-sets/native",
+        derived_from: ["/files/external1"],
       },
     ];
     const externalFiles: FileObject[] = [
       {
-        "@id": "/files/IGVFFI1003FSTQ",
+        "@id": "/files/external1",
         "@type": ["File", "Item"],
-        content_type: "alignments",
+        content_type: "reads",
         file_format: "fastq",
-        file_set: fileSets[1],
-        quality_metrics: [],
-        reference_files: [],
-      },
-      {
-        "@id": "/files/IGVFFI1004FSTQ",
-        "@type": ["File", "Item"],
-        content_type: "alignments",
-        file_format: "fastq",
-        file_set: fileSets[1],
-        quality_metrics: [],
-        reference_files: [],
+        file_set: "/file-sets/external",
+        derived_from: [],
       },
     ];
-    const results = generateGraphData(files, fileSets, [
-      files[0],
-      files[1],
-      externalFiles[0],
-      externalFiles[1],
-    ]);
-    expect(results).toEqual([
+    const fileFileSets: FileSetObject[] = [
       {
-        id: "/files/IGVFFI0001FSTQ",
-        parentIds: [],
-        type: "file",
-        file: {
-          "@id": "/files/IGVFFI0001FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-        externalFiles: [],
-      },
-      {
-        id: "/files/IGVFFI0002FSTQ",
-        parentIds: [
-          "/files/IGVFFI0001FSTQ",
-          "/file-sets/IGVFFS0001FILS-53cbacb7",
-          "/file-sets/IGVFFS0002FILS-8ba84d47",
-        ],
-        type: "file",
-        file: {
-          "@id": "/files/IGVFFI0002FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          derived_from: [
-            "/files/IGVFFI0001FSTQ",
-            "/files/IGVFFI1003FSTQ",
-            "/files/IGVFFI1004FSTQ",
-          ],
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-        externalFiles: [
-          {
-            "@id": "/files/IGVFFI0001FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0001FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0001FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-          {
-            "@id": "/files/IGVFFI1003FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0002FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0002FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set 2",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-          {
-            "@id": "/files/IGVFFI1004FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0002FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0002FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set 2",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-        ],
-      },
-      {
-        id: "/files/IGVFFI0003FSTQ",
-        parentIds: [
-          "/files/IGVFFI0002FSTQ",
-          "/file-sets/IGVFFS0001FILS-33e07923",
-        ],
-        type: "file",
-        file: {
-          "@id": "/files/IGVFFI0003FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          derived_from: ["/files/IGVFFI0002FSTQ"],
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-        externalFiles: [
-          {
-            "@id": "/files/IGVFFI0002FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            derived_from: [
-              "/files/IGVFFI0001FSTQ",
-              "/files/IGVFFI1003FSTQ",
-              "/files/IGVFFI1004FSTQ",
-            ],
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0001FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0001FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-        ],
-      },
-      {
-        id: "/files/IGVFFI0004FSTQ",
-        parentIds: [
-          "/files/IGVFFI0002FSTQ",
-          "/file-sets/IGVFFS0001FILS-33e07923",
-        ],
-        type: "file",
-        file: {
-          "@id": "/files/IGVFFI0004FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          derived_from: ["/files/IGVFFI0002FSTQ"],
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-        externalFiles: [
-          {
-            "@id": "/files/IGVFFI0002FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            derived_from: [
-              "/files/IGVFFI0001FSTQ",
-              "/files/IGVFFI1003FSTQ",
-              "/files/IGVFFI1004FSTQ",
-            ],
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0001FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0001FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-        ],
-      },
-      {
-        id: "/file-sets/IGVFFS0001FILS-53cbacb7",
-        parentIds: [],
-        type: "file-set",
-        fileSet: {
-          "@id": "/file-sets/IGVFFS0001FILS",
-          "@type": ["FileSet", "Item"],
-          files: ["/files/IGVFFI0001FSTQ"],
-          file_set_type: "file-set",
-          summary: "Test file set",
-        },
-        files: [
-          {
-            "@id": "/files/IGVFFI0001FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0001FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0001FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-        ],
-        childFile: {
-          "@id": "/files/IGVFFI0002FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          derived_from: [
-            "/files/IGVFFI0001FSTQ",
-            "/files/IGVFFI1003FSTQ",
-            "/files/IGVFFI1004FSTQ",
-          ],
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-      },
-      {
-        id: "/file-sets/IGVFFS0002FILS-8ba84d47",
-        parentIds: [],
-        type: "file-set",
-        fileSet: {
-          "@id": "/file-sets/IGVFFS0002FILS",
-          "@type": ["FileSet", "Item"],
-          files: ["/files/IGVFFI0002FSTQ"],
-          file_set_type: "file-set",
-          summary: "Test file set 2",
-        },
-        files: [
-          {
-            "@id": "/files/IGVFFI1003FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0002FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0002FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set 2",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-          {
-            "@id": "/files/IGVFFI1004FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0002FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0002FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set 2",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-        ],
-        childFile: {
-          "@id": "/files/IGVFFI0002FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          derived_from: [
-            "/files/IGVFFI0001FSTQ",
-            "/files/IGVFFI1003FSTQ",
-            "/files/IGVFFI1004FSTQ",
-          ],
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-      },
-      {
-        id: "/file-sets/IGVFFS0001FILS-33e07923",
-        parentIds: [],
-        type: "file-set",
-        fileSet: {
-          "@id": "/file-sets/IGVFFS0001FILS",
-          "@type": ["FileSet", "Item"],
-          files: ["/files/IGVFFI0001FSTQ"],
-          file_set_type: "file-set",
-          summary: "Test file set",
-        },
-        files: [
-          {
-            "@id": "/files/IGVFFI0002FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            derived_from: [
-              "/files/IGVFFI0001FSTQ",
-              "/files/IGVFFI1003FSTQ",
-              "/files/IGVFFI1004FSTQ",
-            ],
-            file_format: "fastq",
-            file_set: {
-              "@id": "/file-sets/IGVFFS0001FILS",
-              "@type": ["FileSet", "Item"],
-              files: ["/files/IGVFFI0001FSTQ"],
-              file_set_type: "file-set",
-              summary: "Test file set",
-            },
-            quality_metrics: [],
-            reference_files: [],
-          },
-        ],
-        childFile: {
-          "@id": "/files/IGVFFI0003FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          derived_from: ["/files/IGVFFI0002FSTQ"],
-          file_format: "fastq",
-          file_set: {
-            "@id": "/file-sets/IGVFFS0001FILS",
-            "@type": ["FileSet", "Item"],
-            files: ["/files/IGVFFI0001FSTQ"],
-            file_set_type: "file-set",
-            summary: "Test file set",
-          },
-          quality_metrics: [],
-          reference_files: [],
-        },
-      },
-    ]);
-  });
-
-  it("should handle files with no file set", () => {
-    const fileSets: FileSetObject[] = [];
-
-    const files: FileObject[] = [
-      {
-        "@id": "/files/IGVFFI0001FSTQ",
-        "@type": ["File", "Item"],
-        content_type: "alignments",
-        file_format: "fastq",
-        file_set: "/file-sets/IGVFFS0001FILS",
-        quality_metrics: [],
-        reference_files: [],
-      },
-      {
-        "@id": "/files/IGVFFI0002FSTQ",
-        "@type": ["File", "Item"],
-        content_type: "alignments",
-        derived_from: ["/files/IGVFFI0001FSTQ"],
-        file_format: "fastq",
-        file_set: "/file-sets/IGVFFS0001FILS",
-        quality_metrics: [],
-        reference_files: [],
+        "@id": "/file-sets/external",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+        accession: "EXT001",
+        files: [],
+        summary: "External file set",
       },
     ];
-    const results = generateGraphData(files, fileSets, [files[0]]);
-    expect(results).toEqual([
-      {
-        id: "/files/IGVFFI0001FSTQ",
-        parentIds: [],
-        type: "file",
-        file: {
-          "@id": "/files/IGVFFI0001FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          file_format: "fastq",
-          file_set: "/file-sets/IGVFFS0001FILS",
-          quality_metrics: [],
-          reference_files: [],
-        },
-        externalFiles: [],
-      },
-      {
-        id: "/files/IGVFFI0002FSTQ",
-        parentIds: ["/files/IGVFFI0001FSTQ"],
-        type: "file",
-        file: {
-          "@id": "/files/IGVFFI0002FSTQ",
-          "@type": ["File", "Item"],
-          content_type: "alignments",
-          derived_from: ["/files/IGVFFI0001FSTQ"],
-          file_format: "fastq",
-          file_set: "/file-sets/IGVFFS0001FILS",
-          quality_metrics: [],
-          reference_files: [],
-        },
-        externalFiles: [
-          {
-            "@id": "/files/IGVFFI0001FSTQ",
-            "@type": ["File", "Item"],
-            content_type: "alignments",
-            file_format: "fastq",
-            file_set: "/file-sets/IGVFFS0001FILS",
-            quality_metrics: [],
-            reference_files: [],
-          },
-        ],
-      },
-    ]);
-  });
-});
-
-describe("Test getFileMetrics()", () => {
-  it("should return an empty array for an empty file", () => {
-    const file: FileObject = {
-      "@id": "/files/IGVFFI0001FSTQ",
-      "@type": ["File", "Item"],
-      content_type: "alignments",
-      file_format: "fastq",
-      file_set: "/file-sets/IGVFFS0001FILS",
-      quality_metrics: [],
-      reference_files: [],
-    };
+    const referenceFiles: FileObject[] = [];
     const qualityMetrics: QualityMetricObject[] = [];
-    const results = getFileMetrics(file, qualityMetrics);
-    expect(results).toEqual([]);
-  });
 
-  it("should return an empty array for a file with no quality metrics", () => {
-    const file: FileObject = {
-      "@id": "/files/IGVFFI0001FSTQ",
-      "@type": ["File", "Item"],
-      content_type: "alignments",
-      file_format: "fastq",
-      file_set: "/file-sets/IGVFFS0001FILS",
-      quality_metrics: [],
-      reference_files: [],
-    };
-    const qualityMetrics: QualityMetricObject[] = [
-      {
-        "@id": "/quality-metrics/1",
-        "@type": ["QualityMetric", "Item"],
-        analysis_step_version: "/analysis-step-versions/1",
-        quality_metric_of: ["/files/IGVFFI0001FSTQ"],
-      },
-      {
-        "@id": "/quality-metrics/2",
-        "@type": ["QualityMetric", "Item"],
-        analysis_step_version: "/analysis-step-versions/2",
-        quality_metric_of: ["/files/IGVFFI0001FSTQ"],
-      },
-    ];
-    const results = getFileMetrics(file, qualityMetrics);
-    expect(results).toEqual([]);
-  });
-
-  it("should return quality metrics for a file with matching quality metrics", () => {
-    const file: FileObject = {
-      "@id": "/files/IGVFFI0001FSTQ",
-      "@type": ["File", "Item"],
-      content_type: "alignments",
-      file_format: "fastq",
-      file_set: "/file-sets/IGVFFS0001FILS",
-      quality_metrics: ["/quality-metrics/1"],
-      reference_files: [],
-    };
-    const qualityMetrics: QualityMetricObject[] = [
-      {
-        "@id": "/quality-metrics/1",
-        "@type": ["QualityMetric", "Item"],
-        analysis_step_version: "/analysis-step-versions/1",
-        quality_metric_of: ["/files/IGVFFI0001FSTQ"],
-      },
-      {
-        "@id": "/quality-metrics/2",
-        "@type": ["QualityMetric", "Item"],
-        analysis_step_version: "/analysis-step-versions/2",
-        quality_metric_of: ["/files/IGVFFI0001FSTQ"],
-      },
-    ];
-    const results = getFileMetrics(file, qualityMetrics);
-    expect(results).toHaveLength(1);
-    expect(results[0]["@id"]).toEqual("/quality-metrics/1");
-  });
-
-  it("should return multiple quality metrics for a file with multiple matching quality metrics", () => {
-    const file: FileObject = {
-      "@id": "/files/IGVFFI0001FSTQ",
-      "@type": ["File", "Item"],
-      content_type: "alignments",
-      file_format: "fastq",
-      file_set: "/file-sets/IGVFFS0001FILS",
-      quality_metrics: ["/quality-metrics/1", "/quality-metrics/2"],
-      reference_files: [],
-    };
-    const qualityMetrics: QualityMetricObject[] = [
-      {
-        "@id": "/quality-metrics/1",
-        "@type": ["QualityMetric", "Item"],
-        analysis_step_version: "/analysis-step-versions/1",
-        quality_metric_of: ["/files/IGVFFI0001FSTQ"],
-      },
-      {
-        "@id": "/quality-metrics/2",
-        "@type": ["QualityMetric", "Item"],
-        analysis_step_version: "/analysis-step-versions/2",
-        quality_metric_of: ["/files/IGVFFI0001FSTQ"],
-      },
-      {
-        "@id": "/quality-metrics/3",
-        "@type": ["QualityMetric", "Item"],
-        analysis_step_version: "/analysis-step-versions/3",
-        quality_metric_of: ["/files/IGVFFI0001FSTQ"],
-      },
-    ];
-    const results = getFileMetrics(file, qualityMetrics);
-    expect(results).toHaveLength(2);
-    expect(results[0]["@id"]).toEqual("/quality-metrics/1");
-    expect(results[1]["@id"]).toEqual("/quality-metrics/2");
-  });
-});
-
-describe("Test extractD3DagErrorObject()", () => {
-  it("should return an empty array for an empty string", () => {
-    const results = extractD3DagErrorObject("");
-    expect(results).toEqual([]);
-  });
-
-  it("should return an empty array for a string without JSON", () => {
-    const results = extractD3DagErrorObject(
-      "This does not contain a JSON string"
+    const result = generateGraphData(
+      nativeFiles,
+      externalFiles,
+      fileFileSets,
+      referenceFiles,
+      qualityMetrics
     );
-    expect(results).toEqual([]);
+
+    expect(result).not.toBeNull();
+    expect(result?.children?.length).toBeGreaterThan(0);
   });
 
-  it("should return an empty array for a string with invalid JSON", () => {
-    const results = extractD3DagErrorObject("Error: '{invalid: json,}'");
-    expect(results).toEqual([]);
-  });
+  it("should generate graph data with reference files", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file2"],
+        reference_files: ["/files/reference1"],
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: [],
+      },
+    ];
+    const externalFiles: FileObject[] = [];
+    const fileFileSets: FileSetObject[] = [];
+    const referenceFiles: FileObject[] = [
+      {
+        "@id": "/files/reference1",
+        "@type": ["ReferenceFile", "File", "Item"],
+        content_type: "genome reference",
+        file_format: "fasta",
+        file_set: "/file-sets/reference",
+      },
+    ];
+    const qualityMetrics: QualityMetricObject[] = [];
 
-  it("should return a parsed object for a string containing a valid JSON string", () => {
-    const validJsonString = `node '{"id":"/sequence-files/IGVFFI0001FSTQ/"}' has a cycle`;
-    const results = extractD3DagErrorObject(validJsonString);
-    expect(results).toHaveLength(1);
-    expect(results[0]).toEqual({ id: "/sequence-files/IGVFFI0001FSTQ/" });
-  });
-
-  it("should return multiple parsed objects for a string containing multiple JSON strings", () => {
-    const validJsonString = `node '{"id":"/sequence-files/IGVFFI0001FSTQ/"}' and node '{"id":"/sequence-files/IGVFFI0002FSTQ/"}'`;
-    const results = extractD3DagErrorObject(validJsonString);
-    expect(results).toHaveLength(2);
-    expect(results[0]).toEqual({ id: "/sequence-files/IGVFFI0001FSTQ/" });
-    expect(results[1]).toEqual({ id: "/sequence-files/IGVFFI0002FSTQ/" });
-  });
-
-  it("should deduplicate parsed objects with the same id", () => {
-    const validJsonString = `node '{"id":"/sequence-files/IGVFFI0001FSTQ/"}', node '{"id":"/sequence-files/IGVFFI9998FSTQ/"}' and node '{"id":"/sequence-files/IGVFFI0001FSTQ/"}'`;
-    const results = extractD3DagErrorObject(validJsonString);
-    expect(results).toHaveLength(2);
-    expect(results[0]).toEqual({ id: "/sequence-files/IGVFFI0001FSTQ/" });
-    expect(results[1]).toEqual({ id: "/sequence-files/IGVFFI9998FSTQ/" });
-  });
-});
-
-describe("Test extractD3DagErrorObjectIds()", () => {
-  it("should return an empty array for an empty string", () => {
-    const results = extractD3DagErrorObjectIds("");
-    expect(results).toEqual([]);
-  });
-
-  it("should return an empty array for a string without JSON", () => {
-    const results = extractD3DagErrorObjectIds(
-      "This does not contain a JSON string"
+    const result = generateGraphData(
+      nativeFiles,
+      externalFiles,
+      fileFileSets,
+      referenceFiles,
+      qualityMetrics
     );
-    expect(results).toEqual([]);
+
+    expect(result).not.toBeNull();
+    expect(result?.children?.length).toBeGreaterThan(0);
   });
 
-  it("should return an empty array for a string with invalid JSON", () => {
-    const results = extractD3DagErrorObjectIds("Error: '{invalid: json,}'");
-    expect(results).toEqual([]);
+  it("should generate graph data with quality metrics filtering", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file2"],
+        quality_metrics: ["/quality-metrics/metric1"],
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: [],
+      },
+    ];
+    const externalFiles: FileObject[] = [];
+    const fileFileSets: FileSetObject[] = [];
+    const referenceFiles: FileObject[] = [];
+    const qualityMetrics: QualityMetricObject[] = [
+      {
+        "@id": "/quality-metrics/metric1",
+        "@type": ["QualityMetric", "Item"],
+        quality_metric_of: ["/files/file1"],
+        analysis_step_version: "/analysis-step-versions/test",
+      },
+    ];
+
+    const result = generateGraphData(
+      nativeFiles,
+      externalFiles,
+      fileFileSets,
+      referenceFiles,
+      qualityMetrics
+    );
+
+    expect(result).not.toBeNull();
+    expect(result?.children?.length).toBeGreaterThan(0);
   });
 
-  it("should return paths for valid JSON strings in the error message", () => {
-    const validJsonString = `node '{"id":"/sequence-files/IGVFFI0001FSTQ/"}' has a cycle`;
-    const results = extractD3DagErrorObjectIds(validJsonString);
-    expect(results).toHaveLength(1);
-    expect(results[0]).toBe("IGVFFI0001FSTQ");
+  it("should generate graph data with files having null derived_from", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: null, // null instead of undefined or array
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file1"], // This file derives from file1
+      },
+    ] as FileObject[];
+    const externalFiles: FileObject[] = [];
+    const fileFileSets: FileSetObject[] = [];
+    const referenceFiles: FileObject[] = [];
+    const qualityMetrics: QualityMetricObject[] = [];
+
+    const result = generateGraphData(
+      nativeFiles,
+      externalFiles,
+      fileFileSets,
+      referenceFiles,
+      qualityMetrics
+    );
+
+    expect(result).not.toBeNull();
+    expect(result?.children?.length).toBeGreaterThan(0);
   });
 
-  it("should return multiple paths for multiple valid JSON strings", () => {
-    const validJsonString = `node '{"id":"/sequence-files/IGVFFI0001FSTQ/"}' and node '{"id":"/sequence-files/IGVFFI0002FSTQ/"}'`;
-    const results = extractD3DagErrorObjectIds(validJsonString);
-    expect(results).toHaveLength(2);
-    expect(results[0]).toBe("IGVFFI0001FSTQ");
-    expect(results[1]).toBe("IGVFFI0002FSTQ");
-  });
-
-  it("should deduplicate paths for valid JSON strings with the same id", () => {
-    const validJsonString = `node '{"id":"/sequence-files/IGVFFI0001FSTQ/"}', node '{"id":"/sequence-files/IGVFFI9998FSTQ/"}' and node '{"id":"/sequence-files/IGVFFI0001FSTQ/"}'`;
-    const results = extractD3DagErrorObjectIds(validJsonString);
-    expect(results).toHaveLength(2);
-    expect(results[0]).toBe("IGVFFI0001FSTQ");
-    expect(results[1]).toBe("IGVFFI9998FSTQ");
+  it("should handle empty inputs", () => {
+    const result = generateGraphData([], [], [], [], []);
+    expect(result).toBeNull();
   });
 });
 
-describe("Test global consts for full statement coverage", () => {
-  it("should have valid NODE_WIDTH", () => {
-    expect(NODE_WIDTH).toBeDefined();
+describe("elkToReactFlow", () => {
+  it("should handle ELK graph with undefined children", () => {
+    const elkGraph = {
+      id: "root",
+      // children is undefined
+      edges: [],
+    };
+
+    const result = elkToReactFlow(elkGraph);
+    expect(result.nodes).toEqual([]);
+    expect(result.edges).toEqual([]);
   });
 
-  it("should have valid NODE_HEIGHT", () => {
-    expect(NODE_HEIGHT).toBeDefined();
+  it("should convert empty ELK graph to React Flow format", () => {
+    const elkGraph = {
+      id: "root",
+      children: [],
+      edges: [],
+    };
+
+    const result = elkToReactFlow(elkGraph);
+    expect(result.nodes).toEqual([]);
+    expect(result.edges).toEqual([]);
+  });
+
+  it("should convert ELK graph with nodes to React Flow format", () => {
+    const elkGraph = {
+      id: "root",
+      children: [
+        {
+          id: "node1",
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 50,
+          metadata: {
+            kind: NODE_KINDS.FILE,
+            file: {
+              "@id": "/files/file1",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+            upstreamNativeFiles: [],
+            upstreamExternalFiles: [],
+            upstreamFileSetNodes: [],
+            referenceFiles: [],
+            qualityMetrics: [],
+          },
+        },
+      ],
+      edges: [],
+    };
+
+    const result = elkToReactFlow(elkGraph);
+    expect(result.nodes).toHaveLength(1);
+    expect(result.nodes[0].id).toBe("node1");
+    expect(result.nodes[0].type).toBe("file");
+    expect(result.nodes[0].position).toEqual({ x: 0, y: 0 });
+    expect(result.edges).toEqual([]);
+  });
+
+  it("should convert ELK graph with nested children to React Flow format", () => {
+    const elkGraph = {
+      id: "root",
+      children: [
+        {
+          id: "parent1",
+          x: 0,
+          y: 0,
+          width: 200,
+          height: 100,
+          metadata: {
+            kind: NODE_KINDS.FILESET,
+            fileSet: {
+              "@id": "/file-sets/parent",
+              "@type": ["AnalysisSet", "FileSet", "Item"],
+              accession: "PARENT001",
+              files: [],
+              summary: "Parent file set",
+            } as FileSetObject,
+            externalFiles: [],
+            downstreamFile: {
+              "@id": "/files/downstream",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+          },
+          children: [
+            {
+              id: "child1",
+              x: 10,
+              y: 10,
+              width: 100,
+              height: 50,
+              metadata: {
+                kind: NODE_KINDS.FILE,
+                file: {
+                  "@id": "/files/child1",
+                  "@type": ["File", "Item"],
+                  content_type: "reads",
+                  file_format: "fastq",
+                  file_set: "/file-sets/test",
+                } as FileObject,
+                upstreamNativeFiles: [],
+                upstreamExternalFiles: [],
+                upstreamFileSetNodes: [],
+                referenceFiles: [],
+                qualityMetrics: [],
+              },
+            },
+          ],
+        },
+      ],
+      edges: [],
+    };
+
+    const result = elkToReactFlow(elkGraph);
+    expect(result.nodes).toHaveLength(2); // Parent and child nodes both have metadata
+    expect(result.nodes.map((n) => n.id)).toContain("parent1");
+    expect(result.nodes.map((n) => n.id)).toContain("child1");
+    expect(result.edges).toEqual([]);
+  });
+
+  it("should convert ELK graph with edges to React Flow format", () => {
+    const elkGraph = {
+      id: "root",
+      children: [
+        {
+          id: "node1",
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 50,
+          metadata: {
+            kind: NODE_KINDS.FILE,
+            file: {
+              "@id": "/files/file1",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+            upstreamNativeFiles: [],
+            upstreamExternalFiles: [],
+            upstreamFileSetNodes: [],
+            referenceFiles: [],
+            qualityMetrics: [],
+          },
+        },
+        {
+          id: "node2",
+          x: 200,
+          y: 0,
+          width: 100,
+          height: 50,
+          metadata: {
+            kind: NODE_KINDS.FILE,
+            file: {
+              "@id": "/files/file2",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+            upstreamNativeFiles: [],
+            upstreamExternalFiles: [],
+            upstreamFileSetNodes: [],
+            referenceFiles: [],
+            qualityMetrics: [],
+          },
+        },
+      ],
+      edges: [
+        {
+          id: "edge1",
+          sources: ["node1"],
+          targets: ["node2"],
+        },
+      ],
+    };
+
+    const result = elkToReactFlow(elkGraph);
+    expect(result.nodes).toHaveLength(2);
+    expect(result.edges).toHaveLength(1);
+    expect(result.edges[0].id).toBe("edge1");
+    expect(result.edges[0].source).toBe("node1");
+    expect(result.edges[0].target).toBe("node2");
+  });
+});
+
+describe("countFileNodes", () => {
+  it("should return 0 for empty node array", () => {
+    const result = countFileNodes([]);
+    expect(result).toBe(0);
+  });
+
+  it("should return the correct count for non-empty node array", () => {
+    const nodes: Node<NodeMetadata>[] = [
+      {
+        id: "file1",
+        type: "file",
+        position: { x: 0, y: 0 },
+        data: {
+          kind: NODE_KINDS.FILE,
+          file: {
+            "@id": "/files/file1",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test",
+          } as FileObject,
+          upstreamNativeFiles: [],
+          upstreamExternalFiles: [],
+          upstreamFileSetNodes: [],
+          referenceFiles: [],
+          qualityMetrics: [],
+        },
+      },
+      {
+        id: "file2",
+        type: "file",
+        position: { x: 0, y: 0 },
+        data: {
+          kind: NODE_KINDS.FILE,
+          file: {
+            "@id": "/files/file2",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test",
+          } as FileObject,
+          upstreamNativeFiles: [],
+          upstreamExternalFiles: [],
+          upstreamFileSetNodes: [],
+          referenceFiles: [],
+          qualityMetrics: [],
+        },
+      },
+      {
+        id: "fileset1",
+        type: "fileset",
+        position: { x: 0, y: 0 },
+        data: {
+          kind: NODE_KINDS.FILESET,
+          fileSet: {
+            "@id": "/file-sets/test",
+            "@type": ["FileSet", "Item"],
+          } as FileSetObject,
+          externalFiles: [],
+          downstreamFile: {
+            "@id": "/files/downstream",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test",
+          } as FileObject,
+        },
+      },
+    ];
+
+    const result = countFileNodes(nodes);
+    expect(result).toBe(2);
   });
 });

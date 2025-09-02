@@ -1,729 +1,470 @@
 // node_modules
-import * as d3Dag from "d3-dag";
-import { ArrowDownTrayIcon, DocumentTextIcon } from "@heroicons/react/20/solid";
+import ELK from "elkjs/lib/elk.bundled.js";
+import type { ElkNode } from "elkjs/lib/elk-api";
 import _ from "lodash";
-import { ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
-import { Group } from "@visx/group";
-import { LinkHorizontal } from "@visx/shape";
+import { Fragment, useCallback, useEffect, useState } from "react";
+import {
+  Handle,
+  MarkerType,
+  Position,
+  ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
+  type Edge,
+  type Node,
+  type NodeProps,
+} from "@xyflow/react";
 // components
 import { DataAreaTitle, DataPanel } from "../data-area";
-import { Button } from "../form-elements";
-import GlobalContext from "../global-context";
-import Icon from "../icon";
 import { QualityMetricModal } from "../quality-metric";
-import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
+import SeparatedList from "../separated-list";
 // lib
-import { UC } from "../../lib/constants";
 import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
+import { detectCycles } from "./detect-cycles";
 import { FileModal } from "./file-modal";
 import { FileSetModal } from "./file-set-modal";
 import { Legend } from "./legend";
 import {
   collectRelevantFileSetStats,
-  extractD3DagErrorObjectIds,
+  countFileNodes,
+  elkToReactFlow,
   generateGraphData,
-  getFileMetrics,
   NODE_HEIGHT,
   NODE_WIDTH,
-  trimIsolatedNodes,
+  trimIsolatedFiles,
 } from "./lib";
 import {
   fileSetTypeColorMap,
-  isFileNodeData,
-  isFileSetNodeData,
-  MAX_NODES_TO_DISPLAY,
-  type FileSetTypeColorMapSpec,
-  type NodeData,
+  isFileNodeMetadata,
+  isFileSetNodeMetadata,
+  NODE_KINDS,
+  type FileMetadata,
+  type FileSetMetadata,
+  type NodeMetadata,
 } from "./types";
 // root
-import type {
-  DatabaseObject,
-  FileObject,
-  FileSetObject,
-} from "../../globals.d";
+import type { FileObject, FileSetObject } from "../../globals.d";
+import "@xyflow/react/dist/style.css";
 
 /**
- * Horizontal offset of arrowhead from the target node.
+ * Directs node rendering to the appropriate components.
  */
-const LINK_ARROWHEAD_X_OFFSET = -88;
+const nodeTypes = {
+  [NODE_KINDS.FILE]: FileNodeContent,
+  [NODE_KINDS.FILESET]: FileSetNodeContent,
+};
 
 /**
- * Dimensions of the quality metric trigger rectangle within a file node.
+ * Maximum number of characters to display in one line of a node label.
  */
-const QUALITY_METRIC_DIMENSIONS = {
-  width: 40,
-  height: 16,
-} as const;
+const MAX_LINE_LENGTH = 24;
 
 /**
- * y-offsets for the text labels in file and file-set nodes. Each array element corresponds to a
- * different text line number in the node. `withoutMetrics` is used when the node does not
- * contain quality metrics, and `withMetrics` is used when the node does contain quality metrics.
+ * Padding around the graph in pixels.
  */
-const lineOffsetsMap = {
-  withoutMetrics: ["-8px", "6px", "18px"],
-  withMetrics: ["-18px", "-4px", "8px"],
-} as const;
+const GRAPH_PADDING = 20;
 
 /**
- * Display a selectable node in the graph, for either a file or a file set node. Put the contents
- * of the node as the children of this component.
- * @param node The node to display from d3-dag
- * @param onNodeClick Function to call when the user clicks on the node
- * @param background Background color of the node
- * @param label Aria label for the node
- * @param isNodeSelected Whether the node is selected
+ * Styles for the node handles. This puts the handles in the correct place for the edges to hook up
+ * to, but hidden to avoid visual clutter.
  */
-function GraphNode({
-  node,
-  onNodeClick,
-  background,
-  label,
-  isNodeSelected,
-  isRounded = false,
-  className = "",
-  isGraphDownload = false,
-  children,
-}: {
-  node: d3Dag.DagNode<
-    {
-      id: string;
-      parentIds: string[];
-    },
-    undefined
-  >;
-  onNodeClick: (nodeData: NodeData) => void;
-  background: FileSetTypeColorMapSpec;
-  label: string;
-  isNodeSelected: boolean;
-  isRounded?: boolean;
-  isGraphDownload?: boolean;
-  className?: string;
-  children: ReactNode;
-}) {
-  const rectProps = {
-    height: NODE_HEIGHT,
-    width: NODE_WIDTH,
-    x: -NODE_WIDTH / 2,
-    y: -NODE_HEIGHT / 2,
-    opacity: 1,
-    strokeWidth: 1,
-    ...(isRounded ? { rx: 10, ry: 10 } : {}),
-    ...(!isGraphDownload && {
-      className: `stroke-file-graph-node ${background.fill}`,
-    }),
-    ...(isGraphDownload && {
-      style: { stroke: "#1f2937", fill: background.color },
-    }),
-  };
-
-  return (
-    <Group
-      top={node.x}
-      left={node.y}
-      style={{ cursor: "pointer" }}
-      onClick={() => onNodeClick(node.data as NodeData)}
-      tabIndex={0}
-      aria-label={label}
-      className={className}
-    >
-      <rect {...rectProps} />
-      {isNodeSelected && (
-        <rect
-          height={NODE_HEIGHT + 8}
-          width={NODE_WIDTH + 8}
-          x={-NODE_WIDTH / 2 - 4}
-          y={-NODE_HEIGHT / 2 - 4}
-          fill="transparent"
-          opacity={1}
-          className="stroke-file-graph-node"
-          strokeWidth={3}
-          {...(isRounded ? { rx: 14, ry: 14 } : {})}
-        />
-      )}
-      {children}
-    </Group>
-  );
-}
-
-/**
- * Display an arrowhead at the end of a link between two nodes. The arrowhead is a triangle pointing
- * in the direction of the target node. `x` comes from `link.target.x` which -- in this graph
- * orientation -- specifies the vertical position of the target node. `y` comes from
- * `link.target.y` which specifies the horizontal position of the target node.
- * @param x X-coordinate of the arrowhead from the target node
- * @param y Y-coordinate of the arrowhead from the target node
- * @param angle Angle of the arrowhead in radians
- * @param isGraphDownload True if downloading graph as an SVG file, false if browser displayed
- */
-function LinkArrowHead({
-  x,
-  y,
-  angle,
-  isGraphDownload,
-}: {
-  x: number;
-  y: number;
-  angle: number;
-  isGraphDownload: boolean;
-}) {
-  return (
-    <polygon
-      points="0,-5 10,0 0,5"
-      transform={`translate(${
-        y + LINK_ARROWHEAD_X_OFFSET + Math.sin(angle) * 2.8
-      },${x - 10 * Math.sin(angle) * 1.3}) rotate(${(angle * 180) / Math.PI})`}
-      {...(!isGraphDownload && {
-        className: "stroke-black dark:stroke-white fill-black dark:fill-white",
-      })}
-      {...(isGraphDownload && {
-        style: { stroke: "black", fill: "black" },
-      })}
-    />
-  );
-}
+const NodeHandleStyle: React.CSSProperties = {
+  opacity: 0,
+  pointerEvents: "none",
+  left: 0,
+  right: 0,
+  top: "50%",
+  transform: "translate(0, -50%)",
+  width: 1,
+  height: 1,
+  border: 0,
+  background: "transparent",
+};
 
 /**
  * Display a button within a file node that the user can click to display the quality metrics for
  * the file.
- * @param file File object that the given quality metrics belong to
- * @param fileMetrics Quality metric objects for the currently rendering file
- * @param onClick Function to call when the user clicks on the quality metric trigger
+ *
+ * @param file - File object that the given quality metrics belong to
+ * @param fileMetrics - Quality metric objects for the currently rendering file
  */
 function QCMetricTrigger({
   file,
   fileMetrics,
-  onClick,
 }: {
   file: FileObject;
   fileMetrics: QualityMetricObject[];
-  onClick: (file: FileObject, qcMetrics: QualityMetricObject[]) => void;
 }) {
-  // Called when the user clicks on the quality metric trigger button. This button is an enclave
-  // within the file node, so stop the event from propagating to the node click handler.
-  function clickHandler(e: React.MouseEvent<SVGRectElement>) {
-    e.stopPropagation();
-    onClick(file, fileMetrics);
-  }
-
   if (fileMetrics.length > 0) {
     return (
-      <g aria-label={`Quality metrics for file ${file.accession}`}>
-        <rect
-          x={-QUALITY_METRIC_DIMENSIONS.width / 2}
-          y={NODE_HEIGHT / 2 - QUALITY_METRIC_DIMENSIONS.height - 2}
-          width={QUALITY_METRIC_DIMENSIONS.width}
-          height={QUALITY_METRIC_DIMENSIONS.height}
-          rx={2}
-          ry={2}
-          fill="lightgray"
-          role="button"
-          className="fill-file-graph-qc-trigger stroke-file-graph-node"
-          onClick={clickHandler}
-          tabIndex={0}
-        />
-        <text
-          x={0}
-          y={NODE_HEIGHT / 2 - QUALITY_METRIC_DIMENSIONS.height + 10}
-          fontSize={10}
-          textAnchor="middle"
-          className="fill-file-graph-qc-trigger-text pointer-events-none"
-          fill="black"
-          fontWeight="bold"
-        >
-          QC
-        </text>
-      </g>
+      <button
+        className="border-file-graph-file bg-file-graph-qc-trigger h-4 w-10 cursor-pointer rounded-sm border font-bold"
+        aria-label={`Quality metrics for file ${file.accession}`}
+        data-qc-button
+      >
+        QC
+      </button>
     );
   }
 }
 
 /**
- * Display a graph of file associations for a file set. The graph is a directed acyclic graph (DAG)
- * where each node represents a file and each edge represents a `derived_from` relationship between
- * files.
- * @param fileSet The file set object for the page the user views
- * @param nativeFiles Files belonging to the file set the user views
- * @param qualityMetrics Quality metrics for `nativeFiles`
- * @param graphData List of nodes to include in the graph
- * @param onReady Called when the graph is ready to be displayed
- * @param isGraphDownload True to download graph in SVG file, false to display in browser
+ * File node component. Renders the node as well as its contents.
+ *
+ * @param props - React Flow node props
  */
-function Graph({
-  fileSet,
-  nativeFiles,
-  referenceFiles,
-  qualityMetrics = [],
+function FileNodeContent(props: NodeProps) {
+  const data = props.data as FileMetadata;
+  const file = data.file;
+
+  return (
+    <div className="border-file-graph-file bg-file-graph-file h-full cursor-pointer border px-1 py-0.5">
+      <div className="flex h-full flex-col items-center justify-center text-[0.67rem] leading-[1.2]">
+        <div className="font-bold">{file.accession}</div>
+        <div>{truncateText(file.file_format, MAX_LINE_LENGTH)}</div>
+        <div>{truncateText(file.content_type, MAX_LINE_LENGTH)}</div>
+        <QCMetricTrigger file={file} fileMetrics={data.qualityMetrics} />
+      </div>
+      <div>
+        <Handle
+          type="target"
+          position={Position.Left}
+          style={{
+            ...NodeHandleStyle,
+            right: "auto",
+          }}
+        />
+        <Handle
+          type="source"
+          position={Position.Right}
+          style={{
+            ...NodeHandleStyle,
+            left: "auto",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * File-set node component. Renders the node as well as its contents.
+ *
+ * @param props - React Flow node props
+ */
+function FileSetNodeContent(props: NodeProps) {
+  const metadata = props.data as FileSetMetadata;
+  const fileSet = metadata.fileSet;
+  const fileSetAtType = fileSet["@type"][0];
+  const fileSetTypeColors = fileSetTypeColorMap[fileSetAtType];
+  const externalFileCount = metadata.externalFiles.length;
+
+  return (
+    <div
+      className={`h-full cursor-pointer rounded-full border px-1 py-0.5 ${fileSetTypeColors.bg} ${fileSetTypeColors.border}`}
+    >
+      <div className="flex h-full flex-col items-center justify-center text-[0.67rem] leading-[1.2]">
+        <div className="font-bold">{fileSet.accession}</div>
+        {externalFileCount === 1 ? (
+          <div>1 file</div>
+        ) : (
+          <div>{externalFileCount} files</div>
+        )}
+        {fileSet.file_set_type && (
+          <div>{truncateText(fileSet.file_set_type, MAX_LINE_LENGTH)}</div>
+        )}
+      </div>
+      <div>
+        <Handle
+          type="target"
+          position={Position.Left}
+          style={{
+            ...NodeHandleStyle,
+            right: "auto",
+          }}
+        />
+        <Handle
+          type="source"
+          position={Position.Right}
+          style={{
+            ...NodeHandleStyle,
+            left: "auto",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Display a graph of file associations for a file set using React Flow and ELK layout.
+ *
+ * @param graphData - ELK node data structure containing files and file sets to render
+ * @param nativeFiles - Files included directly in the file set the user views
+ */
+function GraphCore({
   graphData,
-  onReady = () => {},
-  isGraphDownload = false,
+  nativeFiles,
 }: {
-  fileSet: FileSetObject;
+  graphData: ElkNode;
   nativeFiles: FileObject[];
-  referenceFiles: FileObject[];
-  qualityMetrics?: QualityMetricObject[];
-  graphData: NodeData[];
-  onReady?: (svg: SVGSVGElement) => void;
-  isGraphDownload?: boolean;
 }) {
-  // Holds the DAG to render after it has been loaded in the browser
-  const [loadedDag, setLoadedDag] = useState<d3Dag.Dag<
-    { id: string; parentIds: string[] },
-    undefined
-  > | null>(null);
-  const { darkMode } = useContext(GlobalContext);
-  // Holds the height of the layout after it has been calculated
-  const [layoutHeight, setLayoutHeight] = useState(0);
-  // Holds the width of the layout after it has been calculated
-  const [layoutWidth, setLayoutWidth] = useState(0);
-  // Holds the node that the user has clicked on to display a modal
-  const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
-  // When the user clicks on a nodes quality metrics, hold the selected node's metrics
+  const [elk] = useState(() => new ELK());
+  const [laidOutNodes, setLaidOutNodes] = useState<Node<NodeMetadata>[]>([]);
+  const [laidOutEdges, setLaidOutEdges] = useState<Edge[]>([]);
+  const [graphHeight, setGraphHeight] = useState(0);
+  const [graphWidth, setGraphWidth] = useState(0);
+  const [selectedNode, setSelectedNode] = useState<Node<NodeMetadata> | null>(
+    null
+  );
   const [selectedQualityMetrics, setSelectedQualityMetrics] = useState<
     QualityMetricObject[]
   >([]);
-  // File that the user clicked the quality metrics trigger for
   const [qualityMetricFile, setQualityMetricFile] = useState<FileObject | null>(
     null
   );
-  // Displays a message instead of the graph, like "Loading" or error messages.
-  const [graphingMessage, setGraphingMessage] = useState<string | null>(
-    `Loading${UC.hellip}`
+
+  const rf = useReactFlow();
+  const fileSetStats = collectRelevantFileSetStats(laidOutNodes);
+
+  // Called when the user clicks on a file or file-set node in the graph. It sets the currently
+  // selected node so that its modal appears.
+  const onNodeClick = useCallback(
+    (e: React.MouseEvent, node: Node<NodeMetadata>) => {
+      // Detect if the click was in the QC button enclave within the clicked node.
+      if ((e.target as HTMLElement).closest("[data-qc-button]")) {
+        const metadata = node.data as FileMetadata;
+        setSelectedQualityMetrics(metadata.qualityMetrics);
+        setQualityMetricFile(metadata.file);
+        return;
+      }
+
+      // Click was within the node but outside the QC button. Set a state to open the file or file-
+      // set modal.
+      setSelectedNode(node as Node<NodeMetadata>);
+    },
+    []
   );
-
-  // Reference to the SVG element that holds the graph; useful for saving the graph to a file
-  const svgRef = useRef<SVGSVGElement>(null);
-  // Timer to periodically monitor when svgRef gets filled in with the SVG element
-  let svgReadyTimer: NodeJS.Timeout;
-
-  // Poll the SVG element ref to know when the graph is ready to be displayed.
-  function waitForSvg() {
-    if (svgRef.current) {
-      // Notify the caller that the graph is ready to be displayed. Use this to download the chart
-      // to an SVG file.
-      onReady(svgRef.current);
-    } else {
-      svgReadyTimer = setTimeout(waitForSvg, 10);
-    }
-  }
 
   useEffect(() => {
-    // useEffect hides the d3-dag code from the NextJS server because d3-dag requires the browser's
-    // DOM to run. Use a timer to give React a cycle to render the "Loading..." message before
-    // running the d3-dag code.
-    let dag: d3Dag.Dag<NodeData, undefined>;
-    let layout: d3Dag.SugiyamaOperator = undefined as any;
+    // After ELK loads we can start layout with ELK. Do this inside useEffect so we can set the
+    // node and edge states and render the graph once layout finishes.
+    elk
+      .layout(graphData)
+      .then((graphDataWithLayout: ElkNode) => {
+        const { nodes, edges } = elkToReactFlow(graphDataWithLayout);
+        setLaidOutNodes(nodes as Node<NodeMetadata>[]);
+        setLaidOutEdges(edges);
+      })
+      .catch((error) => {
+        console.error("ELK layout failed:", error);
+      });
+  }, [elk, graphData]);
 
-    const loadingTimer = setTimeout(() => {
-      try {
-        dag = d3Dag.dagStratify()(graphData);
-        layout = d3Dag
-          .sugiyama()
-          .coord(d3Dag.coordGreedy())
-          .decross(d3Dag.decrossOpt().large("large"))
-          .layering(d3Dag.layeringLongestPath())
-          .nodeSize((node) => {
-            // Might have to play with the adjustment factors if you change the size of the nodes.
-            return node ? [NODE_HEIGHT * 1.4, NODE_WIDTH * 1.8] : [0, 0];
-          });
-        const { width, height } = layout(dag as any);
-        setLoadedDag(dag);
+  useEffect(() => {
+    // Runs after layout to determine the height of the graph so we can set the height of the
+    // container appropriately.
+    requestAnimationFrame(() => {
+      const graphBounds = rf.getNodesBounds(rf.getNodes());
+      setGraphHeight(
+        Math.ceil(
+          graphBounds.y + graphBounds.height + NODE_HEIGHT + GRAPH_PADDING
+        )
+      );
+      setGraphWidth(
+        Math.ceil(
+          graphBounds.x + graphBounds.width + NODE_WIDTH + GRAPH_PADDING
+        )
+      );
+    });
+  }, [rf, laidOutNodes, laidOutEdges]);
 
-        // d3-dag sugiyama lays out the graph vertically, so swap the width and height to fit a
-        // horizontal display.
-        setLayoutHeight(width);
-        setLayoutWidth(height);
-      } catch (error) {
-        const { message } = error;
-        let userMessage = "The graph could not be generated from this data.";
-        const errorObjectIds = extractD3DagErrorObjectIds(message);
-
-        if (message.includes("self loop")) {
-          if (errorObjectIds.length > 0) {
-            userMessage = `File ${errorObjectIds[0]} refers to itself as its parent.`;
-          } else {
-            userMessage = "A file refers to itself as its parent.";
-          }
-        } else if (message.includes("cycle")) {
-          if (errorObjectIds.length > 0) {
-            userMessage = `The files ${errorObjectIds.join(
-              ", "
-            )} are part of a derived-from loop.`;
-          } else {
-            userMessage = "The files form a derived-from loop.";
-          }
-        }
-        setLoadedDag(null);
-        setLayoutHeight(0);
-        setLayoutWidth(0);
-        setGraphingMessage(`Error generating graph: ${userMessage}`);
-      }
-    }, 0);
-
-    // Start waiting for the SVG graph to finish rendering.
-    waitForSvg();
-
-    return () => {
-      clearTimeout(loadingTimer);
-      clearTimeout(svgReadyTimer);
-    };
-  }, []);
-
-  /**
-   * Called when the user clicks on a quality metric trigger in a file node. By setting the
-   * `selectedQualityMetrics` state, the modal showing the quality metrics gets displayed.
-   * @param file File object that the quality-metric button user clicked on belongs to
-   * @param qcMetrics Quality metrics for the file that the user clicked on
-   */
-  function qcMetricClickHandler(
-    file: FileObject,
-    qcMetrics: QualityMetricObject[]
-  ) {
-    setQualityMetricFile(file);
-    setSelectedQualityMetrics(qcMetrics);
-  }
-
-  /**
-   * Handle when the user clicks on a node in the graph to display a modal.
-   * @param {NodeData} nodeData The node that the user clicked on
-   */
-  function onNodeClick(nodeData: NodeData) {
-    setSelectedNode(nodeData);
-  }
-
-  return loadedDag ? (
-    <div className="max-h-[calc(100vh-8rem)] overflow-y-auto">
-      <svg
-        className="mx-auto"
-        width={layoutWidth}
-        height={layoutHeight}
-        ref={svgRef}
-      >
-        <Group top={0} left={0}>
-          {loadedDag.links().map((link, i) => {
-            const source = { x: link.source.x, y: link.source.y + 70 };
-            const target = { x: link.target.x, y: link.target.y - 70 };
-
-            // Calculate the angle of the arrowhead based on the link's source and target positions.
-            const dx = target.y - source.y;
-            const dy = target.x - source.x;
-            const angle = Math.atan2(dy, dx) * 0.4;
-
-            // Render the edges between nodes as lines.
-            return (
-              <g key={`link-${i}`}>
-                <LinkHorizontal
-                  data={link}
-                  {...(!isGraphDownload && {
-                    className: "stroke-black dark:stroke-white",
-                  })}
-                  {...(isGraphDownload && {
-                    style: { stroke: "black" },
-                  })}
-                  fill="none"
-                  source={() => source}
-                  target={() => target}
-                />
-                <LinkArrowHead
-                  x={link.target.x}
-                  y={link.target.y}
-                  angle={angle}
-                  isGraphDownload={isGraphDownload}
-                />
-              </g>
-            );
-          })}
-          {loadedDag.descendants().map((node, i) => {
-            // Render the nodes as rectangles.
-            const graphNode = node.data as NodeData;
-            if (isFileNodeData(graphNode)) {
-              const isNodeSelected = selectedNode?.id === graphNode.id;
-              const background =
-                fileSetTypeColorMap[fileSet["@type"][0]] ||
-                fileSetTypeColorMap.unknown;
-              const foreground =
-                darkMode.enabled && !isGraphDownload ? "#ffffff" : "#000000";
-              const fileMetrics = getFileMetrics(
-                graphNode.file,
-                qualityMetrics
-              );
-              const lineOffsets =
-                fileMetrics.length > 0
-                  ? lineOffsetsMap.withMetrics
-                  : lineOffsetsMap.withoutMetrics;
-              return (
-                <GraphNode
-                  key={i}
-                  node={node}
-                  onNodeClick={onNodeClick}
-                  background={background}
-                  label={`File ${graphNode.file.accession}, file format ${graphNode.file.file_format}, content type ${graphNode.file.content_type}`}
-                  isNodeSelected={isNodeSelected && !isGraphDownload}
-                  isGraphDownload={isGraphDownload}
-                  className="relative"
-                >
-                  <DocumentTextIcon
-                    className="absolute"
-                    x={NODE_WIDTH / 2 - 18}
-                    y={-NODE_HEIGHT / 2 + 2}
-                    width={16}
-                    height={16}
-                  />
-                  <text
-                    y={lineOffsets[0]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fontWeight="bold"
-                    fill={foreground}
-                  >
-                    {graphNode.file.accession}
-                  </text>
-                  <text
-                    y={lineOffsets[1]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fill={foreground}
-                  >
-                    {graphNode.file.file_format}
-                  </text>
-                  <text
-                    y={lineOffsets[2]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fill={foreground}
-                  >
-                    {truncateText(graphNode.file.content_type, 24)}
-                  </text>
-                  <QCMetricTrigger
-                    file={graphNode.file}
-                    fileMetrics={fileMetrics}
-                    onClick={qcMetricClickHandler}
-                  />
-                </GraphNode>
-              );
-            }
-            if (isFileSetNodeData(graphNode)) {
-              const isNodeSelected = selectedNode?.id === graphNode.id;
-              const background =
-                fileSetTypeColorMap[graphNode.fileSet["@type"][0]] ||
-                fileSetTypeColorMap.unknown;
-              const foreground = darkMode.enabled ? "#ffffff" : "#000000";
-              const lineOffsets = lineOffsetsMap.withoutMetrics;
-              return (
-                <GraphNode
-                  key={i}
-                  node={node}
-                  onNodeClick={onNodeClick}
-                  background={background}
-                  label={`File set ${graphNode.fileSet.title}`}
-                  isNodeSelected={isNodeSelected && !isGraphDownload}
-                  isGraphDownload={isGraphDownload}
-                  isRounded
-                >
-                  <Icon.FileSet
-                    className="absolute"
-                    x={NODE_WIDTH / 2 - 18}
-                    y={-NODE_HEIGHT / 2 + 1}
-                    width={16}
-                    height={16}
-                  />
-                  <text
-                    y={lineOffsets[0]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fontWeight="bold"
-                    fill={foreground}
-                  >
-                    {graphNode.fileSet.accession}
-                  </text>
-                  <text
-                    y={lineOffsets[1]}
-                    fontSize={12}
-                    textAnchor="middle"
-                    fill={foreground}
-                  >
-                    {graphNode.files.length}{" "}
-                    {graphNode.files.length === 1 ? "file" : "files"}
-                  </text>
-                  {graphNode.fileSet.file_set_type && (
-                    <text
-                      y={lineOffsets[2]}
-                      fontSize={12}
-                      textAnchor="middle"
-                      fill={foreground}
-                    >
-                      {truncateText(graphNode.fileSet.file_set_type, 24)}
-                    </text>
-                  )}
-                  <text
-                    y="6px"
-                    fontSize={12}
-                    textAnchor="middle"
-                    fill={foreground}
-                  >
-                    {graphNode.files.length}{" "}
-                    {graphNode.files.length === 1 ? "file" : "files"}
-                  </text>
-                </GraphNode>
-              );
-            }
-            return null;
-          })}
-        </Group>
-      </svg>
-      {selectedNode && isFileNodeData(selectedNode) && (
-        <FileModal
-          node={selectedNode}
-          referenceFiles={referenceFiles}
-          onClose={() => setSelectedNode(null)}
-        />
-      )}
-      {selectedNode && isFileSetNodeData(selectedNode) && (
-        <FileSetModal
-          node={selectedNode}
-          nativeFiles={nativeFiles}
-          onClose={() => setSelectedNode(null)}
-        />
-      )}
-      {selectedQualityMetrics.length > 0 && (
-        <QualityMetricModal
-          file={qualityMetricFile}
-          qualityMetrics={selectedQualityMetrics}
-          onClose={() => {
-            setSelectedQualityMetrics([]);
-            setQualityMetricFile(null);
+  return (
+    <div className="relative">
+      <div className="max-h-[calc(100vh-8rem)] overflow-x-auto overflow-y-auto">
+        <div
+          className="mx-auto"
+          style={{
+            height: graphHeight,
+            width: graphWidth,
           }}
-        />
-      )}
-    </div>
-  ) : (
-    <div className="flex h-16 items-center justify-center p-2 italic">
-      {graphingMessage}
+        >
+          <div className="h-full w-full p-2">
+            <ReactFlow
+              nodes={laidOutNodes}
+              edges={laidOutEdges}
+              defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+              minZoom={1}
+              maxZoom={1}
+              nodeOrigin={[0, 0]}
+              nodeTypes={nodeTypes}
+              nodesDraggable={false}
+              nodesConnectable={false}
+              elementsSelectable={false}
+              onNodeClick={onNodeClick}
+              panOnDrag={false}
+              panOnScroll={false}
+              zoomOnScroll={false}
+              zoomOnPinch={false}
+              zoomOnDoubleClick={false}
+              preventScrolling={false}
+              defaultEdgeOptions={{
+                style: {
+                  stroke: "var(--color-file-graph-edge)",
+                  strokeWidth: 1,
+                },
+                markerEnd: {
+                  type: MarkerType.ArrowClosed,
+                  color: "var(--color-file-graph-edge)",
+                  width: 24,
+                  height: 24,
+                },
+              }}
+            />
+          </div>
+        </div>
+        {selectedNode && isFileNodeMetadata(selectedNode.data) && (
+          <FileModal
+            node={selectedNode as Node<FileMetadata>}
+            onClose={() => setSelectedNode(null)}
+          />
+        )}
+        {selectedNode && isFileSetNodeMetadata(selectedNode.data) && (
+          <FileSetModal
+            node={selectedNode as Node<FileSetMetadata>}
+            nativeFiles={nativeFiles}
+            onClose={() => setSelectedNode(null)}
+          />
+        )}
+        {selectedQualityMetrics.length > 0 && (
+          <QualityMetricModal
+            file={qualityMetricFile}
+            qualityMetrics={selectedQualityMetrics}
+            onClose={() => {
+              setSelectedQualityMetrics([]);
+              setQualityMetricFile(null);
+            }}
+          />
+        )}
+      </div>
+      <Legend
+        fileSetStats={fileSetStats}
+        fileCount={countFileNodes(laidOutNodes)}
+      />
     </div>
   );
 }
 
 /**
- * Save an SVG element as an SVG file.
- * @param svgElement SVG element to save as an SVG file
- * @param fileSet File set object the user views
+ * Wrapper for the file-graph component to provide its hooks with the React Flow context provider.
+ *
+ * @param graphData - Graph data after ELK layout
+ * @param nativeFiles - Files included directly in the file set the user is viewing
  */
-async function saveSvg(
-  svgElement: SVGSVGElement,
-  fileSet: FileSetObject
-): Promise<void> {
-  const svgString = new XMLSerializer().serializeToString(svgElement);
-  const blob = new Blob([svgString], { type: "image/svg+xml" });
-
-  // Generate a suggested file name.
-  const filename = `${fileSet.accession}_graph.svg`;
-
-  if ("showSaveFilePicker" in window) {
-    // Use the File System Access API to save the SVG file using a Save As modal.
-    try {
-      const handle = await (window as any).showSaveFilePicker({
-        suggestedName: filename,
-        types: [
-          {
-            description: `File graph for file set ${fileSet.accession}`,
-            accept: { "image/svg+xml": [".svg"] },
-          },
-        ],
-      });
-      const writable = await handle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-    } catch (error) {
-      console.error("Save aborted:", error);
-    }
-  } else {
-    // The File System Access API is not available in this browser, so directly download the SVG
-    // file to the user's download directory as configured in their browser.
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+function Graph({
+  graphData,
+  nativeFiles,
+}: {
+  graphData: ElkNode;
+  nativeFiles: FileObject[];
+}) {
+  return (
+    <ReactFlowProvider>
+      <GraphCore graphData={graphData} nativeFiles={nativeFiles} />
+    </ReactFlowProvider>
+  );
 }
 
 /**
- * Handles the button to download the graph as an SVG file. It also directs the actual process of
- * saving the SVG file.
- * @param fileSet The file set object the user views
- * @param nativeFiles Files included directly in `fileSet`
- * @param trimmedData List of nodes to include in the graph
+ * Wrapper to display cycle error messages of a single type.
+ *
+ * @param title - Title of the error message section
  */
-function SaveSvgTrigger({
-  fileSet,
-  nativeFiles,
-  referenceFiles,
-  trimmedData,
+function CycleErrorMessage({
+  title,
+  children,
 }: {
-  fileSet: FileSetObject;
-  nativeFiles: FileObject[];
-  referenceFiles: FileObject[];
-  trimmedData: NodeData[];
+  title: string;
+  children: React.ReactNode;
 }) {
-  const tooltipAttr = useTooltip("graph-download");
+  return (
+    <div className="my-4">
+      <h4 className="font-bold">{title}</h4>
+      <ul className="list-none space-y-1 [&>li]:relative [&>li]:pl-6 [&>li]:before:absolute [&>li]:before:top-0 [&>li]:before:left-2 [&>li]:before:content-['–']">
+        {children}
+      </ul>
+    </div>
+  );
+}
 
-  // Set up the process to save the graph as an SVG file, and render the graph for a file instead
-  // of for the browser. The downloaded file doesn't use Tailwind CSS classes nor does it pay
-  // attention to dark mode.
-  function saveAsSvgSetup() {
-    // Create an off-screen container and create the React 18 root inside it.
-    const container = document.createElement("div");
-    document.body.appendChild(container);
-    const root = createRoot(container);
-
-    // Render <Graph /> inside the off-screen container, indicating we're rendering the graph for
-    // download.
-    root.render(
-      <Graph
-        fileSet={fileSet}
-        nativeFiles={nativeFiles}
-        referenceFiles={referenceFiles}
-        graphData={trimmedData}
-        onReady={(svgElement) => {
-          if (svgElement) {
-            saveSvg(svgElement, fileSet);
-          }
-
-          // Cleanup: Unmount the component and remove the container.
-          root.unmount();
-          document.body.removeChild(container);
-        }}
-        isGraphDownload
-      />
-    );
-  }
+/**
+ * Display information about cycles detected in the file graph preventing its display.
+ *
+ * @param cycles - Array of cycle arrays, where each cycle is an array of file `@id`s
+ */
+function GraphCycleError({ cycles }: { cycles: string[][] }) {
+  // Categorize cycles by type.
+  const selfLoops = cycles.filter((cycle) => cycle.length === 2); // ["A", "A"]
+  const mutualLoops = cycles.filter((cycle) => cycle.length === 3); // ["A", "B", "A"]
+  const complexCycles = cycles.filter((cycle) => cycle.length > 3); // ["A", "B", "C", "A"]
 
   return (
     <>
-      <TooltipRef tooltipAttr={tooltipAttr}>
-        <div>
-          <Button size="sm" onClick={saveAsSvgSetup}>
-            <ArrowDownTrayIcon className="h-4 w-4" />
-          </Button>
-        </div>
-      </TooltipRef>
-      <Tooltip tooltipAttr={tooltipAttr}>
-        Download graph as SVG file. See{" "}
-        <a
-          href="https://youtu.be/700ZwlFX41g"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          tutorial
-        </a>
-        .
-      </Tooltip>
+      <p>
+        The file association graph does not appear because the{" "}
+        <code>derived_from</code> relationships contain circular dependencies.
+        Please review and correct these dependencies to display the graph.
+      </p>
+
+      {selfLoops.length > 0 && (
+        <CycleErrorMessage title="Self References">
+          {selfLoops.map((cycle, index) => (
+            <li key={index}>
+              <a href={cycle[0]} target="_blank" rel="noopener noreferrer">
+                <code>{cycle[0]}</code>
+              </a>{" "}
+              derives from itself
+            </li>
+          ))}
+        </CycleErrorMessage>
+      )}
+
+      {mutualLoops.length > 0 && (
+        <CycleErrorMessage title="Mutual Dependencies">
+          {mutualLoops.map((cycle, index) => (
+            <li key={index}>
+              <a href={cycle[0]} target="_blank" rel="noopener noreferrer">
+                <code>{cycle[0]}</code>
+              </a>{" "}
+              ↔{" "}
+              <a href={cycle[1]} target="_blank" rel="noopener noreferrer">
+                <code>{cycle[1]}</code>
+              </a>{" "}
+              derive from each other
+            </li>
+          ))}
+        </CycleErrorMessage>
+      )}
+
+      {complexCycles.length > 0 && (
+        <CycleErrorMessage title="Complex Circular Dependencies">
+          {complexCycles.map((cycle, index) => (
+            <li key={index}>
+              <SeparatedList separator=" ↔ ">
+                {cycle.map((fileId, i) => (
+                  <Fragment key={i}>
+                    <a href={fileId} target="_blank" rel="noopener noreferrer">
+                      <code>{fileId}</code>
+                    </a>
+                  </Fragment>
+                ))}
+              </SeparatedList>
+            </li>
+          ))}
+        </CycleErrorMessage>
+      )}
     </>
   );
 }
@@ -732,75 +473,63 @@ function SaveSvgTrigger({
  * Display a graph of the file associations for a file set in a collapsible panel. We use files in
  * `files` instead of those embedded in `fileSet` because the embedded file objects do not include
  * enough properties of the files to generate the graph.
- * @param fileSet The file set object the user views
- * @param files Files included directly in `fileSet`
- * @param derivedFromFiles Files in other file sets that `files` derive from
- * @param fileFileSets File sets aside from `fileSet` that `files` belong to
- * @param qualityMetrics Quality metrics for `files`
- * @param title Title that appears above the graph panel
- * @param pagePanels The page panels controller
- * @param pagePanelId The ID of the file-graph panel unique on the page
+ *
+ * @param files - Files included directly in `fileSet`
+ * @param fileFileSets - File sets aside from `fileSet` that `files` belong to
+ * @param derivedFromFiles - Files in other file sets that `files` derive from
+ * @param referenceFiles - Reference files associated with `files`
+ * @param qualityMetrics - Quality metrics for `files`
+ * @param title - Title that appears above the graph panel
+ * @param panelId - ID of the file-graph panel unique on the page for the section directory
  */
 export function FileGraph({
-  fileSet,
   files,
+  fileFileSets,
   derivedFromFiles,
   referenceFiles,
-  fileFileSets,
   qualityMetrics,
   title = "File Association Graph",
   panelId = "file-graph",
 }: {
-  fileSet: DatabaseObject;
-  files: DatabaseObject[];
+  files: FileObject[];
+  fileFileSets: FileSetObject[];
   referenceFiles: FileObject[];
-  fileFileSets: DatabaseObject[];
-  derivedFromFiles: DatabaseObject[];
+  derivedFromFiles: FileObject[];
   qualityMetrics: QualityMetricObject[];
   title?: string;
   panelId?: string;
 }) {
-  const data = generateGraphData(
-    files as FileObject[],
-    fileFileSets as FileSetObject[],
-    derivedFromFiles as FileObject[]
-  );
-  const trimmedData = trimIsolatedNodes(data);
-  const isGraphTooLarge = trimmedData.length > MAX_NODES_TO_DISPLAY;
-  const relevantFileSetTypes = collectRelevantFileSetStats(trimmedData);
+  // Only consider native files that derive from other files or that other files derive from. From
+  // these files look for cycles caused by circular `derived_from` relationships.
+  const includedFiles = trimIsolatedFiles(files, derivedFromFiles);
+  const cycles = detectCycles(includedFiles.concat(derivedFromFiles));
 
-  if (trimmedData.length > 0) {
+  const graphData =
+    cycles.length === 0
+      ? generateGraphData(
+          includedFiles,
+          derivedFromFiles,
+          fileFileSets,
+          referenceFiles,
+          qualityMetrics
+        )
+      : null;
+
+  if (graphData || cycles.length > 0) {
     return (
       <section role="region" aria-labelledby="file-graph">
         <DataAreaTitle id={panelId}>
           <div id="file-graph">{title}</div>
-          <SaveSvgTrigger
-            fileSet={fileSet as FileSetObject}
-            nativeFiles={files as FileObject[]}
-            referenceFiles={referenceFiles}
-            trimmedData={trimmedData}
-          />
         </DataAreaTitle>
-        <div className="[&>div]:p-0">
-          <DataPanel>
-            {!isGraphTooLarge ? (
-              <>
-                <Graph
-                  fileSet={fileSet as FileSetObject}
-                  nativeFiles={files as FileObject[]}
-                  referenceFiles={referenceFiles}
-                  qualityMetrics={qualityMetrics}
-                  graphData={trimmedData}
-                />
-              </>
-            ) : (
-              <div className="p-4 text-center italic">
-                Graph too large to display
-              </div>
-            )}
-            <Legend stats={relevantFileSetTypes} />
+        {graphData ? (
+          <DataPanel isPaddingSuppressed>
+            <Graph graphData={graphData} nativeFiles={files} />
           </DataPanel>
-        </div>
+        ) : (
+          <DataPanel>
+            <GraphCycleError cycles={cycles} />
+          </DataPanel>
+        )}
       </section>
     );
   }
