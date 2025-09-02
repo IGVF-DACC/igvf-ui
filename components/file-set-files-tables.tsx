@@ -62,6 +62,7 @@ export default function FileSetFilesTables({
       {groupedFiles.sequencingIllumina?.length > 0 && (
         <SequencingFileTable
           files={groupedFiles.sequencingIllumina}
+          fileSet={fileSet}
           title="Sequencing Results (Illumina)"
           isIlluminaReadType
           itemPath={fileSet["@id"]}
@@ -73,6 +74,7 @@ export default function FileSetFilesTables({
       {groupedFiles.sequencingOther?.length > 0 && (
         <SequencingFileTable
           files={groupedFiles.sequencingOther}
+          fileSet={fileSet}
           title="Sequencing Results"
           isIlluminaReadType={false}
           itemPath={fileSet["@id"]}
@@ -85,6 +87,7 @@ export default function FileSetFilesTables({
       {groupedFiles.other?.length > 0 && (
         <FileTable
           files={groupedFiles.other}
+          fileSet={fileSet}
           title="Other Raw Data Files"
           panelId="other-raw-files"
         />

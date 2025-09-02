@@ -3,14 +3,17 @@ import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import { useState } from "react";
 // components
+import { BatchDownloadActuator } from "./batch-download";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import DataGrid, { DataGridContainer } from "./data-grid";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
 import Link from "./link-no-prefetch";
 import Pager, { TablePagerContainer } from "./pager";
+import { SeqspecDocumentLink } from "./seqspec-document";
 import TableCount from "./table-count";
 // lib
+import { FileTableController } from "../lib/batch-download";
 import type { Row, Cell, CellContentProps } from "../lib/data-grid";
 import {
   extractSeqspecsForFile,
@@ -19,8 +22,7 @@ import {
   paginateSequenceFileGroups,
 } from "../lib/files";
 // root
-import type { DocumentObject, FileObject } from "../globals";
-import { SeqspecDocumentLink } from "./seqspec-document";
+import type { DocumentObject, FileObject, FileSetObject } from "../globals";
 
 /**
  * The default maximum number of items in the table before the pager gets displayed.
@@ -291,6 +293,7 @@ function AlternateRowComponent({
  */
 export default function SequencingFileTable({
   files,
+  fileSet = null,
   title = "Files",
   itemPath = "",
   itemPathProp = "file_set.@id",
@@ -300,6 +303,7 @@ export default function SequencingFileTable({
   panelId = "sequencing-files",
 }: {
   files: FileObject[];
+  fileSet?: FileSetObject;
   title?: string;
   itemPath?: string;
   itemPathProp?: string;
@@ -361,6 +365,9 @@ export default function SequencingFileTable({
         ),
       };
 
+  // Create a batch-download controller if a file set is provided.
+  const controller = fileSet ? new FileTableController(fileSet) : null;
+
   // Called when the user selects a new page of sequence files to view.
   function setCurrentPageIndex(newIndex: number) {
     setPageIndex(newIndex);
@@ -370,13 +377,24 @@ export default function SequencingFileTable({
     <>
       <DataAreaTitle id={panelId}>
         {title}
-        {reportLink && (
-          <DataAreaTitleLink
-            href={reportLink}
-            label="Report of files that have this item as their file set"
-          >
-            <TableCellsIcon className="h-4 w-4" />
-          </DataAreaTitleLink>
+        {(controller || reportLink) && (
+          <div className="align-center flex gap-1">
+            {controller && (
+              <BatchDownloadActuator
+                controller={controller}
+                label="Download files associated with this file set"
+                size="sm"
+              />
+            )}
+            {reportLink && (
+              <DataAreaTitleLink
+                href={reportLink}
+                label="Report of files that have this item as their file set"
+              >
+                <TableCellsIcon className="h-4 w-4" />
+              </DataAreaTitleLink>
+            )}
+          </div>
         )}
       </DataAreaTitle>
       <div className="overflow-hidden">
