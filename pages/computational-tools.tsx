@@ -183,7 +183,7 @@ function convertSoftwareToDataTable(
  */
 function DefaultHeaderCell({ children }: { children: React.ReactNode }) {
   return (
-    <th className="sticky top-0 z-2 border-b border-r border-panel bg-computational-tools-header p-2 text-left align-bottom text-computational-tools-header last:border-r-0">
+    <th className="border-panel bg-computational-tools-header text-computational-tools-header sticky top-0 z-2 border-r border-b p-2 text-left align-bottom last:border-r-0">
       {children}
     </th>
   );
@@ -204,7 +204,7 @@ function CategoryHeaderCell({
 
   return (
     <th
-      className={`border-b border-r border-panel p-2 text-left align-top font-semibold last:border-r-0 ${color}`}
+      className={`border-panel border-r border-b p-2 text-left align-top font-semibold last:border-r-0 ${color}`}
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
       {children}
@@ -217,7 +217,7 @@ function CategoryHeaderCell({
  */
 function PurposeColumnHeader({ children }: { children: React.ReactNode }) {
   return (
-    <th className="sticky top-0 z-2 w-96 border-b border-r border-panel bg-computational-tools-header p-2 text-left text-computational-tools-header last:border-r-0">
+    <th className="border-panel bg-computational-tools-header text-computational-tools-header sticky top-0 z-2 w-96 border-r border-b p-2 text-left last:border-r-0">
       {children}
     </th>
   );
@@ -228,7 +228,7 @@ function PurposeColumnHeader({ children }: { children: React.ReactNode }) {
  */
 function ReferencesColumnHeader({ children }: { children: React.ReactNode }) {
   return (
-    <th className="sticky top-0 z-2 w-80 border-b border-r border-panel bg-computational-tools-header p-2 text-left text-computational-tools-header last:border-r-0">
+    <th className="border-panel bg-computational-tools-header text-computational-tools-header sticky top-0 z-2 w-80 border-r border-b p-2 text-left last:border-r-0">
       {children}
     </th>
   );

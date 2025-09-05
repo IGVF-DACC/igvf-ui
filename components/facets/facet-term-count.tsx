@@ -46,7 +46,7 @@ export function FacetTermCount({
     <>
       <TooltipRef tooltipAttr={tooltipAttr}>
         <div
-          className="flex gap-0.5 overflow-hidden facet-term-count-mask"
+          className="facet-term-count-mask flex gap-0.5 overflow-hidden"
           data-testid={`facet-term-count-${facet.field}`}
           aria-label={helpText}
         >

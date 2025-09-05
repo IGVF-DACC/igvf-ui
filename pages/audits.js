@@ -135,7 +135,7 @@ export default function AuditDoc({ auditDoc, schemas }) {
         category, there could be one or more icons, each assigned a distinct
         color corresponding to the severity level of the audit category.
       </p>
-      <div className="mb-1 mt-4 text-lg font-semibold text-brand dark:text-[#8fb3a5]">
+      <div className="text-brand mt-4 mb-1 text-lg font-semibold dark:text-[#8fb3a5]">
         {"Severity Level and Description Key"}
       </div>
       <AuditKeyTable data={auditKeyColor} />
@@ -147,7 +147,7 @@ export default function AuditDoc({ auditDoc, schemas }) {
           return (
             <Fragment key={itemType}>
               <h2
-                className={`mb-1 mt-8 text-lg text-brand dark:text-[#8fb3a5] ${
+                className={`text-brand mt-8 mb-1 text-lg dark:text-[#8fb3a5] ${
                   isParent ? "font-semibold" : ""
                 }`}
                 id={`${secDirId(itemType)}`}

@@ -111,7 +111,7 @@ export default function SearchModal({
         aria-hidden="true"
       />
       <div className="fixed inset-0 overflow-y-auto">
-        <Dialog.Panel className="mx-auto w-4/5 max-w-4xl overflow-hidden rounded-lg border border-modal-border bg-white drop-shadow-lg dark:bg-gray-900 xl:my-20">
+        <Dialog.Panel className="border-modal-border mx-auto w-4/5 max-w-4xl overflow-hidden rounded-lg border bg-white drop-shadow-lg xl:my-20 dark:bg-gray-900">
           <div className="flex items-center gap-2 px-2 py-1">
             <button
               onClick={executeSearch}
@@ -141,7 +141,7 @@ export default function SearchModal({
 
           {recentTerms.length > 0 && (
             <>
-              <div className="border-t border-panel px-4 py-2 text-base font-semibold text-gray-500 dark:text-gray-300">
+              <div className="border-panel border-t px-4 py-2 text-base font-semibold text-gray-500 dark:text-gray-300">
                 {recentSearchLabel}
               </div>
               {recentTerms.map((recentTerm) => {

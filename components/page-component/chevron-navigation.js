@@ -44,7 +44,7 @@ export default function ChevronNavigation(items) {
   if (itemTitles.length > 0) {
     return (
       <nav data-testid="chevron-navigation">
-        <ul className="flex flex-wrap gap-1 overflow-hidden px-4 @container/chevron-menu">
+        <ul className="@container/chevron-menu flex flex-wrap gap-1 overflow-hidden px-4">
           {itemTitles.map((itemTitle, index) => {
             // Get the link and color for the title, separated by a pipe character
             const [href, color] = items[itemTitle].split("|");

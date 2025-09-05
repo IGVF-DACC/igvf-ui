@@ -116,7 +116,7 @@ function Entry({
         <AnimatePresence>
           {isPanelExpanded && (
             <motion.div
-              className="overflow-hidden pb-2 pl-2 pr-2"
+              className="overflow-hidden pr-2 pb-2 pl-2"
               initial="collapsed"
               animate="open"
               exit="collapsed"

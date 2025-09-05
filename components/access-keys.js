@@ -38,11 +38,11 @@ function AccessKeyDisplay({ accessKeyId, accessKeySecret }) {
   ];
 
   return (
-    <div className="my-5 w-full gap-3 border border-modal-border bg-gray-100 px-2 py-2.5 dark:bg-gray-800 md:grid md:w-auto md:auto-cols-min md:grid-cols-min-2 md:px-5">
+    <div className="border-modal-border md:grid-cols-min-2 my-5 w-full gap-3 border bg-gray-100 px-2 py-2.5 md:grid md:w-auto md:auto-cols-min md:px-5 dark:bg-gray-800">
       {rows.map((row) => {
         return (
           <Fragment key={row.label}>
-            <div className="flex items-center whitespace-nowrap font-bold text-data-title md:h-full">
+            <div className="text-data-title flex items-center font-bold whitespace-nowrap md:h-full">
               {row.label}
             </div>
             <div className="mb-2 flex items-center justify-between last:mb-0 md:mb-0">
@@ -351,7 +351,7 @@ DeleteAccessKeyTrigger.propTypes = {
 export function AccessKeyItem({ accessKey, onAccessKeyChange }) {
   return (
     <>
-      <div className="flex items-center justify-between border border-panel px-3 py-2 md:px-2 md:py-1">
+      <div className="border-panel flex items-center justify-between border px-3 py-2 md:px-2 md:py-1">
         <div className="font-mono">{accessKey.access_key_id}</div>
         <div className="flex gap-1">
           <ResetAccessKeyTrigger accessKeyId={accessKey.access_key_id} />

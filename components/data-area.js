@@ -34,7 +34,7 @@ export function DataPanel({
 }) {
   return (
     <div
-      className={`border border-panel bg-panel @container ${
+      className={`border-panel bg-panel @container border ${
         isPaddingSuppressed ? "" : "p-4"
       } ${className}`}
       data-testid="datapanel"
@@ -90,7 +90,7 @@ export function DataAreaTitle({
   return (
     <h2
       id={`${id ? secDirId(id) : ""}`}
-      className={`mb-1 mt-4 text-2xl font-light ${className}`}
+      className={`mt-4 mb-1 text-2xl font-light ${className}`}
       data-testid="dataareatitle"
       {...(secDirTitle ? { "data-sec-dir": secDirTitle } : {})}
     >
@@ -136,7 +136,7 @@ export function DataItemLabel({ className = "", isSmall = false, children }) {
   const containerClasses = isSmall ? "mt-2 @xs:mt-0" : "mt-4 @xs:mt-0";
   return (
     <div
-      className={`break-words font-semibold text-data-label first:mt-0 dark:text-gray-400 ${containerClasses} ${className}`}
+      className={`text-data-label font-semibold break-words first:mt-0 dark:text-gray-400 ${containerClasses} ${className}`}
       data-testid="dataitemlabel"
     >
       {children}
@@ -160,7 +160,7 @@ export function DataItemValue({ className = "", isSmall = false, children }) {
     : "mb-4 @md:mb-0 @md:min-w-0";
   return (
     <div
-      className={`font-medium text-data-value last:mb-0 ${containerClasses} ${className}`}
+      className={`text-data-value font-medium last:mb-0 ${containerClasses} ${className}`}
       data-testid="dataitemvalue"
     >
       {children}
@@ -184,7 +184,7 @@ export function DataItemValueBoolean({ className = "", children = null }) {
   if (typeof children === "boolean") {
     return (
       <div
-        className={`mb-4 font-medium text-data-value last:mb-0 @md:mb-0 @md:min-w-0 ${className}`}
+        className={`text-data-value mb-4 font-medium last:mb-0 @md:mb-0 @md:min-w-0 ${className}`}
         data-testid="dataitemvalue"
       >
         {children ? "True" : "False"}
@@ -241,13 +241,13 @@ export function DataItemList({
 
   return (
     <div>
-      <ul className={hasSingleChild ? "" : "border border-data-list-item"}>
+      <ul className={hasSingleChild ? "" : "border-data-list-item border"}>
         {Children.map(collapser.items, (child) => (
           <li
             className={`${
               hasSingleChild
                 ? ""
-                : "border-b border-data-list-item px-2 py-0.5 last:border-none"
+                : "border-data-list-item border-b px-2 py-0.5 last:border-none"
             } ${urlListCss}`}
           >
             {child}

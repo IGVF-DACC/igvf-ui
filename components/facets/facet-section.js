@@ -28,7 +28,7 @@ function ClearAll({ searchResults }) {
   const isDisabled = uniqueSelectedFields.length === 0;
   return (
     <button
-      className="h-5 w-full grow rounded-sm border border-button-secondary bg-button-secondary fill-button-secondary text-xs text-button-secondary disabled:border-button-secondary-disabled disabled:text-button-secondary-disabled"
+      className="border-button-secondary bg-button-secondary fill-button-secondary text-button-secondary disabled:border-button-secondary-disabled disabled:text-button-secondary-disabled h-5 w-full grow rounded-sm border text-xs"
       aria-label="Clear all filters"
       onClick={onClearAll}
       disabled={isDisabled}

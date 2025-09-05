@@ -496,7 +496,7 @@ function ImageThumbnailAndPreview({ attachment, ownerPath, alt, size }) {
         />
         <div className="fixed inset-0 overflow-y-auto px-3 py-8 text-center">
           <CloseButton
-            className="absolute right-1 top-1"
+            className="absolute top-1 right-1"
             onClick={() => setIsPreviewOpen(false)}
             label="Close the full-size preview image"
           >
@@ -505,7 +505,7 @@ function ImageThumbnailAndPreview({ attachment, ownerPath, alt, size }) {
           <Dialog.Panel className="mx-auto inline-block max-w-3xl">
             <picture className="block border border-gray-200">
               <img
-                className="block border border-data-border"
+                className="border-data-border block border"
                 src={attachmentToServerHref(attachment, ownerPath)}
                 alt={alt}
               />

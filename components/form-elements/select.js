@@ -45,7 +45,7 @@ export default function Select({
       )}
       <div className="relative">
         <select
-          className={`block w-full appearance-none rounded-sm border border-form-element bg-form-element py-0 pl-1 pr-5 font-medium text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled ${selectSizeClasses[size]}`}
+          className={`border-form-element bg-form-element text-form-element disabled:border-form-element-disabled disabled:text-form-element-disabled block w-full appearance-none rounded-sm border py-0 pr-5 pl-1 font-medium ${selectSizeClasses[size]}`}
           id={name}
           name={name}
           value={value}
@@ -56,7 +56,7 @@ export default function Select({
         >
           {children}
         </select>
-        <div className="pointer-events-none absolute bottom-0 right-0 top-0 my-auto h-5 w-5">
+        <div className="pointer-events-none absolute top-0 right-0 bottom-0 my-auto h-5 w-5">
           <ChevronDownIcon
             className={`h-full w-full ${
               isDisabled ? "fill-form-element-disabled" : "fill-form-element"

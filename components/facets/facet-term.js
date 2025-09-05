@@ -34,7 +34,7 @@ export default function FacetTerm({
         }`}
         onClick={() => onClick(field, term, false, parent)}
         onLongClick={() => onClick(field, term, true, parent)}
-        className={`cursor-pointer rounded border border-transparent px-2 py-1 hover:border-data-border ${
+        className={`hover:border-data-border cursor-pointer rounded border border-transparent px-2 py-1 ${
           isNegative ? "line-through" : ""
         }`}
       >
