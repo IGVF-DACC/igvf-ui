@@ -41,11 +41,17 @@ export default class BaseController {
   }
 
   /**
+   * Returns the download URL. Make sure to call `this.buildQueryStrings()` before calling this.
+   */
+  get downloadUrl(): string {
+    return `${API_URL}/batch-download-v2/?${this.downloadQuery.format()}`;
+  }
+
+  /**
    * Initiate the batch download using the query string for the specified download option ID.
    */
   initiateDownload(): void {
     this.buildQueryStrings();
-    const formattedQuery = this.downloadQuery.format();
-    window.location.href = `${API_URL}/batch-download/?${formattedQuery}`;
+    window.location.href = this.downloadUrl;
   }
 }

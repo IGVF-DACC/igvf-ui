@@ -219,7 +219,6 @@ export default function PredictionSet({
               <FileTable
                 files={files}
                 fileSet={predictionSet}
-                isDownloadable
                 isFilteredVisible
               />
               <FileGraph

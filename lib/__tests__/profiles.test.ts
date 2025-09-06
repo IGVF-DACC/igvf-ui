@@ -7,6 +7,7 @@ import {
   schemaPageTabUrl,
   schemaToPath,
   schemaToType,
+  typeToRootType,
 } from "../profiles";
 // types
 import {
@@ -495,5 +496,84 @@ describe("Test the schemaToPath function", () => {
 
     const result = schemaToPath(schema);
     expect(result).toBe("/profiles/human_donor");
+  });
+});
+
+describe("Test typeToRootType functionality", () => {
+  const mockProfiles = {
+    _hierarchy: {
+      Item: {
+        Sample: {
+          Biosample: {
+            InVitroSystem: {},
+            PrimaryCell: {},
+          },
+          MultiplexedSample: {},
+          TechnicalSample: {},
+        },
+        Gene: {},
+      },
+    },
+  } as any;
+
+  it("should return root parent for deeply nested type", () => {
+    const result = typeToRootType("InVitroSystem", mockProfiles);
+    expect(result).toBe("Sample");
+  });
+
+  it("should return root parent for intermediate nested type", () => {
+    const result = typeToRootType("Biosample", mockProfiles);
+    expect(result).toBe("Sample");
+  });
+
+  it("should return root parent for first-level nested type", () => {
+    const result = typeToRootType("MultiplexedSample", mockProfiles);
+    expect(result).toBe("Sample");
+  });
+
+  it("should return itself for root-level type", () => {
+    const result = typeToRootType("Sample", mockProfiles);
+    expect(result).toBe("Sample");
+  });
+
+  it("should return itself for another root-level type", () => {
+    const result = typeToRootType("Gene", mockProfiles);
+    expect(result).toBe("Gene");
+  });
+
+  it("should return empty string for non-existent type", () => {
+    const result = typeToRootType("NonExistentType", mockProfiles);
+    expect(result).toBe("");
+  });
+
+  it("should handle empty hierarchy", () => {
+    const emptyProfiles = { _hierarchy: { Item: {} } } as any;
+    const result = typeToRootType("AnyType", emptyProfiles);
+    expect(result).toBe("");
+  });
+
+  it("should return root parent for deeply nested hierarchy", () => {
+    const deepProfiles = {
+      _hierarchy: {
+        Item: {
+          Root: {
+            Level1: {
+              Level2: {
+                Level3: {
+                  Level4: {},
+                },
+              },
+            },
+          },
+        },
+      },
+    } as any;
+    const result = typeToRootType("Level4", deepProfiles);
+    expect(result).toBe("Root");
+  });
+
+  it("should return empty string when profiles is empty", () => {
+    const result = typeToRootType("Level4", null);
+    expect(result).toBe("");
   });
 });

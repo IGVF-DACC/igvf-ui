@@ -6,6 +6,7 @@ import { useContext } from "react";
 import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
 import Attribution from "../../components/attribution";
+import { BatchDownloadFileSet } from "../../components/batch-download-fileset";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { ConstructLibraryTable } from "../../components/construct-library-table";
 import { ControlledAccessIndicator } from "../../components/controlled-access";
@@ -97,6 +98,7 @@ export default function AnalysisSet({
           alternateAccessions={analysisSet.alternate_accessions}
         />
         <ObjectPageHeader item={analysisSet} isJsonFormat={isJson}>
+          <BatchDownloadFileSet fileSet={analysisSet} />
           <ControlledAccessIndicator item={analysisSet} />
           <DataUseLimitationSummaries
             summaries={analysisSet.data_use_limitation_summaries}
@@ -265,7 +267,6 @@ export default function AnalysisSet({
               <FileTable
                 files={files}
                 fileSet={analysisSet}
-                isDownloadable
                 isFilteredVisible
               />
               <FileGraph

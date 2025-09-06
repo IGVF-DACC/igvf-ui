@@ -9,7 +9,7 @@ import { HostedFilePreview } from "./hosted-file-preview";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
-import { FileSetController } from "../lib/batch-download";
+import { FileTableController } from "../lib/batch-download";
 import { dataSize, truthyOrZero } from "../lib/general";
 
 const filesColumns = [
@@ -70,7 +70,6 @@ export function CuratedSetFileTable({
   reportLink = "",
   reportLabel = "",
   downloadQuery = null,
-  isDownloadable = false,
   controllerContent = null,
   panelId = "files",
 }) {
@@ -85,10 +84,9 @@ export function CuratedSetFileTable({
     : reportLabel;
 
   // Create a batch-download controller if a file set is provided.
-  const controller =
-    fileSet && isDownloadable
-      ? new FileSetController(fileSet, downloadQuery)
-      : null;
+  const controller = fileSet
+    ? new FileTableController(fileSet, downloadQuery)
+    : null;
 
   const sortableGrid = (
     <SortableGrid
@@ -139,8 +137,6 @@ CuratedSetFileTable.propTypes = {
   reportLabel: PropTypes.string,
   // Extra query parameters for downloading files, if needed
   downloadQuery: PropTypes.object,
-  // True if the user can download the files in this table
-  isDownloadable: PropTypes.bool,
   // Extra text or JSX content for the batch download controller
   controllerContent: PropTypes.node,
   // Unique ID for the table for the section directory

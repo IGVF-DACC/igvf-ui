@@ -74,7 +74,9 @@ export function Button({
       id={id}
       data-testid={id}
       onClick={onClick}
-      className={`${inlineClasses(isInline)} ${buttonClasses} ${className}`}
+      className={`cursor-pointer ${inlineClasses(
+        isInline
+      )} ${buttonClasses} ${className}`}
       aria-label={label}
       aria-checked={isSelected}
       disabled={isDisabled}

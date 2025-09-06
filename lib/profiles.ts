@@ -4,6 +4,7 @@ import FetchRequest from "./fetch-request";
 import {
   DataProviderObject,
   Profiles,
+  ProfilesProps,
   ProfilesGeneric,
   Schema,
   SchemaProperties,
@@ -16,6 +17,25 @@ import {
  */
 export const SEARCH_MODE_TITLE = "SEARCH_MODE_TITLE";
 export const SEARCH_MODE_PROPERTIES = "SEARCH_MODE_PROPERTIES";
+
+/**
+ * Recursive hierarchy of schema types. Keys are `@type` names; values are objects containing
+ * subtypes. Leaf nodes, representing concrete types, have empty objects as values.
+ * Example:
+ * {
+ *   "Sample": { // abstract `@type`
+ *     "Biosample": { // abstract `@type`
+ *       "InVitroSystem": {} // concrete `@type`
+ *     },
+ *     "MultiplexedSample": {} // concrete `@type`
+ *     "TechnicalSample": {} // concrete `@type`
+ *   },
+ *   "Gene": {} // concrete `@type`
+ * }
+ */
+export type SchemaHierarchyNode = {
+  [key: string]: SchemaHierarchyNode;
+};
 
 /**
  * Loads the schemas for all object types, with each key of the object being the @type for each
@@ -221,4 +241,78 @@ export function schemaToType(schema: Schema, profiles: Profiles): string {
  */
 export function schemaToPath(schema: Schema): string {
   return schema.$id.replace(".json", "");
+}
+
+/**
+ * Recursive function to find the root-level parent `@type` of a given `@type`.
+ *
+ * @param atType - `@type` to find the root parent for
+ * @param hierarchy - schema hierarchy node to search within
+ * @param rootParent - current root-level parent being considered; initially empty
+ * @returns Root-level parent `@type` if found; empty string otherwise
+ */
+function typeToRootTypeSearch(
+  atType: string,
+  hierarchy: SchemaHierarchyNode,
+  rootParent = ""
+): string {
+  // Loop through each key at the current level of the hierarchy, searching for a matching `@type`
+  // or descending deeper into each key's children for those that have any.
+  for (const [parent, nestedChildren] of Object.entries(hierarchy)) {
+    // The initial call doesn't provide `rootParent`, so we use the current parent as the root
+    // parent. As we descend the hierarchy, the root parent gets maintained.
+    const currentRoot = rootParent || parent;
+
+    // We're done if `atType` is a root parent.
+    if (parent === atType && !rootParent) {
+      return parent;
+    }
+
+    // Stop searching if we found the type under the current parent.
+    if (Object.keys(nestedChildren).includes(atType)) {
+      return currentRoot;
+    }
+
+    // Didn't find the `@type` we seek. Recursively search in nested children, passing down the
+    // root parent. If the `@type` is found deeper in the current node's children, the root parent
+    // gets returned, and the search completes.
+    const rootParentFromChild = typeToRootTypeSearch(
+      atType,
+      nestedChildren,
+      currentRoot
+    );
+    if (rootParentFromChild) {
+      return rootParentFromChild;
+    }
+  }
+
+  // Didn't find the `@type` anywhere in the hierarchy.
+  return "";
+}
+
+/**
+ * Resolves the root-level parent `@type` for a given `@type`.
+ *
+ * If the input `@type` is a concrete subtype of an abstract parent, the function returns
+ * that abstract parent. If the input `@type` is already a root type, it is returned as is.
+ *
+ * Example hierarchy:
+ * - Gene
+ * - Sample
+ *   - Biosample
+ *     - InVitroSystem
+ *
+ * Examples:
+ * - `InVitroSystem` -> `Sample`
+ * - `Biosample` -> `Sample`
+ * - `Sample` -> `Sample`
+ * - `Gene` -> `Gene`
+ *
+ * @param type - The `@type` to resolve
+ * @param profiles - Schema profiles defining type hierarchies
+ * @returns The root-level parent `@type` of the given type; empty string if not found
+ */
+export function typeToRootType(type: string, profiles: ProfilesProps): string {
+  const hierarchy = profiles?._hierarchy?.Item as SchemaHierarchyNode;
+  return hierarchy ? typeToRootTypeSearch(type, hierarchy) : "";
 }

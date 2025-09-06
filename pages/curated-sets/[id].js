@@ -108,11 +108,7 @@ export default function CuratedSet({
             <DonorTable donors={curatedSet.donors} />
           )}
           {files.length > 0 && (
-            <CuratedSetFileTable
-              files={files}
-              fileSet={curatedSet}
-              isDownloadable
-            />
+            <CuratedSetFileTable files={files} fileSet={curatedSet} />
           )}
           {curatedSet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable
