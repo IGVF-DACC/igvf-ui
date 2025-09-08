@@ -785,10 +785,9 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="github-issues"
-            href="/github-project-board"
+            href="mailto:igvf-portal-help@lists.stanford.edu"
             navigationClick={navigationClick}
             isChildItem
-            isExternal
           >
             Data Portal Issues?
           </NavigationHrefItem>
