@@ -7,7 +7,6 @@ The portions of a facet you can customize include:
 - **Title** — This lets you customize the title of the facet. This usually comes from the `title` property of a facet object in the search result, but can come from anywhere in your custom facet title component.
 
 - **Terms** — This lets you customize both how a facet appears and how it works. With this mechanism, you can make a facet work in any way you’d like, as long as an updated query string results from the user interacting with your custom facet. Examples of a custom facet terms component include, but certainly not limited to:
-
   - Dropdown — Selecting an item in a dropdown adds or replaces a relevant query-string element.
   - Radio Buttons — Choosing a radio button adds or replaces a relevant query-string element.
   - Date Picker — The user picks a date to add to the query string, or perhaps a range of dates.
@@ -65,7 +64,7 @@ Your custom TermLabel component can then use the `key` and `doc_count` propertie
 ```jsx
 export default function TaxaTermLabel({ term }) {
   return (
-    <div className="flex grow items-center justify-between gap-2 text-sm font-normal leading-[1.1]">
+    <div className="flex grow items-center justify-between gap-2 text-sm leading-[1.1] font-normal">
       <div className="italic">{term.key}</div>
       <div>{term.doc_count}</div>
     </div>

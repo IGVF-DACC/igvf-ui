@@ -120,7 +120,7 @@ export function TabTitle({
       {({ selected }) => {
         return (
           <div
-            className={`flex border-b-4 px-5 pb-1.5 pt-2 ${
+            className={`flex border-b-4 px-5 pt-2 pb-1.5 ${
               selected ? "border-tab-selected text-tab-title-selected" : ""
             } ${
               isDisabled ? "border-tab-disabled text-tab-title-disabled" : ""

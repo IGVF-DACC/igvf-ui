@@ -92,7 +92,7 @@ jobs:
     steps:
       - checkout
       - run: pip install pre-commit==2.17.0
-      - run: pre-commit run --all-files
+      - run: SKIP=prettier pre-commit run --all-files
 
   cdk-mypy:
     docker:

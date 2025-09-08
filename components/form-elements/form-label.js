@@ -16,7 +16,7 @@ export default function FormLabel({
     <label
       data-testid="form-label"
       htmlFor={htmlFor}
-      className={`${className} flex items-center font-semibold text-data-label`}
+      className={`${className} text-data-label flex items-center font-semibold`}
     >
       {children}
       {isRequired && <Icon.Splat className="ml-1 h-2.5 w-2.5 fill-red-500" />}

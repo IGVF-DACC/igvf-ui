@@ -30,7 +30,7 @@ function Versions({ serverVersion = "" }) {
 
   if (versions.length > 0) {
     return (
-      <div className="flex gap-2 text-xs font-semibold text-brand">
+      <div className="text-brand flex gap-2 text-xs font-semibold">
         {versions}
       </div>
     );
@@ -56,7 +56,7 @@ export function Email() {
         rel="noreferrer noopener"
         aria-label="Email the IGVF help desk"
       >
-        <EnvelopeIcon className="h-6 w-6 fill-brand" />
+        <EnvelopeIcon className="fill-brand h-6 w-6" />
       </a>
     </div>
   );

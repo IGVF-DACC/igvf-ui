@@ -412,7 +412,7 @@ function BlockEditor({ block, dispatchLiveBlocks, previewedBlockIds }) {
     return (
       <MarkdownSection
         direction={block.direction}
-        className="h-96 w-full overflow-y-auto border border-panel bg-panel p-2"
+        className="border-panel bg-panel h-96 w-full overflow-y-auto border p-2"
       >
         {block.body}
       </MarkdownSection>
@@ -421,7 +421,7 @@ function BlockEditor({ block, dispatchLiveBlocks, previewedBlockIds }) {
 
   return (
     <textarea
-      className="block h-96 w-full border border-form-element bg-form-element p-2 font-mono text-sm"
+      className="border-form-element bg-form-element block h-96 w-full border p-2 font-mono text-sm"
       id={block["@id"].substring(1)}
       value={block.body}
       dir={block.direction}
@@ -864,7 +864,7 @@ function PageEditor({ blocks, pageMeta, awards, labs, pages, onClose }) {
           Save
         </Button>
       </div>
-      <div className="mb-4 border-b border-panel">
+      <div className="border-panel mb-4 border-b">
         {liveBlocks.map((block) => {
           return (
             <div key={block["@id"]} className="my-10 first:mt-0">

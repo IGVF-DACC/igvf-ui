@@ -596,6 +596,12 @@ export function FileDataItems({
       )}
       <DataItemLabel>Summary</DataItemLabel>
       <DataItemValue>{item.summary}</DataItemValue>
+      {item.description && (
+        <>
+          <DataItemLabel>Description</DataItemLabel>
+          <DataItemValue>{item.description}</DataItemValue>
+        </>
+      )}
       {analysisStepVersion && (
         <>
           <DataItemLabel>Analysis Step Version</DataItemLabel>

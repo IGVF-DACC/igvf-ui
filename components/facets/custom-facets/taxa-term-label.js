@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
  */
 export default function TaxaTermLabel({ term, isNegative }) {
   return (
-    <div className="flex grow items-center justify-between gap-2 text-sm font-normal leading-[1.1]">
+    <div className="flex grow items-center justify-between gap-2 text-sm leading-[1.1] font-normal">
       <div className="italic">{term.key}</div>
       {!isNegative && <div>{term.doc_count}</div>}
     </div>

@@ -22,7 +22,7 @@ import {
 function SearchListItem({ href, testid, children }) {
   return (
     <li
-      className="my-0.5 flex border border-data-border bg-data-background px-2 first:mt-0 last:mb-0"
+      className="border-data-border bg-data-background my-0.5 flex border px-2 first:mt-0 last:mb-0"
       data-testid={`search-list-item-${testid}`}
     >
       <ItemLink href={href} label={`View details for ${testid}`} />

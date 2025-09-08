@@ -17,7 +17,7 @@ function SearchTriggerExpanded({ onClick }) {
   return (
     <button
       onClick={onClick}
-      className="flex h-8 w-full grow items-center gap-2 rounded-sm border border-panel bg-form-element p-2 text-form-element"
+      className="border-panel bg-form-element text-form-element flex h-8 w-full grow items-center gap-2 rounded-sm border p-2"
       data-testid="site-search-trigger-expanded"
       label="Search the site for a word or phrase"
     >

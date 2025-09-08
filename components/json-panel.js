@@ -56,7 +56,7 @@ function JsonPanelTools({ target, children }) {
   const tooltipAttr = useTooltip("json-copy");
 
   return (
-    <div className="absolute right-1 top-1 flex gap-1">
+    <div className="absolute top-1 right-1 flex gap-1">
       {children}
       <TooltipRef tooltipAttr={tooltipAttr}>
         <div>
@@ -114,7 +114,7 @@ export default function JsonPanel({
         language="json"
         style={theme}
         className={`text-xs ${
-          isBorderHidden ? "" : "border border-json-panel"
+          isBorderHidden ? "" : "border-json-panel border"
         } ${className}`}
         lineNumberStyle={{ display: "none" }}
         lineProps={(lineNumber) => {

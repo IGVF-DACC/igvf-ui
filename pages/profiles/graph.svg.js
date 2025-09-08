@@ -59,7 +59,7 @@ export default function GraphSvg({ graph }) {
     <>
       <Breadcrumbs item={graph} />
       <PagePreamble pageTitle="Graph" />
-      <div ref={container} className="border border-panel bg-panel">
+      <div ref={container} className="border-panel bg-panel border">
         <ReactSvgPanZoomLoader
           svgXML={graph}
           render={(content) => (

@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 export function AliasesCell({ source }) {
   if (source.aliases?.length > 0) {
     return (
-      <ul className="min-w-48 max-w-80 break-all">
+      <ul className="max-w-80 min-w-48 break-all">
         {source.aliases.map((alias) => (
           <li
             key={alias}

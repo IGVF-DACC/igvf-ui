@@ -12,7 +12,7 @@ export default function ItemLink({ href, label = "" }) {
     <div className="mx-auto flex items-center justify-center">
       <Link
         href={href}
-        className="rounded-full border border-transparent px-0 py-2 hover:border-highlight-border hover:bg-highlight sm:px-2"
+        className="hover:border-highlight-border hover:bg-highlight rounded-full border border-transparent px-0 py-2 sm:px-2"
         aria-label={label}
       >
         <ChevronDoubleRightIcon className="h-5 w-5 fill-gray-700 dark:fill-gray-300" />

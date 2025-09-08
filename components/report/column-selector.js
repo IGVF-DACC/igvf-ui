@@ -145,7 +145,7 @@ ColumnCheckboxes.propTypes = {
 function Note({ className = "", children }) {
   return (
     <div
-      className={`text-center text-sm text-gray-500 dark:text-gray-300 md:grow md:text-left ${className}`}
+      className={`text-center text-sm text-gray-500 md:grow md:text-left dark:text-gray-300 ${className}`}
     >
       {children}
     </div>
@@ -220,14 +220,14 @@ export default function ColumnSelector({
           </Modal.Header>
 
           <Modal.Body className="[&>div]:p-0">
-            <div className="border-b border-modal-border p-1 md:flex md:items-center">
+            <div className="border-modal-border border-b p-1 md:flex md:items-center">
               <ChangeAllControls onChangeAll={onChangeAll} />
               <Note className="md:ml-2">
                 The <i>ID</i> column cannot be hidden
               </Note>
             </div>
             <CheckboxArea>
-              <CheckboxSection className="border-b border-modal-border">
+              <CheckboxSection className="border-modal-border border-b">
                 <ColumnCheckboxes
                   columnSpecs={allColumnSpecs}
                   visibleColumnIds={visibleColumnIds}
@@ -235,7 +235,7 @@ export default function ColumnSelector({
                   onChange={onChange}
                 />
               </CheckboxSection>
-              <h2 className="px-2 pb-0 pt-1 font-bold">Audit Columns</h2>
+              <h2 className="px-2 pt-1 pb-0 font-bold">Audit Columns</h2>
               <CheckboxSection className="[&>fieldset]:pt-0">
                 <ColumnCheckboxes
                   columnSpecs={auditColumnSpecs}

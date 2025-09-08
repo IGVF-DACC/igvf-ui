@@ -27,7 +27,7 @@ export default function AuditTitle({ facet, searchResults, isFacetOpen }) {
             <div>Audit {mapping.humanReadable}</div>
             <div className="relative h-4 w-4">
               <mapping.Icon
-                className={`absolute bottom-0 left-0 right-0 top-0 ${mapping.color}`}
+                className={`absolute top-0 right-0 bottom-0 left-0 ${mapping.color}`}
               />
             </div>
           </div>

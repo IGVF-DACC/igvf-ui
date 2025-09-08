@@ -32,7 +32,7 @@ export default function SearchResultsHeader({
   const controller = new SearchController(query, profiles);
 
   return (
-    <div className="relative z-10 w-full @container">
+    <div className="@container relative z-10 w-full">
       <div className="@md:flex @md:items-center @md:justify-between">
         <div className="flex gap-1">
           <div className="mb-1 flex gap-1">

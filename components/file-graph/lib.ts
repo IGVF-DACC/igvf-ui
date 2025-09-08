@@ -237,9 +237,8 @@ function generateFileNodes(
     );
 
     // Get all reference-file objects associated with the current file.
-    const fileReferenceFiles = referenceFiles.filter(
-      (referenceFile) =>
-        (nativeFile.reference_files as string[])?.includes(referenceFile["@id"])
+    const fileReferenceFiles = referenceFiles.filter((referenceFile) =>
+      (nativeFile.reference_files as string[])?.includes(referenceFile["@id"])
     );
 
     // Initialize the node data for the native file.

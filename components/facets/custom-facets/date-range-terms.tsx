@@ -186,7 +186,7 @@ export default function DateRangeTerms({
       <>
         <div className="flex flex-col justify-center gap-1 p-2">
           <button
-            className="flex w-full rounded-sm border border-button-secondary bg-button-secondary fill-button-secondary px-2 py-1 text-button-secondary"
+            className="border-button-secondary bg-button-secondary fill-button-secondary text-button-secondary flex w-full rounded-sm border px-2 py-1"
             onClick={onDateRangeTrigger}
             data-testid={`date-range-trigger-${facet.field}`}
             aria-label={`${facet.title} range from ${humanReadableStartDate} to ${humanReadableEndDate}`}

@@ -137,8 +137,8 @@ export default function ListSelect({
         )}
       </div>
       <div
-        className={`flex rounded bg-panel ${
-          isBorderHidden ? "" : "border border-panel"
+        className={`bg-panel flex rounded ${
+          isBorderHidden ? "" : "border-panel border"
         }`}
       >
         <div id={scrollId} className="w-full overflow-y-scroll p-2">

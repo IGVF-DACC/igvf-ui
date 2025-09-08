@@ -46,13 +46,13 @@ function FacetTag({ filter, facets }) {
   return (
     <Link
       href={filter.remove}
-      className={`flex items-center rounded-sm border py-0.5 pl-1 pr-0 text-facet-tag no-underline ${tagClassName}`}
+      className={`text-facet-tag flex items-center rounded-sm border py-0.5 pr-0 pl-1 no-underline ${tagClassName}`}
       aria-label={`Clear ${title} filter for ${filter.term}`}
       key={filter.field}
     >
       <div>
         <div className="text-xs leading-4">{title}</div>
-        <div className="text-sm font-semibold leading-4">
+        <div className="text-sm leading-4 font-semibold">
           <TagLabel filter={filter} />
         </div>
       </div>

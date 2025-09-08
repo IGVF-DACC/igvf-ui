@@ -12,7 +12,7 @@ export function Logo() {
       width="100%"
       height="100%"
     >
-      <g className="fill-white md:fill-brand">
+      <g className="md:fill-brand fill-white">
         <path
           d="M100.3,192.4c-50.9,0-92.4-41.4-92.4-92.4c0-50.9,41.4-92.4,92.4-92.4c50.9,0,92.4,41.4,92.4,92.4
 		C192.7,150.9,151.2,192.4,100.3,192.4z M100.3,33.6c-36.6,0-66.4,29.8-66.4,66.4c0,36.6,29.8,66.4,66.4,66.4
@@ -23,7 +23,7 @@ export function Logo() {
         <path d="M75.4,98.3l-13-13v58.5c7.3,6.3,16.2,10.9,26,13V85.3L75.4,98.3z" />
         <path d="M233.2,67.3l10.6-10.6v-6c0-5.9-4.3-10.3-10.3-10.3c-5.9,0-10.3,4.5-10.3,10.3v6.6L233.2,67.3z" />
       </g>
-      <g className="fill-white dark:fill-white md:fill-black md:dark:fill-white">
+      <g className="fill-white md:fill-black dark:fill-white md:dark:fill-white">
         <path
           d="M524.8,59.6V93h33.6c5.2,0,9.1,4,9.1,9.1c0,5-4,9-9.1,9h-33.6v37.8c0,5.7-4.3,10.3-10.3,10.3c-5.9,0-10.3-4.7-10.3-10.3
 		V51.5c0-5.9,4.3-10.3,10-10.3h49.2c5.3,0,9.5,4.1,9.5,9.3c0,5-4.1,9.1-9.5,9.1H524.8z"
@@ -46,7 +46,7 @@ export function Logo() {
         />
       </g>
       <path
-        className="fill-white md:fill-brand-accent"
+        className="md:fill-brand-accent fill-white"
         d="M125.2,111.6l-13,13v32.1c9.8-2.1,18.7-6.6,26-13v-19.1L125.2,111.6z"
       />
     </svg>

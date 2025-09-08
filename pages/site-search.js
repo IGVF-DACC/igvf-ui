@@ -54,7 +54,7 @@ function TypeSectionHeader({
 
   return (
     <div
-      className={`flex justify-between border-data-border bg-site-search-header px-2 py-1 ${
+      className={`border-data-border bg-site-search-header flex justify-between px-2 py-1 ${
         isSectionOpen ? "border-b" : ""
       }`}
     >
@@ -75,7 +75,7 @@ function TypeSectionHeader({
           )}
         </Button>
         <div className="@md:flex @md:items-baseline @md:gap-2">
-          <div className="text-lg font-semibold leading-5">{typeTitle}</div>
+          <div className="text-lg leading-5 font-semibold">{typeTitle}</div>
           <div className="text-base leading-4 text-gray-600 @md:text-xs dark:text-gray-300">
             {searchResult.doc_count} item
             {searchResult.doc_count === 1 ? "" : "s"}
@@ -114,7 +114,7 @@ function TypeSectionFooter({ searchResult, term }) {
   query.addKeyValue("query", term);
 
   return (
-    <div className="flex items-center justify-end gap-2 pb-1 pl-1 pr-1 pt-0.5">
+    <div className="flex items-center justify-end gap-2 pt-0.5 pr-1 pb-1 pl-1">
       <div className="text-xs text-gray-500">
         View all {searchResult.doc_count} {typeTitle} with {UC.ldquo}
         {term}
@@ -160,7 +160,7 @@ TypeSectionFooter.propTypes = {
 function TypeSection({ type, children }) {
   return (
     <li
-      className="my-4 border border-data-border bg-panel @container first:mt-0 last:mb-0"
+      className="border-data-border bg-panel @container my-4 border first:mt-0 last:mb-0"
       data-testid={`site-search-type-section-${toShishkebabCase(type)}`}
     >
       {children}
@@ -236,7 +236,7 @@ export default function SiteSearch({ results, term, accessoryData = null }) {
                       transition={standardAnimationTransition}
                       variants={standardAnimationVariants}
                     >
-                      <div className="px-1 pt-0.5 text-center text-xs font-semibold uppercase text-gray-500">
+                      <div className="px-1 pt-0.5 text-center text-xs font-semibold text-gray-500 uppercase">
                         Top results for {typeTitle}
                       </div>
                       <TypeTopHits topHits={result.top_hits.hits.hits}>

@@ -87,7 +87,7 @@ export default function HomeTitle() {
           <polygon points="414.8 78.9 407.5 82.3 403.2 95.4 403 95.4 391 58.7 377 58.7 396.5 110.4 409 110.4 418.3 86.3 414.8 78.9" />
         </g>
       </svg>
-      <div className="absolute right-0 top-0 flex gap-1">
+      <div className="absolute top-0 right-0 flex gap-1">
         <a
           href="https://catalog-dev.igvf.org/"
           target="_blank"
@@ -100,7 +100,7 @@ export default function HomeTitle() {
           href="https://igvf.org/"
           target="_blank"
           rel="noopener noreferrer"
-          className="block rounded-full bg-brand px-3 py-0 text-sm text-white no-underline @lg/home:py-1"
+          className="bg-brand block rounded-full px-3 py-0 text-sm text-white no-underline @lg/home:py-1"
         >
           IGVF Consortium
         </a>
