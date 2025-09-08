@@ -622,6 +622,16 @@ export function FileDataItems({
       )}
       <DataItemLabel>Content Type</DataItemLabel>
       <DataItemValue>{item.content_type}</DataItemValue>
+      {item.cell_type_annotation && (
+        <>
+          <DataItemLabel>Cell Type Annotation</DataItemLabel>
+          <DataItemValue>
+            <Link href={item.cell_type_annotation["@id"]}>
+              {item.cell_type_annotation.term_name}
+            </Link>
+          </DataItemValue>
+        </>
+      )}
       {item.external_host_url && (
         <>
           <DataItemLabel className="flex items-center gap-1">
