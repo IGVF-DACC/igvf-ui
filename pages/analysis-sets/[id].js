@@ -41,6 +41,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
+  requestDonors,
   requestFileSets,
   requestFiles,
   requestLibraryDesignFiles,
@@ -76,6 +77,7 @@ export default function AnalysisSet({
   constructLibrarySets,
   libraryDesignFiles,
   samples,
+  donors,
   qualityMetrics,
   assayTitleDescriptionMap,
   pipelineParametersDocuments,
@@ -289,9 +291,7 @@ export default function AnalysisSet({
             />
           )}
 
-          {analysisSet.donors?.length > 0 && (
-            <DonorTable donors={analysisSet.donors} />
-          )}
+          {donors.length > 0 && <DonorTable donors={donors} />}
 
           {analysisSet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable
@@ -402,6 +402,8 @@ AnalysisSet.propTypes = {
   libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples from analysis set `samples` property that doesn't embed enough properties to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors from analysis set `donors` property that doesn't embed enough properties to display
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this analysis set
   qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Assay title description map for this analysis set
@@ -505,6 +507,11 @@ export async function getServerSideProps({ params, req, query }) {
       const samplePaths = analysisSet.samples.map((sample) => sample["@id"]);
       samples = await requestSamples(samplePaths, request);
     }
+
+    const donors = await requestDonors(
+      analysisSet.donors?.map((donor) => donor["@id"]) || [],
+      request
+    );
 
     let auxiliarySets = [];
     let controlFileSets = [];
@@ -673,6 +680,7 @@ export async function getServerSideProps({ params, req, query }) {
         constructLibrarySets,
         libraryDesignFiles,
         samples,
+        donors,
         qualityMetrics,
         assayTitleDescriptionMap,
         pipelineParametersDocuments,

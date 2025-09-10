@@ -721,7 +721,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFetch).toHaveBeenCalledWith(
-      "/search-quick/?type=Donor&field=accession&field=aliases&field=sex&field=status&field=taxa&@id=/human-donors/IGVFDO3718JLGW/&@id=/rodent-donors/IGVFDO4122GLOB/&limit=2",
+      "/search-quick/?type=Donor&field=accession&field=aliases&field=ethnicities&field=sex&field=status&field=taxa&@id=/human-donors/IGVFDO3718JLGW/&@id=/rodent-donors/IGVFDO4122GLOB/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);

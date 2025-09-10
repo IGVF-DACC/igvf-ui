@@ -29,6 +29,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
+  requestDonors,
   requestFiles,
   requestFileSets,
   requestPublications,
@@ -46,6 +47,7 @@ export default function CuratedSet({
   inputFileSetFor,
   controlFor,
   samples,
+  donors,
   attribution = null,
   isJson,
 }) {
@@ -104,9 +106,7 @@ export default function CuratedSet({
               isConstructLibraryColumnVisible
             />
           )}
-          {curatedSet.donors?.length > 0 && (
-            <DonorTable donors={curatedSet.donors} />
-          )}
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {files.length > 0 && (
             <CuratedSetFileTable files={files} fileSet={curatedSet} />
           )}
@@ -156,6 +156,8 @@ CuratedSet.propTypes = {
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples associated with this curated set
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors associated with this curated set
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this curated set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -199,6 +201,11 @@ export async function getServerSideProps({ params, req, query }) {
       samples = await requestSamples(samplePaths, request);
     }
 
+    const donors = await requestDonors(
+      curatedSet.donors?.map((donor) => donor["@id"]) || [],
+      request
+    );
+
     let publications = [];
     if (curatedSet.publications?.length > 0) {
       const publicationPaths = curatedSet.publications.map(
@@ -216,6 +223,7 @@ export async function getServerSideProps({ params, req, query }) {
         inputFileSetFor,
         controlFor,
         samples,
+        donors,
         pageContext: { title: curatedSet.accession },
         attribution,
         isJson,

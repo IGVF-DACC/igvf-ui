@@ -41,6 +41,7 @@ import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
+  requestDonors,
   requestFiles,
   requestFileSets,
   requestLibraryDesignFiles,
@@ -125,6 +126,7 @@ export default function MeasurementSet({
   inputFileSetFor,
   controlFor,
   samples,
+  donors,
   seqspecFiles,
   seqspecDocuments,
   primerDesigns,
@@ -311,9 +313,7 @@ export default function MeasurementSet({
               isConstructLibraryColumnVisible
             />
           )}
-          {measurementSet.donors?.length > 0 && (
-            <DonorTable donors={measurementSet.donors} />
-          )}
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {measurementSet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable
               constructLibrarySets={measurementSet.construct_library_sets}
@@ -417,6 +417,8 @@ MeasurementSet.propTypes = {
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sample objects associated with the measurement set
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donor objects associated with the measurement set
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec documents associated with `files`
@@ -510,6 +512,11 @@ export async function getServerSideProps({ params, req, query }) {
       samples = await requestSamples(samplesPaths, request);
     }
 
+    const donors = await requestDonors(
+      measurementSet.donors?.map((donor) => donor["@id"]) || [],
+      request
+    );
+
     // Use the files to retrieve all the seqspec files they might link to.
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
@@ -564,6 +571,7 @@ export async function getServerSideProps({ params, req, query }) {
         inputFileSetFor,
         controlFor,
         samples,
+        donors,
         seqspecFiles,
         seqspecDocuments,
         primerDesigns,

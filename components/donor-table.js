@@ -30,6 +30,22 @@ const columns = [
     id: "taxa",
     title: "Taxa",
   },
+  {
+    id: "ethnicities",
+    title: "Ethnicities",
+    display: ({ source }) => {
+      if (source.ethnicities?.length > 0) {
+        // Use non-mutating sorting, the default locale, and ignore case (base sensitivity).
+        const sortedEthnicities = source.ethnicities.toSorted((a, b) =>
+          a.localeCompare(b, undefined, { sensitivity: "base" })
+        );
+        return sortedEthnicities.join(", ");
+      }
+      return "";
+    },
+    hide: (data) => !data.some((item) => item.ethnicities?.length > 0),
+    isSortable: false,
+  },
 ];
 
 /**

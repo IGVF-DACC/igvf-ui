@@ -34,6 +34,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
+  requestDonors,
   requestFiles,
   requestFileSets,
   requestPublications,
@@ -60,6 +61,7 @@ export default function AuxiliarySet({
   inputFileSetFor,
   controlFor,
   samples,
+  donors,
   assayTitleDescriptionMap,
   attribution = null,
   isJson,
@@ -134,9 +136,7 @@ export default function AuxiliarySet({
               isConstructLibraryColumnVisible
             />
           )}
-          {auxiliarySet.donors?.length > 0 && (
-            <DonorTable donors={auxiliarySet.donors} />
-          )}
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {auxiliarySet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable
               constructLibrarySets={auxiliarySet.construct_library_sets}
@@ -197,6 +197,8 @@ AuxiliarySet.propTypes = {
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples associated with this file set
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors associated with this file set
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Assay title description map for this analysis set
   assayTitleDescriptionMap: PropTypes.object.isRequired,
   // Publications associated with this file set
@@ -231,6 +233,11 @@ export async function getServerSideProps({ params, req, query }) {
       const samplePaths = auxiliarySet.samples.map((sample) => sample["@id"]);
       samples = await requestSamples(samplePaths, request);
     }
+
+    const donors = await requestDonors(
+      auxiliarySet.donors?.map((donor) => donor["@id"]) || [],
+      request
+    );
 
     let relatedDatasets = [];
     if (auxiliarySet.measurement_sets?.length > 0) {
@@ -303,6 +310,7 @@ export async function getServerSideProps({ params, req, query }) {
         seqspecDocuments,
         inputFileSetFor,
         samples,
+        donors,
         controlFor,
         assayTitleDescriptionMap,
         pageContext: { title: auxiliarySet.accession },

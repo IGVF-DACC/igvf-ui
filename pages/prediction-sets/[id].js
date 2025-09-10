@@ -34,6 +34,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
+  requestDonors,
   requestFiles,
   requestFileSets,
   requestGenes,
@@ -59,6 +60,7 @@ export default function PredictionSet({
   referenceFiles,
   derivedFromFiles,
   samples,
+  donors,
   assessedGenes,
   qualityMetrics,
   attribution = null,
@@ -239,9 +241,7 @@ export default function PredictionSet({
               isConstructLibraryColumnVisible
             />
           )}
-          {predictionSet.donors?.length > 0 && (
-            <DonorTable donors={predictionSet.donors} />
-          )}
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {predictionSet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable
               constructLibrarySets={predictionSet.construct_library_sets}
@@ -304,6 +304,8 @@ PredictionSet.propTypes = {
   assessedGenes: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples associated with this prediction set
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors associated with this prediction set
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this prediction set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this analysis set
@@ -332,6 +334,11 @@ export async function getServerSideProps({ params, req, query }) {
       const samplePaths = predictionSet.samples.map((sample) => sample["@id"]);
       samples = await requestSamples(samplePaths, request);
     }
+
+    const donors = await requestDonors(
+      predictionSet.donors?.map((donor) => donor["@id"]) || [],
+      request
+    );
 
     const inputFileSets =
       predictionSet.input_file_sets?.length > 0
@@ -430,6 +437,7 @@ export async function getServerSideProps({ params, req, query }) {
         referenceFiles,
         derivedFromFiles,
         samples,
+        donors,
         qualityMetrics,
         pageContext: { title: predictionSet.accession },
         attribution,
