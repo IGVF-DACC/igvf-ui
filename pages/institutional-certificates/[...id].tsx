@@ -25,8 +25,7 @@ import { requestLabs, requestSamples } from "../../lib/common-requests";
 import { type InstitutionalCertificateObject } from "../../lib/data-use-limitation";
 import { formatDate } from "../../lib/dates";
 import { errorObjectToProps } from "../../lib/errors";
-import FetchRequest from "../../lib/fetch-request";
-import { type ErrorObject } from "../../lib/fetch-request.d";
+import FetchRequest, { type ErrorObject } from "../../lib/fetch-request";
 import PagePreamble from "../../components/page-preamble";
 import { isJsonFormat } from "../../lib/query-utils";
 // root

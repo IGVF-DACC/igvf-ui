@@ -1,26 +1,55 @@
 // node_modules
 import type { NextApiRequest, NextApiResponse } from "next";
 // lib
-import { ServerCache } from "../../lib/cache";
-import FetchRequest from "../../lib/fetch-request";
-// types
-import type { ErrorObject } from "../../lib/fetch-request.d";
+import { getCachedDataFetch } from "../../lib/cache";
+import FetchRequest, {
+  HTTP_STATUS_CODE,
+  isHttpMethod,
+  type ErrorObject,
+} from "../../lib/fetch-request";
 
 /**
- * Time-to-live for the indexer-state cache in seconds.
+ * Server cache key for the indexer-state object.
  */
-const INDEXER_STATE_TTL = 60;
+const INDEXER_STATE_KEY = "indexer-state";
+
+/**
+ * Time-to-live for the indexer-state cache in seconds. Short because the indexer state can
+ * change frequently, but balance against making too many requests to the data provider.
+ */
+const INDEXER_STATE_TTL = 60; // 1 minute
 
 /**
  * Reflects the data returned by the data provider's /indexer-info endpoint.
  */
 type IndexerInfo = {
+  deduplication_dead_letter_queue: {
+    ApproximateNumberOfMessages: number;
+    ApproximateNumberOfMessagesNotVisible: number;
+    ApproximateNumberOfMessagesDelayed: number;
+  };
+  deduplication_queue: {
+    ApproximateNumberOfMessages: number;
+    ApproximateNumberOfMessagesNotVisible: number;
+    ApproximateNumberOfMessagesDelayed: number;
+  };
+  has_indexing_errors: boolean;
+  invalidation_dead_letter_queue: {
+    ApproximateNumberOfMessages: number;
+    ApproximateNumberOfMessagesNotVisible: number;
+    ApproximateNumberOfMessagesDelayed: number;
+  };
   invalidation_queue: {
     ApproximateNumberOfMessages: number;
     ApproximateNumberOfMessagesDelayed: number;
     ApproximateNumberOfMessagesNotVisible: number;
   };
   is_indexing: boolean;
+  transaction_dead_letter_queue: {
+    ApproximateNumberOfMessages: number;
+    ApproximateNumberOfMessagesNotVisible: number;
+    ApproximateNumberOfMessagesDelayed: number;
+  };
   transaction_queue: {
     ApproximateNumberOfMessages: number;
     ApproximateNumberOfMessagesDelayed: number;
@@ -39,36 +68,54 @@ export type IndexerState = {
 };
 
 /**
- * ServerCache callback to Fetch the BE indexer state on a cache miss.
- * @param request Result of `new FetchRequest(..)` to the data provider
- * @returns JSON stringified `IndexerState` object
+ * Fetches the indexer-info data from the data provider and converts it to the simplified
+ * IndexerState format used to display the indexer's status on the UI. Adding a trailing slash to
+ * `/indexer-info` causes a 404.
+ *
+ * @param cookie - Cookie to use for the request to the data provider
+ * @returns Promise that resolves to the indexer state or null if not found
  */
-async function fetchIndexerInfoData(request: FetchRequest): Promise<string> {
-  let response;
+async function fetchIndexerInfoData(
+  cookie?: string
+): Promise<IndexerState | null> {
+  const request = new FetchRequest({ cookie });
 
   try {
-    response = (await request.getObject("/indexer-info")).union();
+    const response = (await request.getObject("/indexer-info")).union();
     if (response.isError) {
-      throw new Error((response as ErrorObject).description);
+      const error = response as ErrorObject;
+      if (error.code === HTTP_STATUS_CODE.NOT_FOUND) {
+        console.warn(
+          "Indexer info endpoint not found - might be normal during deployment"
+        );
+      } else if (error.code >= HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR) {
+        console.error(
+          "Data provider server error for indexer info:",
+          error.description
+        );
+      } else {
+        console.error("Client error fetching indexer info:", error.description);
+      }
+      return null;
     }
-  } catch (err) {
-    console.error("Failed to fetch indexer info:", err);
-    return JSON.stringify({ isIndexing: false, indexingCount: 0 });
-  }
 
-  const stateFromDataProvider = response as IndexerInfo;
-  const state: IndexerState = {
-    isIndexing: stateFromDataProvider.is_indexing,
-    indexingCount:
-      stateFromDataProvider.invalidation_queue.ApproximateNumberOfMessages,
-  };
-  return JSON.stringify(state);
+    // Build the IndexerState object from the valid IndexerInfo response.
+    const indexerInfo = response as IndexerInfo;
+    return {
+      isIndexing: indexerInfo.is_indexing,
+      indexingCount: indexerInfo.invalidation_queue.ApproximateNumberOfMessages,
+    };
+  } catch (err) {
+    console.error("Network or parsing error fetching indexer info:", err);
+    return null;
+  }
 }
 
 /**
  * This endpoint is used to determine if the indexer is currently indexing and how many
  * transactions are remaining in the invalidation queue. Request the indexer state from the data
  * provider. Convert this to the simplified `IndexerState` format.
+ *
  * @param req {NextApiRequest} NextJS API request object.
  * @param res {NextApiResponse} NextJS API response object.
  */
@@ -76,9 +123,27 @@ export default async function indexerState(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  const request = new FetchRequest({ cookie: req.headers.cookie });
-  const cacheRef = new ServerCache("indexer-info", INDEXER_STATE_TTL);
-  cacheRef.setFetchConfig(fetchIndexerInfoData, request);
-  const indexerInfo = await cacheRef.getData<IndexerState>();
-  res.status(200).json(indexerInfo);
+  // Only allow GET requests for this endpoint.
+  if (!isHttpMethod(req.method, "GET")) {
+    res.status(HTTP_STATUS_CODE.METHOD_NOT_ALLOWED).json({
+      error: "Method not allowed",
+    });
+    return;
+  }
+
+  // Request the indexer state from the cache, or fetch it if it's not in the cache.
+  const indexerInfo = await getCachedDataFetch<IndexerState>(
+    INDEXER_STATE_KEY,
+    async () => fetchIndexerInfoData(req.headers.cookie),
+    INDEXER_STATE_TTL
+  );
+
+  // Return the cached or fetched indexer state, or a 503 if something went wrong.
+  if (indexerInfo) {
+    res.status(HTTP_STATUS_CODE.OK).json(indexerInfo);
+  } else {
+    res
+      .status(HTTP_STATUS_CODE.SERVICE_UNAVAILABLE)
+      .json({ error: "Indexer state temporarily unavailable" });
+  }
 }

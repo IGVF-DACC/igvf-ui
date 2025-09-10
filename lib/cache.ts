@@ -7,169 +7,168 @@
  * so they see the same data on different browsers or devices. Don't rely on this persistence
  * however. Losing this data shouldn't significantly affect the user experience.
  *
- * Use this code only on the Next.js server.
+ * Use this code only on the Next.js server. Documentation in lib/docs/cache.md.
  */
 
-// node_modules
-import type { RedisClientType } from "redis";
 // lib
 import { getCacheClient } from "./cache-client";
 import FetchRequest from "./fetch-request";
 
 /**
- * Default time to live for cache entries in seconds.
+ * Default TTL time for cache entries in seconds.
  */
-const DEFAULT_CACHE_TTL = 3600;
+const DEFAULT_CACHE_TTL = 3600; // 1 hour
 
 /**
- * Callback to fetch data when it's not in the cache. The code using the cache provides this
- * callback. The callback must return a string or null, so it should convert any numbers it returns
- * to strings, and any objects or arrays it returns to stringified JSON. It returns null if the data
- * can't be fetched for any reason.
+ * Tracks active request promises to prevent duplicating requests, thereby preventing the
+ * thundering-herd problem. When a promise resolves with fetched data, it gets removed from this
+ * map.
  */
-export type CacheFetchCallback = (
-  request: FetchRequest,
-  meta?: Record<string, any>
-) => Promise<string | null>;
+const activeRequests = new Map<string, Promise<unknown>>();
 
 /**
- * Options to pass to the `getData` method of `ServerCache`.
+ * Callback to fetch data when it's not in the cache. The function should return the data, or null
+ * if something went wrong. If this function uses the `FetchRequest` class, it should create a new
+ * instance of it for each call, and it should unwrap the result appropriately, e.g. by calling
+ * `.optional()` on the result of `getObject()`.
  */
-type GetDataOptions = {
-  /** True to fetch the data instead of getting it from the cache. The fetched data gets cached. */
-  forceFetch?: boolean;
-};
+export type CacheFetcher<T = unknown> = () => Promise<T | null>;
 
 /**
- * Class to handle caching of server data. It's intended to cache data from the data provider
- * server to reduce load on that server.
+ * Get data from cache or fetch it using the provided fetcher function. Cache the fetched data.
+ *
+ * @param key - Key identifying the data in the cache
+ * @param fetcher - Function to call to fetch the data if it's not in the cache
+ * @param [ttl] - Time to live for the cached data in seconds. Default is one hour
+ * @returns Promise that resolves to the cached or fetched data; null if something went wrong
  */
-export class ServerCache {
-  private redisClient: RedisClientType | null;
-  private key: string;
-  private ttl: number;
-  private fetchData: CacheFetchCallback;
-  private request: FetchRequest;
-  private fetchMeta: Record<string, any> | null;
-  private isFetched: boolean;
-
-  /**
-   * Creates an instance of ServerCache.
-   * @param key - Key to identify the cached data; normally shishkebab case
-   * @param [fetchData] - Callback function to fetch the data if it's not in the cache
-   * @param [request] - FetchRequest object to pass to the fetch callback
-   * @param [ttl] - Number of seconds before this cache item expires
-   * @throws {Error} - If any of the required parameters are missing
-   */
-  constructor(key: string, ttl: number = DEFAULT_CACHE_TTL) {
-    this.redisClient = getCacheClient();
-    this.key = key;
-    this.ttl = ttl;
-    this.isFetched = false;
+export async function getCachedDataFetch<T = unknown>(
+  key: string,
+  fetcher: CacheFetcher<T>,
+  ttl: number = DEFAULT_CACHE_TTL
+): Promise<T | null> {
+  // Check for an active request promise for the same key. If found, wait for that request's
+  // fetcher function and return its cached result. This deduplicates requests for the same key
+  // that arrive while the first request processes but before caching completes.
+  if (activeRequests.has(key)) {
+    return (await activeRequests.get(key)) as T;
   }
 
-  /**
-   * For cache items filled with data from the data provider, set the fetch callback and request
-   * object to fetch the data if it's not in the cache.
-   * @param fetchData - Callback function to fetch the data if it's not in the cache
-   * @param request - FetchRequest object to pass to the fetch callback
-   * @param meta - Metadata to pass to the fetch callback
-   */
-  setFetchConfig(
-    fetchData: CacheFetchCallback,
-    request: FetchRequest,
-    meta: Record<string, any> = null
-  ): void {
-    this.fetchData = fetchData;
-    this.request = request;
-    this.fetchMeta = meta;
-    this.isFetched = true;
+  // Get a reference to the Redis client. If Redis fails to load, just fetch the data directly.
+  // Don't bother tracking this request because we can't cache it.
+  const redisClient = await getCacheClient();
+  if (!redisClient) {
+    return await fetcher();
   }
 
-  /**
-   * Clear the fetch configuration so the cache item doesn't fetch data from the data provider when
-   * the cache doesn't have it.
-   */
-  clearFetchConfig(): void {
-    this.fetchData = null;
-    this.request = null;
-    this.fetchMeta = null;
-    this.isFetched = false;
-  }
-
-  /**
-   * Retrieve requested data from the cache, or fetch it if it's not in the cache and the fetch
-   * configuration has been set. Fetched data gets cached.
-   * @param [options] - Options to adjust the behavior of the method
-   */
-  async getData<T>(options: GetDataOptions = {}): Promise<T> {
-    if (this.redisClient) {
-      const forceFetch = this.isFetched && Boolean(options.forceFetch);
-      if (!forceFetch) {
-        const cachedData = await this.redisClient.get(this.key);
-        if (cachedData) {
-          return JSON.parse(cachedData);
-        }
-      }
-
-      // Requested data not in the cache. Fetch it if the cache is set up to do so.
-      if (this.isFetched) {
-        const fetchedData = await this.fetchData(this.request, this.fetchMeta);
-        if (fetchedData) {
-          this.redisClient.set(this.key, fetchedData, { EX: this.ttl });
-          return JSON.parse(fetchedData);
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Cache the provided data. Use this when you have data to cache that doesn't come from the data
-   * provider.
-   * @param data - Data to cache
-   */
-  async setData(data: unknown): Promise<void> {
-    if (this.redisClient && !this.isFetched) {
-      await this.redisClient.set(this.key, JSON.stringify(data), {
-        EX: this.ttl,
-      });
+  // Retrieve the data corresponding to the key from Redis if cached.
+  const cachedData = await redisClient.get(key);
+  if (cachedData) {
+    try {
+      return JSON.parse(cachedData);
+    } catch {
+      // Could not parse cached data, maybe because of corruption. Fall through to fetch it again.
     }
   }
+
+  // Calls the provided fetcher function and caches the result. Also tracks the promise in the
+  // `activeRequests` map so other requests for the same key can wait for the fetcher function to
+  // complete to return its data.
+  async function fetchAndCache(): Promise<T | null> {
+    try {
+      const data = await fetcher();
+      if (data !== null && redisClient) {
+        await redisClient.set(key, JSON.stringify(data), { EX: ttl });
+      }
+      return data;
+    } catch (error) {
+      console.error(`Cache fetch error for key ${key}:`, error);
+      return null;
+    } finally {
+      // We don't need to track this request anymore because it completed, successfully or not.
+      activeRequests.delete(key);
+    }
+  }
+
+  // Core of the fetch-and-cache process. `fetchAndCache()` immediately returns a promise that we
+  // track in the `activeRequests` map, preventing other requests for the same key from arriving
+  // between the initiation of the request and the adding of its key to `activeRequests`.
+  const fetchPromise = fetchAndCache();
+  activeRequests.set(key, fetchPromise);
+
+  // Wait for the fetcher function to complete and return its data. This function can return data
+  // from `fetcher()` at multiple points in this function. This particular return handles the case
+  // where we called `fetcher()` because the data wasn't in the Redis cache.
+  return await fetchPromise;
 }
 
 /**
- * Callback for `retrieveCacheBackedData` to fetch the requested data from the data provider.
- * @param request - FetchRequest object to use to fetch the profiles object
- * @returns The profiles object as a JSON string or null if it couldn't be fetched
- */
-async function fetchCacheBackedData(
-  request: FetchRequest,
-  meta: { path: string }
-): Promise<string | null> {
-  const data = (await request.getObject(meta.path)).optional();
-  return data ? JSON.stringify(data) : null;
-}
-
-/**
- * Convenience function to retrieve data from the cache or fetch it from the data provider if it's not
- * in the cache. Use this for simple cases where you have a path to a data provider endpoint and
- * simply want to return the data from that endpoint, caching it as it's fetched. Subsequent calls
- * with the same `key` will return the cached data until the `key`'s cache expires.
+ * Convenience function for API endpoint caching. Use this for caching data fetched from the data
+ * provider API's `getObject()` method.
+ *
  * @param cookie - Cookie to use for the request to the data provider
- * @param key - Key to use to identify the cache item
- * @param path - Path to use for the request to the data provider
- * @param [ttl] - Number of seconds before this cache item expires
- * @returns Promise for the data from the data provider, or null if it couldn't be fetched
+ * @param key - Key identifying the data in the cache
+ * @param path - Path to pass to `FetchRequest.getObject()`
+ * @param [ttl] - Time to live for the cached data in seconds. Default is one hour
+ * @returns Promise that resolves to the cached or fetched data; null if something went wrong
  */
-export async function retrieveCacheBackedData(
+export async function getObjectCached<T = unknown>(
   cookie: string,
   key: string,
   path: string,
   ttl?: number
-): Promise<unknown> {
-  const request = new FetchRequest({ cookie });
-  const cacheRef = new ServerCache(key, ttl);
-  cacheRef.setFetchConfig(fetchCacheBackedData, request, { path });
-  return await cacheRef.getData();
+): Promise<T | null> {
+  return await getCachedDataFetch<T>(
+    key,
+    async () => {
+      const request = new FetchRequest({ cookie: cookie || undefined });
+      const data = (await request.getObject(path)).optional();
+      return data as T;
+    },
+    ttl
+  );
+}
+
+/**
+ * Get data directly from cache without a fetcher fallback. Use this to retrieve data that was
+ * previously stored with `setCachedData()`. Returns null if the key doesn't exist or Redis is
+ * unavailable.
+ *
+ * @param key - Key identifying the data in the cache
+ * @returns Promise that resolves to the cached data, or null if not found or error occurred
+ */
+export async function getCachedData<T = unknown>(
+  key: string
+): Promise<T | null> {
+  const redisClient = await getCacheClient();
+  if (redisClient) {
+    try {
+      const cachedData = await redisClient.get(key);
+      return cachedData ? (JSON.parse(cachedData) as T) : null;
+    } catch (error) {
+      console.error(`Cache retrieval error for key ${key}:`, error);
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Set data directly in cache (for non-API data). Use this for caching data that doesn't come from
+ * the data-provider API, perhaps a user preference or the result of a complex computation.
+ *
+ * @param key - Key identifying the data in the cache
+ * @param data - Data to cache
+ * @param [ttl] - Time to live for the cached data in seconds. Default is one hour
+ * @returns Promise that resolves when the data has been cached
+ */
+export async function setCachedData(
+  key: string,
+  data: unknown,
+  ttl: number = DEFAULT_CACHE_TTL
+): Promise<void> {
+  const redisClient = await getCacheClient();
+  if (redisClient) {
+    await redisClient.set(key, JSON.stringify(data), { EX: ttl });
+  }
 }

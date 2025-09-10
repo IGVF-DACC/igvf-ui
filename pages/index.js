@@ -9,7 +9,7 @@ import Icon from "../components/icon";
 import Link from "../components/link-no-prefetch";
 import { TabGroup, TabList, TabTitle } from "../components/tabs";
 // lib
-import { ServerCache } from "../lib/cache";
+import { getCachedDataFetch } from "../lib/cache";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber } from "../lib/general";
 import {
@@ -260,10 +260,12 @@ Home.propTypes = {
 
 /**
  * Fetch the statistics for the home page for copying to the cache.
- * @param {FetchRequest} request Result of `new FetchRequest(..)`
+ *
+ * @param {string} cookie - Cookie to use for the request to the data provider
  * @returns {string} JSON string with the statistics for the home page
  */
-async function fetchHomePageStatistics(request) {
+async function fetchHomePageStatistics(cookie) {
+  const request = new FetchRequest({ cookie: cookie || undefined });
   const processedResults = (
     await request.getObject("/search/?type=AnalysisSet&status=released&limit=0")
   ).optional();
@@ -278,19 +280,20 @@ async function fetchHomePageStatistics(request) {
     )
   ).optional();
 
-  return JSON.stringify({
+  return {
     processedCount: processedResults?.total || 0,
     predictionsCount: predictionsResults?.total || 0,
     rawCount: rawResults?.total || 0,
-  });
+  };
 }
 
 export async function getServerSideProps({ req }) {
-  const providerRequest = new FetchRequest({ cookie: req.headers.cookie });
-  const cacheRef = new ServerCache(STATISTICS_CACHE_KEY, STATISTICS_CACHE_TTL);
-  cacheRef.setFetchConfig(fetchHomePageStatistics, providerRequest);
   const { processedCount, predictionsCount, rawCount } =
-    await cacheRef.getData();
+    await getCachedDataFetch(
+      STATISTICS_CACHE_KEY,
+      async () => fetchHomePageStatistics(req.headers.cookie || ""),
+      STATISTICS_CACHE_TTL
+    );
 
   return {
     props: {

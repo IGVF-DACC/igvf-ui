@@ -13,8 +13,7 @@ import {
 } from "@auth0/auth0-react";
 // lib
 import { AUTH0_CLIENT_ID, AUTH_ERROR_URI } from "./constants";
-import FetchRequest from "./fetch-request";
-import { ErrorObject } from "./fetch-request.d";
+import FetchRequest, { type ErrorObject } from "./fetch-request";
 // root
 import type { DataProviderObject } from "../globals";
 
@@ -59,7 +58,7 @@ export async function getSessionProperties(
  */
 export async function getDataProviderUrl(): Promise<string | null> {
   const request = new FetchRequest({ backend: true });
-  const response = (await request.getObject("/api/data-provider")).optional();
+  const response = (await request.getObject("/api/data-provider/")).optional();
   return (response?.dataProviderUrl as string) || null;
 }
 

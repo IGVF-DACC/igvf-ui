@@ -25,11 +25,6 @@
  * `defaultErrorValue`.
  */
 
-// node_modules
-import pako from "pako";
-// lib
-import { API_URL, SERVER_URL, BACKEND_URL, MAX_URL_LENGTH } from "./constants";
-
 // TYPES
 // root
 import type {
@@ -38,25 +33,83 @@ import type {
   SessionObject,
 } from "../globals.d";
 // lib
-import type {
-  ErrorObject,
-  FetchMethod,
-  FetchRequestInitializer,
-} from "./fetch-request.d";
 import { ok, err, Result, Ok } from "./result";
 
-export const FETCH_METHOD = {
-  GET: "GET",
-  HEAD: "HEAD",
-  POST: "POST",
-  PUT: "PUT",
-  DELETE: "DELETE",
-  CONNECT: "CONNECT",
-  OPTIONS: "OPTIONS",
-  TRACE: "TRACE",
-  PATCH: "PATCH",
-};
-Object.freeze(FETCH_METHOD);
+// node_modules
+import pako from "pako";
+// lib
+import { API_URL, SERVER_URL, BACKEND_URL, MAX_URL_LENGTH } from "./constants";
+
+/**
+ * Node.js HTTP/HTTPS Agent classes for persistent connections.
+ * These remain undefined in browser environments and are set once during module initialization.
+ *
+ * ⚠️ IMPORTANT: Do not reassign these variables after initialization as it will break HTTP
+ * connection pooling for all subsequent requests.
+ */
+let HttpsAgent: typeof import("https").Agent | undefined;
+let HttpAgent: typeof import("http").Agent | undefined;
+
+/*
+ * Server-side module loading for persistent connections. Browser environments don't need this.
+ * Agent classes are assigned once at module load time and should remain unchanged thereafter.
+ */
+/* istanbul ignore if: Server-side module loading cannot be tested in Jest jsdom environment */
+if (typeof window === "undefined") {
+  try {
+    const { Agent } = require("https");
+    const { Agent: HttpAgentClass } = require("http");
+    HttpsAgent = Agent;
+    HttpAgent = HttpAgentClass;
+  } catch (_error) {
+    // Import failed - agents will remain undefined and requests will use default behavior.
+  }
+}
+
+/**
+ * Possible request methods for a fetch request.
+ */
+export type FetchMethod =
+  | "GET"
+  | "HEAD"
+  | "POST"
+  | "PUT"
+  | "DELETE"
+  | "CONNECT"
+  | "OPTIONS"
+  | "TRACE"
+  | "PATCH";
+
+/**
+ * Arguments for a FetchRequest constructor.
+ */
+export interface FetchRequestInitializer {
+  cookie?: string;
+  session?: SessionObject;
+  backend?: boolean;
+}
+
+/**
+ * Extended RequestInit that includes Node.js-specific `agent` property.
+ */
+interface RequestInitWithAgent extends RequestInit {
+  agent?:
+    | InstanceType<typeof import("https").Agent>
+    | InstanceType<typeof import("http").Agent>;
+}
+
+/**
+ * Format of standard error responses.
+ */
+export interface ErrorObject {
+  isError: true;
+  "@type": Array<string>;
+  code: number;
+  description: string;
+  detail: string;
+  status: string;
+  title: string;
+}
 
 /**
  * fetch() methods that allow a `body` in the options object.
@@ -154,14 +207,47 @@ const MAX_READ_SIZE = 50_000_000;
 const DEFAULT_MAX_TEXT_LINES = 100;
 
 /**
- * Log a request from the NextJS server to igvfd.
- * @param {string} method FetchRequest method that performs the request
- * @param {string} path Path or paths to requested resource
- * @returns {void}
+ * Maximum number of sockets to allow in the connection pool for persistent connections.
  */
-function logRequest(method: string, path: string): void {
-  const date = new Date().toISOString();
-  console.log(`SVRREQ [${date}] ${method} ${path}`);
+const MAX_SOCKETS = 10;
+
+/**
+ * Maximum number of idle connections to keep open per host (connection pooling).
+ */
+const MAX_FREE_SOCKETS = 5;
+
+/**
+ * Timeout in milliseconds for socket inactivity before closing the connection.
+ */
+const SOCKET_TIMEOUT = 60000; // 60 seconds
+
+/**
+ * Log request details with connection type indicator
+ */
+export function logRequest(
+  method: string,
+  path: string,
+  usingAgent: boolean
+): void {
+  console.log(
+    `SVRREQ [${new Date().toISOString()}] [${
+      usingAgent ? "PERSISTENT" : "DEFAULT"
+    }] ${method} ${path}`
+  );
+}
+
+/**
+ * Type-safe HTTP method comparison utility. Compares string method with a FetchMethod union type.
+ *
+ * @param method - Method to check against a `FetchMethod` union type
+ * @param expectedMethod - Expected HTTP method
+ * @returns True if the methods match
+ */
+export function isHttpMethod(
+  method: string | undefined,
+  expectedMethod: FetchMethod
+): boolean {
+  return method === expectedMethod;
 }
 
 /**
@@ -186,6 +272,17 @@ export function isErrorObject(
 export default class FetchRequest {
   private headers = new Headers();
   private backend = false;
+
+  // Static connection pool for persistent connections (Node only). Imports only import Typescript
+  // types, not code. This holds an actual instance of the agent class once initialized, so we need
+  // to use `InstanceType<>` to represent the instance of the class.
+  private static httpsAgent:
+    | InstanceType<typeof import("https").Agent>
+    | undefined;
+  private static httpAgent:
+    | InstanceType<typeof import("http").Agent>
+    | undefined;
+  private static connectionPoolInitialized = false;
 
   /**
    * Determine whether the response object indicates an error of any kind occurred, whether an
@@ -245,6 +342,78 @@ export default class FetchRequest {
     if (backend) {
       this.backend = true;
     }
+
+    // Initialize persistent connection pool for server-side requests
+    this.initializeConnectionPool();
+  }
+
+  /**
+   * Initialize persistent connection pool for server-side requests. This improves performance by
+   * reusing TCP/TLS connections.
+   */
+  private initializeConnectionPool(): void {
+    // Initialize if we're on Node.js but not already initialized.
+    /* istanbul ignore if: Server-side connection pool initialization cannot be tested in Jest jsdom environment */
+    if (this.isServer && !FetchRequest.connectionPoolInitialized) {
+      try {
+        if (HttpsAgent && HttpAgent) {
+          // Shared configuration for both HTTP and HTTPS agents. Define here instead of globally
+          // because this isn't needed in the browser.
+          const agentConfig = {
+            // Keep TCP/TLS connections alive between requests instead of closing them.
+            keepAlive: true,
+            // Maximum number of concurrent connections to any single host.
+            maxSockets: MAX_SOCKETS,
+            // Maximum number of idle connections to keep open per host (connection pooling).
+            maxFreeSockets: MAX_FREE_SOCKETS,
+            // Timeout in milliseconds for socket inactivity before closing the connection
+            timeout: SOCKET_TIMEOUT,
+          };
+
+          // Configure HTTPS and HTTP agents with persistent connections.
+          FetchRequest.httpsAgent = new HttpsAgent(agentConfig);
+          FetchRequest.httpAgent = new HttpAgent(agentConfig);
+
+          FetchRequest.connectionPoolInitialized = true;
+        }
+      } catch (_error) {
+        // Failed to initialize connection pool -- fall back to default behavior. Requests still
+        // work without persistent connections.
+      }
+    }
+  }
+
+  /**
+   * Return true if persistent connections are available for use.
+   */
+  private get usingPersistentConnections(): boolean {
+    return this.isServer && FetchRequest.connectionPoolInitialized;
+  }
+
+  /**
+   * Get the appropriate HTTP agent for persistent connections based on URL protocol.
+   *
+   * @param url - The URL to determine the protocol for
+   * @returns HTTP agent for the protocol, or undefined if not available
+   */
+  private getConnectionAgent(
+    url: string
+  ):
+    | InstanceType<typeof import("https").Agent>
+    | InstanceType<typeof import("http").Agent>
+    | undefined {
+    if (this.usingPersistentConnections) {
+      try {
+        const protocol = new URL(url).protocol;
+        return protocol === "https:"
+          ? FetchRequest.httpsAgent
+          : FetchRequest.httpAgent;
+      } catch (_error) {
+        // Invalid URL or other error - return undefined for default behavior
+        return undefined;
+      }
+    }
+    return undefined;
   }
 
   /**
@@ -338,7 +507,7 @@ export default class FetchRequest {
       acceptEncoding?: string;
     },
     includeCredentials = true
-  ): RequestInit {
+  ): RequestInitWithAgent {
     if (additional.accept) {
       this.headers.set("Accept", additional.accept);
     }
@@ -361,6 +530,42 @@ export default class FetchRequest {
   }
 
   /**
+   * Build the options object for a fetch() request with persistent connection agent.
+   *
+   * @param url  - The URL for the request (to determine the agent)
+   * @param method  - Method to use for the request
+   * @param additional  - Additional options object
+   * @param includeCredentials  - Whether to include credentials
+   * @returns Options object for fetch() with agent if available
+   */
+  private buildOptionsWithAgent(
+    url: string,
+    method: FetchMethod,
+    additional: {
+      payload?: object;
+      accept?: string;
+      range?: string;
+      contentType?: string;
+      acceptEncoding?: string;
+    },
+    includeCredentials = true
+  ): RequestInitWithAgent {
+    const baseOptions = this.buildOptions(
+      method,
+      additional,
+      includeCredentials
+    );
+
+    // Add persistent connection agent for server-side requests.
+    const agent = this.getConnectionAgent(url);
+    if (agent) {
+      baseOptions.agent = agent;
+    }
+
+    return baseOptions;
+  }
+
+  /**
    * Request the object with the given path.
    * @param {string} path Path to requested resource
    * @param {object} options? indicating request options
@@ -372,15 +577,13 @@ export default class FetchRequest {
     path: string,
     options = { isDbRequest: false }
   ): Promise<Result<DataProviderObject, ErrorObject>> {
-    const headerOptions = this.buildOptions("GET", {
+    const url = this.pathUrl(path, options.isDbRequest);
+    const headerOptions = this.buildOptionsWithAgent(url, "GET", {
       accept: PAYLOAD_FORMAT.JSON,
     });
     try {
-      logRequest("getObject", this.pathUrl(path));
-      const response = await fetch(
-        this.pathUrl(path, options.isDbRequest),
-        headerOptions
-      );
+      logRequest("getObject", url, this.usingPersistentConnections);
+      const response = await fetch(url, headerOptions);
       if (!response.ok) {
         const error = {
           ...(await response.json()),
@@ -405,11 +608,11 @@ export default class FetchRequest {
   public async getObjectByUrl(
     url: string
   ): Promise<Result<DataProviderObject, ErrorObject>> {
-    const headerOptions = this.buildOptions("GET", {
+    const headerOptions = this.buildOptionsWithAgent(url, "GET", {
       accept: PAYLOAD_FORMAT.JSON,
     });
     try {
-      logRequest("getObjectByUrl", url);
+      logRequest("getObjectByUrl", url, this.usingPersistentConnections);
       const response = await fetch(url, headerOptions);
       if (!response.ok) {
         const error = {
@@ -439,7 +642,11 @@ export default class FetchRequest {
     paths: Array<string>,
     options = { filterErrors: false }
   ): Promise<Array<Result<DataProviderObject, ErrorObject>>> {
-    logRequest("getMultipleObjects", `[${paths.join(", ")}]`);
+    logRequest(
+      "getMultipleObjects",
+      `[${paths.join(", ")}]`,
+      this.usingPersistentConnections
+    );
     const results =
       paths.length > 0
         ? await Promise.all(paths.map((path) => this.getObject(path)))
@@ -470,7 +677,8 @@ export default class FetchRequest {
   ): Promise<Result<Array<DataProviderObject>, ErrorObject>> {
     logRequest(
       "getMultipleObjectsBulk",
-      `types:${types.join()} [${paths.join(", ")}]`
+      `types:${types.join()} [${paths.join(", ")}]`,
+      this.usingPersistentConnections
     );
 
     if (paths.length === 0) {
@@ -553,7 +761,8 @@ export default class FetchRequest {
       "getMultipleObjectsBySearch",
       `type:${type} query:${query} property:${property} values:${values.join(
         ","
-      )}`
+      )}`,
+      this.usingPersistentConnections
     );
 
     // Ensure we have either `query` or `property` with `values`.
@@ -614,12 +823,13 @@ export default class FetchRequest {
     path: string,
     defaultErrorValue?: T
   ): Promise<string | ErrorObject | T> {
-    const options = this.buildOptions("GET", {
+    const url = this.pathUrl(path);
+    const options = this.buildOptionsWithAgent(url, "GET", {
       accept: PAYLOAD_FORMAT.TEXT,
     });
     try {
-      logRequest("getText", path);
-      const response = await fetch(this.pathUrl(path), options);
+      logRequest("getText", path, this.usingPersistentConnections);
+      const response = await fetch(url, options);
       if (!response.ok && defaultErrorValue !== undefined) {
         return defaultErrorValue;
       }
@@ -641,9 +851,12 @@ export default class FetchRequest {
    * @param maxLines Maximum number of lines to return from the text file
    * @returns First decompressed `maxLines` lines of the text file
    */
-  /* istanbul ignore next */
-  public async getZippedPreviewText(url, maxLines = DEFAULT_MAX_TEXT_LINES) {
-    const options = this.buildOptions(
+  public async getZippedPreviewText(
+    url: string,
+    maxLines = DEFAULT_MAX_TEXT_LINES
+  ) {
+    const options = this.buildOptionsWithAgent(
+      url,
       "GET",
       {
         accept: PAYLOAD_FORMAT.TEXT,
@@ -717,14 +930,15 @@ export default class FetchRequest {
     path: string,
     payload: object
   ): Promise<DataProviderObject | ErrorObject> {
-    logRequest("postObject", path);
-    const options = this.buildOptions("POST", {
+    const url = this.pathUrl(path);
+    logRequest("postObject", path, this.usingPersistentConnections);
+    const options = this.buildOptionsWithAgent(url, "POST", {
       accept: PAYLOAD_FORMAT.JSON,
       contentType: PAYLOAD_FORMAT.JSON,
       payload,
     });
     try {
-      const response = await fetch(this.pathUrl(path), options);
+      const response = await fetch(url, options);
       return response.json();
     } catch (error) {
       console.log(error);
@@ -742,14 +956,15 @@ export default class FetchRequest {
     path: string,
     payload: object
   ): Promise<DataProviderObject | ErrorObject> {
-    const options = this.buildOptions("PUT", {
+    const url = this.pathUrl(path);
+    const options = this.buildOptionsWithAgent(url, "PUT", {
       accept: PAYLOAD_FORMAT.JSON,
       contentType: PAYLOAD_FORMAT.JSON,
       payload,
     });
     try {
-      logRequest("putObject", path);
-      const response = await fetch(this.pathUrl(path), options);
+      logRequest("putObject", path, this.usingPersistentConnections);
+      const response = await fetch(url, options);
       return response.json();
     } catch (error) {
       console.log(error);
@@ -767,14 +982,15 @@ export default class FetchRequest {
     path: string,
     payload: object
   ): Promise<DataProviderObject | ErrorObject> {
-    const options = this.buildOptions("PATCH", {
+    const url = this.pathUrl(path);
+    const options = this.buildOptionsWithAgent(url, "PATCH", {
       accept: PAYLOAD_FORMAT.JSON,
       contentType: PAYLOAD_FORMAT.JSON,
       payload,
     });
     try {
-      logRequest("patchObject", path);
-      const response = await fetch(this.pathUrl(path), options);
+      logRequest("patchObject", path, this.usingPersistentConnections);
+      const response = await fetch(url, options);
       return response.json();
     } catch (error) {
       console.log(error);

@@ -8,9 +8,7 @@ import { useContext } from "react";
 import { ExternallyHostedBadge } from "./common-pill-badges";
 import { ButtonLink } from "./form-elements";
 import LinkedIdAndStatus from "./linked-id-and-status";
-import SessionContext, {
-  type SessionPropertiesObject,
-} from "./session-context";
+import SessionContext from "./session-context";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { API_URL } from "../lib/constants";
@@ -32,9 +30,7 @@ export function FileDownload({
   file: FileObject;
   className?: string;
 }) {
-  const { sessionProperties } = useContext(SessionContext as any) as {
-    sessionProperties: SessionPropertiesObject;
-  };
+  const { sessionProperties } = useContext(SessionContext);
 
   const tooltipAttr = useTooltip("file-download");
 

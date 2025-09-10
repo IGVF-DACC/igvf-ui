@@ -6,9 +6,9 @@
 // node_modules
 import type { NextApiRequest, NextApiResponse } from "next";
 // lib
-import { ServerCache } from "../../lib/cache";
+import { getCachedDataFetch } from "../../lib/cache";
 import { requestDatasetSummary } from "../../lib/common-requests";
-import FetchRequest from "../../lib/fetch-request";
+import FetchRequest, { HTTP_STATUS_CODE } from "../../lib/fetch-request";
 import { type LabData } from "../../lib/home";
 import { getQueryStringFromServerQuery } from "../../lib/query-utils";
 
@@ -20,7 +20,7 @@ const LAB_CHART_DATA_KEY = "lab-chart-data";
 /**
  * TTL time for home-page redis cache in seconds.
  */
-const LAB_CHART_DATA_TTL = 15 * 60;
+const LAB_CHART_DATA_TTL = 15 * 60; // 15 minutes
 
 /**
  * Generate a cache key for the lab chart data for the given type. The data for the given type gets
@@ -33,15 +33,20 @@ function genLabChartDataCacheKey(type: string): string {
 }
 
 /**
- * Callback to pass to `new ServerCache(..)` to fetch the home-page data when we don't have it in
- * the Redis cache.
- * @param request Result of `new FetchRequest(..)`
- * @returns JSON stringified props for the home page.
+ * Fetches the the home-page lab chart data on a cache miss, and returns it for caching in the
+ * Redis cache.
+ *
+ * @param cookie - Cookie to use for the request to the data provider
+ * @param queryString - Query string to use for the request to the data provider
+ * @returns Promise that resolves to the lab chart data for the home page, or null if not found
  */
-async function fetchHomePageData(request, meta): Promise<string> {
-  const datasetSummary = await requestDatasetSummary(request, meta.queryString);
-  const props = datasetSummary.matrix?.y || {};
-  return JSON.stringify(props);
+async function fetchHomePageData(
+  cookie: string,
+  queryString: string
+): Promise<LabData | null> {
+  const request = new FetchRequest({ cookie: cookie || undefined });
+  const datasetSummary = await requestDatasetSummary(request, queryString);
+  return datasetSummary.matrix?.y || null;
 }
 
 /**
@@ -55,24 +60,28 @@ export default async function datasetSummary(
 ): Promise<void> {
   // Get the specified object type for the query from the query string and make sure it exists.
   const queryString = getQueryStringFromServerQuery(req.query);
-  const queryType = req.query.type;
+  const queryType = typeof req.query.type === "string" ? req.query.type : "";
   if (!queryType) {
-    res.status(400).json({ error: "Missing query type" });
+    res
+      .status(HTTP_STATUS_CODE.BAD_REQUEST)
+      .json({ error: "Missing or invalid query type" });
     return;
   }
 
+  // Get the cookie from the request headers. Use empty string if missing to allow unauthenticated requests.
+  const cookie = req.headers.cookie || "";
+
   // Request the lab chart data from the cache, or fetch it if it's not in the cache.
-  const serverRequest = new FetchRequest({ cookie: req.headers.cookie });
-  const cacheRef = new ServerCache(
-    genLabChartDataCacheKey(queryType as string),
+  const labData = await getCachedDataFetch<LabData>(
+    genLabChartDataCacheKey(queryType),
+    async () => fetchHomePageData(cookie, queryString),
     LAB_CHART_DATA_TTL
   );
-  cacheRef.setFetchConfig(fetchHomePageData, serverRequest, { queryString });
-  const labData = await cacheRef.getData<LabData>();
 
+  // Return either the cached or fetched data, or a 404 if something went wrong.
   if (labData) {
-    res.status(200).json(labData);
+    res.status(HTTP_STATUS_CODE.OK).json(labData);
   } else {
-    res.status(404).json({ error: "Not Found" });
+    res.status(HTTP_STATUS_CODE.NOT_FOUND).json({ error: "Not Found" });
   }
 }

@@ -3,9 +3,8 @@
  */
 
 // lib
-import { HTTP_STATUS_CODE } from "./fetch-request";
+import { HTTP_STATUS_CODE, type ErrorObject } from "./fetch-request";
 // types
-import { ErrorObject } from "./fetch-request.d";
 import { ServerSideProps } from "../globals.d";
 
 /**

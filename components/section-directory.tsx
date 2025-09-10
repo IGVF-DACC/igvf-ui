@@ -57,7 +57,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 // components
 import Icon from "./icon";
 import SessionContext from "./session-context";
-import type { SessionPropertiesObject } from "./session-context.d";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 import { useTouchPointerType } from "./touch";
 // lib
@@ -330,9 +329,7 @@ export function useSecDir({
 
   // Use the session properties `auth.userid` property to detect the user login so we can update
   // the section directory in case new panels appear.
-  const { sessionProperties } = useContext(SessionContext as any) as {
-    sessionProperties: SessionPropertiesObject;
-  };
+  const { sessionProperties } = useContext(SessionContext);
   const userName = sessionProperties?.["auth.userid"] || "";
 
   // State to hold the list of sections to display in the section directory

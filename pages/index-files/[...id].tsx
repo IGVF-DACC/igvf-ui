@@ -36,8 +36,7 @@ import {
   requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
-import FetchRequest from "../../lib/fetch-request";
-import { type ErrorObject } from "../../lib/fetch-request.d";
+import FetchRequest, { type ErrorObject } from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
   convertFileDownloadPathToFilePagePath,

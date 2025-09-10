@@ -45,7 +45,7 @@ export type SchemaHierarchyNode = {
  */
 export async function getProfiles(): Promise<DataProviderObject | null> {
   const request = new FetchRequest({ backend: true });
-  return (await request.getObject("/api/profiles")).optional();
+  return (await request.getObject("/api/profiles/")).optional();
 }
 
 /**

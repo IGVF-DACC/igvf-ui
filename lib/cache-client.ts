@@ -13,21 +13,19 @@ let redisClient: RedisClientType | null = null;
 /**
  * Try to get the cache client, or create it if it doesn't exist. Return null if something bad
  * happens. Exported for Jest testing, but not expected to be called from outside this module.
+ *
  * @returns Redis client or null
  */
-
-export function getCacheClient(): RedisClientType | null {
+export async function getCacheClient(): Promise<RedisClientType | null> {
   if (redisClient === null) {
     try {
-      redisClient = createClient({
-        url: CACHE_URL,
-      });
+      redisClient = createClient({ url: CACHE_URL });
       redisClient.on("error", (err) =>
         console.error("Redis client error", err)
       );
-      redisClient.connect();
+      await redisClient.connect();
     } catch (error) {
-      console.error(error);
+      console.error("Redis connection failed:", error);
       redisClient = null;
     }
   }
