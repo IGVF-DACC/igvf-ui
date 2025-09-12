@@ -21,8 +21,8 @@ repos:
         exclude: '^(?!cdk\/)'
       - id: check-yaml
 
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0
-    hooks:
-      - id: prettier
-        exclude: "^cdk/"
+  # - repo: https://github.com/pre-commit/mirrors-prettier
+  #   rev: v3.0.0
+  #   hooks:
+  #     - id: prettier
+  #       exclude: "^cdk/"

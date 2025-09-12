@@ -187,10 +187,14 @@ function NonLinkedPath({ id, source }: { id: string; source: DatabaseObject }) {
 function SampleTerms({ id, source }: { id: string; source: DatabaseObject }) {
   const sampleTerms = source[id] as OntologyTermObject[];
   if (sampleTerms) {
+    const sortedSampleTerms = _.sortBy(sampleTerms, (term) =>
+      term.term_name.toLowerCase()
+    );
+
     // Non-collapsible list of sample terms because only one term can exist in this array.
     return (
       <SeparatedList testid="cell-type-sample-terms">
-        {sampleTerms.map((sampleTerm) => {
+        {sortedSampleTerms.map((sampleTerm) => {
           return (
             <Link key={sampleTerm["@id"]} href={sampleTerm["@id"]}>
               {sampleTerm.term_name}
