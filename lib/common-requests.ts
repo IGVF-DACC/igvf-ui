@@ -272,7 +272,15 @@ export async function requestDonors(
   return (
     await request.getMultipleObjectsBulk(
       paths,
-      ["accession", "aliases", "ethnicities", "sex", "status", "taxa"],
+      [
+        "accession",
+        "aliases",
+        "ethnicities",
+        "sex",
+        "status",
+        "strain",
+        "taxa",
+      ],
       ["Donor"]
     )
   ).unwrap_or([]);

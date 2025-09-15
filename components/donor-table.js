@@ -46,6 +46,11 @@ const columns = [
     hide: (data) => !data.some((item) => item.ethnicities?.length > 0),
     isSortable: false,
   },
+  {
+    id: "strain",
+    title: "Strain",
+    hide: (data) => !data.some((item) => item.strain),
+  },
 ];
 
 /**
