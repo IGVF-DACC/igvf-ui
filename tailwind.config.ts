@@ -234,6 +234,17 @@ const tailwindConfig: Config = {
         "computational-tools-category-unknown":
           "var(--color-computational-tools-category-unknown)",
 
+        "uniform-pipeline-completed":
+          "var(--color-uniform-pipeline-background-completed)",
+        "uniform-pipeline-error":
+          "var(--color-uniform-pipeline-background-error)",
+        "uniform-pipeline-preprocessing":
+          "var(--color-uniform-pipeline-background-preprocessing)",
+        "uniform-pipeline-processing":
+          "var(--color-uniform-pipeline-background-processing)",
+        "uniform-pipeline-fallback":
+          "var(--color-uniform-pipeline-background-fallback)",
+
         "standardized-file-format":
           "var(--color-standardized-file-format-background)",
         "modal-backdrop": "var(--color-modal-backdrop)",
@@ -385,11 +396,31 @@ const tailwindConfig: Config = {
 
         "computational-tools-header":
           "var(--color-computational-tools-header-foreground)",
+
+        "uniform-pipeline-completed":
+          "var(--color-uniform-pipeline-text-completed)",
+        "uniform-pipeline-error": "var(--color-uniform-pipeline-text-error)",
+        "uniform-pipeline-preprocessing":
+          "var(--color-uniform-pipeline-text-preprocessing)",
+        "uniform-pipeline-processing":
+          "var(--color-uniform-pipeline-text-processing)",
+        "uniform-pipeline-fallback":
+          "var(--color-uniform-pipeline-text-fallback)",
       },
       ringColor: {
         "standardized-file-format":
           "var(--color-standardized-file-format-ring)",
         status: "#a0a0a0",
+
+        "uniform-pipeline-completed":
+          "var(--color-uniform-pipeline-ring-completed)",
+        "uniform-pipeline-error": "var(--color-uniform-pipeline-ring-error)",
+        "uniform-pipeline-preprocessing":
+          "var(--color-uniform-pipeline-ring-preprocessing)",
+        "uniform-pipeline-processing":
+          "var(--color-uniform-pipeline-ring-processing)",
+        "uniform-pipeline-fallback":
+          "var(--color-uniform-pipeline-ring-fallback)",
       },
       fill: {
         "button-primary": "var(--color-button-primary-label)",
@@ -404,6 +435,16 @@ const tailwindConfig: Config = {
           "var(--color-button-selected-label-disabled)",
         "form-element": "var(--color-form-element-label)",
         "form-element-disabled": "var(--color-form-element-label-disabled)",
+
+        "uniform-pipeline-completed":
+          "var(--color-uniform-pipeline-fill-completed)",
+        "uniform-pipeline-error": "var(--color-uniform-pipeline-fill-error)",
+        "uniform-pipeline-preprocessing":
+          "var(--color-uniform-pipeline-fill-preprocessing)",
+        "uniform-pipeline-processing":
+          "var(--color-uniform-pipeline-fill-processing)",
+        "uniform-pipeline-fallback":
+          "var(--color-uniform-pipeline-fill-fallback)",
 
         // Document icon tag colors
         "document-autosql": "var(--color-document-autosql)",

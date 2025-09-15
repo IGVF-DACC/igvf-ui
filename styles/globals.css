@@ -374,6 +374,32 @@
   /** Document standardized file format badge colors */
   --color-standardized-file-format-background: oklch(0.8056 0.1488 56.4585);
   --color-standardized-file-format-ring: oklch(0.7552 0.181171 56.4585);
+
+  /** Uniform Pipeline Status */
+  --color-uniform-pipeline-background-completed: oklch(0.6346 0.17 151.18);
+  --color-uniform-pipeline-ring-completed: oklch(0.5163 0.1367 151.71);
+  --color-uniform-pipeline-text-completed: oklch(1 0 0);
+  --color-uniform-pipeline-fill-completed: oklch(1 0 0);
+
+  --color-uniform-pipeline-background-error: oklch(0.6079 0.2362 12.25);
+  --color-uniform-pipeline-ring-error: oklch(0.5282 0.2039 11.96);
+  --color-uniform-pipeline-text-error: oklch(1 0 0);
+  --color-uniform-pipeline-fill-error: oklch(1 0 0);
+
+  --color-uniform-pipeline-background-preprocessing: oklch(0.905 0.182 98.111);
+  --color-uniform-pipeline-ring-preprocessing: oklch(0.795 0.184 86.047);
+  --color-uniform-pipeline-text-preprocessing: oklch(0 0 0);
+  --color-uniform-pipeline-fill-preprocessing: oklch(0 0 0);
+
+  --color-uniform-pipeline-background-processing: oklch(0.5381 0.1433 247.55);
+  --color-uniform-pipeline-ring-processing: oklch(0.4437 0.1155 246.57);
+  --color-uniform-pipeline-text-processing: oklch(1 0 0);
+  --color-uniform-pipeline-fill-processing: oklch(1 0 0);
+
+  --color-uniform-pipeline-background-fallback: oklch(0.8078 0 0);
+  --color-uniform-pipeline-ring-fallback: oklch(0.7058 0 0);
+  --color-uniform-pipeline-text-fallback: oklch(0 0 0);
+  --color-uniform-pipeline-fill-fallback: oklch(0 0 0);
 }
 
 /**
