@@ -32,6 +32,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import buildAttribution from "../../lib/attribution";
 import {
   requestDocuments,
+  requestDonors,
   requestFiles,
   requestFileSets,
   requestPublications,
@@ -262,6 +263,7 @@ export default function ConstructLibrarySet({
   publications,
   files,
   fileSets,
+  donors,
   seqspecFiles,
   seqspecDocuments,
   integratedContentFiles,
@@ -381,9 +383,7 @@ export default function ConstructLibrarySet({
               title="Samples"
             />
           )}
-          {constructLibrarySet.donors?.length > 0 && (
-            <DonorTable donors={constructLibrarySet.donors} />
-          )}
+          {donors.length > 0 && <DonorTable donors={donors} />}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -402,6 +402,8 @@ ConstructLibrarySet.propTypes = {
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets associated with this construct library set
   fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors associated with this construct library set
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec files associated with `files`
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec documents associated with `files`
@@ -457,6 +459,11 @@ export async function getServerSideProps({ params, req, query }) {
         ? await requestFileSets(constructLibrarySet.file_sets, request)
         : [];
 
+    const donors = await requestDonors(
+      constructLibrarySet.donors?.map((donor) => donor["@id"]) || [],
+      request
+    );
+
     let integratedContentFiles = [];
     if (constructLibrarySet.integrated_content_files?.length > 0) {
       const filePaths = constructLibrarySet.integrated_content_files.map(
@@ -511,6 +518,7 @@ export async function getServerSideProps({ params, req, query }) {
         documents,
         files,
         fileSets,
+        donors,
         seqspecFiles,
         seqspecDocuments,
         integratedContentFiles,
