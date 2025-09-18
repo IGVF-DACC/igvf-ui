@@ -1,9 +1,8 @@
 // lib
-import FetchRequest from "./fetch-request";
+import FetchRequest, { type ErrorObject } from "./fetch-request";
 import { requestPages } from "./common-requests";
 // type
 import type { BreadcrumbMeta } from "./breadcrumbs";
-import type { ErrorObject } from "./fetch-request.d";
 import type {
   DatabaseObject,
   DatabaseWriteResponse,

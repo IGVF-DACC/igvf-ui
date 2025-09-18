@@ -40,7 +40,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 // lib
 import { getCacheClient } from "../../../lib/cache-client";
 import { generateFacetStoreKey } from "../../../lib/facets";
-import { FETCH_METHOD, HTTP_STATUS_CODE } from "../../../lib/fetch-request";
+import { HTTP_STATUS_CODE, isHttpMethod } from "../../../lib/fetch-request";
 
 /**
  * Number of seconds to keep the facet configuration in the cache.
@@ -51,7 +51,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const redisClient = getCacheClient();
+  const redisClient = await getCacheClient();
   if (!redisClient) {
     res
       .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
@@ -69,7 +69,8 @@ export default async function handler(
     return;
   }
 
-  // Get the type from the query string.
+  // Get the type from the query string. This code should eventually use the new `getCachedData()`
+  // and `setCachedData()` functions in lib/cache.ts.
   const type = req.query.type as string;
   if (!type) {
     // return an error if the type is missing, with the message that the type is required.
@@ -78,11 +79,11 @@ export default async function handler(
   }
   const facetStoreKey = generateFacetStoreKey(uuid);
 
-  if (req.method === FETCH_METHOD.POST) {
+  if (isHttpMethod(req.method, "POST")) {
     await redisClient.hSet(facetStoreKey, type, JSON.stringify(req.body));
     await redisClient.expire(facetStoreKey, FACET_CONFIG_EXPIRATION);
     res.status(HTTP_STATUS_CODE.CREATED).json(req.body);
-  } else if (req.method === FETCH_METHOD.GET) {
+  } else if (isHttpMethod(req.method, "GET")) {
     const value = await redisClient.hGet(facetStoreKey, type);
     if (value) {
       res.status(HTTP_STATUS_CODE.CREATED).json(JSON.parse(value));

@@ -8,5 +8,5 @@ import FetchRequest from "./fetch-request";
  */
 export default async function getCollectionTitles(): Promise<DataProviderObject | null> {
   const request = new FetchRequest({ backend: true });
-  return (await request.getObject("/api/collection-titles")).optional();
+  return (await request.getObject("/api/collection-titles/")).optional();
 }

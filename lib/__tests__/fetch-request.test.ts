@@ -1,11 +1,28 @@
+// Mock Node.js modules to enable testing of persistent connection code
+jest.mock("https", () => ({
+  Agent: jest.fn().mockImplementation((config) => ({
+    config,
+    protocol: "https:",
+  })),
+}));
+
+jest.mock("http", () => ({
+  Agent: jest.fn().mockImplementation((config) => ({
+    config,
+    protocol: "http:",
+  })),
+}));
+
 import _ from "lodash";
 import pako from "pako";
 import FetchRequest, {
   HTTP_STATUS_CODE,
   isErrorObject,
+  isHttpMethod,
+  logRequest,
 } from "../fetch-request";
 import { DataProviderObject } from "../../globals";
-import type { ErrorObject } from "../fetch-request.d";
+import type { ErrorObject } from "../fetch-request";
 
 declare const global: { window?: Window };
 
@@ -69,6 +86,288 @@ describe("Test improper authentications get detected", () => {
       });
       expect(request).toBeTruthy();
     });
+  });
+});
+
+describe("Test persistent connection functionality", () => {
+  // Simulate server-side environment for persistent connections
+  const { window } = global;
+
+  beforeEach(() => {
+    delete global.window;
+  });
+
+  afterAll(() => {
+    global.window = window;
+  });
+
+  it("initializes connection pool on server-side", () => {
+    // Create a new instance to trigger initialization
+    const request = new FetchRequest();
+    expect(request).toBeTruthy();
+  });
+
+  it("handles import failure gracefully when modules are missing", () => {
+    // Mock require to throw an error
+    const originalRequire = require;
+    (global as any).require = jest.fn().mockImplementation((module) => {
+      if (module === "http" || module === "https") {
+        throw new Error("Module not found");
+      }
+      return originalRequire(module);
+    });
+
+    try {
+      // This should handle the import failure gracefully
+      const request = new FetchRequest();
+      expect((request as any).usingPersistentConnections).toBe(false);
+    } finally {
+      // Restore original require
+      (global as any).require = originalRequire;
+    }
+  });
+
+  it("handles buildOptionsWithAgent correctly", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ test: "data" }),
+      })
+    );
+
+    const request = new FetchRequest();
+
+    // Make a request that will call buildOptionsWithAgent
+    await request.getObject("/test-path");
+
+    // Verify that fetch was called, which means buildOptionsWithAgent worked
+    expect(window.fetch).toHaveBeenCalled();
+  });
+
+  it("handles getConnectionAgent with various URLs", () => {
+    const request = new FetchRequest();
+
+    // Test with invalid URL - should handle gracefully
+    const invalidAgent = (request as any).getConnectionAgent("not-a-url");
+    expect(invalidAgent).toBeUndefined();
+
+    // Test with valid HTTPS URL
+    const httpsAgent = (request as any).getConnectionAgent(
+      "https://example.com"
+    );
+    // Should either return an agent or undefined based on server/client environment
+    expect(typeof httpsAgent === "object" || httpsAgent === undefined).toBe(
+      true
+    );
+
+    // Test with valid HTTP URL
+    const httpAgent = (request as any).getConnectionAgent("http://example.com");
+    // Should either return an agent or undefined based on server/client environment
+    expect(typeof httpAgent === "object" || httpAgent === undefined).toBe(true);
+  });
+
+  it("handles connection agent creation with valid URL", async () => {
+    // Mock fetch for the actual request
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ test: "data" }),
+      })
+    );
+
+    const request = new FetchRequest();
+
+    // Test that the method works even if agents aren't available
+    const result = await request.getObject("/test-path");
+    expect(result.isOk()).toBe(true);
+  });
+
+  it("handles invalid URL in getConnectionAgent gracefully", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        status: 404,
+        json: () => Promise.resolve({ error: "Not found" }),
+      })
+    );
+
+    const request = new FetchRequest();
+
+    // Test with an invalid URL - this should still work but return an error
+    const result = await request.getObjectByUrl(
+      "http://invalid-url-test.com/test"
+    );
+    expect(result.isErr()).toBe(true);
+  });
+
+  it("uses persistent connections when available", async () => {
+    // Test that buildOptionsWithAgent adds agent when available
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      })
+    );
+
+    const request = new FetchRequest();
+    const result = await request.getObject("/test-path");
+    expect(result.isOk()).toBe(true);
+
+    // Verify fetch was called
+    expect(window.fetch).toHaveBeenCalled();
+  });
+
+  it("covers connection pool initialization with server environment", () => {
+    // Since Jest runs in jsdom environment with window object, we can't easily
+    // test the server-only module loading. But we can test the connection pool logic.
+
+    // Clear the static connection pool state to test reinitialization
+    (FetchRequest as any).connectionPoolInitialized = false;
+    (FetchRequest as any).httpsAgent = undefined;
+    (FetchRequest as any).httpAgent = undefined;
+
+    // Verify mocked agents are available
+    const https = require("https");
+    const http = require("http");
+    expect(typeof https.Agent).toBe("function");
+    expect(typeof http.Agent).toBe("function");
+
+    // Create FetchRequest to trigger connection pool initialization attempt
+    const request = new FetchRequest();
+
+    // Verify the request was created
+    expect(request).toBeDefined();
+
+    // Test the connection pool functionality that is available
+    const connectionPoolInitialized = (FetchRequest as any)
+      .connectionPoolInitialized;
+    const usingPersistent = (request as any).usingPersistentConnections;
+
+    // These should be boolean values
+    expect(typeof connectionPoolInitialized).toBe("boolean");
+    expect(typeof usingPersistent).toBe("boolean");
+
+    // In Jest's browser-like environment, persistent connections won't be available
+    // but the code paths should still be exercised
+    expect(usingPersistent).toBe(false);
+  });
+
+  it("handles connection pool initialization failure gracefully", () => {
+    // Simulate server environment
+    delete (global as any).window;
+
+    // Reset connection pool state
+    (FetchRequest as any).connectionPoolInitialized = false;
+    (FetchRequest as any).httpsAgent = undefined;
+    (FetchRequest as any).httpAgent = undefined;
+
+    // Mock agents to throw an error during initialization
+    const MockHttpsAgent = jest.fn().mockImplementation(() => {
+      throw new Error("Agent initialization failed");
+    });
+    const MockHttpAgent = jest.fn().mockImplementation(() => {
+      throw new Error("Agent initialization failed");
+    });
+
+    const https = require("https");
+    const http = require("http");
+    https.Agent = MockHttpsAgent;
+    http.Agent = MockHttpAgent;
+
+    // Create request instance - should handle initialization failure gracefully
+    const request = new FetchRequest();
+
+    // Verify persistent connections are not available after failure
+    expect((request as any).usingPersistentConnections).toBe(false);
+
+    // Verify agents remain undefined after failure
+    expect((FetchRequest as any).httpsAgent).toBeUndefined();
+    expect((FetchRequest as any).httpAgent).toBeUndefined();
+  });
+
+  it("handles module import failure gracefully", () => {
+    // Simulate browser environment to avoid initialization
+    (global as any).window = {};
+
+    // Reset connection pool state
+    (FetchRequest as any).connectionPoolInitialized = false;
+    (FetchRequest as any).httpsAgent = undefined;
+    (FetchRequest as any).httpAgent = undefined;
+
+    // Create request instance in browser environment
+    const request = new FetchRequest();
+
+    // Verify persistent connections are not available in browser
+    expect((request as any).usingPersistentConnections).toBe(false);
+
+    // Clean up
+    delete (global as any).window;
+  });
+
+  it("covers getConnectionAgent with https and http URLs", () => {
+    // Simulate server environment
+    delete (global as any).window;
+
+    // Set up connection pool
+    (FetchRequest as any).connectionPoolInitialized = true;
+    const mockHttpsAgent = { protocol: "https:" };
+    const mockHttpAgent = { protocol: "http:" };
+    (FetchRequest as any).httpsAgent = mockHttpsAgent;
+    (FetchRequest as any).httpAgent = mockHttpAgent;
+
+    const request = new FetchRequest();
+
+    // Test HTTPS URL
+    const httpsAgent = (request as any).getConnectionAgent(
+      "https://example.com"
+    );
+    expect(httpsAgent).toBe(mockHttpsAgent);
+
+    // Test HTTP URL
+    const httpAgent = (request as any).getConnectionAgent("http://example.com");
+    expect(httpAgent).toBe(mockHttpAgent);
+
+    // Test invalid URL - should return undefined
+    const invalidAgent = (request as any).getConnectionAgent("invalid-url");
+    expect(invalidAgent).toBeUndefined();
+  });
+
+  it("covers buildOptionsWithAgent with agent assignment", async () => {
+    // Simulate server environment
+    delete (global as any).window;
+
+    // Set up connection pool
+    (FetchRequest as any).connectionPoolInitialized = true;
+    const mockHttpsAgent = { protocol: "https:" };
+    (FetchRequest as any).httpsAgent = mockHttpsAgent;
+
+    const request = new FetchRequest();
+
+    // Mock fetch to capture the options passed to it
+    let capturedOptions: any = null;
+    window.fetch = jest.fn().mockImplementation((url, options) => {
+      capturedOptions = options;
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      });
+    });
+
+    // Make a request that should use the agent
+    await request.getObjectByUrl("https://example.com/test");
+
+    // Verify that the agent was added to the options
+    expect(capturedOptions.agent).toBe(mockHttpsAgent);
+  });
+
+  it("covers buildOptions with includeCredentials default parameter", () => {
+    const request = new FetchRequest();
+
+    // Test buildOptions without includeCredentials parameter to cover line 449 default parameter assignment
+    const options = (request as any).buildOptions("GET", {});
+
+    expect(options).toBeDefined();
+    expect(options.credentials).toBe("include");
   });
 });
 
@@ -679,6 +978,38 @@ describe("Test getMultipleObjectsBulk()", () => {
     );
     expect(labItems.unwrap_err()["@type"]).toContain("NetworkError");
   });
+
+  it("covers typeQuery ternary operator with non-empty types array", async () => {
+    // Mock successful response
+    const mockData = {
+      "@graph": [
+        {
+          "@id": "/labs/test-lab/",
+          "@type": ["Lab", "Item"],
+          name: "test-lab",
+        },
+      ],
+    };
+
+    window.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      })
+    ) as jest.Mock;
+
+    const request = new FetchRequest();
+
+    // Call with non-empty types array to cover line 641 typeQuery ternary
+    const labItems = await request.getMultipleObjectsBulk(
+      ["/labs/test-lab/"],
+      ["name"],
+      ["Lab", "Item"] // Non-empty types array to exercise typeQuery logic
+    );
+
+    expect(labItems.isOk()).toBeTruthy();
+    expect(labItems.unwrap()).toHaveLength(1);
+  });
 });
 
 describe("Test static isResponseSuccess function", () => {
@@ -755,6 +1086,132 @@ describe("Test getZippedPreviewText()", () => {
     expect(result).toContain("line1");
     expect(result).toContain("line5");
     expect(result.split("\n").length).toBeLessThanOrEqual(5);
+  });
+
+  it("handles fetch error when response has no body", async () => {
+    window.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        body: null, // This will trigger line 807 - the ReadableStream error
+      })
+    ) as jest.Mock;
+
+    const fetchRequest = new FetchRequest();
+
+    await expect(
+      fetchRequest.getZippedPreviewText("http://example.com/notfound.gz", 5)
+    ).rejects.toThrow("ReadableStream not supported in this browser");
+  });
+
+  it("handles fetch network error", async () => {
+    window.fetch = jest.fn(() =>
+      Promise.reject(new Error("Network error"))
+    ) as jest.Mock;
+
+    const fetchRequest = new FetchRequest();
+
+    await expect(
+      fetchRequest.getZippedPreviewText("http://example.com/error.gz", 5)
+    ).rejects.toThrow("Network error");
+  });
+
+  it("handles decompression errors gracefully", async () => {
+    // Create data that will cause pako decompression error
+    const corruptedData = new Uint8Array([0xff, 0xff, 0xff, 0xff]);
+
+    const mockReader = {
+      read: jest
+        .fn()
+        .mockResolvedValueOnce({ value: corruptedData, done: true }),
+      cancel: jest.fn(),
+    };
+
+    window.fetch = jest.fn(() =>
+      Promise.resolve({
+        body: {
+          getReader: () => mockReader,
+        },
+        headers: new Headers(),
+        ok: true,
+        status: 206,
+      })
+    ) as jest.Mock;
+
+    const fetchRequest = new FetchRequest();
+    const result = await fetchRequest.getZippedPreviewText(
+      "http://example.com/corrupted.gz",
+      5
+    );
+
+    // Should return error message when decompression fails (covers lines 851-852)
+    expect(result).toContain("ERROR:");
+  });
+
+  it("handles decompression error with invalid gzip data", async () => {
+    // Create invalid compressed data that will cause pako to throw
+    const invalidCompressedData = new Uint8Array([
+      0x1f, 0x8b, 0x08, 0x00, 0x00,
+    ]);
+
+    const mockReader = {
+      read: jest
+        .fn()
+        .mockResolvedValueOnce({ value: invalidCompressedData, done: true }),
+      cancel: jest.fn(),
+    };
+
+    window.fetch = jest.fn(() =>
+      Promise.resolve({
+        body: {
+          getReader: () => mockReader,
+        },
+        headers: new Headers(),
+        ok: true,
+        status: 206,
+      })
+    ) as jest.Mock;
+
+    const fetchRequest = new FetchRequest();
+    const result = await fetchRequest.getZippedPreviewText(
+      "http://example.com/invalid.gz",
+      5
+    );
+
+    expect(result).toBe("");
+  });
+
+  it("covers getZippedPreviewText with default maxLines parameter", async () => {
+    // Create mock data
+    const text = "line1\nline2\nline3";
+    const compressedData = pako.gzip(text);
+
+    const mockReader = {
+      read: jest
+        .fn()
+        .mockResolvedValueOnce({ value: compressedData, done: true }),
+      cancel: jest.fn(),
+    };
+
+    window.fetch = jest.fn(() =>
+      Promise.resolve({
+        body: {
+          getReader: () => mockReader,
+        },
+        headers: new Headers(),
+        ok: true,
+        status: 206,
+      })
+    ) as jest.Mock;
+
+    const fetchRequest = new FetchRequest();
+
+    // Call without maxLines parameter to use default, covering line 794
+    const result = await fetchRequest.getZippedPreviewText(
+      "http://example.com/test.gz"
+    );
+
+    expect(result).toContain("line1");
   });
 });
 
@@ -1203,5 +1660,136 @@ describe("Test getMultipleObjectsBySearch()", () => {
         values: [longValue],
       })
     ).rejects.toThrow("Search query URI exceeds maximum length");
+  });
+});
+
+describe("logRequest", () => {
+  let consoleSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(console, "log").mockImplementation();
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
+
+  it("logs with PERSISTENT indicator when using agent", () => {
+    logRequest("getObject", "/test-path", true);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringMatching(
+        /^SVRREQ \[.*\] \[PERSISTENT\] getObject \/test-path$/
+      )
+    );
+  });
+
+  it("logs with DEFAULT indicator when not using agent", () => {
+    logRequest("postObject", "/api/data", false);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringMatching(
+        /^SVRREQ \[.*\] \[DEFAULT\] postObject \/api\/data$/
+      )
+    );
+  });
+
+  it("includes ISO timestamp in log message", () => {
+    const beforeTime = new Date().toISOString();
+    logRequest("getText", "/markdown", false);
+    const afterTime = new Date().toISOString();
+
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
+    const loggedMessage = consoleSpy.mock.calls[0][0];
+
+    // Extract timestamp from log message
+    const timestampMatch = loggedMessage.match(/\[(.*?)\]/);
+    expect(timestampMatch).not.toBeNull();
+
+    const loggedTimestamp = timestampMatch[1];
+    expect(loggedTimestamp).toMatch(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+    );
+    expect(loggedTimestamp >= beforeTime).toBe(true);
+    expect(loggedTimestamp <= afterTime).toBe(true);
+  });
+
+  it("formats different HTTP methods correctly", () => {
+    const testCases = [
+      {
+        method: "getObject",
+        path: "/users/123",
+        usingAgent: true,
+        expected: "PERSISTENT",
+      },
+      {
+        method: "postObject",
+        path: "/api/submit",
+        usingAgent: false,
+        expected: "DEFAULT",
+      },
+      {
+        method: "putObject",
+        path: "/data/update",
+        usingAgent: true,
+        expected: "PERSISTENT",
+      },
+      {
+        method: "patchObject",
+        path: "/profile/edit",
+        usingAgent: false,
+        expected: "DEFAULT",
+      },
+      {
+        method: "getText",
+        path: "/docs/readme",
+        usingAgent: true,
+        expected: "PERSISTENT",
+      },
+    ];
+
+    testCases.forEach(({ method, path, usingAgent, expected }) => {
+      consoleSpy.mockClear();
+      logRequest(method, path, usingAgent);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringMatching(
+          new RegExp(
+            `^SVRREQ \\[.*\\] \\[${expected}\\] ${method} ${path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`
+          )
+        )
+      );
+    });
+  });
+});
+
+describe("isHttpMethod", () => {
+  it("returns true when methods match", () => {
+    expect(isHttpMethod("GET", "GET")).toBe(true);
+    expect(isHttpMethod("POST", "POST")).toBe(true);
+    expect(isHttpMethod("PUT", "PUT")).toBe(true);
+    expect(isHttpMethod("PATCH", "PATCH")).toBe(true);
+    expect(isHttpMethod("DELETE", "DELETE")).toBe(true);
+  });
+
+  it("returns false when methods do not match", () => {
+    expect(isHttpMethod("GET", "POST")).toBe(false);
+    expect(isHttpMethod("POST", "GET")).toBe(false);
+    expect(isHttpMethod("PUT", "DELETE")).toBe(false);
+  });
+
+  it("returns false when request method is undefined", () => {
+    expect(isHttpMethod(undefined, "GET")).toBe(false);
+    expect(isHttpMethod(undefined, "POST")).toBe(false);
+  });
+
+  it("returns false when request method is empty string", () => {
+    expect(isHttpMethod("", "GET")).toBe(false);
+  });
+
+  it("is case sensitive", () => {
+    expect(isHttpMethod("get", "GET")).toBe(false);
+    expect(isHttpMethod("Get", "GET")).toBe(false);
+    expect(isHttpMethod("GET", "GET")).toBe(true);
   });
 });

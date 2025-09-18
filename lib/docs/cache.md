@@ -4,14 +4,16 @@
 
 This project has two servers:
 
-1. The data-provider server that contains the primary database and a REST API to access database objects.
-1. The UI server that generates the HTML and Javascript sent to the user’s browser.
+1. The backend server (igvfd) that contains the primary database and a REST API to access database objects.
+1. The Next.js UI server that generates the HTML and Javascript sent to the user’s browser.
 
-When you visit a typical page in your browser, the UI server asks the data-provider server for the object you want. The UI server uses that data to make the HTML that your browser sees.
+When you visit a typical page in your browser, the UI server fetches the object that the page represents from the backend server. The UI server uses that data to generate the HTML for the page and sends that to your browser.
 
-Sometimes, the UI server asks the data-provider server for the same object over and over, which puts a lot of stress on the data-provider server. This is especially true when multiple browsers are using the same object at the same time. This cache library helps reduce this stress by storing these objects in a Redis database on the UI server. This data only travels between the UI server and users’ browsers — the data-provider doesn’t know any of that happens.
+Sometimes, the UI server fetches the same object from the backend server over and over, which puts a lot of stress on the backend server. This is especially true when multiple browsers are using the same object at the same time.
 
-You can also use this cache to store data that’s not for the data-provider server, but for browser data you want to save across sessions, browsers, and devices. The Redis cache doesn’t guarantee that this data will stay there forever, so losing it shouldn’t hurt the user experience too much. For example, you could store a list of recent search terms for a user by putting the user’s ID in the Redis key for this data. Losing a list of recent search terms probably won’t bother the user much.
+This cache library helps reduce this stress by storing certain frequently requested objects in a Redis database on the UI server. This data only travels between the UI server and users’ browsers — the data-provider doesn’t know any of that happens.
+
+You can also use this cache to store data that’s not from the backend server, but for data you want to save across sessions, browsers, and devices. The Redis cache doesn’t guarantee that this data will stay there forever, so losing it shouldn’t hurt the user experience too much. For example, you could store a list of recent search terms for a user by putting the user’s ID in the Redis key for this data. Losing a list of recent search terms probably won’t bother the user much.
 
 Code that uses this cache library only runs on the UI server -- it should never run in the browser.
 
@@ -20,164 +22,134 @@ Code that uses this cache library only runs on the UI server -- it should never 
 To import this caching module into your project:
 
 ```typescript
-import { ServerCache, retrieveCacheBackedData } from "lib/cache";
+import { getCachedDataFetch, getObjectCached, setCachedData } from "lib/cache";
 ```
 
-`retrieveCacheBackedData` is a utility function for simple cases of caching data-provider objects.
+## Module API Reference
 
-## API Reference
+### `getCachedDataFetch` Async Function
 
-### `ServerCache` Class
+Request data from the backend, caching the data in the Redis database. The next time you request the same data (as identified by `key`), you retrieve it from the cache instead of sending the request to the backend. After a configurable amount of time, the cached data can expire, and a request goes to the backend server for fresh data that then gets cached until expiration. Code calling `getCachedDataFetch()` doesn't need to know whether the data came from the backend server or the cache.
 
-Use this class to cache data-provider objects, as well as to store browser data.
-
-#### Example Usage For Saving Browser Data
+The calling code supplies the fetcher function that issues the fetch request to the backend and returns it as a function result. The fetcher function only gets called on a cache miss. If anything goes wrong, `getCachedDataFetch()` expects a `null` from the fetcher function. `getCachedDataFetch()` doesn’t pass any arguments to the fetcher function so if it needs any, supply it in the calling function’s closure as demonstrated in the example below.
 
 ```typescript
-// This item stored under the `browser-data-key` ID.
-const cacheRef = new ServerCache("browser-data-key");
-cacheRef.setData({ test: "data" });
-...
-const cachedObject = cacheRef.getData();
+getCachedDataFetch<T>(
+  key:     string,
+  fetcher: CacheFetcher<T>,
+  ttl:     number
+): Promise<T | null>
 ```
 
-#### Example Usage For Caching Data-Provider Objects
+| Parameter | Type     | Required | Description                                                                                                               |
+| --------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
+| key       | string   | Yes      | Identifier for cached data, unique to each object you request from the backend.                                           |
+| fetcher   | function | Yes      | Asynchronous function that gets called on a cache miss to request the data from the backend.                              |
+| ttl       | number   | No       | Number of seconds before the cached data expires, causing the next request to go to the backend. The default is one hour. |
+
+### Example
 
 ```typescript
-// Called to fetch the object from the data provider on a cache miss.
-function fetchCacheBackedData(request: FetchRequest) {
-  const data = (await request.getObject("/object/path")).optional();
-  return data ? JSON.stringify(data) : null;
+async function fetchLabData(cookie: string, queryString: string): Promise<Data | null> {
+  // Send a fetch request to the backend and return it as a function result. `getCacheData()`
+  // caches this data before returning it to the caller. The next time the caller calls
+  // `getCachedDataFetch()` with the same key, `getCachedDataFetch()` doesn't call this function
+  // unless `THIRTY_SECOND_TTL` has passed, instead getting the requested data from the Redis cache.
 }
 
-const request = new FetchRequest({ cookie });
-const cacheRef = new ServerCache("cached-data-key");
-cacheRef.setFetchConfig(fetchCacheBackedData, request);
-// Get data from the cache, or from the data provider on a cache miss.
-return await cacheRef.getData();
+const THIRTY_SECOND_TTL = 30;
+const cookie = req.headers.cookie;
+const queryString = `labId=${id}`;
+const labData = await getCachedDataFetch<LabData>(
+  `lab-${labId}`
+  async () => fetchLabData(cookie, queryString),
+  THIRTY_SECOND_TTL,
+);
+
+// You do not have to `await fetchLabData(...)` because this expression returns a value in an
+// async context. The `await` would be redundant.
 ```
 
-#### constructor
+### `getObjectCached` Async Function
 
-| parameter      | description                                                                                                                                |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `key` (string) | The unique key to store a data item under in the Redis database.                                                                           |
-| `ttl` [number] | Number of seconds before the data item gets automatically purged from the Redis database. The default value is for one hour (3600 seconds) |
-
-##### Example
+Convenience function for fetching and caching an object from a path on the backend server. Use it very similarly to `getCachedDataFetch()` but instead of passing it a fetcher function, just pass the path to an object on the backend server. `getObjectCached()` provides a standard fetcher function to fetch this object on a cache miss.
 
 ```typescript
-const cacheRef = ServerCache("example-key", 60);
+getObjectCached<T>(
+  cookie: string,
+  key:    string,
+  path:   string,
+  ttl?:   number
+): Promise<T | null> {
 ```
 
-#### `setFetchConfig`
+| Parameter | Type   | Required | Description                                                                                                                |
+| --------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------- |
+| cookie    | string | Yes      | Cookie from the `getServerSideProps()` `req` argument.                                                                     |
+| key       | string | Yes      | Identifier for cached data, unique to each object you request from the backend.                                            |
+| path      | string | Yes      | Path to the backend object to fetch and cache.                                                                             |
+| ttl       | number | No       | Number of seconds before the cached data expires, causing the next request to go to the back end. The default is one hour. |
 
-For `ServerCache` instances intended to cache data from the data provider, call this method to allow this to happen. When you get data from the `ServerCache` instance, the arguments you pass this method allow `ServerCache` to request the data from the data provider if it doesn’t exist in the cache.
-
-| parameter                | description                                                                                    |
-| ------------------------ | ---------------------------------------------------------------------------------------------- |
-| `fetchData` (function)   | Called by the `ServerCache` instance to fetch an object from the data provider on a cache miss |
-| `request` (FetchRequest) | `FetchRequest` object for communicating with the data provider                                 |
-| `meta` [object]          | Passes arbitrary data to `fetchData` if needed                                                 |
-
-The `fetchData` parameter references a function you supply to request the data from the data provider.
-
-The type signature for `fetchData` is:
+### Example
 
 ```typescript
-(request: FetchRequest, meta?: Record<string, any>) => Promise<string | null>;
+const SIXTY_SECOND_TTL = 60;
+const cookie = req.headers.cookie;
+const labData = await getObjectCached<LabData>(
+  cookie,
+  `lab-${labId}`,
+  `/lab/${labId}`,
+  SIXTY_SECOND_TTL
+);
 ```
 
-`request` and `meta` contain copies of the arguments you passed to `setFetchConfig`. Notice `fetchData` must return a string. That includes regular strings, numbers converted to JSON stingified strings, or JSON stringified objects or arrays. If this function can’t retrieve the data, it must return null.
+### `getCachedData` Async Function
 
-#### Example Usage to Fetch and Cache an Object From a Dynamic Path
+Retrieves data cached by the `setCachedData()` function. Use this to cache data that doesn't involve data from the backend. Examples include user preferences, prior search terms, etc.
 
 ```typescript
-// Called to fetch the object from the data provider on a cache miss.
-function fetchCacheBackedData(request: FetchRequest, meta: { path: string }) {
-  const data = (await request.getObject(meta.path)).optional();
-  return data ? JSON.stringify(data) : null;
-}
-
-const path = "/some/path";
-const request = new FetchRequest({ cookie });
-const cacheRef = new ServerCache("cached-data-key");
-cacheRef.setFetchConfig(fetchCacheBackedData, request, { path });
-const data = await cacheRef.getData();
+getCachedData<T>(
+  key: string
+): Promise<T | null> {
 ```
 
-#### `clearFetchConfig`
+| Parameter | Type   | Required | Description                                                   |
+| --------- | ------ | -------- | ------------------------------------------------------------- |
+| key       | string | Yes      | Identifier for cached data, unique to the data you've cached. |
 
-If you had used a `ServerCache` instance to cache data for the data provider, and now you want to use this instance to store data in the Redis database, call this function to do that conversion. You probably won’t ever use this capability.
-
-#### Example Usage to Convert a Data-Provider Cache Instance to Redis Storage
+### Example
 
 ```typescript
-const request = new FetchRequest({ cookie });
-const cacheRef = new ServerCache("cached-data-key");
-cacheRef.setFetchConfig(fetchCacheBackedData, request, { path });
-const data = await cacheRef.getData();
-...
-cacheRef.clearFetchConfig();
+const userPreference = await getCachedData<UserPreference>(
+  "user-preference-chris_robin"
+);
 ```
 
-#### `getData`
+### `setCachedData` Async Function
 
-Retrieves data for the instance’s key from Redis database if it exists. For `ServerCache` instances with a fetch configuration, if the data doesn’t exist in the Redis database, `getData` then calls the `fetchData` function you passed in the `setFetchConfig` method to request this data from the data provider. Once this data gets received, it gets cached in the Redis database before it gets returned to you.
-
-The type of the data returned from the cache matches the type of data passed to the `fetchData` function.
-
-| parameter                  | description                                     |
-| -------------------------- | ----------------------------------------------- |
-| `options` [GetDataOptions] | Options for modifying the behavior of `getData` |
-
-`GetDataOptions` is an object with this type signature:
+Caches data in the Redis database under a unique key. You can then retrieve this data using `getCachedData()`.
 
 ```typescript
-{
-  forceFetch?: boolean;
-}
+setCachedData(
+  key:  string,
+  data: unknown,
+  ttl:  number
+): Promise<void> {
 ```
 
-Setting `forceFetch` to true causes `getData` to skip the cache for that request and get the data from the data provider instead.
+| Parameter | Type    | Required | Description                                                                                        |
+| --------- | ------- | -------- | -------------------------------------------------------------------------------------------------- |
+| key       | string  | Yes      | Identifier for cached data, unique to the data to cache.                                           |
+| data      | unknown | Yes      | Data to cache to the Redis database. You can use any serializable type.                            |
+| ttl       | number  | No       | Number of seconds before the cached data expires, effectively deleting it from the Redis database. |
 
-#### `setData`
-
-Puts the given data into the Redis database. This method does nothing if you had set a fetch config for this `ServerCache` instance.
-
-| parameter        | description                |
-| ---------------- | -------------------------- |
-| `data` (unknown) | Data to put into the cache |
-
-#### Example Usage
+### Example
 
 ```typescript
-const cacheRef = ServerCache("data-storage");
-await cacheRef.setData({ test: "data" });
-...
-const data = cacheRef.getData();
-// data === { test: "data" }
-```
+const ONE_HOUR_TTL = 3600;
+const userPreference = { darkMode: true; };
+setCachedData("user-preference-chris_robin", userPreference, ONE_HOUR_TTL);
 
-### `retrieveCacheBackedData`
-
-This utility function retrieves a single object from the data provider, caches it in Redis, and ensures subsequent calls retrieve the cached data instead of fetching it from the server.
-
-| parameter         | description                                                                |
-| ----------------- | -------------------------------------------------------------------------- |
-| `cookie` (string) | Authentication cookie from NextJS for the authenticated request, if needed |
-| `key` (string)    | Unique ID to associate with the data                                       |
-| `path` (string)   | Path to the object on the data provider                                    |
-
-#### Example Usage
-
-```typescript
-export async function getServerSideProps({ req }) {
-  const data = retrieveCachedBackedData(
-    req.headers.cookie,
-    "data-key",
-    "/data/path"
-  );
-  console.log("DATA", data);
-}
+// Though `setCachedData()` is async it returns no value, so you don't necessarily have to await
+// it unless the following code depends on the caching operation to complete.
 ```

@@ -3,9 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useContext } from "react";
 // components
 import { ButtonLink } from "./form-elements";
-import SessionContext, {
-  type SessionPropertiesObject,
-} from "./session-context";
+import SessionContext from "./session-context";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // root
 import { DatabaseObject } from "../globals";
@@ -49,9 +47,7 @@ export function HistoryLink({
   basePath?: string;
 }) {
   const { isAuthenticated } = useAuth0();
-  const { sessionProperties } = useContext(SessionContext as any) as {
-    sessionProperties: SessionPropertiesObject;
-  };
+  const { sessionProperties } = useContext(SessionContext);
   const tooltipAttr = useTooltip("history-link");
 
   if (item && basePath) {
