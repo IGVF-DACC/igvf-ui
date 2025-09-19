@@ -37,6 +37,7 @@ import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 import SessionContext from "../../components/session-context";
 import { StatusPreviewDetail } from "../../components/status";
+import { UniformPipelineStatus } from "../../components/uniform-pipeline-status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import {
@@ -202,6 +203,18 @@ export default function AnalysisSet({
                         </Link>
                       ))}
                     </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
+              {analysisSet.uniform_pipeline_status && (
+                <>
+                  <DataItemLabel>Uniform Pipeline Status</DataItemLabel>
+                  <DataItemValue>
+                    <UniformPipelineStatus
+                      status={analysisSet.uniform_pipeline_status}
+                      atType={analysisSet["@type"][0]}
+                      objectId={analysisSet["@id"]}
+                    />
                   </DataItemValue>
                 </>
               )}

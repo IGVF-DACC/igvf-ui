@@ -99,20 +99,41 @@ export function useTooltip(id) {
 
 /**
  * Wrap the element that you want to trigger the tooltip with this component. You can only wrap one
- * element; more than one causes an error. This tooltip ref wrapper can contain most any kind of
- * HTML element, though a focusable one like a button or link is recommended for accessibility,
- * even if it does nothing when the user clicks it.
+ * element; more than one causes an error. This tooltip ref wrapper can contain any kind of HTML
+ * element or custom React component without modifying the child element itself.
+ *
+ * For DOM elements, we clone the child to attach tooltip handlers/refs directly. For custom React
+ * components (which might not forward refs/props), we wrap them in a simple wrapper element that
+ * receives the tooltip handlers/refs so we don't interfere with the child's own event handling.
  */
 export function TooltipRef({ tooltipAttr, children }) {
-  // Make sure only one child exists. Add the floating-ui refs and its other props to this child.
+  // Make sure only one child exists.
   const child = Children.only(children);
-  const clonedElement = cloneElement(child, {
-    ref: tooltipAttr.refEl,
-    "aria-describedby": tooltipAttr.id,
-    ...tooltipAttr.refProps(),
-  });
 
-  return <>{clonedElement}</>;
+  // Check if this is a DOM element (oddly indicated by the string type) or a custom component. We
+  // can safely clone and add props directly to DOM elements.
+  const isDOMElement = typeof child.type === "string";
+  if (isDOMElement) {
+    const clonedElement = cloneElement(child, {
+      ref: tooltipAttr.refEl,
+      "aria-describedby": tooltipAttr.id,
+      ...tooltipAttr.refProps(),
+    });
+    return <>{clonedElement}</>;
+  }
+
+  // For custom components, use a wrapper that receives the tooltip handlers and reference. We keep
+  // this wrapper lightweight and let events bubble from the child so we don't block interactions.
+  return (
+    <span
+      className="inline-block"
+      ref={tooltipAttr.refEl}
+      aria-describedby={tooltipAttr.id}
+      {...tooltipAttr.refProps()}
+    >
+      {child}
+    </span>
+  );
 }
 
 TooltipRef.propTypes = {

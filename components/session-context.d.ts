@@ -15,6 +15,7 @@ interface SessionContextValue {
   profiles: Profiles | null;
   collectionTitles: CollectionTitles | null;
   dataProviderUrl: string | null;
+  profiles: Profiles;
 }
 
 declare module "./session-context" {
