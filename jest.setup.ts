@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom";
+import { TextDecoder, TextEncoder } from "util";
 
 import { setConfig } from "next/config";
 const config = {
@@ -14,3 +15,6 @@ const config = {
 
 // Use runtime config in tests.
 setConfig(config);
+
+// Make TextEncoder and TextDecoder available globally in tests.
+Object.assign(globalThis, { TextEncoder, TextDecoder });

@@ -590,14 +590,20 @@ export interface SoftwareVersionObject extends DatabaseObject {
 }
 
 export interface AnalysisStepObject extends DatabaseObject {
+  aliases?: string[];
   analysis_step_types: string[];
+  analysis_step_versions?: string[] | AnalysisStepVersionObject[];
+  description?: string;
   input_content_types: string[];
   output_content_types: string[];
+  parents?: string[] | AnalysisStepObject[];
   step_label: string;
+  submitter_comment?: string;
   title: string;
 }
 
 export interface AnalysisStepVersionObject extends DatabaseObject {
   analysis_step: string | AnalysisStepObject;
   software_versions: string[] | SoftwareVersionObject[];
+  workflows?: string[] | WorkflowObject[];
 }

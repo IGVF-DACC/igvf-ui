@@ -87,6 +87,20 @@ export default function AnalysisStepVersion({
                   </DataItemValue>
                 </>
               )}
+              {analysisStepVersion.workflows?.length > 0 && (
+                <>
+                  <DataItemLabel>Workflows</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {analysisStepVersion.workflows.map((workflow) => (
+                        <Link key={workflow["@id"]} href={workflow["@id"]}>
+                          {workflow.name}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>

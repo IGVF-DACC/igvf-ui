@@ -1,5 +1,5 @@
 // node_modules
-import PropTypes from "prop-types";
+import _ from "lodash";
 import { Fragment } from "react";
 // components
 import Attribution from "../../components/attribution";
@@ -19,18 +19,39 @@ import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
+import { type AttributionData } from "../../lib/attribution";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import { isJsonFormat } from "../../lib/query-utils";
+import {
+  getAnalysisStepWorkflows,
+  hasIndexedVersions,
+} from "../../lib/workflow";
+// root
+import type { AnalysisStepObject, DatabaseObject } from "../../globals";
 
+/**
+ * Main page component to display an Analysis Step object.
+ *
+ * @param analysisStep - Analysis Step object to display
+ * @param attribution - Attribution for this analysis step
+ * @param isJson - True to display the page in JSON format
+ */
 export default function AnalysisStep({
   analysisStep,
-  attribution = null,
+  attribution,
   isJson,
+}: {
+  analysisStep: AnalysisStepObject;
+  attribution: AttributionData | null;
+  isJson: boolean;
 }) {
   const sections = useSecDir({ isJson });
+
+  // Get workflows, if any, from the analysis step.
+  const workflows = getAnalysisStepWorkflows(analysisStep);
 
   return (
     <>
@@ -105,10 +126,24 @@ export default function AnalysisStep({
                   </DataItemValue>
                 </>
               )}
+              {workflows.length > 0 && (
+                <>
+                  <DataItemLabel>Workflows</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList>
+                      {workflows.map((workflow) => (
+                        <Link key={workflow["@id"]} href={workflow["@id"]}>
+                          {workflow.name}
+                        </Link>
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          {analysisStep.analysis_step_versions?.length > 0 && (
+          {hasIndexedVersions(analysisStep.analysis_step_versions) && (
             <AnalysisStepVersionTable
               analysisStepVersions={analysisStep.analysis_step_versions}
               reportLink={`/multireport/?type=AnalysisStepVersion&analysis_step.@id=${analysisStep["@id"]}`}
@@ -121,15 +156,6 @@ export default function AnalysisStep({
   );
 }
 
-AnalysisStep.propTypes = {
-  // Analysis Step object to display
-  analysisStep: PropTypes.object.isRequired,
-  // Attribution for this analysis step
-  attribution: PropTypes.object,
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
@@ -138,7 +164,7 @@ export async function getServerSideProps({ params, req, query }) {
   ).union();
   if (FetchRequest.isResponseSuccess(analysisStep)) {
     const attribution = await buildAttribution(
-      analysisStep,
+      analysisStep as DatabaseObject,
       req.headers.cookie
     );
     return {
