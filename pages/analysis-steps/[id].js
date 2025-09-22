@@ -19,6 +19,7 @@ import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
+import { requestAnalysisStepVersions } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
@@ -27,6 +28,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 
 export default function AnalysisStep({
   analysisStep,
+  analysisStepVersions,
   attribution = null,
   isJson,
 }) {
@@ -108,9 +110,9 @@ export default function AnalysisStep({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          {analysisStep.analysis_step_versions?.length > 0 && (
+          {analysisStepVersions.length > 0 && (
             <AnalysisStepVersionTable
-              analysisStepVersions={analysisStep.analysis_step_versions}
+              analysisStepVersions={analysisStepVersions}
               reportLink={`/multireport/?type=AnalysisStepVersion&analysis_step.@id=${analysisStep["@id"]}`}
               reportLabel="Analysis Step Versions"
             />
@@ -124,6 +126,8 @@ export default function AnalysisStep({
 AnalysisStep.propTypes = {
   // Analysis Step object to display
   analysisStep: PropTypes.object.isRequired,
+  // Array of Analysis Step Version objects
+  analysisStepVersions: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis step
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -136,14 +140,25 @@ export async function getServerSideProps({ params, req, query }) {
   const analysisStep = (
     await request.getObject(`/analysis-steps/${params.id}/`)
   ).union();
+
   if (FetchRequest.isResponseSuccess(analysisStep)) {
+    let analysisStepVersions = [];
+    if (analysisStep.analysis_step_versions?.length > 0) {
+      analysisStepVersions = await requestAnalysisStepVersions(
+        analysisStep.analysis_step_versions.map((version) => version["@id"]),
+        request
+      );
+    }
+
     const attribution = await buildAttribution(
       analysisStep,
       req.headers.cookie
     );
+
     return {
       props: {
         analysisStep,
+        analysisStepVersions,
         pageContext: { title: analysisStep.title },
         attribution,
         isJson,
