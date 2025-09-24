@@ -1,7 +1,9 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
+import { useState } from "react";
 // components
+import Checkbox from "./checkbox";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import Link from "./link-no-prefetch";
 import SeparatedList from "./separated-list";
@@ -11,7 +13,25 @@ import { sortedSeparatedList } from "../lib/general";
 // root
 import { AnalysisStepVersionObject } from "../globals";
 
+/**
+ * Meta information passed to the sortable grid for the analysis step version table.
+ *
+ * @property isVersionColumnVisible - True to show the analysis step version column
+ */
+type TableMeta = {
+  isVersionColumnVisible: boolean;
+};
+
 const analysisStepVersionColumns = [
+  {
+    id: "analysis_step_version",
+    title: "Analysis Step Version",
+    display: ({ source }) => {
+      return <Link href={source["@id"]}>{source["@id"]}</Link>;
+    },
+    hide: (data, columns, meta: TableMeta) => !meta.isVersionColumnVisible,
+    isSortable: false,
+  },
   {
     id: "analysis_step_title",
     title: "Analysis Step Title",
@@ -83,7 +103,7 @@ export function AnalysisStepVersionTable({
   analysisStepVersions,
   reportLink = "",
   reportLabel = "",
-  title = "Analysis Step Versions",
+  title = "Analysis Steps",
   panelId = "analysis-step-version-table",
 }: {
   analysisStepVersions: AnalysisStepVersionObject[];
@@ -92,15 +112,30 @@ export function AnalysisStepVersionTable({
   title?: string;
   panelId?: string;
 }) {
+  const [isVersionColumnVisible, setIsVersionColumnVisible] = useState(false);
+
   return (
     <>
-      <DataAreaTitle id={panelId}>
+      <DataAreaTitle id={panelId} secDirTitle={title}>
         {title}
-        {reportLink && (
-          <DataAreaTitleLink href={reportLink} label={reportLabel}>
-            <TableCellsIcon className="h-4 w-4" />
-          </DataAreaTitleLink>
-        )}
+        <div className="flex gap-1">
+          <Checkbox
+            id="show-analysis-step-versions-column"
+            checked={isVersionColumnVisible}
+            name="Show analysis-step versions column"
+            onClick={() => setIsVersionColumnVisible(!isVersionColumnVisible)}
+            className="items-center [&>input]:mr-0"
+          >
+            <div className="order-first mr-1 text-sm">
+              Show analysis-step versions column
+            </div>
+          </Checkbox>
+          {reportLink && (
+            <DataAreaTitleLink href={reportLink} label={reportLabel}>
+              <TableCellsIcon className="h-4 w-4" />
+            </DataAreaTitleLink>
+          )}
+        </div>
       </DataAreaTitle>
       <div className="overflow-hidden">
         <SortableGrid
@@ -108,6 +143,7 @@ export function AnalysisStepVersionTable({
           columns={analysisStepVersionColumns}
           keyProp="@id"
           pager={{}}
+          meta={{ isVersionColumnVisible } satisfies TableMeta}
         />
       </div>
     </>
