@@ -1,9 +1,10 @@
 import {
-  WorkflowObject,
-  workflowTextTitle,
   hasIndexedVersions,
   hasIndexedWorkflows,
   getAnalysisStepWorkflows,
+  sortUniqueWorkflows,
+  WorkflowObject,
+  workflowTextTitle,
 } from "../workflow";
 import type {
   AnalysisStepObject,
@@ -178,6 +179,42 @@ describe("hasIndexedWorkflows", () => {
       },
     ] as any[];
     expect(hasIndexedWorkflows(workflowsWithoutName)).toBe(false);
+  });
+});
+
+describe("sortUniqueWorkflows", () => {
+  it("should de-duplicate and sort workflows by name", () => {
+    const workflows = [
+      mockWorkflow2,
+      mockWorkflow1,
+      mockWorkflow2,
+      mockWorkflow3,
+    ];
+    const result = sortUniqueWorkflows(workflows);
+    expect(result).toHaveLength(3);
+    expect(result[0]).toBe(mockWorkflow3);
+    expect(result[1]).toBe(mockWorkflow2);
+    expect(result[2]).toBe(mockWorkflow1);
+  });
+
+  it("should handle empty array", () => {
+    const result = sortUniqueWorkflows([]);
+    expect(result).toEqual([]);
+  });
+
+  it("should sort workflows without a name at the end", () => {
+    const workflowWithoutName = {
+      "@id": "/workflows/workflow-without-name/",
+      "@type": ["Workflow"],
+      source_url: "https://example.com/workflow-without-name",
+    } as WorkflowObject;
+
+    const workflows = [mockWorkflow2, workflowWithoutName, mockWorkflow1];
+    const result = sortUniqueWorkflows(workflows);
+    expect(result).toHaveLength(3);
+    expect(result[0]).toBe(mockWorkflow2);
+    expect(result[1]).toBe(mockWorkflow1);
+    expect(result[2]).toBe(workflowWithoutName);
   });
 });
 

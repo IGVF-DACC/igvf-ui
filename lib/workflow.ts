@@ -75,6 +75,21 @@ export function hasIndexedWorkflows(
 }
 
 /**
+ * Sort and de-duplicate an array of Workflow objects.
+ *
+ * @param workflows - Array of Workflow objects to de-duplicate and sort
+ * @returns De-duplicated and sorted array of Workflow objects
+ */
+export function sortUniqueWorkflows(
+  workflows: WorkflowObject[]
+): WorkflowObject[] {
+  return _.chain(workflows)
+    .uniqBy("@id")
+    .sortBy((workflow) => workflow.name?.toLowerCase() || "zzz")
+    .value();
+}
+
+/**
  * Get all the workflow objects in all the analysis step versions embedded in the given analysis
  * step, and return a de-duplicated array of those workflow objects.
  *
@@ -93,8 +108,8 @@ export function getAnalysisStepWorkflows(
       return acc;
     }, [] as WorkflowObject[]);
 
-    // De-duplicate workflows that have the same @id.
-    workflows = _.uniqBy(workflows, "@id");
+    // De-duplicate workflows that have the same @id, then sort them by name case-insensitively.
+    workflows = sortUniqueWorkflows(workflows);
   }
   return workflows;
 }

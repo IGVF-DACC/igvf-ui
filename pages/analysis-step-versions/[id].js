@@ -17,11 +17,12 @@ import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
-import { errorObjectToProps } from "../../lib/errors";
-import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
+import { errorObjectToProps } from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { sortUniqueWorkflows } from "../../lib/workflow";
 
 export default function AnalysisStepVersion({
   analysisStepVersion,
@@ -29,6 +30,10 @@ export default function AnalysisStepVersion({
   isJson,
 }) {
   const sections = useSecDir({ isJson });
+  const workflows =
+    analysisStepVersion.workflows?.length > 0
+      ? sortUniqueWorkflows(analysisStepVersion.workflows)
+      : [];
 
   return (
     <>
@@ -87,12 +92,12 @@ export default function AnalysisStepVersion({
                   </DataItemValue>
                 </>
               )}
-              {analysisStepVersion.workflows?.length > 0 && (
+              {workflows.length > 0 && (
                 <>
                   <DataItemLabel>Workflows</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList>
-                      {analysisStepVersion.workflows.map((workflow) => (
+                      {workflows.map((workflow) => (
                         <Link key={workflow["@id"]} href={workflow["@id"]}>
                           {workflow.name}
                         </Link>
