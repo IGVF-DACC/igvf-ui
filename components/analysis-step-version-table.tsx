@@ -127,7 +127,7 @@ export function AnalysisStepVersionTable({
             className="items-center [&>input]:mr-0"
           >
             <div className="order-first mr-1 text-sm">
-              Show analysis-step versions column
+              Show analysis-step-versions column
             </div>
           </Checkbox>
           {reportLink && (
