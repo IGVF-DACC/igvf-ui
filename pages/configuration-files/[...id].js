@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -205,10 +206,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
             request
           )
         : [];
-    const analysisStepVersion = configurationFile.analysis_step_version
-      ? (
-          await request.getObject(configurationFile.analysis_step_version)
-        ).optional()
+    const analysisStepVersionId = _.get(
+      configurationFile,
+      "analysis_step_version.@id"
+    );
+    const analysisStepVersion = analysisStepVersionId
+      ? (await request.getObject(analysisStepVersionId)).optional()
       : null;
     const attribution = await buildAttribution(
       configurationFile,

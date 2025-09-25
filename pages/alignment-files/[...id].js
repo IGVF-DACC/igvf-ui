@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import AlternateAccessions from "../../components/alternate-accessions";
@@ -246,10 +247,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       alignmentFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(alignmentFile.quality_metrics, request)
         : [];
-    const analysisStepVersion = alignmentFile.analysis_step_version
-      ? (
-          await request.getObject(alignmentFile.analysis_step_version)
-        ).optional()
+    const analysisStepVersionId = _.get(
+      alignmentFile,
+      "analysis_step_version.@id"
+    );
+    const analysisStepVersion = analysisStepVersionId
+      ? (await request.getObject(analysisStepVersionId)).optional()
       : null;
     const attribution = await buildAttribution(
       alignmentFile,
