@@ -499,9 +499,26 @@ export function FileGraph({
   title?: string;
   panelId?: string;
 }) {
+  // Create a set of paths of files that are available to be included in the graph. Any files
+  // unavailable because of incomplete indexing or access privileges do not get included.
+  const availableFilePaths = new Set([
+    ...files.map((file) => file["@id"]),
+    ...derivedFromFiles.map((file) => file["@id"]),
+  ]);
+
+  // Copy the files but with unavailable files filtered out of their `derived_from` arrays.
+  const filesWithFilteredDerived = files.map((file) => ({
+    ...file,
+    derived_from:
+      file.derived_from?.filter((path) => availableFilePaths.has(path)) || [],
+  }));
+
   // Only consider native files that derive from other files or that other files derive from. From
   // these files look for cycles caused by circular `derived_from` relationships.
-  const includedFiles = trimIsolatedFiles(files, derivedFromFiles);
+  const includedFiles = trimIsolatedFiles(
+    filesWithFilteredDerived,
+    derivedFromFiles
+  );
   const cycles = detectCycles(includedFiles.concat(derivedFromFiles));
 
   const graphData =
@@ -523,7 +540,10 @@ export function FileGraph({
         </DataAreaTitle>
         {graphData ? (
           <DataPanel isPaddingSuppressed>
-            <Graph graphData={graphData} nativeFiles={files} />
+            <Graph
+              graphData={graphData}
+              nativeFiles={filesWithFilteredDerived}
+            />
           </DataPanel>
         ) : (
           <DataPanel>
