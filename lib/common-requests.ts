@@ -3,6 +3,7 @@ import FetchRequest from "./fetch-request";
 import { type DatasetSummary } from "./home";
 // root
 import type {
+  AnalysisStepVersionObject,
   DatabaseObject,
   DataProviderObject,
   FileObject,
@@ -35,6 +36,33 @@ export async function requestAnalysisSteps(
       ["AnalysisStep"]
     )
   ).unwrap_or([]);
+}
+
+/**
+ * Retrieve the analysis step version objects for the given analysis step version paths from the
+ * data provider.
+ *
+ * @param paths - Paths to the analysis step version objects to request
+ * @param request - Request object to use to make the request
+ * @returns - Analysis step version objects requested
+ */
+export async function requestAnalysisStepVersions(
+  paths: Array<string>,
+  request: FetchRequest
+): Promise<Array<AnalysisStepVersionObject>> {
+  return (
+    await request.getMultipleObjectsBulk(
+      paths,
+      [
+        "analysis_step.analysis_step_types",
+        "analysis_step.input_content_types",
+        "analysis_step.output_content_types",
+        "analysis_step.title",
+        "software_versions",
+      ],
+      ["AnalysisStepVersion"]
+    )
+  ).unwrap_or([]) as AnalysisStepVersionObject[];
 }
 
 /**

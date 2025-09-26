@@ -1,6 +1,7 @@
 import type { DatabaseObject, FileSetObject } from "../../globals.d";
 import {
   requestAnalysisSteps,
+  requestAnalysisStepVersions,
   requestAwards,
   requestBiomarkers,
   requestBiosamples,
@@ -81,6 +82,51 @@ describe("Test all the common requests", () => {
 
     expect(mockFetch).toHaveBeenCalledWith(
       "/search-quick/?type=AnalysisStep&field=aliases&field=input_content_types&field=name&field=output_content_types&field=status&field=step_label&field=title&@id=/analysis-steps/IGVFWF0000WORK-example-analysis-step/&limit=1",
+      expect.anything()
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockResult["@graph"][0]);
+  });
+
+  test("requestAnalysisStepVersions function", async () => {
+    const mockResult = {
+      "@graph": [
+        {
+          "@id":
+            "/analysis-step-versions/IGVFWF0000WORK-example-analysis-step-version/",
+          "@type": ["AnalysisStepVersion", "Item"],
+          analysis_step: {
+            "@id": "/analysis-steps/IGVFWF0000WORK-example-analysis-step/",
+            "@type": ["AnalysisStep", "Item"],
+            analysis_step_types: ["alignment", "quantification"],
+            input_content_types: ["reads"],
+            output_content_types: ["alignments", "transcriptome annotations"],
+            title: "Example Analysis Step",
+          },
+          software_versions: [
+            {
+              "@id":
+                "/software-versions/IGVFWF0000WORK-example-software-version/",
+              "@type": ["SoftwareVersion", "Item"],
+              name: "IGVFWF0000WORK-example-software-version",
+              status: "released",
+            },
+          ],
+        },
+      ],
+    };
+
+    // Mock the response for the getObject call within getMultipleObjectsBulk
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestAnalysisStepVersions(
+      ["/analysis-step-versions/IGVFWF0000WORK-example-analysis-step-version/"],
+      request
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/search-quick/?type=AnalysisStepVersion&field=analysis_step.analysis_step_types&field=analysis_step.input_content_types&field=analysis_step.output_content_types&field=analysis_step.title&field=software_versions&@id=/analysis-step-versions/IGVFWF0000WORK-example-analysis-step-version/&limit=1",
       expect.anything()
     );
     expect(result).toHaveLength(1);
