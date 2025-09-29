@@ -20,17 +20,19 @@ import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
 import { type AttributionData } from "../../lib/attribution";
+import { requestAnalysisStepVersions } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
-import FetchRequest from "../../lib/fetch-request";
+import FetchRequest, { type ErrorObject } from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import { isJsonFormat } from "../../lib/query-utils";
-import {
-  getAnalysisStepWorkflows,
-  hasIndexedVersions,
-} from "../../lib/workflow";
+import { getAnalysisStepWorkflows } from "../../lib/workflow";
 // root
-import type { AnalysisStepObject, DatabaseObject } from "../../globals";
+import type {
+  AnalysisStepObject,
+  AnalysisStepVersionObject,
+  DatabaseObject,
+} from "../../globals";
 
 /**
  * Main page component to display an Analysis Step object.
@@ -41,10 +43,12 @@ import type { AnalysisStepObject, DatabaseObject } from "../../globals";
  */
 export default function AnalysisStep({
   analysisStep,
-  attribution,
+  analysisStepVersions,
+  attribution = null,
   isJson,
 }: {
   analysisStep: AnalysisStepObject;
+  analysisStepVersions: AnalysisStepVersionObject[];
   attribution: AttributionData | null;
   isJson: boolean;
 }) {
@@ -143,9 +147,9 @@ export default function AnalysisStep({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          {hasIndexedVersions(analysisStep.analysis_step_versions) && (
+          {analysisStepVersions.length > 0 && (
             <AnalysisStepVersionTable
-              analysisStepVersions={analysisStep.analysis_step_versions}
+              analysisStepVersions={analysisStepVersions}
               reportLink={`/multireport/?type=AnalysisStepVersion&analysis_step.@id=${analysisStep["@id"]}`}
               reportLabel="Analysis Step Versions"
             />
@@ -159,22 +163,35 @@ export default function AnalysisStep({
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const analysisStep = (
+  const response = (
     await request.getObject(`/analysis-steps/${params.id}/`)
   ).union();
-  if (FetchRequest.isResponseSuccess(analysisStep)) {
+
+  if (FetchRequest.isResponseSuccess(response)) {
+    const analysisStep = response as AnalysisStepObject;
+
+    let analysisStepVersions = [];
+    if (analysisStep.analysis_step_versions?.length > 0) {
+      analysisStepVersions = await requestAnalysisStepVersions(
+        analysisStep.analysis_step_versions.map((version) => version["@id"]),
+        request
+      );
+    }
+
     const attribution = await buildAttribution(
       analysisStep as DatabaseObject,
       req.headers.cookie
     );
+
     return {
       props: {
         analysisStep,
+        analysisStepVersions,
         pageContext: { title: analysisStep.title },
         attribution,
         isJson,
       },
     };
   }
-  return errorObjectToProps(analysisStep);
+  return errorObjectToProps(response as ErrorObject);
 }

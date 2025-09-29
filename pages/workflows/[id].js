@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import AliasList from "../../components/alias-list";
 import AlternateAccessions from "../../components/alternate-accessions";
 import AnalysisStepTable from "../../components/analysis-step-table";
+import { AnalysisStepVersionTable } from "../../components/analysis-step-version-table";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { UniformlyProcessedBadge } from "../../components/common-pill-badges";
@@ -152,6 +153,13 @@ export default function Workflow({
               analysisSteps={analysisSteps}
               reportLink={`/multireport/?type=AnalysisStep&workflow.@id=${workflow["@id"]}`}
               reportLabel="Analysis Steps that link to this workflow"
+            />
+          )}
+          {workflow.analysis_step_versions?.length > 0 && (
+            <AnalysisStepVersionTable
+              analysisStepVersions={workflow.analysis_step_versions}
+              reportLink={`/multireport/?type=AnalysisStepVersion&workflows.@id=${workflow["@id"]}`}
+              reportLabel="Analysis Step Versions that link to this workflow"
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
