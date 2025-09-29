@@ -27,11 +27,11 @@ export interface Attributable {
 }
 
 /**
- * The Attribution of an object. Once an object has its attribution built, the details are
+ * The attribution data of an object. Once an object has its attribution built, the details are
  * collected into an object that has this interface. Attributions are then passed to the
  * Attribution component to be rendered.
  */
-export interface Attribution {
+export interface AttributionData {
   type: string;
   lab: LabObject | null;
   award: AwardObject | null;
@@ -41,14 +41,15 @@ export interface Attribution {
 
 /**
  * Generate the attribution data for an object page.
- * @param {DatabaseObject} obj Object for the displayed page
- * @param {string} cookie Server cookie to authenticate the request
- * @returns {Attribution} attribution data for the given page
+ *
+ * @param obj - Object for the displayed page
+ * @param cookie - Server cookie to authenticate the request
+ * @returns Attribution data for the given page
  */
 export default async function buildAttribution(
   obj: DatabaseObject,
   cookie: string
-): Promise<Attribution> {
+): Promise<AttributionData> {
   const request = new FetchRequest({ cookie });
 
   const lab = (

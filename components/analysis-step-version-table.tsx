@@ -1,23 +1,25 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import _ from "lodash";
-import PropTypes from "prop-types";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import Link from "./link-no-prefetch";
 import SeparatedList from "./separated-list";
 import SortableGrid from "./sortable-grid";
+// root
+import { AnalysisStepVersionObject } from "../globals";
 
 const analysisStepVersionColumns = [
   {
     id: "@id",
     title: "Analysis Step Versions",
-    display: ({ source }) => <Link href={source["@id"]}>{source["@id"]}</Link>,
+    display: ({ source }: { source: AnalysisStepVersionObject }) => (
+      <Link href={source["@id"]}>{source["@id"]}</Link>
+    ),
   },
   {
     id: "software_versions",
     title: "Software Versions",
-    display: ({ source }) => {
+    display: ({ source }: { source: AnalysisStepVersionObject }) => {
       return (
         <SeparatedList>
           {source.software_versions.map((version) => (
@@ -33,8 +35,14 @@ const analysisStepVersionColumns = [
 ];
 
 /**
- * Display a sortable table of the given analysis step versions. Optionally display a link to a report page of
- * the analysis steps in this table.
+ * Display a sortable table of the given analysis step versions. Optionally display a link to a
+ * report page of the analysis steps in this table.
+ *
+ * @param analysisStepVersions - Analysis Step Versions to display in the table
+ * @param reportLink - Optional link to a report page containing the same file sets as this table
+ * @param reportLabel - Label for the report link if given
+ * @param title - Title of the table
+ * @param panelId - Unique ID for the panel in the section directory
  */
 export function AnalysisStepVersionTable({
   analysisStepVersions,
@@ -42,6 +50,12 @@ export function AnalysisStepVersionTable({
   reportLabel = "",
   title = "Analysis Step Versions",
   panelId = "analysis-step-version-table",
+}: {
+  analysisStepVersions: AnalysisStepVersionObject[];
+  reportLink?: string;
+  reportLabel?: string;
+  title?: string;
+  panelId?: string;
 }) {
   return (
     <>
@@ -64,16 +78,3 @@ export function AnalysisStepVersionTable({
     </>
   );
 }
-
-AnalysisStepVersionTable.propTypes = {
-  // Analysis Step Versions to display
-  analysisStepVersions: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Link to the report page containing the same file sets as this table
-  reportLink: PropTypes.string,
-  // Label for the report link
-  reportLabel: PropTypes.string,
-  // Title of the table if not "Analysis Step Versions"
-  title: PropTypes.string,
-  // Unique ID for the panel
-  panelId: PropTypes.string,
-};

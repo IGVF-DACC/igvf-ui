@@ -5,7 +5,7 @@ import { DataItemLabel, DataItemValue } from "./data-area";
 import Link from "./link-no-prefetch";
 import SeparatedList from "./separated-list";
 // lib
-import { type Attribution } from "../lib/attribution";
+import { type AttributionData } from "../lib/attribution";
 import { UC } from "../lib/constants";
 
 /**
@@ -15,7 +15,7 @@ import { UC } from "../lib/constants";
 export default function Attribution({
   attribution = null,
 }: {
-  attribution: Attribution;
+  attribution: AttributionData | null;
 }) {
   // Get an array of keys within the attribution object that have a truthy value.
   const attributionsWithValues = attribution
