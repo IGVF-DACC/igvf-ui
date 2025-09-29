@@ -3,6 +3,8 @@ import {
   arbitraryTypeToText,
   convertTextToTitleCase,
   dataSize,
+  isObjectArrayProperty,
+  isStringArrayProperty,
   isValidPath,
   isValidUrl,
   itemId,
@@ -487,5 +489,259 @@ describe("Test the arbitraryTypeToText function", () => {
   it("should handle arrays containing objects", () => {
     const arrayWithObjects = [{ id: 1 }, { id: 2 }];
     expect(arbitraryTypeToText(arrayWithObjects)).toBe('{"id":1}, {"id":2}');
+  });
+});
+
+describe("Test the isStringArrayProperty utility function", () => {
+  // Valid cases
+  it("should return true for valid string array properties", () => {
+    const obj = { validProp: ["string1", "string2", "string3"] };
+    expect(isStringArrayProperty(obj, "validProp")).toBe(true);
+  });
+
+  it("should return true for single-element string arrays", () => {
+    const obj = { singleProp: ["onlyString"] };
+    expect(isStringArrayProperty(obj, "singleProp")).toBe(true);
+  });
+
+  it("should return false for null object", () => {
+    // Using type assertion to test runtime behavior
+    expect(isStringArrayProperty(null as any, "anyProp")).toBe(false);
+  });
+
+  it("should return false for undefined object", () => {
+    // Using type assertion to test runtime behavior
+    expect(isStringArrayProperty(undefined as any, "anyProp")).toBe(false);
+  });
+
+  it("should return false for non-existent properties", () => {
+    const obj = { existingProp: ["string1"] };
+    expect(isStringArrayProperty(obj, "nonExistentProp" as any)).toBe(false);
+  });
+
+  it("should return false for inherited properties", () => {
+    const parent = { inheritedProp: ["string1", "string2"] };
+    const child = Object.create(parent);
+    child.ownProp = ["string3"];
+
+    expect(isStringArrayProperty(child, "ownProp")).toBe(true);
+    expect(isStringArrayProperty(child, "inheritedProp")).toBe(false);
+  });
+
+  it("should return false for non-array properties", () => {
+    const obj = {
+      stringProp: "not an array",
+      numberProp: 123,
+      objectProp: { key: "value" },
+      booleanProp: true,
+      nullProp: null,
+      undefinedProp: undefined,
+    };
+
+    expect(isStringArrayProperty(obj, "stringProp")).toBe(false);
+    expect(isStringArrayProperty(obj, "numberProp")).toBe(false);
+    expect(isStringArrayProperty(obj, "objectProp")).toBe(false);
+    expect(isStringArrayProperty(obj, "booleanProp")).toBe(false);
+    expect(isStringArrayProperty(obj, "nullProp")).toBe(false);
+    expect(isStringArrayProperty(obj, "undefinedProp")).toBe(false);
+  });
+
+  it("should return false for empty arrays", () => {
+    const obj = { emptyArray: [] };
+    expect(isStringArrayProperty(obj, "emptyArray")).toBe(false);
+  });
+
+  it("should return false for arrays containing numbers", () => {
+    const obj = { numberArray: [1, 2, 3] };
+    expect(isStringArrayProperty(obj, "numberArray")).toBe(false);
+  });
+
+  it("should return false for arrays containing mixed types", () => {
+    const obj = { mixedArray: ["string", 123, true, null] };
+    expect(isStringArrayProperty(obj, "mixedArray")).toBe(false);
+  });
+
+  it("should return false for arrays containing objects", () => {
+    const obj = { objectArray: [{ key: "value" }, { key2: "value2" }] };
+    expect(isStringArrayProperty(obj, "objectArray")).toBe(false);
+  });
+
+  it("should handle arrays with empty strings", () => {
+    const obj = { emptyStringArray: ["", "non-empty", ""] };
+    expect(isStringArrayProperty(obj, "emptyStringArray")).toBe(true);
+  });
+
+  it("should handle arrays with special string characters", () => {
+    const obj = {
+      specialChars: ["hello\nworld", "tab\there", "unicode: 🚀", ""],
+    };
+    expect(isStringArrayProperty(obj, "specialChars")).toBe(true);
+  });
+
+  it("should work with complex object structures", () => {
+    interface ComplexObject {
+      metadata: {
+        tags: string[];
+        categories: string[];
+      };
+      invalidField: number[];
+    }
+
+    const complexObj: ComplexObject = {
+      metadata: {
+        tags: ["tag1", "tag2"],
+        categories: ["cat1"],
+      },
+      invalidField: [1, 2, 3],
+    };
+
+    expect(isStringArrayProperty(complexObj.metadata, "tags")).toBe(true);
+    expect(isStringArrayProperty(complexObj.metadata, "categories")).toBe(true);
+    expect(isStringArrayProperty(complexObj, "invalidField")).toBe(false);
+  });
+
+  it("should return false for sparse arrays", () => {
+    // Create sparse array programmatically to avoid ESLint no-sparse-arrays rule.
+    const sparseArray: string[] = [];
+    sparseArray[0] = "string1";
+    sparseArray[2] = "string3"; // Index 1 is intentionally left as a hole
+    const obj = { sparseArray };
+    expect(isStringArrayProperty(obj, "sparseArray")).toBe(false);
+  });
+});
+
+describe("Test the isObjectArrayProperty utility function", () => {
+  it("should return true for valid object arrays", () => {
+    const obj = {
+      validProp: [{ name: "item1" }, { name: "item2" }],
+      singleProp: [{ id: 1 }],
+    };
+    expect(isObjectArrayProperty(obj, "validProp")).toBe(true);
+    expect(isObjectArrayProperty(obj, "singleProp")).toBe(true);
+  });
+
+  it("should handle null and undefined objects", () => {
+    expect(isObjectArrayProperty(null as any, "anyProp")).toBe(false);
+    expect(isObjectArrayProperty(undefined as any, "anyProp")).toBe(false);
+  });
+
+  it("should return false for non-existent properties", () => {
+    const obj = { existingProp: [{}] };
+    expect(isObjectArrayProperty(obj, "nonExistentProp" as any)).toBe(false);
+  });
+
+  it("should only check own properties, not inherited ones", () => {
+    const parent = { inheritedProp: [{ value: "parent" }] };
+    const child = Object.create(parent);
+    child.ownProp = [{ value: "child" }];
+
+    expect(isObjectArrayProperty(child, "ownProp")).toBe(true);
+    expect(isObjectArrayProperty(child, "inheritedProp")).toBe(false);
+  });
+
+  it("should return false for non-array properties", () => {
+    const obj = {
+      stringProp: "not an array",
+      numberProp: 42,
+      objectProp: { key: "value" },
+      booleanProp: true,
+      nullProp: null,
+      undefinedProp: undefined,
+    };
+
+    expect(isObjectArrayProperty(obj, "stringProp")).toBe(false);
+    expect(isObjectArrayProperty(obj, "numberProp")).toBe(false);
+    expect(isObjectArrayProperty(obj, "objectProp")).toBe(false);
+    expect(isObjectArrayProperty(obj, "booleanProp")).toBe(false);
+    expect(isObjectArrayProperty(obj, "nullProp")).toBe(false);
+    expect(isObjectArrayProperty(obj, "undefinedProp")).toBe(false);
+  });
+
+  it("should return false for empty arrays", () => {
+    const obj = { emptyArray: [] };
+    expect(isObjectArrayProperty(obj, "emptyArray")).toBe(false);
+  });
+
+  it("should return false for arrays of non-objects", () => {
+    const obj = {
+      numberArray: [1, 2, 3],
+      stringArray: ["a", "b", "c"],
+      mixedArray: [1, "string", true],
+      booleanArray: [true, false],
+    };
+
+    expect(isObjectArrayProperty(obj, "numberArray")).toBe(false);
+    expect(isObjectArrayProperty(obj, "stringArray")).toBe(false);
+    expect(isObjectArrayProperty(obj, "mixedArray")).toBe(false);
+    expect(isObjectArrayProperty(obj, "booleanArray")).toBe(false);
+  });
+
+  it("should return false for arrays containing null values", () => {
+    const obj = {
+      nullArray: [{ valid: true }, null, { alsoValid: true }],
+      onlyNulls: [null, null],
+    };
+
+    expect(isObjectArrayProperty(obj, "nullArray")).toBe(false);
+    expect(isObjectArrayProperty(obj, "onlyNulls")).toBe(false);
+  });
+
+  it("should return true for arrays of various object types", () => {
+    const obj = {
+      plainObjects: [{ key: "value" }, { another: "object" }],
+      emptyObjects: [{}, {}],
+      nestedObjects: [{ nested: { deep: true } }, { shallow: false }],
+      dateObjects: [new Date(), new Date()],
+      arrayObjects: [[], [1, 2, 3]], // Arrays are objects too
+      regexObjects: [/test/, new RegExp("pattern")],
+    };
+
+    expect(isObjectArrayProperty(obj, "plainObjects")).toBe(true);
+    expect(isObjectArrayProperty(obj, "emptyObjects")).toBe(true);
+    expect(isObjectArrayProperty(obj, "nestedObjects")).toBe(true);
+    expect(isObjectArrayProperty(obj, "dateObjects")).toBe(true);
+    expect(isObjectArrayProperty(obj, "arrayObjects")).toBe(true);
+    expect(isObjectArrayProperty(obj, "regexObjects")).toBe(true);
+  });
+
+  it("should return false for arrays containing functions", () => {
+    // Functions are technically objects in JavaScript, but our type guard
+    // is designed for data objects, not function objects
+    const obj = {
+      functionsArray: [() => {}, function named() {}],
+      mixedWithFunctions: [{ data: true }, () => {}],
+    };
+
+    expect(isObjectArrayProperty(obj, "functionsArray")).toBe(false);
+    expect(isObjectArrayProperty(obj, "mixedWithFunctions")).toBe(false);
+  });
+
+  it("should work with complex object structures", () => {
+    interface Schema {
+      oneOf?: Array<{ required?: string[] }>;
+      properties: {
+        items: Array<{ type: string; format?: string }>;
+      };
+    }
+
+    const schema: Schema = {
+      oneOf: [{ required: ["field1"] }, { required: ["field2", "field3"] }],
+      properties: {
+        items: [{ type: "string", format: "email" }, { type: "number" }],
+      },
+    };
+
+    expect(isObjectArrayProperty(schema, "oneOf")).toBe(true);
+    expect(isObjectArrayProperty(schema.properties, "items")).toBe(true);
+  });
+
+  it("should return false for sparse arrays", () => {
+    // Create sparse array programmatically to avoid ESLint no-sparse-arrays rule.
+    const sparseArray: object[] = [];
+    sparseArray[0] = { first: true };
+    sparseArray[2] = { third: true }; // Index 1 is intentionally left as a hole
+    const obj = { sparseArray };
+
+    expect(isObjectArrayProperty(obj, "sparseArray")).toBe(false);
   });
 });

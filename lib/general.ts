@@ -350,3 +350,79 @@ export function arbitraryTypeToText(value: unknown): string {
   }
   return String(value);
 }
+
+/**
+ * Type guard to check if a property of an object is a non-empty array of strings. Sparse arrays
+ * (arrays with holes) also get disqualified.
+ *
+ * @param obj - Object to check
+ * @param property - Name of object property to check
+ * @returns True if the property is a non-empty array of strings, false otherwise
+ */
+export function isStringArrayProperty<T extends object, K extends keyof T>(
+  obj: T,
+  property: K
+): obj is T & Record<K, string[]> {
+  if (obj && typeof obj === "object" && Object.hasOwn(obj, property)) {
+    const propValue = obj[property];
+
+    return (
+      Array.isArray(propValue) &&
+      propValue.length > 0 &&
+      propValue.every((field) => typeof field === "string") &&
+      propValue.length === propValue.filter(() => true).length // Disqualify sparse arrays
+    );
+  }
+  return false;
+}
+
+/**
+ * Compute a friendly, preserved array type for a property that should be an array of objects.
+ *
+ * If Arr is already an array whose element type extends object (e.g., Foo[] or Foo[] | undefined),
+ * we keep that concrete array type (minus null/undefined via NonNullable). Otherwise, we fall back
+ * to a generic object[]. This improves hovers and narrowing results without changing runtime logic.
+ *
+ * How it works (type-level only):
+ * - NonNullable<Arr> removes null/undefined from Arr so we can safely check its structure.
+ * - NonNullable<Arr> extends Array<infer E> extracts the element type E if Arr is an array.
+ * - E extends object ensures we only preserve arrays whose elements are objects.
+ * - If any check fails, we use object[] as a safe fallback.
+ *
+ * Examples:
+ * - RequiredFieldObject[] | undefined  -> RequiredFieldObject[]
+ * - object[]                           -> object[]
+ * - unknown                            -> object[]
+ * - (string | number)[]                -> object[] (elements aren’t objects)
+ */
+type ObjectArrayOrFallback<Arr> =
+  NonNullable<Arr> extends Array<infer E>
+    ? E extends object
+      ? NonNullable<Arr>
+      : object[]
+    : object[];
+
+/**
+ * Type guard to check if a property of an object is a non-empty array of objects. Sparse arrays
+ * (arrays with holes) also get disqualified.
+ *
+ * @param obj - Object to check
+ * @param property - Name of object property to check
+ * @returns True if the property is a non-empty array of objects, false otherwise
+ */
+export function isObjectArrayProperty<T extends object, K extends keyof T>(
+  obj: T,
+  property: K
+): obj is T & Record<K, ObjectArrayOrFallback<T[K]>> {
+  if (obj && typeof obj === "object" && Object.hasOwn(obj, property)) {
+    const propValue = obj[property];
+
+    return (
+      Array.isArray(propValue) &&
+      propValue.length > 0 &&
+      propValue.every((field) => typeof field === "object" && field !== null) &&
+      propValue.length === propValue.filter(() => true).length // Disqualify sparse arrays
+    );
+  }
+  return false;
+}

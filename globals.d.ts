@@ -89,6 +89,15 @@ interface SearchResultsObjectGenerics {
 }
 
 /**
+ * Object with a required property containing an array of strings, used for schemas with more than
+ * one possible set of required properties.
+ */
+export interface RequiredFieldObject {
+  required: string[];
+  [key: string]: unknown;
+}
+
+/**
  * The `properties` object of a schema.
  */
 export interface SchemaProperty {
@@ -103,6 +112,7 @@ export interface SchemaProperty {
   notSubmittable?: boolean;
   readonly?: boolean;
   permission?: string;
+  default?: unknown;
 }
 
 export interface SchemaProperties {
@@ -129,7 +139,8 @@ export interface Schema {
   identifyingProperties?: string[];
   mixinProperties: object[];
   properties: SchemaProperties;
-  required: string[];
+  required?: string[];
+  oneOf?: RequiredFieldObject[];
   title: string;
   type: string;
 }

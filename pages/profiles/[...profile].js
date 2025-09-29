@@ -32,6 +32,7 @@ import JsonPanel, { JsonPanelTool } from "../../components/json-panel";
 import MarkdownSection from "../../components/markdown-section";
 import PagePreamble from "../../components/page-preamble";
 import {
+  SchemaRequired,
   SchemaSearchField,
   SchemaVersion,
   SearchAndReportType,
@@ -665,12 +666,7 @@ function FormattedSchema({
           <DataItemValue>
             <SchemaVersion schema={schema} />
           </DataItemValue>
-          {schema.required?.length > 0 && (
-            <>
-              <DataItemLabel>Required</DataItemLabel>
-              <DataItemValue>{schema.required.sort().join(", ")}</DataItemValue>
-            </>
-          )}
+          <SchemaRequired schema={schema} />
           {schema.identifyingProperties?.length > 0 && (
             <>
               <DataItemLabel>Identifying Properties</DataItemLabel>
