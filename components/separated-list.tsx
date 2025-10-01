@@ -1,5 +1,4 @@
 // node_modules
-import PropTypes from "prop-types";
 import { Children, Fragment } from "react";
 // components
 import {
@@ -43,6 +42,13 @@ import {
  *   </SeparatedList>
  * </SeparatedList>
  * // Expected output: "First component, Second component LINK Third component, Fourth component"
+ *
+ * @param separator - Separator between items; can be a string or a React component
+ * @param className - Additional classes for the wrapper element
+ * @param testid - Test ID for the wrapper element
+ * @param isCollapsible - True if the list should be collapsible when it exceeds the maximum number
+ *   of items before collapsing
+ * @param maxItemsBeforeCollapse - Maximum number of items before the list appears collapsed
  */
 export default function SeparatedList({
   separator = ", ",
@@ -51,13 +57,21 @@ export default function SeparatedList({
   isCollapsible = false,
   maxItemsBeforeCollapse = DEFAULT_MAX_COLLAPSE_ITEMS_INLINE,
   children,
+}: {
+  separator?: React.ReactNode;
+  className?: string;
+  testid?: string | null;
+  isCollapsible?: boolean;
+  maxItemsBeforeCollapse?: number;
+  children: React.ReactNode;
 }) {
+  const childrenArray = Children.toArray(children);
   const collapser = useCollapseControl(
-    children,
+    childrenArray,
     maxItemsBeforeCollapse,
     isCollapsible
   );
-  const items = isCollapsible ? collapser.items : Children.toArray(children);
+  const items = isCollapsible ? collapser.items : childrenArray;
 
   if (items.length > 0) {
     return (
@@ -73,7 +87,7 @@ export default function SeparatedList({
               {collapser.isCollapseControlVisible &&
               index === collapser.items.length - 1 ? (
                 <CollapseControlInline
-                  length={children.length}
+                  length={childrenArray.length}
                   isCollapsed={collapser.isCollapsed}
                   setIsCollapsed={collapser.setIsCollapsed}
                 />
@@ -85,16 +99,3 @@ export default function SeparatedList({
   }
   return null;
 }
-
-SeparatedList.propTypes = {
-  // The separator between the items; ", " by default
-  separator: PropTypes.node,
-  // Additional classes for wrapper element
-  className: PropTypes.string,
-  // Test ID for wrapper element
-  testid: PropTypes.string,
-  // True if the list should be collapsible
-  isCollapsible: PropTypes.bool,
-  // Maximum number of items before the list appears collapsed
-  maxItemsBeforeCollapse: PropTypes.number,
-};
