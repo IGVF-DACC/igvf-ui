@@ -9,6 +9,7 @@ import {
   DataArea,
   DataItemLabel,
   DataItemValue,
+  DataItemValueAnnotated,
   DataPanel,
 } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
@@ -81,9 +82,12 @@ export default function AnalysisStep({
                 </>
               )}
               <DataItemLabel>Analysis Step Types</DataItemLabel>
-              <DataItemValue>
-                {analysisStep.analysis_step_types.join(", ")}
-              </DataItemValue>
+              <DataItemValueAnnotated
+                objectType={analysisStep["@type"][0]}
+                propertyName="analysis_step_types"
+              >
+                {analysisStep.analysis_step_types}
+              </DataItemValueAnnotated>
               <DataItemLabel>Input Content Types</DataItemLabel>
               <DataItemValue>
                 <SeparatedList isCollapsible>

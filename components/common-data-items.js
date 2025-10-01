@@ -21,18 +21,18 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
+  DataItemValueAnnotated,
   DataItemValueUrl,
 } from "./data-area";
 import DbxrefList from "./dbxref-list";
 import Link from "./link-no-prefetch";
-import { AssayTitles } from "./ontology-terms";
 import ProductInfo from "./product-info";
 import SeparatedList from "./separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { checkCheckfilesVersionVisible } from "../lib/checkfiles-version";
 import { formatDate } from "../lib/dates";
-import { dataSize, sortedSeparatedList, truthyOrZero } from "../lib/general";
+import { dataSize, truthyOrZero } from "../lib/general";
 
 /**
  * Display the data items common to all donor-derived objects.
@@ -336,6 +336,29 @@ SampleDataItems.commonProperties = [
 ];
 
 /**
+ * Format the age display for a biosample-derived object.
+ *
+ * @param item - biosample item object
+ * @returns Formatted age string
+ */
+function formatAge(item) {
+  let ageDisplay;
+
+  if (item.age === "unknown") {
+    ageDisplay = item.embryonic ? "Embryonic" : "unknown";
+  } else {
+    ageDisplay = item.embryonic ? `Embryonic ${item.age}` : item.age;
+  }
+
+  if (item.age_units) {
+    const units = item.age !== "1" ? `${item.age_units}s` : item.age_units;
+    return `${ageDisplay} ${units}`;
+  }
+
+  return ageDisplay;
+}
+
+/**
  * Display data items common to all biosample-derived objects.
  */
 export function BiosampleDataItems({
@@ -373,8 +396,13 @@ export function BiosampleDataItems({
       )}
       {classifications.length > 0 && (
         <>
-          <DataItemLabel>Classification</DataItemLabel>
-          <DataItemValue>{classifications.join(", ")}</DataItemValue>
+          <DataItemLabel>Classifications</DataItemLabel>
+          <DataItemValueAnnotated
+            objectType={item["@type"][0]}
+            propertyName="classifications"
+          >
+            {classifications}
+          </DataItemValueAnnotated>
         </>
       )}
       {item.embryonic && (
@@ -415,24 +443,7 @@ export function BiosampleDataItems({
       )}
       <>
         <DataItemLabel>Age</DataItemLabel>
-        <DataItemValue>
-          {item.age === "unknown"
-            ? item.embryonic
-              ? "Embryonic"
-              : "unknown"
-            : item.embryonic
-            ? `Embryonic ${item.age}`
-            : item.age}
-          {item.age_units ? (
-            <>
-              {" "}
-              {item.age_units}
-              {item.age !== "1" ? "s" : ""}
-            </>
-          ) : (
-            ""
-          )}
-        </DataItemValue>
+        <DataItemValue>{formatAge(item)}</DataItemValue>
       </>
       {partOf && (
         <>
@@ -621,7 +632,12 @@ export function FileDataItems({
         </>
       )}
       <DataItemLabel>Content Type</DataItemLabel>
-      <DataItemValue>{item.content_type}</DataItemValue>
+      <DataItemValueAnnotated
+        objectType={item["@type"][0]}
+        propertyName="content_type"
+      >
+        {item.content_type}
+      </DataItemValueAnnotated>
       {item.cell_type_annotation && (
         <>
           <DataItemLabel>Cell Type Annotation</DataItemLabel>
@@ -778,15 +794,23 @@ export function FileSetDataItems({
       {item.file_set_type && (
         <>
           <DataItemLabel>File Set Type</DataItemLabel>
-          <DataItemValue>{item.file_set_type}</DataItemValue>
+          <DataItemValueAnnotated
+            objectType={item["@type"][0]}
+            propertyName="file_set_type"
+          >
+            {item.file_set_type}
+          </DataItemValueAnnotated>
         </>
       )}
       {item.control_types && (
         <>
           <DataItemLabel>Control Types</DataItemLabel>
-          <DataItemValue>
-            {sortedSeparatedList(item.control_types)}
-          </DataItemValue>
+          <DataItemValueAnnotated
+            objectType={item["@type"][0]}
+            propertyName="control_types"
+          >
+            {item.control_types}
+          </DataItemValueAnnotated>
         </>
       )}
       {item.summary && (
@@ -804,23 +828,21 @@ export function FileSetDataItems({
       {item.assay_titles?.length > 0 && (
         <>
           <DataItemLabel>Assay Term Names</DataItemLabel>
-          <DataItemValue>
-            <AssayTitles
-              titles={item.assay_titles}
-              descriptionMap={assayTitleDescriptionMap}
-            />
-          </DataItemValue>
+          <DataItemValueAnnotated
+            externalAnnotations={assayTitleDescriptionMap}
+          >
+            {item.assay_titles}
+          </DataItemValueAnnotated>
         </>
       )}
       {item.preferred_assay_titles?.length > 0 && (
         <>
           <DataItemLabel>Preferred Assay Titles</DataItemLabel>
-          <DataItemValue>
-            <AssayTitles
-              titles={item.preferred_assay_titles}
-              descriptionMap={preferredAssayTitleDescriptionMap}
-            />
-          </DataItemValue>
+          <DataItemValueAnnotated
+            externalAnnotations={preferredAssayTitleDescriptionMap}
+          >
+            {item.preferred_assay_titles}
+          </DataItemValueAnnotated>
         </>
       )}
       {children}

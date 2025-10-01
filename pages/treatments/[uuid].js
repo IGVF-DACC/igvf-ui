@@ -8,6 +8,7 @@ import {
   DataArea,
   DataItemLabel,
   DataItemValue,
+  DataItemValueAnnotated,
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
@@ -88,7 +89,12 @@ export default function Treatment({
               {treatment.purpose && (
                 <>
                   <DataItemLabel>Purpose</DataItemLabel>
-                  <DataItemValue>{treatment.purpose}</DataItemValue>
+                  <DataItemValueAnnotated
+                    objectType={treatment["@type"][0]}
+                    propertyName="purpose"
+                  >
+                    {treatment.purpose}
+                  </DataItemValueAnnotated>
                 </>
               )}
               {truthyOrZero(treatment.post_treatment_time) && (

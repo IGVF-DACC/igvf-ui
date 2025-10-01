@@ -15,6 +15,7 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
+  DataItemValueAnnotated,
   DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
@@ -30,7 +31,6 @@ import InputFileSets from "../../components/input-file-sets";
 import JsonDisplay from "../../components/json-display";
 import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
-import { AssayTitles } from "../../components/ontology-terms";
 import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
@@ -120,7 +120,12 @@ export default function AnalysisSet({
                 </>
               )}
               <DataItemLabel>File Set Type</DataItemLabel>
-              <DataItemValue>{analysisSet.file_set_type}</DataItemValue>
+              <DataItemValueAnnotated
+                objectType={analysisSet["@type"][0]}
+                propertyName="file_set_type"
+              >
+                {analysisSet.file_set_type}
+              </DataItemValueAnnotated>
               {analysisSet.summary && (
                 <>
                   <DataItemLabel>Summary</DataItemLabel>
@@ -136,23 +141,21 @@ export default function AnalysisSet({
               {analysisSet.assay_titles?.length > 0 && (
                 <>
                   <DataItemLabel>Assay Term Names</DataItemLabel>
-                  <DataItemValue>
-                    <AssayTitles
-                      titles={analysisSet.assay_titles}
-                      descriptionMap={assayTitleDescriptionMap}
-                    />
-                  </DataItemValue>
+                  <DataItemValueAnnotated
+                    externalAnnotations={assayTitleDescriptionMap}
+                  >
+                    {analysisSet.assay_titles}
+                  </DataItemValueAnnotated>
                 </>
               )}
               {analysisSet.preferred_assay_titles?.length > 0 && (
                 <>
                   <DataItemLabel>Preferred Assay Titles</DataItemLabel>
-                  <DataItemValue>
-                    <AssayTitles
-                      titles={analysisSet.preferred_assay_titles}
-                      descriptionMap={preferredAssayTitleDescriptionMap}
-                    />
-                  </DataItemValue>
+                  <DataItemValueAnnotated
+                    externalAnnotations={preferredAssayTitleDescriptionMap}
+                  >
+                    {analysisSet.preferred_assay_titles}
+                  </DataItemValueAnnotated>
                 </>
               )}
               {referenceFiles.length > 0 && (

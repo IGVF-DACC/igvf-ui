@@ -1,16 +1,14 @@
 // node_modules
-import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import {
   type GetServerSidePropsContext,
   type GetServerSidePropsResult,
 } from "next";
 import { useContext } from "react";
 // components
+import { AnnotatedValue } from "../components/annotated-value";
 import { DataTable } from "../components/data-table";
-import { getPreferredAssayTitleDescriptionMap } from "../lib/ontology-terms";
 import PagePreamble from "../components/page-preamble";
 import SessionContext from "../components/session-context";
-import { Tooltip, TooltipRef, useTooltip } from "../components/tooltip";
 // lib
 import { type Cell, type DataTableFormat, type Row } from "../lib/data-table";
 import { errorObjectToProps } from "../lib/errors";
@@ -21,7 +19,10 @@ import {
   toShishkebabCase,
 } from "../lib/general";
 import { type ColumnMap, generateMatrixColumnMap } from "../lib/matrix";
-import { getAssayTitleDescriptionMap } from "../lib/ontology-terms";
+import {
+  getAssayTitleDescriptionMap,
+  getPreferredAssayTitleDescriptionMap,
+} from "../lib/ontology-terms";
 // root
 import type { MatrixResults, MatrixResultsObject, Profiles } from "../globals";
 
@@ -169,27 +170,15 @@ function AssayCell({
   // Convert children to assayTitle regardless of type, and use that to get the corresponding
   // definition.
   const assayTitle = arbitraryTypeToText(children);
-  const definition = assayTitle
-    ? meta?.assayTitleDescriptionMap[assayTitle]
-    : "";
-
-  const tooltipAttr = useTooltip(`assay-${assayTitle || "none"}`);
 
   return (
     <th
       className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
-      {assayTitle}
-      {definition && (
-        <>
-          {" "}
-          <TooltipRef tooltipAttr={tooltipAttr}>
-            <QuestionMarkCircleIcon className="inline h-4 w-4" />
-          </TooltipRef>
-          <Tooltip tooltipAttr={tooltipAttr}>{definition}</Tooltip>
-        </>
-      )}
+      <AnnotatedValue externalAnnotations={meta?.assayTitleDescriptionMap}>
+        {assayTitle}
+      </AnnotatedValue>
     </th>
   );
 }
@@ -210,9 +199,6 @@ function PreferredAssayHeaderCell({
   children: React.ReactNode;
 }) {
   const preferredAssayTitle = arbitraryTypeToText(children);
-  const tooltipAttr = useTooltip(`preferred-assay-${preferredAssayTitle}`);
-  const definition =
-    meta?.preferredAssayTitleDescriptionMap[preferredAssayTitle];
 
   return (
     <th
@@ -220,16 +206,11 @@ function PreferredAssayHeaderCell({
       {...(rowSpan > 1 ? { rowSpan } : {})}
       data-highlight
     >
-      {preferredAssayTitle}
-      {definition && (
-        <>
-          {" "}
-          <TooltipRef tooltipAttr={tooltipAttr}>
-            <QuestionMarkCircleIcon className="inline h-4 w-4" />
-          </TooltipRef>
-          <Tooltip tooltipAttr={tooltipAttr}>{definition}</Tooltip>
-        </>
-      )}
+      <AnnotatedValue
+        externalAnnotations={meta?.preferredAssayTitleDescriptionMap}
+      >
+        {preferredAssayTitle}
+      </AnnotatedValue>
     </th>
   );
 }

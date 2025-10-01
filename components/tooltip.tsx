@@ -14,9 +14,16 @@ import {
   useFocus,
   useHover,
   useInteractions,
+  type FloatingContext,
+  type ReferenceType,
 } from "@floating-ui/react";
-import PropTypes from "prop-types";
-import { Children, cloneElement, useRef, useState } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 // lib
 import { toShishkebabCase } from "../lib/general";
@@ -43,6 +50,22 @@ const ARROW_WIDTH = Math.round(ARROW_HEIGHT * 1.4);
 const TOOLTIP_DELAY = 500;
 
 /**
+ * Attributes returned by the `useTooltip()` hook that you need to pass to both `<TooltipRef>` and
+ * `<Tooltip>`.
+ */
+export type TooltipAttr = {
+  id: string;
+  refEl: (node: ReferenceType | null) => void;
+  refProps: () => Record<string, unknown>;
+  tooltipEl: (node: HTMLElement | null) => void;
+  tooltipProps: () => Record<string, unknown>;
+  context: FloatingContext;
+  arrowRef: React.RefObject<SVGSVGElement>;
+  styles: React.CSSProperties;
+  isVisible: boolean;
+};
+
+/**
  * Call this custom hook within any component that contains a tooltip. It returns props that you
  * need to pass to both `<TooltipRef>` and `<Tooltip>`. It can only control one tooltip, so if you
  * need to have more than one, you need to call this hook once for each tooltip.
@@ -59,11 +82,11 @@ const TOOLTIP_DELAY = 500;
  * @param {string} id Unique ID for the tooltip
  * @returns {object} Object with props for `<TooltipRef>` and `<Tooltip>`
  */
-export function useTooltip(id) {
+export function useTooltip(id: string): TooltipAttr {
   const [isVisible, setIsVisible] = useState(false);
-  const arrowRef = useRef(null);
+  const arrowRef = useRef<SVGSVGElement>(null);
 
-  const { context, floatingStyles, refs } = useFloating({
+  const { context, floatingStyles, refs } = useFloating<HTMLButtonElement>({
     middleware: [
       autoPlacement(),
       shift(),
@@ -105,14 +128,23 @@ export function useTooltip(id) {
  * For DOM elements, we clone the child to attach tooltip handlers/refs directly. For custom React
  * components (which might not forward refs/props), we wrap them in a simple wrapper element that
  * receives the tooltip handlers/refs so we don't interfere with the child's own event handling.
+ *
+ * @param tooltipAttr - Object returned by `useTooltip()` that contains props to pass to this and the
+ *   corresponding `<Tooltip>` component
  */
-export function TooltipRef({ tooltipAttr, children }) {
+export function TooltipRef({
+  tooltipAttr,
+  children,
+}: {
+  tooltipAttr: TooltipAttr;
+  children: React.ReactNode;
+}) {
   // Make sure only one child exists.
   const child = Children.only(children);
 
   // Check if this is a DOM element (oddly indicated by the string type) or a custom component. We
   // can safely clone and add props directly to DOM elements.
-  const isDOMElement = typeof child.type === "string";
+  const isDOMElement = isValidElement(child) && typeof child.type === "string";
   if (isDOMElement) {
     const clonedElement = cloneElement(child, {
       ref: tooltipAttr.refEl,
@@ -136,21 +168,21 @@ export function TooltipRef({ tooltipAttr, children }) {
   );
 }
 
-TooltipRef.propTypes = {
-  // Object returned by `useTooltip()`
-  tooltipAttr: PropTypes.shape({
-    id: PropTypes.string,
-    refEl: PropTypes.func,
-    refProps: PropTypes.func,
-  }),
-};
-
 /**
  * Wrap the content that you want to show in the tooltip with this component. It can contain one or
  * many elements. Make sure your content works with both light and dark mode, and with different
  * browser widths.
+ *
+ * @param tooltipAttr - Object returned by `useTooltip()` that contains props to pass to this and the
+ *   corresponding `<TooltipRef>` component
  */
-export function Tooltip({ tooltipAttr, children }) {
+export function Tooltip({
+  tooltipAttr,
+  children,
+}: {
+  tooltipAttr: TooltipAttr;
+  children: React.ReactNode;
+}) {
   return (
     <>
       {tooltipAttr.isVisible &&
@@ -179,19 +211,6 @@ export function Tooltip({ tooltipAttr, children }) {
     </>
   );
 }
-
-Tooltip.propTypes = {
-  // Object returned by `useTooltip()`
-  tooltipAttr: PropTypes.shape({
-    id: PropTypes.string,
-    tooltipEl: PropTypes.func,
-    tooltipProps: PropTypes.func,
-    context: PropTypes.object,
-    styles: PropTypes.object,
-    arrowRef: PropTypes.object,
-    isVisible: PropTypes.bool,
-  }),
-};
 
 /**
  * Drop this component into the `<body>` of your HTML document. It creates the DOM root-level
