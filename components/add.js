@@ -14,6 +14,7 @@ import SessionContext from "./session-context";
 // lib
 import FetchRequest from "../lib/fetch-request";
 import { urlWithoutParams, sortObjectProps } from "../lib/general";
+import { schemaNameToCollectionName } from "../lib/profiles";
 import { collectionToSchema } from "../lib/schema";
 /* istanbul ignore file */
 
@@ -88,15 +89,19 @@ function schemaToName(schema) {
  * A custom label can be supplied with the `label` prop.
  */
 export function AddLink({ schema, label = null }) {
+  const { collectionTitles } = useContext(SessionContext);
   const { isAuthenticated } = useAuth0();
   if (isAuthenticated && canEdit(schema)) {
     const schemaName = schemaToName(schema);
-    if (schemaName) {
+    const collectionName =
+      schemaName && collectionTitles
+        ? schemaNameToCollectionName(schemaName, collectionTitles)
+        : null;
+    if (collectionName) {
       const objectAddPath =
         schema.$id === "/profiles/page.json"
           ? "/add-page#!edit"
-          : `/${schemaName}#!add`;
-
+          : `/${collectionName}#!add`;
       return (
         <ButtonLink
           label={label}

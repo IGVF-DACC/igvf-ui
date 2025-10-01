@@ -19,11 +19,11 @@ describe("Test Add button", () => {
     cy.contains("Cypress Testing");
 
     cy.visit("/profiles/");
-    cy.get("a[href='/lab/#!add']").should("exist").click();
+    cy.get("a[href='/labs/#!add']").should("exist").click();
 
     // After the div for the JSON editor appears in the DOM, reload the page. Without this, the ACE
     // editor does not initialize properly, and the test fails.
-    cy.url().should("include", "/lab/#!add");
+    cy.url().should("include", "/labs/#!add");
     cy.get('[id="JSON Editor"]', { timeout: 30000 }).should("exist");
     cy.reloadWithDelay(5000);
 

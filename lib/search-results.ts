@@ -33,15 +33,19 @@ export function generateSearchResultsTypes(
     if (typeFacet) {
       // Get all concrete types from the search results.
       const terms = typeFacet.terms as SearchResultsFacetTerm[];
-      const allResultTypes = terms.map((term) => term.key);
+      const allResultTypes = terms
+        .map((term) => term.key)
+        .filter((key): key is string => typeof key === "string");
       const concreteTypes = allResultTypes.filter((type) => {
         const typeSubtypes = (profiles as ProfilesProps)._subtypes[type];
         return (
           typeSubtypes && typeSubtypes.length === 1 && type === typeSubtypes[0]
         );
       });
-      const readableTitles = collectionTitles
-        ? concreteTypes.map((type) => collectionTitles[type])
+      const readableTitles: string[] = collectionTitles
+        ? concreteTypes
+            .map((type) => collectionTitles[type])
+            .filter((title): title is string => typeof title === "string")
         : concreteTypes;
       return readableTitles.sort();
     }

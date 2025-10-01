@@ -304,17 +304,12 @@ export interface NextJsServerQuery {
 }
 
 /**
- * Response from /collection-titles.
+ * Response from /collection-titles. Contains an @type property and dynamic collection keys
+ * that map to their human-readable titles.
  */
-export type CollectionTitles = CollectionTitleProps | CollectionTitleGenerics;
-
-interface CollectionTitleProps {
+export type CollectionTitles = {
   "@type": string[];
-}
-
-interface CollectionTitleGenerics {
-  [key: string]: string;
-}
+} & Record<string, string>;
 
 /**
  * ************************************************************************************************

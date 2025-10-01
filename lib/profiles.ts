@@ -2,6 +2,7 @@
 import FetchRequest from "./fetch-request";
 // types
 import {
+  CollectionTitles,
   DataProviderObject,
   Profiles,
   ProfilesProps,
@@ -315,4 +316,39 @@ function typeToRootTypeSearch(
 export function typeToRootType(type: string, profiles: ProfilesProps): string {
   const hierarchy = profiles?._hierarchy?.Item as SchemaHierarchyNode;
   return hierarchy ? typeToRootTypeSearch(type, hierarchy) : "";
+}
+
+/**
+ * Given a schema name, return the corresponding collection name. Examples of schema names and
+ * their corresponding collection names:
+ *
+ * - "tissue" -> "tissues"
+ * - "in_vitro_system" -> "in-vitro-systems"
+ * - "single_cell_atac_seq_quality_metric" -> "single-cell-atac-seq-quality-metrics"
+ *
+ * @param schemaName Name of the schema
+ * @param collectionTitles Mapping of schema names to collection titles
+ * @returns Corresponding collection name for the given schema name; empty string if not found
+ */
+export function schemaNameToCollectionName(
+  schemaName: string,
+  collectionTitles: CollectionTitles
+): string {
+  if (collectionTitles && schemaName in collectionTitles) {
+    const collectionTitle = collectionTitles[schemaName];
+
+    // Get all properties in collectionTitles that share the same value as collectionTitle.
+    const idsWithMatchingTitles = Object.keys(collectionTitles).filter(
+      (key) => collectionTitles[key] === collectionTitle
+    );
+
+    // Now find the one string in `idsWithMatchingTitles` that doesn't start with an uppercase
+    // letter and that doesn't match `schemaName`. That's the collection name.
+    return (
+      idsWithMatchingTitles.find(
+        (name) => name !== schemaName && !/^[A-Z]/.test(name)
+      ) || ""
+    );
+  }
+  return "";
 }
