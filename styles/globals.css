@@ -77,6 +77,22 @@
   @apply border-yellow-600 bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900 dark:hover:bg-yellow-800;
 }
 
+/**
+ * Light and dark themes. With Tailwind CSS v4 this will gradually take over the functionality of
+ * tailwind.config.ts, :root, and .dark groups, which were a Tailwind CSS v3 thing that's getting
+ * deprecated.
+ */
+@theme {
+  /** Decoration colors */
+  --color-help-underline: oklch(55.1% 0.027 264.364);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-help-underline: oklch(70.7% 0.022 261.325);
+  }
+}
+
 :root {
   --color-background: #f8f8f8;
 

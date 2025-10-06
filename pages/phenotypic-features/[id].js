@@ -1,6 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
+import { AnnotatedValue } from "../../components/annotated-value";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -53,7 +54,12 @@ export default function PhenotypicFeature({
                   <DataItemLabel>Quantity</DataItemLabel>
                   <DataItemValue>
                     {phenotypicFeature.quantity}{" "}
-                    {phenotypicFeature.quantity_units}
+                    <AnnotatedValue
+                      objectType={phenotypicFeature["@type"][0]}
+                      propertyName="quantity_units"
+                    >
+                      {phenotypicFeature.quantity_units}
+                    </AnnotatedValue>
                   </DataItemValue>
                 </>
               )}

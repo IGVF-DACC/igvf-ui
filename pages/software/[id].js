@@ -9,6 +9,7 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
+  DataItemValueAnnotated,
   DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
@@ -63,6 +64,17 @@ export default function Software({
                   {software.source_url}
                 </a>
               </DataItemValueUrl>
+              {software.categories?.length > 0 && (
+                <>
+                  <DataItemLabel>Categories</DataItemLabel>
+                  <DataItemValueAnnotated
+                    objectType={software["@type"][0]}
+                    propertyName="categories"
+                  >
+                    {software.categories}
+                  </DataItemValueAnnotated>
+                </>
+              )}
               {software.aliases?.length > 0 && (
                 <>
                   <DataItemLabel>Aliases</DataItemLabel>

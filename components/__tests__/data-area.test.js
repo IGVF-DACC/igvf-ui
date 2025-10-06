@@ -6,10 +6,13 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
+  DataItemValueAnnotated,
   DataItemValueBoolean,
   DataItemValueUrl,
   DataPanel,
 } from "../data-area";
+import SessionContext from "../session-context";
+import { TooltipPortalRoot } from "../tooltip";
 import Status from "../status";
 
 describe("Test the DataArea component", () => {
@@ -129,6 +132,14 @@ describe("Test the DataArea component", () => {
     expect(dataAreaTitle).toBeInTheDocument();
     expect(dataAreaTitle).toHaveAttribute("data-sec-dir", "Treatments");
   });
+
+  it("handles the `id` prop for the DataAreaTitle component", () => {
+    render(<DataAreaTitle id="test-section">Test Section Title</DataAreaTitle>);
+
+    const dataAreaTitle = screen.getByTestId("dataareatitle");
+    expect(dataAreaTitle).toBeInTheDocument();
+    expect(dataAreaTitle).toHaveAttribute("id", "sec-dir-test-section");
+  });
 });
 
 describe("Test DataItemList", () => {
@@ -226,5 +237,234 @@ describe("Test the DataItemValueBoolean component", () => {
     render(<DataItemValueBoolean>{undefined}</DataItemValueBoolean>);
     expect(screen.queryByText("True")).not.toBeInTheDocument();
     expect(screen.queryByText("False")).not.toBeInTheDocument();
+  });
+
+  it('renders nothing when the value is "null"', () => {
+    render(<DataItemValueBoolean>{null}</DataItemValueBoolean>);
+    expect(screen.queryByText("True")).not.toBeInTheDocument();
+    expect(screen.queryByText("False")).not.toBeInTheDocument();
+  });
+});
+
+describe("Test the DataItemValueAnnotated component", () => {
+  function renderWithSession(ui, profiles = {}) {
+    const providerValue = {
+      session: null,
+      sessionProperties: null,
+      profiles,
+      collectionTitles: null,
+      dataProviderUrl: null,
+    };
+    return render(
+      <SessionContext.Provider value={providerValue}>
+        <TooltipPortalRoot />
+        {ui}
+      </SessionContext.Provider>
+    );
+  }
+
+  it("renders a single string value with annotation", () => {
+    const profiles = {
+      File: {
+        properties: {
+          content_type: {
+            type: "string",
+            enum_descriptions: {
+              fastq: "FASTQ file format",
+            },
+          },
+        },
+      },
+    };
+
+    renderWithSession(
+      <DataItemValueAnnotated objectType="File" propertyName="content_type">
+        fastq
+      </DataItemValueAnnotated>,
+      profiles
+    );
+
+    expect(screen.getByText("fastq")).toBeInTheDocument();
+  });
+
+  it("renders an array of string values with annotations", () => {
+    const profiles = {
+      File: {
+        properties: {
+          file_format: {
+            type: "string",
+            enum_descriptions: {
+              bam: "BAM file format",
+              fastq: "FASTQ file format",
+              bed: "BED file format",
+            },
+          },
+        },
+      },
+    };
+
+    renderWithSession(
+      <DataItemValueAnnotated objectType="File" propertyName="file_format">
+        {["fastq", "bam", "bed"]}
+      </DataItemValueAnnotated>,
+      profiles
+    );
+
+    expect(screen.getByText("fastq")).toBeInTheDocument();
+    expect(screen.getByText("bam")).toBeInTheDocument();
+    expect(screen.getByText("bed")).toBeInTheDocument();
+  });
+
+  it("de-duplicates array values", () => {
+    const profiles = {
+      File: {
+        properties: {
+          status: {
+            type: "string",
+            enum_descriptions: {
+              released: "Released status",
+            },
+          },
+        },
+      },
+    };
+
+    renderWithSession(
+      <DataItemValueAnnotated objectType="File" propertyName="status">
+        {["released", "released", "released"]}
+      </DataItemValueAnnotated>,
+      profiles
+    );
+
+    const elements = screen.getAllByText("released");
+    expect(elements.length).toBe(1);
+  });
+
+  it("sorts array values alphabetically", () => {
+    const profiles = {
+      File: {
+        properties: {
+          file_format: {
+            type: "string",
+            enum_descriptions: {
+              bam: "BAM file format",
+              fastq: "FASTQ file format",
+              bed: "BED file format",
+            },
+          },
+        },
+      },
+    };
+
+    renderWithSession(
+      <DataItemValueAnnotated objectType="File" propertyName="file_format">
+        {["fastq", "bam", "bed"]}
+      </DataItemValueAnnotated>,
+      profiles
+    );
+
+    const listItems = screen.getAllByText(/bam|bed|fastq/);
+    // After sorting: bam, bed, fastq
+    expect(listItems[0]).toHaveTextContent("bam");
+    expect(listItems[1]).toHaveTextContent("bed");
+    expect(listItems[2]).toHaveTextContent("fastq");
+  });
+
+  it("applies custom className to the component", () => {
+    const profiles = {
+      File: {
+        properties: {
+          content_type: {
+            type: "string",
+            enum_descriptions: {
+              fastq: "FASTQ file format",
+            },
+          },
+        },
+      },
+    };
+
+    renderWithSession(
+      <DataItemValueAnnotated
+        objectType="File"
+        propertyName="content_type"
+        className="custom-class"
+      >
+        fastq
+      </DataItemValueAnnotated>,
+      profiles
+    );
+
+    const dataItemValue = screen.getByTestId("dataitemvalue");
+    expect(dataItemValue).toHaveClass("custom-class");
+  });
+
+  it("renders with isSmall prop", () => {
+    const profiles = {
+      File: {
+        properties: {
+          content_type: {
+            type: "string",
+            enum_descriptions: {
+              fastq: "FASTQ file format",
+            },
+          },
+        },
+      },
+    };
+
+    renderWithSession(
+      <DataItemValueAnnotated
+        objectType="File"
+        propertyName="content_type"
+        isSmall
+      >
+        fastq
+      </DataItemValueAnnotated>,
+      profiles
+    );
+
+    const dataItemValue = screen.getByTestId("dataitemvalue");
+    expect(dataItemValue).toHaveClass("mb-2 @xs:mb-0 @xs:min-w-0");
+  });
+
+  it("renders with externalAnnotations for a single value", () => {
+    const externalAnnotations = {
+      active: "This item is currently active.",
+      inactive: "This item is inactive.",
+    };
+
+    renderWithSession(
+      <DataItemValueAnnotated externalAnnotations={externalAnnotations}>
+        active
+      </DataItemValueAnnotated>
+    );
+
+    expect(screen.getByText("active")).toBeInTheDocument();
+  });
+
+  it("renders with externalAnnotations for multiple values", () => {
+    const externalAnnotations = {
+      high: "High priority",
+      medium: "Medium priority",
+      low: "Low priority",
+    };
+
+    renderWithSession(
+      <DataItemValueAnnotated externalAnnotations={externalAnnotations}>
+        {["high", "low", "medium"]}
+      </DataItemValueAnnotated>
+    );
+
+    // Check all values are rendered.
+    expect(screen.getByText("high")).toBeInTheDocument();
+    expect(screen.getByText("low")).toBeInTheDocument();
+    expect(screen.getByText("medium")).toBeInTheDocument();
+
+    // Verify they're sorted alphabetically.
+    const listItems = screen.getAllByText(/high|low|medium/);
+    expect(listItems[0]).toHaveTextContent("high");
+    expect(listItems[1]).toHaveTextContent("low");
+    expect(listItems[2]).toHaveTextContent("medium");
   });
 });
