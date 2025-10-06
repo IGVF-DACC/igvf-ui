@@ -16,7 +16,6 @@ import {
 } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import { useRouter } from "next/router";
-import PropTypes from "prop-types";
 import {
   createContext,
   memo,
@@ -50,31 +49,43 @@ import {
   rewriteBlockIds,
   savePage,
   sliceBlocks,
+  type PageLayoutComponent,
+  type PageMeta,
+  type PageObject,
+  type WritingDirection,
 } from "../lib/page";
+// root
+import type { AwardObject, LabObject } from "../globals";
 
 /**
  * Page metadata reducer action codes.
  */
-const PAGE_META_AWARD = "award";
-const PAGE_META_LAB = "lab";
-const PAGE_META_NAME = "name";
-const PAGE_META_PARENT = "parent";
-const PAGE_META_STATUS = "status";
-const PAGE_META_TITLE = "title";
+const PAGE_META = {
+  AWARD: "award",
+  LAB: "lab",
+  NAME: "name",
+  PARENT: "parent",
+  STATUS: "status",
+  TITLE: "title",
+} as const;
 
 /**
  * Live block reducer operation types. Placed in the action.type property.
  */
-const LIVE_BLOCK_UPDATE = "UPDATE";
-const LIVE_BLOCK_ADD_ABOVE = "ADD_ABOVE";
-const LIVE_BLOCK_ADD_BELOW = "ADD_BELOW";
-const LIVE_BLOCK_DELETE = "DELETE";
+const LIVE_BLOCK = {
+  UPDATE: "update",
+  ADD_ABOVE: "add_above",
+  ADD_BELOW: "add_below",
+  DELETE: "delete",
+} as const;
 
 /**
  * Types of each block; either Markdown or for a React component.
  */
-const BLOCK_TYPE_MARKDOWN = "markdown";
-const BLOCK_TYPE_COMPONENT = "component";
+const BLOCK_TYPE = {
+  MARKDOWN: "markdown",
+  COMPONENT: "component",
+} as const;
 
 /**
  * Maximum number of blocks the front end allows on a page.
@@ -82,11 +93,37 @@ const BLOCK_TYPE_COMPONENT = "component";
 const MAX_BLOCKS = 20;
 
 /**
+ * Action type for the page metadata reducer.
+ *
+ * @property type - Metadata field to update (one of the PAGE_META constants)
+ * @property value - New value for the metadata field
+ */
+type PageMetaAction = {
+  type: (typeof PAGE_META)[keyof typeof PAGE_META];
+  value: string;
+};
+
+/**
+ * Action type for the live blocks reducer.
+ *
+ * @property type - Operation to perform on the blocks (one of the LIVE_BLOCK constants)
+ * @property blockId - ID of the block to update, add above/below, or delete
+ * @property content - Content of the block to update or add
+ */
+type BlockAction = {
+  type: (typeof LIVE_BLOCK)[keyof typeof LIVE_BLOCK];
+  blockId: string;
+  blockType?: (typeof BLOCK_TYPE)[keyof typeof BLOCK_TYPE];
+  direction?: WritingDirection;
+  content?: string;
+};
+
+/**
  * Initializes a new block within a page.
  */
-const initialBlock = {
+const initialBlock: PageLayoutComponent = {
   "@id": "#block1",
-  "@type": BLOCK_TYPE_MARKDOWN,
+  "@type": BLOCK_TYPE.MARKDOWN,
   body: "",
   direction: "ltr",
 };
@@ -95,7 +132,9 @@ Object.freeze(initialBlock);
 /**
  * Page object content for new pages.
  */
-const initialPage = {
+const initialPage: PageObject = {
+  "@id": "",
+  "@type": ["Page", "Item"],
   name: "",
   title: "",
   status: "in progress",
@@ -106,26 +145,37 @@ const initialPage = {
 Object.freeze(initialPage);
 Object.freeze(initialPage.layout);
 Object.freeze(initialPage.layout.blocks);
-Object.freeze(initialPage.layout.blocks.body);
 
 /**
  * Tracks any errors in the page editor that prevent saving the page.
  */
-const EditorValidation = createContext({
+const EditorValidation = createContext<{
+  isValidationError: boolean;
+  setValidationError: (isValidationError: boolean) => void;
+}>({
   isValidationError: false,
+  setValidationError: () => {},
 });
 
 /**
  * Tracks the condition of the page overall.
  */
-const PageCondition = createContext({
+const PageCondition = createContext<{
+  isDirty: boolean;
+  setDirty: (dirty: boolean) => void;
+  isNewPage: boolean;
+}>({
   isDirty: false,
+  setDirty: () => {},
+  isNewPage: false,
 });
 
 /**
  * Shows the button to trigger editing the page.
+ *
+ * @param href - URL of the page to edit
  */
-function EditPageTrigger({ href }) {
+function EditPageTrigger({ href }: { href: string }) {
   return (
     <div className="mb-1 flex justify-end">
       <ButtonLink href={`${href}#!edit`} type="secondary" size="sm">
@@ -135,15 +185,16 @@ function EditPageTrigger({ href }) {
   );
 }
 
-EditPageTrigger.propTypes = {
-  // URL to the page to edit
-  href: PropTypes.string.isRequired,
-};
-
 /**
  * Manages a form to edit the page metadata, e.g. awards and labs. Memoize this component so that
  * it only gets rendered when a change is made to the metadata form, not when the user edits the
  * text blocks -- this component is a little heavy.
+ *
+ * @param livePageMeta - All the page metadata states this component can update with user action
+ * @param dispatchLivePageMeta - Dispatches actions to update the page metadata states
+ * @param awards - All awards currently in the database
+ * @param labs - All labs currently in the database
+ * @param pages - All pages currently in the database
  */
 const PageMetaEditor = memo(function PageMetaEditor({
   livePageMeta,
@@ -151,6 +202,12 @@ const PageMetaEditor = memo(function PageMetaEditor({
   awards,
   labs,
   pages,
+}: {
+  livePageMeta: PageMeta;
+  dispatchLivePageMeta: React.Dispatch<PageMetaAction>;
+  awards: AwardObject[];
+  labs: LabObject[];
+  pages: PageObject[];
 }) {
   // Filter text for the parent page list
   const [parentFilter, setParentFilter] = useState("");
@@ -159,7 +216,10 @@ const PageMetaEditor = memo(function PageMetaEditor({
   // Filter text for the lab list
   const [labFilter, setLabFilter] = useState("");
 
-  function onFilterChange(setFilter, event) {
+  function onFilterChange(
+    setFilter: React.Dispatch<React.SetStateAction<string>>,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
     setFilter(event.target.value.toLowerCase());
   }
 
@@ -180,32 +240,36 @@ const PageMetaEditor = memo(function PageMetaEditor({
    * Called whenever the user changes anything about the page metadata. Individual keystrokes in
    * the form fields trigger this function. You normally call this through the shortcuts functions
    * below. Also sets the dirty flag.
-   * @param {string} type Type code for metadata property to update
-   * @param {string} value New value the user set for the metadata property
+   *
+   * @param type - Type code for metadata property to update
+   * @param value - New value the user set for the metadata property
    */
-  function setLivePageMeta(type, value) {
+  function setLivePageMeta(
+    type: (typeof PAGE_META)[keyof typeof PAGE_META],
+    value: string
+  ) {
     dispatchLivePageMeta({ type, value });
     setDirty(true);
   }
 
   // Shortcuts to call the reducers for page metadata.
-  function setPageMetaName(value) {
-    setLivePageMeta(PAGE_META_NAME, value);
+  function setPageMetaName(value: string) {
+    setLivePageMeta(PAGE_META.NAME, value);
   }
-  function setPageMetaTitle(value) {
-    setLivePageMeta(PAGE_META_TITLE, value);
+  function setPageMetaTitle(value: string) {
+    setLivePageMeta(PAGE_META.TITLE, value);
   }
-  function setPageMetaStatus(value) {
-    setLivePageMeta(PAGE_META_STATUS, value);
+  function setPageMetaStatus(value: string) {
+    setLivePageMeta(PAGE_META.STATUS, value);
   }
-  function setPageMetaParent(value) {
-    setLivePageMeta(PAGE_META_PARENT, value);
+  function setPageMetaParent(value: string) {
+    setLivePageMeta(PAGE_META.PARENT, value);
   }
-  function setPageMetaAward(value) {
-    setLivePageMeta(PAGE_META_AWARD, value);
+  function setPageMetaAward(value: string) {
+    setLivePageMeta(PAGE_META.AWARD, value);
   }
-  function setPageMetaLab(value) {
-    setLivePageMeta(PAGE_META_LAB, value);
+  function setPageMetaLab(value: string) {
+    setLivePageMeta(PAGE_META.LAB, value);
   }
 
   useEffect(() => {
@@ -216,9 +280,10 @@ const PageMetaEditor = memo(function PageMetaEditor({
   /**
    * Updates the `pageMeta` name property to track text field changes for the Name field. Allows
    * only characters that are valid in a URL path.
-   * @param {object} event React synthetic event object for text field changes
+   *
+   * @param event - React synthetic event object for text field changes
    */
-  function setNameField(event) {
+  function setNameField(event: React.ChangeEvent<HTMLInputElement>) {
     const validPath = event.target.value.toLowerCase().replace(/\W+/g, "-");
     setPageMetaName(validPath);
     setNameConflicting(detectConflictingName(validPath, pages));
@@ -227,9 +292,10 @@ const PageMetaEditor = memo(function PageMetaEditor({
 
   /**
    * Updates the `pageMeta` title property to track text field changes for the Title field.
-   * @param {object} event React synthetic event object for text field changes
+   *
+   * @param event - React synthetic event object for text field changes
    */
-  function setTitleField(event) {
+  function setTitleField(event: React.ChangeEvent<HTMLInputElement>) {
     setPageMetaTitle(event.target.value);
     setTitleEmpty(!event.target.value);
   }
@@ -379,32 +445,24 @@ const PageMetaEditor = memo(function PageMetaEditor({
   );
 });
 
-PageMetaEditor.propTypes = {
-  // All the page metadata states this component can update with user action
-  livePageMeta: PropTypes.exact({
-    award: PropTypes.string.isRequired,
-    lab: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    parent: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }),
-  // Dispatches actions to update the page metadata states
-  dispatchLivePageMeta: PropTypes.func.isRequired,
-  // All awards currently in the database
-  awards: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // All labs currently in the database
-  labs: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // All pages currently in the database
-  pages: PropTypes.arrayOf(PropTypes.object).isRequired,
-};
-
 /**
  * Handles the editing of one block from the page, including its text and type. This component
  * displays the live text content of one editable block, though its contents are held by
  * <PageEditor> state.
+ *
+ * @param block - Block of text to edit
+ * @param dispatchLiveBlocks - Dispatches actions to update the live blocks state
+ * @param previewedBlockIds - `@ids` of blocks that are currently being previewed
  */
-function BlockEditor({ block, dispatchLiveBlocks, previewedBlockIds }) {
+function BlockEditor({
+  block,
+  dispatchLiveBlocks,
+  previewedBlockIds,
+}: {
+  block: PageLayoutComponent;
+  dispatchLiveBlocks: React.Dispatch<BlockAction>;
+  previewedBlockIds: string[];
+}) {
   const { setDirty } = useContext(PageCondition);
   const isBlockInPreviewMode = previewedBlockIds.includes(block["@id"]);
 
@@ -425,11 +483,11 @@ function BlockEditor({ block, dispatchLiveBlocks, previewedBlockIds }) {
       id={block["@id"].substring(1)}
       value={block.body}
       dir={block.direction}
-      spellCheck={block["@type"] === BLOCK_TYPE_MARKDOWN}
+      spellCheck={block["@type"] === BLOCK_TYPE.MARKDOWN}
       aria-label={`Edit ${block["@type"]} block`}
       onChange={(event) => {
         dispatchLiveBlocks({
-          type: LIVE_BLOCK_UPDATE,
+          type: LIVE_BLOCK.UPDATE,
           blockId: block["@id"],
           content: event.target.value,
         });
@@ -439,19 +497,22 @@ function BlockEditor({ block, dispatchLiveBlocks, previewedBlockIds }) {
   );
 }
 
-BlockEditor.propTypes = {
-  // The block of text to edit
-  block: PropTypes.object.isRequired,
-  // Dispatches actions to update the live blocks state
-  dispatchLiveBlocks: PropTypes.func.isRequired,
-  // @ids of blocks that are currently being previewed
-  previewedBlockIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-};
-
 /**
  * Displays the two text direction buttons and handles clicks in them.
+ *
+ * @param direction - Current text direction of the block
+ * @param disabled - True if the buttons are disabled
+ * @param onBlockDirectionChange - Called when the user chooses a new text direction for the block
  */
-function TextDirectionSwitch({ direction, disabled, onBlockDirectionChange }) {
+function TextDirectionSwitch({
+  direction,
+  disabled,
+  onBlockDirectionChange,
+}: {
+  direction: WritingDirection;
+  disabled: boolean;
+  onBlockDirectionChange: (direction: WritingDirection) => void;
+}) {
   const iconClassName = `h-4 w-4${
     disabled
       ? " fill-gray-400 dark:fill-gray-600"
@@ -460,9 +521,10 @@ function TextDirectionSwitch({ direction, disabled, onBlockDirectionChange }) {
 
   /**
    * Called when the user clicks the left-to-right or right-to-left text direction buttons.
-   * @param {string} newDirection "ltr" or "rtl"
+   *
+   * @param newDirection - "ltr" or "rtl"
    */
-  function onDirectionClick(newDirection) {
+  function onDirectionClick(newDirection: WritingDirection) {
     if (newDirection !== direction) {
       onBlockDirectionChange(newDirection);
     }
@@ -494,19 +556,12 @@ function TextDirectionSwitch({ direction, disabled, onBlockDirectionChange }) {
   );
 }
 
-TextDirectionSwitch.propTypes = {
-  // The current text direction of the block
-  direction: PropTypes.string.isRequired,
-  // True if the buttons are disabled
-  disabled: PropTypes.bool.isRequired,
-  // Called when the user chooses a new text direction for the block
-  onBlockDirectionChange: PropTypes.func.isRequired,
-};
-
 /**
  * Display the Delete Block button and handle the modal confirmation.
+ *
+ * @param onDelete - Called if the user confirms the deletion of the block
  */
-function DeleteBlockTrigger({ onDelete }) {
+function DeleteBlockTrigger({ onDelete }: { onDelete: () => void }) {
   // True if the Delete warning modal is open
   const [isOpen, setOpen] = useState(false);
 
@@ -539,7 +594,7 @@ function DeleteBlockTrigger({ onDelete }) {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="secondary" onClick={() => setOpen(false)} autoFocus>
+          <Button type="secondary" onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button
@@ -555,13 +610,14 @@ function DeleteBlockTrigger({ onDelete }) {
   );
 }
 
-DeleteBlockTrigger.propTypes = {
-  // Called if the user confirms the deletion of the block
-  onDelete: PropTypes.func.isRequired,
-};
-
 /**
  * Displays the controls below each block to set the block's type, preview the block, etc.
+ *
+ * @param block - Block being edited
+ * @param dispatchLiveBlocks - Dispatches actions to update the live blocks state
+ * @param blocks - All blocks on the page as edited
+ * @param previewedBlockIds - `@ids` of all blocks currently in preview mode
+ * @param onPreview - Called when the user clicks the preview button
  */
 function BlockControls({
   block,
@@ -569,6 +625,12 @@ function BlockControls({
   blocks,
   previewedBlockIds,
   onPreview,
+}: {
+  block: PageLayoutComponent;
+  dispatchLiveBlocks: React.Dispatch<BlockAction>;
+  blocks: PageLayoutComponent[];
+  previewedBlockIds: string[];
+  onPreview: (blockId: string, preview: boolean) => void;
 }) {
   const isBlockPreviewed = previewedBlockIds.includes(block["@id"]);
   const { setDirty } = useContext(PageCondition);
@@ -577,16 +639,17 @@ function BlockControls({
    * Called when the user changes the type of a block between Markdown and Component.
    * @param {object} event React synthetic event
    */
-  function onBlockTypeChange(event) {
+  function onBlockTypeChange(event: React.ChangeEvent<HTMLSelectElement>) {
     dispatchLiveBlocks({
-      type: LIVE_BLOCK_UPDATE,
+      type: LIVE_BLOCK.UPDATE,
       blockId: block["@id"],
-      blockType: event.target.value,
+      blockType: event.target
+        .value as (typeof BLOCK_TYPE)[keyof typeof BLOCK_TYPE],
     });
     setDirty(true);
 
     // Blocks transitioning to a component type should have preview mode turned off.
-    if (event.target.value === BLOCK_TYPE_COMPONENT) {
+    if (event.target.value === BLOCK_TYPE.COMPONENT) {
       onPreview(block["@id"], false);
     }
   }
@@ -596,9 +659,9 @@ function BlockControls({
    * left) for the block.
    * @param {string} direction Whether to have the "ltr" or "rtl" text direction
    */
-  function onBlockDirectionChange(direction) {
+  function onBlockDirectionChange(direction: WritingDirection) {
     dispatchLiveBlocks({
-      type: LIVE_BLOCK_UPDATE,
+      type: LIVE_BLOCK.UPDATE,
       blockId: block["@id"],
       direction,
     });
@@ -613,10 +676,10 @@ function BlockControls({
           value={block["@type"]}
           onChange={onBlockTypeChange}
         >
-          <option value={BLOCK_TYPE_MARKDOWN}>Markdown</option>
-          <option value={BLOCK_TYPE_COMPONENT}>Component</option>
+          <option value={BLOCK_TYPE.MARKDOWN}>Markdown</option>
+          <option value={BLOCK_TYPE.COMPONENT}>Component</option>
         </Select>
-        {block["@type"] === BLOCK_TYPE_MARKDOWN && (
+        {block["@type"] === BLOCK_TYPE.MARKDOWN && (
           <>
             <TextDirectionSwitch
               direction={block.direction}
@@ -642,7 +705,7 @@ function BlockControls({
               label="Add block above this block"
               onClick={() => {
                 dispatchLiveBlocks({
-                  type: LIVE_BLOCK_ADD_ABOVE,
+                  type: LIVE_BLOCK.ADD_ABOVE,
                   blockId: block["@id"],
                 });
                 setDirty(true);
@@ -655,7 +718,7 @@ function BlockControls({
               label="Add block below this block"
               onClick={() => {
                 dispatchLiveBlocks({
-                  type: LIVE_BLOCK_ADD_BELOW,
+                  type: LIVE_BLOCK.ADD_BELOW,
                   blockId: block["@id"],
                 });
                 setDirty(true);
@@ -670,7 +733,7 @@ function BlockControls({
           <DeleteBlockTrigger
             onDelete={() => {
               dispatchLiveBlocks({
-                type: LIVE_BLOCK_DELETE,
+                type: LIVE_BLOCK.DELETE,
                 blockId: block["@id"],
               });
               setDirty(true);
@@ -682,35 +745,23 @@ function BlockControls({
   );
 }
 
-BlockControls.propTypes = {
-  // Block being edited
-  block: PropTypes.object.isRequired,
-  // Dispatches actions to update the live blocks state
-  dispatchLiveBlocks: PropTypes.func.isRequired,
-  // All blocks on the page as edited
-  blocks: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // @ids of all blocks currently in preview mode
-  previewedBlockIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // Called when the user clicks the preview button
-  onPreview: PropTypes.func.isRequired,
-};
-
 /**
  * Called on every user edit of any block. Updates the live blocks state with the new text or
  * setting.
- * @param {array} state Live blocks state containing the current text content of each block
- * @param {object} action Action to update the live blocks state
- * @param {string} action.type Type of operation; update, insert, delete
- * @param {string} action.blockId ID of the block to update, delete, or insert before
- * @param {string} action.blockType Type of block; Markdown, Component
- * @param {string} action.content New text content for the block
- * @returns {object} The updated live blocks state
+ *
+ * @param state - Live blocks state containing the current text content of each block
+ * @param action - Action to update the live blocks state
+ * @param action.type - Type of operation; update, insert, delete
+ * @param action.blockId - ID of the block to update, delete, or insert before
+ * @param action.blockType - Type of block; Markdown, Component
+ * @param action.content - New text content for the block
+ * @returns The updated live blocks state
  */
-function reducerLiveBlocks(state, action) {
+function reducerLiveBlocks(state: PageLayoutComponent[], action: BlockAction) {
   const updatedState = [...state];
 
   switch (action.type) {
-    case LIVE_BLOCK_UPDATE:
+    case LIVE_BLOCK.UPDATE:
       // Update the content or type of the block.
       {
         const updatedBlock = updatedState.find(
@@ -727,14 +778,14 @@ function reducerLiveBlocks(state, action) {
         }
       }
       break;
-    case LIVE_BLOCK_ADD_ABOVE:
-    case LIVE_BLOCK_ADD_BELOW:
+    case LIVE_BLOCK.ADD_ABOVE:
+    case LIVE_BLOCK.ADD_BELOW:
       {
         const index = updatedState.findIndex(
           (block) => block["@id"] === action.blockId
         );
         if (index !== -1) {
-          if (action.type === LIVE_BLOCK_ADD_ABOVE) {
+          if (action.type === LIVE_BLOCK.ADD_ABOVE) {
             // Insert `initialBlock` above the block with the given ID.
             updatedState.splice(index, 0, { ...initialBlock });
           } else {
@@ -745,7 +796,7 @@ function reducerLiveBlocks(state, action) {
         }
       }
       break;
-    case LIVE_BLOCK_DELETE:
+    case LIVE_BLOCK.DELETE:
       {
         const index = updatedState.findIndex(
           (block) => block["@id"] === action.blockId
@@ -764,13 +815,17 @@ function reducerLiveBlocks(state, action) {
 
 /**
  * Updates the page metadata when changed by the user in the metadata form.
- * @param {object} state The current page metadata states
- * @param {object} action Page metadata property to update and its new value
- * @param {string} action.type Metadata property to update
- * @param {string} action.value New value for the metadata property
- * @returns {object} Copy of the current page metadata states with the new property value
+ *
+ * @param state - The current page metadata states
+ * @param action - Page metadata property to update and its new value
+ * @param action.type - Metadata property to update
+ * @param action.value - New value for the metadata property
+ * @returns Copy of the current page metadata states with the new property value
  */
-function reducerLivePageMeta(state, action) {
+function reducerLivePageMeta(
+  state: PageMeta,
+  action: PageMetaAction
+): PageMeta {
   const newLivePageMeta = { ...state };
   newLivePageMeta[action.type] = action.value;
   return newLivePageMeta;
@@ -778,8 +833,34 @@ function reducerLivePageMeta(state, action) {
 
 /**
  * Displays the page editor with multiple blocks of text and the page metadata.
+ *
+ * @param blocks - Blocks of text to edit
+ * @param pageMeta - Page metadata states
+ * @param awards - All awards currently in the database
+ * @param labs - All labs currently in the database
+ * @param pages - All pages currently in the database
+ * @param onClose - Called when the user clicks Cancel or Save;
  */
-function PageEditor({ blocks, pageMeta, awards, labs, pages, onClose }) {
+function PageEditor({
+  blocks,
+  pageMeta,
+  awards,
+  labs,
+  pages,
+  onClose,
+}: {
+  blocks: PageLayoutComponent[];
+  pageMeta: PageMeta;
+  awards: AwardObject[];
+  labs: LabObject[];
+  pages: PageObject[];
+  onClose: (
+    savedData: {
+      blocks: PageLayoutComponent[];
+      pageMeta: PageMeta;
+    } | null
+  ) => void;
+}) {
   // Copy of blocks but containing the live editable text content of each block.
   const [liveBlocks, dispatchLiveBlocks] = useReducer(
     reducerLiveBlocks,
@@ -825,10 +906,11 @@ function PageEditor({ blocks, pageMeta, awards, labs, pages, onClose }) {
 
   /**
    * Called to set whether a block goes into or out of preview mode.
-   * @param {string} blockId @id of the block being toggled between preview and edit mode
-   * @param {boolean} isPreviewMode True to set the block preview mode, false to set the edit mode
+   *
+   * @param blockId - `@id` of the block being toggled between preview and edit mode
+   * @param isPreviewMode - True to set the block preview mode, false to set the edit mode
    */
-  function onPreview(blockId, isPreviewMode) {
+  function onPreview(blockId: string, isPreviewMode: boolean) {
     if (isPreviewMode) {
       setPreviewedBlockIds([...previewedBlockIds, blockId]);
     } else {
@@ -848,7 +930,7 @@ function PageEditor({ blocks, pageMeta, awards, labs, pages, onClose }) {
     >
       <div className="mb-1 flex justify-end gap-1">
         <Button
-          onClick={() => onClose()}
+          onClick={() => onClose(null)}
           type="secondary"
           label="Cancel editing page"
         >
@@ -895,42 +977,14 @@ function PageEditor({ blocks, pageMeta, awards, labs, pages, onClose }) {
   );
 }
 
-PageEditor.propTypes = {
-  // Editable blocks of markdown text
-  blocks: PropTypes.arrayOf(
-    PropTypes.exact({
-      "@id": PropTypes.string.isRequired,
-      body: PropTypes.string.isRequired,
-      "@type": PropTypes.string.isRequired,
-      direction: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  // Page metadata states
-  pageMeta: PropTypes.exact({
-    award: PropTypes.string.isRequired,
-    lab: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    parent: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-  }),
-  // All awards currently in the database
-  awards: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // All labs currently in the database
-  labs: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // All pages currently in the database to select as a parent
-  pages: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Called when the user either cancels or saves the page
-  onClose: PropTypes.func.isRequired,
-};
-
 /**
  * Copies editable metadata from the given page object so that the page editor can modify it
  * without modifying the props.
- * @param {object} page Page object to potentially be edited
- * @returns {object} Contains editable copies of the page's metadata
+ *
+ * @param page - Page object to potentially be edited
+ * @returns Contains editable copies of the page's metadata
  */
-function copyPageMeta(page) {
+function copyPageMeta(page: PageObject): PageMeta {
   return {
     award: page?.award || "",
     lab: page?.lab || "",
@@ -947,15 +1001,31 @@ function copyPageMeta(page) {
  * since the page can get edited, this only gets used on initial render. From then on the contents
  * of the page get displayed from the editable states to prevent the need to reload the page after
  * the user saves their edits.
+ *
+ * @param page - Page object as stored in the database
+ * @param awards - All awards currently in the database
+ * @param labs - All labs currently in the database
+ * @param pages - All pages currently in the database
+ * @param breadcrumbMeta - Metadata to display in the breadcrumbs
+ * @param isNewPage - True if this is a new page being created, false if editing an existing page
+ * @param titleDecoration - React node to display next to the page title, e.g. a badge
  */
 export default function Page({
   page = initialPage,
-  awards = null,
-  labs = null,
-  pages = null,
+  awards = [],
+  labs = [],
+  pages = [],
   breadcrumbMeta = null,
   isNewPage = false,
   titleDecoration = "",
+}: {
+  page: PageObject;
+  awards: AwardObject[];
+  labs: LabObject[];
+  pages: PageObject[];
+  breadcrumbMeta: { [key: string]: string } | null;
+  isNewPage?: boolean;
+  titleDecoration?: React.ReactNode;
 }) {
   // Blocks of content; gets updated on save
   const [editableBlocks, setEditableBlocks] = useState(() =>
@@ -1007,11 +1077,13 @@ export default function Page({
 
   /**
    * Called when the user closes the editor through canceling or saving.
-   * @param {object} updates Updated blocks and metadata after editing
-   * @param {object} updates.blocks Updated blocks of text
-   * @param {object} updates.pageMeta Updated page metadata
+   * @param updates - Updated blocks and metadata after editing
+   * @param updates.blocks - Updated blocks of text
+   * @param updates.pageMeta - Updated page metadata
    */
-  function onClose(updates) {
+  function onClose(
+    updates: { blocks: PageLayoutComponent[]; pageMeta: PageMeta } | null
+  ) {
     setActiveError("");
     if (updates) {
       // User clicked save, so save the blocks and metadata.
@@ -1052,7 +1124,9 @@ export default function Page({
   return (
     <PageCondition.Provider value={{ isDirty, setDirty, isNewPage }}>
       <Breadcrumbs item={page} meta={breadcrumbMeta} />
-      <PagePreamble title={title}>{titleDecoration}</PagePreamble>
+      <PagePreamble pageTitle={title} isTitleHidden>
+        {titleDecoration}
+      </PagePreamble>
       {activeError && (
         <FlashMessage
           message={activeError}
@@ -1075,7 +1149,7 @@ export default function Page({
           <PanelComponent>
             <div data-testid="page-blocks" id="page-content">
               {editableBlocks.map((block) => {
-                if (block["@type"] === BLOCK_TYPE_MARKDOWN) {
+                if (block["@type"] === BLOCK_TYPE.MARKDOWN) {
                   return (
                     <MarkdownSection
                       key={block["@id"]}
@@ -1085,7 +1159,7 @@ export default function Page({
                     </MarkdownSection>
                   );
                 }
-                if (block["@type"] === BLOCK_TYPE_COMPONENT) {
+                if (block["@type"] === BLOCK_TYPE.COMPONENT) {
                   return <PageComponent key={block["@id"]} spec={block.body} />;
                 }
               })}
@@ -1096,20 +1170,3 @@ export default function Page({
     </PageCondition.Provider>
   );
 }
-
-Page.propTypes = {
-  // Page object to display; null for new pages
-  page: PropTypes.object,
-  // Collection of all awards
-  awards: PropTypes.arrayOf(PropTypes.object),
-  // Collection of all labs
-  labs: PropTypes.arrayOf(PropTypes.object),
-  // Collection of all pages
-  pages: PropTypes.arrayOf(PropTypes.object),
-  // Metadata for breadcrumbs
-  breadcrumbMeta: PropTypes.object,
-  // True if adding a page instead of updating an existing page
-  isNewPage: PropTypes.bool,
-  // String or component to display after the page title
-  titleDecoration: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-};
