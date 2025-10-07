@@ -4,18 +4,32 @@ import {
   checkSearchTermTitle,
   getProfiles,
   notSubmittableProperty,
+  schemaNameToCollectionName,
   schemaPageTabUrl,
   schemaToPath,
   schemaToType,
   typeToRootType,
+  SEARCH_MODE_TITLE,
+  SEARCH_MODE_PROPERTIES,
 } from "../profiles";
 // types
 import {
+  CollectionTitles,
   Profiles,
   Schema,
   SchemaProperties,
   SchemaProperty,
 } from "../../globals";
+
+describe("Test exported constants", () => {
+  it("should have correct SEARCH_MODE_TITLE constant", () => {
+    expect(SEARCH_MODE_TITLE).toBe("SEARCH_MODE_TITLE");
+  });
+
+  it("should have correct SEARCH_MODE_PROPERTIES constant", () => {
+    expect(SEARCH_MODE_PROPERTIES).toBe("SEARCH_MODE_PROPERTIES");
+  });
+});
 
 describe("Test getProfiles functionality", () => {
   it("retrieves the schema profiles object", () => {
@@ -575,5 +589,115 @@ describe("Test typeToRootType functionality", () => {
   it("should return empty string when profiles is empty", () => {
     const result = typeToRootType("Level4", null);
     expect(result).toBe("");
+  });
+});
+
+describe("Test schemaNameToCollectionName functionality", () => {
+  const mockCollectionTitles = {
+    "@type": ["CollectionTitles"],
+    Tissue: "Tissues",
+    tissue: "Tissues",
+    tissues: "Tissues",
+    InVitroSystem: "In Vitro Systems",
+    in_vitro_system: "In Vitro Systems",
+    "in-vitro-systems": "In Vitro Systems",
+    SingleCellAtacSeqQualityMetric: "Single Cell ATAC-seq Quality Metrics",
+    single_cell_atac_seq_quality_metric: "Single Cell ATAC-seq Quality Metrics",
+    "single-cell-atac-seq-quality-metrics":
+      "Single Cell ATAC-seq Quality Metrics",
+    Gene: "Genes",
+    gene: "Genes",
+    genes: "Genes",
+  } as unknown as CollectionTitles;
+
+  it("should return collection name for a schema name (tissue example)", () => {
+    const result = schemaNameToCollectionName("tissue", mockCollectionTitles);
+    expect(result).toBe("tissues");
+  });
+
+  it("should return collection name for a schema name (in_vitro_system example)", () => {
+    const result = schemaNameToCollectionName(
+      "in_vitro_system",
+      mockCollectionTitles
+    );
+    expect(result).toBe("in-vitro-systems");
+  });
+
+  it("should return collection name for a schema name (single_cell_atac_seq_quality_metric example)", () => {
+    const result = schemaNameToCollectionName(
+      "single_cell_atac_seq_quality_metric",
+      mockCollectionTitles
+    );
+    expect(result).toBe("single-cell-atac-seq-quality-metrics");
+  });
+
+  it("should return collection name when schema name is PascalCase", () => {
+    const result = schemaNameToCollectionName(
+      "InVitroSystem",
+      mockCollectionTitles
+    );
+    expect(result).toBe("in_vitro_system");
+  });
+
+  it("should return empty string when collection name is the same as schema name", () => {
+    const singleMatchTitles = {
+      "@type": ["CollectionTitles"],
+      tissue: "Tissues",
+    } as unknown as CollectionTitles;
+    const result = schemaNameToCollectionName("tissue", singleMatchTitles);
+    expect(result).toBe("");
+  });
+
+  it("should return empty string when schema name not found in collectionTitles", () => {
+    const result = schemaNameToCollectionName(
+      "nonexistent",
+      mockCollectionTitles
+    );
+    expect(result).toBe("");
+  });
+
+  it("should return empty string when collectionTitles is empty", () => {
+    const emptyTitles = {
+      "@type": ["CollectionTitles"],
+    } as unknown as CollectionTitles;
+    const result = schemaNameToCollectionName("tissue", emptyTitles);
+    expect(result).toBe("");
+  });
+
+  it("should return empty string when collectionTitles is null", () => {
+    const result = schemaNameToCollectionName("tissue", null as any);
+    expect(result).toBe("");
+  });
+
+  it("should return empty string when collectionTitles is undefined", () => {
+    const result = schemaNameToCollectionName("tissue", undefined as any);
+    expect(result).toBe("");
+  });
+
+  it("should prioritize lowercase non-PascalCase collection names", () => {
+    const titlesWithMultiple = {
+      "@type": ["CollectionTitles"],
+      Gene: "Genes",
+      gene: "Genes",
+      genes: "Genes",
+      GENES: "Genes",
+    } as unknown as CollectionTitles;
+    const result = schemaNameToCollectionName("gene", titlesWithMultiple);
+    expect(result).toBe("genes");
+  });
+
+  it("should filter out @type key from matching collections", () => {
+    const titlesWithType = {
+      "@type": ["Test"],
+      tissue: "Test",
+      tissues: "Test",
+    } as unknown as CollectionTitles;
+    const result = schemaNameToCollectionName("tissue", titlesWithType);
+    expect(result).toBe("tissues");
+  });
+
+  it("should return first non-uppercase match when multiple valid matches exist", () => {
+    const result = schemaNameToCollectionName("gene", mockCollectionTitles);
+    expect(result).toBe("genes");
   });
 });

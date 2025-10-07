@@ -58,6 +58,7 @@ describe("Content-Change Tests", () => {
     cy.get(`[aria-label="Save edits to page"]`).click();
     cy.delayForIndexing();
     cy.visit("/search/?type=Page&limit=300");
+    cy.delayForIndexing();
     cy.get(
       `[data-testid="search-list-item-/test-section/test-page-${now}/"]`
     ).within(() => {
