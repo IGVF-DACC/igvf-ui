@@ -21,6 +21,7 @@ import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestLabs, requestSamples } from "../../lib/common-requests";
 import { type InstitutionalCertificateObject } from "../../lib/data-use-limitation";
 import { formatDate } from "../../lib/dates";
@@ -136,13 +137,22 @@ type Params = {
 export async function getServerSideProps(
   context: GetServerSidePropsContext<Params>
 ) {
-  const { req, query, params } = context;
+  const { req, query, params, resolvedUrl } = context;
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const item = (
     await request.getObject(`/institutional-certificates/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(item)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      item,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const institutionalCertificate =
       item as unknown as InstitutionalCertificateObject;
 

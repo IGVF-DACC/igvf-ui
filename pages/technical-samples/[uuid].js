@@ -24,6 +24,7 @@ import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestFileSets,
@@ -140,13 +141,23 @@ TechnicalSample.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sample = (
     await request.getObject(`/technical-samples/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(sample)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      sample,
+      resolvedUrl,
+      query,
+      ["uuid"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     let publications = [];
     if (sample.publications?.length > 0) {
       const publicationPaths = sample.publications.map(

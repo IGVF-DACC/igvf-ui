@@ -24,6 +24,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestFiles,
@@ -165,6 +166,15 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/configuration-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(configurationFile)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      configurationFile,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const seqspecOf =
       configurationFile.seqspec_of?.length > 0
         ? await requestFiles(configurationFile.seqspec_of, request)

@@ -25,6 +25,7 @@ import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestDonors,
@@ -114,13 +115,23 @@ HumanDonor.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const donor = (
     await request.getObject(`/human-donors/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(donor)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      donor,
+      resolvedUrl,
+      query,
+      ["uuid"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     let phenotypicFeatures = [];
     if (donor.phenotypic_features?.length > 0) {
       const phenotypicFeaturePaths = donor.phenotypic_features.map(

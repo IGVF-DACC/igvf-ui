@@ -15,6 +15,7 @@ import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 // lib
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestUsers } from "../../lib/common-requests";
 import { formatDateRange } from "../../lib/dates";
 import { errorObjectToProps } from "../../lib/errors";
@@ -119,11 +120,21 @@ Award.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const award = (await request.getObject(`/awards/${params.name}/`)).union();
   if (FetchRequest.isResponseSuccess(award)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      award,
+      resolvedUrl,
+      query,
+      ["name"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const pis =
       award.pis?.length > 0 ? await requestUsers(award.pis, request) : [];
     const contactPi = award.contact_pi

@@ -32,6 +32,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestFiles,
@@ -211,7 +212,17 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const alignmentFile = (
     await request.getObject(`/alignment-files/${params.id}/`)
   ).union();
+
   if (FetchRequest.isResponseSuccess(alignmentFile)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      alignmentFile,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const documents = alignmentFile.documents
       ? await requestDocuments(alignmentFile.documents, request)
       : [];

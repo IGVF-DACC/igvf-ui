@@ -21,6 +21,7 @@ import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
 // lib
 import { type AttributionData } from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestAnalysisStepVersions } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest, { type ErrorObject } from "../../lib/fetch-request";
@@ -164,7 +165,7 @@ export default function AnalysisStep({
   );
 }
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const response = (
@@ -172,6 +173,15 @@ export async function getServerSideProps({ params, req, query }) {
   ).union();
 
   if (FetchRequest.isResponseSuccess(response)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      response,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const analysisStep = response as AnalysisStepObject;
 
     let analysisStepVersions = [];

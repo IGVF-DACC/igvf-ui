@@ -12,6 +12,7 @@ import { QualityMetricField } from "../../components/quality-metric";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestFiles } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -73,7 +74,7 @@ export default function PerturbSeqQualityMetric({
   );
 }
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const item = (
@@ -82,6 +83,15 @@ export async function getServerSideProps({ params, req, query }) {
     )
   ).union();
   if (FetchRequest.isResponseSuccess(item)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      item,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const qualityMetric = item as QualityMetricObject;
 
     const qualityMetricOf =

@@ -27,6 +27,7 @@ import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestDonors,
@@ -164,13 +165,22 @@ CuratedSet.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const curatedSet = (
     await request.getObject(`/curated-sets/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(curatedSet)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      curatedSet,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const documents = curatedSet.documents
       ? await requestDocuments(curatedSet.documents, request)
       : [];

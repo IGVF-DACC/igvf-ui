@@ -23,6 +23,7 @@ import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestDocuments, requestSamples } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -146,13 +147,23 @@ CrisprModification.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const modification = (
     await request.getObject(`/crispr-modifications/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(modification)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      modification,
+      resolvedUrl,
+      query,
+      ["uuid"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     let sources = [];
     if (modification.sources?.length > 0) {
       sources = Ok.all(

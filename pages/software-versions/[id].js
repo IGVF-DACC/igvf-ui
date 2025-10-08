@@ -21,6 +21,7 @@ import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestPublications } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -120,13 +121,22 @@ SoftwareVersion.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const softwareVersion = (
     await request.getObject(`/software-versions/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(softwareVersion)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      softwareVersion,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const award = (
       await request.getObject(softwareVersion.award["@id"])
     ).optional();

@@ -27,6 +27,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDonors,
   requestFileSets,
@@ -189,13 +190,22 @@ Publication.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const publication = (
     await request.getObject(`/publications/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(publication)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      publication,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const samples =
       publication.samples?.length > 0
         ? await requestSamples(publication.samples, request)

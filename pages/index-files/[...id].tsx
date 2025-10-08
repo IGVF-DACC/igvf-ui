@@ -29,6 +29,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestFiles,
@@ -212,9 +213,18 @@ export async function getServerSideProps(
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const indexFile = (
-    await request.getObject(`/image-files/${params.id}/`)
+    await request.getObject(`/index-files/${params.id}/`)
   ).union() as IndexFileObject;
   if (FetchRequest.isResponseSuccess(indexFile)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      indexFile,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const documents = indexFile.documents
       ? await requestDocuments(indexFile.documents as string[], request)
       : [];

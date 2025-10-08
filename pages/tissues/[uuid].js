@@ -27,6 +27,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestBiomarkers,
   requestBiosamples,
@@ -272,11 +273,21 @@ Tissue.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const tissue = (await request.getObject(`/tissues/${params.uuid}/`)).union();
   if (FetchRequest.isResponseSuccess(tissue)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      tissue,
+      resolvedUrl,
+      query,
+      ["uuid"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     let biomarkers = [];
     if (tissue.biomarkers?.length > 0) {
       const biomarkerPaths = tissue.biomarkers.map(

@@ -32,6 +32,7 @@ import SessionContext from "../../components/session-context";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestDonors,
@@ -211,13 +212,22 @@ AuxiliarySet.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const auxiliarySet = (
     await request.getObject(`/auxiliary-sets/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(auxiliarySet)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      auxiliarySet,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const documents = auxiliarySet.documents
       ? await requestDocuments(auxiliarySet.documents, request)
       : [];
