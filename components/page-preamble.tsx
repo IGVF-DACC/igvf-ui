@@ -12,25 +12,30 @@ import { type SectionList } from "./section-directory";
  * element as the <h1> title, allowing more than basic text as the <h1> title.
  * @param pageTitle - Text title of the page for the tab and <h1> element
  * @param styledTitle - React element to be used as the <h1> title instead of `pageTitle`
+ * @param isTitleHidden - True to hide the <h1> title, false to show it
  * @param sections - Section information for the page; used in the section directory
  */
 export default function PagePreamble({
   pageTitle = "",
   styledTitle = null,
+  isTitleHidden = false,
   sections,
   children = null,
 }: {
   pageTitle?: string;
   styledTitle?: React.ReactElement;
+  isTitleHidden?: boolean;
   sections?: SectionList;
   children?: React.ReactNode;
 }) {
   return (
     <>
       <SiteTitle pageTitle={pageTitle} />
-      <PageTitle pageTitle={styledTitle || pageTitle} sections={sections}>
-        {children}
-      </PageTitle>
+      {!isTitleHidden && (
+        <PageTitle pageTitle={styledTitle || pageTitle} sections={sections}>
+          {children}
+        </PageTitle>
+      )}
     </>
   );
 }

@@ -11,7 +11,16 @@ import type {
 } from "../globals.d";
 
 /**
- * Tracks the parts of a page object that the user can modify when editing a page.
+ * Meta information about the page used in various places. This is separate from the PageObject
+ * because it includes information not stored in the object itself, e.g. whether the user can edit
+ * the page or not.
+ *
+ * @property award - @id of the award associated with the page, if any
+ * @property lab - @id of the lab associated with the page, if any
+ * @property name - Name of the page, used in the URL path
+ * @property parent - @id of the parent page, if any
+ * @property status - Status of the page, e.g. "in progress" or "released"
+ * @property title - Title of the page, shown at the top of the page
  */
 export type PageMeta = {
   award: string;
@@ -29,7 +38,7 @@ export type PageLayoutComponent = {
   "@id": string;
   "@type": string;
   body: string;
-  direction: string;
+  direction: WritingDirection;
 };
 
 /**
@@ -46,6 +55,11 @@ export interface PageObject extends DatabaseObject {
   summary?: string;
   title: string;
 }
+
+/**
+ * Writing direction for text in a block. This has to do with language, not text alignment.
+ */
+export type WritingDirection = "ltr" | "rtl";
 
 /**
  * Page titles can have embedded codes to control some aspect of the page's display. These codes
@@ -142,7 +156,10 @@ export async function savePage(
       return writeablePage;
     }
   } else {
-    writeablePage = { ...page };
+    // Create a new page object based on the given page, but remove properties that should not be
+    // included in a new page object -- @id and @type.
+    const { "@id": _, "@type": __, ...rest } = page;
+    writeablePage = rest as PageObject;
     writeablePage.layout = { ...page.layout };
     writeablePage.layout.blocks = [...page.layout.blocks];
   }
