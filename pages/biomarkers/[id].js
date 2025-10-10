@@ -20,6 +20,7 @@ import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { getBiomarkerTitle } from "../../lib/biomarker";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -106,13 +107,22 @@ Biomarker.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const biomarker = (
     await request.getObject(`/biomarkers/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(biomarker)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      biomarker,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const gene = biomarker.gene
       ? (await request.getObject(biomarker.gene)).optional()
       : null;

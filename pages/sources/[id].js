@@ -15,6 +15,7 @@ import PagePreamble from "../../components/page-preamble";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import AliasList from "../../components/alias-list";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -76,11 +77,20 @@ Source.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const source = (await request.getObject(`/sources/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(source)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      source,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     return {
       props: {
         source,

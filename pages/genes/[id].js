@@ -20,6 +20,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { encodeUriElement } from "../../lib/query-encoding";
@@ -140,11 +141,20 @@ Gene.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const gene = (await request.getObject(`/genes/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(gene)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      gene,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     return {
       props: {
         gene,

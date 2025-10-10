@@ -32,6 +32,7 @@ import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestDonors,
@@ -318,13 +319,22 @@ PredictionSet.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const predictionSet = (
     await request.getObject(`/prediction-sets/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(predictionSet)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      predictionSet,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const documents = predictionSet.documents
       ? await requestDocuments(predictionSet.documents, request)
       : [];

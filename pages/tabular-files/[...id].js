@@ -30,6 +30,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import WorkflowTable from "../../components/workflow-table";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestFileSets,
@@ -226,6 +227,15 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     await request.getObject(`/tabular-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(tabularFile)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      tabularFile,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const documents = tabularFile.documents
       ? await requestDocuments(tabularFile.documents, request)
       : [];

@@ -22,6 +22,7 @@ import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truncateText } from "../../lib/general";
@@ -121,13 +122,22 @@ Document.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const document = (
     await request.getObject(`/documents/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(document)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      document,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const attribution = await buildAttribution(document, req.headers.cookie);
     return {
       props: {

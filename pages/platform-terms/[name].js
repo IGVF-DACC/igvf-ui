@@ -16,6 +16,7 @@ import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -64,13 +65,23 @@ PlatformOntologyTerm.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const platformOntologyTerm = (
     await request.getObject(`/platform-terms/${params.name}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(platformOntologyTerm)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      platformOntologyTerm,
+      resolvedUrl,
+      query,
+      ["name"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const isA = platformOntologyTerm.is_a
       ? await requestOntologyTerms(platformOntologyTerm.is_a, request)
       : [];

@@ -28,6 +28,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestBiomarkers,
   requestBiosamples,
@@ -312,13 +313,22 @@ InVitroSystem.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const inVitroSystem = (
     await request.getObject(`/in-vitro-systems/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(inVitroSystem)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      inVitroSystem,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     let biomarkers = [];
     if (inVitroSystem.biomarkers?.length > 0) {
       const biomarkerPaths = inVitroSystem.biomarkers.map(

@@ -16,6 +16,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import SeparatedList from "../../components/separated-list";
 // lib
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestAwards } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -90,11 +91,21 @@ Lab.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const lab = (await request.getObject(`/labs/${params.name}/`)).union();
   if (FetchRequest.isResponseSuccess(lab)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      lab,
+      resolvedUrl,
+      query,
+      ["name"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     let awards = [];
     if (lab.awards?.length > 0) {
       const awardPaths = lab.awards.map((award) => award["@id"]);

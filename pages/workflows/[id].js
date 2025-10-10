@@ -27,6 +27,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import { WorkflowTitle } from "../../components/workflow";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestAnalysisSteps,
   requestDocuments,
@@ -184,11 +185,20 @@ Workflow.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const workflow = (await request.getObject(`/workflow/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(workflow)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      workflow,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const award = (await request.getObject(workflow.award["@id"])).optional();
     const lab = (await request.getObject(workflow.lab["@id"])).optional();
 

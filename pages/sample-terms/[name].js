@@ -15,6 +15,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -86,13 +87,23 @@ SampleOntologyTerm.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const sampleOntologyTerm = (
-    await request.getObject(`/sample-terms//${params.name}/`)
+    await request.getObject(`/sample-terms/${params.name}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(sampleOntologyTerm)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      sampleOntologyTerm,
+      resolvedUrl,
+      query,
+      ["name"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const isA = sampleOntologyTerm.is_a
       ? await requestOntologyTerms(sampleOntologyTerm.is_a, request)
       : [];

@@ -69,7 +69,6 @@
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.14.195",
     "@types/xxhashjs": "^0.2.4",
-    "auth0-js": "^9.19.0",
     "coveralls": "^3.1.1",
     "cypress": "^14.5.1",
     "eslint": "^9.25.1",

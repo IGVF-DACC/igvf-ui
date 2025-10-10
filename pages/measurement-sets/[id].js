@@ -39,6 +39,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestDonors,
@@ -439,13 +440,22 @@ MeasurementSet.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const measurementSet = (
     await request.getObject(`/measurement-sets/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(measurementSet)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      measurementSet,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const assayTerm = (
       await request.getObject(measurementSet.assay_term["@id"])
     ).optional();

@@ -4,9 +4,7 @@ services:
     working_dir: "/test"
     shm_size: "1gb" # Fix shared memory issues that affect Electron rendering
     volumes:
-      - "./cypress:/test/cypress"
-      - "./docker/cypress/cypress-docker.config.js:/test/cypress.config.js"
-      - "./cypress.env.json:/test/cypress.env.json"
+      - .:/test
       - /dev/shm:/dev/shm # Mount shared memory to container
     command: cypress run
     network_mode: "host"

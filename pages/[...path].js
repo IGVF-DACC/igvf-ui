@@ -17,6 +17,8 @@ import Page from "../components/page";
 import PagePreamble from "../components/page-preamble";
 import { StatusPreviewDetail } from "../components/status";
 import UnknownTypePanel from "../components/unknown-type-panel";
+// lib
+import { createCanonicalUrlRedirect } from "../lib/canonical-redirect";
 
 /**
  * Extract a reasonable title from a collection or object.
@@ -117,17 +119,13 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const generic = (await request.getObject(resolvedUrl)).union();
   if (generic) {
-    // Redirect to canonical URL if the fetched object's @id doesn't match the requested URL. For
-    // example, `resolvedUrl` might contain `/IGVFDS0000AAAA/` but when we fetch that object, the
-    // resulting `generic["@id"]` might contain `/analysis-sets/IGVFDS0000AAAA/`. In that case, we
-    // want to redirect to the canonical URL so we get the correct page rendering for that object.
-    if ("@id" in generic && generic["@id"] !== resolvedUrl) {
-      return {
-        redirect: {
-          destination: generic["@id"],
-          permanent: true,
-        },
-      };
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      generic,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
     }
 
     // Return 404 if `generic` is an object but doesn't have an @type property.

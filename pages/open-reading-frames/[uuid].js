@@ -18,6 +18,7 @@ import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import AliasList from "../../components/alias-list";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -120,13 +121,23 @@ OpenReadingFrame.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const orf = (
     await request.getObject(`/open-reading-frames/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(orf)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      orf,
+      resolvedUrl,
+      query,
+      ["uuid"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     return {
       props: {
         orf,

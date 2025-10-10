@@ -30,6 +30,7 @@ import SessionContext from "../../components/session-context";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestDonors,
@@ -422,13 +423,22 @@ ConstructLibrarySet.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const constructLibrarySet = (
     await request.getObject(`/construct-library-sets/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(constructLibrarySet)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      constructLibrarySet,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const documents = constructLibrarySet.documents
       ? await requestDocuments(constructLibrarySet.documents, request)
       : [];

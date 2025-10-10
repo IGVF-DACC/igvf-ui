@@ -22,6 +22,7 @@ import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestDocuments, requestBiosamples } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
@@ -177,13 +178,23 @@ Treatment.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const treatment = (
     await request.getObject(`/treatments/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(treatment)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      treatment,
+      resolvedUrl,
+      query,
+      ["uuid"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const biosamplesTreated =
       treatment.biosamples_treated?.length > 0
         ? await requestBiosamples(treatment.biosamples_treated, request)

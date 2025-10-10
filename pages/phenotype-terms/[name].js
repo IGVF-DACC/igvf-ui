@@ -10,6 +10,7 @@ import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestOntologyTerms } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -48,13 +49,23 @@ PhenotypeOntologyTerm.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const phenotypeOntologyTerm = (
     await request.getObject(`/phenotype-terms/${params.name}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(phenotypeOntologyTerm)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      phenotypeOntologyTerm,
+      resolvedUrl,
+      query,
+      ["name"]
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const isA = phenotypeOntologyTerm.is_a
       ? await requestOntologyTerms(phenotypeOntologyTerm.is_a, request)
       : [];
