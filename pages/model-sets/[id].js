@@ -174,7 +174,7 @@ export default function ModelSet({
           {inputFileSetFor.length > 0 && (
             <FileSetTable
               fileSets={inputFileSetFor}
-              reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${modelSet["@id"]}`}
+              reportLink={`/multireport/?type=FileSet&input_file_sets=${modelSet["@id"]}`}
               reportLabel="Report of file sets that this model set is an input for"
               title="File Sets Using This Model Set as an Input"
               panelId="input-file-set-for"
