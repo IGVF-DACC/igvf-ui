@@ -265,8 +265,14 @@ export async function getServerSideProps({ params, req, query }) {
     }
 
     const inputFileSetFor =
-      auxiliarySet.input_for?.length > 0
-        ? await requestFileSets(auxiliarySet.input_for, request)
+      auxiliarySet.input_for?.length > 0 &&
+      auxiliarySet.input_for.every(
+        (item) => typeof item === "object" && item["@id"]
+      )
+        ? await requestFileSets(
+            auxiliarySet.input_for.map((inputFor) => inputFor["@id"]),
+            request
+          )
         : [];
 
     let controlFor = [];
