@@ -128,7 +128,7 @@ export default defineConfig([
         "error",
         {
           argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
+          varsIgnorePattern: "^(_|_.*)",
           caughtErrorsIgnorePattern: "^_",
         },
       ],
@@ -139,12 +139,14 @@ export default defineConfig([
   {
     files: ["**/*.js", "**/*.jsx"],
     rules: {
+      "@typescript-eslint/no-unused-vars": "off", // Disable TypeScript rule for JS files
       "no-unused-vars": [
         "error",
         {
           argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
+          varsIgnorePattern: "^(_|_.*)",
           caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
         },
       ],
     },
