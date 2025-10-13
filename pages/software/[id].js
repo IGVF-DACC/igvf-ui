@@ -23,6 +23,7 @@ import SoftwareVersionTable from "../../components/software-version-table";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestPublications,
   requestSoftwareVersions,
@@ -125,11 +126,20 @@ Software.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const software = (await request.getObject(`/software/${params.id}/`)).union();
   if (FetchRequest.isResponseSuccess(software)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      software,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const award = (await request.getObject(software.award["@id"])).optional();
     const lab = (await request.getObject(software.lab["@id"])).optional();
 

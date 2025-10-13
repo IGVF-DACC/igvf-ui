@@ -1,6 +1,9 @@
-const { defineConfig } = require("cypress");
-
-module.exports = defineConfig({
+/*
+ * Docker-specific Cypress config.
+ * Uses a plain object export so we don't depend on resolving the 'cypress' module
+ * via import/require inside the container (the minimal volume mount may omit node_modules).
+ */
+module.exports = {
   defaultCommandTimeout: 30000,
   video: true,
   retries: {
@@ -17,6 +20,7 @@ module.exports = defineConfig({
     viewportWidth: 1280,
     viewportHeight: 800,
     experimentalMemoryManagement: true,
+    tsConfig: "tsconfig.cypress.json",
     setupNodeEvents(on) {
       on("before:browser:launch", (browser, launchOptions) => {
         if (browser.name === "chrome") {
@@ -29,4 +33,4 @@ module.exports = defineConfig({
       });
     },
   },
-});
+};

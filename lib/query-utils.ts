@@ -1,3 +1,5 @@
+// node
+import type { ParsedUrlQuery } from "querystring";
 // lib
 import { encodeUriElement } from "./query-encoding";
 // types
@@ -7,7 +9,7 @@ import type { NextJsServerQuery, SessionPropertiesObject } from "../globals";
  * Keys that should not be included in the query string. These keys can appear spuriously from
  * internal routing and should not get included in our igvfd queries.
  */
-const excludedKeys = ["path"];
+const excludedKeys = ["path", "id"];
 
 /**
  * Build a query string from the NextJS `serverQuery` object passed in server-side requests.
@@ -19,14 +21,17 @@ const excludedKeys = ["path"];
  *
  * serverQuery: { a: "1", b: ["2", "3"], c: "4" }
  * URL query string: a=1&b=2&b=3&c=4
- * @param {NextJsServerQuery} searchQuery Query string keys and values as object
+ *
+ * @param - searchQuery Query string keys and values as object
  * @returns {string} Composed query string
  */
 export function getQueryStringFromServerQuery(
-  serverQuery: NextJsServerQuery
+  serverQuery: ParsedUrlQuery,
+  additionalExcludedKeys: string[] = []
 ): string {
+  const allExcludedKeys = [...excludedKeys, ...additionalExcludedKeys];
   const queryKeys = Object.keys(serverQuery).filter(
-    (key) => !excludedKeys.includes(key)
+    (key) => !allExcludedKeys.includes(key)
   );
   return queryKeys
     .map((queryKey) => {

@@ -1,17 +1,14 @@
-import { defineConfig } from "cypress";
-
-export default defineConfig({
+/**
+ * Minimal Cypress config (CommonJS) – avoids importing 'cypress' so it works
+ * even if node_modules isn't mounted inside a Docker container.
+ */
+module.exports = {
   projectId: "3vpsct",
   defaultCommandTimeout: 30000,
   video: true,
-  retries: {
-    runMode: 2,
-    openMode: 0,
-  },
+  retries: { runMode: 2, openMode: 0 },
   env: {
-    // Disable internal instrumentation that might rely on missing marks.
     CYPRESS_INTERNAL_ENV: "production",
-    // Disable Next.js performance measurement
     __NEXT_DISABLE_TELEMETRY: "1",
   },
   e2e: {
@@ -21,6 +18,7 @@ export default defineConfig({
     viewportHeight: 800,
     experimentalRunAllSpecs: true,
     experimentalMemoryManagement: true,
+    tsConfig: "tsconfig.cypress.json",
     setupNodeEvents(on) {
       on("before:browser:launch", (browser, launchOptions) => {
         if (browser.name === "chrome") {
@@ -36,8 +34,6 @@ export default defineConfig({
         }
         return launchOptions;
       });
-
-      // Suppress console warnings about performance marks
       on("task", {
         log(message) {
           console.log(message);
@@ -46,4 +42,4 @@ export default defineConfig({
       });
     },
   },
-});
+};

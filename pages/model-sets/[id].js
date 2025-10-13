@@ -28,6 +28,7 @@ import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestFiles,
@@ -223,13 +224,22 @@ ModelSet.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const modelSet = (
     await request.getObject(`/model-sets/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(modelSet)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      modelSet,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const documents = modelSet.documents
       ? await requestDocuments(modelSet.documents, request)
       : [];

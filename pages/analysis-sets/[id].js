@@ -40,6 +40,7 @@ import { StatusPreviewDetail } from "../../components/status";
 import { UniformPipelineStatus } from "../../components/uniform-pipeline-status";
 // lib
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
   requestDonors,
@@ -440,13 +441,23 @@ AnalysisSet.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const analysisSet = (
     await request.getObject(`/analysis-sets/${params.id}/`)
   ).union();
+
   if (FetchRequest.isResponseSuccess(analysisSet)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      analysisSet,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const documents = analysisSet.documents
       ? await requestDocuments(analysisSet.documents, request)
       : [];

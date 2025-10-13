@@ -19,6 +19,7 @@ import SeparatedList from "../../components/separated-list";
 // lib
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -124,13 +125,23 @@ AnalysisStepVersion.propTypes = {
   isJson: PropTypes.bool.isRequired,
 };
 
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const analysisStepVersion = (
     await request.getObject(`/analysis-step-versions/${params.id}/`)
   ).union();
+
   if (FetchRequest.isResponseSuccess(analysisStepVersion)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      analysisStepVersion,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
     const attribution = await buildAttribution(
       analysisStepVersion,
       req.headers.cookie
