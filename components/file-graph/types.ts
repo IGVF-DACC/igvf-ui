@@ -66,26 +66,29 @@ export interface ElkNodeEx extends ElkNode {
 }
 
 /**
- * Defines the colors of components of the file-set nodes in the graph. The `color` property
- * duplicates the light-mode color of the `bg` property, but is used for downloaded SVGs where
- * Tailwind CSS classes are not available.
+ * Defines the colors of components of the file and file-set nodes in the graph. The `bgColor` and
+ * `borderColor` properties duplicate the light-mode colors of the `bg` and `border` properties,
+ * but is used for downloaded SVGs where Tailwind CSS classes are not available.
+ *
  * @property bg - CSS class for the background color of the nodes and legend elements
  * @property bgCount - CSS class for the background color of the count in the legend elements
  * @property border - CSS class for the border color of the legend elements
- * @property color - Hex color for the fill color of the node for downloaded SVGs
+ * @property bgColor - Hex color for the background color of the node for downloaded SVGs
+ * @property borderColor - Hex color for the border color of the node for downloaded SVGs
  */
-export type FileSetTypeColorMapSpec = {
+export type ColorMapSpec = {
   readonly bg: string;
   readonly bgCount: string;
   readonly border: string;
   readonly bgColor: string;
+  readonly borderColor: string;
 };
 
 /**
  * Represents a mapping of file-set types to colors.
  */
 export type FileSetTypeColorMap = {
-  readonly [key: string]: FileSetTypeColorMapSpec;
+  readonly [key: string]: ColorMapSpec;
 };
 
 /**
@@ -113,49 +116,69 @@ export const fileSetTypeColorMap: FileSetTypeColorMap = {
     bgCount: "bg-file-graph-analysis-count",
     border: "border-file-graph-analysis",
     bgColor: "#faafff",
+    borderColor: "#b770bd",
   },
   AuxiliarySet: {
     bg: "bg-file-graph-auxiliary",
     bgCount: "bg-file-graph-auxiliary-count",
     border: "border-file-graph-auxiliary",
     bgColor: "#60fa72",
+    borderColor: "#00b629",
   },
   ConstructLibrarySet: {
     bg: "bg-file-graph-construct-library",
     bgCount: "bg-file-graph-construct-library-count",
     border: "border-file-graph-construct-library",
     bgColor: "#ff84aa",
+    borderColor: "#bd4871",
   },
   CuratedSet: {
     bg: "bg-file-graph-curated",
     bgCount: "bg-file-graph-curated-count",
     border: "border-file-graph-curated",
     bgColor: "#faac60",
+    borderColor: "#bc721e",
   },
   MeasurementSet: {
     bg: "bg-file-graph-measurement",
     bgCount: "bg-file-graph-measurement-count",
     border: "border-file-graph-measurement",
     bgColor: "#7cc0ff",
+    borderColor: "#4588c4",
   },
   ModelSet: {
     bg: "bg-file-graph-model",
     bgCount: "bg-file-graph-model-count",
     border: "border-file-graph-model",
     bgColor: "#f5fa60",
+    borderColor: "#aeb000",
   },
   PredictionSet: {
     bg: "bg-file-graph-prediction",
     bgCount: "bg-file-graph-prediction-count",
     border: "border-file-graph-prediction",
     bgColor: "#60f5fa",
+    borderColor: "#00afb4",
   },
   unknown: {
     bg: "bg-file-graph-unknown",
     bgCount: "bg-file-graph-unknown-count",
     border: "border-file-graph-unknown",
     bgColor: "#c0c0c0",
+    borderColor: "#868686",
   },
+};
+
+/**
+ * Color map for file nodes in the graph. This is really only used for downloaded SVGs because the
+ * Tailwind CSS classes have names we can use directly.
+ */
+export const fileTypeColorMap: ColorMapSpec = {
+  bg: "bg-file-graph-file",
+  bgCount: "bg-file-graph-file-count",
+  border: "border-file-graph-file",
+  bgColor: "#e0e0e0",
+  borderColor: "#606060",
 };
 
 /**

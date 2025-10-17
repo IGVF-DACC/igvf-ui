@@ -2,12 +2,14 @@
 import type { ElkNode, ElkExtendedEdge } from "elkjs/lib/elk-api";
 import _ from "lodash";
 import XXH from "xxhashjs";
-import { type Edge, type Node } from "@xyflow/react";
+import { getNodesBounds, type Edge, type Node } from "@xyflow/react";
 // lib
 import { pathToId } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
 import {
+  fileSetTypeColorMap,
+  fileTypeColorMap,
   isFileSetNodeMetadata,
   NODE_KINDS,
   type ElkNodeEx,
@@ -30,9 +32,19 @@ export const NODE_WIDTH = 156;
 export const NODE_HEIGHT = 60;
 
 /**
+ * Maximum number of characters to display in one line of a node label.
+ */
+export const MAX_LINE_LENGTH = 24;
+
+/**
  * xxhashjs seed for hashing strings; generated randomly.
  */
 const HASH_SEED = 0xe8c0f852;
+
+/**
+ * Padding (in pixels) added around SVG export content for visual spacing.
+ */
+const SVG_CONTENT_PADDING = 5;
 
 /**
  * Static root node of ELK graph.
@@ -43,11 +55,14 @@ const rootElkNode: ElkNodeEx = {
     "org.eclipse.elk.algorithm": "layered",
     "org.eclipse.elk.layered.edgeRouting": "POLYLINE",
     "org.eclipse.elk.direction": "RIGHT",
-    "org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": "100",
     "org.eclipse.elk.layered.hierarchyHandling": "INCLUDE_CHILDREN",
     "org.eclipse.elk.layered.nodePlacement.favorStraightEdges": "true",
     "org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment": "BALANCED",
     "org.eclipse.elk.padding": "[top=4,left=4,bottom=4,right=4]",
+    "org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": "100", // Horizontal gaps
+    "org.eclipse.elk.spacing.componentComponent": "30", // Vertical gaps between disconnected groups of nodes
+    "org.eclipse.elk.spacing.nodeNode": "30", // Vertical gaps between nodes in a group
+    "org.eclipse.elk.layered.spacing.edgeNode": "50", // Space between edges and nodes
   },
   children: [],
   edges: [],
@@ -457,6 +472,8 @@ function elkToReactFlowNodes(
       type: elkNodeMetadata.kind,
       data: elkNode.metadata,
       position: { x: elkNode.x, y: elkNode.y },
+      width: elkNode.width,
+      height: elkNode.height,
       style: { width: elkNode.width, height: elkNode.height },
       draggable: false,
       selectable: false,
@@ -519,4 +536,124 @@ export function elkToReactFlow(elkGraph: ElkNodeEx): {
  */
 export function countFileNodes(nodes: Node<NodeMetadata>[]): number {
   return nodes.filter((node) => node.data.kind === NODE_KINDS.FILE).length;
+}
+
+/**
+ * Generate SVG content for the current file graph that can then be downloaded. This function must
+ * run in the browser after ReactFlow has rendered the graph DOM. It queries the rendered elements
+ * to extract SVG content.
+ *
+ * @param nodes - Nodes from the currently rendered file graph
+ * @param graphId - ID of the graph container element in case we have multiple graphs on the page
+ * @returns SVG content as a string that can be downloaded
+ */
+export function generateSVGContent(
+  nodes: Node<NodeMetadata>[],
+  graphId: string
+) {
+  // Get ReactFlow's rendered SVG elements within the specified container.
+  const graphContainer = document.getElementById(graphId);
+  const reactFlowRenderer = graphContainer?.querySelector(
+    ".react-flow__renderer"
+  );
+
+  if (!reactFlowRenderer) {
+    console.error("ReactFlow renderer not found for graphId:", graphId);
+    return;
+  }
+
+  // Calculate SVG dimensions from node bounds. Since zoom/pan are disabled (fixed at 1:1), we can
+  // reliably calculate dimensions directly from node positions.
+  const bounds = getNodesBounds(nodes);
+
+  // Add minimal padding for visual spacing around the SVG.
+  const width = bounds.x + bounds.width + SVG_CONTENT_PADDING;
+  const height = bounds.y + bounds.height + SVG_CONTENT_PADDING;
+
+  // Generate SVG header with renderer dimensions. This eventually holds the entire SVG text for
+  // the graph that the user can then download.
+  let svgContent = `<?xml version="1.0" encoding="UTF-8"?><svg width="${width}px" height="${height}px" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Add ReactFlow's edge paths and arrowheads to the SVG.
+  const edgePathElements = reactFlowRenderer.querySelectorAll(
+    ".react-flow__edge path"
+  );
+  const edgeArrowheadElements = reactFlowRenderer.querySelectorAll(
+    ".react-flow__edge polygon"
+  );
+
+  // Add paths to the accumulating SVG text.
+  const edgePathElementArray = Array.from(edgePathElements);
+  svgContent += edgePathElementArray.reduce((acc, pathElement) => {
+    const d = pathElement.getAttribute("d");
+    const stroke = pathElement.getAttribute("stroke") || "#6b7280";
+    const strokeWidth = pathElement.getAttribute("stroke-width") || "1";
+    return d
+      ? `${acc} <path d="${d}" stroke="${stroke}" stroke-width="${strokeWidth}" fill="none"/>\n`
+      : acc;
+  }, "");
+
+  // Add arrowheads to the accumulating SVG text.
+  const edgeArrowheadElementArray = Array.from(edgeArrowheadElements);
+  svgContent += edgeArrowheadElementArray.reduce((acc, polygonElement) => {
+    const points = polygonElement.getAttribute("points");
+    const fill = polygonElement.getAttribute("fill") || "#6b7280";
+    return points
+      ? `${acc}  <polygon points="${points}" fill="${fill}"/>\n`
+      : acc;
+  }, "");
+
+  // Add nodes by copying the rendered SVG node elements.
+  const nodesArray = Array.from(nodes);
+  svgContent += nodesArray.reduce((acc, node) => {
+    const nodeElement = reactFlowRenderer.querySelector(
+      `[data-id="${node.id}"] svg`
+    );
+    if (nodeElement) {
+      // Get the position of the node from ReactFlow's data so we can convert that to the
+      // downloaded SVG's transform.
+      const x = node.position.x;
+      const y = node.position.y;
+
+      // Check if this is a file set node (has rounded corners in DOM)
+      const isFileSetNode = isFileSetNodeMetadata(node.data);
+
+      // Determine the colors to use for the node based on its type.
+      let nodeColors = null;
+      if (isFileSetNode) {
+        const fileSetType = nodeElement.getAttribute("data-fileset-type") || "";
+        nodeColors = fileSetType
+          ? fileSetTypeColorMap[fileSetType] || fileSetTypeColorMap.unknown
+          : fileSetTypeColorMap.unknown;
+      } else {
+        nodeColors = fileTypeColorMap;
+      }
+
+      // Add explicit font-family to all text elements for cross-platform compatibility, and remove
+      // class attributes -- Tailwind CSS classes don't export, and we'll insert inline styles.
+      const svgContentInner = nodeElement.innerHTML
+        .replace(
+          /<text([^>]*)>/g,
+          '<text$1 font-family="Helvetica, Arial, sans-serif">'
+        )
+        .replace(/(<text[^>]*)\s+class="[^"]*"([^>]*>)/g, "$1$2");
+
+      // Replace any existing rect/background with a clean rounded rect, but keep text elements
+      const cleanFileSetSvg = isFileSetNode
+        ? `
+            <rect x="0" y="0" width="${NODE_WIDTH}" height="${NODE_HEIGHT}" rx="${NODE_HEIGHT / 2}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>
+            ${svgContentInner}
+          `
+        : `
+            <rect x="0" y="0" width="${NODE_WIDTH}" height="${NODE_HEIGHT}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>
+            ${svgContentInner}
+          `;
+      return `${acc}  <g transform="translate(${x}, ${y})">${cleanFileSetSvg}</g>\n`;
+    }
+    return acc;
+  }, "");
+
+  // Close the SVG element. We now have the entire SVG to download as a string.
+  svgContent += "</svg>";
+  return svgContent;
 }
