@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -22,6 +22,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { QualityMetricPanel } from "../../components/quality-metric";
+import { ReferenceFileTable } from "../../components/reference-file-table";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
@@ -33,6 +34,7 @@ import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestSupersedes,
   requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -52,6 +54,8 @@ export default function MatrixFile({
   fileFormatSpecifications,
   workflows,
   referenceFiles,
+  supersedes,
+  supersededBy,
   qualityMetrics,
   isJson,
 }) {
@@ -62,8 +66,10 @@ export default function MatrixFile({
       <Breadcrumbs item={matrixFile} />
       <EditableItem item={matrixFile}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={matrixFile.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={matrixFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={matrixFile}>
@@ -104,6 +110,9 @@ export default function MatrixFile({
               </DataItemValue>
             </DataArea>
           </DataPanel>
+          {referenceFiles.length > 0 && (
+            <ReferenceFileTable files={referenceFiles} />
+          )}
           {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
@@ -114,13 +123,6 @@ export default function MatrixFile({
           )}
           {matrixFile.file_set.samples?.length > 0 && (
             <SampleTable samples={matrixFile.file_set.samples} />
-          )}
-          {referenceFiles.length > 0 && (
-            <FileTable
-              files={referenceFiles}
-              title="Reference Files"
-              panelId="reference"
-            />
           )}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
@@ -159,6 +161,10 @@ MatrixFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // Workflows that processed this file
   workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files that this file supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object),
+  // Files that supersede this file
+  supersededBy: PropTypes.arrayOf(PropTypes.object),
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this file
@@ -231,6 +237,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       matrixFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(matrixFile.quality_metrics, request)
         : [];
+    const { supersedes, supersededBy } = await requestSupersedes(
+      matrixFile,
+      "File",
+      request
+    );
     const attribution = await buildAttribution(matrixFile, req.headers.cookie);
     return {
       props: {
@@ -241,6 +252,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         fileFormatSpecifications,
         workflows,
         qualityMetrics,
+        supersedes,
+        supersededBy,
         pageContext: { title: matrixFile.accession },
         attribution,
         referenceFiles,

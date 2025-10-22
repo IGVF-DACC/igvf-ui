@@ -156,7 +156,7 @@ export function DataItemLabel({
   const containerClasses = isSmall ? "mt-2 @xs:mt-0" : "mt-4 @xs:mt-0";
   return (
     <div
-      className={`text-data-label font-semibold break-words first:mt-0 dark:text-gray-400 ${containerClasses} ${className}`}
+      className={`text-data-label font-semibold wrap-break-word first:mt-0 dark:text-gray-400 ${containerClasses} ${className}`}
       data-testid="dataitemlabel"
     >
       {children}
@@ -239,7 +239,7 @@ export function DataItemValueUrl({
 }
 
 /**
- * Display a collapsable list of items in the value area of a data item.
+ * Display a collapsible list of items in the value area of a data item.
  *
  * @param isCollapsible - True if the list should be collapsible
  * @param maxItemsBeforeCollapse - Maximum number of items before the list appears collapsed

@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -37,6 +37,7 @@ import {
   requestFileSets,
   requestFiles,
   requestQualityMetrics,
+  requestSupersedes,
   requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -56,6 +57,8 @@ export default function ReferenceFile({
   integratedIn,
   workflows,
   qualityMetrics,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -66,8 +69,10 @@ export default function ReferenceFile({
       <Breadcrumbs item={referenceFile} />
       <EditableItem item={referenceFile}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={referenceFile.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={referenceFile} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={referenceFile} />
@@ -186,6 +191,10 @@ ReferenceFile.propTypes = {
   workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
+  // Files that this file supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object),
+  // Files that supersede this file
+  supersededBy: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -257,6 +266,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       referenceFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(referenceFile.quality_metrics, request)
         : [];
+    const { supersedes, supersededBy } = await requestSupersedes(
+      referenceFile,
+      "File",
+      request
+    );
     const attribution = await buildAttribution(
       referenceFile,
       req.headers.cookie
@@ -271,6 +285,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         integratedIn,
         workflows,
         qualityMetrics,
+        supersedes,
+        supersededBy,
         pageContext: { title: referenceFile.accession },
         attribution,
         isJson,

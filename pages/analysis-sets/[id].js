@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { useContext } from "react";
 // components
 import AliasList from "../../components/alias-list";
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import { BatchDownloadFileSet } from "../../components/batch-download-fileset";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -50,6 +50,7 @@ import {
   requestPublications,
   requestQualityMetrics,
   requestSamples,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -85,6 +86,8 @@ export default function AnalysisSet({
   pipelineParametersDocuments,
   pipelineParametersFiles,
   primerDesigns,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -98,8 +101,10 @@ export default function AnalysisSet({
       <Breadcrumbs item={analysisSet} />
       <EditableItem item={analysisSet}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={analysisSet.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={analysisSet} isJsonFormat={isJson}>
           <BatchDownloadFileSet fileSet={analysisSet} />
@@ -435,6 +440,10 @@ AnalysisSet.propTypes = {
   pipelineParametersFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Primer design files
   primerDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this file set supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object),
+  // File sets that supersede this file set
+  supersededBy: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this analysis set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -687,6 +696,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         ? await getAssayTitleDescriptionMap(analysisSet.assay_titles, request)
         : {};
 
+    const { supersedes, supersededBy } = await requestSupersedes(
+      analysisSet,
+      "FileSet",
+      request
+    );
+
     const attribution = await buildAttribution(analysisSet, req.headers.cookie);
     return {
       props: {
@@ -713,6 +728,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         pipelineParametersDocuments,
         pipelineParametersFiles,
         primerDesigns,
+        supersedes,
+        supersededBy,
         pageContext: { title: analysisSet.accession },
         attribution,
         isJson,

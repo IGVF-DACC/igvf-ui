@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
@@ -35,6 +35,7 @@ import {
   requestFileSets,
   requestPublications,
   requestSamples,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -50,6 +51,8 @@ export default function ModelSet({
   inputFileSetFor,
   controlFor,
   samples,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -60,8 +63,10 @@ export default function ModelSet({
       <Breadcrumbs item={modelSet} />
       <EditableItem item={modelSet}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={modelSet.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={modelSet} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={modelSet} />
@@ -135,6 +140,20 @@ export default function ModelSet({
                       <Link href={externalInputData["@id"]}>
                         {externalInputData.accession}
                       </Link>
+                    </DataItemValue>
+                  </>
+                )}
+                {modelSet.software_versions?.length > 0 && (
+                  <>
+                    <DataItemLabel>Software Versions</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {modelSet.software_versions.map((version) => (
+                          <Link href={version["@id"]} key={version["@id"]}>
+                            {version.summary}
+                          </Link>
+                        ))}
+                      </SeparatedList>
                     </DataItemValue>
                   </>
                 )}
@@ -218,6 +237,10 @@ ModelSet.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this model set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files that this file set supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files that supersede this file set
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this measurement set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -290,6 +313,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
+    const { supersedes, supersededBy } = await requestSupersedes(
+      modelSet,
+      "FileSet",
+      request
+    );
+
     const attribution = await buildAttribution(modelSet, req.headers.cookie);
 
     return {
@@ -303,6 +332,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileSetFor,
         controlFor,
         samples,
+        supersedes,
+        supersededBy,
         pageContext: { title: modelSet.model_name },
         attribution,
         isJson,

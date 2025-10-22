@@ -2,7 +2,7 @@
 import { Fragment } from "react";
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import BiomarkerTable from "../../components/biomarker-table";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -39,6 +39,7 @@ import {
   requestInstitutionalCertificates,
   requestPublications,
   requestSamples,
+  requestSupersedes,
   requestTreatments,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
@@ -61,6 +62,8 @@ export default function MultiplexedSample({
   treatments,
   multiplexedInSamples,
   barcodeMap,
+  supersedes,
+  supersededBy,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
@@ -72,8 +75,10 @@ export default function MultiplexedSample({
       <Breadcrumbs item={multiplexedSample} />
       <EditableItem item={multiplexedSample}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={multiplexedSample.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={multiplexedSample} isJsonFormat={isJson} />
         <JsonDisplay item={multiplexedSample} isJsonFormat={isJson}>
@@ -204,6 +209,10 @@ MultiplexedSample.propTypes = {
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Barcode map file
   barcodeMap: PropTypes.object,
+  // Samples that this sample supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples that supersede this sample
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -306,6 +315,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const barcodeMap = multiplexedSample.barcode_map
       ? (await request.getObject(multiplexedSample.barcode_map)).optional()
       : null;
+    const { supersedes, supersededBy } = await requestSupersedes(
+      multiplexedSample,
+      "Sample",
+      request
+    );
     const attribution = await buildAttribution(
       multiplexedSample,
       req.headers.cookie
@@ -324,6 +338,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         treatments,
         multiplexedInSamples,
         barcodeMap,
+        supersedes,
+        supersededBy,
         pageContext: {
           title: `${multiplexedSample.accession} ${UC.mdash} ${multiplexedSample.summary}`,
         },

@@ -2,7 +2,7 @@
 import _ from "lodash";
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -21,13 +21,12 @@ import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
-import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { QualityMetricPanel } from "../../components/quality-metric";
+import { ReferenceFileTable } from "../../components/reference-file-table";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
-import SeparatedList from "../../components/separated-list";
 import { StatusPreviewDetail } from "../../components/status";
 import WorkflowTable from "../../components/workflow-table";
 // lib
@@ -37,6 +36,7 @@ import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestSupersedes,
   requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -58,17 +58,27 @@ export default function AlignmentFile({
   referenceFiles,
   qualityMetrics,
   analysisStepVersion,
+  supersedes,
+  supersededBy,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
+  const isAlignmentDetailsVisible = Boolean(
+    alignmentFile.redacted ||
+      alignmentFile.filtered ||
+      alignmentFile.assembly ||
+      alignmentFile.transcriptome_annotation
+  );
 
   return (
     <>
       <Breadcrumbs item={alignmentFile} />
       <EditableItem item={alignmentFile}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={alignmentFile.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={alignmentFile} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={alignmentFile} />
@@ -87,53 +97,46 @@ export default function AlignmentFile({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          <DataAreaTitle id="alignment-details">
-            Alignment Details
-          </DataAreaTitle>
-          <DataPanel>
-            <DataArea>
-              {referenceFiles.length > 0 && (
-                <>
-                  <DataItemLabel>Reference Files</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
-                      {referenceFiles.map((file) => (
-                        <Link href={file["@id"]} key={file["@id"]}>
-                          {file.accession}
-                        </Link>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {alignmentFile.redacted && (
-                <>
-                  <DataItemLabel>Redacted</DataItemLabel>
-                  <DataItemValue>True</DataItemValue>
-                </>
-              )}
-              {alignmentFile.filtered && (
-                <>
-                  <DataItemLabel>Filtered</DataItemLabel>
-                  <DataItemValue>True</DataItemValue>
-                </>
-              )}
-              {alignmentFile.assembly && (
-                <>
-                  <DataItemLabel>Genome Assembly</DataItemLabel>
-                  <DataItemValue>{alignmentFile.assembly}</DataItemValue>
-                </>
-              )}
-              {alignmentFile.transcriptome_annotation && (
-                <>
-                  <DataItemLabel>Transcriptome Annotation</DataItemLabel>
-                  <DataItemValue>
-                    {alignmentFile.transcriptome_annotation}
-                  </DataItemValue>
-                </>
-              )}
-            </DataArea>
-          </DataPanel>
+          {isAlignmentDetailsVisible && (
+            <>
+              <DataAreaTitle id="alignment-details">
+                Alignment Details
+              </DataAreaTitle>
+              <DataPanel>
+                <DataArea>
+                  {alignmentFile.redacted && (
+                    <>
+                      <DataItemLabel>Redacted</DataItemLabel>
+                      <DataItemValue>True</DataItemValue>
+                    </>
+                  )}
+                  {alignmentFile.filtered && (
+                    <>
+                      <DataItemLabel>Filtered</DataItemLabel>
+                      <DataItemValue>True</DataItemValue>
+                    </>
+                  )}
+                  {alignmentFile.assembly && (
+                    <>
+                      <DataItemLabel>Genome Assembly</DataItemLabel>
+                      <DataItemValue>{alignmentFile.assembly}</DataItemValue>
+                    </>
+                  )}
+                  {alignmentFile.transcriptome_annotation && (
+                    <>
+                      <DataItemLabel>Transcriptome Annotation</DataItemLabel>
+                      <DataItemValue>
+                        {alignmentFile.transcriptome_annotation}
+                      </DataItemValue>
+                    </>
+                  )}
+                </DataArea>
+              </DataPanel>
+            </>
+          )}
+          {referenceFiles.length > 0 && (
+            <ReferenceFileTable files={referenceFiles} />
+          )}
           {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
@@ -187,6 +190,10 @@ AlignmentFile.propTypes = {
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Analysis step version associated with this file
   analysisStepVersion: PropTypes.object,
+  // Files that this file supersedes
+  supersedes: PropTypes.array.isRequired,
+  // Files that supersede this file
+  supersededBy: PropTypes.array.isRequired,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Reference files used to generate this file
@@ -265,6 +272,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const analysisStepVersion = analysisStepVersionId
       ? (await request.getObject(analysisStepVersionId)).optional()
       : null;
+    const { supersedes, supersededBy } = await requestSupersedes(
+      alignmentFile,
+      "File",
+      request
+    );
     const attribution = await buildAttribution(
       alignmentFile,
       req.headers.cookie
@@ -280,6 +292,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         qualityMetrics,
         analysisStepVersion,
         pageContext: { title: alignmentFile.accession },
+        supersedes,
+        supersededBy,
         attribution,
         referenceFiles,
         isJson,

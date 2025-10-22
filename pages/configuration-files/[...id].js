@@ -2,7 +2,7 @@
 import _ from "lodash";
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -29,6 +29,7 @@ import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestSupersedes,
   requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -50,6 +51,8 @@ export default function ConfigurationFile({
   workflows,
   qualityMetrics,
   analysisStepVersion,
+  supersedes,
+  supersededBy,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
@@ -59,8 +62,10 @@ export default function ConfigurationFile({
       <Breadcrumbs item={configurationFile} />
       <EditableItem item={configurationFile}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={configurationFile.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={configurationFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={configurationFile}>
@@ -142,6 +147,10 @@ ConfigurationFile.propTypes = {
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
   // Analysis step version for this file
   analysisStepVersion: PropTypes.object,
+  // Files that this file supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Files that supersede this file
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Is the format JSON?
@@ -223,6 +232,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const analysisStepVersion = analysisStepVersionId
       ? (await request.getObject(analysisStepVersionId)).optional()
       : null;
+    const { supersedes, supersededBy } = await requestSupersedes(
+      configurationFile,
+      "File",
+      request
+    );
     const attribution = await buildAttribution(
       configurationFile,
       req.headers.cookie
@@ -238,6 +252,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         workflows,
         qualityMetrics,
         analysisStepVersion,
+        supersedes,
+        supersededBy,
         pageContext: { title: configurationFile.accession },
         attribution,
         isJson,

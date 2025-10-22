@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -22,6 +22,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { QualityMetricPanel } from "../../components/quality-metric";
+import { ReferenceFileTable } from "../../components/reference-file-table";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
@@ -33,6 +34,7 @@ import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestSupersedes,
   requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -53,6 +55,8 @@ export default function SignalFile({
   referenceFiles,
   workflows,
   qualityMetrics,
+  supersedes,
+  supersededBy,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
@@ -62,8 +66,10 @@ export default function SignalFile({
       <Breadcrumbs item={signalFile} />
       <EditableItem item={signalFile}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={signalFile.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={signalFile} isJsonFormat={isJson}>
           <FileHeaderDownload file={signalFile}>
@@ -113,6 +119,9 @@ export default function SignalFile({
               )}
             </DataArea>
           </DataPanel>
+          {referenceFiles.length > 0 && (
+            <ReferenceFileTable files={referenceFiles} />
+          )}
           {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
           {fileFormatSpecifications.length > 0 && (
@@ -142,13 +151,6 @@ export default function SignalFile({
               panelId="input-file-for"
             />
           )}
-          {referenceFiles.length > 0 && (
-            <FileTable
-              files={referenceFiles}
-              title="Reference Files"
-              panelId="reference"
-            />
-          )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
         </JsonDisplay>
       </EditableItem>
@@ -171,6 +173,10 @@ SignalFile.propTypes = {
   workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
+  // Files that this file supersedes
+  supersedes: PropTypes.array.isRequired,
+  // Files that supersede this file
+  supersededBy: PropTypes.array.isRequired,
   // Attribution for this file
   attribution: PropTypes.object.isRequired,
   // Reference files used to generate this file
@@ -241,6 +247,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       signalFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(signalFile.quality_metrics, request)
         : [];
+    const { supersedes, supersededBy } = await requestSupersedes(
+      signalFile,
+      "File",
+      request
+    );
     const attribution = await buildAttribution(signalFile, req.headers.cookie);
     return {
       props: {
@@ -251,6 +262,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         fileFormatSpecifications,
         workflows,
         qualityMetrics,
+        supersedes,
+        supersededBy,
         pageContext: { title: signalFile.accession },
         attribution,
         referenceFiles,

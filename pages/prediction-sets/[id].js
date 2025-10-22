@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
@@ -42,6 +42,7 @@ import {
   requestPublications,
   requestQualityMetrics,
   requestSamples,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -64,6 +65,8 @@ export default function PredictionSet({
   donors,
   assessedGenes,
   qualityMetrics,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -74,8 +77,10 @@ export default function PredictionSet({
       <Breadcrumbs item={predictionSet} />
       <EditableItem item={predictionSet}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={predictionSet.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={predictionSet} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={predictionSet} />
@@ -213,6 +218,20 @@ export default function PredictionSet({
                     </DataItemValue>
                   </>
                 )}
+                {predictionSet.software_versions?.length > 0 && (
+                  <>
+                    <DataItemLabel>Software Versions</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {predictionSet.software_versions.map((version) => (
+                          <Link href={version["@id"]} key={version["@id"]}>
+                            {version.summary}
+                          </Link>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
               </FileSetDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
@@ -313,6 +332,10 @@ PredictionSet.propTypes = {
   qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this prediction set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that supersede this file set
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that are superseded by this file set
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this prediction set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -429,10 +452,17 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         ? await requestFiles(referenceFilePaths, request)
         : [];
 
+    const { supersedes, supersededBy } = await requestSupersedes(
+      predictionSet,
+      "FileSet",
+      request
+    );
+
     const attribution = await buildAttribution(
       predictionSet,
       req.headers.cookie
     );
+
     return {
       props: {
         predictionSet,
@@ -449,6 +479,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         samples,
         donors,
         qualityMetrics,
+        supersedes,
+        supersededBy,
         pageContext: { title: predictionSet.accession },
         attribution,
         isJson,

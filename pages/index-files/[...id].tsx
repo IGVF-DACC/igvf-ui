@@ -1,7 +1,7 @@
 // node_modules
 import { GetServerSidePropsContext } from "next";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -10,7 +10,6 @@ import {
   DataArea,
   DataAreaTitle,
   DataItemLabel,
-  DataItemValue,
   DataItemValueBoolean,
   DataPanel,
 } from "../../components/data-area";
@@ -24,6 +23,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { QualityMetricPanel } from "../../components/quality-metric";
+import { ReferenceFileTable } from "../../components/reference-file-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 import WorkflowTable from "../../components/workflow-table";
@@ -34,6 +34,7 @@ import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
+  requestSupersedes,
   requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -61,8 +62,11 @@ export default function IndexFile({
   documents,
   derivedFrom,
   inputFileFor,
+  referenceFiles,
   fileFormatSpecifications,
   workflows,
+  supersedes,
+  supersededBy,
   qualityMetrics,
   isJson,
 }: {
@@ -71,15 +75,15 @@ export default function IndexFile({
   documents: any[];
   derivedFrom: any[];
   inputFileFor: FileObject[];
+  referenceFiles: FileObject[];
   fileFormatSpecifications: any[];
   workflows: WorkflowObject[];
+  supersedes: FileObject[];
+  supersededBy: FileObject[];
   qualityMetrics: QualityMetricObject[];
   isJson: boolean;
 }) {
   const sections = useSecDir({ isJson });
-
-  const hasReferencePanel =
-    indexFile.assembly || indexFile.transcriptome_annotation;
   const hasAlignmentPanel = "filtered" in indexFile || "redacted" in indexFile;
 
   return (
@@ -87,8 +91,10 @@ export default function IndexFile({
       <Breadcrumbs item={indexFile} />
       <EditableItem item={indexFile}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={indexFile.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={indexFile} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={indexFile} />
@@ -104,31 +110,6 @@ export default function IndexFile({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          {hasReferencePanel && (
-            <>
-              <DataAreaTitle id="reference-source-details">
-                Reference Source Details
-              </DataAreaTitle>
-              <DataPanel>
-                <DataArea>
-                  {indexFile.assembly && (
-                    <>
-                      <DataItemLabel>Genome Assembly</DataItemLabel>
-                      <DataItemValue>{indexFile.assembly}</DataItemValue>
-                    </>
-                  )}
-                  {indexFile.transcriptome_annotation && (
-                    <>
-                      <DataItemLabel>Transcriptome Annotation</DataItemLabel>
-                      <DataItemValue>
-                        {indexFile.transcriptome_annotation}
-                      </DataItemValue>
-                    </>
-                  )}
-                </DataArea>
-              </DataPanel>
-            </>
-          )}
           {hasAlignmentPanel && (
             <>
               <DataAreaTitle id="alignment-details">
@@ -155,6 +136,9 @@ export default function IndexFile({
                 </DataArea>
               </DataPanel>
             </>
+          )}
+          {referenceFiles.length > 0 && (
+            <ReferenceFileTable files={referenceFiles} />
           )}
           {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
@@ -238,6 +222,11 @@ export async function getServerSideProps(
         ? await requestFiles(indexFile.input_file_for as string[], request)
         : [];
 
+    const referenceFiles =
+      indexFile.reference_files?.length > 0
+        ? await requestFiles(indexFile.reference_files as string[], request)
+        : [];
+
     let fileFormatSpecifications = [];
     if (indexFile.file_format_specifications?.length > 0) {
       const fileFormatSpecificationsPaths =
@@ -258,6 +247,12 @@ export async function getServerSideProps(
       )) as WorkflowObject[];
     }
 
+    const { supersedes, supersededBy } = await requestSupersedes(
+      indexFile,
+      "File",
+      request
+    );
+
     const qualityMetrics =
       indexFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(indexFile.quality_metrics, request)
@@ -271,8 +266,11 @@ export async function getServerSideProps(
         documents,
         derivedFrom,
         inputFileFor,
+        referenceFiles,
         fileFormatSpecifications,
         workflows,
+        supersedes,
+        supersededBy,
         qualityMetrics,
         pageContext: { title: indexFile.accession },
         attribution,

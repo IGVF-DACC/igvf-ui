@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { SampleDataItems } from "../../components/common-data-items";
@@ -31,6 +31,7 @@ import {
   requestInstitutionalCertificates,
   requestPublications,
   requestSamples,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
@@ -48,6 +49,8 @@ export default function TechnicalSample({
   sortedFractions,
   sources,
   multiplexedInSamples,
+  supersedes,
+  supersededBy,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
@@ -57,8 +60,10 @@ export default function TechnicalSample({
       <Breadcrumbs item={sample} />
       <EditableItem item={sample}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={sample.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={sample} isJsonFormat={isJson} />
         <JsonDisplay item={sample} isJsonFormat={isJson}>
@@ -135,6 +140,10 @@ TechnicalSample.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples that this sample supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples that supersede this sample
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this technical sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -204,6 +213,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       sample.multiplexed_in?.length > 0
         ? await requestSamples(sample.multiplexed_in, request)
         : [];
+    const { supersedes, supersededBy } = await requestSupersedes(
+      sample,
+      "Sample",
+      request
+    );
     const attribution = await buildAttribution(sample, req.headers.cookie);
     return {
       props: {
@@ -215,6 +229,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         sortedFractions,
         sources,
         multiplexedInSamples,
+        supersedes,
+        supersededBy,
         pageContext: {
           title: `${sample.accession} ${UC.mdash} ${sample.sample_terms[0].term_name}`,
         },

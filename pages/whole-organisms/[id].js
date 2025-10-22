@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import BiomarkerTable from "../../components/biomarker-table";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -33,6 +33,7 @@ import {
   requestOntologyTerms,
   requestPublications,
   requestSamples,
+  requestSupersedes,
   requestTreatments,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
@@ -58,6 +59,8 @@ export default function WholeOrganism({
   sources,
   multiplexedInSamples,
   institutionalCertificates,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -68,8 +71,10 @@ export default function WholeOrganism({
       <Breadcrumbs item={sample} />
       <EditableItem item={sample}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={sample.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={sample} isJsonFormat={isJson} />
         <JsonDisplay item={sample} isJsonFormat={isJson}>
@@ -209,6 +214,10 @@ WholeOrganism.propTypes = {
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Institutional certificates referencing this sample
   institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
+  // Samples that this sample supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples that supersede this sample
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -323,6 +332,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
       publications = await requestPublications(publicationPaths, request);
     }
+    const { supersedes, supersededBy } = await requestSupersedes(
+      sample,
+      "Sample",
+      request
+    );
     const attribution = await buildAttribution(sample, req.headers.cookie);
     return {
       props: {
@@ -342,6 +356,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         sources,
         multiplexedInSamples,
         institutionalCertificates,
+        supersedes,
+        supersededBy,
         pageContext: {
           title: `${sample.accession} ${UC.mdash} ${sample.sample_terms[0].term_name}`,
         },

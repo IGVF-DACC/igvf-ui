@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import { Children, useContext } from "react";
 // components
-import AlternateAccessions from "../../alternate-accessions";
+import { AlternateAccessions } from "../../alternative-identifiers";
 import { AuditDetail, useAudit } from "../../audit";
 import Icon from "../../icon";
 import QualitySection from "../../quality-section";
@@ -81,7 +81,6 @@ export function SearchListItemSupplementAlternateAccessions({ item }) {
           <SearchListItemSupplementContent>
             <AlternateAccessions
               alternateAccessions={item.alternate_accessions}
-              className="inline text-xs text-gray-500 dark:text-gray-400"
               isTitleHidden
             />
           </SearchListItemSupplementContent>

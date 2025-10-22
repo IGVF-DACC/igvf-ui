@@ -704,3 +704,42 @@ export async function requestLibraryDesignFiles(
   }
   return [];
 }
+
+/**
+ * Request the supersedes and superseded_by objects for a given item. The requests go out in
+ * parallel. This function expects that the item has `supersedes` and `superseded_by` properties
+ * that comprise arrays of unique paths.
+ *
+ * @param item - Item to request supersedes and superseded_by from
+ * @param type - Type of the items that could supersede or be superseded by the item
+ * @param request - Request object to use to make the request
+ * @returns Objects that the item supersedes and is superseded by
+ */
+export async function requestSupersedes(
+  item: DatabaseObject,
+  type: string,
+  request: FetchRequest
+): Promise<{ supersedes: DatabaseObject[]; supersededBy: DatabaseObject[] }> {
+  const [supersedes, supersededBy] = await Promise.all([
+    item.supersedes?.length > 0
+      ? ((
+          await request.getMultipleObjectsBulk(
+            item.supersedes,
+            ["accession"],
+            [type]
+          )
+        ).unwrap_or([]) as DatabaseObject[])
+      : [],
+    item.superseded_by?.length > 0
+      ? ((
+          await request.getMultipleObjectsBulk(
+            item.superseded_by,
+            ["accession"],
+            [type]
+          )
+        ).unwrap_or([]) as DatabaseObject[])
+      : [],
+  ]);
+
+  return { supersedes, supersededBy };
+}

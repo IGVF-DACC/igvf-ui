@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import { Fragment, useContext } from "react";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
@@ -38,6 +38,7 @@ import {
   requestFileSets,
   requestPublications,
   requestSeqspecFiles,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
@@ -269,6 +270,8 @@ export default function ConstructLibrarySet({
   seqspecDocuments,
   integratedContentFiles,
   assayTitleDescriptionMap,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -282,8 +285,10 @@ export default function ConstructLibrarySet({
       <Breadcrumbs item={constructLibrarySet} />
       <EditableItem item={constructLibrarySet}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={constructLibrarySet.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={constructLibrarySet} isJsonFormat={isJson} />
         <JsonDisplay item={constructLibrarySet} isJsonFormat={isJson}>
@@ -417,6 +422,10 @@ ConstructLibrarySet.propTypes = {
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Map of assay titles to corresponding descriptions
   assayTitleDescriptionMap: PropTypes.object.isRequired,
+  // File set that this file set supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File set that supersedes this file set
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this analysis set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -516,6 +525,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
           )
         : {};
 
+    const { supersedes, supersededBy } = await requestSupersedes(
+      constructLibrarySet,
+      "FileSet",
+      request
+    );
+
     const attribution = await buildAttribution(
       constructLibrarySet,
       req.headers.cookie
@@ -534,6 +549,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         integratedContentFiles,
         publications,
         assayTitleDescriptionMap,
+        supersedes,
+        supersededBy,
         pageContext: { title: constructLibrarySet.accession },
         attribution,
         isJson,
