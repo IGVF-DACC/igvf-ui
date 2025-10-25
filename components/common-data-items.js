@@ -32,7 +32,7 @@ import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { checkCheckfilesVersionVisible } from "../lib/checkfiles-version";
 import { formatDate } from "../lib/dates";
-import { dataSize, truthyOrZero } from "../lib/general";
+import { dataSize } from "../lib/general";
 
 /**
  * Display the data items common to all donor-derived objects.
@@ -160,12 +160,12 @@ export function SampleDataItems({
           </DataItemList>
         </>
       )}
-      {item.time_post_library_delivery && (
+      {typeof item.time_post_library_delivery === "number" && (
         <>
           <DataItemLabel>Time Post Library Delivery</DataItemLabel>
           <DataItemValue>
             {item.time_post_library_delivery}{" "}
-            {item.time_post_library_delivery > 1
+            {item.time_post_library_delivery !== 1
               ? `${item.time_post_library_delivery_units}s`
               : item.time_post_library_delivery_units}
           </DataItemValue>
@@ -201,7 +201,7 @@ export function SampleDataItems({
           </DataItemValue>
         </>
       )}
-      {truthyOrZero(item.starting_amount) && (
+      {typeof item.starting_amount === "number" && (
         <>
           <DataItemLabel>Starting Amount</DataItemLabel>
           <DataItemValue>
@@ -700,7 +700,7 @@ export function FileDataItems({
           <DataItemValue>{item.content_md5sum}</DataItemValue>
         </>
       )}
-      {truthyOrZero(item.file_size) && (
+      {typeof item.file_size === "number" && (
         <>
           <DataItemLabel>File Size</DataItemLabel>
           <DataItemValue>{dataSize(item.file_size)}</DataItemValue>
