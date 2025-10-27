@@ -1,3 +1,4 @@
+import { MouseEvent } from "react";
 import {
   fireEvent,
   render,
@@ -6,9 +7,25 @@ import {
   within,
 } from "@testing-library/react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useState } from "react";
 import SessionContext from "../../session-context";
 import { FacetList } from "../facet-list";
 import FacetSection from "../facet-section";
+import type { SearchResults, SearchResultsFacet } from "../../../globals";
+
+// Mock the window.location object so we can test the router.push() function.
+const location = new URL("https://www.example.com") as any;
+location.assign = jest.fn();
+location.replace = jest.fn();
+location.reload = jest.fn();
+delete (window as any).location;
+(window as any).location = location;
+
+// Mock next/router (uses __mocks__/next/router.ts)
+jest.mock("next/router");
+
+// Mock framer-motion (uses components/__mocks__/framer-motion.tsx automatically)
+jest.mock("framer-motion");
 
 /**
  * Method to mock the useAuth0 hook comes from:
@@ -19,38 +36,31 @@ jest.mock("@auth0/auth0-react", () => ({
   useAuth0: jest.fn(),
 }));
 
-jest.mock("next/router", () => {
-  // Mock the window.location object so we can test the router.push() function.
-  const location = new URL("https://www.example.com");
-  location.assign = jest.fn();
-  location.replace = jest.fn();
-  location.reload = jest.fn();
-  delete window.location;
-  window.location = location;
+const mockUseAuth0 = useAuth0 as jest.MockedFunction<typeof useAuth0>;
 
-  return {
-    useRouter() {
-      return {
-        route: "/",
-        pathname: "",
-        query: "",
-        asPath: "",
-        push: jest.fn().mockImplementation((href) => {
-          window.location.href = `https://www.example.com${href}`;
-        }),
-      };
-    },
-  };
-});
+// Test wrapper to manage facet open/close state
+function FacetListWithState({
+  searchResults,
+  facets,
+}: {
+  searchResults: SearchResults;
+  facets: SearchResultsFacet[];
+}) {
+  const [openedFacets, setOpenedFacets] = useState<Record<string, boolean>>({});
 
-jest.mock("framer-motion", () => ({
-  ...jest.requireActual("framer-motion"),
-  AnimatePresence: ({ children }) => <>{children}</>,
-  motion: {
-    div: jest.fn(({ children }) => <div>{children}</div>),
-    ul: jest.fn(({ children }) => <ul>{children}</ul>),
-  },
-}));
+  function handleFacetOpen(e: MouseEvent, field: string) {
+    setOpenedFacets((prev) => ({ ...prev, [field]: !prev[field] }));
+  }
+
+  return (
+    <FacetList
+      searchResults={searchResults}
+      facets={facets}
+      openedFacets={openedFacets}
+      onFacetOpen={handleFacetOpen}
+    />
+  );
+}
 
 describe("Test <FacetList> component", () => {
   beforeEach(() => {
@@ -61,13 +71,17 @@ describe("Test <FacetList> component", () => {
     jest.clearAllMocks();
   });
 
-  it("renders the correct facets ", async () => {
-    useAuth0.mockReturnValue({
+  it("renders the correct facets", async () => {
+    mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
-    });
+    } as any);
 
     const searchResults = {
       "@id": "/search?type=Gene&taxa!=Homo+sapiens",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 7,
       facets: [
         {
           field: "type",
@@ -139,9 +153,9 @@ describe("Test <FacetList> component", () => {
           remove: "/search",
         },
       ],
-    };
+    } as any;
 
-    render(<FacetList searchResults={searchResults} />);
+    render(<FacetSection searchResults={searchResults} />);
 
     // Check for the correct number of facets.
     const facetSections = screen.getAllByTestId(/^facet-container-/);
@@ -150,7 +164,7 @@ describe("Test <FacetList> component", () => {
     // Make sure the first facet has the correct title.
     const facetTitle = within(facetSections[0]).getByRole("heading", {
       name: /^Taxa$/,
-    });
+    } as any);
     expect(facetTitle).toBeInTheDocument();
 
     // Click the facet button with data-testid="facet-trigger-taxa" to open it.
@@ -177,12 +191,16 @@ describe("Test <FacetList> component", () => {
   });
 
   it("renders no facets if only a type facet exists", () => {
-    useAuth0.mockReturnValue({
+    mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
-    });
+    } as any);
 
     const searchResults = {
       "@id": "/search?type=Gene",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 7,
       facet_groups: [],
       facets: [
         {
@@ -207,9 +225,20 @@ describe("Test <FacetList> component", () => {
           remove: "/search",
         },
       ],
-    };
+    } as any;
 
-    render(<FacetList searchResults={searchResults} />);
+    const facetsForDisplay = searchResults.facets.filter(
+      (facet) => facet.field !== "type"
+    );
+
+    render(
+      <FacetList
+        searchResults={searchResults}
+        facets={facetsForDisplay}
+        openedFacets={{}}
+        onFacetOpen={jest.fn()}
+      />
+    );
 
     // Check for no facet group buttons.
     const facetGroupButtonSection = screen.queryByTestId("facet-group-buttons");
@@ -221,9 +250,9 @@ describe("Test <FacetList> component", () => {
   });
 
   it("clears all filters when clicking the Clear All button", () => {
-    useAuth0.mockReturnValue({
+    mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
-    });
+    } as any);
 
     const searchResults = {
       "@graph": [
@@ -252,6 +281,10 @@ describe("Test <FacetList> component", () => {
       "@id": "/search/?type=HumanDonor&sex=female",
       "@type": ["Search"],
       clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
       facet_groups: [],
       facets: [
         {
@@ -299,9 +332,9 @@ describe("Test <FacetList> component", () => {
   });
 
   it("reacts correctly to clicking a term", async () => {
-    useAuth0.mockReturnValue({
+    mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
-    });
+    } as any);
 
     const searchResults = {
       "@graph": [
@@ -330,6 +363,10 @@ describe("Test <FacetList> component", () => {
       "@id": "/search/?type=HumanDonor&sex=female",
       "@type": ["Search"],
       clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
       facet_groups: [],
       facets: [
         {
@@ -402,9 +439,9 @@ describe("Test <FacetList> component", () => {
   });
 
   it("displays no facets if no facets are visible", () => {
-    useAuth0.mockReturnValue({
+    mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
-    });
+    } as any);
 
     const searchResults = {
       "@graph": [
@@ -433,6 +470,10 @@ describe("Test <FacetList> component", () => {
       "@id": "/search/?type=HumanDonor&sex=female",
       "@type": ["Search"],
       clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
       facet_groups: [],
       facets: [
         {
@@ -475,9 +516,9 @@ describe("Test <FacetList> component", () => {
   });
 
   it("renders a facet with lots of terms", async () => {
-    useAuth0.mockReturnValue({
+    mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
-    });
+    } as any);
 
     const searchResults = {
       "@context": "/terms/",
@@ -653,7 +694,16 @@ describe("Test <FacetList> component", () => {
       total: 79,
     };
 
-    render(<FacetList searchResults={searchResults} />);
+    const facetsForDisplay = searchResults.facets.filter(
+      (facet) => facet.field !== "type"
+    );
+
+    render(
+      <FacetListWithState
+        searchResults={searchResults}
+        facets={facetsForDisplay}
+      />
+    );
 
     // Click the facet button with data-testid="facet-trigger-institute_label" to open it.
     const facetTrigger = screen.getByTestId(/^facettrigger-institute_label$/);
@@ -691,22 +741,27 @@ describe("Test <FacetList> component", () => {
   });
 
   it("loads saved opened facets if logged in", async () => {
-    useAuth0.mockReturnValue({
+    mockUseAuth0.mockReturnValue({
       isAuthenticated: true,
-    });
+    } as any);
 
     window.fetch = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ sex: true }),
       });
-    });
+    }) as any;
 
     const mockSessionProperties = {
       user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
         uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
       },
-    };
+    } as any;
 
     const searchResults = {
       "@graph": [
@@ -735,6 +790,10 @@ describe("Test <FacetList> component", () => {
       "@id": "/search/?type=HumanDonor&sex=female",
       "@type": ["Search"],
       clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
       facet_groups: [],
       facets: [
         {
@@ -787,9 +846,9 @@ describe("Test <FacetList> component", () => {
 
     render(
       <SessionContext.Provider
-        value={{ sessionProperties: mockSessionProperties }}
+        value={{ sessionProperties: mockSessionProperties } as any}
       >
-        <FacetList searchResults={searchResults} />
+        <FacetSection searchResults={searchResults} />
       </SessionContext.Provider>
     );
 
@@ -836,22 +895,27 @@ describe("Test <FacetList> component", () => {
   });
 
   it("doesn't attempt to load facets when logged in if multiple types in the query string", async () => {
-    useAuth0.mockReturnValue({
+    mockUseAuth0.mockReturnValue({
       isAuthenticated: true,
-    });
+    } as any);
 
     window.fetch = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ "lab.title": true }),
       });
-    });
+    }) as any;
 
     const mockSessionProperties = {
       user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
         uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
       },
-    };
+    } as any;
 
     const searchResults = {
       "@graph": [
@@ -880,6 +944,10 @@ describe("Test <FacetList> component", () => {
       "@id": "/search/?type=HumanDonor&type=RodentDonor",
       "@type": ["Search"],
       clear_filters: "/search/?type=HumanDonor&type=RodentDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
       facet_groups: [],
       facets: [
         {
@@ -912,9 +980,9 @@ describe("Test <FacetList> component", () => {
 
     render(
       <SessionContext.Provider
-        value={{ sessionProperties: mockSessionProperties }}
+        value={{ sessionProperties: mockSessionProperties } as any}
       >
-        <FacetList searchResults={searchResults} />
+        <FacetSection searchResults={searchResults} />
       </SessionContext.Provider>
     );
 

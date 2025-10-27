@@ -1,7 +1,6 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
 // components/facets
 import facetRegistry from "./facet-registry";
 // components
@@ -12,6 +11,12 @@ import {
   filterOutChildFacets,
   getVisibleFilters,
 } from "../../lib/facets";
+// root
+import type {
+  SearchResults,
+  SearchResultsFacet,
+  SearchResultsFilter,
+} from "../../globals";
 
 /**
  * Facet tags show a list of the currently selected facet terms. Clicking each tag clears that facet
@@ -22,8 +27,18 @@ import {
 /**
  * Display a single facet tag specified by the `filter` object of the relevant facet term copied
  * from the search-results object.
+ *
+ * @param filter - Filter object from search results
+ * @param facets - `facets` property from search results
  */
-function FacetTag({ filter, facets }) {
+function FacetTag({
+  filter,
+  facets,
+}: {
+  filter: SearchResultsFilter;
+  facets: SearchResultsFacet[];
+}) {
+  // Collect all facets including child facets to find the title for the tag.
   const filteredFacets = filterOutChildFacets(facets);
   const allChildFacets = collectAllChildFacets(filteredFacets);
   const allFacets = filteredFacets.concat(allChildFacets);
@@ -61,27 +76,16 @@ function FacetTag({ filter, facets }) {
   );
 }
 
-FacetTag.propTypes = {
-  // Filter object from search results
-  filter: PropTypes.shape({
-    // Object property the filter represents
-    field: PropTypes.string.isRequired,
-    // Value of the object property
-    term: PropTypes.string.isRequired,
-    // URI to remove this filter from the query string
-    remove: PropTypes.string.isRequired,
-  }).isRequired,
-  // `facets` property from search results
-  facets: PropTypes.arrayOf(PropTypes.shape({ field: PropTypes.string }))
-    .isRequired,
-};
-
 /**
  * Displays a list of tags showing the currently selected facets. Clicking each tag clears that
  * facet term from the query string. This acts as a shortcut to removing the facet terms using the
  * facet modals.
  */
-export default function FacetTags({ searchResults }) {
+export default function FacetTags({
+  searchResults,
+}: {
+  searchResults: SearchResults;
+}) {
   const { isAuthenticated } = useAuth0();
   const removableFilters = getVisibleFilters(
     searchResults.filters,
@@ -107,8 +111,3 @@ export default function FacetTags({ searchResults }) {
   // No selected facet terms, so display no facet tags.
   return null;
 }
-
-FacetTags.propTypes = {
-  // Search results from data provider
-  searchResults: PropTypes.object.isRequired,
-};
