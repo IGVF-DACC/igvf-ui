@@ -231,6 +231,7 @@ export default function PredictionSet({
                 fileFileSets={fileFileSets}
                 derivedFromFiles={derivedFromFiles}
                 qualityMetrics={qualityMetrics}
+                fileId={predictionSet.accession}
               />
             </>
           )}

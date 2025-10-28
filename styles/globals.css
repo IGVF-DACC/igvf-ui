@@ -628,7 +628,7 @@
   --color-file-graph-qc-trigger-text: oklch(1 0 0);
   --color-file-graph-edge: oklch(0.8576 0 0);
   --color-file-graph-file: oklch(0.3092 0 0);
-  --color-file-graph-file-border: oklch(0.8078 0 0);
+  --color-file-graph-file-border: oklch(0.5999 0 0);
 
   --color-modal-border: #68799c;
   --color-modal-backdrop: oklch(0 0 0 / 60%);
@@ -953,4 +953,13 @@
 .react-flow__node-group {
   padding: 12px !important;
   box-sizing: border-box;
+}
+
+.react-flow__node:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px #000000 !important;
+}
+
+.dark .react-flow__node:focus-visible {
+  box-shadow: 0 0 0 2px #a0a0a0 !important;
 }

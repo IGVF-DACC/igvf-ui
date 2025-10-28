@@ -2,27 +2,31 @@
 import ELK from "elkjs/lib/elk.bundled.js";
 import type { ElkNode } from "elkjs/lib/elk-api";
 import _ from "lodash";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Handle,
-  MarkerType,
   Position,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
+  getBezierPath,
   type Edge,
+  type EdgeProps,
   type Node,
   type NodeProps,
 } from "@xyflow/react";
 // components
 import { DataAreaTitle, DataPanel } from "../data-area";
+import Link from "../link-no-prefetch";
 import { QualityMetricModal } from "../quality-metric";
 import SeparatedList from "../separated-list";
+import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
 import { detectCycles } from "./detect-cycles";
+import { DownloadTrigger } from "./download";
 import { FileModal } from "./file-modal";
 import { FileSetModal } from "./file-set-modal";
 import { Legend } from "./legend";
@@ -31,6 +35,7 @@ import {
   countFileNodes,
   elkToReactFlow,
   generateGraphData,
+  MAX_LINE_LENGTH,
   NODE_HEIGHT,
   NODE_WIDTH,
   trimIsolatedFiles,
@@ -57,14 +62,36 @@ const nodeTypes = {
 };
 
 /**
- * Maximum number of characters to display in one line of a node label.
+ * Directs edge rendering to use custom arrowheads.
  */
-const MAX_LINE_LENGTH = 24;
+const edgeTypes = {
+  default: CustomArrowEdge,
+};
 
 /**
  * Padding around the graph in pixels.
  */
-const GRAPH_PADDING = 20;
+const GRAPH_PADDING = 5;
+
+/**
+ * Position of the first line of text in a file node.
+ */
+const FILE_NODE_TOP_LINE_POSITION = 20;
+
+/**
+ * Position of the first line of text in a file-set node.
+ */
+const FILESET_NODE_TOP_LINE_POSITION = 20;
+
+/**
+ * Height of each line of text in a node.
+ */
+const NODE_LINE_HEIGHT = 13;
+
+/**
+ * Padding of the container around the graph.
+ */
+const CONTAINER_PADDING = 16;
 
 /**
  * Styles for the node handles. This puts the handles in the correct place for the edges to hook up
@@ -99,15 +126,86 @@ function QCMetricTrigger({
 }) {
   if (fileMetrics.length > 0) {
     return (
-      <button
-        className="border-file-graph-file bg-file-graph-qc-trigger h-4 w-10 cursor-pointer rounded-sm border font-bold"
-        aria-label={`Quality metrics for file ${file.accession}`}
-        data-qc-button
-      >
-        QC
-      </button>
+      <div className="flex justify-center">
+        <button
+          className="border-file-graph-file bg-file-graph-qc-trigger block cursor-pointer rounded-b-sm border-r border-b border-l px-2 text-[8px] font-semibold"
+          aria-label={`quality metrics for file ${file.accession}`}
+          data-qc-button
+        >
+          QC
+        </button>
+      </div>
     );
   }
+}
+
+/**
+ * Render the title of a node centered horizontally at the given Y position.
+ *
+ * @param content - Text content of the title
+ * @param y - Y position to center the title at
+ */
+function NodeTitle({ content, y }: { content: string; y: number }) {
+  return (
+    <text
+      x={NODE_WIDTH / 2}
+      y={y}
+      textAnchor="middle"
+      fontSize="11px"
+      fontWeight="bold"
+      className="fill-black dark:fill-white"
+    >
+      {content}
+    </text>
+  );
+}
+
+/**
+ * Render the subtitle of a node centered horizontally at the given Y position.
+ *
+ * @param content - Text content of the subtitle
+ * @param y - Y position to center the subtitle at
+ */
+function NodeSubtitle({ content, y }: { content: string; y: number }) {
+  return (
+    <text
+      x={NODE_WIDTH / 2}
+      y={y}
+      textAnchor="middle"
+      fontSize="11px"
+      fill="#111827"
+      className="fill-black dark:fill-white"
+    >
+      {content}
+    </text>
+  );
+}
+
+/**
+ * Render the handles for a node. We use two handles, one on the left for incoming edges and one on
+ * the right for outgoing edges.
+ */
+function NodeHandles() {
+  return (
+    <>
+      <Handle
+        type="target"
+        position={Position.Left}
+        style={{
+          ...NodeHandleStyle,
+          right: "auto",
+        }}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        style={{
+          ...NodeHandleStyle,
+          left: "auto",
+        }}
+      />
+    </>
+  );
 }
 
 /**
@@ -118,33 +216,34 @@ function QCMetricTrigger({
 function FileNodeContent(props: NodeProps) {
   const data = props.data as FileMetadata;
   const file = data.file;
+  let linePosition = FILE_NODE_TOP_LINE_POSITION;
 
+  // Render the containing box with a div instead of an SVG rect to use the same mechanism that
+  // `<FileSetNodeContent>` needs.
   return (
-    <div className="border-file-graph-file bg-file-graph-file h-full cursor-pointer border px-1 py-0.5">
-      <div className="flex h-full flex-col items-center justify-center text-[0.67rem] leading-[1.2]">
-        <div className="font-bold">{file.accession}</div>
-        <div>{truncateText(file.file_format, MAX_LINE_LENGTH)}</div>
-        <div>{truncateText(file.content_type, MAX_LINE_LENGTH)}</div>
+    <div className="relative">
+      <div
+        className="bg-file-graph-file border-file-graph-file relative cursor-pointer border"
+        style={{ width: NODE_WIDTH, height: NODE_HEIGHT }}
+      >
+        <svg width={NODE_WIDTH} height={NODE_HEIGHT}>
+          <g>
+            <NodeTitle content={file.accession} y={linePosition} />
+            <NodeSubtitle
+              content={truncateText(file.file_format, MAX_LINE_LENGTH)}
+              y={(linePosition += NODE_LINE_HEIGHT)}
+            />
+            <NodeSubtitle
+              content={truncateText(file.content_type, MAX_LINE_LENGTH)}
+              y={(linePosition += NODE_LINE_HEIGHT)}
+            />
+          </g>
+        </svg>
+      </div>
+      <div className="absolute top-full right-0 left-0 z-10">
         <QCMetricTrigger file={file} fileMetrics={data.qualityMetrics} />
       </div>
-      <div>
-        <Handle
-          type="target"
-          position={Position.Left}
-          style={{
-            ...NodeHandleStyle,
-            right: "auto",
-          }}
-        />
-        <Handle
-          type="source"
-          position={Position.Right}
-          style={{
-            ...NodeHandleStyle,
-            left: "auto",
-          }}
-        />
-      </div>
+      <NodeHandles />
     </div>
   );
 }
@@ -158,43 +257,95 @@ function FileSetNodeContent(props: NodeProps) {
   const metadata = props.data as FileSetMetadata;
   const fileSet = metadata.fileSet;
   const fileSetAtType = fileSet["@type"][0];
-  const fileSetTypeColors = fileSetTypeColorMap[fileSetAtType];
+  const fileSetTypeColors =
+    fileSetTypeColorMap[fileSetAtType] || fileSetTypeColorMap.unknown;
   const externalFileCount = metadata.externalFiles.length;
+  let linePosition = FILESET_NODE_TOP_LINE_POSITION;
+  const fileCountDisplay =
+    externalFileCount === 1 ? "1 file" : `${externalFileCount} files`;
+
+  // Render the containing box with rounded corners as a div instead of an SVG rect because any
+  // curved lines in SVG appear thicker than straight ones. A div with rounded corners keeps the
+  // border width consistent.
+  return (
+    <>
+      <div
+        className={`relative cursor-pointer rounded-full border ${fileSetTypeColors.bg} ${fileSetTypeColors.border}`}
+        style={{
+          width: NODE_WIDTH,
+          height: NODE_HEIGHT,
+        }}
+      >
+        <svg
+          width={NODE_WIDTH}
+          height={NODE_HEIGHT}
+          data-fileset-type={fileSetAtType}
+        >
+          <g>
+            <NodeTitle content={fileSet.accession} y={linePosition} />
+            <NodeSubtitle
+              content={fileCountDisplay}
+              y={(linePosition += NODE_LINE_HEIGHT)}
+            />
+            <NodeSubtitle
+              content={truncateText(fileSet.file_set_type, MAX_LINE_LENGTH)}
+              y={(linePosition += NODE_LINE_HEIGHT)}
+            />
+          </g>
+        </svg>
+      </div>
+      <NodeHandles />
+    </>
+  );
+}
+
+/**
+ * Custom edge component that renders a curved path with a polygon arrowhead.
+ *
+ * @param id - ID of the edge
+ * @param sourceX - X coordinate of the edge source
+ * @param sourceY - Y coordinate of the edge source
+ * @param targetX - X coordinate of the edge target
+ * @param targetY - Y coordinate of the edge target
+ * @param sourcePosition - Position of the edge source handle
+ * @param targetPosition - Position of the edge target handle
+ * @param style - Styles to apply to the edge
+ */
+function CustomArrowEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  style,
+}: EdgeProps) {
+  // Use ReactFlow's bezier path to create smooth curved edges
+  const [edgePath] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
 
   return (
-    <div
-      className={`h-full cursor-pointer rounded-full border px-1 py-0.5 ${fileSetTypeColors.bg} ${fileSetTypeColors.border}`}
-    >
-      <div className="flex h-full flex-col items-center justify-center text-[0.67rem] leading-[1.2]">
-        <div className="font-bold">{fileSet.accession}</div>
-        {externalFileCount === 1 ? (
-          <div>1 file</div>
-        ) : (
-          <div>{externalFileCount} files</div>
-        )}
-        {fileSet.file_set_type && (
-          <div>{truncateText(fileSet.file_set_type, MAX_LINE_LENGTH)}</div>
-        )}
-      </div>
-      <div>
-        <Handle
-          type="target"
-          position={Position.Left}
-          style={{
-            ...NodeHandleStyle,
-            right: "auto",
-          }}
-        />
-        <Handle
-          type="source"
-          position={Position.Right}
-          style={{
-            ...NodeHandleStyle,
-            left: "auto",
-          }}
-        />
-      </div>
-    </div>
+    <g>
+      <path
+        id={id}
+        d={edgePath}
+        style={style}
+        fill="none"
+        className="react-flow__edge-path"
+      />
+      <polygon
+        points={`${targetX},${targetY} ${targetX - 5},${targetY - 5} ${targetX - 5},${targetY + 5}`}
+        fill={style?.stroke || "#6b7280"}
+        className="react-flow__edge-arrowhead"
+      />
+    </g>
   );
 }
 
@@ -203,13 +354,19 @@ function FileSetNodeContent(props: NodeProps) {
  *
  * @param graphData - ELK node data structure containing files and file sets to render
  * @param nativeFiles - Files included directly in the file set the user views
+ * @param graphId - ID to assign to the graph container element
+ * @param onNodeLayout - Callback invoked after node layout is complete with the laid out nodes
  */
 function GraphCore({
   graphData,
   nativeFiles,
+  graphId = "file-graph-container",
+  onNodeLayout,
 }: {
   graphData: ElkNode;
   nativeFiles: FileObject[];
+  graphId?: string;
+  onNodeLayout?: (nodes: Node<NodeMetadata>[]) => void;
 }) {
   const [elk] = useState(() => new ELK());
   const [laidOutNodes, setLaidOutNodes] = useState<Node<NodeMetadata>[]>([]);
@@ -231,22 +388,19 @@ function GraphCore({
 
   // Called when the user clicks on a file or file-set node in the graph. It sets the currently
   // selected node so that its modal appears.
-  const onNodeClick = useCallback(
-    (e: React.MouseEvent, node: Node<NodeMetadata>) => {
-      // Detect if the click was in the QC button enclave within the clicked node.
-      if ((e.target as HTMLElement).closest("[data-qc-button]")) {
-        const metadata = node.data as FileMetadata;
-        setSelectedQualityMetrics(metadata.qualityMetrics);
-        setQualityMetricFile(metadata.file);
-        return;
-      }
+  function onNodeClick(e: React.MouseEvent, node: Node<NodeMetadata>) {
+    // Detect if the click was in the QC button enclave within the clicked node.
+    if ((e.target as HTMLElement).closest("[data-qc-button]")) {
+      const metadata = node.data as FileMetadata;
+      setSelectedQualityMetrics(metadata.qualityMetrics);
+      setQualityMetricFile(metadata.file);
+      return;
+    }
 
-      // Click was within the node but outside the QC button. Set a state to open the file or file-
-      // set modal.
-      setSelectedNode(node as Node<NodeMetadata>);
-    },
-    []
-  );
+    // Click was within the node but outside the QC button. Set a state to open the file or file-
+    // set modal.
+    setSelectedNode(node as Node<NodeMetadata>);
+  }
 
   useEffect(() => {
     // After ELK loads we can start layout with ELK. Do this inside useEffect so we can set the
@@ -257,6 +411,7 @@ function GraphCore({
         const { nodes, edges } = elkToReactFlow(graphDataWithLayout);
         setLaidOutNodes(nodes as Node<NodeMetadata>[]);
         setLaidOutEdges(edges);
+        onNodeLayout?.(nodes);
       })
       .catch((error) => {
         console.error("ELK layout failed:", error);
@@ -270,12 +425,12 @@ function GraphCore({
       const graphBounds = rf.getNodesBounds(rf.getNodes());
       setGraphHeight(
         Math.ceil(
-          graphBounds.y + graphBounds.height + NODE_HEIGHT + GRAPH_PADDING
+          graphBounds.y + graphBounds.height + GRAPH_PADDING + CONTAINER_PADDING
         )
       );
       setGraphWidth(
         Math.ceil(
-          graphBounds.x + graphBounds.width + NODE_WIDTH + GRAPH_PADDING
+          graphBounds.x + graphBounds.width + GRAPH_PADDING + CONTAINER_PADDING
         )
       );
     });
@@ -291,7 +446,7 @@ function GraphCore({
             width: graphWidth,
           }}
         >
-          <div className="h-full w-full p-2">
+          <div className="h-full w-full p-2" id={graphId}>
             <ReactFlow
               nodes={laidOutNodes}
               edges={laidOutEdges}
@@ -300,6 +455,7 @@ function GraphCore({
               maxZoom={1}
               nodeOrigin={[0, 0]}
               nodeTypes={nodeTypes}
+              edgeTypes={edgeTypes}
               nodesDraggable={false}
               nodesConnectable={false}
               elementsSelectable={false}
@@ -314,12 +470,6 @@ function GraphCore({
                 style: {
                   stroke: "var(--color-file-graph-edge)",
                   strokeWidth: 1,
-                },
-                markerEnd: {
-                  type: MarkerType.ArrowClosed,
-                  color: "var(--color-file-graph-edge)",
-                  width: 24,
-                  height: 24,
                 },
               }}
             />
@@ -362,17 +512,27 @@ function GraphCore({
  *
  * @param graphData - Graph data after ELK layout
  * @param nativeFiles - Files included directly in the file set the user is viewing
+ * @param graphId - ID to assign to the graph container element
  */
 function Graph({
   graphData,
   nativeFiles,
+  graphId = "file-graph-container",
+  onNodeLayout,
 }: {
   graphData: ElkNode;
   nativeFiles: FileObject[];
+  graphId?: string;
+  onNodeLayout?: (nodes: Node<NodeMetadata>[]) => void;
 }) {
   return (
     <ReactFlowProvider>
-      <GraphCore graphData={graphData} nativeFiles={nativeFiles} />
+      <GraphCore
+        graphData={graphData}
+        nativeFiles={nativeFiles}
+        graphId={graphId}
+        onNodeLayout={onNodeLayout}
+      />
     </ReactFlowProvider>
   );
 }
@@ -481,6 +641,8 @@ function GraphCycleError({ cycles }: { cycles: string[][] }) {
  * @param qualityMetrics - Quality metrics for `files`
  * @param title - Title that appears above the graph panel
  * @param panelId - ID of the file-graph panel unique on the page for the section directory
+ * @param graphId - ID of the graph container element unique on the page
+ * @param fileId - ID of the file the graph is for; used to customize download filename
  */
 export function FileGraph({
   files,
@@ -490,6 +652,8 @@ export function FileGraph({
   qualityMetrics,
   title = "File Association Graph",
   panelId = "file-graph",
+  graphId = "file-graph-container",
+  fileId = "",
 }: {
   files: FileObject[];
   fileFileSets: FileSetObject[];
@@ -498,7 +662,11 @@ export function FileGraph({
   qualityMetrics: QualityMetricObject[];
   title?: string;
   panelId?: string;
+  graphId?: string;
+  fileId?: string;
 }) {
+  const tooltipAttr = useTooltip(`tooltip-${graphId}`);
+
   // Create a set of paths of files that are available to be included in the graph. Any files
   // unavailable because of incomplete indexing or access privileges do not get included.
   const availableFilePaths = new Set([
@@ -537,12 +705,27 @@ export function FileGraph({
       <section role="region" aria-labelledby="file-graph">
         <DataAreaTitle id={panelId}>
           <div id="file-graph">{title}</div>
+          <TooltipRef tooltipAttr={tooltipAttr}>
+            <DownloadTrigger graphId={graphId} fileId={fileId} />
+          </TooltipRef>
+          <Tooltip tooltipAttr={tooltipAttr}>
+            Download the graph as an SVG file. See{" "}
+            <Link
+              href="/help/graph-download"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              tutorial
+            </Link>{" "}
+            for details.
+          </Tooltip>
         </DataAreaTitle>
         {graphData ? (
           <DataPanel isPaddingSuppressed>
             <Graph
               graphData={graphData}
               nativeFiles={filesWithFilteredDerived}
+              graphId={graphId}
             />
           </DataPanel>
         ) : (
