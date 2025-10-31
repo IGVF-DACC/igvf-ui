@@ -58,6 +58,8 @@ export interface DatabaseObject {
   release_timestamp?: string;
   status?: string;
   submitted_by?: string | UserObject;
+  supersedes?: string[];
+  superseded_by?: string[];
   title?: string;
   uuid?: string;
   [key: string]: unknown;
@@ -363,6 +365,7 @@ export interface FileSetObject extends DatabaseObject {
   construct_library_sets?: string[] | FileSetObject[];
   assay_term?: string | OntologyTermObject;
   assay_titles?: string[];
+  external_image_urls?: string[];
   file_set_type?: string;
   files: string[] | FileObject[];
   integrated_content_files?: string[] | FileObject[];

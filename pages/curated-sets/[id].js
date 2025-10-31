@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
@@ -35,6 +35,7 @@ import {
   requestFileSets,
   requestPublications,
   requestSamples,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -49,6 +50,8 @@ export default function CuratedSet({
   controlFor,
   samples,
   donors,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -59,8 +62,10 @@ export default function CuratedSet({
       <Breadcrumbs item={curatedSet} />
       <EditableItem item={curatedSet}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={curatedSet.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={curatedSet} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={curatedSet} />
@@ -159,6 +164,10 @@ CuratedSet.propTypes = {
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with this curated set
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this file set supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that supersede this file set
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this curated set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -223,6 +232,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
       publications = await requestPublications(publicationPaths, request);
     }
+
+    const { supersedes, supersededBy } = await requestSupersedes(
+      curatedSet,
+      "FileSet",
+      request
+    );
+
     const attribution = await buildAttribution(curatedSet, req.headers.cookie);
     return {
       props: {
@@ -234,6 +250,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         controlFor,
         samples,
         donors,
+        supersedes,
+        supersededBy,
         pageContext: { title: curatedSet.accession },
         attribution,
         isJson,

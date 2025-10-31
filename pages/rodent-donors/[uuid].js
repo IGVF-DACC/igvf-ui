@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import DbxrefList from "../../components/dbxref-list";
@@ -25,6 +25,7 @@ import {
   requestDocuments,
   requestPhenotypicFeatures,
   requestPublications,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -39,6 +40,8 @@ export default function RodentDonor({
   phenotypicFeatures,
   publications,
   documents,
+  supersedes,
+  supersededBy,
   attribution = null,
   sources,
   isJson,
@@ -50,7 +53,11 @@ export default function RodentDonor({
       <Breadcrumbs item={donor} />
       <EditableItem item={donor}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions alternateAccessions={donor.alternate_accessions} />
+        <AlternativeIdentifiers
+          alternateAccessions={donor.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
+        />
         <ObjectPageHeader item={donor} isJsonFormat={isJson} />
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <StatusPreviewDetail item={donor} />
@@ -114,6 +121,10 @@ RodentDonor.propTypes = {
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with the rodent donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors that this donor supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors that supersede this donor
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this donor
   attribution: PropTypes.object,
   // Source of donor
@@ -170,6 +181,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         })
       );
     }
+    const { supersedes, supersededBy } = await requestSupersedes(
+      donor,
+      "Donor",
+      request
+    );
     const attribution = await buildAttribution(donor, req.headers.cookie);
     return {
       props: {
@@ -178,6 +194,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         publications,
         documents,
         sources,
+        supersedes,
+        supersededBy,
         pageContext: { title: donor.accession },
         attribution,
         isJson,

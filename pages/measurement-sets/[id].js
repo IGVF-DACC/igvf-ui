@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { useContext } from "react";
 import { Fragment } from "react";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
@@ -17,7 +17,6 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
-  DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
@@ -49,6 +48,7 @@ import {
   requestPublications,
   requestSamples,
   requestSeqspecFiles,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -132,6 +132,8 @@ export default function MeasurementSet({
   seqspecDocuments,
   primerDesigns,
   libraryDesignFiles,
+  supersedes,
+  supersededBy,
   assayTitleDescriptionMap,
   attribution = null,
   isJson,
@@ -168,8 +170,10 @@ export default function MeasurementSet({
       <Breadcrumbs item={measurementSet} />
       <EditableItem item={measurementSet}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={measurementSet.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={measurementSet} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={measurementSet} />
@@ -263,27 +267,32 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {measurementSet.external_image_url && (
+                {measurementSet.external_image_urls?.length > 0 && (
                   <>
-                    <DataItemLabel className="flex items-center gap-1">
-                      External Image URL
-                      <TooltipRef tooltipAttr={tooltipAttr}>
-                        <QuestionMarkCircleIcon className="h-4 w-4" />
-                      </TooltipRef>
-                      <Tooltip tooltipAttr={tooltipAttr}>
-                        Image data is not hosted here due to size. Please use
-                        the link.
-                      </Tooltip>
+                    <DataItemLabel>
+                      <div className="flex items-center gap-1">
+                        External Image URLs
+                        <TooltipRef tooltipAttr={tooltipAttr}>
+                          <QuestionMarkCircleIcon className="h-4 w-4" />
+                        </TooltipRef>
+                        <Tooltip tooltipAttr={tooltipAttr}>
+                          Image data is not hosted here due to size. Please use
+                          the link.
+                        </Tooltip>
+                      </div>
                     </DataItemLabel>
-                    <DataItemValueUrl>
-                      <a
-                        href={measurementSet.external_image_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {measurementSet.external_image_url}
-                      </a>
-                    </DataItemValueUrl>
+                    <DataItemList isCollapsible isUrlList>
+                      {measurementSet.external_image_urls.map((url) => (
+                        <a
+                          key={url}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {url}
+                        </a>
+                      ))}
+                    </DataItemList>
                   </>
                 )}
               </FileSetDataItems>
@@ -432,6 +441,10 @@ MeasurementSet.propTypes = {
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this measurement set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this file set supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this file set is superseded by
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Map of assay term titles to their descriptions
   assayTitleDescriptionMap: PropTypes.object.isRequired,
   // Attribution for this measurement set
@@ -567,6 +580,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       publications = await requestPublications(publicationPaths, request);
     }
 
+    const { supersedes, supersededBy } = await requestSupersedes(
+      measurementSet,
+      "FileSet",
+      request
+    );
+
     const assayTitleDescriptionMap =
       await getMeasurementSetAssayTitleDescriptionMap(measurementSet, request);
 
@@ -592,6 +611,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         seqspecDocuments,
         primerDesigns,
         libraryDesignFiles,
+        supersedes,
+        supersededBy,
         assayTitleDescriptionMap,
         pageContext: { title: measurementSet.accession },
         attribution,

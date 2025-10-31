@@ -1,8 +1,9 @@
 // node_modules
 import PropTypes from "prop-types";
+import { useContext } from "react";
 // components
 import AliasList from "../../components/alias-list";
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import AnalysisStepTable from "../../components/analysis-step-table";
 import { AnalysisStepVersionTable } from "../../components/analysis-step-version-table";
 import Attribution from "../../components/attribution";
@@ -13,6 +14,7 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
+  DataItemValueAnnotated,
   DataItemValueUrl,
   DataPanel,
 } from "../../components/data-area";
@@ -21,8 +23,10 @@ import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
+import { getPreferredAssayTitleDescriptionMap } from "../../lib/ontology-terms";
 import PagePreamble from "../../components/page-preamble";
 import { useSecDir } from "../../components/section-directory";
+import SessionContext from "../../components/session-context";
 import { StatusPreviewDetail } from "../../components/status";
 import { WorkflowTitle } from "../../components/workflow";
 // lib
@@ -47,6 +51,9 @@ export default function Workflow({
   isJson,
 }) {
   const sections = useSecDir({ isJson });
+  const { profiles } = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    getPreferredAssayTitleDescriptionMap(profiles);
 
   return (
     <>
@@ -57,7 +64,7 @@ export default function Workflow({
           styledTitle={<WorkflowTitle workflow={workflow} />}
           sections={sections}
         />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={workflow.alternate_accessions}
         />
         <ObjectPageHeader item={workflow} isJsonFormat={isJson}>
@@ -71,6 +78,16 @@ export default function Workflow({
             <DataArea>
               <DataItemLabel>Name</DataItemLabel>
               <DataItemValue>{workflow.name}</DataItemValue>
+              {workflow.preferred_assay_titles?.length > 0 && (
+                <>
+                  <DataItemLabel>Preferred Assay Titles</DataItemLabel>
+                  <DataItemValueAnnotated
+                    externalAnnotations={preferredAssayTitleDescriptionMap}
+                  >
+                    {workflow.preferred_assay_titles}
+                  </DataItemValueAnnotated>
+                </>
+              )}
               {workflow.description && (
                 <>
                   <DataItemLabel>Description</DataItemLabel>

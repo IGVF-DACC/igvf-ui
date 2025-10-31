@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import DbxrefList from "../../components/dbxref-list";
@@ -31,6 +31,7 @@ import {
   requestDonors,
   requestPhenotypicFeatures,
   requestPublications,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -42,6 +43,8 @@ export default function HumanDonor({
   relatedDonors,
   publications,
   documents,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -52,7 +55,11 @@ export default function HumanDonor({
       <Breadcrumbs item={donor} />
       <EditableItem item={donor}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions alternateAccessions={donor.alternate_accessions} />
+        <AlternativeIdentifiers
+          alternateAccessions={donor.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
+        />
         <ObjectPageHeader item={donor} isJsonFormat={isJson} />
         <JsonDisplay item={donor} isJsonFormat={isJson}>
           <StatusPreviewDetail item={donor} />
@@ -109,6 +116,10 @@ HumanDonor.propTypes = {
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with human donor
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors that this donor supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors that supersedes this donor
+  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
   // HumanDonor attribution
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -163,6 +174,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestDocuments(donor.documents, request)
       : [];
 
+    const { supersedes, supersededBy } = await requestSupersedes(
+      donor,
+      "Donor",
+      request
+    );
+
     const attribution = await buildAttribution(donor, req.headers.cookie);
     return {
       props: {
@@ -170,6 +187,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         phenotypicFeatures,
         relatedDonors,
         publications,
+        supersedes,
+        supersededBy,
         documents,
         pageContext: { title: donor.accession },
         attribution,

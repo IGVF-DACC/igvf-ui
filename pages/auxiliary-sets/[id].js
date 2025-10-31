@@ -3,7 +3,7 @@ import _ from "lodash";
 import PropTypes from "prop-types";
 import { useContext } from "react";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
@@ -41,6 +41,7 @@ import {
   requestPublications,
   requestSamples,
   requestSeqspecFiles,
+  requestSupersedes,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -64,6 +65,8 @@ export default function AuxiliarySet({
   samples,
   donors,
   assayTitleDescriptionMap,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -82,8 +85,10 @@ export default function AuxiliarySet({
       <Breadcrumbs item={auxiliarySet} />
       <EditableItem item={auxiliarySet}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={auxiliarySet.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={auxiliarySet} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={auxiliarySet} />
@@ -206,6 +211,10 @@ AuxiliarySet.propTypes = {
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this file set supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object),
+  // File sets that supersede this file set
+  supersededBy: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this measurement set
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -310,6 +319,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         ? await getAssayTitleDescriptionMap(auxiliarySet.assay_titles, request)
         : {};
 
+    const { supersedes, supersededBy } = await requestSupersedes(
+      auxiliarySet,
+      "FileSet",
+      request
+    );
+
     const attribution = await buildAttribution(
       auxiliarySet,
       req.headers.cookie
@@ -329,6 +344,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         donors,
         controlFor,
         assayTitleDescriptionMap,
+        supersedes,
+        supersededBy,
         pageContext: { title: auxiliarySet.accession },
         attribution,
         isJson,

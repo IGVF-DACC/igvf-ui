@@ -47,7 +47,7 @@ describe("Test the DataArea component", () => {
     const dataItemLabels = screen.getAllByTestId("dataitemlabel");
     expect(dataItemLabels[0]).toBeInTheDocument();
     expect(dataItemLabels[0]).toHaveClass(
-      "break-words font-semibold text-data-label first:mt-0 dark:text-gray-400 mt-4 @xs:mt-0"
+      "text-data-label font-semibold wrap-break-word first:mt-0 dark:text-gray-400 mt-4 @xs:mt-0"
     );
 
     const values = screen.getAllByTestId("dataitemvalue");
@@ -109,7 +109,7 @@ describe("Test the DataArea component", () => {
     const dataItemLabel = screen.getByTestId("dataitemlabel");
     expect(dataItemLabel).toBeInTheDocument();
     expect(dataItemLabel).toHaveClass(
-      "break-words font-semibold text-data-label first:mt-0 dark:text-gray-400 mt-2 @xs:mt-0 font-black"
+      "text-data-label font-semibold wrap-break-word first:mt-0 dark:text-gray-400 mt-2 @xs:mt-0 font-black"
     );
 
     const value = screen.getByTestId("dataitemvalue");

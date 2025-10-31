@@ -24,6 +24,7 @@ import {
   requestSoftware,
   requestSoftwareVersions,
   requestSources,
+  requestSupersedes,
   requestTreatments,
   requestUsers,
   requestWorkflows,
@@ -1558,6 +1559,237 @@ describe("Test all the common requests", () => {
       expect(result[0]).toEqual(mockResult["@graph"][0]);
       expect(result[1]).toEqual(mockResult["@graph"][1]);
       expect(result[2]).toEqual(mockResult["@graph"][2]);
+    });
+  });
+
+  describe("requestSupersedes function", () => {
+    test("with both supersedes and superseded_by arrays", async () => {
+      const item = {
+        "@id": "/measurement-sets/IGVFDS1234TEST/",
+        "@type": ["MeasurementSet", "FileSet", "Item"],
+        accession: "IGVFDS1234TEST",
+        supersedes: [
+          "/measurement-sets/IGVFDS0001OLD/",
+          "/measurement-sets/IGVFDS0002OLD/",
+        ],
+        superseded_by: ["/measurement-sets/IGVFDS9999NEW/"],
+      } as DatabaseObject;
+
+      // Mock supersedes response
+      const mockSupersedesResult = {
+        "@graph": [
+          {
+            "@id": "/measurement-sets/IGVFDS0001OLD/",
+            "@type": ["MeasurementSet", "FileSet", "Item"],
+            accession: "IGVFDS0001OLD",
+          },
+          {
+            "@id": "/measurement-sets/IGVFDS0002OLD/",
+            "@type": ["MeasurementSet", "FileSet", "Item"],
+            accession: "IGVFDS0002OLD",
+          },
+        ],
+      };
+
+      // Mock superseded_by response
+      const mockSupersededByResult = {
+        "@graph": [
+          {
+            "@id": "/measurement-sets/IGVFDS9999NEW/",
+            "@type": ["MeasurementSet", "FileSet", "Item"],
+            accession: "IGVFDS9999NEW",
+          },
+        ],
+      };
+
+      mockFetch
+        .mockResolvedValueOnce(createMockResponse(mockSupersedesResult))
+        .mockResolvedValueOnce(createMockResponse(mockSupersededByResult));
+
+      const request = new FetchRequest();
+      const result = await requestSupersedes(item, "MeasurementSet", request);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/search-quick/?type=MeasurementSet&field=accession&@id=/measurement-sets/IGVFDS0001OLD/&@id=/measurement-sets/IGVFDS0002OLD/&limit=2",
+        expect.anything()
+      );
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/search-quick/?type=MeasurementSet&field=accession&@id=/measurement-sets/IGVFDS9999NEW/&limit=1",
+        expect.anything()
+      );
+
+      expect(result.supersedes).toHaveLength(2);
+      expect(result.supersedes[0]).toEqual(mockSupersedesResult["@graph"][0]);
+      expect(result.supersedes[1]).toEqual(mockSupersedesResult["@graph"][1]);
+      expect(result.supersededBy).toHaveLength(1);
+      expect(result.supersededBy[0]).toEqual(
+        mockSupersededByResult["@graph"][0]
+      );
+    });
+
+    test("with only supersedes array", async () => {
+      const item = {
+        "@id": "/measurement-sets/IGVFDS1234TEST/",
+        "@type": ["MeasurementSet", "FileSet", "Item"],
+        accession: "IGVFDS1234TEST",
+        supersedes: ["/measurement-sets/IGVFDS0001OLD/"],
+      } as DatabaseObject;
+
+      const mockSupersedesResult = {
+        "@graph": [
+          {
+            "@id": "/measurement-sets/IGVFDS0001OLD/",
+            "@type": ["MeasurementSet", "FileSet", "Item"],
+            accession: "IGVFDS0001OLD",
+          },
+        ],
+      };
+
+      mockFetch.mockResolvedValueOnce(createMockResponse(mockSupersedesResult));
+
+      const request = new FetchRequest();
+      const result = await requestSupersedes(item, "MeasurementSet", request);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/search-quick/?type=MeasurementSet&field=accession&@id=/measurement-sets/IGVFDS0001OLD/&limit=1",
+        expect.anything()
+      );
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      expect(result.supersedes).toHaveLength(1);
+      expect(result.supersedes[0]).toEqual(mockSupersedesResult["@graph"][0]);
+      expect(result.supersededBy).toHaveLength(0);
+    });
+
+    test("with only superseded_by array", async () => {
+      const item = {
+        "@id": "/measurement-sets/IGVFDS1234TEST/",
+        "@type": ["MeasurementSet", "FileSet", "Item"],
+        accession: "IGVFDS1234TEST",
+        superseded_by: ["/measurement-sets/IGVFDS9999NEW/"],
+      } as DatabaseObject;
+
+      const mockSupersededByResult = {
+        "@graph": [
+          {
+            "@id": "/measurement-sets/IGVFDS9999NEW/",
+            "@type": ["MeasurementSet", "FileSet", "Item"],
+            accession: "IGVFDS9999NEW",
+          },
+        ],
+      };
+
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse(mockSupersededByResult)
+      );
+
+      const request = new FetchRequest();
+      const result = await requestSupersedes(item, "MeasurementSet", request);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/search-quick/?type=MeasurementSet&field=accession&@id=/measurement-sets/IGVFDS9999NEW/&limit=1",
+        expect.anything()
+      );
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      expect(result.supersedes).toHaveLength(0);
+      expect(result.supersededBy).toHaveLength(1);
+      expect(result.supersededBy[0]).toEqual(
+        mockSupersededByResult["@graph"][0]
+      );
+    });
+
+    test("with neither supersedes nor superseded_by arrays", async () => {
+      const item = {
+        "@id": "/measurement-sets/IGVFDS1234TEST/",
+        "@type": ["MeasurementSet", "FileSet", "Item"],
+        accession: "IGVFDS1234TEST",
+      } as DatabaseObject;
+
+      const request = new FetchRequest();
+      const result = await requestSupersedes(item, "MeasurementSet", request);
+
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(result.supersedes).toHaveLength(0);
+      expect(result.supersededBy).toHaveLength(0);
+    });
+
+    test("with empty supersedes and superseded_by arrays", async () => {
+      const item = {
+        "@id": "/measurement-sets/IGVFDS1234TEST/",
+        "@type": ["MeasurementSet", "FileSet", "Item"],
+        accession: "IGVFDS1234TEST",
+        supersedes: [],
+        superseded_by: [],
+      } as DatabaseObject;
+
+      const request = new FetchRequest();
+      const result = await requestSupersedes(item, "MeasurementSet", request);
+
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(result.supersedes).toHaveLength(0);
+      expect(result.supersededBy).toHaveLength(0);
+    });
+
+    test("with different object type", async () => {
+      const item = {
+        "@id": "/auxiliary-sets/IGVFDS1234TEST/",
+        "@type": ["AuxiliarySet", "FileSet", "Item"],
+        accession: "IGVFDS1234TEST",
+        supersedes: ["/auxiliary-sets/IGVFDS0001OLD/"],
+      } as DatabaseObject;
+
+      const mockSupersedesResult = {
+        "@graph": [
+          {
+            "@id": "/auxiliary-sets/IGVFDS0001OLD/",
+            "@type": ["AuxiliarySet", "FileSet", "Item"],
+            accession: "IGVFDS0001OLD",
+          },
+        ],
+      };
+
+      mockFetch.mockResolvedValueOnce(createMockResponse(mockSupersedesResult));
+
+      const request = new FetchRequest();
+      const result = await requestSupersedes(item, "AuxiliarySet", request);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/search-quick/?type=AuxiliarySet&field=accession&@id=/auxiliary-sets/IGVFDS0001OLD/&limit=1",
+        expect.anything()
+      );
+
+      expect(result.supersedes).toHaveLength(1);
+      expect(result.supersedes[0]).toEqual(mockSupersedesResult["@graph"][0]);
+      expect(result.supersededBy).toHaveLength(0);
+    });
+
+    test("handles API errors gracefully", async () => {
+      const item = {
+        "@id": "/measurement-sets/IGVFDS1234TEST/",
+        "@type": ["MeasurementSet", "FileSet", "Item"],
+        accession: "IGVFDS1234TEST",
+        supersedes: ["/measurement-sets/IGVFDS0001OLD/"],
+        superseded_by: ["/measurement-sets/IGVFDS9999NEW/"],
+      } as DatabaseObject;
+
+      // Mock API error responses
+      const mockErrorResponse = {
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+        json: () => Promise.resolve({ error: "Not found" }),
+      } as Response;
+
+      mockFetch
+        .mockResolvedValueOnce(mockErrorResponse)
+        .mockResolvedValueOnce(mockErrorResponse);
+
+      const request = new FetchRequest();
+      const result = await requestSupersedes(item, "MeasurementSet", request);
+
+      expect(result.supersedes).toHaveLength(0);
+      expect(result.supersededBy).toHaveLength(0);
     });
   });
 });

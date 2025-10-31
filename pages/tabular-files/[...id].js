@@ -1,7 +1,7 @@
 // node_modules
 import PropTypes from "prop-types";
 // components
-import AlternateAccessions from "../../components/alternate-accessions";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
@@ -24,6 +24,7 @@ import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { QualityMetricPanel } from "../../components/quality-metric";
+import { ReferenceFileTable } from "../../components/reference-file-table";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
@@ -37,6 +38,7 @@ import {
   requestFiles,
   requestQualityMetrics,
   requestSamples,
+  requestSupersedes,
   requestWorkflows,
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
@@ -54,11 +56,14 @@ export default function TabularFile({
   documents,
   derivedFrom,
   inputFileFor,
+  referenceFiles,
   fileFormatSpecifications,
   integratedIn,
   primerDesignFor,
   workflows,
   qualityMetrics,
+  supersedes,
+  supersededBy,
   attribution = null,
   isJson,
 }) {
@@ -69,8 +74,10 @@ export default function TabularFile({
       <Breadcrumbs item={tabularFile} />
       <EditableItem item={tabularFile}>
         <PagePreamble sections={sections} />
-        <AlternateAccessions
+        <AlternativeIdentifiers
           alternateAccessions={tabularFile.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
         />
         <ObjectPageHeader item={tabularFile} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={tabularFile} />
@@ -119,6 +126,9 @@ export default function TabularFile({
                 </DataArea>
               </DataPanel>
             </>
+          )}
+          {referenceFiles.length > 0 && (
+            <ReferenceFileTable files={referenceFiles} />
           )}
           {workflows.length > 0 && <WorkflowTable workflows={workflows} />}
           <QualityMetricPanel qualityMetrics={qualityMetrics} />
@@ -194,6 +204,8 @@ TabularFile.propTypes = {
   derivedFrom: PropTypes.array,
   // Files that derive from this file
   inputFileFor: PropTypes.array.isRequired,
+  // ReferenceFiles associated with this file
+  referenceFiles: PropTypes.arrayOf(PropTypes.object),
   // Set of documents for file specifications
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // ConstructLibraryset this file was integrated in
@@ -204,6 +216,10 @@ TabularFile.propTypes = {
   workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics for this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
+  // Files that this file supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object),
+  // Files that supersede this file
+  supersededBy: PropTypes.arrayOf(PropTypes.object),
   // Attribution for this ReferenceFile
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -250,6 +266,10 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       tabularFile.input_file_for?.length > 0
         ? await requestFiles(tabularFile.input_file_for, request)
         : [];
+    const referenceFiles =
+      tabularFile.reference_files?.length > 0
+        ? await requestFiles(tabularFile.reference_files, request)
+        : [];
     let fileFormatSpecifications = [];
     if (tabularFile.file_format_specifications?.length > 0) {
       const fileFormatSpecificationsPaths =
@@ -283,6 +303,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       tabularFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(tabularFile.quality_metrics, request)
         : [];
+    const { supersedes, supersededBy } = await requestSupersedes(
+      tabularFile,
+      "File",
+      request
+    );
     const attribution = await buildAttribution(tabularFile, req.headers.cookie);
     return {
       props: {
@@ -291,11 +316,14 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         documents,
         derivedFrom,
         inputFileFor,
+        referenceFiles,
         fileFormatSpecifications,
         integratedIn,
         primerDesignFor,
         workflows,
         qualityMetrics,
+        supersedes,
+        supersededBy,
         pageContext: { title: tabularFile.accession },
         attribution,
         isJson,
