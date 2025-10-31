@@ -4,13 +4,15 @@ import type {
   Schema,
   SearchResults,
 } from "../globals.d";
+import { extractSchema } from "./profiles";
 
 /**
  * Given a database item object, return the schema that matches its @type. The first @type that
  * matches a schema in the profiles object gets used. If no match is found or `profiles` hasn't yet
  * loaded, return null.
- * @param item A database item object
- * @param profiles Contains all schemas keyed by `@type`; from /profiles endpoint
+ *
+ * @param item - A database item object
+ * @param profiles - Contains all schemas keyed by `@type`; from /profiles endpoint
  * @returns The first schema that matches the item's `@type`
  */
 export function itemToSchema(
@@ -18,8 +20,11 @@ export function itemToSchema(
   profiles: Profiles
 ): Schema | null {
   if (profiles && item && item["@type"]) {
-    const matchingSchema = item["@type"].find((type) => profiles[type]);
-    return matchingSchema ? profiles[matchingSchema] : null;
+    return (
+      item["@type"]
+        .map((type) => extractSchema(profiles, type))
+        .find((schema) => schema !== null) || null
+    );
   }
   return null;
 }
@@ -42,7 +47,7 @@ export function collectionToSchema(
         /^([a-zA-Z0-9]+)Collection$/
       );
       return collectionTypeMatch
-        ? profiles[collectionTypeMatch[1]] || null
+        ? extractSchema(profiles, collectionTypeMatch[1])
         : null;
     }
   }

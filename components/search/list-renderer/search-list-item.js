@@ -8,6 +8,8 @@ import Icon from "../../icon";
 import QualitySection from "../../quality-section";
 import SeparatedList from "../../separated-list";
 import SessionContext from "../../session-context";
+// lib
+import { extractSchema } from "../../../lib/profiles";
 
 /**
  * Display the main contents of a search-list item including the unique identifier, title, and
@@ -29,7 +31,7 @@ export function SearchListItemType({ item }) {
   const { profiles } = useContext(SessionContext);
 
   const type = item["@type"][0];
-  const typeName = profiles?.[type]?.title || type;
+  const typeName = extractSchema(profiles, type)?.title || type;
   return (
     <div className="inline" data-testid="search-list-item-type">
       {typeName}

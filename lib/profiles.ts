@@ -4,9 +4,9 @@ import FetchRequest from "./fetch-request";
 import {
   CollectionTitles,
   DataProviderObject,
+  ProfileHierarchy,
   Profiles,
   ProfilesProps,
-  ProfilesGeneric,
   Schema,
   SchemaProperties,
   SchemaProperty,
@@ -16,31 +16,12 @@ import {
  * The search mode for the search term. This specifies either the title of the schema or the
  * content of the schema.
  */
-export const SEARCH_MODE_TITLE = "SEARCH_MODE_TITLE";
-export const SEARCH_MODE_PROPERTIES = "SEARCH_MODE_PROPERTIES";
-
-/**
- * Recursive hierarchy of schema types. Keys are `@type` names; values are objects containing
- * subtypes. Leaf nodes, representing concrete types, have empty objects as values.
- * Example:
- * {
- *   "Sample": { // abstract `@type`
- *     "Biosample": { // abstract `@type`
- *       "InVitroSystem": {} // concrete `@type`
- *     },
- *     "MultiplexedSample": {} // concrete `@type`
- *     "TechnicalSample": {} // concrete `@type`
- *   },
- *   "Gene": {} // concrete `@type`
- * }
- */
-export type SchemaHierarchyNode = {
-  [key: string]: SchemaHierarchyNode;
-};
+export type SearchMode = "SEARCH_MODE_TITLE" | "SEARCH_MODE_PROPERTIES";
 
 /**
  * Loads the schemas for all object types, with each key of the object being the @type for each
  * schema.
+ *
  * @param dataProviderUrl URL of the data provider instance
  * @returns Promise that resolves to the /profiles object
  */
@@ -227,12 +208,58 @@ export function schemaToType(schema: Schema, profiles: Profiles): string {
   let objectType: string | undefined;
   if (profiles) {
     const objectTypes = Object.keys(profiles);
-    const profilesGeneric = profiles as ProfilesGeneric;
     objectType = objectTypes.find(
-      (type) => profilesGeneric[type].$id === schema.$id
+      (type) => extractSchema(profiles, type)?.$id === schema.$id
     );
   }
   return objectType || "";
+}
+
+/**
+ * Type guard to determine whether an unknown value is a Schema.
+ *
+ * @param value - Value to test as a Schema
+ * @returns True if the value is a Schema; false otherwise
+ */
+export function isSchema(value: unknown): value is Schema {
+  let hasPassedTests = false;
+  if (value && typeof value === "object") {
+    const potentialSchema = value as Schema;
+    const hasProperties =
+      typeof potentialSchema.properties === "object" &&
+      potentialSchema.properties !== null;
+
+    // Allow $schema and @type to be absent in lightweight test mocks, but if present ensure types
+    // are correct.
+    const idOk =
+      !("$id" in potentialSchema) || typeof potentialSchema.$id === "string";
+    const schemaOk =
+      !("$schema" in potentialSchema) ||
+      typeof potentialSchema.$schema === "string";
+    const atTypeOk =
+      !("@type" in potentialSchema) || Array.isArray(potentialSchema["@type"]);
+    hasPassedTests = hasProperties && idOk && schemaOk && atTypeOk;
+  }
+  return hasPassedTests;
+}
+
+/**
+ * Safely extract a schema from profiles by `@type`.
+ *
+ * @param profiles - Profiles object containing all schemas
+ * @param type - `@type` of the schema to retrieve
+ * @returns The schema matching the given `@type`; null if not found
+ */
+export function extractSchema(
+  profiles: Profiles | undefined | null,
+  type: string
+): Schema | null {
+  let extractedSchema: Schema | null = null;
+  if (profiles) {
+    const candidate = profiles[type];
+    extractedSchema = isSchema(candidate) ? candidate : null;
+  }
+  return extractedSchema;
 }
 
 /**
@@ -254,7 +281,7 @@ export function schemaToPath(schema: Schema): string {
  */
 function typeToRootTypeSearch(
   atType: string,
-  hierarchy: SchemaHierarchyNode,
+  hierarchy: ProfileHierarchy,
   rootParent = ""
 ): string {
   // Loop through each key at the current level of the hierarchy, searching for a matching `@type`
@@ -314,7 +341,7 @@ function typeToRootTypeSearch(
  * @returns The root-level parent `@type` of the given type; empty string if not found
  */
 export function typeToRootType(type: string, profiles: ProfilesProps): string {
-  const hierarchy = profiles?._hierarchy?.Item as SchemaHierarchyNode;
+  const hierarchy = profiles?._hierarchy?.Item as ProfileHierarchy;
   return hierarchy ? typeToRootTypeSearch(type, hierarchy) : "";
 }
 

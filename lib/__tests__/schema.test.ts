@@ -2,6 +2,9 @@ import type { DatabaseObject, Profiles, SearchResults } from "../../globals.d";
 import { itemToSchema, collectionToSchema } from "../schema";
 
 const testProfiles: Profiles = {
+  "@type": ["JSONSchemas"],
+  _hierarchy: { Item: {} },
+  _subtypes: {},
   ItemType: {
     $id: "/profiles/test.json",
     $schema: "https://json-schema.org/draft/2020-12/schema",
@@ -22,7 +25,7 @@ const testProfiles: Profiles = {
 
 describe("Test itemToSchema function", () => {
   it("returns null if profiles is null", () => {
-    const item = { "@type": ["ItemType", "ParentType"] };
+    const item = { "@id": "/item/1", "@type": ["ItemType", "ParentType"] };
     expect(itemToSchema(item, null)).toBeNull();
   });
 
@@ -45,23 +48,45 @@ describe("Test itemToSchema function", () => {
   });
 
   it("returns null if item has empty @type", () => {
-    const item = { "@type": [] };
+    const item = { "@id": "/item/1", "@type": [] };
     expect(itemToSchema(item, testProfiles)).toBeNull();
   });
 
   it("returns null if item has no matching @type", () => {
-    const item = { "@type": ["UnusedType", "ParentType"] };
+    const item = { "@id": "/item/1", "@type": ["UnusedType", "ParentType"] };
     expect(itemToSchema(item, testProfiles)).toBeNull();
   });
 
+  it("returns null if item @type exists but schema is invalid", () => {
+    const profilesWithInvalidSchema: Profiles = {
+      ...testProfiles,
+      InvalidType: "not a schema" as any,
+    };
+    const item = { "@id": "/item/1", "@type": ["InvalidType", "ParentType"] };
+    expect(itemToSchema(item, profilesWithInvalidSchema)).toBeNull();
+  });
+
+  it("returns null if item @type exists but has no properties field", () => {
+    const profilesWithBadSchema: Profiles = {
+      ...testProfiles,
+      BadSchema: {
+        $id: "/profiles/bad.json",
+        $schema: "https://json-schema.org/draft/2020-12/schema",
+        "@type": ["Bad"],
+      } as any,
+    };
+    const item = { "@id": "/item/1", "@type": ["BadSchema"] };
+    expect(itemToSchema(item, profilesWithBadSchema)).toBeNull();
+  });
+
   it("returns schema if item has matching @type", () => {
-    const item = { "@type": ["ItemType", "ParentType"] };
+    const item = { "@id": "/item/1", "@type": ["ItemType", "ParentType"] };
     const matchingSchema = itemToSchema(item, testProfiles);
     expect(matchingSchema.$id).toEqual("/profiles/test.json");
   });
 
   it("itemToSchema returns parent schema if item type matches none", () => {
-    const item = { "@type": ["ChildType", "ItemType"] };
+    const item = { "@id": "/item/1", "@type": ["ChildType", "ItemType"] };
     const matchingSchema = itemToSchema(item, testProfiles);
     expect(matchingSchema.$id).toEqual("/profiles/test.json");
   });
@@ -79,6 +104,8 @@ describe("Test collectionToSchema function", () => {
         title: "ID",
       },
     },
+    facets: [],
+    filters: [],
     notification: "Success",
     title: "Test",
     total: 0,
@@ -131,6 +158,8 @@ describe("Test collectionToSchema function", () => {
           title: "ID",
         },
       },
+      facets: [],
+      filters: [],
       notification: "Success",
       title: "Item Type",
       total: 0,

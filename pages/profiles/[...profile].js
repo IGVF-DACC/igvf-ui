@@ -55,7 +55,6 @@ import {
   notSubmittableProperty,
   schemaPageTabUrl,
   schemaToType,
-  SEARCH_MODE_PROPERTIES,
 } from "../../lib/profiles";
 import { decodeUriElement, encodeUriElement } from "../../lib/query-encoding";
 
@@ -574,7 +573,7 @@ function SchemaProperties({
           <SchemaSearchField
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-            searchMode={SEARCH_MODE_PROPERTIES}
+            searchMode={"SEARCH_MODE_PROPERTIES"}
           />
           <HelpTip>
             Highlight properties with matching names, &ldquo;title&rdquo;

@@ -1,7 +1,6 @@
 // node_modules
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import router from "next/router";
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 // components
 import { AddLink } from "../../components/add";
@@ -23,6 +22,7 @@ import {
   SearchAndReportType,
 } from "../../components/profiles";
 import SchemaIcon from "../../components/schema-icon";
+import { extractSchema } from "../../lib/profiles";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
 import { deprecatedSchemas } from "../../lib/constants";
@@ -31,23 +31,31 @@ import {
   checkSearchTermSchema,
   checkSearchTermTitle,
   schemaToPath,
-  SEARCH_MODE_PROPERTIES,
-  SEARCH_MODE_TITLE,
+  type SearchMode,
 } from "../../lib/profiles";
 import { decodeUriElement, encodeUriElement } from "../../lib/query-encoding";
 import {
+  retrieveCollectionNames,
   retrieveCollectionTitles,
   retrieveProfiles,
 } from "../../lib/server-objects";
+// root
+import type {
+  CollectionTitles,
+  ProfileHierarchy,
+  Profiles,
+  Schema,
+} from "../../globals";
 
 /**
  * Copy the given schema object and delete deprecated schemas from it.
- * @param {object} profiles Schema object to copy and delete deprecated schemas from
- * @returns {object} New schema object with deprecated schemas deleted
+ *
+ * @param profiles - Schema object to copy and delete deprecated schemas from
+ * @returns New schema object with deprecated schemas deleted
  */
-function deleteDeprecatedSchemas(profiles) {
+function deleteDeprecatedSchemas(profiles: Profiles): Profiles {
   // Copy profiles properties except for those in `deprecatedSchemas`.
-  const newProfiles = { ...profiles };
+  const newProfiles: Profiles = { ...profiles };
   for (const schema of deprecatedSchemas) {
     if (newProfiles[schema]) {
       delete newProfiles[schema];
@@ -59,25 +67,33 @@ function deleteDeprecatedSchemas(profiles) {
 /**
  * Returns true if the given object type is displayable in the UI. This also indicates that you
  * can add and edit objects of this type.
- * @param {string} objectType Object @type to check
- * @param {object} schemas List of schemas to display in the list; directly from /profiles endpoint
- * @param {object} tree Top of the _hierarchy tree at this level
- * @returns {boolean} True if the object type is displayable/addable/editable
+ *
+ * @param - objectType Object @type to check
+ * @param - schemas List of schemas to display in the list; directly from /profiles endpoint
+ * @param - tree Top of the _hierarchy tree at this level
+ * @returns True if the object type is displayable/addable/editable
  */
-function isDisplayableType(objectType, schemas, tree) {
+function isDisplayableType(
+  objectType: string,
+  schemas: Profiles,
+  tree: ProfileHierarchy
+): boolean {
+  const schema: Schema | undefined = extractSchema(schemas, objectType);
   return (
-    schemas[objectType]?.identifyingProperties?.length > 0 ||
+    (schema?.identifyingProperties?.length ?? 0) > 0 ||
     Object.keys(tree).length > 0
   );
 }
 
 /**
  * Display a help tip for the schema search field. Its contents depend on the current search mode.
+ *
+ * @param searchMode - Current search mode: title or properties
  */
-function SchemaSearchHelpTip({ searchMode }) {
+function SchemaSearchHelpTip({ searchMode }: { searchMode: SearchMode }) {
   return (
     <HelpTip>
-      {searchMode === SEARCH_MODE_TITLE ? (
+      {searchMode === "SEARCH_MODE_TITLE" ? (
         <>Highlight schemas with matching titles.</>
       ) : (
         <>
@@ -88,12 +104,6 @@ function SchemaSearchHelpTip({ searchMode }) {
     </HelpTip>
   );
 }
-
-SchemaSearchHelpTip.propTypes = {
-  // The current search mode
-  searchMode: PropTypes.oneOf([SEARCH_MODE_TITLE, SEARCH_MODE_PROPERTIES])
-    .isRequired,
-};
 
 /**
  * Display a header above the panel of schemas. Display within it a link to the schema graph.
@@ -110,51 +120,56 @@ function ProfilesHeader() {
 
 /**
  * Show a text field that lets the user type in a search term to filter the list of schemas.
+ *
+ * @param searchTerm - Current search term
+ * @param setSearchTerm - Function to set the search term
+ * @param searchMode - Current search mode: title or properties
+ * @param setSearchMode - Function to set the search mode
  */
 function SearchSection({
   searchTerm,
   setSearchTerm,
   searchMode,
   setSearchMode,
+}: {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  searchMode: SearchMode;
+  setSearchMode: (mode: SearchMode) => void;
 }) {
   return (
     <section className="border-panel bg-schema-search sticky top-7 border-b px-4 py-3">
       <FormLabel htmlFor="schema-search">
-        {searchMode === SEARCH_MODE_TITLE
+        {searchMode === "SEARCH_MODE_TITLE"
           ? "Search Schema Titles"
           : "Search Schema Properties"}
       </FormLabel>
       <div className="flex gap-2">
         <AttachedButtons className="[&>button]:h-full">
           <Button
-            onClick={() => setSearchMode(SEARCH_MODE_TITLE)}
-            type={searchMode === SEARCH_MODE_TITLE ? "selected" : "secondary"}
+            onClick={() => setSearchMode("SEARCH_MODE_TITLE")}
+            type={searchMode === "SEARCH_MODE_TITLE" ? "selected" : "secondary"}
             size="sm"
             label="Search schema titles"
             role="radio"
-            isSelected={searchMode === SEARCH_MODE_TITLE}
+            isSelected={searchMode === "SEARCH_MODE_TITLE"}
           >
             Title
           </Button>
           <Button
-            onClick={() => setSearchMode(SEARCH_MODE_PROPERTIES)}
+            onClick={() => setSearchMode("SEARCH_MODE_PROPERTIES")}
             type={
-              searchMode === SEARCH_MODE_PROPERTIES ? "selected" : "secondary"
+              searchMode === "SEARCH_MODE_PROPERTIES" ? "selected" : "secondary"
             }
             size="sm"
             label="Search schema properties"
             role="radio"
-            isSelected={searchMode === SEARCH_MODE_PROPERTIES}
+            isSelected={searchMode === "SEARCH_MODE_PROPERTIES"}
           >
             Properties
           </Button>
         </AttachedButtons>
         <SchemaSearchField
-          label={
-            searchMode === SEARCH_MODE_TITLE
-              ? "Schema title search"
-              : "schema property search"
-          }
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           searchMode={searchMode}
@@ -165,20 +180,16 @@ function SearchSection({
   );
 }
 
-SearchSection.propTypes = {
-  // Current search term
-  searchTerm: PropTypes.string.isRequired,
-  // Function to set the search term
-  setSearchTerm: PropTypes.func.isRequired,
-  // Current search mode: title or properties
-  searchMode: PropTypes.string.isRequired,
-  // Function to set the search mode
-  setSearchMode: PropTypes.func.isRequired,
-};
-
 /**
  * Displays a schema element and its children. This component uses recursion, so every element at
  * different times exists as a child and a parent -- possibly a parent with no children.
+ *
+ * @param tree - Top of the _hierarchy tree to render at this level
+ * @param objectType - Object @type for `tree`
+ * @param schemas - List of schemas to display in the list; directly from /profiles endpoint
+ * @param searchTerm - Current search term
+ * @param searchMode - Search mode: title or properties
+ * @param collectionTitles - Maps collection names to corresponding human-readable schema titles
  */
 function SubTree({
   tree,
@@ -187,17 +198,27 @@ function SubTree({
   searchTerm,
   searchMode,
   collectionTitles = null,
+  collectionNames = null,
+}: {
+  tree: ProfileHierarchy;
+  objectType: string;
+  schemas: Profiles;
+  searchTerm: string;
+  searchMode: SearchMode;
+  collectionTitles?: CollectionTitles | null;
+  collectionNames?: Record<string, string> | null;
 }) {
   const tooltipAttr = useTooltip(objectType);
 
   const title = collectionTitles?.[objectType] || objectType;
-  const schema = schemas[objectType];
+  const schema: Schema | undefined = extractSchema(schemas, objectType);
   const childObjectTypes = Object.keys(tree).filter((childObjectType) =>
     isDisplayableType(childObjectType, schemas, tree[childObjectType])
   );
+  const collectionName = collectionNames?.[objectType] || "";
 
   let isTitleHighlighted = false;
-  if (searchMode === SEARCH_MODE_TITLE) {
+  if (searchMode === "SEARCH_MODE_TITLE") {
     isTitleHighlighted = checkSearchTermTitle(searchTerm, title);
   } else {
     isTitleHighlighted = schema?.properties
@@ -225,7 +246,7 @@ function SubTree({
   // with the search term as a hash. Idea from:
   // https://stackoverflow.com/questions/75657476/next-js-execute-onclick-event-before-href-link-routing#75658026
   async function onClick(event) {
-    if (isTitleHighlighted && searchMode === SEARCH_MODE_PROPERTIES) {
+    if (isTitleHighlighted && searchMode === "SEARCH_MODE_PROPERTIES") {
       event.preventDefault();
       await router.push(`${event.target.href}#${encodeUriElement(searchTerm)}`);
     }
@@ -262,7 +283,11 @@ function SubTree({
               {schema.description || "No description available"}
             </Tooltip>
             <SearchAndReportType type={objectType} title={title} />
-            <AddLink schema={schema} label={`Add ${schema.title}`} />
+            <AddLink
+              schema={schema}
+              collectionName={collectionName}
+              label={`Add ${schema.title}`}
+            />
           </>
         ) : (
           <>
@@ -283,6 +308,7 @@ function SubTree({
                 searchTerm={searchTerm}
                 searchMode={searchMode}
                 collectionTitles={collectionTitles}
+                collectionNames={collectionNames}
                 key={childObjectType}
               />
             );
@@ -293,28 +319,21 @@ function SubTree({
   );
 }
 
-SubTree.propTypes = {
-  // Top of the _hierarchy tree to render at this level
-  tree: PropTypes.object.isRequired,
-  // @type for `tree`
-  objectType: PropTypes.string.isRequired,
-  // List of schemas to display in the list; directly from /profiles endpoint
-  schemas: PropTypes.object.isRequired,
-  // Current search term
-  searchTerm: PropTypes.string.isRequired,
-  // Search mode: title or properties
-  searchMode: PropTypes.string.isRequired,
-  // Maps collection names to corresponding human-readable schema titles
-  collectionTitles: PropTypes.object.isRequired,
-};
-
-export default function Profiles({ schemas, collectionTitles = null }) {
+export default function Profiles({
+  schemas,
+  collectionTitles = null,
+  collectionNames = null,
+}: {
+  schemas: Profiles;
+  collectionTitles?: CollectionTitles | null;
+  collectionNames?: Record<string, string> | null;
+}) {
   // Search term for schema
   const [searchTerm, setSearchTerm] = useState("");
   // Search mode: title or properties
-  const [searchMode, setSearchMode] = useSessionStorage(
+  const [searchMode, setSearchMode] = useSessionStorage<SearchMode>(
     "schema-search-mode",
-    SEARCH_MODE_TITLE
+    "SEARCH_MODE_TITLE"
   );
 
   const topLevelObjectTypes = Object.keys(schemas._hierarchy.Item).filter(
@@ -331,7 +350,7 @@ export default function Profiles({ schemas, collectionTitles = null }) {
     // hash.
     if (window.location.hash) {
       setSearchTerm(decodeUriElement(window.location.hash.slice(1)));
-      setSearchMode(SEARCH_MODE_PROPERTIES);
+      setSearchMode("SEARCH_MODE_PROPERTIES");
     }
   }, []);
 
@@ -358,6 +377,7 @@ export default function Profiles({ schemas, collectionTitles = null }) {
                 searchTerm={searchTerm}
                 searchMode={searchMode}
                 collectionTitles={collectionTitles}
+                collectionNames={collectionNames}
                 key={objectType}
               />
             );
@@ -367,17 +387,6 @@ export default function Profiles({ schemas, collectionTitles = null }) {
     </>
   );
 }
-
-Profiles.propTypes = {
-  // List of schemas to display in the list; directly from /profiles endpoint
-  schemas: PropTypes.shape({
-    _hierarchy: PropTypes.shape({
-      Item: PropTypes.object.isRequired,
-    }).isRequired,
-  }),
-  // Map of collection names to corresponding schema titles
-  collectionTitles: PropTypes.object,
-};
 
 export async function getServerSideProps({ req }) {
   const schemas = await retrieveProfiles(req.headers.cookie);
@@ -392,11 +401,18 @@ export async function getServerSideProps({ req }) {
     return { notFound: true };
   }
 
+  const collectionNames = await retrieveCollectionNames(req.headers.cookie);
+  if (!collectionNames) {
+    // 404 page
+    return { notFound: true };
+  }
+
   const schemasWithoutDeprecated = deleteDeprecatedSchemas(schemas);
   return {
     props: {
       schemas: schemasWithoutDeprecated,
       collectionTitles,
+      collectionNames,
       pageContext: { title: "Schema Directory" },
     },
   };

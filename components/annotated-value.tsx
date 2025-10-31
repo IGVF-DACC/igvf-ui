@@ -6,6 +6,7 @@ import SessionContext from "./session-context";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { toShishkebabCase } from "../lib/general";
+import { extractSchema } from "../lib/profiles";
 
 /**
  * Display a single data-item value with an annotation that appears in a tooltip.
@@ -59,7 +60,8 @@ export function AnnotatedValue({
   if (hasExternal) {
     annotations = externalAnnotations;
   } else {
-    const schemaProperty = profiles?.[objectType]?.properties?.[propertyName];
+    const schema = extractSchema(profiles, objectType);
+    const schemaProperty = schema?.properties?.[propertyName];
     if (schemaProperty) {
       if (schemaProperty.type === "array") {
         annotations = schemaProperty.items?.enum_descriptions || {};

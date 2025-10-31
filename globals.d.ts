@@ -148,26 +148,45 @@ export interface Schema {
 }
 
 /**
+ * Recursive hierarchy of schema types. Keys are `@type` names; values are objects containing
+ * subtypes. Leaf nodes, representing concrete types, have empty objects as values.
+ * Example:
+ * {
+ *   "Sample": { // abstract `@type`
+ *     "Biosample": { // abstract `@type`
+ *       "InVitroSystem": {} // concrete `@type`
+ *     },
+ *     "MultiplexedSample": {} // concrete `@type`
+ *     "TechnicalSample": {} // concrete `@type`
+ *   },
+ *   "Gene": {} // concrete `@type`
+ * }
+ */
+export type ProfileHierarchy = {
+  [key: string]: ProfileHierarchy;
+};
+
+/**
  * Describes the /profiles endpoint object, which is an object with `@type`s as its keys and
  * the corresponding schemas for each type as the values.
  */
 export interface ProfilesProps {
   "@type": string[];
   _hierarchy: {
-    Item: {
-      [key: string]: object;
-    };
+    Item: ProfileHierarchy;
   };
   _subtypes: {
     [key: string]: string[];
   };
 }
 
-export interface ProfilesGeneric {
-  [key: string]: Schema;
-}
-
-export type Profiles = ProfilesProps & ProfilesGeneric;
+// Profiles contains special properties plus dynamic keys for each schema `@type`.
+// We intentionally type dynamic entries as `unknown` here to keep the special properties
+// strongly typed without allowing impossible shapes on arbitrary keys. Where schema values
+// are needed, cast to `ProfilesGeneric` locally.
+export type Profiles = ProfilesProps & {
+  [key: string]: unknown;
+};
 
 /**
  * Describes the search-results object returned by the data provider.

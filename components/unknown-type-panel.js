@@ -8,6 +8,8 @@ import { findCommonDataRenderer } from "./common-data-items";
 import { DataArea, DataItemLabel, DataItemValue, DataPanel } from "./data-area";
 import SessionContext from "./session-context";
 import UnspecifiedProperty from "./unspecified-property";
+// lib
+import { extractSchema } from "../lib/profiles";
 
 /** @type {string[]} Properties to never display */
 const PROPERTIES_TO_OMIT = [
@@ -34,7 +36,7 @@ const PROPERTIES_TO_OMIT = [
 export default function UnknownTypePanel({ item, attribution = null }) {
   // Get the schema corresponding to the given item. It might not have loaded yet.
   const { profiles } = useContext(SessionContext);
-  const profile = profiles?.[item["@type"][0]];
+  const profile = extractSchema(profiles, item["@type"][0]);
 
   // Get the common data renderer for the parent type of the given item so that the properties it
   // shares with other objects with the same parent type get rendered the same way.

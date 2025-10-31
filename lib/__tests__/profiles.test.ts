@@ -3,14 +3,14 @@ import {
   checkSearchTermSchema,
   checkSearchTermTitle,
   getProfiles,
+  extractSchema,
+  isSchema,
   notSubmittableProperty,
   schemaNameToCollectionName,
   schemaPageTabUrl,
   schemaToPath,
   schemaToType,
   typeToRootType,
-  SEARCH_MODE_TITLE,
-  SEARCH_MODE_PROPERTIES,
 } from "../profiles";
 // types
 import {
@@ -21,18 +21,8 @@ import {
   SchemaProperty,
 } from "../../globals";
 
-describe("Test exported constants", () => {
-  it("should have correct SEARCH_MODE_TITLE constant", () => {
-    expect(SEARCH_MODE_TITLE).toBe("SEARCH_MODE_TITLE");
-  });
-
-  it("should have correct SEARCH_MODE_PROPERTIES constant", () => {
-    expect(SEARCH_MODE_PROPERTIES).toBe("SEARCH_MODE_PROPERTIES");
-  });
-});
-
 describe("Test getProfiles functionality", () => {
-  it("retrieves the schema profiles object", () => {
+  it("retrieves the schema profiles object", async () => {
     const mockData = {
       title: "Human Donor",
       $id: "/profiles/human_donor.json",
@@ -55,9 +45,8 @@ describe("Test getProfiles functionality", () => {
       })
     );
 
-    getProfiles().then((data) => {
-      expect(data).toEqual(mockData);
-    });
+    const data = await getProfiles();
+    expect(data).toEqual(mockData);
   });
 });
 
@@ -311,7 +300,7 @@ describe("Test the schemaPageTabUrl function", () => {
     expect(url).toBe("");
   });
 
-  it("returns an empty string with no schema page URL", () => {
+  it("returns an empty string with an empty schema page URL", () => {
     const url = schemaPageTabUrl("", "schema");
     expect(url).toBe("");
   });
@@ -348,6 +337,9 @@ describe("Test the schemaToType function", () => {
     };
 
     const profiles: Profiles = {
+      "@type": ["JSONSchemas"],
+      _hierarchy: { Item: {} },
+      _subtypes: {},
       HumanDonor: {
         "@type": ["JSONSchema"],
         title: "Human Donor",
@@ -411,6 +403,9 @@ describe("Test the schemaToType function", () => {
     };
 
     const profiles: Profiles = {
+      "@type": ["JSONSchemas"],
+      _hierarchy: { Item: {} },
+      _subtypes: {},
       RodentDonor: {
         "@type": ["JSONSchema"],
         title: "Rodent Donor",
@@ -473,7 +468,11 @@ describe("Test the schemaToType function", () => {
       },
     };
 
-    const result = schemaToType(schema, {});
+    const result = schemaToType(schema, {
+      "@type": ["JSONSchemas"],
+      _hierarchy: { Item: {} },
+      _subtypes: {},
+    });
     expect(result).toBe("");
   });
 });
@@ -699,5 +698,142 @@ describe("Test schemaNameToCollectionName functionality", () => {
   it("should return first non-uppercase match when multiple valid matches exist", () => {
     const result = schemaNameToCollectionName("gene", mockCollectionTitles);
     expect(result).toBe("genes");
+  });
+});
+
+describe("Test isSchema type guard", () => {
+  it("should return true for valid schema with all required fields", () => {
+    const validSchema = {
+      $id: "/profiles/test.json",
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      "@type": ["JSONSchema"],
+      properties: {
+        name: { type: "string" },
+      },
+    };
+    expect(isSchema(validSchema)).toBe(true);
+  });
+
+  it("should return true for minimal schema with only properties", () => {
+    const minimalSchema = {
+      properties: {
+        name: { type: "string" },
+      },
+    };
+    expect(isSchema(minimalSchema)).toBe(true);
+  });
+
+  it("should return false for null", () => {
+    expect(isSchema(null)).toBe(false);
+  });
+
+  it("should return false for undefined", () => {
+    expect(isSchema(undefined)).toBe(false);
+  });
+
+  it("should return false for non-object types", () => {
+    expect(isSchema("string")).toBe(false);
+    expect(isSchema(123)).toBe(false);
+    expect(isSchema(true)).toBe(false);
+  });
+
+  it("should return false for object without properties", () => {
+    expect(isSchema({ $id: "/test.json" })).toBe(false);
+  });
+
+  it("should return false for object with null properties", () => {
+    expect(isSchema({ properties: null })).toBe(false);
+  });
+
+  it("should return false when $id is not a string", () => {
+    const invalidSchema = {
+      $id: 123,
+      properties: {},
+    };
+    expect(isSchema(invalidSchema)).toBe(false);
+  });
+
+  it("should return false when $schema is not a string", () => {
+    const invalidSchema = {
+      $schema: true,
+      properties: {},
+    };
+    expect(isSchema(invalidSchema)).toBe(false);
+  });
+
+  it("should return false when @type is not an array", () => {
+    const invalidSchema = {
+      "@type": "JSONSchema",
+      properties: {},
+    };
+    expect(isSchema(invalidSchema)).toBe(false);
+  });
+});
+
+describe("Test extractSchema function", () => {
+  const mockProfiles: Profiles = {
+    "@type": ["JSONSchemas"],
+    _hierarchy: { Item: {} },
+    _subtypes: {},
+    HumanDonor: {
+      "@type": ["JSONSchema"],
+      title: "Human Donor",
+      $id: "/profiles/human_donor.json",
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      properties: {
+        "@id": {
+          title: "ID",
+          type: "string",
+        },
+      },
+    },
+    TestSchema: {
+      properties: {
+        name: { type: "string" },
+      },
+    },
+  };
+
+  it("should return schema when type exists and is valid", () => {
+    const result = extractSchema(mockProfiles, "HumanDonor");
+    expect(result).toBeDefined();
+    expect(result?.title).toBe("Human Donor");
+  });
+
+  it("should return schema for minimal valid schema", () => {
+    const result = extractSchema(mockProfiles, "TestSchema");
+    expect(result).toBeDefined();
+    expect(result?.properties).toBeDefined();
+  });
+
+  it("should return null when type does not exist", () => {
+    const result = extractSchema(mockProfiles, "NonExistent");
+    expect(result).toBeNull();
+  });
+
+  it("should return null when profiles is null", () => {
+    const result = extractSchema(null, "HumanDonor");
+    expect(result).toBeNull();
+  });
+
+  it("should return null when profiles is undefined", () => {
+    const result = extractSchema(undefined, "HumanDonor");
+    expect(result).toBeNull();
+  });
+
+  it("should return null when value at type is not a valid schema", () => {
+    const invalidProfiles = {
+      "@type": ["JSONSchemas"],
+      _hierarchy: { Item: {} },
+      _subtypes: {},
+      InvalidType: "not a schema",
+    } as unknown as Profiles;
+    const result = extractSchema(invalidProfiles, "InvalidType");
+    expect(result).toBeNull();
+  });
+
+  it("should return null when accessing special keys", () => {
+    const result = extractSchema(mockProfiles, "@type");
+    expect(result).toBeNull();
   });
 });

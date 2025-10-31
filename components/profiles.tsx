@@ -14,7 +14,7 @@ import SeparatedList from "./separated-list";
 import { VersionNumber } from "./version-number";
 // lib
 import { isObjectArrayProperty, isStringArrayProperty } from "../lib/general";
-import { schemaToPath, SEARCH_MODE_TITLE } from "../lib/profiles";
+import { schemaToPath, type SearchMode } from "../lib/profiles";
 // root
 import { Schema } from "../globals";
 
@@ -40,7 +40,7 @@ export function SchemaSearchField({
 }: {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  searchMode: string;
+  searchMode: SearchMode;
   className?: string;
 }) {
   return (
@@ -58,7 +58,7 @@ export function SchemaSearchField({
         onClick={() => setSearchTerm("")}
         className="absolute top-0 right-0 flex h-full w-8 cursor-pointer items-center justify-center"
         aria-label={
-          searchMode === SEARCH_MODE_TITLE
+          searchMode === "SEARCH_MODE_TITLE"
             ? "Clear schema title search"
             : "Clear schema property search"
         }
