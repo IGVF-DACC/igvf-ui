@@ -2,13 +2,13 @@
 import _ from "lodash";
 import { ComponentType } from "react";
 // lib
+import { extractSchema } from "./profiles";
 import QueryString from "./query-string";
 import { splitPathAndQueryString } from "./query-utils";
-// types
+// root
 import type {
   DatabaseObject,
   Profiles,
-  ProfilesGeneric,
   ProfilesProps,
   Schema,
   SchemaProperties,
@@ -96,7 +96,7 @@ export function getSchemasForReportTypes(
 ): Schema[] {
   if (profiles) {
     return reportTypes.reduce((schemaAcc: Schema[], reportType) => {
-      const schema = (profiles as ProfilesGeneric)[reportType];
+      const schema = extractSchema(profiles, reportType);
       if (schema) {
         // Matching schema found for the report type. Add it to the schema accumulator.
         return [...schemaAcc, schema];
@@ -108,10 +108,10 @@ export function getSchemasForReportTypes(
       if (subTypes) {
         // The report type is an abstract type with subtypes. Add all the subtypes' schemas to the
         // schema accumulator.
-        return [
-          ...schemaAcc,
-          ...subTypes.map((subType) => (profiles as ProfilesGeneric)[subType]),
-        ];
+        const subTypeSchemas = subTypes
+          .map((subType) => extractSchema(profiles, subType))
+          .filter((s): s is Schema => Boolean(s));
+        return [...schemaAcc, ...subTypeSchemas];
       }
 
       // No matching schema for the report type, and the report type isn't an abstract type with

@@ -1,12 +1,12 @@
 // lib
 import FetchRequest from "./fetch-request";
+import { extractSchema } from "./profiles";
 // root
 import {
   DatabaseObject,
   FileSetObject,
   OntologyTermObject,
   Profiles,
-  Schema,
 } from "../globals";
 
 export interface AssayTermObject extends DatabaseObject {
@@ -74,9 +74,11 @@ export async function getAssayTitleDescriptionMap(
 export function getPreferredAssayTitleDescriptionMap(
   profiles?: Profiles
 ): Record<string, string> {
-  const measurementSetSchema = (profiles?.MeasurementSet || {}) as Schema;
+  const measurementSetSchema = profiles
+    ? extractSchema(profiles, "MeasurementSet")
+    : undefined;
   return (
-    measurementSetSchema.properties?.preferred_assay_titles?.items
+    measurementSetSchema?.properties?.preferred_assay_titles?.items
       ?.enum_descriptions || {}
   );
 }

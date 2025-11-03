@@ -14,7 +14,6 @@ import SessionContext from "./session-context";
 // lib
 import FetchRequest from "../lib/fetch-request";
 import { urlWithoutParams, sortObjectProps } from "../lib/general";
-import { schemaNameToCollectionName } from "../lib/profiles";
 import { collectionToSchema } from "../lib/schema";
 /* istanbul ignore file */
 
@@ -74,29 +73,12 @@ function convertOptionalIntoRequiredSchema(schema) {
 }
 
 /**
- * Extract a usable name from a schema object that we can use in a path to add or edit an object.
- * Likely this doesn't match the real path, but igvfd can use this to redirect to the correct path.
- * @param {object} schema Schema for a single type from /profiles
- * @returns {string} Name of the schema; null if not found
+ * Generates a button link to the #!add url for the given collection. A custom label can be
+ * supplied with the `label` prop.
  */
-function schemaToName(schema) {
-  const matchingName = schema.$id.match(/^\/profiles\/(.*)\.json$/);
-  return matchingName ? matchingName[1] : null;
-}
-
-/**
- * Generates a button link to the #!add url for the given collection.
- * A custom label can be supplied with the `label` prop.
- */
-export function AddLink({ schema, label = null }) {
-  const { collectionTitles } = useContext(SessionContext);
+export function AddLink({ schema, collectionName, label = null }) {
   const { isAuthenticated } = useAuth0();
   if (isAuthenticated && canEdit(schema)) {
-    const schemaName = schemaToName(schema);
-    const collectionName =
-      schemaName && collectionTitles
-        ? schemaNameToCollectionName(schemaName, collectionTitles)
-        : null;
     if (collectionName) {
       const objectAddPath =
         schema.$id === "/profiles/page.json"
@@ -121,6 +103,8 @@ export function AddLink({ schema, label = null }) {
 AddLink.propTypes = {
   // Schema for the collection to add to
   schema: PropTypes.object.isRequired,
+  // Name of the collection to add to, e.g. in-vitro-systems
+  collectionName: PropTypes.string,
   // Label for the Add button
   label: PropTypes.string,
 };

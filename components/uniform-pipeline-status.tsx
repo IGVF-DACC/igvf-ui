@@ -12,8 +12,7 @@ import SessionContext from "./session-context";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { toShishkebabCase } from "../lib/general";
-// root
-import { Schema } from "../globals";
+import { extractSchema } from "../lib/profiles";
 
 /**
  * Possible statuses for the uniform pipeline. Update if the `uniform_pipeline_status` enum in the
@@ -127,7 +126,7 @@ export function UniformPipelineStatus({
     .fallbackDescription;
   if (sessionContext && "profiles" in sessionContext) {
     const profiles = sessionContext.profiles;
-    const pageSchema = profiles?.[atType] as Schema | undefined;
+    const pageSchema = extractSchema(profiles, atType);
     if (
       pageSchema &&
       typeof pageSchema === "object" &&
