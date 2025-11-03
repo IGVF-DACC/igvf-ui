@@ -65,27 +65,28 @@ export default function HumanDonor({
           <StatusPreviewDetail item={donor} />
           <DataPanel>
             <DataArea>
-              <DonorDataItems item={donor} publications={publications} />
-              {donor.human_donor_identifiers?.length > 0 && (
-                <>
-                  <DataItemLabel>Identifiers</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList isCollapsible>
-                      {donor.human_donor_identifiers.map((identifier) => (
-                        <Fragment key={identifier}>{identifier}</Fragment>
-                      ))}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
-              {donor.dbxrefs?.length > 0 && (
-                <>
-                  <DataItemLabel>External Resources</DataItemLabel>
-                  <DataItemValue>
-                    <DbxrefList dbxrefs={donor.dbxrefs} isCollapsible />
-                  </DataItemValue>
-                </>
-              )}
+              <DonorDataItems item={donor} publications={publications}>
+                {donor.human_donor_identifiers?.length > 0 && (
+                  <>
+                    <DataItemLabel>Identifiers</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList isCollapsible>
+                        {donor.human_donor_identifiers.map((identifier) => (
+                          <Fragment key={identifier}>{identifier}</Fragment>
+                        ))}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+                {donor.dbxrefs?.length > 0 && (
+                  <>
+                    <DataItemLabel>External Resources</DataItemLabel>
+                    <DataItemValue>
+                      <DbxrefList dbxrefs={donor.dbxrefs} isCollapsible />
+                    </DataItemValue>
+                  </>
+                )}
+              </DonorDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>

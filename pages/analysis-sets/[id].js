@@ -282,6 +282,12 @@ export default function AnalysisSet({
                   <DataItemValue>{analysisSet.submitter_comment}</DataItemValue>
                 </>
               )}
+              {analysisSet.revoke_detail && (
+                <>
+                  <DataItemLabel>Revoke Detail</DataItemLabel>
+                  <DataItemValue>{analysisSet.revoke_detail}</DataItemValue>
+                </>
+              )}
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>

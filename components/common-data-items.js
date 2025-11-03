@@ -71,12 +71,6 @@ export function DonorDataItems({ item, publications = [], children }) {
           <DataItemValue>{item.submitter_comment}</DataItemValue>
         </>
       )}
-      {item.revoke_detail && (
-        <>
-          <DataItemLabel>Revoke Detail</DataItemLabel>
-          <DataItemValue>{item.revoke_detail}</DataItemValue>
-        </>
-      )}
       {item.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
@@ -105,6 +99,12 @@ export function DonorDataItems({ item, publications = [], children }) {
               {item.url}
             </a>
           </DataItemValueUrl>
+        </>
+      )}
+      {item.revoke_detail && (
+        <>
+          <DataItemLabel>Revoke Detail</DataItemLabel>
+          <DataItemValue>{item.revoke_detail}</DataItemValue>
         </>
       )}
     </>
@@ -255,12 +255,6 @@ export function SampleDataItems({
           <DataItemValue>{item.submitter_comment}</DataItemValue>
         </>
       )}
-      {item.revoke_detail && (
-        <>
-          <DataItemLabel>Revoke Detail</DataItemLabel>
-          <DataItemValue>{item.revoke_detail}</DataItemValue>
-        </>
-      )}
       {item.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
@@ -298,6 +292,12 @@ export function SampleDataItems({
               ))}
             </SeparatedList>
           </DataItemValue>
+        </>
+      )}
+      {item.revoke_detail && (
+        <>
+          <DataItemLabel>Revoke Detail</DataItemLabel>
+          <DataItemValue>{item.revoke_detail}</DataItemValue>
         </>
       )}
     </>
@@ -738,12 +738,6 @@ export function FileDataItems({
           <DataItemValue>{item.validation_error_detail}</DataItemValue>
         </>
       )}
-      {item.revoke_detail && (
-        <>
-          <DataItemLabel>Revoke Detail</DataItemLabel>
-          <DataItemValue>{item.revoke_detail}</DataItemValue>
-        </>
-      )}
       {item.submitter_comment && (
         <>
           <DataItemLabel>Submitter Comment</DataItemLabel>
@@ -751,6 +745,12 @@ export function FileDataItems({
         </>
       )}
       {children}
+      {item.revoke_detail && (
+        <>
+          <DataItemLabel>Revoke Detail</DataItemLabel>
+          <DataItemValue>{item.revoke_detail}</DataItemValue>
+        </>
+      )}
     </>
   );
 }
@@ -870,12 +870,6 @@ export function FileSetDataItems({
           <DataItemValue>{item.submitter_comment}</DataItemValue>
         </>
       )}
-      {item.revoke_detail && (
-        <>
-          <DataItemLabel>Revoke Detail</DataItemLabel>
-          <DataItemValue>{item.revoke_detail}</DataItemValue>
-        </>
-      )}
       {item.dbxrefs?.length > 0 && (
         <>
           <DataItemLabel>External Resources</DataItemLabel>
@@ -894,6 +888,12 @@ export function FileSetDataItems({
               </Link>
             ))}
           </DataItemList>
+        </>
+      )}
+      {item.revoke_detail && (
+        <>
+          <DataItemLabel>Revoke Detail</DataItemLabel>
+          <DataItemValue>{item.revoke_detail}</DataItemValue>
         </>
       )}
     </>
