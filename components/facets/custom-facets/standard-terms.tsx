@@ -1,7 +1,6 @@
 // node_modules
 import { motion, AnimatePresence } from "framer-motion";
 import { XCircleIcon } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 // components/facet/custom-facets
 import TriBooleanTerms from "./tri-boolean-terms";
@@ -17,6 +16,12 @@ import Icon from "../../icon";
 import { checkForBooleanFacet } from "../../../lib/facets";
 import QueryString from "../../../lib/query-string";
 import { splitPathAndQueryString } from "../../../lib/query-utils";
+// root
+import type {
+  SearchResults,
+  SearchResultsFacet,
+  SearchResultsFacetTerm,
+} from "../../../globals";
 
 /**
  * Minimum number of facet terms to display the term filter.
@@ -28,64 +33,28 @@ const MIN_FILTER_COUNT = 20;
  */
 const COLLAPSED_TERMS_COUNT = 15;
 
-/**
- * Button to select all or none of the facet terms.
- */
-function TermsSelectorsButton({ onClick, label, children }) {
-  return (
-    <button
-      onClick={onClick}
-      className="border-button-secondary bg-button-secondary fill-button-secondary text-button-secondary h-5 grow rounded-sm border text-xs"
-      aria-label={label}
-      type="button"
-    >
-      {children}
-    </button>
-  );
-}
-
-TermsSelectorsButton.propTypes = {
-  // Function to call when the user clicks on the button
-  onClick: PropTypes.func.isRequired,
-  // Accessible label for the button
-  label: PropTypes.string.isRequired,
-};
-
-/**
- * Displays buttons to select all or none of the facet terms.
- */
-function TermsSelectors({ facetTitle, onAllClick, onNoneClick }) {
-  return (
-    <div className="mb-0.5 flex gap-1">
-      <TermsSelectorsButton
-        label={`Select all ${facetTitle}`}
-        onClick={onAllClick}
-      >
-        All
-      </TermsSelectorsButton>
-      <TermsSelectorsButton
-        label={`Select no ${facetTitle}`}
-        onClick={onNoneClick}
-      >
-        None
-      </TermsSelectorsButton>
-    </div>
-  );
-}
-
-TermsSelectors.propTypes = {
-  // Human-readable title of the facet this button controls
-  facetTitle: PropTypes.string.isRequired,
-  // Function to call when the user clicks on the "All" button
-  onAllClick: PropTypes.func.isRequired,
-  // Function to call when the user clicks on the "None" button
-  onNoneClick: PropTypes.func.isRequired,
+type InternalFilter = {
+  field: string;
+  term: string | number;
+  isNegative: boolean;
 };
 
 /**
  * Lets the user type a term to filter the facet terms. Just used for the standard terms facet.
+ *
+ * @param id - Unique ID for the facet filter
+ * @param currentFilter - Current filter term
+ * @param setCurrentFilter - Function to call when the user types into the filter input
  */
-function TermFilter({ id, currentFilter, setCurrentFilter }) {
+function TermFilter({
+  id,
+  currentFilter,
+  setCurrentFilter,
+}: {
+  id: string;
+  currentFilter: string;
+  setCurrentFilter: (filter: string) => void;
+}) {
   const filterIconStyles = currentFilter
     ? "stroke-facet-filter-icon-set fill-facet-filter-icon-set"
     : "stroke-facet-filter-icon fill-facet-filter-icon";
@@ -114,20 +83,26 @@ function TermFilter({ id, currentFilter, setCurrentFilter }) {
   );
 }
 
-TermFilter.propTypes = {
-  // Unique ID for the facet filter
-  id: PropTypes.string.isRequired,
-  // Current filter term
-  currentFilter: PropTypes.string.isRequired,
-  // Function to call when the user types into the filter input
-  setCurrentFilter: PropTypes.func.isRequired,
-};
-
 /**
  * Button to expand or collapse the facets with a large number of terms, generally *after*
  * filtering.
+ *
+ * @param id - Unique ID for the facet collapse control
+ * @param totalTermCount - Total number of terms for the facet
+ * @param isExpanded - True if the facet is currently expanded
+ * @param setIsExpanded - Function to call when the user clicks the expand/collapse button
  */
-function CollapseControl({ id, totalTermCount, isExpanded, setIsExpanded }) {
+function CollapseControl({
+  id,
+  totalTermCount,
+  isExpanded,
+  setIsExpanded,
+}: {
+  id: string;
+  totalTermCount: number;
+  isExpanded: boolean;
+  setIsExpanded: (isExpanded: boolean) => void;
+}) {
   return (
     <button
       className="mx-2 text-xs font-bold text-gray-500 uppercase"
@@ -139,17 +114,6 @@ function CollapseControl({ id, totalTermCount, isExpanded, setIsExpanded }) {
   );
 }
 
-CollapseControl.propTypes = {
-  // Unique ID for the facet collapse control
-  id: PropTypes.string.isRequired,
-  // Total number of terms for the facet
-  totalTermCount: PropTypes.number.isRequired,
-  // True if the facet is currently expanded
-  isExpanded: PropTypes.bool.isRequired,
-  // Function to call when the user clicks the expand/collapse button
-  setIsExpanded: PropTypes.func.isRequired,
-};
-
 /**
  * Display a segment of terms for a facet. Usually all terms in a facet get displayed, but facets
  * with lots of terms can show a subset of terms along with a button to expand the list to show all
@@ -158,13 +122,33 @@ CollapseControl.propTypes = {
  * Use this component to display one segment of terms for a facet, so usually the always-displayed
  * terms regardless of whether the user has expanded the list of terms or not, and the segment of
  * terms that are only displayed when the user has expanded the list.
+ *
+ * @param termSegment - Array of terms to display in this segment
+ * @param field - Field of the facet that the terms belong to
+ * @param selectionFilters - Array of selected filters for this facet
+ * @param parent - Field name and key of the parent term if these terms are child terms
+ * @param onTermClick - Function to call when the user clicks a term
  */
 function TermSegment({
   termSegment,
   field,
   selectionFilters,
+  parentField,
   parent,
   onTermClick,
+}: {
+  termSegment: SearchResultsFacetTerm[];
+  field: string;
+  selectionFilters: InternalFilter[];
+  parentField?: string;
+  parent?: SearchResultsFacetTerm;
+  onTermClick: (
+    field: string,
+    term: SearchResultsFacetTerm,
+    isNegative: boolean,
+    parentField: string,
+    parent: SearchResultsFacetTerm | null
+  ) => void;
 }) {
   return (
     <div className="pl-2">
@@ -182,6 +166,7 @@ function TermSegment({
               key={term.key}
               field={field}
               term={term}
+              parentField={parentField}
               parent={parent}
               isChecked={isChecked}
               isNegative={isNegative}
@@ -190,10 +175,11 @@ function TermSegment({
             {term.subfacet && (
               <div className="pl-3">
                 <TermSegment
-                  termSegment={term.subfacet.terms}
+                  termSegment={term.subfacet.terms as SearchResultsFacetTerm[]}
                   field={term.subfacet.field}
                   selectionFilters={selectionFilters}
-                  parent={{ field, term }}
+                  parentField={field}
+                  parent={term}
                   onTermClick={onTermClick}
                 />
               </div>
@@ -205,69 +191,42 @@ function TermSegment({
   );
 }
 
-TermSegment.propTypes = {
-  // Array of terms to display
-  termSegment: PropTypes.arrayOf(
-    PropTypes.shape({
-      // Label for the facet term
-      key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      // Number of results for the facet term
-      doc_count: PropTypes.number,
-      // Label for the facet term as a string when available
-      key_as_string: PropTypes.string,
-    })
-  ).isRequired,
-  // Field of the facet that the terms belong to
-  field: PropTypes.string.isRequired,
-  // Array of selected filters for this facet
-  selectionFilters: PropTypes.arrayOf(
-    PropTypes.shape({
-      // Field of the selected filter
-      field: PropTypes.string.isRequired,
-      // Term of the selected filter
-      term: PropTypes.string.isRequired,
-      // True if the selected filter is a negative filter
-      isNegative: PropTypes.bool.isRequired,
-    })
-  ).isRequired,
-  // Field name and key of the parent term if these terms are child terms
-  parent: PropTypes.exact({
-    // Field of the parent term
-    field: PropTypes.string,
-    // Parent term object including key and subfacet
-    term: PropTypes.object,
-  }),
-  // Function to call when the user clicks a term
-  onTermClick: PropTypes.func.isRequired,
-};
-
 /**
  * Process the user's click on a facet term. Add or remove the term from the query string and
  * navigate to the new URL.
- * @param {string} field Field of the facet that the user clicked a term within
- * @param {object} term Term that the user clicked within a facet
- * @param {boolean} isNegative True if the term is negated
- * @param {object} parent Parent term of the term the user clicked, if it's a child term
- * @param {QueryString} query Query string object to update
- * @param {function} updateQuery Function to call to update the query string
+ *
+ * @param field - Field of the facet that the user clicked a term within
+ * @param term - Term that the user clicked within a facet
+ * @param isNegative - True if the term is negated
+ * @param parent - Parent term of the term the user clicked, if it's a child term
+ * @param query - Query string object to update
+ * @param updateQuery - Function to call to update the query string
  */
-function processTermClick(field, term, isNegative, parent, query, updateQuery) {
+function processTermClick(
+  field: string,
+  term: SearchResultsFacetTerm,
+  isNegative: boolean,
+  parentField: string,
+  parent: SearchResultsFacetTerm | null,
+  query: QueryString,
+  updateQuery: (query: string) => void
+) {
   const matchingTerms = query.getKeyValues(field, "ANY");
-  const key = term.key_as_string || term.key;
+  const key = term.key_as_string || String(term.key);
   if (matchingTerms.includes(key)) {
     // Remove the term from the query because it's already selected.
     query.deleteKeyValue(field, key);
     if (term.subfacet) {
       // Term has child terms; automatically deselect them all
-      term.subfacet.terms.forEach((subterm) => {
+      const subfacetTerms = term.subfacet.terms as SearchResultsFacetTerm[];
+      subfacetTerms.forEach((subterm) => {
         query.deleteKeyValue(term.subfacet.field, subterm.key);
       });
     } else if (parent) {
       // If the deselected term is the last selected child term, deselect the parent term. Start by
       // getting all subfacet keys for the parent term.
-      const parentSubfacetKeys = parent.term.subfacet.terms.map(
-        (subterm) => subterm.key
-      );
+      const subfacetTerms = parent.subfacet.terms as SearchResultsFacetTerm[];
+      const parentSubfacetKeys = subfacetTerms.map((subterm) => subterm.key);
 
       // Get all selected subfacet keys in the query string. Some could belong to other parent terms.
       const allSelectedSubfacetKeys = query.getKeyValues(field, "ANY");
@@ -279,7 +238,7 @@ function processTermClick(field, term, isNegative, parent, query, updateQuery) {
 
       // If no selected terms exist for the parent term, deselect the parent term.
       if (parentSelectedSubfacetKeys.length === 0) {
-        query.deleteKeyValue(parent.field, parent.term.key);
+        query.deleteKeyValue(parentField, parent.key);
       }
     }
   } else {
@@ -290,7 +249,8 @@ function processTermClick(field, term, isNegative, parent, query, updateQuery) {
     // Process parent or child terms when subfacets are involved.
     if (term.subfacet) {
       // Term has child terms; automatically select them all
-      term.subfacet.terms.forEach((subterm) => {
+      const subfacetTerms = term.subfacet.terms as SearchResultsFacetTerm[];
+      subfacetTerms.forEach((subterm) => {
         query.deleteKeyValue(term.subfacet.field, subterm.key);
         query.addKeyValue(term.subfacet.field, subterm.key, polarity);
       });
@@ -301,7 +261,23 @@ function processTermClick(field, term, isNegative, parent, query, updateQuery) {
   updateQuery(query.format());
 }
 
-function StandardTermsCore({ searchResults, facet, updateQuery }) {
+/**
+ * Core component to display standard facet terms. Handles filtering, expanding/collapsing, and
+ * term selection.
+ *
+ * @param searchResults - Search results that include the given facet
+ * @param facet - Facet to display
+ * @param updateQuery - Function to update the query string on user selection
+ */
+function StandardTermsCore({
+  searchResults,
+  facet,
+  updateQuery,
+}: {
+  searchResults: SearchResults;
+  facet: SearchResultsFacet;
+  updateQuery: (queryString: string) => void;
+}) {
   // User-typed term to filter the facet terms
   const [filterTerm, setFilterTerm] = useState("");
   // True if the facet has enough terms to expand/collapse, and it's currently expanded
@@ -312,9 +288,13 @@ function StandardTermsCore({ searchResults, facet, updateQuery }) {
   const query = new QueryString(queryString);
 
   // Filter the facet terms based on the user-typed term.
-  const filteredTerms = facet.terms.filter((term) => {
+  const facetTerms = facet.terms as SearchResultsFacetTerm[];
+  const filteredTerms = facetTerms.filter((term) => {
     const termKey = term.key_as_string || term.key;
-    return termKey.toLowerCase().includes(filterTerm.toLowerCase());
+    const termKeyNormalized =
+      typeof termKey === "string" ? termKey.toLowerCase() : String(termKey);
+    const filterTermNormalized = filterTerm.toLowerCase();
+    return termKeyNormalized.includes(filterTermNormalized);
   });
 
   // Further limit the terms if the facet has enough terms to be expandable and is currently
@@ -323,36 +303,53 @@ function StandardTermsCore({ searchResults, facet, updateQuery }) {
   const expandedDisplayedTerms = filteredTerms.slice(COLLAPSED_TERMS_COUNT);
 
   // Get the terms that are currently selected for this facet.
-  const selectionFilters = searchResults.filters.map((filter) => {
-    const isNegative = filter.field.at(-1) === "!";
-    const field = isNegative ? filter.field.slice(0, -1) : filter.field;
-    return {
-      field,
-      term: filter.term,
-      isNegative,
-    };
-  });
+  const selectionFilters: InternalFilter[] = searchResults.filters.map(
+    (filter) => {
+      const isNegative = filter.field.at(-1) === "!";
+      const field = isNegative ? filter.field.slice(0, -1) : filter.field;
+      return {
+        field,
+        term: filter.term,
+        isNegative,
+      };
+    }
+  );
 
   /**
    * When the user clicks a facet term, add or remove it from the query string and navigate
    * to the new URL.
-   * @param {string} field Field of the facet that the user clicked a term within
-   * @param {object} term Term that the user clicked within a facet
-   * @param {boolean} isNegative True if the term is negated
-   * @param {boolean} parentTerm Parent term of the term the user clicked, if it's a child term
+   *
+   * @param field - Field of the facet that the user clicked a term within
+   * @param term - Term that the user clicked within a facet
+   * @param isNegative - True if the term is negated
+   * @param parentTerm - Parent term of the term the user clicked, if it's a child term
    */
-  function onTermClick(field, term, isNegative, parent) {
-    processTermClick(field, term, isNegative, parent, query, updateQuery);
+  function onTermClick(
+    field: string,
+    term: SearchResultsFacetTerm,
+    isNegative: boolean,
+    parentField?: string,
+    parentTerm?: SearchResultsFacetTerm
+  ) {
+    processTermClick(
+      field,
+      term,
+      isNegative,
+      parentField,
+      parentTerm,
+      query,
+      updateQuery
+    );
   }
 
   // Clear the term filter when the facet terms change.
   useEffect(() => {
     setFilterTerm("");
-  }, [facet.terms.length]);
+  }, [facetTerms.length]);
 
   return (
     <div className="mt-2">
-      {facet.terms.length > MIN_FILTER_COUNT && (
+      {facetTerms.length > MIN_FILTER_COUNT && (
         <TermFilter
           id={facet.field}
           currentFilter={filterTerm}
@@ -405,38 +402,24 @@ function StandardTermsCore({ searchResults, facet, updateQuery }) {
   );
 }
 
-StandardTermsCore.propTypes = {
-  // Search results from data provider
-  searchResults: PropTypes.object.isRequired,
-  // Facet object from search results
-  facet: PropTypes.shape({
-    // Object property the facet displays
-    field: PropTypes.string.isRequired,
-    // Facet title
-    title: PropTypes.string.isRequired,
-    // Relevant selectable terms for the facet
-    terms: PropTypes.arrayOf(
-      PropTypes.shape({
-        // Label for the facet term
-        key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-          .isRequired,
-        // Number of results for the facet term
-        doc_count: PropTypes.number,
-        // Label for the facet term as a string when available
-        key_as_string: PropTypes.string,
-      })
-    ).isRequired,
-  }).isRequired,
-  // Called to return the updated query string from the facet user selection
-  updateQuery: PropTypes.func.isRequired,
-};
-
 /**
  * Wrapper component for the standard terms facet. It handles boolean facets by using the
  * TriBooleanTerms component, and otherwise uses the StandardTermsCore component to display the
  * terms.
+ *
+ * @param searchResults - Search results that include the given facet
+ * @param facet - Facet to display
+ * @param updateQuery - Function to update the query string on user selection
  */
-export default function StandardTerms({ searchResults, facet, updateQuery }) {
+export default function StandardTerms({
+  searchResults,
+  facet,
+  updateQuery,
+}: {
+  searchResults: SearchResults;
+  facet: SearchResultsFacet;
+  updateQuery: (queryString: string) => void;
+}) {
   // Facets that appear to be boolean facets should use the TriBooleanTerms component.
   if (checkForBooleanFacet(facet)) {
     return (
@@ -456,29 +439,3 @@ export default function StandardTerms({ searchResults, facet, updateQuery }) {
     />
   );
 }
-
-StandardTerms.propTypes = {
-  // Search results from data provider
-  searchResults: PropTypes.object.isRequired,
-  // Facet object from search results
-  facet: PropTypes.shape({
-    // Object property the facet displays
-    field: PropTypes.string.isRequired,
-    // Facet title
-    title: PropTypes.string.isRequired,
-    // Relevant selectable terms for the facet
-    terms: PropTypes.arrayOf(
-      PropTypes.shape({
-        // Label for the facet term
-        key: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-          .isRequired,
-        // Number of results for the facet term
-        doc_count: PropTypes.number,
-        // Label for the facet term as a string when available
-        key_as_string: PropTypes.string,
-      })
-    ).isRequired,
-  }).isRequired,
-  // Called to return the updated query string from the facet user selection
-  updateQuery: PropTypes.func.isRequired,
-};

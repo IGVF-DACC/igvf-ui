@@ -88,6 +88,19 @@ const Icon = {
       <circle cx="10" cy="10" r="10" />
     </svg>
   ),
+  Collapse: ({ className = null, testid = "icon-collapse" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path d="M14,10.75H6c-.41,0-.75-.34-.75-.75s.34-.75.75-.75h8c.41,0,.75.34.75.75s-.34.75-.75.75Z" />
+      <path d="M15,18c-.19,0-.38-.07-.53-.22l-4.47-4.47-4.47,4.47c-.29.29-.77.29-1.06,0s-.29-.77,0-1.06l5-5c.29-.29.77-.29,1.06,0l5,5c.29.29.29.77,0,1.06-.15.15-.34.22-.53.22Z" />
+      <path d="M10,8.5c-.19,0-.38-.07-.53-.22L4.47,3.28c-.29-.29-.29-.77,0-1.06s.77-.29,1.06,0l4.47,4.47,4.47-4.47c.29-.29.77-.29,1.06,0s.29.77,0,1.06l-5,5c-.15.15-.34.22-.53.22Z" />
+    </svg>
+  ),
   Data: ({ className = null, testid = "icon-data" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -157,6 +170,19 @@ const Icon = {
       <circle cx="18" cy="4" r="3.4" />
       <circle cx="31.6" cy="4" r="3.4" />
       <circle cx="4.4" cy="4" r="3.4" />
+    </svg>
+  ),
+  Expand: ({ className = null, testid = "icon-expand" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path d="M15,8.5c-.19,0-.38-.07-.53-.22l-4.47-4.47-4.47,4.47c-.29.29-.77.29-1.06,0s-.29-.77,0-1.06l5-5c.29-.29.77-.29,1.06,0l5,5c.29.29.29.77,0,1.06-.15.15-.34.22-.53.22Z" />
+      <path d="M10,18c-.19,0-.38-.07-.53-.22l-5-5c-.29-.29-.29-.77,0-1.06s.77-.29,1.06,0l4.47,4.47,4.47-4.47c.29-.29.77-.29,1.06,0s.29.77,0,1.06l-5,5c-.15.15-.34.22-.53.22Z" />
+      <path d="M13,10.75h-6c-.41,0-.75-.34-.75-.75s.34-.75.75-.75h6c.41,0,.75.34.75.75s-.34.75-.75.75Z" />
     </svg>
   ),
   FileSet: ({
@@ -454,6 +480,10 @@ Icon.Circle.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };
+Icon.Collapse.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
 Icon.Data.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
@@ -467,6 +497,10 @@ Icon.Donor.propTypes = {
   testid: PropTypes.string,
 };
 Icon.EllipsisHorizontal.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Expand.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };

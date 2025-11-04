@@ -1,9 +1,10 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import type { SearchResultsFacetTerm } from "../../../globals";
 import FacetTerm from "../facet-term";
 
 describe("Test the <FacetTerms> component", () => {
   it("renders an unchecked facet term with a result count of 1", () => {
-    const term = {
+    const term: SearchResultsFacetTerm = {
       doc_count: 1,
       key: "Massively parallel reporter assay",
     };
@@ -36,11 +37,11 @@ describe("Test the <FacetTerms> component", () => {
     fireEvent.mouseDown(checkbox);
     fireEvent.mouseUp(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
-    expect(onClick).toHaveBeenCalledWith("assay_slims", term, false, null);
+    expect(onClick).toHaveBeenCalledWith("assay_slims", term, false, "", null);
   });
 
   it("renders a checked facet term with a result count greater than 1", () => {
-    const term = {
+    const term: SearchResultsFacetTerm = {
       doc_count: 2,
       key: "Massively parallel reporter assay",
     };
@@ -76,7 +77,7 @@ describe("Test the <FacetTerms> component", () => {
   });
 
   it("renders an unchecked facet term and reacts to a long click", async () => {
-    const term = {
+    const term: SearchResultsFacetTerm = {
       doc_count: 1,
       key: "Massively parallel reporter assay",
     };
@@ -112,11 +113,11 @@ describe("Test the <FacetTerms> component", () => {
     await new Promise((r) => setTimeout(r, 500));
     fireEvent.mouseUp(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
-    expect(onClick).toHaveBeenCalledWith("assay_slims", term, true, null);
+    expect(onClick).toHaveBeenCalledWith("assay_slims", term, true, "", null);
   });
 
   it("renders a negative facet term", () => {
-    const term = {
+    const term: SearchResultsFacetTerm = {
       doc_count: 1,
       key: "Massively parallel reporter assay",
     };
@@ -151,25 +152,18 @@ describe("Test the <FacetTerms> component", () => {
   });
 
   it("renders a child term with a parent term", () => {
-    const term = {
+    const term: SearchResultsFacetTerm = {
       doc_count: 1,
       key: "Massively parallel reporter assay",
     };
-    const parent = {
-      field: "assay_slims",
-      term: {
-        key: "assay",
-        doc_count: 2,
-        subfacet: {
-          field: "term_name",
-          terms: [
-            {
-              key: "Massively parallel reporter assay",
-              doc_count: 1,
-            },
-          ],
-          title: "Term Name",
-        },
+    const parent: SearchResultsFacetTerm = {
+      key: "assay_slims",
+      doc_count: 2,
+      subfacet: {
+        field: "term_name",
+        type: "terms",
+        terms: [term],
+        title: "Term Name",
       },
     };
     const onClick = jest.fn();
@@ -186,7 +180,7 @@ describe("Test the <FacetTerms> component", () => {
     );
 
     const facetTerm = screen.getByTestId(
-      "facetterm-assay_slims-massively-parallel-reporter-assay-assay"
+      "facetterm-assay_slims-massively-parallel-reporter-assay-assay-slims"
     );
     expect(facetTerm).toBeInTheDocument();
     const label = within(facetTerm).getByLabelText(
@@ -202,6 +196,12 @@ describe("Test the <FacetTerms> component", () => {
     fireEvent.mouseDown(checkbox);
     fireEvent.mouseUp(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
-    expect(onClick).toHaveBeenCalledWith("assay_slims", term, false, parent);
+    expect(onClick).toHaveBeenCalledWith(
+      "assay_slims",
+      term,
+      false,
+      "",
+      parent
+    );
   });
 });

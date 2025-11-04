@@ -1,10 +1,16 @@
-// node_modules
-import PropTypes from "prop-types";
 // components/facets
 import facetRegistry from "./facet-registry";
+// root
+import type { SearchResults, SearchResultsFacet } from "../../globals";
 
 /**
  * Displays a single facet with its title and terms.
+ *
+ * @param facet - Facet object from search results
+ * @param searchResults - Search results from data provider
+ * @param updateQuery - Function to call when the user clicks on a facet term
+ * @param updateOpen - Function to call when the user clicks the open/collapse button
+ * @param isFacetOpen - True if the facet displays all its terms
  */
 export default function Facet({
   facet,
@@ -13,6 +19,13 @@ export default function Facet({
   updateOpen,
   isFacetOpen,
   children,
+}: {
+  facet: SearchResultsFacet;
+  searchResults: SearchResults;
+  updateQuery: (queryString: string) => void;
+  updateOpen: (e: React.MouseEvent) => void;
+  isFacetOpen: boolean;
+  children: React.ReactNode;
 }) {
   const Title = facetRegistry.title.lookup(facet.field);
 
@@ -41,23 +54,3 @@ export default function Facet({
     </div>
   );
 }
-
-Facet.propTypes = {
-  // Facet object from search results
-  facet: PropTypes.shape({
-    field: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    terms: PropTypes.oneOfType([
-      PropTypes.arrayOf(PropTypes.object),
-      PropTypes.object,
-    ]),
-  }).isRequired,
-  // Search results from data provider
-  searchResults: PropTypes.object.isRequired,
-  // Function to call when the user clicks on a facet term
-  updateQuery: PropTypes.func.isRequired,
-  // Function to call when the user clicks the open/collapse button
-  updateOpen: PropTypes.func.isRequired,
-  // True if the facet displays all its terms
-  isFacetOpen: PropTypes.bool.isRequired,
-};

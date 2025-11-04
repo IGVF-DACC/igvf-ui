@@ -1,18 +1,31 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
-import PropTypes from "prop-types";
 // components
 import { auditMap } from "../../audit";
 // component/facets
 import { FacetTermCount } from "../facet-term-count";
 // components/facets/custom-facets
 import { StandardTitleElement } from "./standard-title";
+// root
+import type { SearchResults, SearchResultsFacet } from "../../../globals";
 
 /**
  * Displays the title for audit facets. These show a shortened title and an icon matching the icons
  * in the audit panels. This component gets used for the titles of all audit categories.
+ *
+ * @param facet - Facet to display from the search results
+ * @param searchResults - Search results that include the given facet
+ * @param isFacetOpen - True if the facet is currently open
  */
-export default function AuditTitle({ facet, searchResults, isFacetOpen }) {
+export default function AuditTitle({
+  facet,
+  searchResults,
+  isFacetOpen,
+}: {
+  facet: SearchResultsFacet;
+  searchResults: SearchResults;
+  isFacetOpen: boolean;
+}) {
   const { isAuthenticated } = useAuth0();
 
   if (isAuthenticated || facet.field !== "audit.INTERNAL_ACTION.category") {
@@ -42,15 +55,3 @@ export default function AuditTitle({ facet, searchResults, isFacetOpen }) {
   }
   return null;
 }
-
-AuditTitle.propTypes = {
-  // Audit facet object
-  facet: PropTypes.shape({
-    // Audit property name including the audit type
-    field: PropTypes.string.isRequired,
-  }).isRequired,
-  // Search results from data provider
-  searchResults: PropTypes.object.isRequired,
-  // True if the facet displays all its terms
-  isFacetOpen: PropTypes.bool.isRequired,
-};
