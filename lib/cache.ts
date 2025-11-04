@@ -1,6 +1,6 @@
 /**
- * This module provides a class for caching server data in a Redis database. The primary purpose is
- * to reduce the requests to the data provider. It does not reduce traffic between the NextJS
+ * This module provides utilities for caching server data in a Redis database. The primary purpose
+ * is to reduce the requests to the data provider. It does not reduce traffic between the NextJS
  * server and the browser.
  *
  * An alternate use for the cache is to temporarily persist data specific to a user between sessions
@@ -170,5 +170,62 @@ export async function setCachedData(
   const redisClient = await getCacheClient();
   if (redisClient) {
     await redisClient.set(key, JSON.stringify(data), { EX: ttl });
+  }
+}
+
+/**
+ * Get data from a Redis hash field. Use this for retrieving related data stored under a single key
+ * where each field can be accessed independently.
+ *
+ * @param key - Hash key in the cache
+ * @param field - Field name within the hash
+ * @returns Promise that resolves to the cached data, or null if not found or error occurred
+ */
+export async function getCachedDataWithField<T = unknown>(
+  key: string,
+  field: string
+): Promise<T | null> {
+  const redisClient = await getCacheClient();
+  if (redisClient) {
+    try {
+      const cachedData = await redisClient.hGet(key, field);
+      return cachedData ? (JSON.parse(cachedData) as T) : null;
+    } catch (error) {
+      console.error(
+        `Cache hash retrieval error for key ${key}, field ${field}:`,
+        error
+      );
+    }
+  }
+  return null;
+}
+
+/**
+ * Set data in a Redis hash field with TTL. Use this for storing related data under a single key
+ * where each field can be accessed independently.
+ *
+ * @param key - Hash key in the cache
+ * @param field - Field name within the hash
+ * @param data - Data to cache
+ * @param [ttl] - Time to live for the entire hash in seconds. Default is one hour
+ * @returns Promise that resolves when the data has been cached
+ */
+export async function setCachedDataWithField(
+  key: string,
+  field: string,
+  data: unknown,
+  ttl: number = DEFAULT_CACHE_TTL
+): Promise<void> {
+  const redisClient = await getCacheClient();
+  if (redisClient) {
+    try {
+      await redisClient.hSet(key, field, JSON.stringify(data));
+      await redisClient.expire(key, ttl);
+    } catch (error) {
+      console.error(
+        `Cache hash set error for key ${key}, field ${field}:`,
+        error
+      );
+    }
   }
 }

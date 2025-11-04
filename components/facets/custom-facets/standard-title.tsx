@@ -1,5 +1,5 @@
 // node_modules
-import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { Bars3Icon, MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 // components/facets/custom-facets
 import NoTermCountTitle from "./no-term-count-title";
 // components/facets
@@ -16,14 +16,17 @@ import type { SearchResults, SearchResultsFacet } from "../../../globals";
  *
  * @param field - Facet property name
  * @param isFacetOpen - True if the facet displays all its terms
+ * @param isEditOrderMode - True when editing facet order
  */
 export function StandardTitleElement({
   field,
   isFacetOpen,
+  isEditOrderMode,
   children,
 }: {
   field: string;
   isFacetOpen: boolean;
+  isEditOrderMode: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -34,13 +37,19 @@ export function StandardTitleElement({
       data-testid={`facettitle-${field}`}
     >
       <div className="text-left">{children}</div>
-      <div className="basis-4">
-        {isFacetOpen ? (
-          <MinusIcon className="h-4 w-4" />
-        ) : (
-          <PlusIcon className="h-4 w-4" />
-        )}
-      </div>
+      {isEditOrderMode ? (
+        <div className="basis-4">
+          <Bars3Icon className="h-4 w-4 fill-gray-400 dark:fill-gray-600" />
+        </div>
+      ) : (
+        <div className="basis-4">
+          {isFacetOpen ? (
+            <MinusIcon className="h-4 w-4" />
+          ) : (
+            <PlusIcon className="h-4 w-4" />
+          )}
+        </div>
+      )}
     </h2>
   );
 }
@@ -51,24 +60,37 @@ export function StandardTitleElement({
  * @param facet - Facet to display the title for
  * @param searchResults - Search results that include the given facet
  * @param isFacetOpen - True if the facet displays all its terms
+ * @param isEditOrderMode - True when editing facet order
  */
 export default function StandardTitle({
   facet,
   searchResults,
   isFacetOpen,
+  isEditOrderMode,
 }: {
   facet: SearchResultsFacet;
   searchResults: SearchResults;
   isFacetOpen: boolean;
+  isEditOrderMode: boolean;
 }) {
   // Facets that appear to be boolean facets should not display a term count.
   if (checkForBooleanFacet(facet)) {
-    return <NoTermCountTitle facet={facet} isFacetOpen={isFacetOpen} />;
+    return (
+      <NoTermCountTitle
+        facet={facet}
+        isFacetOpen={isFacetOpen}
+        isEditOrderMode={isEditOrderMode}
+      />
+    );
   }
 
   return (
     <>
-      <StandardTitleElement field={facet.field} isFacetOpen={isFacetOpen}>
+      <StandardTitleElement
+        field={facet.field}
+        isFacetOpen={isFacetOpen}
+        isEditOrderMode={isEditOrderMode}
+      >
         {facet.title}
       </StandardTitleElement>
       <FacetTermCount

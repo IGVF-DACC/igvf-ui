@@ -1,7 +1,16 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { useAuth0 } from "@auth0/auth0-react";
 import SessionContext from "../../session-context";
 import FacetSection from "../facet-section";
+import { Reorder } from "motion/react";
+import { type ErrorObject } from "../../../lib/fetch-request";
+import type { SearchResults } from "../../../globals";
 
 // Mock the window.location object so we can test the router.push() function.
 const location = new URL("https://www.example.com") as any;
@@ -14,8 +23,8 @@ delete (window as any).location;
 // Mock next/router (uses __mocks__/next/router.ts)
 jest.mock("next/router");
 
-// Mock framer-motion (uses components/__mocks__/framer-motion.tsx)
-jest.mock("framer-motion");
+// Mock motion/react (uses components/__mocks__/motion/react.tsx)
+jest.mock("motion/react");
 
 /**
  * Method to mock the useAuth0 hook comes from:
@@ -31,13 +40,23 @@ const mockUseAuth0 = useAuth0 as jest.MockedFunction<typeof useAuth0>;
 describe("Test <FacetSection> component", () => {
   beforeEach(() => {
     window.scrollTo = jest.fn();
+    // Mock fetch to return resolved promises immediately
+    window.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+      } as Response)
+    );
     jest.clearAllTimers();
-    jest.useFakeTimers();
+    // Use real timers to avoid act() warnings with async state updates
+    jest.useRealTimers();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-    jest.runOnlyPendingTimers();
+    jest.restoreAllMocks();
+    jest.clearAllTimers();
+    // Ensure we're back to real timers after each test
     jest.useRealTimers();
   });
 
@@ -59,7 +78,10 @@ describe("Test <FacetSection> component", () => {
     } as any;
 
     const { container } = render(
-      <FacetSection searchResults={searchResults} />
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
     );
     expect(container.firstChild).toBeNull();
   });
@@ -114,7 +136,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     // Check that Clear All button exists
     const clearAllButton = screen.getByRole("button", { name: /clear all/i });
@@ -177,7 +204,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     const clearAllButton = screen.getByRole("button", { name: /clear all/i });
     fireEvent.click(clearAllButton);
@@ -223,7 +255,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     const clearAllButton = screen.getByRole("button", { name: /clear all/i });
     expect(clearAllButton).toBeDisabled();
@@ -265,7 +302,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     const facetTrigger = screen.getByTestId("facettrigger-sex");
 
@@ -329,7 +371,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     const sexFacetTrigger = screen.getByTestId("facettrigger-sex");
 
@@ -386,7 +433,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     const sexFacetTrigger = screen.getByTestId("facettrigger-sex");
 
@@ -445,7 +497,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     const sexFacetTrigger = screen.getByTestId("facettrigger-sex");
 
@@ -502,7 +559,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     const expandButton = screen.getByLabelText("Open all facets");
     fireEvent.click(expandButton);
@@ -557,7 +619,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     // First open all facets
     const expandButton = screen.getByLabelText("Open all facets");
@@ -629,7 +696,10 @@ describe("Test <FacetSection> component", () => {
       <SessionContext.Provider
         value={{ sessionProperties: mockSessionProperties } as any}
       >
-        <FacetSection searchResults={searchResults} />
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
       </SessionContext.Provider>
     );
 
@@ -648,8 +718,8 @@ describe("Test <FacetSection> component", () => {
       isAuthenticated: false,
     } as any);
 
-    const fetchSpy = jest.fn();
-    window.fetch = fetchSpy as any;
+    const mockFetch = jest.fn();
+    window.fetch = mockFetch as any;
 
     const searchResults = {
       "@id": "/search/?type=HumanDonor",
@@ -682,10 +752,15 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     // Verify fetch was not called
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("does not load saved facet config when multiple types are selected", () => {
@@ -693,8 +768,8 @@ describe("Test <FacetSection> component", () => {
       isAuthenticated: true,
     } as any);
 
-    const fetchSpy = jest.fn();
-    window.fetch = fetchSpy as any;
+    const mockFetch = jest.fn();
+    window.fetch = mockFetch as any;
 
     const mockSessionProperties = {
       user: {
@@ -747,26 +822,32 @@ describe("Test <FacetSection> component", () => {
       <SessionContext.Provider
         value={{ sessionProperties: mockSessionProperties } as any}
       >
-        <FacetSection searchResults={searchResults} />
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
       </SessionContext.Provider>
     );
 
     // Verify fetch was not called because multiple types are selected
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("saves facet config after opening a facet when logged in", async () => {
+    // Enable fake timers for this test to control debounced saves
+    jest.useFakeTimers();
+
     mockUseAuth0.mockReturnValue({
       isAuthenticated: true,
     } as any);
 
-    const fetchSpy = jest.fn().mockImplementation(() => {
+    const mockFetch = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve({}),
       });
     });
-    window.fetch = fetchSpy as any;
+    window.fetch = mockFetch as any;
 
     const mockSessionProperties = {
       user: {
@@ -814,19 +895,22 @@ describe("Test <FacetSection> component", () => {
       <SessionContext.Provider
         value={{ sessionProperties: mockSessionProperties } as any}
       >
-        <FacetSection searchResults={searchResults} />
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
       </SessionContext.Provider>
     );
 
     // Wait for initial load
     await waitFor(() => {
-      expect(fetchSpy).toHaveBeenCalledWith(
+      expect(mockFetch).toHaveBeenCalledWith(
         "/api/facet-config/123/?type=HumanDonor",
         expect.any(Object)
       );
     });
 
-    fetchSpy.mockClear();
+    mockFetch.mockClear();
 
     // Open a facet
     const facetTrigger = screen.getByTestId("facettrigger-sex");
@@ -837,7 +921,7 @@ describe("Test <FacetSection> component", () => {
 
     // Wait for the save to complete
     await waitFor(() => {
-      expect(fetchSpy).toHaveBeenCalledWith(
+      expect(mockFetch).toHaveBeenCalledWith(
         "/api/facet-config/123/?type=HumanDonor",
         expect.objectContaining({
           method: "POST",
@@ -847,12 +931,15 @@ describe("Test <FacetSection> component", () => {
   });
 
   it("does not save facet config when not logged in", () => {
+    // Enable fake timers for this test to control debounced saves
+    jest.useFakeTimers();
+
     mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
     } as any);
 
-    const fetchSpy = jest.fn();
-    window.fetch = fetchSpy as any;
+    const mockFetch = jest.fn();
+    window.fetch = mockFetch as any;
 
     const searchResults = {
       "@id": "/search/?type=HumanDonor",
@@ -885,7 +972,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     // Open a facet
     const facetTrigger = screen.getByTestId("facettrigger-sex");
@@ -895,7 +987,7 @@ describe("Test <FacetSection> component", () => {
     jest.advanceTimersByTime(3000);
 
     // Verify fetch was not called
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("filters out type facet from visible facets", () => {
@@ -943,7 +1035,12 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     // Should only show sex facet, not type facet
     const facets = screen.getAllByTestId(/^facet-container-/);
@@ -954,7 +1051,7 @@ describe("Test <FacetSection> component", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("handles duplicate filter fields in Clear All button", () => {
+  it("handles duplicate filter fields in Clear Filter button", () => {
     mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
     } as any);
@@ -1000,24 +1097,31 @@ describe("Test <FacetSection> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
-    const clearAllButton = screen.getByRole("button", { name: /clear all/i });
+    const clearAllButton = screen.getByRole("button", {
+      name: /clear all filters/i,
+    });
     expect(clearAllButton).not.toBeDisabled();
   });
 
-  it("buffers multiple facet state changes before saving", async () => {
+  it("saves facet config immediately on facet state changes", async () => {
     mockUseAuth0.mockReturnValue({
       isAuthenticated: true,
     } as any);
 
-    const fetchSpy = jest.fn().mockImplementation(() => {
+    const mockFetch = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve({}),
       });
     });
-    window.fetch = fetchSpy as any;
+    window.fetch = mockFetch as any;
 
     const mockSessionProperties = {
       user: {
@@ -1074,36 +1178,1087 @@ describe("Test <FacetSection> component", () => {
       <SessionContext.Provider
         value={{ sessionProperties: mockSessionProperties } as any}
       >
-        <FacetSection searchResults={searchResults} />
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
       </SessionContext.Provider>
     );
 
     // Wait for initial load
     await waitFor(() => {
-      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(mockFetch).toHaveBeenCalledTimes(2); // 1 for config, 1 for order
     });
 
-    fetchSpy.mockClear();
+    mockFetch.mockClear();
 
-    // Open multiple facets quickly
+    // Open multiple facets
     const sexFacetTrigger = screen.getByTestId("facettrigger-sex");
     const statusFacetTrigger = screen.getByTestId("facettrigger-status");
 
     fireEvent.click(sexFacetTrigger);
-    jest.advanceTimersByTime(1000); // Less than BUFFER_TIMEOUT
+
+    // Should have saved immediately after first click
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
 
     fireEvent.click(statusFacetTrigger);
-    jest.advanceTimersByTime(1000); // Still less than BUFFER_TIMEOUT
 
-    // Should not have saved yet
-    expect(fetchSpy).not.toHaveBeenCalled();
-
-    // Complete the buffer timeout
-    jest.advanceTimersByTime(1500); // Total: 3500ms > 3000ms BUFFER_TIMEOUT
-
-    // Now it should have saved (only once)
+    // Should have saved immediately after second click
     await waitFor(() => {
-      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(mockFetch).toHaveBeenCalled();
+
+      // Verify that config saves are happening
+      const configSaves = mockFetch.mock.calls.filter(
+        (call) => call[0] === "/api/facet-config/123/?type=HumanDonor"
+      );
+
+      // Expect at least 2 saves (one for each facet click), possibly more due to React rendering
+      expect(configSaves.length).toBeGreaterThanOrEqual(2);
     });
+  });
+
+  it("enters edit order mode when clicking the edit order button", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        uuid: "123",
+      },
+    };
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "status",
+          title: "Status",
+          terms: [
+            { key: "released", doc_count: 2 },
+            { key: "in progress", doc_count: 2 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search/",
+          term: "HumanDonor",
+        },
+      ],
+    } as any;
+
+    const mockFetch = jest.fn();
+    mockFetch.mockImplementation(
+      () =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({}),
+        }) as any
+    );
+    window.fetch = mockFetch as any;
+
+    render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
+      </SessionContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Find and click the edit order button
+    const editOrderButton = screen.getByRole("button", {
+      name: "Edit facet order",
+    });
+    fireEvent.click(editOrderButton);
+
+    // Check that edit mode controls are now visible
+    await waitFor(() => {
+      const doneButton = screen
+        .getAllByText("Done")
+        .find((el) => el.tagName === "BUTTON");
+      expect(doneButton).toBeInTheDocument();
+      const cancelButton = screen
+        .getAllByText("Cancel")
+        .find((el) => el.tagName === "BUTTON");
+      expect(cancelButton).toBeInTheDocument();
+      const resetButton = screen
+        .getAllByText("Reset")
+        .find((el) => el.tagName === "BUTTON");
+      expect(resetButton).toBeInTheDocument();
+    });
+
+    // mockFetch cleanup handled by beforeEach;
+  });
+
+  it("saves facet order when clicking Done in edit mode", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        uuid: "123",
+      },
+    };
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "status",
+          title: "Status",
+          terms: [
+            { key: "released", doc_count: 2 },
+            { key: "in progress", doc_count: 2 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search/",
+          term: "HumanDonor",
+        },
+      ],
+    } as any;
+
+    const mockFetch = jest.fn();
+    mockFetch.mockImplementation(
+      () =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({}),
+        }) as any
+    );
+    window.fetch = mockFetch as any;
+
+    render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
+      </SessionContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Enter edit mode
+    const editOrderButton = screen.getByRole("button", {
+      name: "Edit facet order",
+    });
+    fireEvent.click(editOrderButton);
+
+    await waitFor(() => {
+      const doneButton = screen
+        .getAllByText("Done")
+        .find((el) => el.tagName === "BUTTON");
+      expect(doneButton).toBeInTheDocument();
+    });
+
+    mockFetch.mockClear();
+
+    // Click Done button
+    const doneButton = screen
+      .getAllByText("Done")
+      .find((el) => el.tagName === "BUTTON");
+    fireEvent.click(doneButton);
+
+    // Verify that the facet order was saved
+    await waitFor(() => {
+      const orderSaveCalls = mockFetch.mock.calls.filter(
+        (call) => call[0] === "/api/facet-order/123/?type=HumanDonor"
+      );
+      expect(orderSaveCalls.length).toBeGreaterThan(0);
+    });
+
+    // Verify edit mode controls are no longer visible
+    expect(screen.queryByText("Done")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cancel")).not.toBeInTheDocument();
+
+    // mockFetch cleanup handled by beforeEach;
+  });
+
+  it("cancels edit mode without saving when clicking Cancel", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        uuid: "123",
+      },
+    };
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "status",
+          title: "Status",
+          terms: [
+            { key: "released", doc_count: 2 },
+            { key: "in progress", doc_count: 2 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search/",
+          term: "HumanDonor",
+        },
+      ],
+    } as any;
+
+    const mockFetch = jest.fn();
+    mockFetch.mockImplementation(
+      () =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({}),
+        }) as any
+    );
+    window.fetch = mockFetch as any;
+
+    render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
+      </SessionContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Enter edit mode
+    const editOrderButton = screen.getByRole("button", {
+      name: "Edit facet order",
+    });
+    fireEvent.click(editOrderButton);
+
+    await waitFor(() => {
+      const cancelButton = screen
+        .getAllByText("Cancel")
+        .find((el) => el.tagName === "BUTTON");
+      expect(cancelButton).toBeInTheDocument();
+    });
+
+    mockFetch.mockClear();
+
+    // Click Cancel button
+    const cancelButton = screen
+      .getAllByText("Cancel")
+      .find((el) => el.tagName === "BUTTON");
+    fireEvent.click(cancelButton);
+
+    // Verify that no order save was made
+    await waitFor(() => {
+      const orderSaveCalls = mockFetch.mock.calls.filter(
+        (call) => call[0] === "/api/facet-order/123/?type=HumanDonor"
+      );
+      expect(orderSaveCalls.length).toBe(0);
+    });
+
+    // Verify edit mode controls are no longer visible
+    expect(screen.queryByText("Done")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cancel")).not.toBeInTheDocument();
+
+    // mockFetch cleanup handled by beforeEach;
+  });
+
+  it("resets facet order to default when clicking Reset in edit mode", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        uuid: "123",
+      },
+    };
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "status",
+          title: "Status",
+          terms: [
+            { key: "released", doc_count: 2 },
+            { key: "in progress", doc_count: 2 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search/",
+          term: "HumanDonor",
+        },
+      ],
+    } as any;
+
+    const mockFetch = jest.fn();
+    mockFetch.mockImplementation(
+      () =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({}),
+        }) as any
+    );
+    window.fetch = mockFetch as any;
+
+    render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
+      </SessionContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Enter edit mode
+    const editOrderButton = screen.getByRole("button", {
+      name: "Edit facet order",
+    });
+    fireEvent.click(editOrderButton);
+
+    await waitFor(() => {
+      const resetButton = screen
+        .getAllByText("Reset")
+        .find((el) => el.tagName === "BUTTON");
+      expect(resetButton).toBeInTheDocument();
+    });
+
+    // Click Reset button - this should reset to default order
+    const resetButton = screen
+      .getAllByText("Reset")
+      .find((el) => el.tagName === "BUTTON");
+    fireEvent.click(resetButton);
+
+    // Reset keeps you in edit mode, so controls should still be visible
+    expect(
+      screen.getAllByText("Done").find((el) => el.tagName === "BUTTON")
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText("Cancel").find((el) => el.tagName === "BUTTON")
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText("Reset").find((el) => el.tagName === "BUTTON")
+    ).toBeInTheDocument();
+
+    // mockFetch cleanup handled by beforeEach;
+  });
+
+  it("loads saved facet order with missing fields added to the end", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        uuid: "123",
+      },
+    };
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "status",
+          title: "Status",
+          terms: [
+            { key: "released", doc_count: 2 },
+            { key: "in progress", doc_count: 2 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "taxa",
+          title: "Taxa",
+          terms: [{ key: "Homo sapiens", doc_count: 4 }],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search/",
+          term: "HumanDonor",
+        },
+      ],
+    } as any;
+
+    const allFacets = searchResults.facets;
+
+    const mockFetch = jest.fn();
+    mockFetch.mockImplementation((url) => {
+      if (url === "/api/facet-order/123/?type=HumanDonor") {
+        // Return saved order that only has "sex" and "status" but not "taxa"
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(["status", "sex"]),
+        }) as any;
+      }
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+      }) as any;
+    });
+    window.fetch = mockFetch as any;
+
+    render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <FacetSection searchResults={searchResults} allFacets={allFacets} />
+      </SessionContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Verify that all three facets are rendered
+    expect(screen.getByText("Sex")).toBeInTheDocument();
+    expect(screen.getByText("Status")).toBeInTheDocument();
+    expect(screen.getByText("Taxa")).toBeInTheDocument();
+
+    // mockFetch cleanup handled by beforeEach;
+  });
+
+  it("prevents facet opening/closing while in edit order mode", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        uuid: "123",
+      },
+    };
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search/",
+          term: "HumanDonor",
+        },
+      ],
+    } as any;
+
+    const mockFetch = jest.fn();
+    mockFetch.mockImplementation(
+      () =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({}),
+        }) as any
+    );
+    window.fetch = mockFetch as any;
+
+    render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
+      </SessionContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Enter edit mode
+    const editOrderButton = screen.getByRole("button", {
+      name: "Edit facet order",
+    });
+    fireEvent.click(editOrderButton);
+
+    await waitFor(() => {
+      const doneButton = screen
+        .getAllByText("Done")
+        .find((el) => el.tagName === "BUTTON");
+      expect(doneButton).toBeInTheDocument();
+    });
+
+    mockFetch.mockClear();
+
+    // Try to click a facet trigger while in edit mode
+    const sexFacetTrigger = screen.getByTestId("facettrigger-sex");
+    fireEvent.click(sexFacetTrigger);
+
+    // Verify that no config save was made (facet shouldn't have opened)
+    await waitFor(() => {
+      const configSaveCalls = mockFetch.mock.calls.filter(
+        (call) => call[0] === "/api/facet-config/123/?type=HumanDonor"
+      );
+      // There should be no new config save calls
+      expect(configSaveCalls.length).toBe(0);
+    });
+
+    // mockFetch cleanup handled by beforeEach;
+  });
+
+  it("updates facet order when dragging in edit mode", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    } as any;
+
+    const searchResults = {
+      "@id": "/search/?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "status",
+          title: "Status",
+          terms: [{ key: "released", doc_count: 4 }],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "HumanDonor",
+        },
+      ],
+    } as any;
+
+    const mockFetch = jest.fn();
+    mockFetch.mockImplementation(
+      () =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({}),
+        }) as any
+    );
+    window.fetch = mockFetch as any;
+
+    render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
+      </SessionContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Enter edit mode
+    const editOrderButton = screen.getByRole("button", {
+      name: "Edit facet order",
+    });
+    fireEvent.click(editOrderButton);
+
+    await waitFor(() => {
+      const doneButton = screen
+        .getAllByText("Done")
+        .find((el) => el.tagName === "BUTTON");
+      expect(doneButton).toBeInTheDocument();
+    });
+
+    // Verify that Reorder.Group was called with onReorder and onReorderComplete callbacks
+    const reorderGroupCalls = (Reorder.Group as jest.Mock).mock.calls;
+    // Find the most recent call that has onReorder (when in edit mode)
+    const editModeCall = reorderGroupCalls
+      .slice()
+      .reverse()
+      .find((call) => call[0].onReorder);
+
+    expect(editModeCall).toBeDefined();
+    expect(editModeCall[0].onReorder).toBeInstanceOf(Function);
+
+    // Test the onReorder callback directly
+    const onReorderCallback = editModeCall[0].onReorder;
+    const newOrder = [
+      searchResults.facets[1], // status first
+      searchResults.facets[0], // sex second
+    ];
+
+    // Call onReorder to simulate drag - wrap in act to handle state updates
+    act(() => {
+      onReorderCallback(newOrder);
+    });
+
+    mockFetch.mockClear();
+
+    // Click Done to save the new order
+    const doneButton = screen
+      .getAllByText("Done")
+      .find((el) => el.tagName === "BUTTON");
+    fireEvent.click(doneButton!);
+
+    // Verify the new order was saved
+    await waitFor(() => {
+      const orderSaveCalls = mockFetch.mock.calls.filter(
+        (call) => call[0] === "/api/facet-order/123/?type=HumanDonor"
+      );
+      expect(orderSaveCalls.length).toBeGreaterThan(0);
+      const saveCall = orderSaveCalls[0];
+      const body = JSON.parse(saveCall[1].body);
+      // After dragging, order should be [status, sex]
+      expect(body).toEqual(["status", "sex"]);
+    });
+  });
+
+  it("logs console error when saving facet configuration fails", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    };
+
+    const consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    // Mock fetch to return error object when posting facet config
+    const errorResponse: ErrorObject = {
+      isError: true,
+      "@type": ["NetworkError", "Error"],
+      status: "error",
+      code: 503,
+      title: "Network error",
+      description: "Failed to save",
+      detail: "Network connection failed",
+    };
+
+    const mockFetch = jest.fn((url: string, options?: RequestInit) => {
+      if (
+        url === "/api/facet-config/123/?type=HumanDonor" &&
+        options?.method === "POST"
+      ) {
+        // Return the error as JSON response
+        return Promise.resolve({
+          ok: false,
+          json: () => Promise.resolve(errorResponse),
+        } as Response);
+      }
+
+      // All other requests succeed
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+      } as Response);
+    });
+    window.fetch = mockFetch;
+
+    const searchResults: SearchResults = {
+      "@id": "/search?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [{ key: "female", doc_count: 4 }],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "HumanDonor",
+        },
+      ],
+    } as any;
+
+    render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
+      </SessionContext.Provider>
+    );
+
+    // Wait for initial load to complete
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Click to open a facet (triggers saveOpen which calls setFacetConfig).
+    const facetTrigger = screen.getByTestId("facettrigger-sex");
+    fireEvent.click(facetTrigger);
+
+    // Wait for the async save to complete and error to be logged.
+    await waitFor(
+      () => {
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "Failed to save facet configuration:",
+          errorResponse
+        );
+      },
+      { timeout: 3000 }
+    );
+  });
+
+  it("logs console error when saving facet order fails", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    };
+
+    const consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    // Mock fetch to return error object when posting facet order
+    const errorResponse: ErrorObject = {
+      isError: true,
+      "@type": ["NetworkError", "Error"],
+      status: "error",
+      code: 503,
+      title: "Redis error",
+      description: "Failed to save order",
+      detail: "Redis connection failed",
+    };
+
+    const mockFetch = jest.fn((url: string, options?: RequestInit) => {
+      if (
+        url === "/api/facet-order/123/?type=HumanDonor" &&
+        options?.method === "POST"
+      ) {
+        // Return the error as JSON response
+        return Promise.resolve({
+          ok: false,
+          json: () => Promise.resolve(errorResponse),
+        } as Response);
+      }
+      // All other requests succeed
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+      } as Response);
+    });
+    window.fetch = mockFetch;
+
+    const searchResults: SearchResults = {
+      "@id": "/search?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search/?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [{ key: "female", doc_count: 4 }],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "status",
+          title: "Status",
+          terms: [{ key: "released", doc_count: 4 }],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "HumanDonor",
+        },
+      ],
+    } as any;
+
+    render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
+      </SessionContext.Provider>
+    );
+
+    // Wait for initial load.
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Enter edit mode.
+    const editOrderButton = screen.getByRole("button", {
+      name: "Edit facet order",
+    });
+    fireEvent.click(editOrderButton);
+
+    await waitFor(() => {
+      const doneButton = screen
+        .getAllByText("Done")
+        .find((el) => el.tagName === "BUTTON");
+      expect(doneButton).toBeInTheDocument();
+    });
+
+    // Simulate reorder.
+    const reorderGroupCalls = (Reorder.Group as jest.Mock).mock.calls;
+    const editModeCall = reorderGroupCalls
+      .slice()
+      .reverse()
+      .find((call) => call[0].onReorder);
+
+    act(() => {
+      editModeCall[0].onReorder([
+        searchResults.facets[1],
+        searchResults.facets[0],
+      ]);
+    });
+
+    // Click Done to save (this will call setFacetOrder which will return error).
+    const doneButton = screen
+      .getAllByText("Done")
+      .find((el) => el.tagName === "BUTTON");
+
+    fireEvent.click(doneButton!);
+
+    // Wait for the async save to complete and error to be logged
+    await waitFor(
+      () => {
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          "Failed to save facet order:",
+          errorResponse
+        );
+      },
+      { timeout: 3000 }
+    );
   });
 });

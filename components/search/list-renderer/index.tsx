@@ -1,5 +1,3 @@
-// node_modules
-import PropTypes from "prop-types";
 // components
 import {
   SearchListItemMain,
@@ -9,6 +7,8 @@ import {
 } from "./search-list-item";
 // lib
 import FetchRequest from "../../../lib/fetch-request";
+// root
+import type { DatabaseObject, SearchResults } from "../../../globals";
 
 /**
  * When you add a new renderer for a search-list item `@type`, likely in its own file in this
@@ -85,7 +85,7 @@ import File from "./file";
 import Source from "./source";
 import Workflow from "./workflow";
 
-const renderers = {
+const renderers: Record<string, React.ComponentType<any>> = {
   AlignmentFile: File,
   AnalysisSet,
   AnalysisStep,
@@ -146,7 +146,7 @@ const renderers = {
 /**
  * Search-list renderer for search-result items that don't have a specific renderer.
  */
-export function Fallback({ item }) {
+export function Fallback({ item }: { item: Record<string, any> }) {
   const title =
     item.accession ||
     item.title ||
@@ -154,22 +154,15 @@ export function Fallback({ item }) {
     item.description ||
     item["@id"];
   return (
-    <>
-      <SearchListItemMain>
-        <SearchListItemUniqueId>
-          <SearchListItemType item={item} />
-          {item["@id"]}
-        </SearchListItemUniqueId>
-        <SearchListItemTitle>{title}</SearchListItemTitle>
-      </SearchListItemMain>
-    </>
+    <SearchListItemMain>
+      <SearchListItemUniqueId>
+        <SearchListItemType item={item} />
+        {item["@id"]}
+      </SearchListItemUniqueId>
+      <SearchListItemTitle>{title}</SearchListItemTitle>
+    </SearchListItemMain>
   );
 }
-
-Fallback.propTypes = {
-  // Single search-result object to display on a search-result list page
-  item: PropTypes.object.isRequired,
-};
 
 /**
  * Get the `@type` that an existing search-list renderer handles for the given item. If no `@type`
@@ -178,7 +171,7 @@ Fallback.propTypes = {
  * @param {object} item Object with `@type` property to look up in registry
  * @returns {string} `@type` from `item` that a search-list renderer handles
  */
-function getItemRendererType(item) {
+function getItemRendererType(item: DatabaseObject): string | null {
   const matchingType = item["@type"].find((itemType) => renderers[itemType]);
   return matchingType || null;
 }
@@ -191,7 +184,9 @@ function getItemRendererType(item) {
  * @param {object} item Object with `@type` property to look up in registry
  * @returns {React.Component} React component to render the given item
  */
-export function getSearchListItemRenderer(item) {
+export function getSearchListItemRenderer(
+  item: DatabaseObject
+): React.ComponentType<any> {
   const itemType = getItemRendererType(item);
   return itemType ? renderers[itemType] : Fallback;
 }
@@ -203,8 +198,12 @@ export function getSearchListItemRenderer(item) {
  * @param {string} itemType Item @type to look up in registry
  * @returns {function} Function to retrieve accessory data paths for the given item type
  */
-function getAccessoryDataPathsGenerator(itemType) {
-  const renderer = renderers[itemType];
+function getAccessoryDataPathsGenerator(
+  itemType: string
+): ((items: DatabaseObject[]) => any) | null {
+  const renderer = renderers[itemType] as React.ComponentType<any> & {
+    getAccessoryDataPaths?: (items: DatabaseObject[]) => any;
+  };
   return renderer?.getAccessoryDataPaths || null;
 }
 
@@ -241,7 +240,9 @@ function getAccessoryDataPathsGenerator(itemType) {
  * @param {object} itemListsByType Search-result items keyed by item type
  * @returns {array} Array of unique accessory data paths
  */
-export function getAccessoryDataPaths(itemListsByType) {
+export function getAccessoryDataPaths(
+  itemListsByType: Record<string, DatabaseObject[]>
+): Record<string, { paths: string[]; fields: string[] }> {
   // For each item type, get its accessory data paths generator function, if any. Pass that
   // function the list of items of that type, and concatenate all the resulting paths and fields
   // that we'll request from the data provider into one array.
@@ -319,7 +320,9 @@ export function getAccessoryDataPaths(itemListsByType) {
  * @param {array.objects} propertyObjects Objects for a single property of search result items
  * @returns {object} Map of property objects keyed by `@id`
  */
-export function generateAccessoryDataPropertyMap(propertyObjects) {
+export function generateAccessoryDataPropertyMap(
+  propertyObjects: DatabaseObject[]
+): Record<string, DatabaseObject> {
   return propertyObjects.reduce(
     (map, term) => ({ ...map, [term["@id"]]: term }),
     {}
@@ -332,7 +335,7 @@ export function generateAccessoryDataPropertyMap(propertyObjects) {
  * @param {object} searchResults Search results from igvfd
  * @returns {array} Array of unique item types in the search-result items
  */
-function getRenderableItemTypes(searchResults) {
+function getRenderableItemTypes(searchResults: SearchResults): string[] {
   return searchResults["@graph"].reduce((itemTypesAcc, item) => {
     const itemType = getItemRendererType(item);
 
@@ -356,7 +359,9 @@ function getRenderableItemTypes(searchResults) {
  * @param {array.string} itemTypes @types found in search results
  * @returns {object} Object with item types as keys and arrays of search-result items as values
  */
-export function getItemListsByType(searchResults) {
+export function getItemListsByType(
+  searchResults: SearchResults
+): Record<string, DatabaseObject[]> {
   const itemTypes = getRenderableItemTypes(searchResults);
   return itemTypes.reduce((itemListsByTypeAcc, itemType) => {
     itemListsByTypeAcc[itemType] = searchResults["@graph"].filter(
@@ -374,7 +379,10 @@ export function getItemListsByType(searchResults) {
  * @param {object} itemListsByType Search-result items keyed by item type
  * @param {string} cookie Browser cookie for request authentication
  */
-export async function getAccessoryData(itemListsByType, cookie) {
+export async function getAccessoryData(
+  itemListsByType: Record<string, DatabaseObject[]>,
+  cookie: string
+): Promise<Record<string, DatabaseObject> | null> {
   if (Object.keys(itemListsByType).length > 0) {
     const accessoryDataPaths = getAccessoryDataPaths(itemListsByType);
     const accessoryDataTypes = Object.keys(accessoryDataPaths);
@@ -401,7 +409,9 @@ export async function getAccessoryData(itemListsByType, cookie) {
       if (accessoryDataList.length > 0) {
         const accessoryData = accessoryDataList.reduce(
           (accessoryDataAcc, { objects }) => {
-            const propertyMap = generateAccessoryDataPropertyMap(objects);
+            const propertyMap = generateAccessoryDataPropertyMap(
+              objects as DatabaseObject[]
+            );
             return { ...accessoryDataAcc, ...propertyMap };
           },
           {}

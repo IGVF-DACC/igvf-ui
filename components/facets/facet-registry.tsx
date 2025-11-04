@@ -67,12 +67,14 @@ type TermComponent = ComponentType<TermComponentProps>;
  * @property searchResults - Search results that include the given facet
  * @property updateQuery - Function to update the query string on user selection
  * @property isFacetOpen - True if the facet is currently open
+ * @property isEditOrderMode - True when editing facet order
  */
 type TitleComponentProps = {
   facet: SearchResultsFacet;
   searchResults: SearchResults;
   updateQuery: (queryString: string) => void;
   isFacetOpen: boolean;
+  isEditOrderMode: boolean;
 };
 type TitleComponent = ComponentType<TitleComponentProps>;
 

@@ -1,5 +1,5 @@
 // node_modules
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { XCircleIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 // components/facet/custom-facets

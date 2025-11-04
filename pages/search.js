@@ -18,6 +18,7 @@ import SessionContext from "../components/session-context";
 import TableCount from "../components/table-count";
 // lib
 import { errorObjectToProps } from "../lib/errors";
+import { getAllFacetsFromQuery } from "../lib/facets";
 import FetchRequest from "../lib/fetch-request";
 import { getQueryStringFromServerQuery } from "../lib/query-utils";
 import {
@@ -30,7 +31,11 @@ import {
  * components this relies on use the term, "search list," to distinguish it from other kinds of
  * search-result display pages, such as /report.
  */
-export default function Search({ searchResults, accessoryData = null }) {
+export default function Search({
+  searchResults,
+  allFacets,
+  accessoryData = null,
+}) {
   const { collectionTitles, profiles } = useContext(SessionContext);
   const { totalPages } = useSearchLimits(searchResults);
   const resultTypes = generateSearchResultsTypes(
@@ -52,7 +57,7 @@ export default function Search({ searchResults, accessoryData = null }) {
         />
       )}
       <div className="lg:flex lg:items-start lg:gap-1">
-        <FacetSection searchResults={searchResults} />
+        <FacetSection searchResults={searchResults} allFacets={allFacets} />
         <div className="grow">
           <FacetTags searchResults={searchResults} />
           {searchResults.total > 0 ? (
@@ -93,6 +98,8 @@ export default function Search({ searchResults, accessoryData = null }) {
 Search.propTypes = {
   // /search results from igvfd
   searchResults: PropTypes.object.isRequired,
+  // All possible facets for the type
+  allFacets: PropTypes.array.isRequired,
   // Accessory data for search results, keyed by each object's `@id`
   accessoryData: PropTypes.object,
 };
@@ -122,9 +129,11 @@ export async function getServerSideProps({ req, query }) {
       itemListsByType,
       req.headers.cookie
     );
+    const allFacets = await getAllFacetsFromQuery(query, request);
     return {
       props: {
         searchResults,
+        allFacets,
         accessoryData,
       },
     };
