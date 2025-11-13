@@ -255,6 +255,12 @@ export function SampleDataItems({
           <DataItemValue>{item.submitter_comment}</DataItemValue>
         </>
       )}
+      {item.nucleic_acid_delivery && (
+        <>
+          <DataItemLabel>Nucleic Acid Delivery</DataItemLabel>
+          <DataItemValue>{item.nucleic_acid_delivery}</DataItemValue>
+        </>
+      )}
       {item.aliases?.length > 0 && (
         <>
           <DataItemLabel>Aliases</DataItemLabel>
@@ -322,6 +328,7 @@ SampleDataItems.commonProperties = [
   "description",
   "lot_id",
   "institutional_certificates",
+  "nucleic_acid_delivery",
   "publications",
   "revoke_detail",
   "sorted_from",
@@ -571,6 +578,8 @@ OntologyTermDataItems.propTypes = {
 
 OntologyTermDataItems.commonProperties = [
   "aliases",
+  "description",
+  "definition",
   "submitter_comment",
   "synonyms",
   "term_id",
