@@ -37,17 +37,26 @@ export default function PlatformOntologyTerm({
           <StatusPreviewDetail item={platformOntologyTerm} />
           <DataPanel>
             <DataArea>
-              <OntologyTermDataItems item={platformOntologyTerm} isA={isA} />
-              {platformOntologyTerm.sequencing_kits?.length > 0 && (
-                <>
-                  <DataItemLabel>Sequencing Kits</DataItemLabel>
-                  <DataItemValue>
-                    <SeparatedList>
-                      {platformOntologyTerm.sequencing_kits}
-                    </SeparatedList>
-                  </DataItemValue>
-                </>
-              )}
+              <OntologyTermDataItems item={platformOntologyTerm} isA={isA}>
+                {platformOntologyTerm.company && (
+                  <>
+                    <DataItemLabel>Company</DataItemLabel>
+                    <DataItemValue>
+                      {platformOntologyTerm.company}
+                    </DataItemValue>
+                  </>
+                )}
+                {platformOntologyTerm.sequencing_kits?.length > 0 && (
+                  <>
+                    <DataItemLabel>Sequencing Kits</DataItemLabel>
+                    <DataItemValue>
+                      <SeparatedList>
+                        {platformOntologyTerm.sequencing_kits}
+                      </SeparatedList>
+                    </DataItemValue>
+                  </>
+                )}
+              </OntologyTermDataItems>
             </DataArea>
           </DataPanel>
         </JsonDisplay>
