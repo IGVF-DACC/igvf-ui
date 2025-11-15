@@ -1,6 +1,6 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Bars2Icon,
   MinusIcon,
@@ -110,7 +110,7 @@ function MobileCollapsableArea({ isOpen, testid = "", children }) {
       {isOpen && (
         <motion.div
           data-testid={testid}
-          className="overflow-hidden md:hidden"
+          className="overflow-hidden"
           initial="collapsed"
           animate="open"
           exit="collapsed"

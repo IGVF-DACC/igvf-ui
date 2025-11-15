@@ -38,7 +38,10 @@
 // node_modules
 import { NextApiRequest, NextApiResponse } from "next";
 // lib
-import { getCacheClient } from "../../../lib/cache-client";
+import {
+  getCachedDataWithField,
+  setCachedDataWithField,
+} from "../../../lib/cache";
 import { generateFacetStoreKey } from "../../../lib/facets";
 import { HTTP_STATUS_CODE, isHttpMethod } from "../../../lib/fetch-request";
 
@@ -51,42 +54,35 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const redisClient = await getCacheClient();
-  if (!redisClient) {
-    res
-      .status(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR)
-      .json({ error: "Cache client not available." });
-    return;
-  }
-
   // Get the user uuid from the path `/api/facet-config/[uuid]`.
   const uuid = req.query.uuid as string;
   if (!uuid) {
-    // return an error if the uuid is missing, with the message that the uuid is required.
     res
       .status(HTTP_STATUS_CODE.BAD_REQUEST)
       .json({ error: "User UUID required." });
     return;
   }
 
-  // Get the type from the query string. This code should eventually use the new `getCachedData()`
-  // and `setCachedData()` functions in lib/cache.ts.
+  // Get the type from the query string.
   const type = req.query.type as string;
   if (!type) {
-    // return an error if the type is missing, with the message that the type is required.
     res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({ error: "Type required." });
     return;
   }
-  const facetStoreKey = generateFacetStoreKey(uuid);
+  const facetStoreKey = generateFacetStoreKey("config", uuid);
 
   if (isHttpMethod(req.method, "POST")) {
-    await redisClient.hSet(facetStoreKey, type, JSON.stringify(req.body));
-    await redisClient.expire(facetStoreKey, FACET_CONFIG_EXPIRATION);
+    await setCachedDataWithField(
+      facetStoreKey,
+      type,
+      req.body,
+      FACET_CONFIG_EXPIRATION
+    );
     res.status(HTTP_STATUS_CODE.CREATED).json(req.body);
   } else if (isHttpMethod(req.method, "GET")) {
-    const value = await redisClient.hGet(facetStoreKey, type);
+    const value = await getCachedDataWithField(facetStoreKey, type);
     if (value) {
-      res.status(HTTP_STATUS_CODE.CREATED).json(JSON.parse(value));
+      res.status(HTTP_STATUS_CODE.OK).json(value);
     } else {
       res.status(HTTP_STATUS_CODE.NOT_FOUND).end();
     }

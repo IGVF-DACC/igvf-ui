@@ -1,6 +1,6 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import PropTypes from "prop-types";

@@ -1,5 +1,6 @@
 // node_modules
 import _ from "lodash";
+import type { GetServerSidePropsContext } from "next";
 import { Fragment } from "react";
 // components
 import Attribution from "../../components/attribution";
@@ -165,7 +166,12 @@ export default function AnalysisStep({
   );
 }
 
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext<{ id: string }>) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const response = (

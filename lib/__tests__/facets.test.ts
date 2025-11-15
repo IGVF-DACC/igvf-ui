@@ -4,12 +4,15 @@ import {
   collectAllChildFacets,
   filterOutChildFacets,
   generateFacetStoreKey,
+  getAllFacetsFromQuery,
   getFacetConfig,
+  getFacetOrder,
   getFilterTerm,
   getTermSelections,
   getVisibleFacets,
   getVisibleFilters,
   setFacetConfig,
+  setFacetOrder,
 } from "../facets";
 import FetchRequest from "../fetch-request";
 import type { SearchResultsFacet, SearchResultsFilter } from "../../globals";
@@ -720,7 +723,7 @@ describe("Test the getTermSelections function", () => {
 describe("Test the generateFacetStoreKey function", () => {
   it("should generate a key for the user", () => {
     const uuid = "123";
-    expect(generateFacetStoreKey(uuid)).toEqual("facet-config-123");
+    expect(generateFacetStoreKey("config", uuid)).toEqual("facet-config-123");
   });
 });
 
@@ -870,5 +873,388 @@ describe("Test the checkForBooleanFacet function", () => {
       appended: false,
     };
     expect(checkForBooleanFacet(facet)).toBe(false);
+  });
+});
+
+describe("Test the getFacetOrder / setFacetOrder functions", () => {
+  it("should get the facet order for the user and object type", async () => {
+    const mockResult = ["taxa", "lab.title", "status"];
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockResult),
+      })
+    );
+
+    const request = new FetchRequest();
+    const uuid = "abc-123";
+    const selectedType = "MeasurementSet";
+
+    await expect(getFacetOrder(uuid, selectedType, request)).resolves.toEqual(
+      mockResult
+    );
+
+    expect(mockFunction).toHaveBeenCalledWith(
+      `/api/facet-order/${uuid}/?type=${selectedType}`,
+      expect.objectContaining({
+        method: "GET",
+      })
+    );
+  });
+
+  it("should return null when facet order is not found", async () => {
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(null),
+      })
+    );
+
+    const request = new FetchRequest();
+    const uuid = "abc-123";
+    const selectedType = "MeasurementSet";
+
+    const result = await getFacetOrder(uuid, selectedType, request);
+
+    expect(result).toBeNull();
+  });
+
+  it("should save the facet order for the user and object type", async () => {
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+      })
+    );
+
+    const request = new FetchRequest();
+    const uuid = "abc-123";
+    const selectedType = "MeasurementSet";
+    const orderedFacetFields = ["taxa", "lab.title", "status"];
+
+    await setFacetOrder(uuid, selectedType, orderedFacetFields, request);
+
+    expect(mockFunction).toHaveBeenCalledWith(
+      `/api/facet-order/${uuid}/?type=${selectedType}`,
+      {
+        body: JSON.stringify(orderedFacetFields),
+        credentials: "include",
+        headers: expect.any(Headers),
+        method: "POST",
+        redirect: "follow",
+      }
+    );
+  });
+
+  it("should handle empty array when saving facet order", async () => {
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+      })
+    );
+
+    const request = new FetchRequest();
+    const uuid = "user-456";
+    const selectedType = "File";
+    const orderedFacetFields: string[] = [];
+
+    await setFacetOrder(uuid, selectedType, orderedFacetFields, request);
+
+    expect(mockFunction).toHaveBeenCalledWith(
+      `/api/facet-order/${uuid}/?type=${selectedType}`,
+      {
+        body: JSON.stringify(orderedFacetFields),
+        credentials: "include",
+        headers: expect.any(Headers),
+        method: "POST",
+        redirect: "follow",
+      }
+    );
+  });
+});
+
+describe("Test the getAllFacetsFromQuery function", () => {
+  it("should fetch all facets for a single type query", async () => {
+    const mockFacets: SearchResultsFacet[] = [
+      {
+        field: "taxa",
+        title: "Taxa",
+        terms: [
+          {
+            key: "Homo sapiens",
+            doc_count: 10,
+          },
+        ],
+        type: "terms",
+        total: 10,
+      },
+      {
+        field: "status",
+        title: "Status",
+        terms: [
+          {
+            key: "released",
+            doc_count: 5,
+          },
+        ],
+        type: "terms",
+        total: 5,
+      },
+    ];
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            facets: mockFacets,
+            "@graph": [],
+            total: 0,
+          }),
+      })
+    );
+
+    const request = new FetchRequest();
+    const query = { type: "MeasurementSet" };
+
+    const result = await getAllFacetsFromQuery(query, request);
+
+    expect(result).toEqual(mockFacets);
+    expect(mockFunction).toHaveBeenCalledWith(
+      "/search/?type=MeasurementSet&limit=0",
+      expect.objectContaining({
+        method: "GET",
+      })
+    );
+  });
+
+  it("should fetch all facets for a single type query when type is an array with one element", async () => {
+    const mockFacets: SearchResultsFacet[] = [
+      {
+        field: "lab.title",
+        title: "Lab",
+        terms: [
+          {
+            key: "Lab 1",
+            doc_count: 3,
+          },
+        ],
+        type: "terms",
+        total: 3,
+      },
+    ];
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            facets: mockFacets,
+            "@graph": [],
+            total: 0,
+          }),
+      })
+    );
+
+    const request = new FetchRequest();
+    const query = { type: ["File"] };
+
+    const result = await getAllFacetsFromQuery(query, request);
+
+    expect(result).toEqual(mockFacets);
+    expect(mockFunction).toHaveBeenCalledWith(
+      "/search/?type=File&limit=0",
+      expect.objectContaining({
+        method: "GET",
+      })
+    );
+  });
+
+  it("should fetch all facets when type is not specified", async () => {
+    const mockFacets: SearchResultsFacet[] = [
+      {
+        field: "type",
+        title: "Object Type",
+        terms: [
+          {
+            key: "MeasurementSet",
+            doc_count: 5,
+          },
+          {
+            key: "File",
+            doc_count: 3,
+          },
+        ],
+        type: "terms",
+        total: 8,
+      },
+    ];
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            facets: mockFacets,
+            "@graph": [],
+            total: 0,
+          }),
+      })
+    );
+
+    const request = new FetchRequest();
+    const query = {};
+
+    const result = await getAllFacetsFromQuery(query, request);
+
+    expect(result).toEqual(mockFacets);
+    expect(mockFunction).toHaveBeenCalledWith(
+      "/search/?&limit=0",
+      expect.objectContaining({
+        method: "GET",
+      })
+    );
+  });
+
+  it("should return empty array when response has no facets", async () => {
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            "@graph": [],
+            total: 0,
+          }),
+      })
+    );
+
+    const request = new FetchRequest();
+    const query = { type: "UnknownType" };
+
+    const result = await getAllFacetsFromQuery(query, request);
+
+    expect(result).toEqual([]);
+  });
+
+  it("should return empty array when response is null", async () => {
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(null),
+      })
+    );
+
+    const request = new FetchRequest();
+    const query = { type: "MeasurementSet" };
+
+    const result = await getAllFacetsFromQuery(query, request);
+
+    expect(result).toEqual([]);
+  });
+
+  it("should handle query with type as an array with multiple elements", async () => {
+    const mockFacets: SearchResultsFacet[] = [
+      {
+        field: "status",
+        title: "Status",
+        terms: [
+          {
+            key: "released",
+            doc_count: 10,
+          },
+        ],
+        type: "terms",
+        total: 10,
+      },
+    ];
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            facets: mockFacets,
+            "@graph": [],
+            total: 0,
+          }),
+      })
+    );
+
+    const request = new FetchRequest();
+    const query = { type: ["MeasurementSet", "File"] };
+
+    const result = await getAllFacetsFromQuery(query, request);
+
+    expect(result).toEqual(mockFacets);
+
+    // When type is an array with more than one element, no type query is added
+    expect(mockFunction).toHaveBeenCalledWith(
+      "/search/?&limit=0",
+      expect.objectContaining({
+        method: "GET",
+      })
+    );
+  });
+
+  it("should handle complex query with other parameters", async () => {
+    const mockFacets: SearchResultsFacet[] = [
+      {
+        field: "lab.title",
+        title: "Lab",
+        terms: [
+          {
+            key: "Lab A",
+            doc_count: 2,
+          },
+        ],
+        type: "terms",
+        total: 2,
+      },
+    ];
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            facets: mockFacets,
+            "@graph": [],
+            total: 0,
+          }),
+      })
+    );
+
+    const request = new FetchRequest();
+    // Query with multiple parameters - only type should be used
+    const query = {
+      type: "AnalysisSet",
+      status: "released",
+      "lab.title": "Lab A",
+    };
+
+    const result = await getAllFacetsFromQuery(query, request);
+
+    expect(result).toEqual(mockFacets);
+
+    // Only type query parameter should be included
+    expect(mockFunction).toHaveBeenCalledWith(
+      "/search/?type=AnalysisSet&limit=0",
+      expect.objectContaining({
+        method: "GET",
+      })
+    );
   });
 });

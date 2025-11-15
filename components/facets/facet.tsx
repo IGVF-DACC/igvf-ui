@@ -18,6 +18,7 @@ export default function Facet({
   updateQuery,
   updateOpen,
   isFacetOpen,
+  isEditOrderMode,
   children,
 }: {
   facet: SearchResultsFacet;
@@ -25,21 +26,23 @@ export default function Facet({
   updateQuery: (queryString: string) => void;
   updateOpen: (e: React.MouseEvent) => void;
   isFacetOpen: boolean;
+  isEditOrderMode: boolean;
   children: React.ReactNode;
 }) {
   const Title = facetRegistry.title.lookup(facet.field);
 
   return (
     <div
-      key={facet.field}
       className="border-panel border-t"
       data-testid={`facet-container-${facet.field}`}
     >
       <button
         onClick={updateOpen}
-        className={`w-full cursor-pointer px-4 pt-2 pb-2 ${
-          isFacetOpen ? "bg-gray-600 dark:bg-gray-400" : ""
-        }`}
+        className={`w-full px-4 pt-2 pb-2 ${
+          isFacetOpen
+            ? "bg-gray-600 dark:bg-gray-400"
+            : "bg-white dark:bg-black"
+        } ${isEditOrderMode ? "cursor-ns-resize" : "cursor-pointer"}`}
         data-testid={`facettrigger-${facet.field}`}
         aria-expanded={isFacetOpen}
       >
@@ -48,6 +51,7 @@ export default function Facet({
           searchResults={searchResults}
           updateQuery={updateQuery}
           isFacetOpen={isFacetOpen}
+          isEditOrderMode={isEditOrderMode}
         />
       </button>
       {children}

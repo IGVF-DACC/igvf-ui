@@ -1,5 +1,5 @@
 // node_modules
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { type MouseEvent, useState } from "react";
 // components
