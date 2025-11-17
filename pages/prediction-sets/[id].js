@@ -260,6 +260,7 @@ export default function PredictionSet({
               reportLink={`/multireport/?type=Sample&file_sets.@id=${predictionSet["@id"]}`}
               reportLabel="Report of samples in this prediction set"
               isConstructLibraryColumnVisible
+              isDeletedVisible
             />
           )}
           {donors.length > 0 && <DonorTable donors={donors} />}
@@ -276,6 +277,7 @@ export default function PredictionSet({
               reportLink={`/multireport/?type=FileSet&input_for=${predictionSet["@id"]}`}
               reportLabel="Report of file sets that are inputs for this prediction set"
               title="Input File Sets"
+              isDeletedVisible
               panelId="input-file-sets"
             />
           )}

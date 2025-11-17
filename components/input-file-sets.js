@@ -413,6 +413,7 @@ function InputFileSetTable({
   measurementSets,
   constructLibrarySets,
   reportLink,
+  isDeletedVisible = false,
   panelId = "input-file-sets",
 }) {
   const { collectionTitles } = useContext(SessionContext);
@@ -439,6 +440,7 @@ function InputFileSetTable({
           <DataAreaTitleLink
             href={reportLink}
             label={`Report of ${fileSetType} input file sets`}
+            isDeletedVisible={isDeletedVisible}
           >
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
@@ -481,6 +483,8 @@ InputFileSetTable.propTypes = {
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Link to the report page containing the same file sets as this table
   reportLink: PropTypes.string,
+  // True to show deleted items in the linked report
+  isDeletedVisible: PropTypes.bool,
   // ID of the panel containing this table for the section directory
   panelId: PropTypes.string,
 };
@@ -517,7 +521,8 @@ export default function InputFileSets({
             auxiliarySets={auxiliarySets}
             measurementSets={measurementSets}
             constructLibrarySets={constructLibrarySets}
-            reportLink={`/multireport/?type=${fileSetType}&input_for=${thisFileSet["@id"]}`}
+            reportLink={`/multireport/?type=${fileSetType}&input_for.@id=${thisFileSet["@id"]}`}
+            isDeletedVisible
             panelId={toShishkebabCase(fileSetType)}
           />
         );

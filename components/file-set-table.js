@@ -113,6 +113,7 @@ export default function FileSetTable({
   reportLabel = "",
   title = "File Sets",
   fileSetMeta = null,
+  isDeletedVisible = false,
   panelId = "file-sets",
 }) {
   const { collectionTitles } = useContext(SessionContext);
@@ -122,7 +123,11 @@ export default function FileSetTable({
       <DataAreaTitle id={panelId}>
         {title}
         {reportLink && (
-          <DataAreaTitleLink href={reportLink} label={reportLabel}>
+          <DataAreaTitleLink
+            href={reportLink}
+            label={reportLabel}
+            isDeletedVisible={isDeletedVisible}
+          >
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
@@ -156,6 +161,8 @@ FileSetTable.propTypes = {
     // Function to filter the files to display
     fileFilter: PropTypes.func,
   }),
+  // True to include deleted status in the linked report
+  isDeletedVisible: PropTypes.bool,
   // ID of the panel for the section directory
   panelId: PropTypes.string,
 };

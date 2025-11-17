@@ -105,12 +105,7 @@ export default function CuratedSet({
             </DataArea>
           </DataPanel>
           {samples.length > 0 && (
-            <SampleTable
-              samples={samples}
-              reportLink={`/multireport/?type=Sample&file_sets.@id=${curatedSet["@id"]}`}
-              reportLabel="Report of samples in this curated set"
-              isConstructLibraryColumnVisible
-            />
+            <SampleTable samples={samples} isConstructLibraryColumnVisible />
           )}
           {donors.length > 0 && <DonorTable donors={donors} />}
           {files.length > 0 && (

@@ -59,32 +59,6 @@ import {
 import { isJsonFormat } from "../../lib/query-utils";
 
 /**
- * Maximum number of samples to include in the related multiome datasets report link. This is based
- * on the maximum URL size of 4000 (really 4096, but we'll be conservative) characters. Subtract a
- * longish demo domain name and the `/multireport/?type=MeasurementSet` search string, and subtract
- * the length of the `field=prop` queries for displaying all possible report columns. Then divide
- * by the length of the `samples.accession=...` query string to get the maximum number of samples
- * that can be included in the report link.
- */
-const MAX_SAMPLES_IN_REPORT_LINK = 100;
-
-/**
- * Compose the report link for the related multiome datasets table.
- */
-function composeRelatedDatasetReportLink(measurementSet) {
-  if (measurementSet.samples.length > 0) {
-    const samples = measurementSet.samples.slice(0, MAX_SAMPLES_IN_REPORT_LINK);
-    const sampleQueries = samples.map(
-      (sample) => `samples.accession=${sample.accession}`
-    );
-    return `/multireport/?type=MeasurementSet&${sampleQueries.join(
-      "&"
-    )}&accession!=${measurementSet.accession}`;
-  }
-  return "";
-}
-
-/**
  * Display the assay details for the measurement set.
  */
 function AssayDetails({ measurementSet }) {
@@ -122,7 +96,6 @@ export default function MeasurementSet({
   documents,
   publications,
   files,
-  relatedMultiomeSets,
   auxiliarySets,
   inputFileSetFor,
   controlFor,
@@ -321,6 +294,7 @@ export default function MeasurementSet({
               reportLabel="Report of Samples in This File Set"
               panelId="samples"
               isConstructLibraryColumnVisible
+              isDeletedVisible
             />
           )}
           {donors.length > 0 && <DonorTable donors={donors} />}
@@ -346,6 +320,7 @@ export default function MeasurementSet({
               reportLink={`/multireport/?type=FileSet&control_for.@id=${measurementSet["@id"]}`}
               reportLabel="Report of Control File Sets in This File Set"
               panelId="control-file-sets"
+              isDeletedVisible
             />
           )}
           {inputFileSetFor.length > 0 && (
@@ -366,15 +341,6 @@ export default function MeasurementSet({
               panelId="control-for"
             />
           )}
-          {relatedMultiomeSets.length > 0 && (
-            <FileSetTable
-              fileSets={relatedMultiomeSets}
-              title="Related Multiome Datasets"
-              reportLink={composeRelatedDatasetReportLink(measurementSet)}
-              reportLabel="Report of Related Multiome Datasets"
-              panelId="related-multiome-datasets"
-            />
-          )}
           {auxiliarySets.length > 0 && (
             <FileSetTable
               fileSets={auxiliarySets}
@@ -389,6 +355,7 @@ export default function MeasurementSet({
                   );
                 },
               }}
+              isDeletedVisible
               panelId="auxiliary-sets"
             />
           )}
@@ -398,6 +365,7 @@ export default function MeasurementSet({
               title="Primer Designs"
               reportLink={`/multireport/?type=TabularFile&primer_design_for=${measurementSet["@id"]}`}
               reportLabel="Report of primer designs for this measurement set"
+              isDeletedVisible
               panelId="primer-designs"
             />
           )}
@@ -417,8 +385,6 @@ MeasurementSet.propTypes = {
   controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Related multiome datasets
-  relatedMultiomeSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Auxiliary datasets
   auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets that this measurement set is an input for
@@ -507,20 +473,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       controlFor = await requestFileSets(controlForPaths, request);
     }
 
-    let relatedMultiomeSets = [];
-    const relatedMultiomeSetPaths =
-      measurementSet.related_multiome_datasets?.length > 0
-        ? measurementSet.related_multiome_datasets.map(
-            (dataset) => dataset["@id"]
-          )
-        : [];
-    if (relatedMultiomeSetPaths.length > 0) {
-      relatedMultiomeSets = await requestFileSets(
-        relatedMultiomeSetPaths,
-        request
-      );
-    }
-
     let auxiliarySets = [];
     const auxiliarySetPaths =
       measurementSet.auxiliary_sets?.length > 0
@@ -601,7 +553,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         documents,
         publications,
         files,
-        relatedMultiomeSets,
         auxiliarySets,
         inputFileSetFor,
         controlFor,

@@ -22,6 +22,9 @@ import {
 import { ButtonLink } from "./form-elements";
 import { secDirId } from "./section-directory";
 import SeparatedList from "./separated-list";
+// lib
+import QueryString from "../lib/query-string";
+import { splitPathAndQueryString } from "../lib/query-utils";
 
 /**
  * Displays a panel -- typically to display data items for an object, but you can use this for
@@ -114,25 +117,45 @@ export function DataAreaTitle({
 
 /**
  * Displays a link to the right of a data area title. This is typically used to link to a report
- * page for the data area.
+ * page for the data area. Generally `isDeletedVisible` should be false for report links on tables
+ * for calculated properties, and true for report links on tables for properties submitted directly
+ * with the displayed object.
  *
  * @param href - Local URL to link to; don't use an external link
  * @param label - Label for the link
  * @param isExternal - True if the link is external
+ * @param isDeletedVisible - True to include deleted items in the linked report
  */
 export function DataAreaTitleLink({
   href,
   label,
   isExternal,
+  isDeletedVisible = false,
   children,
 }: {
   href: string;
   label: string;
   isExternal?: boolean;
+  isDeletedVisible?: boolean;
   children: React.ReactNode;
 }) {
+  // Add status!=deleted to the query string to avoid linking to deleted items in reports. Replace
+  // any existing `status=` values already in `href`.
+  let finalHref = href;
+  if (!isDeletedVisible) {
+    const { path, queryString } = splitPathAndQueryString(href);
+    const query = new QueryString(queryString);
+    query.replaceKeyValue("status", "deleted", "NEGATIVE");
+    finalHref = `${path}?${query.format()}`;
+  }
+
   return (
-    <ButtonLink href={href} size="sm" label={label} isExternal={isExternal}>
+    <ButtonLink
+      href={finalHref}
+      size="sm"
+      label={label}
+      isExternal={isExternal}
+    >
       {children}
     </ButtonLink>
   );

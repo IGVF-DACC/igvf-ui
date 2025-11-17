@@ -155,6 +155,7 @@ export default function AlignmentFile({
               reportLink={`/multireport/?type=File&input_file_for=${alignmentFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
+              isDeletedVisible
             />
           )}
           {inputFileFor.length > 0 && (

@@ -129,11 +129,7 @@ export default function WholeOrganism({
             />
           )}
           {sample.modifications?.length > 0 && (
-            <ModificationTable
-              modifications={sample.modifications}
-              reportLink={`/multireport/?type=Modification&biosamples_modified=${sample["@id"]}`}
-              reportLabel={`Report of genetic modifications for ${sample.accession}`}
-            />
+            <ModificationTable modifications={sample.modifications} />
           )}
           {originOf.length > 0 && (
             <SampleTable
@@ -158,6 +154,7 @@ export default function WholeOrganism({
               biomarkers={biomarkers}
               reportLink={`/multireport/?type=Biomarker&biomarker_for=${sample["@id"]}`}
               reportLabel={`Report of biological markers that are associated with biosample ${sample.accession}`}
+              isDeletedVisible
             />
           )}
           {treatments.length > 0 && (
@@ -165,6 +162,7 @@ export default function WholeOrganism({
               treatments={treatments}
               reportLink={`/multireport/?type=Treatment&biosamples_treated=${sample["@id"]}`}
               reportLabel={`Report of treatments applied to the biosample ${sample.accession}`}
+              isDeletedVisible
             />
           )}
           {institutionalCertificates.length > 0 && (

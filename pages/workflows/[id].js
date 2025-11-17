@@ -4,7 +4,6 @@ import { useContext } from "react";
 // components
 import AliasList from "../../components/alias-list";
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
-import AnalysisStepTable from "../../components/analysis-step-table";
 import { AnalysisStepVersionTable } from "../../components/analysis-step-version-table";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -33,7 +32,6 @@ import { WorkflowTitle } from "../../components/workflow";
 import buildAttribution from "../../lib/attribution";
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
-  requestAnalysisSteps,
   requestDocuments,
   requestPublications,
 } from "../../lib/common-requests";
@@ -44,7 +42,6 @@ import { workflowTextTitle } from "../../lib/workflow";
 
 export default function Workflow({
   workflow,
-  analysisSteps,
   documents,
   publications,
   attribution = null,
@@ -166,18 +163,12 @@ export default function Workflow({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          {analysisSteps.length > 0 && (
-            <AnalysisStepTable
-              analysisSteps={analysisSteps}
-              reportLink={`/multireport/?type=AnalysisStep&workflow.@id=${workflow["@id"]}`}
-              reportLabel="Analysis Steps that link to this workflow"
-            />
-          )}
           {workflow.analysis_step_versions?.length > 0 && (
             <AnalysisStepVersionTable
               analysisStepVersions={workflow.analysis_step_versions}
               reportLink={`/multireport/?type=AnalysisStepVersion&workflows.@id=${workflow["@id"]}`}
               reportLabel="Analysis Step Versions that link to this workflow"
+              isDeletedVisible
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
@@ -192,8 +183,6 @@ Workflow.propTypes = {
   workflow: PropTypes.object.isRequired,
   // Attribution for this workflow
   attribution: PropTypes.object,
-  // Analysis Steps to display
-  analysisSteps: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this workflow
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this workflow
@@ -223,14 +212,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       ? await requestDocuments(workflow.documents, request)
       : [];
 
-    let analysisSteps = [];
-    if (workflow.analysis_steps?.length > 0) {
-      const analysisStepPaths = workflow.analysis_steps.map(
-        (analysisStep) => analysisStep["@id"]
-      );
-      analysisSteps = await requestAnalysisSteps(analysisStepPaths, request);
-    }
-
     let publications = [];
     if (workflow.publications?.length > 0) {
       const publicationPaths = workflow.publications.map(
@@ -245,7 +226,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         workflow,
         award,
         lab,
-        analysisSteps,
         documents,
         publications,
         pageContext: { title: workflow.name },

@@ -69,6 +69,7 @@ export default function DerivedFromTable({
   reportLink = null,
   reportLabel = null,
   title = "Derived From",
+  isDeletedVisible = false,
   panelId = "derived-from",
 }) {
   return (
@@ -76,7 +77,11 @@ export default function DerivedFromTable({
       <DataAreaTitle id={panelId}>
         {title}
         {reportLink && reportLabel && (
-          <DataAreaTitleLink href={reportLink} label={reportLabel}>
+          <DataAreaTitleLink
+            href={reportLink}
+            label={reportLabel}
+            isDeletedVisible={isDeletedVisible}
+          >
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
@@ -104,4 +109,6 @@ DerivedFromTable.propTypes = {
   title: PropTypes.string,
   // ID of the panel containing the table for the section directory
   panelId: PropTypes.string,
+  // True to include deleted items in the linked report
+  isDeletedVisible: PropTypes.bool,
 };

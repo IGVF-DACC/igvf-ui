@@ -186,6 +186,7 @@ export default function SequenceFile({
               reportLink={`/multireport/?type=File&input_file_for=${sequenceFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
+              isDeletedVisible
             />
           )}
           {inputFileFor.length > 0 && (

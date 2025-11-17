@@ -47,6 +47,7 @@ export default function BiomarkerTable({
   reportLink = null,
   reportLabel = null,
   title = "Biomarkers",
+  isDeletedVisible = false,
   panelId = "biomarkers",
 }) {
   return (
@@ -54,7 +55,11 @@ export default function BiomarkerTable({
       <DataAreaTitle id={panelId}>
         {title}
         {reportLink && reportLabel && (
-          <DataAreaTitleLink href={reportLink} label={reportLabel}>
+          <DataAreaTitleLink
+            href={reportLink}
+            label={reportLabel}
+            isDeletedVisible={isDeletedVisible}
+          >
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
@@ -80,6 +85,8 @@ BiomarkerTable.propTypes = {
   reportLabel: PropTypes.string,
   // Title to display if not "Biomarkers"
   title: PropTypes.string,
+  // True to show deleted items in the linked report view
+  isDeletedVisible: PropTypes.bool,
   // Unique ID for the section directory
   panelId: PropTypes.string,
 };

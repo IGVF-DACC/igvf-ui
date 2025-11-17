@@ -360,6 +360,7 @@ export default function ConstructLibrarySet({
               title="Library Design Files"
               reportLink={`/multireport/?type=File&integrated_in.@id=${constructLibrarySet["@id"]}`}
               reportLabel="Report of library design files in this construct library set"
+              isDeletedVisible
               panelId="library-design-files"
             />
           )}

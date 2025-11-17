@@ -297,9 +297,10 @@ export default function SequencingFileTable({
   title = "Files",
   itemPath = "",
   itemPathProp = "file_set.@id",
-  isIlluminaReadType = false,
+  isIlluminaReadType = null,
   seqspecFiles = [],
   seqspecDocuments = [],
+  isDeletedVisible = false,
   panelId = "sequencing-files",
 }: {
   files: FileObject[];
@@ -307,9 +308,10 @@ export default function SequencingFileTable({
   title?: string;
   itemPath?: string;
   itemPathProp?: string;
-  isIlluminaReadType?: boolean;
+  isIlluminaReadType?: boolean | null;
   seqspecFiles?: FileObject[];
   seqspecDocuments?: DocumentObject[];
+  isDeletedVisible?: boolean;
   panelId?: string;
 }) {
   // Currently viewed page of sequence files
@@ -390,6 +392,7 @@ export default function SequencingFileTable({
               <DataAreaTitleLink
                 href={reportLink}
                 label="Report of files that have this item as their file set"
+                isDeletedVisible={isDeletedVisible}
               >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>

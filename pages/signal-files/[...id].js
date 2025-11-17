@@ -140,6 +140,7 @@ export default function SignalFile({
               reportLink={`/multireport/?type=File&input_file_for=${signalFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
+              isDeletedVisible
             />
           )}
           {inputFileFor.length > 0 && (

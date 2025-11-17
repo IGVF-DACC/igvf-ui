@@ -96,6 +96,8 @@ export default function ModelFile({
               reportLink={`/multireport/?type=File&input_file_for=${modelFile["@id"]}`}
               reportLabel="Report of files that this file derives from"
               title="Files This File Derives From"
+              isDeletedVisible
+              panelId="derived-from"
             />
           )}
           {inputFileFor.length > 0 && (
