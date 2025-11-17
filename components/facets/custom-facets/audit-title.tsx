@@ -16,15 +16,18 @@ import type { SearchResults, SearchResultsFacet } from "../../../globals";
  * @param facet - Facet to display from the search results
  * @param searchResults - Search results that include the given facet
  * @param isFacetOpen - True if the facet is currently open
+ * @param isEditOrderMode - True when editing facet order
  */
 export default function AuditTitle({
   facet,
   searchResults,
   isFacetOpen,
+  isEditOrderMode,
 }: {
   facet: SearchResultsFacet;
   searchResults: SearchResults;
   isFacetOpen: boolean;
+  isEditOrderMode: boolean;
 }) {
   const { isAuthenticated } = useAuth0();
 
@@ -35,7 +38,11 @@ export default function AuditTitle({
 
     return (
       <>
-        <StandardTitleElement field={facet.field} isFacetOpen={isFacetOpen}>
+        <StandardTitleElement
+          field={facet.field}
+          isFacetOpen={isFacetOpen}
+          isEditOrderMode={isEditOrderMode}
+        >
           <div className="flex items-center gap-1">
             <div>Audit {mapping.humanReadable}</div>
             <div className="relative h-4 w-4">

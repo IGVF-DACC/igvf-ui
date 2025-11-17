@@ -16,6 +16,7 @@ import SortableGrid from "../components/sortable-grid";
 import TableCount from "../components/table-count";
 // lib
 import { errorObjectToProps } from "../lib/errors";
+import { getAllFacetsFromQuery } from "../lib/facets";
 import FetchRequest from "../lib/fetch-request";
 import QueryString from "../lib/query-string";
 import {
@@ -41,7 +42,7 @@ import {
   stripLimitQueryIfNeeded,
 } from "../lib/search-results";
 
-export default function MultiReport({ searchResults }) {
+export default function MultiReport({ searchResults, allFacets }) {
   const { isAuthenticated } = useAuth0();
   const router = useRouter();
   const { collectionTitles, profiles } = useContext(SessionContext);
@@ -149,7 +150,7 @@ export default function MultiReport({ searchResults }) {
           />
         )}
         <div className="lg:flex lg:items-start lg:gap-1">
-          <FacetSection searchResults={searchResults} />
+          <FacetSection searchResults={searchResults} allFacets={allFacets} />
           <div className="min-w-0 grow">
             <FacetTags searchResults={searchResults} />
             {items.length > 0 ? (
@@ -196,6 +197,8 @@ export default function MultiReport({ searchResults }) {
 MultiReport.propTypes = {
   // @graph from search results from igvfd
   searchResults: PropTypes.object.isRequired,
+  // All possible facets for the type
+  allFacets: PropTypes.array.isRequired,
 };
 
 export async function getServerSideProps({ req, query }) {
@@ -218,9 +221,11 @@ export async function getServerSideProps({ req, query }) {
   ).union();
 
   if (FetchRequest.isResponseSuccess(searchResults)) {
+    const allFacets = await getAllFacetsFromQuery(query, request);
     return {
       props: {
         searchResults,
+        allFacets,
       },
     };
   }

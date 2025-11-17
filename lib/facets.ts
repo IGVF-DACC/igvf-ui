@@ -1,9 +1,12 @@
 // node_modules
 import _ from "lodash";
+import type { ParsedUrlQuery } from "querystring";
 // lib
-import FetchRequest from "./fetch-request";
+import FetchRequest, { type ErrorObject } from "./fetch-request";
 // root
 import type {
+  DataProviderObject,
+  SearchResults,
   SearchResultsFacet,
   SearchResultsFacetTerm,
   SearchResultsFilter,
@@ -227,11 +230,13 @@ export function getTermSelections(
 /**
  * Generate the key to store the facet configuration for a user. This key, along with the object
  * type, is used to identify the facet configuration in the redis cache.
+ *
+ * @param type Type of object for which to generate the facet store key
  * @param uuid UUID of the user for whom to generate the facet store key
  * @returns Facet store key for the user
  */
-export function generateFacetStoreKey(uuid: string): string {
-  return `facet-config-${uuid}`;
+export function generateFacetStoreKey(type: string, uuid: string): string {
+  return `facet-${type}-${uuid}`;
 }
 
 /**
@@ -270,15 +275,53 @@ export async function getFacetConfig(
  * @param selectedType Type of object for which to set the facet configuration
  * @param facetConfig Facet configuration to set
  * @param request FetchRequest object to use for the request
+ * @returns Result of the set operation
  */
 export async function setFacetConfig(
   userUuid: string,
   selectedType: string,
   facetConfig: FacetOpenState,
   request: FetchRequest
-): Promise<void> {
+): Promise<DataProviderObject | ErrorObject> {
   const apiPath = generateFacetConfigApiPath(userUuid, selectedType);
-  await request.postObject(apiPath, facetConfig);
+  return await request.postObject(apiPath, facetConfig);
+}
+
+/**
+ * Get the facet order for a user and object type from the Next.js server redis cache.
+ *
+ * @param userUuid - UUID of the current user to get the facet order for
+ * @param selectedType - Type of object for which to get the facet order
+ * @param request - FetchRequest object to use for the request
+ * @returns Promise that resolves to the ordered array of facet fields, or null if not found
+ */
+export async function getFacetOrder(
+  userUuid: string,
+  selectedType: string,
+  request: FetchRequest
+): Promise<string[] | null> {
+  const apiPath = `/api/facet-order/${userUuid}/?type=${selectedType}`;
+  const response = (await request.getObject(apiPath)).optional();
+  return response as unknown as string[] | null;
+}
+
+/**
+ * Save the facet order for a user and object type in the Next.js server redis cache via the API.
+ *
+ * @param userUuid - UUID of the current user to save the facet order
+ * @param selectedType - Type of object for which to save the facet order
+ * @param orderedFacetFields - Ordered array of facet fields to save
+ * @param request - FetchRequest object to use for the request
+ * @returns Result of the set operation
+ */
+export async function setFacetOrder(
+  userUuid: string,
+  selectedType: string,
+  orderedFacetFields: string[],
+  request: FetchRequest
+): Promise<DataProviderObject | ErrorObject> {
+  const apiPath = `/api/facet-order/${userUuid}/?type=${selectedType}`;
+  return await request.postObject(apiPath, orderedFacetFields);
 }
 
 /**
@@ -301,4 +344,32 @@ export function checkForBooleanFacet(facet: SearchResultsFacet): boolean {
     return falseTerms.length === 1 || trueTerms.length === 1;
   }
   return false;
+}
+
+/**
+ * Fetch all facets for the given query's type with zero results, to get the full list of facets
+ * without any filtering.
+ *
+ * @param query - Query parameters from Next.js request
+ * @param request - FetchRequest instance to make the fetch request
+ * @returns Promise that resolves to an array of all facets for the given type
+ */
+export async function getAllFacetsFromQuery(
+  query: ParsedUrlQuery,
+  request: FetchRequest
+): Promise<SearchResultsFacet[]> {
+  const type = query.type;
+  let typeQuery = "";
+  if (Array.isArray(type)) {
+    if (type.length === 1) {
+      typeQuery = `type=${type[0]}`;
+    }
+  } else if (type) {
+    typeQuery = `type=${type}`;
+  }
+
+  const response = (
+    await request.getObject(`/search/?${typeQuery}&limit=0`)
+  ).optional() as SearchResults;
+  return response?.facets || [];
 }

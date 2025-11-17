@@ -16,8 +16,10 @@ jest.mock("../fetch-request");
 import {
   getCachedData,
   getCachedDataFetch,
+  getCachedDataWithField,
   getObjectCached,
   setCachedData,
+  setCachedDataWithField,
 } from "../cache";
 import { getCacheClient } from "../cache-client";
 import FetchRequest from "../fetch-request";
@@ -679,6 +681,377 @@ describe("Cache System", () => {
         JSON.stringify(largeData),
         { EX: 3600 }
       );
+    });
+  });
+
+  describe("getCachedDataWithField", () => {
+    beforeEach(() => {
+      // Add hGet mock to the Redis client
+      mockRedisClient.hGet = jest.fn();
+    });
+
+    it("should return cached hash field data when available", async () => {
+      const testData = { id: 1, name: "test-user" };
+      mockRedisClient.hGet.mockResolvedValue(JSON.stringify(testData));
+
+      const result = await getCachedDataWithField<typeof testData>(
+        "user-data",
+        "user:123"
+      );
+
+      expect(result).toEqual(testData);
+      expect(mockRedisClient.hGet).toHaveBeenCalledWith(
+        "user-data",
+        "user:123"
+      );
+    });
+
+    it("should return null when hash field doesn't exist", async () => {
+      mockRedisClient.hGet.mockResolvedValue(null);
+
+      const result = await getCachedDataWithField("user-data", "user:999");
+
+      expect(result).toBeNull();
+      expect(mockRedisClient.hGet).toHaveBeenCalledWith(
+        "user-data",
+        "user:999"
+      );
+    });
+
+    it("should return null when Redis client is unavailable", async () => {
+      mockGetCacheClient.mockResolvedValue(null);
+
+      const result = await getCachedDataWithField("user-data", "user:123");
+
+      expect(result).toBeNull();
+      expect(mockRedisClient.hGet).not.toHaveBeenCalled();
+    });
+
+    it("should handle complex nested data in hash field", async () => {
+      const complexData = {
+        preferences: {
+          theme: "dark",
+          notifications: { email: true, sms: false },
+        },
+        metadata: { lastLogin: new Date().toISOString() },
+      };
+      mockRedisClient.hGet.mockResolvedValue(JSON.stringify(complexData));
+
+      const result = await getCachedDataWithField<typeof complexData>(
+        "settings",
+        "user:456"
+      );
+
+      expect(result).toEqual(complexData);
+    });
+
+    it("should handle JSON parsing errors gracefully", async () => {
+      mockRedisClient.hGet.mockResolvedValue("invalid-json{");
+
+      const result = await getCachedDataWithField("user-data", "user:123");
+
+      expect(result).toBeNull();
+      expect(console.error).toHaveBeenCalledWith(
+        "Cache hash retrieval error for key user-data, field user:123:",
+        expect.any(Error)
+      );
+    });
+
+    it("should handle Redis hGet errors", async () => {
+      const redisError = new Error("Redis hGet failed");
+      mockRedisClient.hGet.mockRejectedValue(redisError);
+
+      const result = await getCachedDataWithField("user-data", "user:123");
+
+      expect(result).toBeNull();
+      expect(console.error).toHaveBeenCalledWith(
+        "Cache hash retrieval error for key user-data, field user:123:",
+        redisError
+      );
+    });
+
+    it("should work with different data types in hash fields", async () => {
+      // Test with string.
+      const stringData = "simple string value";
+      mockRedisClient.hGet.mockResolvedValueOnce(JSON.stringify(stringData));
+
+      const stringResult = await getCachedDataWithField<string>(
+        "strings",
+        "field1"
+      );
+      expect(stringResult).toEqual(stringData);
+
+      // Test with number.
+      const numberData = 42;
+      mockRedisClient.hGet.mockResolvedValueOnce(JSON.stringify(numberData));
+
+      const numberResult = await getCachedDataWithField<number>(
+        "numbers",
+        "field2"
+      );
+      expect(numberResult).toEqual(numberData);
+
+      // Test with boolean.
+      const boolData = true;
+      mockRedisClient.hGet.mockResolvedValueOnce(JSON.stringify(boolData));
+
+      const boolResult = await getCachedDataWithField<boolean>(
+        "bools",
+        "field3"
+      );
+      expect(boolResult).toEqual(boolData);
+    });
+
+    it("should return null for empty string from Redis hash", async () => {
+      mockRedisClient.hGet.mockResolvedValue("");
+
+      const result = await getCachedDataWithField("user-data", "empty-field");
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe("setCachedDataWithField", () => {
+    beforeEach(() => {
+      // Add hSet and expire mocks to the Redis client.
+      mockRedisClient.hSet = jest.fn();
+      mockRedisClient.expire = jest.fn();
+    });
+
+    it("should set hash field data with default TTL", async () => {
+      const testData = { id: 1, name: "test" };
+
+      await setCachedDataWithField("user-data", "user:123", testData);
+
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "user-data",
+        "user:123",
+        JSON.stringify(testData)
+      );
+      expect(mockRedisClient.expire).toHaveBeenCalledWith("user-data", 3600);
+    });
+
+    it("should set hash field data with custom TTL", async () => {
+      const testData = { id: 2, name: "custom" };
+
+      await setCachedDataWithField("settings", "user:456", testData, 7200);
+
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "settings",
+        "user:456",
+        JSON.stringify(testData)
+      );
+      expect(mockRedisClient.expire).toHaveBeenCalledWith("settings", 7200);
+    });
+
+    it("should handle complex data structures in hash fields", async () => {
+      const complexData = {
+        preferences: {
+          theme: "dark",
+          layout: { sidebar: true, compact: false },
+        },
+        history: [1, 2, 3],
+        timestamp: new Date().toISOString(),
+      };
+
+      await setCachedDataWithField("user-prefs", "user:789", complexData, 1800);
+
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "user-prefs",
+        "user:789",
+        JSON.stringify(complexData)
+      );
+      expect(mockRedisClient.expire).toHaveBeenCalledWith("user-prefs", 1800);
+    });
+
+    it("should not throw when Redis is unavailable", async () => {
+      mockGetCacheClient.mockResolvedValue(null);
+      const testData = { id: 1 };
+
+      await expect(
+        setCachedDataWithField("user-data", "user:123", testData)
+      ).resolves.not.toThrow();
+
+      expect(mockRedisClient.hSet).not.toHaveBeenCalled();
+      expect(mockRedisClient.expire).not.toHaveBeenCalled();
+    });
+
+    it("should handle Redis hSet errors gracefully", async () => {
+      mockRedisClient.hSet.mockRejectedValue(new Error("Redis hSet failed"));
+      const testData = { id: 1 };
+
+      await expect(
+        setCachedDataWithField("user-data", "user:123", testData)
+      ).resolves.not.toThrow();
+
+      expect(console.error).toHaveBeenCalledWith(
+        "Cache hash set error for key user-data, field user:123:",
+        expect.any(Error)
+      );
+    });
+
+    it("should handle Redis expire errors gracefully", async () => {
+      mockRedisClient.hSet.mockResolvedValue(1);
+      mockRedisClient.expire.mockRejectedValue(
+        new Error("Redis expire failed")
+      );
+      const testData = { id: 1 };
+
+      await expect(
+        setCachedDataWithField("user-data", "user:123", testData)
+      ).resolves.not.toThrow();
+
+      expect(console.error).toHaveBeenCalledWith(
+        "Cache hash set error for key user-data, field user:123:",
+        expect.any(Error)
+      );
+    });
+
+    it("should work with different data types", async () => {
+      // String
+      await setCachedDataWithField("strings", "field1", "test string");
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "strings",
+        "field1",
+        JSON.stringify("test string")
+      );
+
+      // Number.
+      await setCachedDataWithField("numbers", "field2", 123);
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "numbers",
+        "field2",
+        JSON.stringify(123)
+      );
+
+      // Boolean.
+      await setCachedDataWithField("bools", "field3", false);
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "bools",
+        "field3",
+        JSON.stringify(false)
+      );
+
+      // Array.
+      await setCachedDataWithField("arrays", "field4", [1, 2, 3]);
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "arrays",
+        "field4",
+        JSON.stringify([1, 2, 3])
+      );
+    });
+
+    it("should handle null values", async () => {
+      await setCachedDataWithField("nulls", "field1", null);
+
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "nulls",
+        "field1",
+        JSON.stringify(null)
+      );
+      expect(mockRedisClient.expire).toHaveBeenCalledWith("nulls", 3600);
+    });
+  });
+
+  describe("Hash Field Integration", () => {
+    beforeEach(() => {
+      mockRedisClient.hGet = jest.fn();
+      mockRedisClient.hSet = jest.fn();
+      mockRedisClient.expire = jest.fn();
+    });
+
+    it("should work end-to-end with setCachedDataWithField -> getCachedDataWithField", async () => {
+      const userData = {
+        id: 123,
+        name: "John Doe",
+        email: "john@example.com",
+      };
+
+      // Set the data.
+      await setCachedDataWithField("users", "user:123", userData, 3600);
+
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "users",
+        "user:123",
+        JSON.stringify(userData)
+      );
+      expect(mockRedisClient.expire).toHaveBeenCalledWith("users", 3600);
+
+      // Mock the get to return the same data.
+      mockRedisClient.hGet.mockResolvedValue(JSON.stringify(userData));
+
+      // Get the data back
+      const result = await getCachedDataWithField<typeof userData>(
+        "users",
+        "user:123"
+      );
+
+      expect(result).toEqual(userData);
+      expect(mockRedisClient.hGet).toHaveBeenCalledWith("users", "user:123");
+    });
+
+    it("should support multiple fields under the same hash key", async () => {
+      const user1 = { id: 1, name: "User 1" };
+      const user2 = { id: 2, name: "User 2" };
+      const user3 = { id: 3, name: "User 3" };
+
+      // Set multiple fields
+      await setCachedDataWithField("users", "user:1", user1);
+      await setCachedDataWithField("users", "user:2", user2);
+      await setCachedDataWithField("users", "user:3", user3);
+
+      // Verify each field was set.
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "users",
+        "user:1",
+        JSON.stringify(user1)
+      );
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "users",
+        "user:2",
+        JSON.stringify(user2)
+      );
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "users",
+        "user:3",
+        JSON.stringify(user3)
+      );
+
+      // Verify expire was called for each (on the same hash key).
+      expect(mockRedisClient.expire).toHaveBeenCalledTimes(3);
+    });
+
+    it("should handle mixed scenarios with regular cache and hash cache", async () => {
+      const regularData = { type: "regular" };
+      const hashData = { type: "hash" };
+
+      // Set regular cache data.
+      await setCachedData("regular-key", regularData);
+
+      // Set hash field data.
+      await setCachedDataWithField("hash-key", "field1", hashData);
+
+      // Verify both were called correctly.
+      expect(mockRedisClient.set).toHaveBeenCalledWith(
+        "regular-key",
+        JSON.stringify(regularData),
+        { EX: 3600 }
+      );
+      expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+        "hash-key",
+        "field1",
+        JSON.stringify(hashData)
+      );
+
+      // Get regular cache data.
+      mockRedisClient.get.mockResolvedValue(JSON.stringify(regularData));
+      const regularResult = await getCachedData("regular-key");
+      expect(regularResult).toEqual(regularData);
+
+      // Get hash field data
+      mockRedisClient.hGet.mockResolvedValue(JSON.stringify(hashData));
+      const hashResult = await getCachedDataWithField("hash-key", "field1");
+      expect(hashResult).toEqual(hashData);
     });
   });
 });

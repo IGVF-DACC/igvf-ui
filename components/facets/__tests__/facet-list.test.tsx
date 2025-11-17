@@ -24,8 +24,8 @@ delete (window as any).location;
 // Mock next/router (uses __mocks__/next/router.ts)
 jest.mock("next/router");
 
-// Mock framer-motion (uses components/__mocks__/framer-motion.tsx automatically)
-jest.mock("framer-motion");
+// Mock motion/react (uses components/__mocks__/motion/react.tsx automatically)
+jest.mock("motion/react");
 
 /**
  * Method to mock the useAuth0 hook comes from:
@@ -58,6 +58,7 @@ function FacetListWithState({
       facets={facets}
       openedFacets={openedFacets}
       onFacetOpen={handleFacetOpen}
+      isEditOrderMode={false}
     />
   );
 }
@@ -155,7 +156,12 @@ describe("Test <FacetList> component", () => {
       ],
     } as any;
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     // Check for the correct number of facets.
     const facetSections = screen.getAllByTestId(/^facet-container-/);
@@ -237,6 +243,7 @@ describe("Test <FacetList> component", () => {
         facets={facetsForDisplay}
         openedFacets={{}}
         onFacetOpen={jest.fn()}
+        isEditOrderMode={false}
       />
     );
 
@@ -320,7 +327,12 @@ describe("Test <FacetList> component", () => {
       ],
     };
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     // Click the Clear All button and check that the router push function was called with the
     // correct URL.
@@ -402,7 +414,12 @@ describe("Test <FacetList> component", () => {
       ],
     };
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
 
     // Open the sex facet by clicking its trigger.
     const facetTrigger = screen.getByTestId(/^facettrigger-sex$/);
@@ -511,7 +528,12 @@ describe("Test <FacetList> component", () => {
       ],
     };
 
-    render(<FacetSection searchResults={searchResults} />);
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        allFacets={searchResults.facets}
+      />
+    );
     expect(screen.queryByTestId(/^datapanel$/)).toBeNull();
   });
 
@@ -848,7 +870,10 @@ describe("Test <FacetList> component", () => {
       <SessionContext.Provider
         value={{ sessionProperties: mockSessionProperties } as any}
       >
-        <FacetSection searchResults={searchResults} />
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
       </SessionContext.Provider>
     );
 
@@ -982,7 +1007,10 @@ describe("Test <FacetList> component", () => {
       <SessionContext.Provider
         value={{ sessionProperties: mockSessionProperties } as any}
       >
-        <FacetSection searchResults={searchResults} />
+        <FacetSection
+          searchResults={searchResults}
+          allFacets={searchResults.facets}
+        />
       </SessionContext.Provider>
     );
 

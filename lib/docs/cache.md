@@ -22,7 +22,14 @@ Code that uses this cache library only runs on the UI server -- it should never 
 To import this caching module into your project:
 
 ```typescript
-import { getCachedDataFetch, getObjectCached, setCachedData } from "lib/cache";
+import {
+  getCachedDataFetch,
+  getObjectCached,
+  getCachedData,
+  setCachedData,
+  getCachedDataWithField,
+  setCachedDataWithField,
+} from "lib/cache";
 ```
 
 ## Module API Reference
@@ -152,4 +159,81 @@ setCachedData("user-preference-chris_robin", userPreference, ONE_HOUR_TTL);
 
 // Though `setCachedData()` is async it returns no value, so you don't necessarily have to await
 // it unless the following code depends on the caching operation to complete.
+```
+
+### `getCachedDataWithField` Async Function
+
+Retrieves data from a Redis hash field. Redis hashes are useful for storing multiple related pieces of data under a single key. For example, you might store different user preferences (theme, language, facet order) under a single user-specific key, with each preference as a separate field.
+
+Use this instead of multiple `getCachedData()` calls when you have related data that shares a common key prefix. Hash fields can be read and written independently without affecting other fields in the same hash.
+
+```typescript
+getCachedDataWithField<T>(
+  key:   string,
+  field: string
+): Promise<T | null>
+```
+
+| Parameter | Type   | Required | Description                                                        |
+| --------- | ------ | -------- | ------------------------------------------------------------------ |
+| key       | string | Yes      | Hash key in the cache, shared across multiple related data fields. |
+| field     | string | Yes      | Field name within the hash to retrieve.                            |
+
+### Example
+
+```typescript
+// Retrieve a specific user's facet order preference for a particular object type
+const userUuid = "abc-123";
+const objectType = "Donor";
+const facetOrder = await getCachedDataWithField<string[]>(
+  `user-preferences-${userUuid}`,
+  `facet-order-${objectType}`
+);
+```
+
+### `setCachedDataWithField` Async Function
+
+Stores data in a Redis hash field with TTL. This allows you to organize related data under a single key while accessing each piece independently. The TTL applies to the entire hash, not individual fields.
+
+This is more efficient than using multiple separate cache keys when you have related data. For example, instead of creating keys like `user-prefs-123-theme`, `user-prefs-123-lang`, `user-prefs-123-facets`, you can use a single hash key `user-prefs-123` with fields `theme`, `lang`, and `facets`.
+
+```typescript
+setCachedDataWithField(
+  key:   string,
+  field: string,
+  data:  unknown,
+  ttl:   number
+): Promise<void>
+```
+
+| Parameter | Type    | Required | Description                                                                                                        |
+| --------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| key       | string  | Yes      | Hash key in the cache, shared across multiple related data fields.                                                 |
+| field     | string  | Yes      | Field name within the hash to store data in.                                                                       |
+| data      | unknown | Yes      | Data to cache to the Redis database. You can use any serializable type.                                            |
+| ttl       | number  | No       | Number of seconds before the entire hash expires, effectively deleting all fields from Redis. Default is one hour. |
+
+### Example
+
+```typescript
+const ONE_HOUR_TTL = 3600;
+const userUuid = "abc-123";
+const objectType = "Donor";
+const facetOrder = ["status", "sex", "taxa"];
+
+// Store facet order preference for a specific user and object type
+await setCachedDataWithField(
+  `user-preferences-${userUuid}`,
+  `facet-order-${objectType}`,
+  facetOrder,
+  ONE_HOUR_TTL
+);
+
+// You can store multiple related preferences under the same hash key
+await setCachedDataWithField(
+  `user-preferences-${userUuid}`,
+  `facet-config-${objectType}`,
+  { sex: true, status: false },
+  ONE_HOUR_TTL
+);
 ```
