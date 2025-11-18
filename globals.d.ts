@@ -1,6 +1,18 @@
 import { type InstitutionalCertificateObject } from "./lib/data-use-limitation";
 
 /**
+ * Template for props passed from Next.js `getServerSideProps` to page components. Extend this for
+ * the props specific to each page.
+ *
+ * @param isJson - Whether the page is being rendered in JSON format
+ * @param pageContext - Additional context for the page, such as title
+ */
+export interface PageComponentProps {
+  isJson: boolean;
+  pageContext: { title: string };
+}
+
+/**
  * Single audit within an audit category.
  */
 export interface Audit {
@@ -421,8 +433,9 @@ export interface GeneObject extends DatabaseObject {
  * Lab object type.
  */
 export interface LabObject extends DatabaseObject {
-  institute_label?: string;
-  name?: string;
+  institute_label: string;
+  name: string;
+  pi: string | UserObject;
   title: string;
 }
 
@@ -554,9 +567,15 @@ export interface SoftwareObject extends DatabaseObject {
  * Data structure of the `User` object.
  */
 export interface UserObject extends DatabaseObject {
+  email: string;
+  first_name: string;
+  job_title?: string;
+  lab?: string | LabObject;
+  last_name: string;
+  submits_for?: string[];
+  submitter_comment?: string;
   title: string;
-  submits_for: string[];
-  viewing_groups: string[];
+  viewing_groups?: string[];
 }
 
 /**
