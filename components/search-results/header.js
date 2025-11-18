@@ -58,7 +58,7 @@ export default function SearchResultsHeader({
               {controller.offerDownload && (
                 <BatchDownloadActuator
                   controller={controller}
-                  label="Download files associated with the selected file sets"
+                  label="Download files associated with the selected filters."
                 />
               )}
             </div>
