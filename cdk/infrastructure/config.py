@@ -194,7 +194,7 @@ class Common:
     organization_name: str = 'igvf-dacc'
     project_name: str = 'igvf-ui'
     default_region: str = 'us-west-2'
-    aws_cdk_version: str = '2.151.0'
+    aws_cdk_version: str = '2.1031.2'
 
 
 @dataclass
