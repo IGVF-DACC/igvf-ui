@@ -2,13 +2,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { ArrowsUpDownIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
-import {
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type MouseEvent,
-} from "react";
+import { useContext, useEffect, useState, type MouseEvent } from "react";
 // components/facets
 import { FacetList } from "./facet-list";
 // components
@@ -271,13 +265,12 @@ export default function FacetSection({
 
   // Get all the facet objects from the search results that are visible to the current user.
   // Generate a map from facet field to facet object for O(1) lookup when converting the field
-  // arrays to facet objects. Memoize the map to recreate it only when the facets can change like
-  // when a facet term is clicked or a new search requested.
+  // arrays to facet objects.
   const facets = getVisibleFacets(searchResults.facets, isAuthenticated);
   const facetFields = facets.map((facet) => facet.field);
-  const facetMap = useMemo(
-    () => new Map(allFacets.map((facet) => [facet.field, facet])),
-    [allFacets]
+  const consideredFacets = isEditOrderMode ? allFacets : facets;
+  const facetMap = new Map(
+    consideredFacets.map((facet) => [facet.field, facet])
   );
 
   // Keep track of which facets are open and closed; closed by default.
