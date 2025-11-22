@@ -63,9 +63,10 @@ export default function MpraQualityMetric({
 
           <FileTable
             files={qualityMetricOf}
-            title="Files this quality metric applies to"
+            title="Files This Quality Metric Applies To"
             reportLink={`/multireport/?type=File&quality_metrics=${qualityMetric["@id"]}`}
             reportLabel="File with this quality metric"
+            isDeletedVisible
             panelId="quality-metric-of"
           />
         </JsonDisplay>

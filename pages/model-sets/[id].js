@@ -170,6 +170,7 @@ export default function ModelSet({
               reportLink={`/multireport/?type=Sample&file_sets.@id=${modelSet["@id"]}`}
               reportLabel="Report of samples in this model set"
               isConstructLibraryColumnVisible
+              isDeletedVisible
             />
           )}
 
@@ -187,6 +188,7 @@ export default function ModelSet({
               title="Input File Sets"
               reportLink={`/multireport/?type=FileSet&input_for=${modelSet["@id"]}`}
               reportLabel={`View file sets used as input file sets for ${modelSet.accession}`}
+              isDeletedVisible
               panelId="input-file-sets"
             />
           )}

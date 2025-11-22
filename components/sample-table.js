@@ -116,6 +116,7 @@ export default function SampleTable({
   title = "Samples",
   panelId = "samples",
   isConstructLibraryColumnVisible = false,
+  isDeletedVisible = false,
 }) {
   const { collectionTitles } = useContext(SessionContext);
 
@@ -124,7 +125,11 @@ export default function SampleTable({
       <DataAreaTitle id={panelId}>
         {title}
         {reportLink && reportLabel && (
-          <DataAreaTitleLink href={reportLink} label={reportLabel}>
+          <DataAreaTitleLink
+            href={reportLink}
+            label={reportLabel}
+            isDeletedVisible={isDeletedVisible}
+          >
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
@@ -155,4 +160,6 @@ SampleTable.propTypes = {
   panelId: PropTypes.string,
   // True to show the "Associated Construct Library Sets" column
   isConstructLibraryColumnVisible: PropTypes.bool,
+  // True to show deleted items in the linked report
+  isDeletedVisible: PropTypes.bool,
 };

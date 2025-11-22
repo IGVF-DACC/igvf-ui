@@ -131,6 +131,7 @@ export default function PrimaryCell({
               reportLink={`/multireport/?type=Sample&pooled_in=${primaryCell["@id"]}`}
               reportLabel="Report of biosamples this sample is pooled from"
               title="Biosamples Pooled From"
+              isDeletedVisible
               panelId="pooled-from"
             />
           )}
@@ -162,11 +163,7 @@ export default function PrimaryCell({
             />
           )}
           {primaryCell.modifications?.length > 0 && (
-            <ModificationTable
-              modifications={primaryCell.modifications}
-              reportLink={`/multireport/?type=Modification&biosamples_modified=${primaryCell["@id"]}`}
-              reportLabel={`Report of genetic modifications for ${primaryCell.accession}`}
-            />
+            <ModificationTable modifications={primaryCell.modifications} />
           )}
           {sortedFractions.length > 0 && (
             <SampleTable
@@ -182,6 +179,7 @@ export default function PrimaryCell({
               biomarkers={biomarkers}
               reportLink={`/multireport/?type=Biomarker&biomarker_for=${primaryCell["@id"]}`}
               reportLabel={`Report of biological markers that are associated with biosample ${primaryCell.accession}`}
+              isDeletedVisible
             />
           )}
           {treatments.length > 0 && (
@@ -189,6 +187,7 @@ export default function PrimaryCell({
               treatments={treatments}
               reportLink={`/multireport/?type=Treatment&biosamples_treated=${primaryCell["@id"]}`}
               reportLabel={`Report of treatments applied to the biosample ${primaryCell.accession}`}
+              isDeletedVisible
             />
           )}
           {institutionalCertificates.length > 0 && (

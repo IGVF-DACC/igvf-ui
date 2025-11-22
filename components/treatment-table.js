@@ -42,6 +42,7 @@ export default function TreatmentTable({
   reportLink = null,
   reportLabel = null,
   title = "Treatments",
+  isDeletedVisible = false,
   panelId = "treatments",
 }) {
   return (
@@ -49,7 +50,11 @@ export default function TreatmentTable({
       <DataAreaTitle id={panelId}>
         {title}
         {reportLink && reportLabel && (
-          <DataAreaTitleLink href={reportLink} label={reportLabel}>
+          <DataAreaTitleLink
+            href={reportLink}
+            label={reportLabel}
+            isDeletedVisible={isDeletedVisible}
+          >
             <TableCellsIcon className="h-4 w-4" />
           </DataAreaTitleLink>
         )}
@@ -75,6 +80,8 @@ TreatmentTable.propTypes = {
   reportLabel: PropTypes.string,
   // Optional title to display if not "Treatments"
   title: PropTypes.string,
+  // True to show deleted items in the linked report view
+  isDeletedVisible: PropTypes.bool,
   // ID of the panel for the section directory
   panelId: PropTypes.string,
 };

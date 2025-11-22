@@ -161,6 +161,7 @@ export default function Tissue({
               reportLink={`/multireport/?type=Sample&pooled_in=${tissue["@id"]}`}
               reportLabel="Report of biosamples this biosample is pooled from"
               title="Biosamples Pooled From"
+              isDeletedVisible
               panelId="pooled-from"
             />
           )}
@@ -192,11 +193,7 @@ export default function Tissue({
             />
           )}
           {tissue.modifications?.length > 0 && (
-            <ModificationTable
-              modifications={tissue.modifications}
-              reportLink={`/multireport/?type=Modification&biosamples_modified=${tissue["@id"]}`}
-              reportLabel={`Report of genetic modifications for ${tissue.accession}`}
-            />
+            <ModificationTable modifications={tissue.modifications} />
           )}
           {sortedFractions.length > 0 && (
             <SampleTable
@@ -212,6 +209,7 @@ export default function Tissue({
               biomarkers={biomarkers}
               reportLink={`/multireport/?type=Biomarker&biomarker_for=${tissue["@id"]}`}
               reportLabel={`Report of biological markers that are associated with biosample ${tissue.accession}`}
+              isDeletedVisible
             />
           )}
           {treatments.length > 0 && (
@@ -219,6 +217,7 @@ export default function Tissue({
               treatments={treatments}
               reportLink={`/multireport/?type=Treatment&biosamples_treated=${tissue["@id"]}`}
               reportLabel={`Report of treatments applied to the biosample ${tissue.accession}`}
+              isDeletedVisible
             />
           )}
           {institutionalCertificates.length > 0 && (

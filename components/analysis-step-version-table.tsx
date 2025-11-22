@@ -97,6 +97,7 @@ const analysisStepVersionColumns = [
  * @param [reportLink] - Link to a report page containing the same analysis step versions
  * @param [reportLabel] - Label for the report link
  * @param [title] - Title of the table
+ * @param [isDeletedVisible] - True to include deleted items in the linked report
  * @param [panelId] - ID of the panel containing the table
  */
 export function AnalysisStepVersionTable({
@@ -104,12 +105,14 @@ export function AnalysisStepVersionTable({
   reportLink = "",
   reportLabel = "",
   title = "Analysis Steps",
+  isDeletedVisible = false,
   panelId = "analysis-step-version-table",
 }: {
   analysisStepVersions: AnalysisStepVersionObject[];
   reportLink?: string;
   reportLabel?: string;
   title?: string;
+  isDeletedVisible?: boolean;
   panelId?: string;
 }) {
   const [isVersionColumnVisible, setIsVersionColumnVisible] = useState(false);
@@ -131,7 +134,11 @@ export function AnalysisStepVersionTable({
             </div>
           </Checkbox>
           {reportLink && (
-            <DataAreaTitleLink href={reportLink} label={reportLabel}>
+            <DataAreaTitleLink
+              href={reportLink}
+              label={reportLabel}
+              isDeletedVisible={isDeletedVisible}
+            >
               <TableCellsIcon className="h-4 w-4" />
             </DataAreaTitleLink>
           )}

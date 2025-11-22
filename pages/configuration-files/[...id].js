@@ -89,7 +89,7 @@ export default function ConfigurationFile({
               title="seqspec File Of"
               itemPath={configurationFile["@id"]}
               itemPathProp="seqspecs"
-              isIlluminaReadType
+              isDeletedVisible
             />
           )}
           {workflows.length > 0 && <WorkflowTable workflows={workflows} />}

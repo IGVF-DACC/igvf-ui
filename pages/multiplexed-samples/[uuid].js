@@ -144,6 +144,7 @@ export default function MultiplexedSample({
               reportLink={reportLink}
               reportLabel="Report of samples multiplexed together to produce this sample"
               title="Multiplexed Samples"
+              isDeletedVisible
               panelId="multiplexed-samples"
             />
           )}

@@ -140,6 +140,7 @@ export default function AuxiliarySet({
               reportLink={`/multireport/?type=Sample&file_sets.@id=${auxiliarySet["@id"]}`}
               reportLabel="Report of samples in this auxiliary set"
               isConstructLibraryColumnVisible
+              isDeletedVisible
             />
           )}
           {donors.length > 0 && <DonorTable donors={donors} />}

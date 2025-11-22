@@ -100,6 +100,7 @@ export default function FileTable({
   downloadQuery = null,
   controllerContent = null,
   isFilteredVisible = false,
+  isDeletedVisible = false,
   panelId = "files",
 }) {
   // Compose the report link, either from the file set or the given link and label.
@@ -142,7 +143,11 @@ export default function FileTable({
             )}
             {controllerContent}
             {finalReportLink && (
-              <DataAreaTitleLink href={finalReportLink} label={label}>
+              <DataAreaTitleLink
+                href={finalReportLink}
+                label={label}
+                isDeletedVisible={isDeletedVisible}
+              >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>
             )}
@@ -171,6 +176,8 @@ FileTable.propTypes = {
   controllerContent: PropTypes.node,
   // True to show the "Filtered" column if both filtered and unfiltered files exist
   isFilteredVisible: PropTypes.bool,
+  // True to include deleted files in the linked report
+  isDeletedVisible: PropTypes.bool,
   // Unique ID for the table for the section directory
   panelId: PropTypes.string,
 };

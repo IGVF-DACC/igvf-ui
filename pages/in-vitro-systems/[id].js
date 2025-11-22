@@ -186,6 +186,7 @@ export default function InVitroSystem({
               reportLink={`/multireport/?type=Sample&pooled_in=${inVitroSystem["@id"]}`}
               reportLabel="Report of samples this biosample is pooled from"
               title="Biosamples Pooled From"
+              isDeletedVisible
               panelId="pooled-from"
             />
           )}
@@ -226,11 +227,7 @@ export default function InVitroSystem({
             />
           )}
           {inVitroSystem.modifications?.length > 0 && (
-            <ModificationTable
-              modifications={inVitroSystem.modifications}
-              reportLink={`/multireport/?type=Modification&biosamples_modified=${inVitroSystem["@id"]}`}
-              reportLabel={`Report of genetic modifications for ${inVitroSystem.accession}`}
-            />
+            <ModificationTable modifications={inVitroSystem.modifications} />
           )}
           {sortedFractions.length > 0 && (
             <SampleTable
@@ -246,6 +243,7 @@ export default function InVitroSystem({
               biomarkers={biomarkers}
               reportLink={`/multireport/?type=Biomarker&biomarker_for=${inVitroSystem["@id"]}`}
               reportLabel={`Report of biological markers that are associated with biosample ${inVitroSystem.accession}`}
+              isDeletedVisible
             />
           )}
           {treatments.length > 0 && (
@@ -253,6 +251,7 @@ export default function InVitroSystem({
               treatments={treatments}
               reportLink={`/multireport/?type=Treatment&biosamples_treated=${inVitroSystem["@id"]}`}
               reportLabel={`Report of treatments applied to the biosample ${inVitroSystem.accession}`}
+              isDeletedVisible
             />
           )}
           {institutionalCertificates.length > 0 && (
