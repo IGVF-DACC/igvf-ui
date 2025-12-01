@@ -13,7 +13,7 @@ import {
   tomorrowNightBright,
 } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 // components
-import CopyButton from "./copy-button";
+import { CopyButton } from "./copy-button";
 import GlobalContext from "./global-context";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 

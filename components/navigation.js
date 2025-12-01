@@ -28,7 +28,7 @@ import Icon from "./icon";
 import IdSearchTrigger from "./id-search-trigger";
 import IndexerState from "./indexer-state";
 import Link from "./link-no-prefetch";
-import { CreativeCommons, Email, Twitter } from "./site-info";
+import { CreativeCommons, Email, SiteInfo, Twitter } from "./site-info";
 import SiteLogo from "./logo";
 import Modal from "./modal";
 import { useBrowserStateQuery } from "./presentation-status";
@@ -840,6 +840,9 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             <Twitter />
             <CreativeCommons />
           </div>
+          <div className="mt-2 flex justify-center">
+            <SiteInfo />
+          </div>
         </NavigationItem>
       </NavigationList>
     </>
@@ -1020,12 +1023,14 @@ export default function NavigationSection() {
         </div>
       </div>
 
-      <MobileCollapsableArea
-        isOpen={isMobileNavOpen}
-        testid="mobile-navigation"
-      >
-        <NavigationExpanded navigationClick={navigationClick} />
-      </MobileCollapsableArea>
+      <div className="md:hidden">
+        <MobileCollapsableArea
+          isOpen={isMobileNavOpen}
+          testid="mobile-navigation"
+        >
+          <NavigationExpanded navigationClick={navigationClick} />
+        </MobileCollapsableArea>
+      </div>
     </section>
   );
 }

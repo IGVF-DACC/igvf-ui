@@ -654,3 +654,22 @@ export interface AnalysisStepVersionObject extends DatabaseObject {
   software_versions: string[] | SoftwareVersionObject[];
   workflows?: string[] | WorkflowObject[];
 }
+
+/**
+ * Object at site "/" endpoint.
+ */
+export interface ApiObject extends DataProviderObject {
+  "@context": string;
+  "@id": string;
+  "@type": string[];
+  app_version: string;
+  portal_title: string;
+  title: string;
+}
+
+/**
+ * Error object returned by API endpoints.
+ */
+export interface ApiErrorObject {
+  error: string;
+}

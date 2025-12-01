@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 import { Fragment, useContext, useState } from "react";
 // components
 import { Button } from "./form-elements";
-import CopyButton from "./copy-button";
+import { CopyButton } from "./copy-button";
 import Modal from "./modal";
 import SessionContext from "./session-context";
 // lib
@@ -46,7 +46,7 @@ function AccessKeyDisplay({ accessKeyId, accessKeySecret }) {
               {row.label}
             </div>
             <div className="mb-2 flex items-center justify-between last:mb-0 md:mb-0">
-              <div className="shrink-1 font-mono">{row.value}</div>
+              <div className="shrink font-mono">{row.value}</div>
               <div className="ml-2 flex shrink-0 justify-end">
                 <CopyButton.Icon target={row.value} label={row.label}>
                   {(isCopied) =>
