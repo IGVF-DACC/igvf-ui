@@ -963,3 +963,12 @@
 .dark .react-flow__node:focus-visible {
   box-shadow: 0 0 0 2px #a0a0a0 !important;
 }
+
+.truncate-multiline {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -19,6 +19,8 @@ import {
 import { UniformlyProcessedBadge } from "../../common-pill-badges";
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
+// CSS
+import "../../../styles/globals.css";
 
 export default function AnalysisSet({
   item: analysisSet,
@@ -38,6 +40,7 @@ export default function AnalysisSet({
 
   const isSupplementsVisible =
     analysisSet.alternate_accessions ||
+    analysisSet.description ||
     analysisSet.sample_summary ||
     fileContentType.length > 0 ||
     isUniformPipeline;
@@ -59,6 +62,16 @@ export default function AnalysisSet({
         {isSupplementsVisible && (
           <SearchListItemSupplement>
             <SearchListItemSupplementAlternateAccessions item={analysisSet} />
+            {analysisSet.description && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Description
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent className="truncate-multiline">
+                  {analysisSet.description}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
             {fileContentType.length > 0 && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
