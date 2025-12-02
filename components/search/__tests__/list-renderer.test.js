@@ -1497,6 +1497,67 @@ describe("Test the AnalysisSet component", () => {
     expect(status).toHaveTextContent("released");
   });
 
+  it("renders an AnalysisSet item with description", () => {
+    const item = {
+      "@id": "/analysis-sets/IGVFDS0390NOLS/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS0390NOLS",
+      aliases: ["igvf:basic_analysis_set_2"],
+      award: "/awards/HG012012/",
+      description: "This is my description",
+      file_set_type: "primary analysis",
+      files: [],
+      lab: {
+        "@id": "/labs/j-michael-cherry/",
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      summary: "primary analysis of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    const accessoryData = {
+      "/analysis-sets/IGVFDS0390NOLS/": {
+        "@id": "/analysis-sets/IGVFDS9006PQTA/",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+        workflows: [
+          {
+            "@id": "/workflows/IGVFWF0000WORK/",
+            accession: "IGVFWF0000WORK",
+            name: "Perturb-seq Pipeline",
+            uniform_pipeline: true,
+          },
+        ],
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisSet item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^primary Analysis Set IGVFDS0390NOLS$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^primary analysis of data$/);
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent(/^J. Michael Cherry, Stanford/);
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent("Description");
+
+    const supplementContent = screen.getAllByTestId(
+      "search-list-item-supplement-content"
+    )[0];
+    expect(supplementContent).toHaveTextContent("This is my description");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
   it("renders an AnalysisSet item with sample_summary", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
@@ -1718,46 +1779,6 @@ describe("Test the CuratedSet component", () => {
     );
 
     const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("Tim Reddy, Duke");
-
-    const status = screen.getByTestId("search-list-item-quality");
-    expect(status).toHaveTextContent("released");
-  });
-
-  it("renders a CuratedSet item without summary", () => {
-    const item = {
-      "@id": "/curated-sets/IGVFDS0000AAAA/",
-      "@type": ["CuratedSet", "FileSet", "Item"],
-      accession: "IGVFDS0000AAAA",
-      aliases: ["igvf-dacc:GRCh38.p14_assembly"],
-      award: "/awards/HG012012/",
-      description: "A curated set for Cherry lab guide RNAs.",
-      file_set_type: "external data for catalog",
-      lab: {
-        "@id": "/labs/tim-reddy/",
-        title: "Tim Reddy, Duke",
-      },
-      status: "released",
-      taxa: "Homo sapiens",
-      uuid: "40f1e08c-5d6d-4d19-8f69-3fd91420c09f",
-    };
-
-    render(
-      <SessionContext.Provider value={{ profiles }}>
-        <CuratedSet item={item} />
-      </SessionContext.Provider>
-    );
-
-    const uniqueId = screen.getByTestId("search-list-item-unique-id");
-    expect(uniqueId).toHaveTextContent(/^CuratedSet/);
-    expect(uniqueId).toHaveTextContent(/IGVFDS0000AAAA$/);
-
-    const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(
-      /^A curated set for Cherry lab guide RNAs.$/
-    );
-
-    const meta = screen.queryByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Tim Reddy, Duke");
 
     const status = screen.getByTestId("search-list-item-quality");

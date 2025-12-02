@@ -19,8 +19,8 @@ import {
 import { UniformlyProcessedBadge } from "../../common-pill-badges";
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
-// CSS
-import "../../../styles/globals.css";
+// lib
+import { truncateText } from "../../../lib/general";
 
 export default function AnalysisSet({
   item: analysisSet,
@@ -67,8 +67,8 @@ export default function AnalysisSet({
                 <SearchListItemSupplementLabel>
                   Description
                 </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent className="truncate-multiline">
-                  {analysisSet.description}
+                <SearchListItemSupplementContent>
+                  {truncateText(analysisSet.description, 320)}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
