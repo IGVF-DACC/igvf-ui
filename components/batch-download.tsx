@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { useState } from "react";
 // components
-import CopyButton from "./copy-button";
+import { CopyButton } from "./copy-button";
 import { Button } from "./form-elements";
 import Modal from "./modal";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";

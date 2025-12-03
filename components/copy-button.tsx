@@ -1,20 +1,29 @@
 // node_modules
-import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 // components
 import { Button } from "./form-elements";
+
+/**
+ * Information and actions related to copying text to the clipboard with the `useCopyAction` hook.
+ *
+ * @property isCopied - True if the user clicked the button within the last two seconds
+ * @property initiateCopy - Call when the user clicks the button to initiate the copy action
+ */
+type CopyActions = {
+  isCopied: boolean;
+  initiateCopy: () => void;
+};
 
 /**
  * This hook copies the given text to the clipboard. To trigger the copy action, call
  * `initiateCopy`, usually when the user clicks a button. The `isCopied` state is set to true for
  * two seconds after after you call `initiateCopy`. This lets you temporarily display an indicator
  * to the user that the copy was successful.
- * @param {string} target The text to copy to the clipboard.
- * @returns {object}
- * @returns {boolean} isCopied True if the user clicked the button within the last two seconds
- * @returns {function} initiateCopy Call when the user clicks the button to initiate the copy action
+ *
+ * @param target - The text to copy to the clipboard.
+ * @returns Copy actions associated with a copy button
  */
-export function useCopyAction(target) {
+export function useCopyAction(target: string): CopyActions {
   // True if the user has clicked the copy button within the last two seconds
   const [isCopied, setCopied] = useState(false);
 
@@ -34,9 +43,7 @@ export function useCopyAction(target) {
   }
 
   return {
-    // States
     isCopied,
-    // Actions
     initiateCopy,
   };
 }
@@ -45,13 +52,24 @@ export function useCopyAction(target) {
  * Displays a button to copy text to the clipboard. Supply a function as the child of this button
  * that takes an argument that gets set to true for two seconds after the user clicks the copy
  * button.
+ *
+ * @param target - The text to copy to the clipboard
+ * @param label - Accessible label for the button
+ * @param disabled - True if the button should appear disabled
+ * @param className - Additional Tailwind CSS class names
  */
-export default function CopyButton({
+export function CopyButton({
   target,
   label = null,
   disabled = false,
   className = "",
   children,
+}: {
+  target: string;
+  label?: string | null;
+  disabled?: boolean;
+  className?: string;
+  children: (isCopied: boolean) => ReactNode;
 }) {
   const { isCopied, initiateCopy } = useCopyAction(target);
 
@@ -67,21 +85,15 @@ export default function CopyButton({
   );
 }
 
-CopyButton.propTypes = {
-  // The text to copy
-  target: PropTypes.string.isRequired,
-  // Accessible label for the button
-  label: PropTypes.string,
-  // True if the button should appear disabled
-  disabled: PropTypes.bool,
-  // Additional Tailwind CSS class names
-  className: PropTypes.string,
-};
-
 /**
  * Same as the base `CopyButton` component, but it has a circular style to hold a single icon.
  * Supply a function as the child of this button that takes an argument that gets set to true for
  * two seconds after the user clicks the copy button.
+ *
+ * @param target - The text to copy to the clipboard
+ * @param label - Accessible label for the button
+ * @param size - Size of the button: "sm", "md", or "lg"
+ * @param className - Additional Tailwind CSS class names
  */
 function Icon({
   target,
@@ -89,6 +101,12 @@ function Icon({
   size = "md",
   className = "cursor-pointer",
   children,
+}: {
+  target: string;
+  label: string;
+  size?: "sm" | "md" | "lg";
+  className?: string;
+  children: (isCopied: boolean) => ReactNode;
 }) {
   const { isCopied, initiateCopy } = useCopyAction(target);
 
@@ -104,16 +122,5 @@ function Icon({
     </Button>
   );
 }
-
-Icon.propTypes = {
-  // The text to copy
-  target: PropTypes.string.isRequired,
-  // Accessible label for the button
-  label: PropTypes.string.isRequired,
-  // Size of the button
-  size: PropTypes.oneOf(["sm", "md", "lg"]),
-  // Additional Tailwind CSS class names
-  className: PropTypes.string,
-};
 
 CopyButton.Icon = Icon;

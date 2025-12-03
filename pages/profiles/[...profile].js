@@ -18,7 +18,7 @@ import {
 } from "../../components/animation";
 import Breadcrumbs from "../../components/breadcrumbs";
 import Checkbox from "../../components/checkbox";
-import CopyButton, { useCopyAction } from "../../components/copy-button";
+import { CopyButton, useCopyAction } from "../../components/copy-button";
 import {
   DataArea,
   DataItemLabel,

@@ -4,7 +4,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { fireEvent, render, screen } from "@testing-library/react";
 import "../__mocks__/navigator";
-import CopyButton, { useCopyAction } from "../copy-button";
+import { CopyButton, useCopyAction } from "../copy-button";
 
 describe("Test <CopyButton> component", () => {
   it("Renders a text-based copy button and reacts to a click", async () => {
