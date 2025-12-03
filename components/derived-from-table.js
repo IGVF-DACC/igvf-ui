@@ -2,6 +2,7 @@
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
+import { AnnotatedValue } from "./annotated-value";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
@@ -41,7 +42,17 @@ const columns = [
   {
     id: "content_type",
     title: "Content Type",
-    sorter: (item) => item.content_type.toLowerCase(),
+    display: ({ source }) => {
+      return source.content_type ? (
+        <AnnotatedValue
+          objectType={source["@type"][0]}
+          propertyName="content_type"
+        >
+          {source.content_type}
+        </AnnotatedValue>
+      ) : null;
+    },
+    sorter: (item) => (item.content_type || "Z").toLowerCase(),
   },
   {
     id: "lab.title",

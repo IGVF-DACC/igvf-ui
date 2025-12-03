@@ -3,6 +3,7 @@ import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import { useState } from "react";
 // components
+import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import DataGrid, { DataGridContainer } from "./data-grid";
@@ -58,10 +59,15 @@ const columnDisplayConfig: Cell[] = [
   },
   {
     id: "content-type",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{file.content_type}</>;
-    },
+    content: ({ source }: CellContentProps) =>
+      source.content_type && typeof source.content_type === "string" ? (
+        <AnnotatedValue
+          objectType={source["@type"][0]}
+          propertyName="content_type"
+        >
+          {source.content_type}
+        </AnnotatedValue>
+      ) : null,
   },
   {
     id: "file-format",

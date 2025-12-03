@@ -15,7 +15,7 @@ import { type DataGridFormat } from "../lib/data-grid";
  */
 function DefaultCell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-full w-full bg-white p-2 dark:bg-gray-900">
+    <div className="flex h-full w-full items-start bg-white p-2 dark:bg-gray-900">
       {children}
     </div>
   );

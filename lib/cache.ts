@@ -63,7 +63,7 @@ export async function getCachedDataFetch<T = unknown>(
 
   // Retrieve the data corresponding to the key from Redis if cached.
   const cachedData = await redisClient.get(key);
-  if (cachedData) {
+  if (cachedData && typeof cachedData === "string") {
     try {
       return JSON.parse(cachedData);
     } catch {
@@ -144,7 +144,9 @@ export async function getCachedData<T = unknown>(
   if (redisClient) {
     try {
       const cachedData = await redisClient.get(key);
-      return cachedData ? (JSON.parse(cachedData) as T) : null;
+      return cachedData && typeof cachedData === "string"
+        ? (JSON.parse(cachedData) as T)
+        : null;
     } catch (error) {
       console.error(`Cache retrieval error for key ${key}:`, error);
       return null;
@@ -189,7 +191,9 @@ export async function getCachedDataWithField<T = unknown>(
   if (redisClient) {
     try {
       const cachedData = await redisClient.hGet(key, field);
-      return cachedData ? (JSON.parse(cachedData) as T) : null;
+      return cachedData && typeof cachedData === "string"
+        ? (JSON.parse(cachedData) as T)
+        : null;
     } catch (error) {
       console.error(
         `Cache hash retrieval error for key ${key}, field ${field}:`,
