@@ -2,6 +2,7 @@
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 // components
+import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
@@ -31,7 +32,17 @@ const filesColumns = [
   {
     id: "content_type",
     title: "Content Type",
-    sorter: (item) => item.content_type.toLowerCase(),
+    display: ({ source }) => {
+      return source.content_type ? (
+        <AnnotatedValue
+          objectType={source["@type"][0]}
+          propertyName="content_type"
+        >
+          {source.content_type}
+        </AnnotatedValue>
+      ) : null;
+    },
+    sorter: (item) => (item.content_type || "z").toLowerCase(),
   },
   {
     id: "summary",
@@ -41,7 +52,7 @@ const filesColumns = [
     id: "lab",
     title: "Lab",
     display: ({ source }) => source.lab?.title,
-    sorter: (item) => (item.lab ? item.lab.title.toLowerCase() : ""),
+    sorter: (item) => (item.lab ? item.lab.title.toLowerCase() : "z"),
   },
   {
     id: "file_size",
@@ -52,6 +63,9 @@ const filesColumns = [
   {
     id: "submitted_file_name",
     title: "Submitted File Name",
+    display: ({ source }) => (
+      <div className="break-all">{source.submitted_file_name}</div>
+    ),
   },
   {
     id: "upload_status",

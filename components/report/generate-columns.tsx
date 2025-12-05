@@ -174,7 +174,9 @@ function Aliases({ source }: { source: DatabaseObject }) {
  */
 function NonLinkedPath({ id, source }: { id: string; source: DatabaseObject }) {
   return (
-    <div data-testid="cell-type-non-linked-path">{source[id] as string}</div>
+    <div data-testid="cell-type-non-linked-path" className="break-all">
+      {source[id] as string}
+    </div>
   );
 }
 
