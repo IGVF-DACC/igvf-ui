@@ -3,7 +3,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { empty } from "empty-schema";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
-import { PropTypes } from "prop-types";
 import { useContext, useState, useEffect } from "react";
 // components
 import { SaveCancelControl, useEditor } from "./edit";
@@ -12,21 +11,38 @@ import FlashMessage from "./flash-message";
 import { ButtonLink } from "./form-elements";
 import SessionContext from "./session-context";
 // lib
+import { isDataProviderErrorObject } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { urlWithoutParams, sortObjectProps } from "../lib/general";
 import { collectionToSchema } from "../lib/schema";
+// root
+import type { DatabaseObject, Schema, SearchResults } from "../globals";
 /* istanbul ignore file */
 
 /**
- * Looks for an action in the item with a name in the list of given actions
- * and returns the profile path of the first one found, or null if none are found.
- * @param {*} item snovault object
- * @param {*} actions list of actions to find from which to grab
- * the profile path
- * @returns the profile path corresponding to an action or null if there
- * are no available actions or if the none of the specified actions are present.
+ * Represents an error message returned from the server when attempting to save a new object.
+ * Used to display validation errors and conflicts to the user.
+ *
+ * @property description - Human-readable error message
+ * @property keys - Field name(s) associated with the error, formatted for display
+ * @property key - Unique identifier combining keys and description for React keying
  */
-function actionProfile(item, actions) {
+type ErrorMessage = {
+  description: string;
+  keys: string;
+  key: string;
+};
+
+/**
+ * Looks for an action in the item with a name in the list of given actions and returns the profile
+ * path of the first one found, or null if none are found.
+ *
+ * @param item - Snovault object
+ * @param actions - List of actions to find from which to grab the profile path
+ * @returns Profile path corresponding to an action or null if there are no available actions or if
+ *   none of the specified actions are present.
+ */
+function actionProfile(item: DatabaseObject, actions: string): string | null {
   if ("actions" in item) {
     const act = item.actions.find((act) => actions.includes(act.name));
     if (act !== null) {
@@ -37,20 +53,16 @@ function actionProfile(item, actions) {
 }
 
 /**
- * This takes a schema object and adds to the required properties
- * in order for the blank template library to autogenerate stubs
- * for as many fields as makes sense
+ * This takes a schema object and adds to the required properties in order for the blank template
+ * library to autogenerate stubs for as many fields as makes sense.
  *
- * We eliminate properties that have permission requirements, not
- * submittable, commented with "Do not submit", or arrays/objects.
+ * We eliminate properties that have permission requirements, not submittable, commented with "Do
+ * not submit", or arrays/objects.
  *
- * @param {*} schema the schema to modify in perpartion for producing
- * an empty template
- *
- * @returns The modified schema with appropriate fields added as
- * required
+ * @param schema - Schema to modify in preparation for producing an empty template
+ * @returns Modified schema with appropriate fields added as required
  */
-function convertOptionalIntoRequiredSchema(schema) {
+function convertOptionalIntoRequiredSchema(schema: Schema): Schema {
   const topProperties = Object.entries(schema.properties)
     .filter(([, p]) => {
       return p.comment ? !p.comment.includes("Do not submit") : true;
@@ -75,8 +87,20 @@ function convertOptionalIntoRequiredSchema(schema) {
 /**
  * Generates a button link to the #!add url for the given collection. A custom label can be
  * supplied with the `label` prop.
+ *
+ * @param schema - Schema of the collection to add to
+ * @param collectionName - Name of the collection to add to, e.g. in-vitro-systems
+ * @param label - Label for the Add button
  */
-export function AddLink({ schema, collectionName, label = null }) {
+export function AddLink({
+  schema,
+  collectionName,
+  label = "",
+}: {
+  schema: Schema;
+  collectionName?: string;
+  label?: string;
+}) {
   const { isAuthenticated } = useAuth0();
   if (isAuthenticated && canEdit(schema)) {
     if (collectionName) {
@@ -100,16 +124,14 @@ export function AddLink({ schema, collectionName, label = null }) {
   return null;
 }
 
-AddLink.propTypes = {
-  // Schema for the collection to add to
-  schema: PropTypes.object.isRequired,
-  // Name of the collection to add to, e.g. in-vitro-systems
-  collectionName: PropTypes.string,
-  // Label for the Add button
-  label: PropTypes.string,
-};
-
-export function AddInstancePage({ collection }) {
+/**
+ * Displays a JSON editor for creating and submitting a new object to a collection. Generates an
+ * empty object template from the collection's schema and allows the user to edit it. Upon saving,
+ * validates the JSON and submits it to the backend, displaying any errors returned from the server.
+ *
+ * @param collection - Search results collection to add an object to
+ */
+export function AddInstancePage({ collection }: { collection: SearchResults }) {
   const { profiles, session } = useContext(SessionContext);
   const { isAuthenticated } = useAuth0();
 
@@ -121,13 +143,13 @@ export function AddInstancePage({ collection }) {
   const router = useRouter();
 
   // Cannot add if not logged in or "add" not an action
-  function addable(collection) {
+  function addable(collection: SearchResults): boolean {
     const itemSchema = collectionToSchema(collection, profiles);
     const canAdd = Boolean(itemSchema && canEdit(itemSchema));
     return isAuthenticated && canAdd;
   }
 
-  function jsonErrors(json) {
+  function jsonErrors(json: string): string[] {
     // cannot save if we cannot edit or if the JSON is wrong
     try {
       JSON.parse(json);
@@ -138,23 +160,18 @@ export function AddInstancePage({ collection }) {
     }
   }
 
-  /**
-   * When attempting to save the edited text to the backend, if there are any
-   * errors that come back from the server, this list will contain the error objects
-   */
-  const [saveErrors, setSaveErrors] = useState([]);
+  // When attempting to save the edited text to the backend, if there are any errors that come back
+  // from the server, this list will contain the error objects
+  const [saveErrors, setSaveErrors] = useState<ErrorMessage[]>([]);
   const isAddable = addable(collection);
 
-  /**
-   * Interactivity properties of the underlying Ace editor. `canEdit` implies the
-   * user may modify the text field. `canSave` means that the Save button is active.
-   * errors list indicates that the JSON entered in the field is malformed. Errors
-   * is passed to the "annotations" of the underlying Ace editor which will show an
-   * indicator that there's a JSON syntax error.
-   *
-   * If there are errors the text should not be saveable. If the user has insufficient
-   * permissions both saving and editing should be disabled.
-   */
+  // Interactivity properties of the underlying Ace editor. `canEdit` implies the user may modify
+  // the text field. `canSave` means that the Save button is active. errors list indicates that the
+  // JSON entered in the field is malformed. Errors is passed to the "annotations" of the underlying
+  // Ace editor which will show an indicator that there's a JSON syntax error.
+  //
+  // If there are errors the text should not be saveable. If the user has insufficient permissions
+  // both saving and editing should be disabled.
   const [editorStatus, setEditorStatus] = useState({
     canEdit: isAddable,
     canSave: isAddable,
@@ -166,15 +183,18 @@ export function AddInstancePage({ collection }) {
 
   useEffect(() => {
     // Grab the schema from profilePath so we can make an empty object template
-    new FetchRequest({ session }).getObject(profilePath).then((schema) => {
-      // We have the schema, so produce a dummy json from the schema
-      const biggerSchema = convertOptionalIntoRequiredSchema(schema.union());
-      const basic = empty(biggerSchema);
-      setText(JSON.stringify(basic, null, 4));
-    });
+    new FetchRequest({ session })
+      .getObject(profilePath)
+      .then((schemaResult) => {
+        // We have the schema, so produce a dummy json from the schema
+        const schema = schemaResult.optional() as unknown as Schema;
+        const biggerSchema = convertOptionalIntoRequiredSchema(schema);
+        const basic = empty(biggerSchema);
+        setText(JSON.stringify(basic, null, 4));
+      });
   }, [profilePath, session]);
 
-  function onChange(newValue) {
+  function onChange(newValue: string): void {
     setText(newValue);
     const errors = jsonErrors(newValue);
     const isAddable = addable(collection);
@@ -208,9 +228,9 @@ export function AddInstancePage({ collection }) {
             errors: [],
           });
 
-          let errors = [];
-          if (response.errors) {
-            errors = response.errors.map((err) => {
+          let errors: ErrorMessage[] = [];
+          if (isDataProviderErrorObject(response)) {
+            errors = response.errors.map((err): ErrorMessage => {
               // Surround each err name with ``, and separate by comma
               const keys = err.name
                 .map((val) => {
@@ -225,13 +245,13 @@ export function AddInstancePage({ collection }) {
                 key,
               };
             });
-          } else if (response.description) {
+          } else if ("description" in response && response.description) {
             // Conflict errors show up as single messages.
             errors = [
               {
-                description: `${response.description} ${response.detail}`,
-                keys: response.title,
-                key: `${response.title}${response.description}`,
+                description: `${response.description} ${response.detail || ""}`,
+                keys: String(response.title || "Error"),
+                key: `${response.title || "Error"}${response.description}`,
               },
             ];
           } else {
@@ -257,7 +277,6 @@ export function AddInstancePage({ collection }) {
         text={text}
         onChange={onChange}
         enabled={editorStatus.canEdit}
-        errors={editorStatus.errors}
       />
       <div className="flex justify-end">
         <SaveCancelControl
@@ -287,11 +306,19 @@ export function AddInstancePage({ collection }) {
   );
 }
 
-AddInstancePage.propTypes = {
-  collection: PropTypes.object.isRequired,
-};
-
-export function AddableItem({ collection, children }) {
+/**
+ * Wrapper component that conditionally renders the AddInstancePage when in "add" editing mode,
+ * otherwise renders its children. Used to toggle between normal display and add-object mode.
+ *
+ * @param collection - Search results collection to add an object to
+ */
+export function AddableItem({
+  collection,
+  children,
+}: {
+  collection: SearchResults;
+  children: React.ReactNode;
+}) {
   const editing = useEditor("add");
   return editing ? (
     <AddInstancePage collection={collection} />
@@ -299,7 +326,3 @@ export function AddableItem({ collection, children }) {
     <>{children}</>
   );
 }
-
-AddableItem.propTypes = {
-  collection: PropTypes.object.isRequired,
-};

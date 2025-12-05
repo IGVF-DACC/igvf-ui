@@ -4,13 +4,32 @@
 
 // lib
 import { HTTP_STATUS_CODE, type ErrorObject } from "./fetch-request";
-// types
-import { ServerSideProps } from "../globals.d";
+// root
+import type { DataProviderObject, ServerSideProps } from "../globals";
+
+/**
+ * Type guard to determine if an object is an ErrorObject.
+ *
+ * @param obj - Object to test if it's an error object or not
+ * @returns True if the object is an ErrorObject, false otherwise
+ */
+export function isDataProviderErrorObject(
+  obj: DataProviderObject | ErrorObject
+): obj is ErrorObject {
+  return (
+    obj &&
+    typeof obj === "object" &&
+    "isError" in obj &&
+    obj.isError === true &&
+    "errors" in obj
+  );
+}
 
 /**
  * Log the error to the console with a timestamp.
- * @param statusCode Error status code, e.g. 403
- * @param title Narrative string corresponding to error code
+ *
+ * @param statusCode - Error status code, e.g. 403
+ * @param title - Narrative string corresponding to error code
  */
 export function logError(statusCode: string | number, title: string): void {
   const date = new Date().toISOString();
@@ -20,7 +39,8 @@ export function logError(statusCode: string | number, title: string): void {
 /**
  * Given an object from data-provider requests containing error information, return an error object
  * expected by the UI. This gets called at the end of most getServerSideProps functions.
- * @param error Retrieved object containing data-provider error information
+ *
+ * @param errorObject - Retrieved object containing data-provider error information
  * @returns Error object with message and status code, or notFound for 404
  */
 export function errorObjectToProps(errorObject: ErrorObject): ServerSideProps {
@@ -39,7 +59,8 @@ export function errorObjectToProps(errorObject: ErrorObject): ServerSideProps {
 
 /**
  * Generate an error object to pass to NextJS with the appropriate status code and message.
- * @param statusCode HTTP status code
+ *
+ * @param statusCode - HTTP status code
  * @param title - Short title of the error
  * @param description - Short description of the error
  * @param detail - Detailed description of the error
@@ -55,6 +76,7 @@ export function generateErrorObject(
     isError: true,
     "@type": ["Error"],
     code: statusCode,
+    errors: [],
     description,
     detail,
     status: statusCode.toString(),

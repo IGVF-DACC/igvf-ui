@@ -57,6 +57,7 @@ import {
   schemaToType,
 } from "../../lib/profiles";
 import { decodeUriElement, encodeUriElement } from "../../lib/query-encoding";
+import { retrieveCollectionNames } from "../../lib/server-objects";
 
 /**
  * Use as IDs for each of the tabs on the schema page.
@@ -786,6 +787,7 @@ export default function Schema({
   schema,
   changelog,
   collection,
+  collectionNames,
   tab,
   subTab,
   openedProperties,
@@ -798,6 +800,7 @@ export default function Schema({
   const { collectionTitles, profiles } = useContext(SessionContext);
   const pageTitle = collectionTitles?.[collection] || schema.title;
   const schemaType = schemaToType(schema, profiles);
+  const collectionName = collectionNames?.[schemaType] || "";
 
   // Generate URLs for each of the top-level tabs; used to open those tabs on page load.
   const tabUrls = {
@@ -835,7 +838,7 @@ export default function Schema({
           </ButtonLink>
           <SearchAndReportType type={schemaType} title={schema.title} />
         </div>
-        <AddLink schema={schema} label="Add" />
+        <AddLink schema={schema} collectionName={collectionName} label="Add" />
       </div>
       <DataPanel className="@container" isPaddingSuppressed>
         <TabGroup defaultId={tab}>
@@ -895,6 +898,8 @@ Schema.propTypes = {
   changelog: PropTypes.string.isRequired,
   // Collection name from the schema path
   collection: PropTypes.string.isRequired,
+  // Collection names mapping from the schema path
+  collectionNames: PropTypes.object.isRequired,
   // ID of the tab to select without user interaction
   tab: PropTypes.string.isRequired,
   // ID of the sub-tab to select without user interaction
@@ -920,11 +925,18 @@ export async function getServerSideProps({ params, req, query }) {
         : [query.property];
     }
 
+    const collectionNames = await retrieveCollectionNames(req.headers.cookie);
+    if (!collectionNames) {
+      // 404 page
+      return { notFound: true };
+    }
+
     return {
       props: {
         schema,
         changelog,
         collection: profile,
+        collectionNames,
         tab: tab || "",
         subTab: subTab || "",
         openedProperties,

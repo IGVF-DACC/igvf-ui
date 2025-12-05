@@ -99,13 +99,27 @@ interface RequestInitWithAgent extends RequestInit {
 }
 
 /**
+ * Detail of a single error in an ErrorObject.
+ *
+ * @property description - Human-readable description of the error
+ * @property location - Location in the request where the error occurred
+ * @property name - Property names associated with the error
+ */
+export interface ErrorDetail {
+  description: string;
+  location: string;
+  name: string[];
+}
+
+/**
  * Format of standard error responses.
  */
 export interface ErrorObject {
-  isError: true;
+  isError: true; // Indicates this is an error object; UI provides, not DB
   "@type": Array<string>;
   code: number;
   description: string;
+  errors: ErrorDetail[];
   detail: string;
   status: string;
   title: string;
@@ -182,6 +196,7 @@ const NETWORK_ERROR_RESPONSE: ErrorObject = {
   isError: true,
   "@type": ["NetworkError", "Error"],
   status: "error",
+  errors: [],
   code: HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,
   title: "Unknown error",
   description: "An unknown error occurred.",
