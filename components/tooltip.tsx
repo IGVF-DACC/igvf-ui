@@ -25,6 +25,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { twJoin } from "tailwind-merge";
 // lib
 import { toShishkebabCase } from "../lib/general";
 
@@ -188,7 +189,12 @@ export function Tooltip({
       {tooltipAttr.isVisible &&
         createPortal(
           <div
-            className="z-100 max-w-[90%] rounded-md border border-gray-500 bg-gray-800 px-2 py-1 text-xs text-white drop-shadow-md md:max-w-[40%] 2xl:max-w-[20%] dark:border-white dark:bg-gray-300 dark:text-black"
+            className={twJoin(
+              "z-100 max-w-[90%] rounded-md border border-gray-500 bg-gray-800",
+              "px-2 py-1 text-xs text-white drop-shadow-md md:max-w-[40%] 2xl:max-w-[20%]",
+              "dark:border-white dark:bg-gray-300 dark:text-black",
+              "[&_a]:break-all [&_a]:text-white dark:[&_a]:text-black"
+            )}
             ref={tooltipAttr.tooltipEl}
             style={tooltipAttr.styles}
             role="tooltip"
@@ -198,7 +204,12 @@ export function Tooltip({
           >
             {children}
             <FloatingArrow
-              className="fill-gray-800 dark:fill-gray-300 [&>path:first-of-type]:stroke-gray-500 dark:[&>path:first-of-type]:stroke-white [&>path:last-of-type]:stroke-gray-800 dark:[&>path:last-of-type]:stroke-gray-300"
+              className={twJoin(
+                "fill-gray-800 dark:fill-gray-300",
+                "[&>path:first-of-type]:stroke-gray-500",
+                "dark:[&>path:first-of-type]:stroke-white",
+                "[&>path:last-of-type]:stroke-gray-800 dark:[&>path:last-of-type]:stroke-gray-300"
+              )}
               ref={tooltipAttr.arrowRef}
               context={tooltipAttr.context}
               height={ARROW_HEIGHT}
