@@ -18,7 +18,10 @@ type CollectionMapping = {
  */
 const collectionMap: CollectionMapping = {
   ACMG73: "acmg73.svg",
+  Benchmark: "benchmark.svg",
+  "Bridge Sample": "bridge-sample.png",
   ClinGen: "clingen.svg",
+  "E2G Pillar Project": "e2g-pillar.svg",
   ENCODE: "encode.svg",
   GREGoR: "gregor.svg",
   "IGVF_catalog_beta_v0.1": "igvf-catalog-0.1.svg",
@@ -32,6 +35,7 @@ const collectionMap: CollectionMapping = {
   Morphic: "morphic.svg",
   MPRAbase: "mpra-base.svg",
   StanfordFCC: "stanford-fcc.svg",
+  "TF Perturb-seq Project": "tf-perturb-seq.svg",
   "TOPMED Freeze 8": "topmed-freeze-8.svg",
   VarChAMP: "varchamp.svg",
   Vista: "vista.svg",
@@ -86,6 +90,10 @@ export default function Collections({
               <Link
                 href={`/search/?type=${itemType}&collections=${collection}`}
                 className="border-data-border block overflow-hidden border bg-white no-underline dark:bg-gray-200"
+                style={{
+                  width: COLLECTION_DIMENSIONS.WIDTH,
+                  height: COLLECTION_DIMENSIONS.HEIGHT,
+                }}
               >
                 {imageFile ? (
                   <Image
