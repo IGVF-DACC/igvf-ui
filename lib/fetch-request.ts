@@ -56,6 +56,7 @@ let HttpAgent: typeof import("http").Agent | undefined;
  */
 /* istanbul ignore if: Server-side module loading cannot be tested in Jest jsdom environment */
 if (typeof window === "undefined") {
+  /* eslint-disable @typescript-eslint/no-var-requires */
   try {
     const { Agent } = require("https");
     const { Agent: HttpAgentClass } = require("http");
@@ -64,6 +65,7 @@ if (typeof window === "undefined") {
   } catch (_error) {
     // Import failed - agents will remain undefined and requests will use default behavior.
   }
+  /* eslint-enable @typescript-eslint/no-var-requires */
 }
 
 /**
@@ -520,6 +522,7 @@ export default class FetchRequest {
       range?: string;
       contentType?: string;
       acceptEncoding?: string;
+      userAgent?: string;
     },
     includeCredentials = true
   ): RequestInitWithAgent {
@@ -531,6 +534,9 @@ export default class FetchRequest {
     }
     if (additional.contentType) {
       this.headers.set("Content-Type", additional.contentType);
+    }
+    if (additional.userAgent) {
+      this.headers.set("User-Agent", additional.userAgent);
     }
     const options: RequestInit = {
       method,
@@ -562,6 +568,7 @@ export default class FetchRequest {
       range?: string;
       contentType?: string;
       acceptEncoding?: string;
+      userAgent?: string;
     },
     includeCredentials = true
   ): RequestInitWithAgent {
@@ -618,17 +625,29 @@ export default class FetchRequest {
    * Request the object with the given URL, including protocol and domain.
    * @param {string} url Full URL to requested resource
    * @param {string} [accept] Accept header to send with the request; application/json by default
+   * @param {string} [userAgent] User-Agent header to send with the request
+   * @param {function} [onHeaders] Optional callback function to receive response headers
    * @returns {Promise<DataProviderObject|ErrorObject>} Requested object or error object
    */
   public async getObjectByUrl(
-    url: string
+    url: string,
+    accept = PAYLOAD_FORMAT.JSON,
+    userAgent = "",
+    onHeaders?: (response: Headers) => void
   ): Promise<Result<DataProviderObject, ErrorObject>> {
     const headerOptions = this.buildOptionsWithAgent(url, "GET", {
-      accept: PAYLOAD_FORMAT.JSON,
+      accept,
+      ...(userAgent && { userAgent }),
     });
     try {
       logRequest("getObjectByUrl", url, this.usingPersistentConnections);
       const response = await fetch(url, headerOptions);
+
+      // Return response headers to caller if requested.
+      if (onHeaders) {
+        onHeaders(response.headers);
+      }
+
       if (!response.ok) {
         const error = {
           ...(await response.json()),

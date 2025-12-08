@@ -279,6 +279,109 @@ describe("Cache System", () => {
         expect(fetcher2).toHaveBeenCalledTimes(1);
       });
     });
+
+    describe("Hash field support", () => {
+      beforeEach(() => {
+        mockRedisClient.hGet = jest.fn();
+        mockRedisClient.hSet = jest.fn();
+        mockRedisClient.expire = jest.fn();
+      });
+
+      it("should use hGet when field is provided and data is cached", async () => {
+        const cachedData = { id: 1, name: "hash-test" };
+        mockRedisClient.hGet.mockResolvedValue(JSON.stringify(cachedData));
+
+        const fetcher = jest.fn();
+        const result = await getCachedDataFetch(
+          "test-hash-key",
+          fetcher,
+          3600,
+          "test-field"
+        );
+
+        expect(result).toEqual(cachedData);
+        expect(mockRedisClient.hGet).toHaveBeenCalledWith(
+          "test-hash-key",
+          "test-field"
+        );
+        expect(mockRedisClient.get).not.toHaveBeenCalled();
+        expect(fetcher).not.toHaveBeenCalled();
+      });
+
+      it("should use hSet and expire when field is provided and cache misses", async () => {
+        const fetchedData = { id: 2, name: "hash-fetched" };
+        mockRedisClient.hGet.mockResolvedValue(null);
+        const fetcher = jest.fn().mockResolvedValue(fetchedData);
+
+        const result = await getCachedDataFetch(
+          "hash-miss-key",
+          fetcher,
+          7200,
+          "hash-field"
+        );
+
+        expect(result).toEqual(fetchedData);
+        expect(mockRedisClient.hGet).toHaveBeenCalledWith(
+          "hash-miss-key",
+          "hash-field"
+        );
+        expect(fetcher).toHaveBeenCalledTimes(1);
+        expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+          "hash-miss-key",
+          "hash-field",
+          JSON.stringify(fetchedData)
+        );
+        expect(mockRedisClient.expire).toHaveBeenCalledWith(
+          "hash-miss-key",
+          7200
+        );
+        expect(mockRedisClient.set).not.toHaveBeenCalled();
+      });
+
+      it("should use get/set when field is empty string", async () => {
+        const fetchedData = { id: 3, name: "no-field" };
+        mockRedisClient.get.mockResolvedValue(null);
+        const fetcher = jest.fn().mockResolvedValue(fetchedData);
+
+        const result = await getCachedDataFetch(
+          "no-field-key",
+          fetcher,
+          3600,
+          ""
+        );
+
+        expect(result).toEqual(fetchedData);
+        expect(mockRedisClient.get).toHaveBeenCalledWith("no-field-key");
+        expect(mockRedisClient.set).toHaveBeenCalledWith(
+          "no-field-key",
+          JSON.stringify(fetchedData),
+          { EX: 3600 }
+        );
+        expect(mockRedisClient.hGet).not.toHaveBeenCalled();
+        expect(mockRedisClient.hSet).not.toHaveBeenCalled();
+      });
+
+      it("should handle corrupted hash field data", async () => {
+        const fetchedData = { id: 4, name: "recovered" };
+        mockRedisClient.hGet.mockResolvedValue("invalid-json{");
+        const fetcher = jest.fn().mockResolvedValue(fetchedData);
+
+        const result = await getCachedDataFetch(
+          "corrupted-hash-key",
+          fetcher,
+          3600,
+          "corrupted-field"
+        );
+
+        expect(result).toEqual(fetchedData);
+        expect(fetcher).toHaveBeenCalledTimes(1);
+        expect(mockRedisClient.hSet).toHaveBeenCalledWith(
+          "corrupted-hash-key",
+          "corrupted-field",
+          JSON.stringify(fetchedData)
+        );
+      });
+    });
   });
 
   describe("getObjectCached", () => {

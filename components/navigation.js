@@ -749,6 +749,14 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           >
             IGVF
           </NavigationHrefItem>
+          <NavigationHrefItem
+            id="releases"
+            href="/releases"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Release Notes
+          </NavigationHrefItem>
         </NavigationGroupItem>
 
         <NavigationGroupItem

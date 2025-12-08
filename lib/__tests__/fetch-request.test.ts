@@ -369,6 +369,55 @@ describe("Test persistent connection functionality", () => {
     expect(options).toBeDefined();
     expect(options.credentials).toBe("include");
   });
+
+  it("sets User-Agent header when userAgent parameter is provided", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      })
+    );
+
+    const request = new FetchRequest();
+
+    // Test with userAgent provided
+    await request.getObjectByUrl(
+      "https://api.github.com/repos/test/repo",
+      "application/vnd.github+json",
+      "test-app (https://github.com/test/app)"
+    );
+
+    // Verify fetch was called with User-Agent header
+    expect(window.fetch).toHaveBeenCalled();
+    const callArgs = (window.fetch as jest.Mock).mock.calls[0];
+    const headers = callArgs[1].headers as Headers;
+    expect(headers.get("User-Agent")).toBe(
+      "test-app (https://github.com/test/app)"
+    );
+  });
+
+  it("does not set User-Agent header when userAgent is empty string", async () => {
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      })
+    );
+
+    const request = new FetchRequest();
+
+    // Test with empty userAgent (default)
+    await request.getObjectByUrl(
+      "https://api.example.com/data",
+      "application/json"
+    );
+
+    // Verify fetch was called without User-Agent header
+    expect(window.fetch).toHaveBeenCalled();
+    const callArgs = (window.fetch as jest.Mock).mock.calls[0];
+    const headers = callArgs[1].headers as Headers;
+    expect(headers.get("User-Agent")).toBeNull();
+  });
 });
 
 describe("Test GET requests to the data provider", () => {
@@ -617,6 +666,38 @@ describe("Test URL-specific fetch requests", () => {
     expect(session.isErr()).toBeTruthy();
     expect(session.unwrap_err().status).toEqual("error");
     expect(session.unwrap_err().code).toEqual(404);
+  });
+
+  it("calls onHeaders callback when provided", async () => {
+    const mockData = {
+      _csfrt_: "mock_csrf_token",
+      "auth.userid": "email@example.com",
+    };
+    const mockHeaders = new Headers({
+      "content-type": "application/json",
+      "x-custom-header": "test-value",
+    });
+
+    window.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+        headers: mockHeaders,
+      })
+    );
+
+    const onHeadersMock = jest.fn();
+    const request = new FetchRequest();
+    const session = await request.getObjectByUrl(
+      "http://localhost:8000/session",
+      "application/json",
+      "",
+      onHeadersMock
+    );
+
+    expect(session.isOk()).toBe(true);
+    expect(onHeadersMock).toHaveBeenCalledTimes(1);
+    expect(onHeadersMock).toHaveBeenCalledWith(mockHeaders);
   });
 });
 
