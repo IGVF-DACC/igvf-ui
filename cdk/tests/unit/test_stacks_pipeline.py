@@ -114,7 +114,7 @@ def test_stacks_pipeline_production_deployment_pipeline_stack_initialized(produc
         'UpdatePipeline',
         'Assets',
         'igvf-ui-some-branch-StagingDeployStage',
-        'ProductionAndSandboxDeployWave',
+        'igvf-ui-some-branch-ProductionDeployStage',
     ]
     actual = [stage['Name'] for stage in stages]
     for e in expected:
