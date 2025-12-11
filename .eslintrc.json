@@ -97,10 +97,7 @@
       }
     ],
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-require-imports": "off",
-    "testing-library/await-async-queries": "error",
-    "testing-library/no-debugging-utils": "warn",
-    "testing-library/no-dom-import": "off"
+    "@typescript-eslint/no-require-imports": "off"
   },
   "overrides": [
     {
@@ -147,6 +144,11 @@
         "it": "readonly",
         "jest": "readonly",
         "test": "readonly"
+      },
+      "rules": {
+        "testing-library/await-async-queries": "error",
+        "testing-library/no-debugging-utils": "warn",
+        "testing-library/no-dom-import": "off"
       }
     },
     {
