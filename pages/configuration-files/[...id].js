@@ -85,6 +85,7 @@ export default function ConfigurationFile({
           </DataPanel>
           {seqspecOf.length > 0 && (
             <SequencingFileTable
+              key={configurationFile["@id"]}
               files={seqspecOf}
               title="seqspec File Of"
               itemPath={configurationFile["@id"]}
