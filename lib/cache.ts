@@ -40,12 +40,15 @@ export type CacheFetcher<T = unknown> = () => Promise<T | null>;
  * @param key - Key identifying the data in the cache
  * @param fetcher - Function to call to fetch the data if it's not in the cache
  * @param [ttl] - Time to live for the cached data in seconds. Default is one hour
+ * @param [field] - Optional Redis hash field name. If provided, the data is stored and retrieved
+ *                  from the specified field within a Redis hash identified by the key
  * @returns Promise that resolves to the cached or fetched data; null if something went wrong
  */
 export async function getCachedDataFetch<T = unknown>(
   key: string,
   fetcher: CacheFetcher<T>,
-  ttl: number = DEFAULT_CACHE_TTL
+  ttl: number = DEFAULT_CACHE_TTL,
+  field: string = ""
 ): Promise<T | null> {
   // Check for an active request promise for the same key. If found, wait for that request's
   // fetcher function and return its cached result. This deduplicates requests for the same key
@@ -62,7 +65,9 @@ export async function getCachedDataFetch<T = unknown>(
   }
 
   // Retrieve the data corresponding to the key from Redis if cached.
-  const cachedData = await redisClient.get(key);
+  const cachedData = field
+    ? await redisClient.hGet(key, field)
+    : await redisClient.get(key);
   if (cachedData && typeof cachedData === "string") {
     try {
       return JSON.parse(cachedData);
@@ -78,7 +83,12 @@ export async function getCachedDataFetch<T = unknown>(
     try {
       const data = await fetcher();
       if (data !== null && redisClient) {
-        await redisClient.set(key, JSON.stringify(data), { EX: ttl });
+        if (field) {
+          await redisClient.hSet(key, field, JSON.stringify(data));
+          await redisClient.expire(key, ttl);
+        } else {
+          await redisClient.set(key, JSON.stringify(data), { EX: ttl });
+        }
       }
       return data;
     } catch (error) {

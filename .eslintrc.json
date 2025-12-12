@@ -97,7 +97,9 @@
       }
     ],
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-require-imports": "off"
+    "@typescript-eslint/no-require-imports": "off",
+    "testing-library/no-debugging-utils": "warn",
+    "testing-library/no-dom-import": "off"
   },
   "overrides": [
     {
