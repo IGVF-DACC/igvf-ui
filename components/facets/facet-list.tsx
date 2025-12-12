@@ -48,7 +48,7 @@ export function FacetList({
   // When a user selection in the facet terms changes, receive the updated query string and
   // navigate to the new URL.
   function updateQuery(queryString: string) {
-    router.push(`${path}?${queryString}`, "", { scroll: false });
+    void router.push(`${path}?${queryString}`, "", { scroll: false });
   }
 
   // Wrapper components that conditionally render Reorder or Fragment

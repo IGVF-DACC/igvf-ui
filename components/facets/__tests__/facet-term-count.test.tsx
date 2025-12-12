@@ -37,6 +37,7 @@ describe("Test <FacetTermCount /> with no selections", () => {
       facet_groups: [],
       facets: [
         {
+          type: "terms",
           field: "institute_label",
           terms: [
             {
@@ -157,6 +158,7 @@ describe("Test <FacetTermCount /> with selections", () => {
       facets: [
         {
           field: "institute_label",
+          type: "terms",
           terms: [
             {
               doc_count: 12,
@@ -222,12 +224,16 @@ describe("Test <FacetTermCount /> with selections", () => {
       "2 selected of 5 terms"
     );
     expect(facetTermCount.children).toHaveLength(5);
-    Array.from(facetTermCount.children).forEach((child, i) => {
-      if (i < 2) {
-        expect(child).toHaveClass("bg-facet-counter-selected");
-      } else {
-        expect(child).toHaveClass("border-facet-counter");
-      }
+    const children = Array.from(facetTermCount.children);
+
+    // Check first 2 children (selected)
+    children.slice(0, 2).forEach((child) => {
+      expect(child).toHaveClass("bg-facet-counter-selected");
+    });
+
+    // Check remaining children (not selected)
+    children.slice(2).forEach((child) => {
+      expect(child).toHaveClass("border-facet-counter");
     });
   });
 
@@ -248,12 +254,16 @@ describe("Test <FacetTermCount /> with selections", () => {
       "2 selected of 5 terms"
     );
     expect(facetTermCount.children).toHaveLength(5);
-    Array.from(facetTermCount.children).forEach((child, i) => {
-      if (i < 2) {
-        expect(child).toHaveClass("bg-facet-counter-open-selected");
-      } else {
-        expect(child).toHaveClass("border-facet-counter-open");
-      }
+    const children = Array.from(facetTermCount.children);
+
+    // Check first 2 children (selected)
+    children.slice(0, 2).forEach((child) => {
+      expect(child).toHaveClass("bg-facet-counter-open-selected");
+    });
+
+    // Check remaining children (not selected)
+    children.slice(2).forEach((child) => {
+      expect(child).toHaveClass("border-facet-counter-open");
     });
   });
 });
@@ -294,6 +304,7 @@ describe("Test <FacetTermCount /> with a single term", () => {
       facets: [
         {
           field: "institute_label",
+          type: "terms",
           terms: [
             {
               doc_count: 12,

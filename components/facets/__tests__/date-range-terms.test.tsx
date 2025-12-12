@@ -8,8 +8,6 @@ import { SearchResults } from "../../../globals";
 
 // Mock the react-list library needed by the react-date-range package.
 jest.mock("react-list", () => {
-  const React = require("react");
-
   const MockReactList = React.forwardRef((props: any, ref) => {
     React.useImperativeHandle(ref, () => ({
       getVisibleRange: () => [0, 0], // stub return value as needed

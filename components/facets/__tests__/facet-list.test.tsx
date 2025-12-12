@@ -767,10 +767,10 @@ describe("Test <FacetList> component", () => {
       isAuthenticated: true,
     } as any);
 
-    window.fetch = jest.fn().mockImplementation(() => {
+    window.fetch = jest.fn().mockImplementation(async () => {
       return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ sex: true }),
+        json: async () => Promise.resolve({ sex: true }),
       });
     }) as any;
 
@@ -924,10 +924,10 @@ describe("Test <FacetList> component", () => {
       isAuthenticated: true,
     } as any);
 
-    window.fetch = jest.fn().mockImplementation(() => {
+    window.fetch = jest.fn().mockImplementation(async () => {
       return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ "lab.title": true }),
+        json: async () => Promise.resolve({ "lab.title": true }),
       });
     }) as any;
 

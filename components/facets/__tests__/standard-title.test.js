@@ -4,8 +4,6 @@ import StandardTitle, {
   StandardTitleElement,
 } from "../custom-facets/standard-title";
 
-import { checkForBooleanFacet } from "../../../lib/facets";
-
 describe("StandardTitleElement", () => {
   it("renders PlusIcon when closed", () => {
     render(
