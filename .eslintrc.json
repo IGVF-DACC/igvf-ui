@@ -146,6 +146,11 @@
         "it": "readonly",
         "jest": "readonly",
         "test": "readonly"
+      },
+      "rules": {
+        "testing-library/await-async-queries": "error",
+        "testing-library/no-debugging-utils": "warn",
+        "testing-library/no-dom-import": "off"
       }
     },
     {

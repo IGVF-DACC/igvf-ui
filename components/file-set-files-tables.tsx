@@ -61,6 +61,7 @@ export default function FileSetFilesTables({
     <>
       {groupedFiles.sequencingIllumina?.length > 0 && (
         <SequencingFileTable
+          key={`${fileSet["@id"]}-illumina`}
           files={groupedFiles.sequencingIllumina}
           fileSet={fileSet}
           title="Sequencing Results (Illumina)"
@@ -73,6 +74,7 @@ export default function FileSetFilesTables({
       )}
       {groupedFiles.sequencingOther?.length > 0 && (
         <SequencingFileTable
+          key={`${fileSet["@id"]}-other`}
           files={groupedFiles.sequencingOther}
           fileSet={fileSet}
           title="Sequencing Results"

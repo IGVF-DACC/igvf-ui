@@ -1,5 +1,4 @@
 // node_modules
-import { Fragment } from "react";
 import PropTypes from "prop-types";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
@@ -42,7 +41,6 @@ import {
   requestSupersedes,
   requestTreatments,
 } from "../../lib/common-requests";
-import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -342,7 +340,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         supersedes,
         supersededBy,
         pageContext: {
-          title: `${multiplexedSample.accession} ${UC.mdash} ${multiplexedSample.summary}`,
+          title: `${multiplexedSample.accession}`,
         },
         attribution,
         isJson,
