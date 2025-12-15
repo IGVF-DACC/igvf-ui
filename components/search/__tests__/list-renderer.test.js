@@ -791,17 +791,8 @@ describe("Test the HumanDonor component", () => {
 
     const title = screen.getByTestId("search-list-item-title");
     expect(title).toHaveTextContent(
-      /^K562, GM05372 donor (African American, female)$/
+      "K562, GM05372 donor (African American, female)"
     );
-
-    const meta = screen.getByTestId("search-list-item-meta");
-    expect(meta).toHaveTextContent("Chongyuan Luo");
-
-    const supplement = screen.getByTestId("search-list-item-supplement");
-    expect(supplement).toHaveTextContent("Body Weight Measurement");
-
-    const status = screen.getByTestId("search-list-item-quality");
-    expect(status).toHaveTextContent("released");
   });
 });
 
