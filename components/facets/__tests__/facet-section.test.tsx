@@ -41,10 +41,10 @@ describe("Test <FacetSection> component", () => {
   beforeEach(() => {
     window.scrollTo = jest.fn();
     // Mock fetch to return resolved promises immediately
-    window.fetch = jest.fn(() =>
+    window.fetch = jest.fn(async () =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({}),
+        json: async () => Promise.resolve({}),
       } as Response)
     );
     jest.clearAllTimers();
@@ -643,10 +643,10 @@ describe("Test <FacetSection> component", () => {
       isAuthenticated: true,
     } as any);
 
-    window.fetch = jest.fn().mockImplementation(() => {
+    window.fetch = jest.fn().mockImplementation(async () => {
       return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ sex: true }),
+        json: async () => Promise.resolve({ sex: true }),
       });
     }) as any;
 
@@ -841,10 +841,10 @@ describe("Test <FacetSection> component", () => {
       isAuthenticated: true,
     } as any);
 
-    const mockFetch = jest.fn().mockImplementation(() => {
+    const mockFetch = jest.fn().mockImplementation(async () => {
       return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({}),
+        json: async () => Promise.resolve({}),
       });
     });
     window.fetch = mockFetch as any;
@@ -1115,10 +1115,10 @@ describe("Test <FacetSection> component", () => {
       isAuthenticated: true,
     } as any);
 
-    const mockFetch = jest.fn().mockImplementation(() => {
+    const mockFetch = jest.fn().mockImplementation(async () => {
       return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({}),
+        json: async () => Promise.resolve({}),
       });
     });
     window.fetch = mockFetch as any;
@@ -1275,10 +1275,10 @@ describe("Test <FacetSection> component", () => {
 
     const mockFetch = jest.fn();
     mockFetch.mockImplementation(
-      () =>
+      async () =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({}),
+          json: async () => Promise.resolve({}),
         }) as any
     );
     window.fetch = mockFetch as any;
@@ -1379,10 +1379,10 @@ describe("Test <FacetSection> component", () => {
 
     const mockFetch = jest.fn();
     mockFetch.mockImplementation(
-      () =>
+      async () =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({}),
+          json: async () => Promise.resolve({}),
         }) as any
     );
     window.fetch = mockFetch as any;
@@ -1494,10 +1494,10 @@ describe("Test <FacetSection> component", () => {
 
     const mockFetch = jest.fn();
     mockFetch.mockImplementation(
-      () =>
+      async () =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({}),
+          json: async () => Promise.resolve({}),
         }) as any
     );
     window.fetch = mockFetch as any;
@@ -1609,10 +1609,10 @@ describe("Test <FacetSection> component", () => {
 
     const mockFetch = jest.fn();
     mockFetch.mockImplementation(
-      () =>
+      async () =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({}),
+          json: async () => Promise.resolve({}),
         }) as any
     );
     window.fetch = mockFetch as any;
@@ -1736,12 +1736,12 @@ describe("Test <FacetSection> component", () => {
         // Return saved order that only has "sex" and "status" but not "taxa"
         return Promise.resolve({
           ok: true,
-          json: () => Promise.resolve(["status", "sex"]),
+          json: async () => Promise.resolve(["status", "sex"]),
         }) as any;
       }
       return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({}),
+        json: async () => Promise.resolve({}),
       }) as any;
     });
     window.fetch = mockFetch as any;
@@ -1810,10 +1810,10 @@ describe("Test <FacetSection> component", () => {
 
     const mockFetch = jest.fn();
     mockFetch.mockImplementation(
-      () =>
+      async () =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({}),
+          json: async () => Promise.resolve({}),
         }) as any
     );
     window.fetch = mockFetch as any;
@@ -1922,10 +1922,10 @@ describe("Test <FacetSection> component", () => {
 
     const mockFetch = jest.fn();
     mockFetch.mockImplementation(
-      () =>
+      async () =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({}),
+          json: async () => Promise.resolve({}),
         }) as any
     );
     window.fetch = mockFetch as any;
@@ -2027,13 +2027,14 @@ describe("Test <FacetSection> component", () => {
       isError: true,
       "@type": ["NetworkError", "Error"],
       status: "error",
+      errors: [],
       code: 503,
       title: "Network error",
       description: "Failed to save",
       detail: "Network connection failed",
     };
 
-    const mockFetch = jest.fn((url: string, options?: RequestInit) => {
+    const mockFetch = jest.fn(async (url: string, options?: RequestInit) => {
       if (
         url === "/api/facet-config/123/?type=HumanDonor" &&
         options?.method === "POST"
@@ -2041,14 +2042,14 @@ describe("Test <FacetSection> component", () => {
         // Return the error as JSON response
         return Promise.resolve({
           ok: false,
-          json: () => Promise.resolve(errorResponse),
+          json: async () => Promise.resolve(errorResponse),
         } as Response);
       }
 
       // All other requests succeed
       return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({}),
+        json: async () => Promise.resolve({}),
       } as Response);
     });
     window.fetch = mockFetch;
@@ -2138,13 +2139,14 @@ describe("Test <FacetSection> component", () => {
       isError: true,
       "@type": ["NetworkError", "Error"],
       status: "error",
+      errors: [],
       code: 503,
       title: "Redis error",
       description: "Failed to save order",
       detail: "Redis connection failed",
     };
 
-    const mockFetch = jest.fn((url: string, options?: RequestInit) => {
+    const mockFetch = jest.fn(async (url: string, options?: RequestInit) => {
       if (
         url === "/api/facet-order/123/?type=HumanDonor" &&
         options?.method === "POST"
@@ -2152,13 +2154,13 @@ describe("Test <FacetSection> component", () => {
         // Return the error as JSON response
         return Promise.resolve({
           ok: false,
-          json: () => Promise.resolve(errorResponse),
+          json: async () => Promise.resolve(errorResponse),
         } as Response);
       }
       // All other requests succeed
       return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({}),
+        json: async () => Promise.resolve({}),
       } as Response);
     });
     window.fetch = mockFetch;

@@ -101,7 +101,7 @@ function ClearAll({ searchResults }: { searchResults: SearchResults }) {
   const uniqueSelectedFields = [...new Set(selectedFields)];
 
   function onClearAll() {
-    router.push(searchResults.clear_filters, "", { scroll: false });
+    void router.push(searchResults.clear_filters, "", { scroll: false });
   }
 
   const isDisabled = uniqueSelectedFields.length === 0;
@@ -303,7 +303,7 @@ export default function FacetSection({
     // changes if the component unmounts before the async calls complete.
     let isMounted = true;
     if (userUuid && selectedType) {
-      Promise.all([
+      void Promise.all([
         getFacetConfig(userUuid, selectedType, request),
         getFacetOrder(userUuid, selectedType, request),
       ]).then(([savedOpenFacets, savedOrder]) => {
@@ -324,7 +324,15 @@ export default function FacetSection({
             const missingFields = allFacets
               .filter((facet) => !savedOrder.includes(facet.field))
               .map((facet) => facet.field);
-            setOrderedFacetFields([...savedOrder, ...missingFields]);
+
+            // If savedOrder has fields that aren't in allFacets (usually because facets were
+            // removed from the search config), ignore those fields
+            const filteredSavedOrder = savedOrder.filter((field) =>
+              allFacets.some((facet) => facet.field === field)
+            );
+
+            // Update the ordered facet fields state for editing and ordered facet display.
+            setOrderedFacetFields([...filteredSavedOrder, ...missingFields]);
           }
         }
       });
@@ -370,7 +378,7 @@ export default function FacetSection({
     if (!isEditOrderMode) {
       setOpenedFacets((prev) => {
         const updatedOpenedFacets = updateOpenFacets(e, field, facets, prev);
-        saveOpen(updatedOpenedFacets);
+        void saveOpen(updatedOpenedFacets);
         return updatedOpenedFacets;
       });
     }
@@ -380,7 +388,7 @@ export default function FacetSection({
   function onAllFacets(openAll: boolean) {
     const updatedFacets = setAllFacetOpenState(facets, openAll);
     setOpenedFacets(updatedFacets);
-    saveOpen(updatedFacets);
+    void saveOpen(updatedFacets);
   }
 
   // Called by the `Reorder` component when the user drags facets to reorder them.
@@ -396,7 +404,7 @@ export default function FacetSection({
     } else if (editMode === "SAVE") {
       setIsEditOrderMode(false);
       setOrderedFacetFields(editedOrderedFacetFields);
-      saveOrder(editedOrderedFacetFields);
+      void saveOrder(editedOrderedFacetFields);
       setEditedOrderedFacetFields([]);
     } else if (editMode === "CANCEL") {
       // Cancel edit mode; discard changes.
