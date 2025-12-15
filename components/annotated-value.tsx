@@ -1,5 +1,6 @@
 // node_modules
 import { useContext } from "react";
+import { twMerge } from "tailwind-merge";
 // components
 import MarkdownSection from "./markdown-section";
 import SessionContext from "./session-context";
@@ -7,6 +8,51 @@ import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { toShishkebabCase } from "../lib/general";
 import { extractSchema } from "../lib/profiles";
+
+/**
+ * Display a single data-item value with an annotation that appears in a tooltip. If no annotation
+ * is provided, this renders the children without any underline nor tooltip.
+ *
+ * @param tooltipKey - Unique key for the tooltip reference
+ * @param annotation - The annotation text to show in the tooltip
+ * @param className - Additional class names to apply to the span wrapping the children
+ */
+export function AnnotatedItem({
+  tooltipKey,
+  annotation = "",
+  className = "",
+  children,
+}: {
+  tooltipKey: string;
+  annotation?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const tooltipRef = useTooltip(tooltipKey);
+
+  if (annotation) {
+    return (
+      <>
+        <TooltipRef tooltipAttr={tooltipRef}>
+          <span
+            className={twMerge(
+              "decoration-help-underline underline decoration-dotted underline-offset-2",
+              className
+            )}
+          >
+            {children}
+          </span>
+        </TooltipRef>
+        <Tooltip tooltipAttr={tooltipRef}>
+          <MarkdownSection className="text-xs text-white dark:text-black">
+            {annotation}
+          </MarkdownSection>
+        </Tooltip>
+      </>
+    );
+  }
+  return <span>{children}</span>;
+}
 
 /**
  * Display a single data-item value with an annotation that appears in a tooltip.
@@ -43,7 +89,6 @@ export function AnnotatedValue({
   const uniqueTooltipKey = hasExternal
     ? `external-${toShishkebabCase(children)}`
     : `${objectType}-${propertyName}-${toShishkebabCase(children)}`;
-  const tooltipRef = useTooltip(`data-item-value-tooltip-${uniqueTooltipKey}`);
 
   // Check that we either have an object type and property name, or external annotations, and check
   // that we don't have both.
@@ -75,18 +120,9 @@ export function AnnotatedValue({
   // If we got an annotation, display the value with the annotation in a tooltip.
   if (annotation) {
     return (
-      <>
-        <TooltipRef tooltipAttr={tooltipRef}>
-          <span className="decoration-help-underline underline decoration-dotted underline-offset-2">
-            {children}
-          </span>
-        </TooltipRef>
-        <Tooltip tooltipAttr={tooltipRef}>
-          <MarkdownSection className="text-xs text-white dark:text-black">
-            {annotation}
-          </MarkdownSection>
-        </Tooltip>
-      </>
+      <AnnotatedItem annotation={annotation} tooltipKey={uniqueTooltipKey}>
+        {children}
+      </AnnotatedItem>
     );
   }
 

@@ -256,6 +256,10 @@ export interface SearchResultsFacet {
   total?: number;
   /** True if facet term selected but not in search config */
   appended?: boolean;
+  /** Category for facet for facet selection modal grouping */
+  category?: string;
+  /** Description for facet title annotation */
+  description?: string;
 }
 
 export interface SearchResultsFilter {

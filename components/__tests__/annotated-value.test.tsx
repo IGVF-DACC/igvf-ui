@@ -1,9 +1,8 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { AnnotatedValue } from "../annotated-value";
+import { AnnotatedItem, AnnotatedValue } from "../annotated-value";
 import SessionContext from "../session-context";
 import { TooltipPortalRoot } from "../tooltip";
-import { toShishkebabCase } from "../../lib/general";
 
 function renderWithSession(ui: React.ReactElement, profiles?: any) {
   const providerValue: any = {
@@ -110,9 +109,7 @@ describe("AnnotatedValue", () => {
     expect(el).toHaveClass("underline");
     const describedBy = el.getAttribute("aria-describedby");
     expect(describedBy).toBeTruthy();
-    const expectedPrefix = `tooltip-${toShishkebabCase(
-      `data-item-value-tooltip-File-content_type-${toShishkebabCase("fastq")}`
-    )}`;
+    const expectedPrefix = `tooltip-file-content-type-fastq`;
     expect(describedBy!.startsWith(expectedPrefix)).toBe(true);
   });
 
@@ -255,5 +252,80 @@ describe("AnnotatedValue", () => {
     expect(el).not.toHaveAttribute("aria-describedby");
 
     consoleErrorSpy.mockRestore();
+  });
+
+  it("renders annotated item with custom className", () => {
+    const profiles = {
+      File: {
+        properties: {
+          content_type: {
+            type: "string",
+            enum_descriptions: {
+              fastq: "fastq files contain sequence reads.",
+            },
+          },
+        },
+      },
+    };
+
+    renderWithSession(
+      <AnnotatedValue objectType="File" propertyName="content_type">
+        fastq
+      </AnnotatedValue>,
+      profiles
+    );
+
+    const el = screen.getByText("fastq");
+    expect(el).toHaveClass("underline");
+    expect(el).toHaveClass("decoration-help-underline");
+  });
+});
+
+describe("AnnotatedItem", () => {
+  it("renders plain text when annotation is not provided (default empty string)", () => {
+    render(
+      <>
+        <TooltipPortalRoot />
+        <AnnotatedItem tooltipKey="test-key">test value</AnnotatedItem>
+      </>
+    );
+
+    const el = screen.getByText("test value");
+    expect(el).not.toHaveClass("underline");
+    expect(el).not.toHaveAttribute("aria-describedby");
+  });
+
+  it("renders plain text when annotation is empty string", () => {
+    render(
+      <>
+        <TooltipPortalRoot />
+        <AnnotatedItem tooltipKey="test-key" annotation="">
+          test value
+        </AnnotatedItem>
+      </>
+    );
+
+    const el = screen.getByText("test value");
+    expect(el).not.toHaveClass("underline");
+    expect(el).not.toHaveAttribute("aria-describedby");
+  });
+
+  it("renders annotated item with custom className", () => {
+    render(
+      <>
+        <TooltipPortalRoot />
+        <AnnotatedItem
+          tooltipKey="test-key"
+          annotation="Test annotation"
+          className="custom-class"
+        >
+          test value
+        </AnnotatedItem>
+      </>
+    );
+
+    const el = screen.getByText("test value");
+    expect(el).toHaveClass("underline");
+    expect(el).toHaveClass("custom-class");
   });
 });

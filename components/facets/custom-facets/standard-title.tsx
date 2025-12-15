@@ -4,6 +4,8 @@ import { Bars3Icon, MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import NoTermCountTitle from "./no-term-count-title";
 // components/facets
 import { FacetTermCount } from "../facet-term-count";
+// components
+import { AnnotatedItem } from "../../annotated-value";
 // lib
 import { checkForBooleanFacet } from "../../../lib/facets";
 // root
@@ -15,16 +17,19 @@ import type { SearchResults, SearchResultsFacet } from "../../../globals";
  * title itself.
  *
  * @param field - Facet property name
+ * @param [description] - Facet description for annotation
  * @param isFacetOpen - True if the facet displays all its terms
  * @param isEditOrderMode - True when editing facet order
  */
 export function StandardTitleElement({
   field,
+  description = "",
   isFacetOpen,
   isEditOrderMode,
   children,
 }: {
   field: string;
+  description?: string;
   isFacetOpen: boolean;
   isEditOrderMode: boolean;
   children: React.ReactNode;
@@ -36,7 +41,13 @@ export function StandardTitleElement({
       }`}
       data-testid={`facettitle-${field}`}
     >
-      <div className="text-left">{children}</div>
+      <AnnotatedItem
+        annotation={description}
+        tooltipKey={`facet-title-${field}`}
+        className={isFacetOpen ? "decoration-open-facet-help-underline" : ""}
+      >
+        <div className="text-left">{children}</div>
+      </AnnotatedItem>
       {isEditOrderMode ? (
         <div className="basis-4">
           <Bars3Icon className="h-4 w-4 fill-gray-400 dark:fill-gray-600" />
@@ -88,6 +99,7 @@ export default function StandardTitle({
     <>
       <StandardTitleElement
         field={facet.field}
+        description={facet.description}
         isFacetOpen={isFacetOpen}
         isEditOrderMode={isEditOrderMode}
       >

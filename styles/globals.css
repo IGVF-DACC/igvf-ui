@@ -85,11 +85,14 @@
 @theme {
   /** Decoration colors */
   --color-help-underline: oklch(55.1% 0.027 264.364);
+  --color-open-facet-help-underline: oklch(80% 0.027 264.364);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /** Decoration colors */
     --color-help-underline: oklch(70.7% 0.022 261.325);
+    --color-open-facet-help-underline: oklch(50.7% 0.022 261.325);
   }
 }
 
