@@ -655,7 +655,7 @@ describe("Test the HumanDonor component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDO856PXB$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^African American, female$/);
+    expect(title).toHaveTextContent(/^African American, female donor$/);
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Chongyuan Luo");
@@ -738,7 +738,7 @@ describe("Test the HumanDonor component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDO856PXB$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^African American, female$/);
+    expect(title).toHaveTextContent(/^African American, female donor$/);
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Chongyuan Luo");

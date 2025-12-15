@@ -28,7 +28,9 @@ export default function HumanDonor({ item: humanDonor }) {
   const demographic = [ethnicities, sex].filter(Boolean).join(", ");
   const title = humanDonorIdentifiers
     ? `${humanDonorIdentifiers} donor${demographic ? ` (${demographic})` : ""}`
-    : demographic || humanDonor["@id"];
+    : demographic
+      ? `${demographic} donor`
+      : humanDonor["@id"];
   const collections =
     humanDonor.collections?.length > 0 ? humanDonor.collections.join(", ") : "";
   let phenotypicFeatures = humanDonor.phenotypic_features
