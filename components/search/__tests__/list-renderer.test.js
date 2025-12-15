@@ -655,7 +655,7 @@ describe("Test the HumanDonor component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDO856PXB$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^African American female$/);
+    expect(title).toHaveTextContent(/^African American, female$/);
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Chongyuan Luo");
@@ -738,7 +738,61 @@ describe("Test the HumanDonor component", () => {
     expect(uniqueId).toHaveTextContent(/IGVFDO856PXB$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^African American female$/);
+    expect(title).toHaveTextContent(/^African American, female$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("Chongyuan Luo");
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent("Body Weight Measurement");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a human donor item with human_donor_identifiers", () => {
+    const item = {
+      "@id": "/human-donors/IGVFDO856PXB/",
+      "@type": ["HumanDonor", "Donor", "Item"],
+      accession: "IGVFDO856PXB",
+      aliases: ["chongyuan-luo:AA F donor of fibroblasts"],
+      award: "/awards/1U01HG012079-01/",
+      ethnicities: ["African American"],
+      human_donor_identifiers: ["K562", "GM05372"],
+      lab: { "@id": "/labs/chongyuan-luo/", title: "Chongyuan Luo" },
+      sex: "female",
+      status: "released",
+      taxa: "Homo sapiens",
+      uuid: "ee99221f-a11a-4f8b-baf3-9919db92f2f9",
+      phenotypic_features: [
+        {
+          "@id": "/phenotypic-features/123/",
+          feature: {
+            "@id": "/phenotype-terms/NCIT_C92648/",
+            term_id: "NCIT:C92648",
+            term_name: "Body Weight Measurement",
+          },
+          observation_date: "2022-11-15",
+          quantity: 58,
+          quantity_units: "kilogram",
+        },
+      ],
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <HumanDonor item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Human Donor/);
+    expect(uniqueId).toHaveTextContent(/IGVFDO856PXB$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      /^K562, GM05372 donor (African American, female)$/
+    );
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("Chongyuan Luo");
