@@ -137,4 +137,197 @@ describe("Test the <Facet> component", () => {
     fireEvent.click(checkbox);
     expect(checkbox).toHaveAttribute("checked");
   });
+
+  it("renders optional facet with quick-hide button when isOptional is true", () => {
+    const updateQuery = jest.fn();
+    const updateOpen = jest.fn();
+    const onOptionalFacetQuickHideChange = jest.fn();
+
+    const searchResults = {
+      "@id": "/search/?type=MeasurementSet",
+      facets: [
+        {
+          field: "age",
+          title: "Age",
+          terms: [
+            {
+              doc_count: 5,
+              key: "30-40",
+            },
+          ],
+          total: 5,
+          optional: true,
+        },
+      ],
+      filters: [],
+    };
+
+    const facet = searchResults.facets[0];
+
+    render(
+      <Facet
+        facet={facet}
+        searchResults={searchResults}
+        updateQuery={updateQuery}
+        updateOpen={updateOpen}
+        onOptionalFacetQuickHideChange={onOptionalFacetQuickHideChange}
+        isFacetOpen={false}
+        isEditOrderMode={false}
+        isOptional={true}
+      >
+        <div>Child content</div>
+      </Facet>
+    );
+
+    // Verify the quick-hide button is rendered
+    const quickHideButton = screen.getByRole("button", {
+      name: "Hide optional Age filter",
+    });
+    expect(quickHideButton).toBeInTheDocument();
+
+    // Click the quick-hide button
+    fireEvent.click(quickHideButton);
+    expect(onOptionalFacetQuickHideChange).toHaveBeenCalledWith("age");
+  });
+
+  it("renders optional facet with different styling when facet is open", () => {
+    const updateQuery = jest.fn();
+    const updateOpen = jest.fn();
+    const onOptionalFacetQuickHideChange = jest.fn();
+
+    const searchResults = {
+      "@id": "/search/?type=MeasurementSet",
+      facets: [
+        {
+          field: "age",
+          title: "Age",
+          terms: [
+            {
+              doc_count: 5,
+              key: "30-40",
+            },
+          ],
+          total: 5,
+          optional: true,
+        },
+      ],
+      filters: [],
+    };
+
+    const facet = searchResults.facets[0];
+
+    render(
+      <Facet
+        facet={facet}
+        searchResults={searchResults}
+        updateQuery={updateQuery}
+        updateOpen={updateOpen}
+        onOptionalFacetQuickHideChange={onOptionalFacetQuickHideChange}
+        isFacetOpen={true}
+        isEditOrderMode={false}
+        isOptional={true}
+      >
+        <div>Child content</div>
+      </Facet>
+    );
+
+    // Verify the quick-hide button is rendered with open styling
+    const quickHideButton = screen.getByRole("button", {
+      name: "Hide optional Age filter",
+    });
+    expect(quickHideButton).toBeInTheDocument();
+    expect(quickHideButton).toHaveClass("text-optional-facet-quick-hide-open");
+  });
+
+  it("does not render quick-hide button when isOptional is false", () => {
+    const updateQuery = jest.fn();
+    const updateOpen = jest.fn();
+    const onOptionalFacetQuickHideChange = jest.fn();
+
+    const searchResults = {
+      "@id": "/search/?type=Treatment",
+      facets: [
+        {
+          field: "status",
+          title: "Status",
+          terms: [
+            {
+              doc_count: 5,
+              key: "released",
+            },
+          ],
+          total: 5,
+        },
+      ],
+      filters: [],
+    };
+
+    const facet = searchResults.facets[0];
+
+    render(
+      <Facet
+        facet={facet}
+        searchResults={searchResults}
+        updateQuery={updateQuery}
+        updateOpen={updateOpen}
+        onOptionalFacetQuickHideChange={onOptionalFacetQuickHideChange}
+        isFacetOpen={false}
+        isEditOrderMode={false}
+        isOptional={false}
+      >
+        <div>Child content</div>
+      </Facet>
+    );
+
+    // Verify the quick-hide button is NOT rendered
+    const quickHideButton = screen.queryByRole("button", {
+      name: /Hide optional/,
+    });
+    expect(quickHideButton).not.toBeInTheDocument();
+  });
+
+  it("renders with edit order mode styling when isEditOrderMode is true", () => {
+    const updateQuery = jest.fn();
+    const updateOpen = jest.fn();
+    const onOptionalFacetQuickHideChange = jest.fn();
+
+    const searchResults = {
+      "@id": "/search/?type=Treatment",
+      facets: [
+        {
+          field: "status",
+          title: "Status",
+          terms: [
+            {
+              doc_count: 5,
+              key: "released",
+            },
+          ],
+          total: 5,
+        },
+      ],
+      filters: [],
+    };
+
+    const facet = searchResults.facets[0];
+
+    render(
+      <Facet
+        facet={facet}
+        searchResults={searchResults}
+        updateQuery={updateQuery}
+        updateOpen={updateOpen}
+        onOptionalFacetQuickHideChange={onOptionalFacetQuickHideChange}
+        isFacetOpen={false}
+        isEditOrderMode={true}
+        isOptional={false}
+      >
+        <div>Child content</div>
+      </Facet>
+    );
+
+    // Verify the facet trigger button has the edit order mode cursor styling
+    const facetTrigger = screen.getByTestId("facettrigger-status");
+    expect(facetTrigger).toHaveClass("cursor-ns-resize");
+  });
 });

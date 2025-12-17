@@ -1,6 +1,5 @@
 import {
   generateSearchResultsTypes,
-  getSpecificSearchTypes,
   stripLimitQueryIfNeeded,
 } from "../search-results";
 import { CollectionTitles, Profiles, SearchResults } from "../../globals.d";
@@ -194,63 +193,5 @@ describe("Test stripLimitQueryIfNeeded()", () => {
       limit: ["1001", "1002"],
     };
     expect(stripLimitQueryIfNeeded(query)).toEqual("type=Item");
-  });
-});
-
-describe("Test getSpecificSearchTypes()", () => {
-  it("returns an empty array if the search result filters contain no types", () => {
-    const searchResults: SearchResults = {
-      "@context": "/terms/",
-      "@graph": [],
-      "@id": "/search/?type=Item",
-      "@type": ["SearchResults"],
-      clear_filters: "/search/",
-      columns: {},
-      facets: [],
-      filters: [
-        {
-          field: "status",
-          term: "released",
-          remove: "/search/",
-        },
-      ],
-      notification: "Success",
-      title: "Search Results",
-      total: 0,
-    };
-    expect(getSpecificSearchTypes(searchResults)).toEqual([]);
-  });
-
-  it("returns an array of types from the search result filters", () => {
-    const searchResults: SearchResults = {
-      "@context": "/terms/",
-      "@graph": [],
-      "@id": "/search/?type=Item",
-      "@type": ["SearchResults"],
-      clear_filters: "/search/",
-      columns: {},
-      facets: [],
-      filters: [
-        {
-          field: "type",
-          term: "Item",
-          remove: "/search/",
-        },
-        {
-          field: "type",
-          term: "Dataset",
-          remove: "/search/",
-        },
-        {
-          field: "status",
-          term: "released",
-          remove: "/search/",
-        },
-      ],
-      notification: "Success",
-      title: "Search Results",
-      total: 0,
-    };
-    expect(getSpecificSearchTypes(searchResults)).toEqual(["Item", "Dataset"]);
   });
 });

@@ -35,9 +35,9 @@ const iconButtonSizeClasses = {
  * Tailwind CSS classes for each of the icon-only circular button sizes.
  */
 const iconCircleButtonSizeClasses = {
-  sm: `px-[5px] rounded-full ${iconSizes.sm}`,
-  md: `p-2 rounded-full ${iconSizes.md}`,
-  lg: `p-3 rounded-full ${iconSizes.lg}`,
+  sm: `size-6 rounded-full ${iconSizes.sm}`,
+  md: `size-8 rounded-full ${iconSizes.md}`,
+  lg: `size-10 rounded-full ${iconSizes.lg}`,
 };
 
 /**
