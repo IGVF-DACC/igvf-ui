@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import { useAuth0 } from "@auth0/auth0-react";
 import SessionContext from "../../session-context";
+import { ModalManagerProvider } from "../../modal-manager";
 import FacetSection from "../facet-section";
 import { Reorder } from "motion/react";
 import { type ErrorObject } from "../../../lib/fetch-request";
@@ -80,6 +81,7 @@ describe("Test <FacetSection> component", () => {
     const { container } = render(
       <FacetSection
         searchResults={searchResults}
+        types={["Gene"]}
         allFacets={searchResults.facets}
       />
     );
@@ -139,6 +141,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -207,6 +210,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -258,6 +262,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -305,6 +310,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -374,6 +380,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -436,6 +443,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -500,6 +508,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -562,6 +571,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -622,6 +632,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -698,6 +709,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -755,6 +767,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -824,6 +837,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor", "RodentDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -897,6 +911,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -975,6 +990,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -1038,6 +1054,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -1100,6 +1117,7 @@ describe("Test <FacetSection> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
@@ -1180,6 +1198,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -1187,7 +1206,7 @@ describe("Test <FacetSection> component", () => {
 
     // Wait for initial load
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledTimes(2); // 1 for config, 1 for order
+      expect(mockFetch).toHaveBeenCalledTimes(3); // 1 for optional config, 1 for config, 1 for order
     });
 
     mockFetch.mockClear();
@@ -1289,6 +1308,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -1393,6 +1413,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -1508,6 +1529,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -1623,6 +1645,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -1750,7 +1773,11 @@ describe("Test <FacetSection> component", () => {
       <SessionContext.Provider
         value={{ sessionProperties: mockSessionProperties } as any}
       >
-        <FacetSection searchResults={searchResults} allFacets={allFacets} />
+        <FacetSection
+          searchResults={searchResults}
+          types={["HumanDonor"]}
+          allFacets={allFacets}
+        />
       </SessionContext.Provider>
     );
 
@@ -1824,6 +1851,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -1936,6 +1964,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -2088,6 +2117,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -2208,6 +2238,7 @@ describe("Test <FacetSection> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -2262,5 +2293,653 @@ describe("Test <FacetSection> component", () => {
       },
       { timeout: 3000 }
     );
+  });
+
+  it("opens and closes optional filters modal with Close button", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockFetch = jest.fn(async () =>
+      Promise.resolve({
+        ok: true,
+        json: async () => Promise.resolve({}),
+      } as Response)
+    );
+    window.fetch = mockFetch as any;
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    } as any;
+
+    const searchResults = {
+      "@id": "/search/?type=MeasurementSet",
+      "@graph": [],
+      "@type": ["Search"],
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "age",
+          title: "Age",
+          terms: [{ key: "30-40", doc_count: 2 }],
+          total: 2,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+          optional: true,
+          category: "Demographics",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "MeasurementSet",
+        },
+      ],
+    } as any;
+
+    render(
+      <SessionContext.Provider value={mockSessionProperties}>
+        <ModalManagerProvider>
+          <FacetSection
+            searchResults={searchResults}
+            types={["MeasurementSet"]}
+            allFacets={searchResults.facets}
+          />
+        </ModalManagerProvider>
+      </SessionContext.Provider>
+    );
+
+    // Wait for the optional facets to load.
+    await waitFor(() => {
+      expect(window.fetch).toHaveBeenCalled();
+    });
+
+    // Wait for component to fully render after fetch completes
+    await waitFor(() => {
+      const optionalFiltersButton = screen.queryByRole("button", {
+        name: "Configure optional filters",
+      });
+      expect(optionalFiltersButton).toBeInTheDocument();
+    });
+
+    // Click the Optional Filters button to open the modal.
+    const optionalFiltersButton = screen.getByRole("button", {
+      name: "Configure optional filters",
+    });
+    fireEvent.click(optionalFiltersButton);
+
+    // Verify the modal is open.
+    await waitFor(() => {
+      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+    });
+
+    // Close the modal using the Close button in the footer.
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    fireEvent.click(closeButton);
+
+    // Verify the modal is closed.
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Configure Optional Facets")
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("saves optional facets configuration from modal", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockFetch = jest.fn(async () =>
+      Promise.resolve({
+        ok: true,
+        json: async () => Promise.resolve({}),
+      } as Response)
+    );
+    window.fetch = mockFetch as any;
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    } as any;
+
+    const searchResults = {
+      "@id": "/search/?type=MeasurementSet",
+      "@graph": [],
+      "@type": ["Search"],
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "age",
+          title: "Age",
+          terms: [{ key: "30-40", doc_count: 2 }],
+          total: 2,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+          optional: true,
+          category: "Demographics",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "MeasurementSet",
+        },
+      ],
+    } as any;
+
+    render(
+      <SessionContext.Provider value={mockSessionProperties}>
+        <ModalManagerProvider>
+          <FacetSection
+            searchResults={searchResults}
+            types={["MeasurementSet"]}
+            allFacets={searchResults.facets}
+          />
+        </ModalManagerProvider>
+      </SessionContext.Provider>
+    );
+
+    // Wait for the optional facets to load.
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Click the Optional Filters button to open the modal.
+    const optionalFiltersButton = screen.getByRole("button", {
+      name: "Configure optional filters",
+    });
+    fireEvent.click(optionalFiltersButton);
+
+    // Wait for modal to open.
+    await waitFor(() => {
+      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+    });
+
+    // Check the Age checkbox.
+    const ageCheckbox = screen.getByRole("checkbox", { name: "Age" });
+    fireEvent.click(ageCheckbox);
+
+    // Click Save button.
+    const saveButton = screen.getByRole("button", { name: /Save/i });
+    fireEvent.click(saveButton);
+
+    // Verify the modal is closed after saving.
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Configure Optional Facets")
+      ).not.toBeInTheDocument();
+    });
+
+    // Verify that saveOptionalFacetsConfigForType was called.
+    await waitFor(() => {
+      const saveCalls = mockFetch.mock.calls.filter(
+        (call: any[]) =>
+          call[0] === "/api/facet-optional/MeasurementSet/" &&
+          (call[1] as RequestInit)?.method === "POST"
+      );
+      expect(saveCalls.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("clears all optional facets in modal", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    } as any;
+
+    const searchResults = {
+      "@id": "/search/?type=MeasurementSet",
+      "@graph": [],
+      "@type": ["Search"],
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "age",
+          title: "Age",
+          terms: [{ key: "30-40", doc_count: 2 }],
+          total: 2,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+          optional: true,
+          category: "Demographics",
+        },
+        {
+          field: "ethnicity",
+          title: "Ethnicity",
+          terms: [{ key: "hispanic", doc_count: 1 }],
+          total: 1,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+          optional: true,
+          category: "Demographics",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "MeasurementSet",
+        },
+      ],
+    } as any;
+
+    render(
+      <SessionContext.Provider value={mockSessionProperties}>
+        <ModalManagerProvider>
+          <FacetSection
+            searchResults={searchResults}
+            types={["MeasurementSet"]}
+            allFacets={searchResults.facets}
+          />
+        </ModalManagerProvider>
+      </SessionContext.Provider>
+    );
+
+    // Wait for the optional facets to load.
+    await waitFor(() => {
+      expect(window.fetch).toHaveBeenCalled();
+    });
+
+    // Click the Optional Filters button to open the modal.
+    const optionalFiltersButton = screen.getByRole("button", {
+      name: "Configure optional filters",
+    });
+    fireEvent.click(optionalFiltersButton);
+
+    // Wait for modal to open.
+    await waitFor(() => {
+      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+    });
+
+    // Check both Age and Ethnicity checkboxes.
+    const ageCheckbox = screen.getByRole("checkbox", { name: "Age" });
+    const ethnicityCheckbox = screen.getByRole("checkbox", {
+      name: "Ethnicity",
+    });
+    fireEvent.click(ageCheckbox);
+    fireEvent.click(ethnicityCheckbox);
+
+    // Verify both are checked.
+    expect(ageCheckbox).toBeChecked();
+    expect(ethnicityCheckbox).toBeChecked();
+
+    // Click Clear All button.
+    const clearButton = screen.getByRole("button", { name: /Clear All/i });
+    fireEvent.click(clearButton);
+
+    // Verify both checkboxes are unchecked.
+    expect(ageCheckbox).not.toBeChecked();
+    expect(ethnicityCheckbox).not.toBeChecked();
+  });
+
+  it("unchecks optional facet in modal", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockFetch = jest.fn(async () =>
+      Promise.resolve({
+        ok: true,
+        json: async () => Promise.resolve({}),
+      } as Response)
+    );
+    window.fetch = mockFetch as any;
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    } as any;
+
+    const searchResults = {
+      "@id": "/search/?type=MeasurementSet",
+      "@graph": [],
+      "@type": ["Search"],
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "age",
+          title: "Age",
+          terms: [{ key: "30-40", doc_count: 2 }],
+          total: 2,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+          optional: true,
+          category: "Demographics",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "MeasurementSet",
+        },
+      ],
+    } as any;
+
+    render(
+      <SessionContext.Provider value={mockSessionProperties}>
+        <ModalManagerProvider>
+          <FacetSection
+            searchResults={searchResults}
+            types={["MeasurementSet"]}
+            allFacets={searchResults.facets}
+          />
+        </ModalManagerProvider>
+      </SessionContext.Provider>
+    );
+
+    // Wait for the optional facets to load.
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Click the Optional Filters button to open the modal.
+    const optionalFiltersButton = screen.getByRole("button", {
+      name: "Configure optional filters",
+    });
+    fireEvent.click(optionalFiltersButton);
+
+    // Wait for modal to open.
+    await waitFor(() => {
+      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+    });
+
+    // Check the Age checkbox.
+    const ageCheckbox = screen.getByRole("checkbox", { name: "Age" });
+    fireEvent.click(ageCheckbox);
+    expect(ageCheckbox).toBeChecked();
+
+    // Uncheck the Age checkbox.
+    fireEvent.click(ageCheckbox);
+    expect(ageCheckbox).not.toBeChecked();
+  });
+
+  it("closes modal using header X button", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const mockFetch = jest.fn(async () =>
+      Promise.resolve({
+        ok: true,
+        json: async () => Promise.resolve({}),
+      } as Response)
+    );
+    window.fetch = mockFetch as any;
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    } as any;
+
+    const searchResults = {
+      "@id": "/search/?type=MeasurementSet",
+      "@graph": [],
+      "@type": ["Search"],
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "age",
+          title: "Age",
+          terms: [{ key: "30-40", doc_count: 2 }],
+          total: 2,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+          optional: true,
+          category: "Demographics",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "MeasurementSet",
+        },
+      ],
+    } as any;
+
+    render(
+      <SessionContext.Provider value={mockSessionProperties}>
+        <ModalManagerProvider>
+          <FacetSection
+            searchResults={searchResults}
+            types={["MeasurementSet"]}
+            allFacets={searchResults.facets}
+          />
+        </ModalManagerProvider>
+      </SessionContext.Provider>
+    );
+
+    // Wait for the optional facets to load.
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+
+    // Click the Optional Filters button to open the modal.
+    const optionalFiltersButton = screen.getByRole("button", {
+      name: "Configure optional filters",
+    });
+    fireEvent.click(optionalFiltersButton);
+
+    // Wait for modal to open.
+    await waitFor(() => {
+      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+    });
+
+    // Close using the X button in the header.
+    const closeButton = screen.getByRole("button", { name: "Close dialog" });
+    fireEvent.click(closeButton);
+
+    // Verify the modal is closed.
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Configure Optional Facets")
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("hides optional facet using quick-hide button", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    // Mock fetch to return a configuration with "age" already visible
+    const mockFetch = jest.fn(async (url) => {
+      if (url === "/api/facet-optional/MeasurementSet/") {
+        return Promise.resolve({
+          ok: true,
+          json: async () => Promise.resolve(["age"]),
+        } as Response);
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => Promise.resolve({}),
+      } as Response);
+    });
+    window.fetch = mockFetch as any;
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    } as any;
+
+    const searchResults = {
+      "@id": "/search/?type=MeasurementSet",
+      "@graph": [],
+      "@type": ["Search"],
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "age",
+          title: "Age",
+          terms: [{ key: "30-40", doc_count: 2 }],
+          total: 2,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+          optional: true,
+          category: "Demographics",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "MeasurementSet",
+        },
+      ],
+    } as any;
+
+    render(
+      <SessionContext.Provider value={mockSessionProperties}>
+        <FacetSection
+          searchResults={searchResults}
+          types={["MeasurementSet"]}
+          allFacets={searchResults.facets}
+        />
+      </SessionContext.Provider>
+    );
+
+    // Wait for the optional facets config to load and Age facet to appear
+    await waitFor(() => {
+      expect(screen.queryByText("Age")).toBeInTheDocument();
+    });
+
+    // Click the quick-hide button on the Age facet
+    const quickHideButton = screen.getByRole("button", {
+      name: "Hide optional Age filter",
+    });
+    fireEvent.click(quickHideButton);
+
+    // Verify the Age facet is hidden
+    await waitFor(() => {
+      expect(screen.queryByText("Age")).not.toBeInTheDocument();
+    });
+
+    // Verify that saveOptionalFacetsConfigForType was called to persist the change
+    await waitFor(() => {
+      const saveCalls = mockFetch.mock.calls.filter(
+        (call: any[]) =>
+          call[0] === "/api/facet-optional/MeasurementSet/" &&
+          (call[1] as RequestInit)?.method === "POST"
+      );
+      expect(saveCalls.length).toBeGreaterThan(0);
+    });
   });
 });

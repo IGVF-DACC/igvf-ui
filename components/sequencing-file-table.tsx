@@ -65,12 +65,13 @@ const columnDisplayConfig: Cell<FileObject, TableMeta>[] = [
     content: ({ source }: CellContentProps<FileObject, TableMeta>) =>
       source.content_type && typeof source.content_type === "string" ? (
         <AnnotatedValue
-          objectType={source["@type"][0]}
+          objectType={file["@type"][0]}
           propertyName="content_type"
         >
-          {source.content_type}
+          {file.content_type}
         </AnnotatedValue>
-      ) : null,
+      ) : null;
+    },
   },
   {
     id: "file-format",

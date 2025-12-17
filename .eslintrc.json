@@ -108,7 +108,9 @@
         "**/*.test.ts",
         "**/*.test.tsx",
         "**/*.spec.ts",
-        "**/*.spec.tsx"
+        "**/*.spec.tsx",
+        "**/*.cy.ts",
+        "cypress/**/*.d.ts"
       ],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {

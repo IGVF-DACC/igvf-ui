@@ -21,6 +21,7 @@
 // node_modules
 import { Dialog } from "@headlessui/react";
 import { Children } from "react";
+import { twMerge } from "tailwind-merge";
 // components
 import CloseButton from "./close-button";
 import { useModalManager } from "./modal-manager";
@@ -152,11 +153,7 @@ function Body({
   className?: string;
   children: React.ReactNode;
 }) {
-  return (
-    <div className={className}>
-      <div className="p-2">{children}</div>
-    </div>
-  );
+  return <div className={twMerge("p-2", className)}>{children}</div>;
 }
 
 /**

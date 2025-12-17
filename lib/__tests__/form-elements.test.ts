@@ -32,7 +32,7 @@ describe("Test generateButtonClasses", () => {
   it("should return the correct classes with the hasIconCircleOnly option", () => {
     const result = generateButtonClasses("primary", "lg", false, true);
     expect(result).toBe(
-      "items-center justify-center border font-semibold leading-none p-3 rounded-full [&>svg]:h-5 [&>svg]:w-5 bg-button-primary border-button-primary text-button-primary fill-button-primary disabled:bg-button-primary-disabled disabled:border-button-primary-disabled disabled:text-button-primary-disabled disabled:fill-button-primary-disabled"
+      "items-center justify-center border font-semibold leading-none size-10 rounded-full [&>svg]:h-5 [&>svg]:w-5 bg-button-primary border-button-primary text-button-primary fill-button-primary disabled:bg-button-primary-disabled disabled:border-button-primary-disabled disabled:text-button-primary-disabled disabled:fill-button-primary-disabled"
     );
   });
 });
