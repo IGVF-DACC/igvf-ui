@@ -13,9 +13,47 @@ import type {
 } from "../globals";
 
 /**
+ * Maximum number of types allowed in the optional facets configuration.
+ */
+export const MAX_TYPES_IN_CONFIG = 50;
+
+/**
+ * Maximum number of facets allowed per type in the optional facets configuration.
+ */
+const MAX_FACETS_PER_TYPE = 100;
+
+/**
+ * Maximum length of a facet field name.
+ */
+const FACET_FIELD_NAME_MAX_LENGTH = 100;
+
+/**
+ * Holds the property names for the optional facets a user has configured to be visible for a given
+ * type.
+ */
+export type OptionalFacetsConfigForType = string[];
+
+/**
+ * Holds the optional facets configuration for all types. For each type it holds the property names
+ * of the optional facets the user has configured to be visible.
+ */
+export type OptionalFacetsConfig = Record<string, OptionalFacetsConfigForType>;
+
+/**
  * Facet fields that don't get displayed as a facet.
  */
 const HIDDEN_FACET_FIELDS = ["type"];
+
+/**
+ * Types that allow optional facets configuration. The button to configure optional facets
+ * appears only when searching for a single type included in this list.
+ */
+const optionalFacetTypes = [
+  "AnalysisSet",
+  "File",
+  "MeasurementSet",
+  "PredictionSet",
+];
 
 /**
  * Defines whether a facet is open (true) or closed (false). The string is the property the facet
@@ -72,22 +110,38 @@ export function getFilterTerm(filter: SearchResultsFilter): string {
 /**
  * Filter out the hidden facet fields from the given array of facets.
  * @param facets Property of search results
+ * @param selectedType Type of object being searched
  * @param isAuthenticated True if the user has authenticated
  * @returns Facets that the user can see
  */
 export function getVisibleFacets(
   facets: SearchResultsFacet[],
+  optionalFacetsConfigForType: OptionalFacetsConfigForType,
+  selectedType: string,
   isAuthenticated: boolean
 ): SearchResultsFacet[] {
+  // Only want to consider parent facets, not terms of child facets.
+  const normalAndParentFacets = filterOutChildFacets(facets);
+
+  // Filter out facets that never appear, at least at the current access level.
   const extraHiddenFIelds = isAuthenticated
     ? []
     : ["audit.INTERNAL_ACTION.category"];
-  const normalAndParentFacets = filterOutChildFacets(facets);
-
-  return normalAndParentFacets.filter(
+  const nonHiddenFacets = normalAndParentFacets.filter(
     (facet) =>
       !HIDDEN_FACET_FIELDS.concat(extraHiddenFIelds).includes(facet.field)
   );
+
+  // Finally, filter out any optional facets that are not in the user's visible optional facet
+  // configuration.
+  return nonHiddenFacets.filter((facet) => {
+    if (optionalFacetTypes.includes(selectedType)) {
+      return (
+        optionalFacetsConfigForType.includes(facet.field) || !facet.optional
+      );
+    }
+    return !facet.optional;
+  });
 }
 
 /**
@@ -372,4 +426,169 @@ export async function getAllFacetsFromQuery(
     await request.getObject(`/search/?${typeQuery}&limit=0`)
   ).optional() as SearchResults;
   return response?.facets || [];
+}
+
+/**
+ * Check whether the optional facets configuration button should be shown on the search page.
+ *
+ * @param selectedType - Single `@type` for the search results
+ * @returns True if the search page should show the button to configure optional facets
+ */
+export function checkOptionalFacetsConfigurable(selectedType: string): boolean {
+  // Return true if search result filters have exactly one `type=` filter, and that type allows
+  // optional facets configuration.
+  return optionalFacetTypes.includes(selectedType);
+}
+
+/**
+ * Get the optional facets configuration for the given type from the Redis cache on the Next.js
+ * server.
+ *
+ * @param selectedType - `@type` for the displayed search result; single-type search only
+ * @param request - FetchRequest instance to make the request with
+ * @param isAuthenticated - True if the user has authenticated
+ * @returns Properties for the optional facets the user configured to be visible for the `@type`
+ */
+export async function getOptionalFacetsConfigForType(
+  selectedType: string,
+  request: FetchRequest,
+  isAuthenticated: boolean
+): Promise<OptionalFacetsConfigForType> {
+  let configForType: OptionalFacetsConfigForType = [];
+
+  if (isAuthenticated) {
+    // Authenticated users get their config from the Next.js server's Redis cache.
+    const response = (
+      await request.getObject(`/api/facet-optional/${selectedType}/`)
+    ).optional();
+    if (isValidOptionalFacetConfigForType(response)) {
+      configForType = response;
+    }
+  } else {
+    // Non-authenticated users get their config from localStorage.
+    const configString = localStorage.getItem("facet-optional");
+    if (configString) {
+      try {
+        const config = JSON.parse(configString);
+        if (isValidOptionalFacetConfig(config)) {
+          configForType = config[selectedType] || [];
+        }
+      } catch {
+        configForType = [];
+      }
+    }
+  }
+
+  return configForType;
+}
+
+/**
+ * Set the optional facets configuration for the given type.
+ *
+ * @param selectedType - Search `@type` to set the visible optional facets for
+ * @param newConfigForType - New optional facets configuration to set for a type
+ * @param request - FetchRequest instance to make the request with
+ * @param isAuthenticated - True if the user has authenticated
+ */
+export async function saveOptionalFacetsConfigForType(
+  selectedType: string,
+  newConfigForType: OptionalFacetsConfigForType,
+  request: FetchRequest,
+  isAuthenticated: boolean
+): Promise<void> {
+  if (isAuthenticated) {
+    // For authenticated users, save the config in the Next.js server Redis cache.
+    await request.postObject(
+      `/api/facet-optional/${selectedType}/`,
+      newConfigForType
+    );
+  } else {
+    // For non-authenticated users, save the config in localStorage.
+    const configString = localStorage.getItem("facet-optional");
+    let config: OptionalFacetsConfig = {};
+    if (configString) {
+      try {
+        const parsedConfig = JSON.parse(configString);
+        if (isValidOptionalFacetConfig(parsedConfig)) {
+          config = parsedConfig;
+        }
+      } catch {
+        config = {};
+      }
+    }
+
+    // Update the config for the given type.
+    config[selectedType] = newConfigForType;
+
+    // Save the updated config back to localStorage.
+    try {
+      localStorage.setItem("facet-optional", JSON.stringify(config));
+    } catch (error) {
+      console.warn("Failed to save to localStorage:", error);
+    }
+  }
+}
+
+/**
+ * Type guard to validate that a value matches the OptionalFacetsConfigForType structure.
+ *
+ * @param config - Value to validate
+ * @returns True if the value satisfies the OptionalFacetsConfigForType structure
+ */
+export function isValidOptionalFacetConfigForType(
+  configForType: unknown
+): configForType is OptionalFacetsConfigForType {
+  if (
+    !Array.isArray(configForType) ||
+    configForType.length > MAX_FACETS_PER_TYPE
+  ) {
+    return false;
+  }
+
+  // Array elements must all be non-empty strings with reasonable length.
+  const allPropsValid = configForType.every(
+    (item) =>
+      typeof item === "string" &&
+      item.length > 0 &&
+      item.length < FACET_FIELD_NAME_MAX_LENGTH
+  );
+  return allPropsValid;
+}
+
+/**
+ * Type guard to validate that a value matches the OptionalFacetsConfig structure.
+ * OptionalFacetsConfig is a Record<string, string[]> where:
+ * - Keys are type names (strings)
+ * - Values are arrays of facet field names (strings)
+ *
+ * @param config - Value to validate
+ * @returns True if the value satisfies the OptionalFacetsConfig structure
+ */
+export function isValidOptionalFacetConfig(
+  config: unknown
+): config is OptionalFacetsConfig {
+  // Must be an object and not null nor an array.
+  if (typeof config !== "object" || config === null || Array.isArray(config)) {
+    return false;
+  }
+
+  // Must have a reasonable number of keys (types).
+  const keys = Object.keys(config);
+  if (keys.length > MAX_TYPES_IN_CONFIG) {
+    return false;
+  }
+
+  // Check each key-value pair.
+  for (const [key, value] of Object.entries(config)) {
+    // Keys must be non-empty strings.
+    if (typeof key !== "string" || key.length === 0) {
+      return false;
+    }
+
+    if (!isValidOptionalFacetConfigForType(value)) {
+      return false;
+    }
+  }
+
+  return true;
 }

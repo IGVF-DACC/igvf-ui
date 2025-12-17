@@ -13,7 +13,7 @@ import type { DatabaseObject } from "../globals";
 export function ControlledAccessIndicator({ item }: { item: DatabaseObject }) {
   const tooltipAttr = useTooltip("controlled-access-indicator");
 
-  if (item.controlled_access) {
+  if ("controlled_access" in item && item.controlled_access) {
     return (
       <>
         <TooltipRef tooltipAttr={tooltipAttr}>
