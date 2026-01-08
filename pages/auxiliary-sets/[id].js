@@ -70,6 +70,14 @@ export default function AuxiliarySet({
   attribution = null,
   isJson,
 }) {
+  console.log("*** AUXILIARY SET RENDER ***", auxiliarySet["@id"]);
+  if (files.length > 0) {
+    console.log(
+      "*** - AUXILIARY SET FILES ACCESSIONS:",
+      files.map((file) => file.accession).join()
+    );
+  }
+
   const sections = useSecDir({ isJson });
   const { profiles } = useContext(SessionContext);
   const preferredAssayTitleDescriptionMap =
@@ -330,6 +338,16 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       auxiliarySet,
       req.headers.cookie
     );
+
+    console.log("*** [SERVER] AUXILIARY SET FILES REQUESTED ***");
+    console.log(`*** - AUXILIARY SET FILES LENGTH: ${files.length}`);
+    if (files.length > 0) {
+      console.log(
+        "*** - AUXILIARY SET FILES ACCESSIONS:",
+        files.map((file) => file.accession).join()
+      );
+    }
+
     return {
       props: {
         auxiliarySet,
