@@ -146,6 +146,13 @@ const columnDisplayConfig: Cell[] = [
     },
   },
   {
+    id: "tile",
+    content: ({ source }: CellContentProps) => {
+      const file = source as FileObject;
+      return file.tile !== undefined ? <>{file.tile}</> : null;
+    },
+  },
+  {
     id: "file-size",
     content: ({ source }: CellContentProps) => {
       const file = source as FileObject;
@@ -185,12 +192,23 @@ const headerRow: Row = {
     { id: "index", content: "Index" },
     { id: "associated-seqspec", content: "Associated seqspec" },
     { id: "sequencing_platform", content: "Sequencing Platform" },
+    { id: "tile", content: "Tile" },
     { id: "file-size", content: "File Size" },
     { id: "lab", content: "Lab" },
     { id: "upload-status", content: "Upload Status" },
   ],
   RowComponent: HeaderRowComponent,
 };
+
+/**
+ * Determine if any of the given files contain tile information.
+ *
+ * @param files - All files in the sequencing file table
+ * @returns True if any of the files contain tile information
+ */
+function filesContainTile(files: FileObject[]): boolean {
+  return files.some((file) => file.tile !== undefined);
+}
 
 /**
  * DataGrid cell renderer for displaying a list of linked seqspec files.
@@ -347,11 +365,6 @@ export default function SequencingFileTable({
       )}${illuminaSelector}`
     : "";
 
-  // Leave out the "Illumina Read Type" column if `isIlluminaReadType` is false.
-  const resolvedColumnDisplayConfig = isIlluminaReadType
-    ? columnDisplayConfig
-    : columnDisplayConfig.filter((col) => col.id !== "illumina-read-type");
-
   // Generate the sequence-file table data-grid format for the files.
   const sequenceFileGroups = generateSequenceFileGroups(files);
 
@@ -370,9 +383,23 @@ export default function SequencingFileTable({
     sequenceFileGroups,
     MAX_ITEMS_PER_PAGE
   );
+
+  // Determine which columns should be visible based on conditions
+  const showTileColumn = filesContainTile(files);
+  const visibleColumns = columnDisplayConfig.filter((col) => {
+    if (col.id === "illumina-read-type" && !isIlluminaReadType) {
+      return false;
+    }
+    if (col.id === "tile" && !showTileColumn) {
+      return false;
+    }
+    return true;
+  });
+
+  // Build the data grid with only visible columns
   const sequenceDataGrid = fileGroupsToDataGridFormat(
     paginatedSequenceFileGroups[pageIndex],
-    resolvedColumnDisplayConfig,
+    visibleColumns,
     AlternateRowComponent
   );
 
@@ -396,15 +423,20 @@ export default function SequencingFileTable({
     0
   );
 
-  // Generate the header row either with or without the Illumina Read Type column, as selected.
-  const resolvedHeaderRow = isIlluminaReadType
-    ? headerRow
-    : {
-        ...headerRow,
-        cells: headerRow.cells.filter(
-          (cell) => cell.id !== "illumina-read-type"
-        ),
-      };
+  // Generate the header row with only visible columns
+  const visibleHeaderCells = headerRow.cells.filter((cell) => {
+    if (cell.id === "illumina-read-type" && !isIlluminaReadType) {
+      return false;
+    }
+    if (cell.id === "tile" && !showTileColumn) {
+      return false;
+    }
+    return true;
+  });
+  const resolvedHeaderRow = {
+    ...headerRow,
+    cells: visibleHeaderCells,
+  };
 
   // Create a batch-download controller if a file set is provided.
   const controller = fileSet ? new FileTableController(fileSet) : null;

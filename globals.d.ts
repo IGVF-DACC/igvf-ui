@@ -385,6 +385,7 @@ export interface FileObject extends DatabaseObject {
   seqspecs?: string[] | FileObject[];
   sequencing_run?: number;
   summary?: string;
+  tile?: number;
   upload_status?: UploadStatus;
   workflows?: string[] | WorkflowObject[];
 }

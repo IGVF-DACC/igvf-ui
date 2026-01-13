@@ -172,6 +172,7 @@ export async function requestFiles(
         "submitted_file_name",
         "status",
         "summary",
+        "tile",
         "workflows",
         "upload_status",
       ],
