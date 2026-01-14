@@ -73,7 +73,7 @@ export function OptionalFacetsConfigModal({
   return (
     <Modal isOpen onClose={onClose}>
       <Modal.Header onClose={() => onClose()}>
-        Configure Optional Facets
+        Configure Optional Filters
       </Modal.Header>
 
       <Modal.Body className="my-2 grid gap-x-4 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
