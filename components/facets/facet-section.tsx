@@ -542,6 +542,35 @@ export default function FacetSection({
       request,
       isAuthenticated
     );
+
+    // Filter existing ordered fields to keep non-optional facets and visible optional facets.
+    const filteredOrderedFields = orderedFacetFields.filter((field) => {
+      // Find the facet object for this field so we can access its properties.
+      const facet = allFacets.find((f) => f.field === field);
+      if (!facet) {
+        return false;
+      }
+
+      // Always keep non-optional facets.
+      if (!facet.optional) {
+        return true;
+      }
+
+      // For optional facets, only keep them if the user has selected them
+      return visibleOptionalFacets.includes(field);
+    });
+
+    // Find newly visible optional facets that aren't already in the ordered list.
+    const newlyVisibleFields = visibleOptionalFacets.filter(
+      (field) => !orderedFacetFields.includes(field)
+    );
+
+    const newOrderedFacetFields = [
+      ...filteredOrderedFields,
+      ...newlyVisibleFields,
+    ];
+    setOrderedFacetFields(newOrderedFacetFields);
+    void saveOrder(newOrderedFacetFields);
   }
 
   // Called when the user wants to hide a specific optional facet via the quick-hide button. It
@@ -563,11 +592,16 @@ export default function FacetSection({
   // the search results have no displayable facets.
   if (facets.length > 0) {
     // Use the current or edited facet order to generate the ordered list of facet objects using
-    // the facet map for O(1) lookup.
-    const orderedFacets = orderedFacetFields
-      .filter((field) => facetFields.includes(field))
-      .map((field) => facetMap.get(field))
-      .filter((facet) => facet !== undefined);
+    // the facet map for O(1) lookup. Apply getVisibleFacets to ensure optional facets are
+    // properly included in the sort order.
+    const orderedFacets = getVisibleFacets(
+      orderedFacetFields
+        .filter((field) => facetFields.includes(field))
+        .map((field) => facetMap.get(field)),
+      optionalFacetsConfigForType,
+      selectedType,
+      isAuthenticated
+    );
     const editedOrderedFacets = getVisibleFacets(
       editedOrderedFacetFields.map((field) => facetMap.get(field)),
       optionalFacetsConfigForType,
