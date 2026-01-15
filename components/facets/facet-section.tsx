@@ -535,6 +535,7 @@ export default function FacetSection({
   function onOptionalFacetsConfigSave(
     visibleOptionalFacets: OptionalFacetsConfigForType
   ) {
+    // Update and save the new optional facets configuration.
     setOptionalFacetsConfigForType(visibleOptionalFacets);
     void saveOptionalFacetsConfigForType(
       selectedType,
@@ -543,28 +544,21 @@ export default function FacetSection({
       isAuthenticated
     );
 
-    // Filter existing ordered fields to keep non-optional facets and visible optional facets.
+    // Keep non-optional facets and visible optional facets in their current order.
     const filteredOrderedFields = orderedFacetFields.filter((field) => {
-      // Find the facet object for this field so we can access its properties.
-      const facet = allFacets.find((f) => f.field === field);
-      if (!facet) {
-        return false;
-      }
-
-      // Always keep non-optional facets.
-      if (!facet.optional) {
-        return true;
-      }
-
-      // For optional facets, only keep them if the user has selected them
-      return visibleOptionalFacets.includes(field);
+      const facetToCheck = allFacets.find((facet) => facet.field === field);
+      return (
+        facetToCheck &&
+        (!facetToCheck.optional || visibleOptionalFacets.includes(field))
+      );
     });
 
-    // Find newly visible optional facets that aren't already in the ordered list.
+    // Add newly visible optional facets not already in the visible ordered fields.
     const newlyVisibleFields = visibleOptionalFacets.filter(
       (field) => !orderedFacetFields.includes(field)
     );
 
+    // Compose the new ordered facet fields and save them.
     const newOrderedFacetFields = [
       ...filteredOrderedFields,
       ...newlyVisibleFields,
