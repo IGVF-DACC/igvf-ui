@@ -2390,7 +2390,9 @@ describe("Test <FacetSection> component", () => {
 
     // Verify the modal is open.
     await waitFor(() => {
-      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+      expect(
+        screen.getByText("Configure Optional Filters")
+      ).toBeInTheDocument();
     });
 
     // Close the modal using the Close button in the footer.
@@ -2400,7 +2402,7 @@ describe("Test <FacetSection> component", () => {
     // Verify the modal is closed.
     await waitFor(() => {
       expect(
-        screen.queryByText("Configure Optional Facets")
+        screen.queryByText("Configure Optional Filters")
       ).not.toBeInTheDocument();
     });
   });
@@ -2492,7 +2494,9 @@ describe("Test <FacetSection> component", () => {
 
     // Wait for modal to open.
     await waitFor(() => {
-      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+      expect(
+        screen.getByText("Configure Optional Filters")
+      ).toBeInTheDocument();
     });
 
     // Check the Age checkbox.
@@ -2506,7 +2510,7 @@ describe("Test <FacetSection> component", () => {
     // Verify the modal is closed after saving.
     await waitFor(() => {
       expect(
-        screen.queryByText("Configure Optional Facets")
+        screen.queryByText("Configure Optional Filters")
       ).not.toBeInTheDocument();
     });
 
@@ -2611,7 +2615,9 @@ describe("Test <FacetSection> component", () => {
 
     // Wait for modal to open.
     await waitFor(() => {
-      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+      expect(
+        screen.getByText("Configure Optional Filters")
+      ).toBeInTheDocument();
     });
 
     // Check both Age and Ethnicity checkboxes.
@@ -2722,7 +2728,9 @@ describe("Test <FacetSection> component", () => {
 
     // Wait for modal to open.
     await waitFor(() => {
-      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+      expect(
+        screen.getByText("Configure Optional Filters")
+      ).toBeInTheDocument();
     });
 
     // Check the Age checkbox.
@@ -2822,7 +2830,9 @@ describe("Test <FacetSection> component", () => {
 
     // Wait for modal to open.
     await waitFor(() => {
-      expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+      expect(
+        screen.getByText("Configure Optional Filters")
+      ).toBeInTheDocument();
     });
 
     // Close using the X button in the header.
@@ -2832,7 +2842,7 @@ describe("Test <FacetSection> component", () => {
     // Verify the modal is closed.
     await waitFor(() => {
       expect(
-        screen.queryByText("Configure Optional Facets")
+        screen.queryByText("Configure Optional Filters")
       ).not.toBeInTheDocument();
     });
   });
@@ -2941,5 +2951,233 @@ describe("Test <FacetSection> component", () => {
       );
       expect(saveCalls.length).toBeGreaterThan(0);
     });
+  });
+
+  it("filters out fields not found in allFacets when saving optional facets", async () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    let savedOrder: string[] | null = null;
+
+    // Mock getFacetOrder to return a field that will be in allFacets initially
+    const mockFetch = jest.fn(async (url, options) => {
+      if (url === "/api/facet-optional/MeasurementSet/") {
+        if ((options as RequestInit)?.method === "POST") {
+          // Save optional facets config
+          return Promise.resolve({
+            ok: true,
+            json: async () => Promise.resolve({}),
+          } as Response);
+        }
+        // GET - return empty config initially
+        return Promise.resolve({
+          ok: true,
+          json: async () => Promise.resolve([]),
+        } as Response);
+      }
+      if (url === "/api/facet-config/123/?type=MeasurementSet") {
+        // GET - return empty config
+        return Promise.resolve({
+          ok: true,
+          json: async () => Promise.resolve({}),
+        } as Response);
+      }
+      if (url === "/api/facet-order/123/?type=MeasurementSet") {
+        if ((options as RequestInit)?.method === "POST") {
+          // Capture the saved order
+          savedOrder = JSON.parse((options as RequestInit).body as string);
+          return Promise.resolve({
+            ok: true,
+            json: async () => Promise.resolve({}),
+          } as Response);
+        }
+        // GET - Return an order that includes all fields initially
+        return Promise.resolve({
+          ok: true,
+          json: async () => Promise.resolve(["sex", "height", "age"]),
+        } as Response);
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => Promise.resolve({}),
+      } as Response);
+    });
+    window.fetch = mockFetch as any;
+
+    const mockSessionProperties = {
+      user: {
+        "@id": "/users/123/",
+        "@type": ["User"],
+        uuid: "123",
+        title: "Test User",
+        submits_for: [],
+        viewing_groups: [],
+      },
+    } as any;
+
+    // Initial search results with all three facets
+    const searchResultsWithHeight = {
+      "@id": "/search/?type=MeasurementSet",
+      "@graph": [],
+      "@type": ["Search"],
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "height",
+          title: "Height",
+          terms: [{ key: "tall", doc_count: 2 }],
+          total: 2,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "age",
+          title: "Age",
+          terms: [{ key: "30-40", doc_count: 2 }],
+          total: 2,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+          optional: true,
+          category: "Demographics",
+        },
+      ],
+      filters: [
+        {
+          field: "type",
+          remove: "/search",
+          term: "MeasurementSet",
+        },
+      ],
+    } as any;
+
+    const { rerender } = render(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <ModalManagerProvider>
+          <FacetSection
+            searchResults={searchResultsWithHeight}
+            types={["MeasurementSet"]}
+            allFacets={searchResultsWithHeight.facets}
+          />
+        </ModalManagerProvider>
+      </SessionContext.Provider>
+    );
+
+    // Wait for the component to render and facet order to load
+    await waitFor(
+      () => {
+        const orderFetchCalls = mockFetch.mock.calls.filter(
+          (call: any[]) =>
+            call[0] === "/api/facet-order/123/?type=MeasurementSet" &&
+            (!call[1] || (call[1] as RequestInit).method !== "POST")
+        );
+        expect(orderFetchCalls.length).toBeGreaterThan(0);
+      },
+      { timeout: 3000 }
+    );
+
+    // Now update allFacets to remove the "height" facet
+    const searchResultsWithoutHeight = {
+      ...searchResultsWithHeight,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "age",
+          title: "Age",
+          terms: [{ key: "30-40", doc_count: 2 }],
+          total: 2,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+          optional: true,
+          category: "Demographics",
+        },
+      ],
+    };
+
+    // Rerender with updated allFacets (height removed)
+    rerender(
+      <SessionContext.Provider
+        value={{ sessionProperties: mockSessionProperties } as any}
+      >
+        <ModalManagerProvider>
+          <FacetSection
+            searchResults={searchResultsWithoutHeight}
+            types={["MeasurementSet"]}
+            allFacets={searchResultsWithoutHeight.facets}
+          />
+        </ModalManagerProvider>
+      </SessionContext.Provider>
+    );
+
+    // Click the Optional Filters button to open the modal
+    const optionalFiltersButton = await screen.findByRole("button", {
+      name: "Configure optional filters",
+    });
+    fireEvent.click(optionalFiltersButton);
+
+    // Wait for modal to open
+    await waitFor(() => {
+      expect(
+        screen.getByText("Configure Optional Filters")
+      ).toBeInTheDocument();
+    });
+
+    // Check the Age checkbox to add it to visible optional facets
+    const ageCheckbox = screen.getByRole("checkbox", { name: "Age" });
+    fireEvent.click(ageCheckbox);
+
+    // Save the configuration
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    fireEvent.click(saveButton);
+
+    // Wait for modal to close and save to complete
+    await waitFor(
+      () => {
+        expect(
+          screen.queryByText("Configure Optional Filters")
+        ).not.toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
+
+    // Wait for the order save to complete
+    await waitFor(
+      () => {
+        expect(savedOrder).not.toBeNull();
+      },
+      { timeout: 3000 }
+    );
+
+    // The saved order should only contain fields that exist in allFacets
+    expect(savedOrder).toContain("sex");
+    expect(savedOrder).toContain("age");
+    expect(savedOrder).not.toContain("nonexistent_field");
   });
 });
