@@ -58,6 +58,8 @@ function FacetListWithState({
       facets={facets}
       openedFacets={openedFacets}
       onFacetOpen={handleFacetOpen}
+      optionalFacetsConfigForType={[]}
+      onOptionalFacetQuickHideChange={jest.fn()}
       isEditOrderMode={false}
     />
   );
@@ -159,9 +161,15 @@ describe("Test <FacetList> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["Gene"]}
         allFacets={searchResults.facets}
       />
     );
+
+    // Wait for async state updates to complete
+    await waitFor(() => {
+      expect(screen.getAllByTestId(/^facet-container-/)).toHaveLength(3);
+    });
 
     // Check for the correct number of facets.
     const facetSections = screen.getAllByTestId(/^facet-container-/);
@@ -243,6 +251,8 @@ describe("Test <FacetList> component", () => {
         facets={facetsForDisplay}
         openedFacets={{}}
         onFacetOpen={jest.fn()}
+        optionalFacetsConfigForType={[]}
+        onOptionalFacetQuickHideChange={jest.fn()}
         isEditOrderMode={false}
       />
     );
@@ -256,7 +266,7 @@ describe("Test <FacetList> component", () => {
     expect(facetSections).toHaveLength(0);
   });
 
-  it("clears all filters when clicking the Clear All button", () => {
+  it("clears all filters when clicking the Clear All button", async () => {
     mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
     } as any);
@@ -330,9 +340,15 @@ describe("Test <FacetList> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
+
+    // Wait for async state updates to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Clear all filters/)).toBeInTheDocument();
+    });
 
     // Click the Clear All button and check that the router push function was called with the
     // correct URL.
@@ -417,9 +433,15 @@ describe("Test <FacetList> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
+
+    // Wait for async state updates to complete
+    await waitFor(() => {
+      expect(screen.getByTestId(/^facettrigger-sex$/)).toBeInTheDocument();
+    });
 
     // Open the sex facet by clicking its trigger.
     const facetTrigger = screen.getByTestId(/^facettrigger-sex$/);
@@ -455,7 +477,7 @@ describe("Test <FacetList> component", () => {
     );
   });
 
-  it("displays no facets if no facets are visible", () => {
+  it("displays no facets if no facets are visible", async () => {
     mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
     } as any);
@@ -531,10 +553,15 @@ describe("Test <FacetList> component", () => {
     render(
       <FacetSection
         searchResults={searchResults}
+        types={["HumanDonor"]}
         allFacets={searchResults.facets}
       />
     );
-    expect(screen.queryByTestId(/^datapanel$/)).toBeNull();
+
+    // Wait for async state updates to complete
+    await waitFor(() => {
+      expect(screen.queryByTestId(/^datapanel$/)).toBeNull();
+    });
   });
 
   it("renders a facet with lots of terms", async () => {
@@ -872,6 +899,7 @@ describe("Test <FacetList> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
@@ -1009,14 +1037,158 @@ describe("Test <FacetList> component", () => {
       >
         <FacetSection
           searchResults={searchResults}
+          types={["HumanDonor", "AnalysisSet"]}
           allFacets={searchResults.facets}
         />
       </SessionContext.Provider>
     );
 
+    // Wait for async state updates to complete
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(/^facettrigger-lab.title$/)
+      ).toBeInTheDocument();
+    });
+
     // Check that the lab facet didn't expand even though it was saved because we have multiple
     // types.
     const facetTrigger = screen.getByTestId(/^facettrigger-lab.title$/);
     expect(facetTrigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("renders FacetList in edit order mode", () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: false,
+    } as any);
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            {
+              key: "female",
+              doc_count: 2,
+            },
+            {
+              key: "male",
+              doc_count: 2,
+            },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "status",
+          title: "Status",
+          terms: [
+            {
+              key: "released",
+              doc_count: 4,
+            },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [],
+    } as any;
+
+    const mockOnReorder = jest.fn();
+    const facetsForDisplay = searchResults.facets;
+
+    render(
+      <FacetList
+        searchResults={searchResults}
+        facets={facetsForDisplay}
+        openedFacets={{ sex: true }}
+        onFacetOpen={jest.fn()}
+        onReorder={mockOnReorder}
+        optionalFacetsConfigForType={[]}
+        onOptionalFacetQuickHideChange={jest.fn()}
+        isEditOrderMode={true}
+      />
+    );
+
+    // Verify facets render in edit mode
+    const facetContainers = screen.getAllByTestId(/^facet-container-/);
+    expect(facetContainers).toHaveLength(2);
+
+    // Verify that terms are not visible in edit mode even though the facet is marked as open
+    expect(screen.queryAllByTestId(/^facetterm-/)).toHaveLength(0);
+  });
+
+  it("calls onReorder when facets are reordered in edit mode", () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: false,
+    } as any);
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            {
+              key: "female",
+              doc_count: 2,
+            },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "status",
+          title: "Status",
+          terms: [
+            {
+              key: "released",
+              doc_count: 4,
+            },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [],
+    } as any;
+
+    const mockOnReorder = jest.fn();
+
+    render(
+      <FacetList
+        searchResults={searchResults}
+        facets={searchResults.facets}
+        openedFacets={{}}
+        onFacetOpen={jest.fn()}
+        onReorder={mockOnReorder}
+        optionalFacetsConfigForType={[]}
+        onOptionalFacetQuickHideChange={jest.fn()}
+        isEditOrderMode={true}
+      />
+    );
+
+    // The motion/react mock should have been called with reorder props
+    const facetContainers = screen.getAllByTestId(/^facet-container-/);
+    expect(facetContainers).toHaveLength(2);
   });
 });

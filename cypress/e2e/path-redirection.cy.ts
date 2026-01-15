@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe("Path redirection", () => {
   it("loads pages without the object type in the path", () => {
     cy.visit("/IGVFDS5575ANST/");
