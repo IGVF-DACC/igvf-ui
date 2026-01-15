@@ -87,7 +87,7 @@ describe("OptionalFacetsConfigModal", () => {
 
     // Check modal is rendered
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("Configure Optional Facets")).toBeInTheDocument();
+    expect(screen.getByText("Configure Optional Filters")).toBeInTheDocument();
 
     // Check categories are rendered
     expect(screen.getByText("Biology")).toBeInTheDocument();
