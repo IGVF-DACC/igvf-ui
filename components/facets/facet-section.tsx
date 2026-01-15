@@ -382,7 +382,7 @@ export default function FacetSection({
   // the user edits the facet order so that they can cancel editing, returning to the previous
   // order.
   const [orderedFacetFields, setOrderedFacetFields] = useState<string[]>(() =>
-    allFacets.map((facet) => facet.field)
+    facets.map((facet) => facet.field)
   );
   const [editedOrderedFacetFields, setEditedOrderedFacetFields] = useState<
     string[]
@@ -573,13 +573,7 @@ export default function FacetSection({
     const newConfig = optionalFacetsConfigForType.filter(
       (property) => property !== propertyToHide
     );
-    setOptionalFacetsConfigForType(newConfig);
-    void saveOptionalFacetsConfigForType(
-      selectedType,
-      newConfig,
-      request,
-      isAuthenticated
-    );
+    onOptionalFacetsConfigSave(newConfig);
   }
 
   // Determine if we should show facets at all. This is the case when no facet groups exist, and
