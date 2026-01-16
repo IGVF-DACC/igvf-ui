@@ -20,8 +20,17 @@ import {
 export default function HumanDonor({ item: humanDonor }) {
   const ethnicities =
     humanDonor.ethnicities?.length > 0 ? humanDonor.ethnicities.join(", ") : "";
+  const humanDonorIdentifiers =
+    humanDonor.human_donor_identifiers?.length > 0
+      ? humanDonor.human_donor_identifiers.join(", ")
+      : "";
   const sex = humanDonor.sex || "";
-  const title = [ethnicities, sex].filter(Boolean);
+  const demographic = [ethnicities, sex].filter(Boolean).join(", ");
+  const title = humanDonorIdentifiers
+    ? `${humanDonorIdentifiers} donor${demographic ? ` (${demographic})` : ""}`
+    : demographic
+      ? `${demographic} donor`
+      : humanDonor["@id"];
   const collections =
     humanDonor.collections?.length > 0 ? humanDonor.collections.join(", ") : "";
   let phenotypicFeatures = humanDonor.phenotypic_features
@@ -42,9 +51,7 @@ export default function HumanDonor({ item: humanDonor }) {
           <SearchListItemType item={humanDonor} />
           {humanDonor.accession}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>
-          {title.length > 0 ? title.join(" ") : humanDonor["@id"]}
-        </SearchListItemTitle>
+        <SearchListItemTitle>{title}</SearchListItemTitle>
         <SearchListItemMeta>
           <span key="lab">{humanDonor.lab.title}</span>
         </SearchListItemMeta>
