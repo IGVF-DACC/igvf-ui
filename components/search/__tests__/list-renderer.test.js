@@ -794,6 +794,40 @@ describe("Test the HumanDonor component", () => {
       "K562, GM05372 donor (African American, female)"
     );
   });
+
+  it("renders a human donor item with human_donor_identifiers but no demographic info", () => {
+    const item = {
+      "@id": "/human-donors/IGVFDO856PXB/",
+      "@type": ["HumanDonor", "Donor", "Item"],
+      accession: "IGVFDO856PXB",
+      aliases: ["chongyuan-luo:donor with identifiers only"],
+      award: "/awards/1U01HG012079-01/",
+      human_donor_identifiers: ["K562", "GM05372"],
+      lab: { "@id": "/labs/chongyuan-luo/", title: "Chongyuan Luo" },
+      status: "released",
+      taxa: "Homo sapiens",
+      uuid: "ee99221f-a11a-4f8b-baf3-9919db92f2f9",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <HumanDonor item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Human Donor/);
+    expect(uniqueId).toHaveTextContent(/IGVFDO856PXB$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent("K562, GM05372 donor");
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("Chongyuan Luo");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
 });
 
 describe("Test the Lab component", () => {
