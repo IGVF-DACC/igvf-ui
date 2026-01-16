@@ -83,7 +83,7 @@ const renderOptions = {
  */
 export default function MarkdownSection({
   direction = "ltr",
-  className = null,
+  className = "",
   testid = null,
   children,
 }) {
