@@ -3,7 +3,6 @@
  */
 // node_modules
 import _ from "lodash";
-import XXH from "xxhashjs";
 // lib
 import { requestFiles } from "./common-requests";
 import {
@@ -38,11 +37,6 @@ const MISSING_LANE_PLACEHOLDER = "z";
  * Key used for files that cannot be grouped due to missing required metadata.
  */
 const INVALID_GROUP_KEY = "invalid";
-
-/**
- * Cache seed for generating consistent hashes.
- */
-const CACHE_SEED = 0x3a9ffcd0;
 
 /**
  * Set of file statuses that are not downloadable.
@@ -396,13 +390,13 @@ export function fileGroupsToDataGridFormat(
  * groups get split across pages. It returns an array of file group maps, each one representing
  * a page of file groups. Pagination works similarly to other tables, but if a page hits the maximum
  * page size (`pageSize`) in the middle of a group, it continues adding rows to the page until the
- * entire group gets included. Each page, therefore, could have a different number of rows. This
- * pagination can get expensive, so this function gets called through a memoization mechanism.
+ * entire group gets included. Each page, therefore, could have a different number of rows.
+ *
  * @param fileGroups - Map of file groups to paginate
  * @param pageSize - Number of file objects per page
  * @return Array of file group maps, each element representing a page of file groups
  */
-function paginateSequenceFileGroupsCore(
+export function paginateSequenceFileGroups(
   fileGroups: Map<string, FileObject[]>,
   pageSize: number
 ): Map<string, FileObject[]>[] {
@@ -432,36 +426,6 @@ function paginateSequenceFileGroupsCore(
 
   return pages;
 }
-
-/**
- * Create a hash from the file groups map for caching. Only the keys are used in the hash, not the
- * arrays of files. The hash avoids storing long combinations of keys as the memoization key --
- * just a short hex string representing a 32-bit value.
- * @param fileGroups Map of file groups
- * @returns Hash string
- */
-function createMapKeyHash(fileGroups: Map<string, FileObject[]>) {
-  const keys = [...fileGroups.keys()];
-  const keyString = keys.join("|");
-  return XXH.h32(keyString, CACHE_SEED).toString(16);
-}
-
-/**
- * Memoized version of the paginateSequenceFileGroupsCore function. External modules call this
- * function instead of paginateSequenceFileGroupsCore. `_.memoize` is called once on page load. It
- * calls the original function with the provided arguments on a cache miss. A cache miss would
- * happen if any of the keys in the fileGroups map change, or the number of file groups change.
- * @param fileGroups - Map of file groups to paginate
- * @param pageSize - Number of file objects per page
- * @return Array of file group maps, each element representing a page of file groups
- */
-export const paginateSequenceFileGroups = _.memoize(
-  paginateSequenceFileGroupsCore,
-  (fileGroups, pageSize) => {
-    const hash = createMapKeyHash(fileGroups);
-    return `${hash}:${pageSize}`;
-  }
-);
 
 /**
  * Extracts the sequence specifications associated with a given file from an array of seqspec file

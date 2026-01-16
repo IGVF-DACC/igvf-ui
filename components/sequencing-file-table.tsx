@@ -1,7 +1,7 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
@@ -338,14 +338,6 @@ export default function SequencingFileTable({
   isDeletedVisible?: boolean;
   panelId?: string;
 }) {
-  console.log("*** SEQUENCING FILE TABLE ***");
-  if (files.length > 0) {
-    console.log(
-      "***    SEQUENCING FILE TABLE ACCESSIONS:",
-      files.map((file) => file.accession).join()
-    );
-  }
-
   // Currently viewed page of sequence files
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -365,23 +357,19 @@ export default function SequencingFileTable({
       )}${illuminaSelector}`
     : "";
 
-  // Generate the sequence-file table data-grid format for the files.
-  const sequenceFileGroups = generateSequenceFileGroups(files);
+  // Group the sequence files by their sequencing run, flowcell, and lane. Cache the results
+  // because this function can get expensive.
+  const sequenceFileGroups = useMemo(
+    () => generateSequenceFileGroups(files),
+    [files]
+  );
 
-  // If sequenceFileGroups has at least one key, display each key and the accession of each file within it.
-  console.log("***    SEQUENCING FILE TABLE GROUPS");
-  if (sequenceFileGroups.size > 0) {
-    for (const [key, files] of sequenceFileGroups.entries()) {
-      console.log(
-        `***       SEQUENCING FILE GROUP: ${key}`,
-        files.map((file) => file.accession).join()
-      );
-    }
-  }
-
-  const paginatedSequenceFileGroups = paginateSequenceFileGroups(
-    sequenceFileGroups,
-    MAX_ITEMS_PER_PAGE
+  // Paginate the sequence file groups for display in the table. Cache the results because
+  // this function can get expensive. Each `<SequencingFileTable>` instance maintains its
+  // own memoization cache, so the memoization here is per instance and per page.
+  const paginatedSequenceFileGroups = useMemo(
+    () => paginateSequenceFileGroups(sequenceFileGroups, MAX_ITEMS_PER_PAGE),
+    [sequenceFileGroups]
   );
 
   // Determine which columns should be visible based on conditions
@@ -402,19 +390,6 @@ export default function SequencingFileTable({
     visibleColumns,
     AlternateRowComponent
   );
-
-  console.log("***    PAGINATED SEQUENCING FILE TABLE GROUPS");
-  if (paginatedSequenceFileGroups.length > 0) {
-    paginatedSequenceFileGroups.forEach((group, index) => {
-      console.log(
-        `***       PAGINATED SEQUENCING FILE GROUP: PAGE ${index + 1} ***`,
-        Array.from(group.values())
-          .flat()
-          .map((file) => file.accession)
-          .join()
-      );
-    });
-  }
 
   // Get the total number of files within `sequenceFileGroups`. This might have a different count
   // from `files.length` if some files were found invalid for a sequence file table.
