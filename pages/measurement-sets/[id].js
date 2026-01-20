@@ -111,14 +111,6 @@ export default function MeasurementSet({
   attribution = null,
   isJson,
 }) {
-  console.log("*** MEASUREMENT SET RENDER ***", measurementSet["@id"]);
-  if (files.length > 0) {
-    console.log(
-      "*** - MEASUREMENT SET FILE ACCESSIONS:",
-      files.map((file) => file.accession).join()
-    );
-  }
-
   const tooltipAttr = useTooltip("external-image-url");
   const sections = useSecDir({ isJson });
   const { profiles } = useContext(SessionContext);
@@ -553,15 +545,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       measurementSet,
       req.headers.cookie
     );
-
-    console.log("*** [SERVER] MEASUREMENT SET FILES REQUESTED ***");
-    console.log(`*** - MEASUREMENT SET FILES LENGTH: ${files.length}`);
-    if (files.length > 0) {
-      console.log(
-        "*** - MEASUREMENT SET FILES ACCESSIONS:",
-        files.map((file) => file.accession).join()
-      );
-    }
 
     return {
       props: {

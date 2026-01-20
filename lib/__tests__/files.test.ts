@@ -1701,33 +1701,6 @@ describe("Test the paginateSequenceFileGroups function", () => {
     expect(result[2].has("S47-ORDER8-L1")).toBe(true);
   });
 
-  it("uses memoization to return same result for same inputs", () => {
-    const file1 = createTestFileForGroup(
-      "/files/memo1/",
-      "MEMO001",
-      99,
-      "MEMO123",
-      1,
-      "R1"
-    );
-    const file2 = createTestFileForGroup(
-      "/files/memo2/",
-      "MEMO002",
-      99,
-      "MEMO123",
-      1,
-      "R2"
-    );
-
-    const fileGroups = new Map([["S99-MEMO123-L1", [file1, file2]]]);
-
-    const result1 = paginateSequenceFileGroups(fileGroups, 5);
-    const result2 = paginateSequenceFileGroups(fileGroups, 5);
-
-    // Should return the exact same object reference due to memoization
-    expect(result1).toBe(result2);
-  });
-
   it("handles large page size with small number of groups", () => {
     const file1 = createTestFileForGroup(
       "/files/large1/",

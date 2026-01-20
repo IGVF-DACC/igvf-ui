@@ -27,14 +27,6 @@ export default function FileSetFilesTables({
   seqspecDocuments: DocumentObject[];
   children?: React.ReactNode;
 }) {
-  console.log("*** FILE SET FILE TABLE ***");
-  if (files.length > 0) {
-    console.log(
-      "***    FILE SET FILE TABLE ACCESSIONS ***",
-      files.map((file) => file.accession).join()
-    );
-  }
-
   // Extract sequencing files from `files` and group them by characteristics to determine which
   // file table they should appear in, if any. Possible groups include:
   // - sequencingIllumina: Sequencing files with `illumina_read_type`
@@ -64,26 +56,6 @@ export default function FileSetFilesTables({
     // No other conditions apply, so place the file in the "other" group.
     return "other";
   });
-
-  console.log("***    FILE SET FILE TABLE GROUPS");
-  if (groupedFiles.sequencingIllumina?.length > 0) {
-    console.log(
-      "***       SEQUENCING ILLUMINA ACCESSIONS:",
-      groupedFiles.sequencingIllumina.map((file) => file.accession).join()
-    );
-  }
-  if (groupedFiles.sequencingOther?.length > 0) {
-    console.log(
-      "***       SEQUENCING OTHER ACCESSIONS:",
-      groupedFiles.sequencingOther.map((file) => file.accession).join()
-    );
-  }
-  if (groupedFiles.other?.length > 0) {
-    console.log(
-      "***       OTHER ACCESSIONS:",
-      groupedFiles.other.map((file) => file.accession).join()
-    );
-  }
 
   return (
     <>
