@@ -74,6 +74,14 @@ const columns = [
 
 /**
  * Display the given files in a table, useful for pages displaying files derived from other files.
+ *
+ * @param {Object} props
+ * @param {Array} props.derivedFrom - Files to display
+ * @param {string} [props.reportLink] - Optional link (brackets indicate optional)
+ * @param {string} [props.reportLabel] - Optional label
+ * @param {string} [props.title] - Optional title
+ * @param {boolean} [props.isDeletedVisible] - Include deleted items
+ * @param {string} [props.panelId] - Panel ID
  */
 export default function DerivedFromTable({
   derivedFrom,

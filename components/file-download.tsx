@@ -92,7 +92,10 @@ export function FileDownload({
 
 /**
  * File download link for the file object page headers.
- * @param file - File to download
+ *
+ * @param {Object} props
+ * @param {FileObject} props.file - File to download
+ * @param {React.ReactNode} [props.children] - Optional children to render next to the download link
  */
 export function FileHeaderDownload({
   file,
