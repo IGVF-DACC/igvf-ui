@@ -585,13 +585,13 @@ export default function FacetSection({
     const orderedFacets = getVisibleFacets(
       orderedFacetFields
         .filter((field) => facetFields.includes(field))
-        .map((field) => facetMap.get(field)),
+        .map((field) => facetMap.get(field)!),
       optionalFacetsConfigForType,
       selectedType,
       isAuthenticated
     );
     const editedOrderedFacets = getVisibleFacets(
-      editedOrderedFacetFields.map((field) => facetMap.get(field)),
+      editedOrderedFacetFields.map((field) => facetMap.get(field)!),
       optionalFacetsConfigForType,
       selectedType,
       isAuthenticated

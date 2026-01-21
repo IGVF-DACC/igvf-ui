@@ -1,16 +1,18 @@
 // node_modules
+import { useAuth0 } from "@auth0/auth0-react";
 import { CheckBadgeIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import { useState } from "react";
-// root
-import type { SearchResultsFacet } from "../../globals";
 // components
 import Checkbox from "../checkbox";
-import { Button } from "../form-elements";
+import { Button, ButtonAsLink } from "../form-elements";
 import Icon from "../icon";
 import Modal from "../modal";
 // lib
+import { loginAuthProvider } from "../../lib/authentication";
 import { type OptionalFacetsConfigForType } from "../../lib/facets";
+// root
+import type { SearchResultsFacet } from "../../globals";
 
 /**
  * Wrap each section of checkboxes within the checkbox area.
@@ -22,9 +24,11 @@ function CheckboxSection({ children }: { children: React.ReactNode }) {
 /**
  * Display the optional facets configuration modal.
  *
+ * @param visibleOptionalFacets - The currently visible optional facets configuration
  * @param allFacets - All facets that would be displayed with no selected facet terms
- * @param isOpen - True if the modal is open
+ * @param onSave - Function called when the user saves the new configuration
  * @param onClose - Function called when the modal is closed
+ * @param isAuthenticated - True if the user is authenticated
  */
 export function OptionalFacetsConfigModal({
   visibleOptionalFacets,
@@ -37,6 +41,8 @@ export function OptionalFacetsConfigModal({
   onSave: (newConfig: OptionalFacetsConfigForType) => void;
   onClose: () => void;
 }) {
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+
   // Tracks the optional facet config being modified in the modal.
   const [dynamicConfig, setDynamicConfig] =
     useState<OptionalFacetsConfigForType>(visibleOptionalFacets);
@@ -73,7 +79,26 @@ export function OptionalFacetsConfigModal({
   return (
     <Modal isOpen onClose={onClose}>
       <Modal.Header onClose={() => onClose()}>
-        Configure Optional Filters
+        <div>
+          Configure Optional Filters
+          <div className="text-sm font-normal text-neutral-500">
+            {isAuthenticated ? (
+              `Selections sync to other browsers and devices on which you have signed in.`
+            ) : (
+              <div>
+                Selections saved in this browser while signed out.{" "}
+                <ButtonAsLink
+                  onClick={() => {
+                    void loginAuthProvider(loginWithRedirect);
+                  }}
+                >
+                  Sign in
+                </ButtonAsLink>{" "}
+                to sync across browser and devices.
+              </div>
+            )}
+          </div>
+        </div>
       </Modal.Header>
 
       <Modal.Body className="my-2 grid gap-x-4 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
