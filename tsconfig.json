@@ -20,13 +20,12 @@
     "types": ["jest", "node"],
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "pages/**/*.tsx", "components/**/*.tsx", "lib"],
   "exclude": [
     "node_modules",
     ".next",
     "coverage",
     "cypress.config.js",
-    "cypress/**/*",
-    "cdk/**/*"
+    "cypress/e2e/*.cy.js"
   ]
 }
