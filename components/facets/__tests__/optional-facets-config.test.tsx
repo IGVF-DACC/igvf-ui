@@ -335,7 +335,10 @@ describe("OptionalFacetsConfigModal", () => {
   it("shows sign in button and calls loginAuthProvider when clicked (unauthenticated)", () => {
     const onSave = jest.fn();
     const onClose = jest.fn();
-    const mockLoginAuthProvider = jest.spyOn(authentication, "loginAuthProvider");
+    const mockLoginAuthProvider = jest.spyOn(
+      authentication,
+      "loginAuthProvider"
+    );
 
     render(
       <ModalManagerProvider>
