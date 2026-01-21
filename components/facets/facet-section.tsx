@@ -400,6 +400,33 @@ export default function FacetSection({
       ).then((config) => {
         if (isMounted) {
           setOptionalFacetsConfigForType(config);
+
+          // Get the updated set of visible facets so we can update the ordered facet fields.
+          const newVisibleFacets = getVisibleFacets(
+            searchResults.facets,
+            config,
+            selectedType,
+            isAuthenticated
+          );
+          const newVisibleFacetFields = newVisibleFacets.map(
+            (facet) => facet.field
+          );
+
+          // Determine newly visible fields that need to be added to the ordered facet fields.
+          const newlyVisibleFields = newVisibleFacetFields.filter(
+            (field) => !orderedFacetFields.includes(field)
+          );
+
+          // Remove any now-hidden fields from the ordered facet fields.
+          const filteredOrderedFields = orderedFacetFields.filter((field) =>
+            newVisibleFacetFields.includes(field)
+          );
+
+          // Update the ordered facet fields with visible field updates.
+          setOrderedFacetFields([
+            ...filteredOrderedFields,
+            ...newlyVisibleFields,
+          ]);
         }
       });
     }
