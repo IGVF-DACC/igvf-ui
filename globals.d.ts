@@ -380,7 +380,7 @@ export interface FileObject extends DatabaseObject {
   external_host_url?: string;
   externally_hosted?: boolean;
   file_format: string;
-  file_format_specifications?: string[];
+  file_format_specifications?: string[] | DocumentObject[];
   file_set: string | FileSetObject;
   file_size?: number;
   flowcell_id?: string;
