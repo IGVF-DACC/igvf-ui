@@ -14,6 +14,7 @@ export default function CloseButton({ onClick, label }) {
       onClick={onClick}
       label={label}
       size="sm"
+      className="shrink-0"
       hasIconCircleOnly
     >
       <XMarkIcon />

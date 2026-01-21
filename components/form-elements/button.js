@@ -47,7 +47,7 @@ function inlineClasses(isInline) {
  */
 export function Button({
   onClick,
-  label = null,
+  label = "",
   id = "",
   type = "primary",
   size = "md",
