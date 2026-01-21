@@ -3,10 +3,16 @@ import "@testing-library/jest-dom";
 import { OptionalFacetsConfigModal } from "../optional-facets-config";
 import { ModalManagerProvider } from "../../modal-manager";
 import type { SearchResultsFacet } from "../../../globals";
+import * as authentication from "../../../lib/authentication";
 
 // Mock the ResizeObserver and IntersectionObserver
 jest.mock("../../__mocks__/resize-observer-mock");
 jest.mock("../../__mocks__/intersectionObserverMock");
+
+// Mock the authentication module
+jest.mock("../../../lib/authentication", () => ({
+  loginAuthProvider: jest.fn(),
+}));
 
 describe("OptionalFacetsConfigModal", () => {
   const mockAllFacets: SearchResultsFacet[] = [
@@ -324,5 +330,29 @@ describe("OptionalFacetsConfigModal", () => {
 
     // Verify onSave was called with age removed
     expect(onSave).toHaveBeenCalledWith(["sex"]);
+  });
+
+  it("shows sign in button and calls loginAuthProvider when clicked (unauthenticated)", () => {
+    const onSave = jest.fn();
+    const onClose = jest.fn();
+    const mockLoginAuthProvider = jest.spyOn(authentication, "loginAuthProvider");
+
+    render(
+      <ModalManagerProvider>
+        <OptionalFacetsConfigModal
+          visibleOptionalFacets={[]}
+          allFacets={mockAllFacets}
+          onSave={onSave}
+          onClose={onClose}
+        />
+      </ModalManagerProvider>
+    );
+
+    // Find and click the Sign in button
+    const signInButton = screen.getByRole("button", { name: "Sign in" });
+    fireEvent.click(signInButton);
+
+    // Verify loginAuthProvider was called
+    expect(mockLoginAuthProvider).toHaveBeenCalled();
   });
 });
