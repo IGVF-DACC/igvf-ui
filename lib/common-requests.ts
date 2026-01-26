@@ -254,6 +254,7 @@ export async function requestFileSets(
         "aliases",
         "file_set_type",
         "lab.title",
+        "preferred_assay_titles",
         "samples",
         "status",
         "summary",
