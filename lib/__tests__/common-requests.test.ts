@@ -674,7 +674,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFetch).toHaveBeenCalledWith(
-      "/search-quick/?type=FileSet&field=@type&field=accession&field=aliases&field=file_set_type&field=lab.title&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
+      "/search-quick/?type=FileSet&field=@type&field=accession&field=aliases&field=file_set_type&field=lab.title&field=preferred_assay_titles&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
