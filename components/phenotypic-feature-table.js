@@ -163,7 +163,6 @@ export default function PhenotypicFeatureTable({
         <SortableGrid
           data={phenotypicFeatures}
           columns={phenotypicFeaturesColumns}
-          pager={{}}
           keyProp="@id"
         />
       </div>

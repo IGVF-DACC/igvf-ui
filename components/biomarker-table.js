@@ -68,7 +68,6 @@ export default function BiomarkerTable({
         <SortableGrid
           data={biomarkers}
           columns={biomarkersColumns}
-          pager={{}}
           keyProp="@id"
         />
       </div>

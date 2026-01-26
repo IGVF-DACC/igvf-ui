@@ -1,17 +1,41 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
+import _ from "lodash";
 import { useContext } from "react";
+// root
+import type {
+  CollectionTitles,
+  FileObject,
+  FileSetObject,
+  LabObject,
+} from "../globals";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import Link from "./link-no-prefetch";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SeparatedList from "./separated-list";
 import SessionContext from "./session-context";
-import SortableGrid from "./sortable-grid";
+import SortableGrid, { type SortableGridConfig } from "./sortable-grid";
 import { AliasesCell } from "./table-cells";
+// lib
+import { isFileObjectArray } from "../lib/files";
 
-const fileSetColumns = [
+/**
+ * Used to pass metadata to the sortable grid for file set table rendering. `options` comes from
+ * FileSetTable props. `collectionTitles` comes from session context.
+ */
+interface FileSetMeta {
+  options: {
+    showFileSetFiles: boolean;
+    fileFilter?: (files: FileObject[]) => FileObject[];
+  } | null;
+  collectionTitles: CollectionTitles;
+}
+
+/**
+ * Columns configuration for the file set sortable grid.
+ */
+const fileSetColumns: SortableGridConfig<FileSetObject, FileSetMeta>[] = [
   {
     id: "accession",
     title: "Accession",
@@ -25,17 +49,27 @@ const fileSetColumns = [
     sorter: (item) => item.file_set_type.toLowerCase(),
   },
   {
-    id: "summary",
-    title: "Summary",
+    id: "preferred_assay_titles",
+    title: "Preferred Assay Titles",
+    display: ({ source }) => {
+      if (source.preferred_assay_titles?.length > 0) {
+        const uniqueTitles = new Set(source.preferred_assay_titles);
+        const sortedTitles = _.sortBy(Array.from(uniqueTitles), [
+          (title) => title.toLowerCase(),
+        ]);
+        return <>{sortedTitles.join(", ")}</>;
+      }
+      return null;
+    },
     isSortable: false,
   },
   {
     id: "files",
     title: "Files",
     display: ({ source, meta }) => {
-      if (source.files?.length > 0) {
-        const files = meta.fileSetMeta?.fileFilter
-          ? meta.fileSetMeta.fileFilter(source.files)
+      if (source.files && isFileObjectArray(source.files)) {
+        const files = meta.options?.fileFilter
+          ? meta.options.fileFilter(source.files)
           : source.files;
         return (
           <SeparatedList>
@@ -47,17 +81,20 @@ const fileSetColumns = [
           </SeparatedList>
         );
       }
+      return null;
     },
     hide: (data, columns, meta) => {
-      if (meta.fileSetMeta?.showFileSetFiles) {
+      if (meta.options?.showFileSetFiles) {
         // Hide the column if the client didn't request it, or if they did but there are no files
         // to display after filtering, if the client provided a filter function.
-        const allFiles = data.reduce(
-          (acc, fileSet) => acc.concat(fileSet.files),
-          []
-        );
-        const filteredFiles = meta.fileSetMeta?.fileFilter
-          ? meta.fileSetMeta.fileFilter(allFiles)
+        const allFiles = data.reduce<FileObject[]>((acc, fileSet) => {
+          if (fileSet.files && isFileObjectArray(fileSet.files)) {
+            return acc.concat(fileSet.files);
+          }
+          return acc;
+        }, []);
+        const filteredFiles = meta.options?.fileFilter
+          ? meta.options.fileFilter(allFiles)
           : allFiles;
         return filteredFiles.length === 0;
       }
@@ -73,8 +110,17 @@ const fileSetColumns = [
   {
     id: "lab",
     title: "Lab",
-    display: ({ source }) => source.lab?.title || null,
-    sorter: (item) => (item.lab?.title ? item.lab.title.toLowerCase() : ""),
+    display: ({ source }) => {
+      if (source.lab && typeof source.lab === "object") {
+        const lab = source.lab as LabObject;
+        return <>{lab.title}</>;
+      }
+      return null;
+    },
+    sorter: (item) => {
+      const lab = item.lab as LabObject | undefined;
+      return lab?.title ? lab.title.toLowerCase() : "";
+    },
   },
 ];
 
@@ -82,12 +128,6 @@ const fileSetColumns = [
  * Display a sortable table of the given file sets. Optionally display a link to a report page of
  * the file sets in this table. To allow this report link to work, the file sets in this table
  * must each include a link back to the currently displayed item.
- *
- * If you want a link to the report page, you must provide either the `reportLink` or
- * `reportLinkSpecs` property (not both). If you provide `reportLink`, it must contain the
- * complete path of the report page. If you provide `reportLinkSpecs`, it must contain the
- * properties needed to construct the URL of the report page. The `reportLinkSpecs` object must
- * contain the following properties:
  *
  * - fileSetType: `@type` of the file sets referring to the currently displayed item. The report page
  *   displays only objects of this type. You can use the `FileSet` abstract type if needed here.
@@ -106,6 +146,14 @@ const fileSetColumns = [
  *   function takes an array of file objects displayed in the cell of the File column and returns
  *   an array of file objects to include in the cell. If you don't provide this function, the cell
  *   displays all files belonging to the file set in the row.
+ *
+ * @param fileSets - Array of file sets to display in the table
+ * @param reportLink - Link to the report page containing the same file sets as this table
+ * @param reportLabel - Label for the report link
+ * @param title - Title of the table if not "File Sets"
+ * @param fileSetMeta - Metadata for display options
+ * @param isDeletedVisible - True to include deleted status in the linked report
+ * @param panelId - ID of the panel for the section directory
  */
 export default function FileSetTable({
   fileSets,
@@ -115,6 +163,17 @@ export default function FileSetTable({
   fileSetMeta = null,
   isDeletedVisible = false,
   panelId = "file-sets",
+}: {
+  fileSets: FileSetObject[];
+  reportLink?: string;
+  reportLabel?: string;
+  title?: string;
+  fileSetMeta?: {
+    showFileSetFiles: boolean;
+    fileFilter?: (files: FileObject[]) => FileObject[];
+  } | null;
+  isDeletedVisible?: boolean;
+  panelId?: string;
 }) {
   const { collectionTitles } = useContext(SessionContext);
 
@@ -137,32 +196,9 @@ export default function FileSetTable({
           data={fileSets}
           columns={fileSetColumns}
           keyProp="@id"
-          meta={{ fileSetMeta, collectionTitles }}
-          pager={{}}
+          meta={{ options: fileSetMeta, collectionTitles }}
         />
       </div>
     </>
   );
 }
-
-FileSetTable.propTypes = {
-  // File sets to display
-  fileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Link to the report page containing the same file sets as this table
-  reportLink: PropTypes.string,
-  // Label for the report link
-  reportLabel: PropTypes.string,
-  // Title of the table if not "File Sets"
-  title: PropTypes.string,
-  // Metadata for display options
-  fileSetMeta: PropTypes.exact({
-    // True to show a column for the files belonging to each file set
-    showFileSetFiles: PropTypes.bool,
-    // Function to filter the files to display
-    fileFilter: PropTypes.func,
-  }),
-  // True to include deleted status in the linked report
-  isDeletedVisible: PropTypes.bool,
-  // ID of the panel for the section directory
-  panelId: PropTypes.string,
-};

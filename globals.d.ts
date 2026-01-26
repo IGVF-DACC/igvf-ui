@@ -1,4 +1,6 @@
 import { type InstitutionalCertificateObject } from "./lib/data-use-limitation";
+import { type QualityMetricObject } from "./lib/quality-metric";
+import { type WorkflowObject } from "./lib/workflow";
 
 /**
  * Template for props passed from Next.js `getServerSideProps` to page components. Extend this for
@@ -387,6 +389,7 @@ export interface FileObject extends DatabaseObject {
   quality_metrics?: string[] | QualityMetricObject[];
   reference_files?: string[] | FileObject[];
   seqspecs?: string[] | FileObject[];
+  sequencing_platform?: string | OntologyTermObject;
   sequencing_run?: number;
   summary?: string;
   tile?: number;
@@ -406,6 +409,7 @@ export interface FileSetObject extends DatabaseObject {
   file_set_type?: string;
   files: string[] | FileObject[];
   integrated_content_files?: string[] | FileObject[];
+  preferred_assay_titles?: string[];
   samples?: string[] | SampleObject[];
   summary: string;
 }

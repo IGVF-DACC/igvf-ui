@@ -176,7 +176,6 @@ export function FileSetModal({
             columns={filesColumns}
             keyProp="@id"
             meta={{ nativeFiles }}
-            pager={{} as any}
           />
         </div>
       </DataPanel>

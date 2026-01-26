@@ -180,6 +180,7 @@ export default function MultiReport({ searchResults, allFacets }) {
                     nonSortableColumnIds,
                   }}
                   isTotalCountHidden
+                  isPagerHidden
                   CustomHeaderCell={ReportHeaderCell}
                 />
               </>

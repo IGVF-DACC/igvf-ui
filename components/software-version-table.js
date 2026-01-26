@@ -60,7 +60,7 @@ export default function SoftwareVersionTable({
         )}
       </DataAreaTitle>
       <div className="overflow-hidden">
-        <SortableGrid data={versions} columns={columns} pager={{}} />
+        <SortableGrid data={versions} columns={columns} />
       </div>
     </>
   );

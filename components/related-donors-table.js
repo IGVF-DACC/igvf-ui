@@ -67,7 +67,6 @@ export default function RelatedDonorsTable({
           data={relatedDonors}
           columns={relatedDonorsColumns}
           meta={{ embeddedDonors }}
-          pager={{}}
         />
       </div>
     </>

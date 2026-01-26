@@ -79,12 +79,7 @@ export default function WorkflowTable({
         )}
       </DataAreaTitle>
       <div className="overflow-hidden">
-        <SortableGrid
-          data={workflows}
-          columns={columns}
-          pager={{}}
-          keyProp="@id"
-        />
+        <SortableGrid data={workflows} columns={columns} keyProp="@id" />
       </div>
     </>
   );

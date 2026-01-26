@@ -68,12 +68,7 @@ export default function SoftwareTable({
         )}
       </DataAreaTitle>
       <div className="overflow-hidden">
-        <SortableGrid
-          data={software}
-          columns={columns}
-          pager={{}}
-          keyProp="@id"
-        />
+        <SortableGrid data={software} columns={columns} keyProp="@id" />
       </div>
     </>
   );

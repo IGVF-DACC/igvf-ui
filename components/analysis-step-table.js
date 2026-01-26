@@ -82,7 +82,6 @@ export default function AnalysisStepTable({
           data={analysisSteps}
           columns={analysisStepColumns}
           keyProp="@id"
-          pager={{}}
         />
       </div>
     </>

@@ -82,7 +82,7 @@ export default function DocumentTable({
     <>
       <DataAreaTitle id={panelId}>{title}</DataAreaTitle>
       <div className="overflow-hidden">
-        <SortableGrid data={documents} columns={columns} pager={{}} />
+        <SortableGrid data={documents} columns={columns} />
       </div>
     </>
   );

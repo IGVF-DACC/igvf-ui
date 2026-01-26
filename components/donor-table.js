@@ -74,12 +74,7 @@ export default function DonorTable({
         )}
       </DataAreaTitle>
       <div className="overflow-hidden">
-        <SortableGrid
-          data={donors}
-          columns={columns}
-          pager={{}}
-          keyProp="@id"
-        />
+        <SortableGrid data={donors} columns={columns} keyProp="@id" />
       </div>
     </>
   );

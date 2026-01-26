@@ -23,7 +23,13 @@ import {
   paginateSequenceFileGroups,
 } from "../lib/files";
 // root
-import type { DocumentObject, FileObject, FileSetObject } from "../globals";
+import type {
+  DocumentObject,
+  FileObject,
+  FileSetObject,
+  LabObject,
+  OntologyTermObject,
+} from "../globals";
 
 /**
  * The default maximum number of items in the table before the pager gets displayed.
@@ -44,22 +50,19 @@ type TableMeta = {
  * Row definition for the columns to display in the sequencing file table, mostly for displaying
  * metadata about the sequencing files. Keep in sync with the `headerRow` definition below.
  */
-const columnDisplayConfig: Cell[] = [
+const columnDisplayConfig: Cell<FileObject, TableMeta>[] = [
   {
     id: "accession",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return (
-        <div className="h-full">
-          <FileAccessionAndDownload file={file} />
-          <HostedFilePreview file={file} buttonSize="sm" />
-        </div>
-      );
-    },
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => (
+      <div className="h-full">
+        <FileAccessionAndDownload file={source} />
+        <HostedFilePreview file={source} buttonSize="sm" />
+      </div>
+    ),
   },
   {
     id: "content-type",
-    content: ({ source }: CellContentProps) =>
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) =>
       source.content_type && typeof source.content_type === "string" ? (
         <AnnotatedValue
           objectType={source["@type"][0]}
@@ -71,64 +74,52 @@ const columnDisplayConfig: Cell[] = [
   },
   {
     id: "file-format",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{file.file_format}</>;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      return <>{source.file_format}</>;
     },
   },
   {
     id: "sequencing-run",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{file.sequencing_run}</>;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      return <>{source.sequencing_run}</>;
     },
   },
   {
     id: "flowcell-id",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{file.flowcell_id}</>;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      return <>{source.flowcell_id}</>;
     },
   },
   {
     id: "lane",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{file.lane}</>;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      return <>{source.lane}</>;
     },
   },
   {
     id: "illumina-read-type",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{file.illumina_read_type}</>;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      return <>{source.illumina_read_type}</>;
     },
   },
   {
     id: "index",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{file.index}</>;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      return <>{source.index}</>;
     },
   },
   {
     id: "associated-seqspec",
-    content: ({ source, meta }: CellContentProps) => {
-      const file = source as FileObject;
-      const tableMetadata = meta as TableMeta;
-
+    content: ({ source, meta }: CellContentProps<FileObject, TableMeta>) => {
       return (
         <div className="flex flex-col gap-4">
-          {file.seqspecs?.length > 0 && (
-            <SeqspecFileCell
-              file={file}
-              seqspecFiles={tableMetadata.seqspecFiles}
-            />
+          {source.seqspecs?.length > 0 && (
+            <SeqspecFileCell file={source} seqspecFiles={meta.seqspecFiles} />
           )}
-          {file.seqspec_document && (
+          {source.seqspec_document && (
             <SeqspecDocumentCell
-              file={file}
-              seqspecDocuments={tableMetadata.seqspecDocuments}
+              file={source}
+              seqspecDocuments={meta.seqspecDocuments}
             />
           )}
         </div>
@@ -137,40 +128,47 @@ const columnDisplayConfig: Cell[] = [
   },
   {
     id: "sequencing_platform",
-    content: ({ source }) => {
-      return (
-        <Link href={source.sequencing_platform["@id"]}>
-          {source.sequencing_platform.term_name}
-        </Link>
-      );
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      if (
+        source.sequencing_platform !== undefined &&
+        source.sequencing_platform !== null &&
+        typeof source.sequencing_platform === "object"
+      ) {
+        const platform = source.sequencing_platform as OntologyTermObject;
+        return <Link href={platform["@id"]}>{platform.term_name}</Link>;
+      }
+      return <>{source.sequencing_platform}</>;
     },
   },
   {
     id: "tile",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return file.tile !== undefined ? <>{file.tile}</> : null;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      return source.tile !== undefined ? <>{source.tile}</> : null;
     },
   },
   {
     id: "file-size",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{file.file_size}</>;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      return <>{source.file_size}</>;
     },
   },
   {
     id: "lab",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{typeof file.lab === "object" ? file.lab.title : file.lab}</>;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      if (source.lab) {
+        if (typeof source.lab === "object") {
+          const lab = source.lab as LabObject;
+          return <>{lab.title}</>;
+        }
+        return <>{source.lab}</>;
+      }
+      return null;
     },
   },
   {
     id: "upload-status",
-    content: ({ source }: CellContentProps) => {
-      const file = source as FileObject;
-      return <>{file.upload_status}</>;
+    content: ({ source }: CellContentProps<FileObject, TableMeta>) => {
+      return <>{source.upload_status}</>;
     },
   },
 ];
@@ -237,6 +235,7 @@ function SeqspecFileCell({
       </div>
     );
   }
+  return null;
 }
 
 /**
@@ -257,6 +256,7 @@ function SeqspecDocumentCell({
   if (matchingSeqspecDocument) {
     return <SeqspecDocumentLink seqspecDocument={matchingSeqspecDocument} />;
   }
+  return null;
 }
 
 /**
@@ -292,14 +292,12 @@ function AlternateRowComponent({
   children?: React.ReactNode;
 }) {
   return (
-    <>
-      <div
-        className="h-full bg-slate-100 p-2 dark:bg-slate-800"
-        data-row-id={rowId}
-      >
-        {children}
-      </div>
-    </>
+    <div
+      className="h-full bg-slate-100 p-2 dark:bg-slate-800"
+      data-row-id={rowId}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -372,16 +370,23 @@ export default function SequencingFileTable({
     [sequenceFileGroups]
   );
 
-  // Determine which columns should be visible based on conditions
+  // Determine if the "Tile" column should be shown based on whether any files contain tile info.
   const showTileColumn = filesContainTile(files);
-  const visibleColumns = columnDisplayConfig.filter((col) => {
-    if (col.id === "illumina-read-type" && !isIlluminaReadType) {
+
+  // Function to determine if a column should be shown based on the current table conditions.
+  function shouldShowColumn(columnId: string) {
+    if (columnId === "illumina-read-type" && !isIlluminaReadType) {
       return false;
     }
-    if (col.id === "tile" && !showTileColumn) {
+    if (columnId === "tile" && !showTileColumn) {
       return false;
     }
     return true;
+  }
+
+  // Determine which columns should be visible based on conditions
+  const visibleColumns = columnDisplayConfig.filter((col) => {
+    return shouldShowColumn(col.id);
   });
 
   // Build the data grid with only visible columns
@@ -400,13 +405,7 @@ export default function SequencingFileTable({
 
   // Generate the header row with only visible columns
   const visibleHeaderCells = headerRow.cells.filter((cell) => {
-    if (cell.id === "illumina-read-type" && !isIlluminaReadType) {
-      return false;
-    }
-    if (cell.id === "tile" && !showTileColumn) {
-      return false;
-    }
-    return true;
+    return shouldShowColumn(cell.id);
   });
   const resolvedHeaderRow = {
     ...headerRow,

@@ -98,12 +98,7 @@ export default function DerivedFromTable({
         )}
       </DataAreaTitle>
       <div className="overflow-hidden">
-        <SortableGrid
-          data={derivedFrom}
-          columns={columns}
-          pager={{}}
-          keyProp="@id"
-        />
+        <SortableGrid data={derivedFrom} columns={columns} keyProp="@id" />
       </div>
     </>
   );

@@ -57,6 +57,33 @@ export type IlluminaSequenceFiles = {
 };
 
 /**
+ * Type guard to check if `file` is a FileObject.
+ *
+ * @param file - Could be anything; function validates it's a FileObject
+ * @returns True if file is a FileObject, enabling TypeScript type narrowing
+ */
+export function isFileObject(file: unknown): file is FileObject {
+  return (
+    typeof file === "object" &&
+    file !== null &&
+    Array.isArray((file as FileObject)["@type"]) &&
+    (file as FileObject)["@type"].includes("File")
+  );
+}
+
+/**
+ * Type guard to check if files array contains an actual array of `FileObject`.
+ *
+ * @param files - Array that could be string paths or FileObject[]
+ * @returns True if array contains FileObject[], enabling TypeScript type narrowing
+ */
+export function isFileObjectArray(files: unknown): files is FileObject[] {
+  // Only check the first element to determine if it's a FileObject array for performance and the
+  // unlikely case of mixed arrays.
+  return Array.isArray(files) && files.length > 0 && isFileObject(files[0]);
+}
+
+/**
  * Split an array of files into two arrays: one with files with the `illumina_read_type` property
  * and one with files that don't have that property.
  * @param files Array of files to split
@@ -352,7 +379,7 @@ function applyFileToCells(file: FileObject, cells: Cell[]): Cell[] {
 export function fileGroupsToDataGridFormat(
   fileGroups: Map<string, FileObject[]>,
   columnDisplayConfig: Cell[],
-  alternateRowComponent?: React.ComponentType<RowComponentProps>
+  alternateRowComponent?: React.ComponentType<RowComponentProps<unknown>>
 ): DataGridFormat {
   const rows: Row[] = [];
   const sortedKeys = Array.from(fileGroups.keys());

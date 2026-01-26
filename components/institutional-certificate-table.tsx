@@ -90,7 +90,6 @@ export function InstitutionalCertificateTable({
           data={institutionalCertificates}
           columns={icColumns}
           keyProp="@id"
-          pager={{}}
         />
       </div>
     </>
