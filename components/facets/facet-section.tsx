@@ -180,6 +180,7 @@ function AllFacetsControls({
 /**
  * Display controls for configuring optional facets and editing facet order.
  *
+ * @param selectedType - Currently selected single search type
  * @param allFacets - All facets that would be displayed with no selected facet terms
  * @param onEditModeChange - Function called when the user clicks to change edit mode
  * @param showEditOrder - True to show the edit order button
@@ -190,6 +191,7 @@ function AllFacetsControls({
  * @param showOptionalFacetsControl - True to show the optional facets configuration button
  */
 function ConfigFacetsControl({
+  selectedType,
   allFacets,
   onEditModeChange,
   showEditOrder,
@@ -197,6 +199,7 @@ function ConfigFacetsControl({
   onOptionalFacetsConfigSave,
   showOptionalFacetsControl,
 }: {
+  selectedType: string;
   allFacets: SearchResultsFacet[];
   onEditModeChange: (editMode: EditModeChange) => void;
   showEditOrder: boolean;
@@ -267,6 +270,7 @@ function ConfigFacetsControl({
       )}
       {isOptionalFacetsConfigOpen && (
         <OptionalFacetsConfigModal
+          selectedType={selectedType}
           visibleOptionalFacets={optionalFacetsConfigForType}
           allFacets={allFacets}
           onSave={onSaveOptionalFacetsConfigForType}
@@ -638,6 +642,7 @@ export default function FacetSection({
                   <AllFacetsControls onAllFacets={onAllFacets} />
                 </div>
                 <ConfigFacetsControl
+                  selectedType={selectedType}
                   allFacets={allFacets}
                   onEditModeChange={onEditModeChange}
                   showEditOrder={isAuthenticated && selectedType !== ""}
