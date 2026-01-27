@@ -85,7 +85,7 @@ export default function AnalysisSet({
   assayTitleDescriptionMap,
   pipelineParametersDocuments,
   pipelineParametersFiles,
-  primerDesigns,
+  enrichmentDesigns,
   supersedes,
   supersededBy,
   attribution = null,
@@ -386,11 +386,11 @@ export default function AnalysisSet({
             />
           )}
 
-          {primerDesigns.length > 0 && (
+          {enrichmentDesigns.length > 0 && (
             <FileTable
-              title="Primer Design Files"
-              files={primerDesigns}
-              panelId="primer-design-files"
+              title="Input File Set Enrichment Designs"
+              files={enrichmentDesigns}
+              panelId="enrichment-designs"
             />
           )}
 
@@ -445,8 +445,8 @@ AnalysisSet.propTypes = {
   pipelineParametersDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Pipeline parameters tabular files
   pipelineParametersFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Primer design files
-  primerDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Enrichment design files
+  enrichmentDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets that this file set supersedes
   supersedes: PropTypes.arrayOf(PropTypes.object),
   // File sets that supersede this file set
@@ -693,9 +693,9 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       }
     }
 
-    const primerDesigns =
-      analysisSet.primer_designs?.length > 0
-        ? await requestFiles(analysisSet.primer_designs, request)
+    const enrichmentDesigns =
+      analysisSet.enrichment_designs?.length > 0
+        ? await requestFiles(analysisSet.enrichment_designs, request)
         : [];
 
     const assayTitleDescriptionMap =
@@ -734,7 +734,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         assayTitleDescriptionMap,
         pipelineParametersDocuments,
         pipelineParametersFiles,
-        primerDesigns,
+        enrichmentDesigns,
         supersedes,
         supersededBy,
         pageContext: { title: analysisSet.accession },

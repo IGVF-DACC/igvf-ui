@@ -103,7 +103,7 @@ export default function MeasurementSet({
   donors,
   seqspecFiles,
   seqspecDocuments,
-  primerDesigns,
+  enrichmentDesigns,
   libraryDesignFiles,
   supersedes,
   supersededBy,
@@ -359,14 +359,14 @@ export default function MeasurementSet({
               panelId="auxiliary-sets"
             />
           )}
-          {primerDesigns.length > 0 && (
+          {enrichmentDesigns.length > 0 && (
             <FileTable
-              files={primerDesigns}
-              title="Primer Designs"
-              reportLink={`/multireport/?type=TabularFile&primer_design_for=${measurementSet["@id"]}`}
-              reportLabel="Report of primer designs for this measurement set"
+              files={enrichmentDesigns}
+              title="Enrichment Designs"
+              reportLink={`/multireport/?type=TabularFile&enrichment_design_for=${measurementSet["@id"]}`}
+              reportLabel="Report of files describing the assay-specific enrichment strategy."
               isDeletedVisible
-              panelId="primer-designs"
+              panelId="enrichment-designs"
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
@@ -399,8 +399,8 @@ MeasurementSet.propTypes = {
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec documents associated with `files`
   seqspecDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Primer designs tabular files associated with the measurement set
-  primerDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Enrichment designs tabular files associated with the measurement set
+  enrichmentDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Library design files associated with the measurement set's construct library sets
   libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
@@ -513,8 +513,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       }
     }
 
-    const primerDesigns = measurementSet.primer_designs
-      ? await requestFiles(measurementSet.primer_designs, request, [
+    const enrichmentDesigns = measurementSet.enrichment_designs
+      ? await requestFiles(measurementSet.enrichment_designs, request, [
           "TabularFile",
         ])
       : [];
@@ -561,7 +561,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         donors,
         seqspecFiles,
         seqspecDocuments,
-        primerDesigns,
+        enrichmentDesigns,
         libraryDesignFiles,
         supersedes,
         supersededBy,
