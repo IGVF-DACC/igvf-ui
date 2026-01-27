@@ -172,6 +172,17 @@ const Icon = {
       <circle cx="4.4" cy="4" r="3.4" />
     </svg>
   ),
+  Eraser: ({ className = null, testid = "icon-eraser" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      data-testid={testid}
+    >
+      <path d="M17.5,6.5l-4-4c-.7-.7-1.9-.7-2.6,0l-6.2,6.2.7.7-2.8,2.8c-.7.7-.7,1.9,0,2.6l2.7,2.7c.4.4.8.5,1.3.5s.9-.2,1.3-.5l2.8-2.8.7.7,6.2-6.2c.7-.7.7-1.9,0-2.6ZM6.7,16.4c0,0-.2,0-.2,0s-.2,0-.2,0l-2.7-2.7c0,0,0-.2,0-.2s0-.2,0-.2l2.8-2.8,3.1,3.1-2.8,2.8Z" />
+    </svg>
+  ),
   Expand: ({ className = null, testid = "icon-expand" }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -497,6 +508,10 @@ Icon.Donor.propTypes = {
   testid: PropTypes.string,
 };
 Icon.EllipsisHorizontal.propTypes = {
+  className: PropTypes.string,
+  testid: PropTypes.string,
+};
+Icon.Eraser.propTypes = {
   className: PropTypes.string,
   testid: PropTypes.string,
 };

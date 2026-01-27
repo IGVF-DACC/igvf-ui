@@ -169,7 +169,7 @@ function Site({ Component, pageProps, postLoginRedirectUri }) {
             <ModalManagerProvider>
               <div className="md:flex">
                 <NavigationSection />
-                <div className="@container/main min-w-0 shrink grow px-3 py-2 md:px-8">
+                <div className="@container/main min-w-0 shrink grow py-2 pr-3 md:pr-0 md:pl-2">
                   {pageProps.serverSideError ? (
                     <Error
                       statusCode={pageProps.serverSideError.code}
