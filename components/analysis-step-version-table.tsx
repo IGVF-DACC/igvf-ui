@@ -149,7 +149,6 @@ export function AnalysisStepVersionTable({
           data={analysisStepVersions}
           columns={analysisStepVersionColumns}
           keyProp="@id"
-          pager={{}}
           meta={{ isVersionColumnVisible } satisfies TableMeta}
         />
       </div>

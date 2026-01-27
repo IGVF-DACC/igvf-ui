@@ -55,6 +55,7 @@ export default function AuditTable({ data }) {
       columns={auditColumns}
       initialSort={{ isSortingSuppressed: true }}
       isTotalCountHidden
+      isPagerHidden
     />
   );
 }

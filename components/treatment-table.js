@@ -63,7 +63,6 @@ export default function TreatmentTable({
         <SortableGrid
           data={treatments}
           columns={treatmentColumns}
-          pager={{}}
           keyProp="@id"
         />
       </div>

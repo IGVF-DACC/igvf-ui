@@ -222,14 +222,10 @@ By default, the table initially gets rendered with the first column set to an as
 
 **`isSortingSuppressed`** {boolean} Unusual property to prevent any sorting of the table at all. You can use this to handle sorting in the parent component.
 
-## <a name="pager"></a>Pager
+## Pager
 
-You can include a pager to handle tables with too much data to show all at once. The pager appears between the count of items in the table and the table itself.
+The pager automatically appears when there are more than 10 items in the table.
 
-To enable the pager, pass a `pager` property with an object as the value. The object lets you configure the pager, so if the default configuration works for this application, just pass an empty object in `pager`. If you don’t pass the `pager` property, no pager appears, and all items in the table always appear at once. The properties the `pager` property accepts includes:
+**`isPagerHidden`** {boolean} Set to true to disable pagination and show all items.
 
-**maxItems** {number} (Default: 10) Maximum number of items on a single page. If fewer than this number of items exists in the table, no pager appears.
-
-**currentPageIndex** {number} Only used if the paging gets handled by the parent of `<SortableGrid>`. This functionality isn’t complete yet.
-
-**setCurrentPageIndex** {function} Only used if the paging gets handled by the parent of `<SortableGrid>`. This functionality isn’t complete yet.
+**`isTotalCountHidden`** {boolean} Set to true to hide the total count display above the table.

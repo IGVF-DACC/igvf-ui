@@ -40,7 +40,7 @@ export function ReferenceFileTable({
   return (
     <>
       <DataAreaTitle id={panelId}>Reference File Details</DataAreaTitle>
-      <SortableGrid data={files} columns={columns} keyProp="@id" pager={{}} />
+      <SortableGrid data={files} columns={columns} keyProp="@id" />
     </>
   );
 }

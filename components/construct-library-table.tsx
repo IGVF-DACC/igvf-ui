@@ -63,7 +63,6 @@ export function ConstructLibraryTable({
           data={constructLibrarySets}
           columns={columns}
           keyProp="@id"
-          pager={{}}
         />
       </div>
     </>

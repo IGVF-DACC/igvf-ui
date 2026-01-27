@@ -255,8 +255,12 @@ export async function getServerSideProps(
     );
 
     const qualityMetrics =
-      indexFile.quality_metrics?.length > 0
-        ? await requestQualityMetrics(indexFile.quality_metrics, request)
+      indexFile.quality_metrics?.length > 0 &&
+      typeof indexFile.quality_metrics[0] === "string"
+        ? await requestQualityMetrics(
+            indexFile.quality_metrics as string[],
+            request
+          )
         : [];
 
     const attribution = await buildAttribution(indexFile, req.headers.cookie);

@@ -140,7 +140,6 @@ export default function SampleTable({
           columns={sampleColumns}
           keyProp="@id"
           meta={{ collectionTitles, isConstructLibraryColumnVisible }}
-          pager={{}}
         />
       </div>
     </>

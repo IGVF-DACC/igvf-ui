@@ -8,12 +8,12 @@
 // node_modules
 import { forwardRef } from "react";
 // lib
-import { type DataGridFormat } from "../lib/data-grid";
+import { type DataGridFormat, type RowComponentProps } from "../lib/data-grid";
 
 /**
  * Default data grid cell. Custom data grid cells can use wrap or replace this.
  */
-function DefaultCell({ children }: { children: React.ReactNode }) {
+function DefaultCell({ children }: RowComponentProps<unknown>) {
   return (
     <div className="flex h-full w-full items-start bg-white p-2 dark:bg-gray-900">
       {children}
@@ -50,24 +50,25 @@ export const DataGridContainer = forwardRef(function DataGridContainer(
 
 /**
  * Main data-grid interface.
- * @param data Data to render in the data grid
- * @param CellComponent Component to render all cells in matrix unless specifically overridden
- * @param startingRow Starting CSS grid row number; used for recursive rendering
- * @param startingCol Starting CSS grid column number; used for recursive rendering
- * @param meta Extra metadata to pass to custom cell renderers
+ *
+ * @param data - Data to render in the data grid
+ * @param CellComponent - Component to render all cells in matrix unless specifically overridden
+ * @param startingRow - Starting CSS grid row number; used for recursive rendering
+ * @param startingCol - Starting CSS grid column number; used for recursive rendering
+ * @param meta - Extra metadata to pass to custom cell renderers
  */
-export default function DataGrid({
+export default function DataGrid<TItem = unknown, TMeta = unknown>({
   data,
   CellComponent = DefaultCell,
   startingRow = 1,
   startingCol = 1,
-  meta = {},
+  meta = {} as TMeta,
 }: {
-  data: DataGridFormat;
-  CellComponent?: React.ComponentType<any>;
+  data: DataGridFormat<TItem, TMeta, unknown>;
+  CellComponent?: React.ComponentType<RowComponentProps<unknown>>;
   startingRow?: number;
   startingCol?: number;
-  meta?: object;
+  meta?: TMeta;
 }) {
   let rowLine = startingRow;
   return data.reduce((acc, row) => {

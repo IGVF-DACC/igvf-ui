@@ -1,4 +1,6 @@
+// node_modules
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import React from "react";
 import SortableGrid from "../sortable-grid";
 
 const data = [
@@ -221,7 +223,6 @@ describe("SortableGrid", () => {
         columns={columns}
         keyProp="uuid"
         initialSort={{ columnId: "doesnt_exist", isSortingSuppressed: true }}
-        pager={{}}
       />
     );
 
@@ -256,10 +257,124 @@ describe("SortableGrid", () => {
     expect(headers).toHaveLength(1);
     expect(headers[0]).toHaveTextContent("Accession");
   });
+
+  it("renders a header with mixed content (React element and text)", () => {
+    const columns = [
+      {
+        id: "accession",
+        // Create a title with an array of children where one is not a valid element
+        title: React.createElement("div", null, [
+          React.createElement(
+            "span",
+            { key: "span", className: "text-blue-500" },
+            "Accession"
+          ),
+          "Text",
+        ]),
+      },
+      {
+        id: "description",
+        title: "Description",
+      },
+    ];
+
+    render(<SortableGrid data={data} columns={columns} keyProp="uuid" />);
+
+    const headers = screen.getAllByRole("columnheader");
+    expect(headers[0]).toHaveTextContent("AccessionText");
+    const span = within(headers[0]).getByText("Accession");
+    expect(span).toHaveClass("text-blue-500");
+  });
 });
 
 describe("Test the pager", () => {
   it("renders a pager", () => {
+    const columns = [
+      {
+        id: "accession",
+        title: "Accession",
+      },
+      {
+        id: "description",
+        title: "Description",
+      },
+    ];
+
+    // Create enough data to trigger pagination (>10 items for DEFAULT_MAX_ITEMS_PER_PAGE)
+    const manyItems = Array.from({ length: 25 }, (_, i) => ({
+      accession: `ENCBS${i.toString().padStart(6, "0")}`,
+      description: `Test item ${i + 1}`,
+      uuid: `uuid-${i}`,
+    }));
+
+    render(<SortableGrid data={manyItems} columns={columns} keyProp="uuid" />);
+
+    const pager = screen.getByRole("navigation");
+    expect(pager).toBeInTheDocument();
+
+    const pageButtons = within(pager).getAllByRole("button");
+    // Should have left arrow, page 1, page 2, page 3, right arrow = 5 buttons
+    expect(pageButtons).toHaveLength(5);
+    expect(pageButtons[1]).toHaveTextContent("1");
+    expect(pageButtons[2]).toHaveTextContent("2");
+    expect(pageButtons[3]).toHaveTextContent("3");
+
+    // Click the right arrow to go to the next page.
+    fireEvent.click(pageButtons[4]);
+
+    // Make sure we're now on page 2
+    const updatedPageButtons = within(pager).getAllByRole("button");
+    expect(updatedPageButtons[0]).not.toBeDisabled();
+    expect(updatedPageButtons[4]).not.toBeDisabled();
+
+    // Click right arrow again to go to page 3 (last page)
+    fireEvent.click(updatedPageButtons[4]);
+
+    // Make sure the right arrow button is now disabled and the left arrow button is enabled.
+    const finalPageButtons = within(pager).getAllByRole("button");
+    expect(finalPageButtons[0]).not.toBeDisabled();
+    expect(finalPageButtons[4]).toBeDisabled();
+  });
+
+  it("hides the pager when isPagerHidden is true", () => {
+    const columns = [
+      {
+        id: "accession",
+        title: "Accession",
+      },
+      {
+        id: "description",
+        title: "Description",
+      },
+    ];
+
+    // Create enough data that would normally trigger pagination
+    const manyItems = Array.from({ length: 25 }, (_, i) => ({
+      accession: `ENCBS${i.toString().padStart(6, "0")}`,
+      description: `Test item ${i + 1}`,
+      uuid: `uuid-${i}`,
+    }));
+
+    render(
+      <SortableGrid
+        data={manyItems}
+        columns={columns}
+        keyProp="uuid"
+        isPagerHidden={true}
+      />
+    );
+
+    // Should not find a pager
+    const pager = screen.queryByRole("navigation");
+    expect(pager).not.toBeInTheDocument();
+
+    // All items should be displayed (not paginated)
+    const cells = screen.getAllByRole("cell");
+    // 2 columns * 25 items = 50 cells
+    expect(cells).toHaveLength(50);
+  });
+
+  it("hides the total count when isTotalCountHidden is true", () => {
     const columns = [
       {
         id: "accession",
@@ -276,23 +391,12 @@ describe("Test the pager", () => {
         data={data}
         columns={columns}
         keyProp="uuid"
-        pager={{ maxItemsPerPage: 1 }}
+        isTotalCountHidden={true}
       />
     );
 
-    const pager = screen.getByRole("navigation");
-    expect(pager).toBeInTheDocument();
-
-    const pageButtons = within(pager).getAllByRole("button");
-    expect(pageButtons).toHaveLength(4);
-    expect(pageButtons[1]).toHaveTextContent("1");
-    expect(pageButtons[2]).toHaveTextContent("2");
-
-    // Click the right arrow to go to the next page.
-    fireEvent.click(pageButtons[3]);
-
-    // Make sure the right arrow button is disabled and the left arrow button is enabled.
-    expect(pageButtons[0]).not.toBeDisabled();
-    expect(pageButtons[3]).toBeDisabled();
+    // Should not find the count display
+    const countDisplay = screen.queryByTestId("search-results-count");
+    expect(countDisplay).not.toBeInTheDocument();
   });
 });

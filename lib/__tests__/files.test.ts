@@ -7,6 +7,8 @@ import {
   fileGroupsToDataGridFormat,
   generateSequenceFileGroups,
   getAllDerivedFromFiles,
+  isFileObject,
+  isFileObjectArray,
   paginateSequenceFileGroups,
   splitIlluminaSequenceFiles,
 } from "../files";
@@ -923,7 +925,9 @@ describe("Test the fileGroupsToDataGridFormat function", () => {
     ];
   }
 
-  function createMockRowComponent(): React.ComponentType<RowComponentProps> {
+  function createMockRowComponent(): React.ComponentType<
+    RowComponentProps<unknown>
+  > {
     // Create a mock component that can be identified in tests
     function MockRowComponent() {
       return null;
@@ -2006,5 +2010,126 @@ describe("Test the extractSeqspecsForFile function", () => {
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual(seqspecs[0]);
     expect(result[1]).toEqual(seqspecs[1]);
+  });
+});
+
+describe("Test the isFileObject function", () => {
+  it("returns true for a valid FileObject", () => {
+    const file: FileObject = {
+      "@context": "/terms/",
+      "@id": "/sequence-files/IGVFFI0000TEST/",
+      "@type": ["SequenceFile", "File", "Item"],
+      accession: "IGVFFI0000TEST",
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/IGVFFI0000TEST/",
+      status: "released",
+      uuid: "00000000-0000-0000-0000-000000000000",
+      creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+    };
+
+    expect(isFileObject(file)).toBe(true);
+  });
+
+  it("returns false for null", () => {
+    expect(isFileObject(null)).toBe(false);
+  });
+
+  it("returns false for undefined", () => {
+    expect(isFileObject(undefined)).toBe(false);
+  });
+
+  it("returns false for a string", () => {
+    expect(isFileObject("not a file")).toBe(false);
+  });
+
+  it("returns false for a number", () => {
+    expect(isFileObject(42)).toBe(false);
+  });
+
+  it("returns false for an object without @type", () => {
+    const notAFile = {
+      "@id": "/something/",
+      accession: "TEST123",
+    };
+
+    expect(isFileObject(notAFile)).toBe(false);
+  });
+
+  it("returns false for an object with @type that is not an array", () => {
+    const notAFile = {
+      "@type": "NotAnArray",
+      accession: "TEST123",
+    };
+
+    expect(isFileObject(notAFile)).toBe(false);
+  });
+
+  it("returns false for an object with @type array that does not include 'File'", () => {
+    const notAFile = {
+      "@type": ["SomethingElse", "Item"],
+      accession: "TEST123",
+    };
+
+    expect(isFileObject(notAFile)).toBe(false);
+  });
+});
+
+describe("Test the isFileObjectArray function", () => {
+  it("returns true for an array of FileObjects", () => {
+    const files: FileObject[] = [
+      {
+        "@context": "/terms/",
+        "@id": "/sequence-files/IGVFFI0000TEST/",
+        "@type": ["SequenceFile", "File", "Item"],
+        accession: "IGVFFI0000TEST",
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/IGVFFI0000TEST/",
+        status: "released",
+        uuid: "00000000-0000-0000-0000-000000000000",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+      },
+      {
+        "@context": "/terms/",
+        "@id": "/sequence-files/IGVFFI0001TEST/",
+        "@type": ["SequenceFile", "File", "Item"],
+        accession: "IGVFFI0001TEST",
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/IGVFFI0000TEST/",
+        status: "released",
+        uuid: "00000000-0000-0000-0000-000000000001",
+        creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+      },
+    ];
+
+    expect(isFileObjectArray(files)).toBe(true);
+  });
+
+  it("returns false for an empty array", () => {
+    expect(isFileObjectArray([])).toBe(false);
+  });
+
+  it("returns false for an array of strings", () => {
+    expect(isFileObjectArray(["/files/path1/", "/files/path2/"])).toBe(false);
+  });
+
+  it("returns false for a non-array", () => {
+    expect(isFileObjectArray("not an array")).toBe(false);
+  });
+
+  it("returns false for null", () => {
+    expect(isFileObjectArray(null)).toBe(false);
+  });
+
+  it("returns false for undefined", () => {
+    expect(isFileObjectArray(undefined)).toBe(false);
+  });
+
+  it("returns false for an array of objects without @type", () => {
+    const notFiles = [{ accession: "TEST123" }, { accession: "TEST456" }];
+
+    expect(isFileObjectArray(notFiles)).toBe(false);
   });
 });

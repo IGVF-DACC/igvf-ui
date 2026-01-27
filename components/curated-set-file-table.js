@@ -103,12 +103,7 @@ export function CuratedSetFileTable({
     : null;
 
   const sortableGrid = (
-    <SortableGrid
-      data={files}
-      columns={filesColumns}
-      keyProp="@id"
-      pager={{}}
-    />
+    <SortableGrid data={files} columns={filesColumns} keyProp="@id" />
   );
 
   return (

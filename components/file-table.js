@@ -134,7 +134,6 @@ export default function FileTable({
       columns={filesColumns}
       keyProp="@id"
       meta={{ isFilteredVisible }}
-      pager={{}}
     />
   );
 
