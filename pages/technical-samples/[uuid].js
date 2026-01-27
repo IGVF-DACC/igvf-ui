@@ -51,6 +51,8 @@ export default function TechnicalSample({
   multiplexedInSamples,
   supersedes,
   supersededBy,
+  partOf,
+  parts,
   isJson,
 }) {
   const sections = useSecDir({ isJson });
@@ -84,6 +86,14 @@ export default function TechnicalSample({
                     {sample.sample_terms[0].term_name}
                   </Link>
                 </DataItemValue>
+                {partOf && (
+                  <>
+                    <DataItemLabel>Part of Sample</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={partOf["@id"]}>{partOf.accession}</Link>
+                    </DataItemValue>
+                  </>
+                )}
               </SampleDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
@@ -107,6 +117,15 @@ export default function TechnicalSample({
               reportLabel="Report of fractions into which this sample has been sorted"
               title="Sorted Fractions of Sample"
               panelId="sorted-fractions"
+            />
+          )}
+          {parts.length > 0 && (
+            <SampleTable
+              samples={parts}
+              reportLink={`/multireport/?type=Sample&part_of=${sample["@id"]}`}
+              reportLabel="Report of samples into which this sample has been divided"
+              title="Technical Sample Parts"
+              panelId="parts"
             />
           )}
           {institutionalCertificates.length > 0 && (
@@ -140,6 +159,10 @@ TechnicalSample.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples into which this sample has been divided
+  parts: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Sample that represents a larger sample from which this sample was taken
+  partOf: PropTypes.object,
   // Samples that this sample supersedes
   supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples that supersede this sample
@@ -218,6 +241,16 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       "Sample",
       request
     );
+
+    const partOf = sample.part_of
+      ? (await request.getObject(sample.part_of)).optional()
+      : null;
+
+    const parts =
+      sample.parts?.length > 0
+        ? await requestSamples(sample.parts, request)
+        : [];
+
     const attribution = await buildAttribution(sample, req.headers.cookie);
     return {
       props: {
@@ -229,6 +262,8 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         sortedFractions,
         sources,
         multiplexedInSamples,
+        parts,
+        partOf,
         supersedes,
         supersededBy,
         pageContext: {
