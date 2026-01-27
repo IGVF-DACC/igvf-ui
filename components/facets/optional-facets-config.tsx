@@ -4,6 +4,7 @@ import { CheckBadgeIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import { useState } from "react";
 // components
+import { AnnotatedItem } from "../annotated-value";
 import Checkbox from "../checkbox";
 import { Button, ButtonAsLink } from "../form-elements";
 import Icon from "../icon";
@@ -24,6 +25,7 @@ function CheckboxSection({ children }: { children: React.ReactNode }) {
 /**
  * Display the optional facets configuration modal.
  *
+ * @param selectedType - Currently selected single search type
  * @param visibleOptionalFacets - The currently visible optional facets configuration
  * @param allFacets - All facets that would be displayed with no selected facet terms
  * @param onSave - Function called when the user saves the new configuration
@@ -31,11 +33,13 @@ function CheckboxSection({ children }: { children: React.ReactNode }) {
  * @param isAuthenticated - True if the user is authenticated
  */
 export function OptionalFacetsConfigModal({
+  selectedType,
   visibleOptionalFacets,
   allFacets,
   onSave,
   onClose,
 }: {
+  selectedType: string;
   visibleOptionalFacets: OptionalFacetsConfigForType;
   allFacets: SearchResultsFacet[];
   onSave: (newConfig: OptionalFacetsConfigForType) => void;
@@ -62,7 +66,7 @@ export function OptionalFacetsConfigModal({
   );
 
   // Called when a field checkbox is clicked to add or remove it from the config.
-  function onFieldClick(field: string) {
+  function onFieldClick(field: string): void {
     let newConfig: OptionalFacetsConfigForType = [];
     if (dynamicConfig.includes(field)) {
       // Remove the field from the config.
@@ -121,7 +125,14 @@ export function OptionalFacetsConfigModal({
                   checked={dynamicConfig.includes(facet.field)}
                   onClick={() => onFieldClick(facet.field)}
                 >
-                  {facet.title}
+                  <AnnotatedItem
+                    tooltipKey={`optional-facet-modal-${selectedType}-${
+                      facet.field
+                    }`}
+                    annotation={facet.description || ""}
+                  >
+                    {facet.title}
+                  </AnnotatedItem>
                 </Checkbox>
               ))}
             </CheckboxSection>
