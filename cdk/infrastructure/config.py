@@ -71,7 +71,7 @@ config: Dict[str, Any] = {
             },
             'backend_url': 'https://api.data.igvf.org',
             'tags': [
-                ('time-to-live-hours', '60'),
+                ('time-to-live-hours', '72'),
                 ('turn-off-on-friday-night', 'yes'),
             ],
         },
