@@ -144,6 +144,7 @@ export async function requestFiles(
         "@type",
         "accession",
         "aliases",
+        "content_summary",
         "content_type",
         "controlled_access",
         "creation_timestamp",

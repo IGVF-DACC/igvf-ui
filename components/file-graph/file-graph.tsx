@@ -234,7 +234,10 @@ function FileNodeContent(props: NodeProps) {
               y={(linePosition += NODE_LINE_HEIGHT)}
             />
             <NodeSubtitle
-              content={truncateText(file.content_type, MAX_LINE_LENGTH)}
+              content={truncateText(
+                file.content_summary || file.content_type,
+                MAX_LINE_LENGTH
+              )}
               y={(linePosition += NODE_LINE_HEIGHT)}
             />
           </g>
