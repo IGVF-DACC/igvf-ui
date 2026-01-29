@@ -108,7 +108,7 @@ export default function Facet({
         />
         <button
           onClick={updateOpen}
-          className={`w-full py-2 pr-4 ${isEditOrderMode ? "cursor-ns-resize" : "cursor-pointer"} ${isOptional ? "pl-1" : "pl-5"}`}
+          className={`min-w-0 flex-1 py-2 pr-4 ${isEditOrderMode ? "cursor-ns-resize" : "cursor-pointer"} ${isOptional ? "pl-1" : "pl-5"}`}
           data-testid={`facettrigger-${facet.field}`}
           aria-expanded={isFacetOpen}
         >
