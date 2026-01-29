@@ -69,8 +69,9 @@ config: Dict[str, Any] = {
                 'enabled': True,
                 'arn': 'arn:aws:wafv2:us-west-2:109189702753:regional/webacl/IgvfUiDemoWaf-HGyhnH6Z5X0B/84cce4ee-629b-41e1-9918-feb83b50f187',
             },
+            'backend_url': 'https://api.data.igvf.org',
             'tags': [
-                ('time-to-live-hours', '60'),
+                ('time-to-live-hours', '72'),
                 ('turn-off-on-friday-night', 'yes'),
             ],
         },
