@@ -26,6 +26,19 @@ describe("Optional Facets Functionality", () => {
     cy.get("body").trigger("mousemove", { clientX: 500, clientY: 400 });
     cy.get(`[id^="headlessui-dialog-panel"]`).should("be.visible");
 
+    // First, clear any existing optional facets to ensure clean state
+    cy.get('button[id="clear-optional-facets-modal-button"]').click();
+    cy.get('button[id="save-optional-facets-modal-button"]').click();
+    cy.get(`[id^="headlessui-dialog-panel"]`).should("not.exist");
+
+    // Wait for state to stabilize after clearing
+    cy.wait(500);
+
+    // Reopen the modal to start the actual test
+    cy.get(`[data-testid="optional-facets-button"]`).click();
+    cy.get("body").trigger("mousemove", { clientX: 500, clientY: 400 });
+    cy.get(`[id^="headlessui-dialog-panel"]`).should("be.visible");
+
     // Click the Award checkbox, then save and make sure that facet appears.
     cy.get(`input[type="checkbox"][aria-label="Award"]`)
       .should("exist")
@@ -35,6 +48,10 @@ describe("Optional Facets Functionality", () => {
 
     // Wait for modal to close and verify facet appears.
     cy.get(`[id^="headlessui-dialog-panel"]`).should("not.exist");
+
+    // Wait a moment for state updates to propagate and stabilize
+    cy.wait(500);
+
     cy.get(`[data-testid="facet-container-award.component"]`, {
       timeout: 10000,
     }).should("be.visible");
@@ -90,6 +107,10 @@ describe("Optional Facets Functionality", () => {
 
     // Wait for modal to close and verify facet appears.
     cy.get(`[id^="headlessui-dialog-panel"]`).should("not.exist");
+
+    // Wait a moment for state updates to propagate and stabilize
+    cy.wait(500);
+
     cy.get(`[data-testid="facet-container-award.component"]`, {
       timeout: 10000,
     }).should("be.visible");
