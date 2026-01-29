@@ -59,7 +59,7 @@ export default function TabularFile({
   referenceFiles,
   fileFormatSpecifications,
   integratedIn,
-  primerDesignFor,
+  enrichmentDesignFor,
   workflows,
   qualityMetrics,
   supersedes,
@@ -178,13 +178,13 @@ export default function TabularFile({
               panelId="barcode-map-for"
             />
           )}
-          {primerDesignFor.length > 0 && (
+          {enrichmentDesignFor.length > 0 && (
             <FileSetTable
-              fileSets={primerDesignFor}
-              title="Primer Design For"
-              reportLink={`/multireport/?type=MeasurementSet&primer_designs=${tabularFile["@id"]}`}
-              reportLabel="Report of measurement sets using this file as a primer design"
-              panelId="primer-design-for"
+              fileSets={enrichmentDesignFor}
+              title="Enrichment Design For"
+              reportLink={`/multireport/?type=MeasurementSet&enrichment_designs=${tabularFile["@id"]}`}
+              reportLabel="Report of measurement sets using this file as an enrichment design"
+              panelId="enrichment-design-for"
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}
@@ -211,8 +211,8 @@ TabularFile.propTypes = {
   fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
   // ConstructLibraryset this file was integrated in
   integratedIn: PropTypes.arrayOf(PropTypes.object),
-  // Primer design files for this file
-  primerDesignFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Enrichment design files for this file
+  enrichmentDesignFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Workflows that processed this file
   workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics for this file
@@ -289,9 +289,9 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
       integratedIn = await requestFileSets(integratedInPaths, request);
     }
-    const primerDesignFor =
-      tabularFile.primer_design_for?.length > 0
-        ? await requestFileSets(tabularFile.primer_design_for, request)
+    const enrichmentDesignFor =
+      tabularFile.enrichment_design_for?.length > 0
+        ? await requestFileSets(tabularFile.enrichment_design_for, request)
         : [];
     let workflows = [];
     if (tabularFile.workflows?.length > 0) {
@@ -320,7 +320,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         referenceFiles,
         fileFormatSpecifications,
         integratedIn,
-        primerDesignFor,
+        enrichmentDesignFor,
         workflows,
         qualityMetrics,
         supersedes,
