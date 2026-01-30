@@ -1,5 +1,7 @@
+// node_modules
+import { TableCellsIcon } from "@heroicons/react/20/solid";
 // components
-import { DataAreaTitle } from "./data-area";
+import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import Link from "./link-no-prefetch";
 import LinkedIdAndStatusStack from "./linked-id-and-status-stack";
 import SortableGrid, { type SortableGridConfig } from "./sortable-grid";
@@ -9,6 +11,9 @@ import type {
   SoftwareVersionObject,
 } from "../globals";
 
+/**
+ * Columns configuration for the Analysis Step Version table.
+ */
 const analysisStepVersionColumns: SortableGridConfig<AnalysisStepVersionObject>[] =
   [
     {
@@ -38,19 +43,44 @@ const analysisStepVersionColumns: SortableGridConfig<AnalysisStepVersionObject>[
     },
   ];
 
+/**
+ * Display a table of Analysis Step Versions.
+ *
+ * @param analysisStepVersions - List of Analysis Step Version objects to display
+ * @param title - Title of the data area
+ * @param reportLink - Link to multi-report for analysis step versions
+ * @param reportLabel - Label for the multi-report link
+ * @param isDeletedVisible - True to show deleted items in the report link
+ * @param panelId - ID of the data area panel
+ */
 export function AnalysisStepVersionTable({
   analysisStepVersions,
   title = "Analysis Step Versions",
+  reportLink = "",
+  reportLabel = "",
+  isDeletedVisible = false,
   panelId = "analysis-step-versions-table",
 }: {
   analysisStepVersions: AnalysisStepVersionObject[];
   title?: string;
+  reportLink?: string;
+  reportLabel?: string;
+  isDeletedVisible?: boolean;
   panelId?: string;
 }) {
   return (
     <>
       <DataAreaTitle id={panelId} secDirTitle={title}>
         {title}
+        {reportLink && reportLabel && (
+          <DataAreaTitleLink
+            href={reportLink}
+            label={reportLabel}
+            isDeletedVisible={isDeletedVisible}
+          >
+            <TableCellsIcon className="h-4 w-4" />
+          </DataAreaTitleLink>
+        )}
       </DataAreaTitle>
       <div className="overflow-hidden">
         <SortableGrid
