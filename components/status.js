@@ -301,7 +301,7 @@ export default function Status({ status, isAbbreviated = false }) {
       <>
         <TooltipRef tooltipAttr={tooltipAttr}>
           <div
-            className={`h-5 w-5 rounded-full border-1 border-white ring ${styles}`}
+            className={`h-5 w-5 rounded-full border border-white ring ${styles}`}
             data-testid={`status-pill-${status.replace(/\s/g, "-")}`}
           >
             <Icon />
@@ -318,7 +318,7 @@ export default function Status({ status, isAbbreviated = false }) {
       testid={`status-pill-${status.replace(/\s/g, "-")}`}
       iconPosition="left"
     >
-      <Icon className="ml-[-8px]" />
+      <Icon className="-ml-2" />
       <div className="pt-px">{status}</div>
     </PillBadge>
   );

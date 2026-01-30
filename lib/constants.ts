@@ -97,3 +97,8 @@ export const MAX_URL_LENGTH: number = 4000;
  * Default inline text styles for links.
  */
 export const LINK_INLINE_STYLE: string = "font-medium";
+
+/**
+ * Fallback value for sorting when a proper value is not available.
+ */
+export const SORT_FALLBACK_VALUE: string = "\uffff"; // High unicode character sorts last

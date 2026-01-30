@@ -44,12 +44,12 @@ type SortDirection = "asc" | "desc";
 /**
  * Configuration for one column in a `SortableGrid`.
  */
-export interface SortableGridConfig<TItem, TMeta> {
+export interface SortableGridConfig<TItem, TMeta = unknown> {
   id: string;
   title: ReactNode | string | number;
   display?: (props: CellContentProps<TItem, TMeta>) => ReactNode;
   isSortable?: boolean;
-  sorter?: (item: TItem, meta: TMeta | undefined) => string | number;
+  sorter?: (item: TItem, meta?: TMeta) => string | number;
   value?: (item: TItem) => string | number;
   hide?: (
     data: TItem[],

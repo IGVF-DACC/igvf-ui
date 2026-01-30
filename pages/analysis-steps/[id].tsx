@@ -157,7 +157,7 @@ export default function AnalysisStep({
             <AnalysisStepVersionTable
               analysisStepVersions={analysisStepVersions}
               reportLink={`/multireport/?type=AnalysisStepVersion&analysis_step.@id=${analysisStep["@id"]}`}
-              reportLabel="Analysis Step Versions"
+              reportLabel="Report of analysis step versions belonging to this analysis step"
             />
           )}
         </JsonDisplay>
