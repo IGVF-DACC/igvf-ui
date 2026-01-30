@@ -57,7 +57,7 @@ export interface ObjectActions {
 /**
  * Standard properties for all objects in the database.
  */
-export interface DatabaseObject {
+export interface DatabaseObject extends DataProviderObject {
   "@context"?: string;
   "@id": string;
   "@type": string[];
@@ -76,7 +76,6 @@ export interface DatabaseObject {
   superseded_by?: string[];
   title?: string;
   uuid?: string;
-  [key: string]: unknown;
 }
 
 /**
@@ -262,6 +261,8 @@ export interface SearchResultsFacet {
   category?: string;
   /** Description for facet title annotation */
   description?: string;
+  /** True if facet is configured as optional */
+  optional?: boolean;
 }
 
 export interface SearchResultsFilter {
@@ -378,17 +379,20 @@ export interface FileObject extends DatabaseObject {
   content_type: string;
   derived_from?: string[];
   external_host_url?: string;
+  externally_hosted?: boolean;
   file_format: string;
-  file_format_specifications?: string[];
+  file_format_specifications?: string[] | DocumentObject[];
   file_set: string | FileSetObject;
   file_size?: number;
   flowcell_id?: string;
   href?: string;
   illumina_read_type?: string;
+  index?: string;
   input_file_for?: string[] | FileObject[];
   lane?: number;
   quality_metrics?: string[] | QualityMetricObject[];
   reference_files?: string[] | FileObject[];
+  seqspec_document?: string | DocumentObject;
   seqspecs?: string[] | FileObject[];
   sequencing_platform?: string | OntologyTermObject;
   sequencing_run?: number;

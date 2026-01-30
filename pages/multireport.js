@@ -42,7 +42,7 @@ import {
   stripLimitQueryIfNeeded,
 } from "../lib/search-results";
 
-export default function MultiReport({ searchResults, allFacets }) {
+export default function MultiReport({ searchResults, types, allFacets }) {
   const { isAuthenticated } = useAuth0();
   const router = useRouter();
   const { collectionTitles, profiles } = useContext(SessionContext);
@@ -150,7 +150,11 @@ export default function MultiReport({ searchResults, allFacets }) {
           />
         )}
         <div className="lg:flex lg:items-start lg:gap-1">
-          <FacetSection searchResults={searchResults} allFacets={allFacets} />
+          <FacetSection
+            searchResults={searchResults}
+            types={types}
+            allFacets={allFacets}
+          />
           <div className="min-w-0 grow">
             <FacetTags searchResults={searchResults} />
             {items.length > 0 ? (
@@ -198,6 +202,8 @@ export default function MultiReport({ searchResults, allFacets }) {
 MultiReport.propTypes = {
   // @graph from search results from igvfd
   searchResults: PropTypes.object.isRequired,
+  // All `type=` from the search query
+  types: PropTypes.arrayOf(PropTypes.string).isRequired,
   // All possible facets for the type
   allFacets: PropTypes.array.isRequired,
 };
@@ -222,10 +228,14 @@ export async function getServerSideProps({ req, query }) {
   ).union();
 
   if (FetchRequest.isResponseSuccess(searchResults)) {
+    // Get all `type=` from the query string and put into an array of types.
+    const types = [].concat(query.type || []);
+
     const allFacets = await getAllFacetsFromQuery(query, request);
     return {
       props: {
         searchResults,
+        types,
         allFacets,
       },
     };

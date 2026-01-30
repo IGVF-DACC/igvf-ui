@@ -25,7 +25,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { twJoin } from "tailwind-merge";
+import { twJoin, twMerge } from "tailwind-merge";
 // lib
 import { toShishkebabCase } from "../lib/general";
 
@@ -135,9 +135,11 @@ export function useTooltip(id: string): TooltipAttr {
  */
 export function TooltipRef({
   tooltipAttr,
+  className = "",
   children,
 }: {
   tooltipAttr: TooltipAttr;
+  className?: string;
   children: React.ReactNode;
 }) {
   // Make sure only one child exists.
@@ -159,7 +161,7 @@ export function TooltipRef({
   // this wrapper lightweight and let events bubble from the child so we don't block interactions.
   return (
     <span
-      className="inline-block"
+      className={twMerge("inline-block", className)}
       ref={tooltipAttr.refEl}
       aria-describedby={tooltipAttr.id}
       {...tooltipAttr.refProps()}

@@ -86,6 +86,14 @@
   /** Decoration colors */
   --color-help-underline: oklch(55.1% 0.027 264.364);
   --color-open-facet-help-underline: oklch(80% 0.027 264.364);
+
+  /** Optional facets */
+  --color-optional-facet-config-header: var(--color-gray-500);
+  --color-optional-facet-config-divider: var(--color-gray-300);
+  --color-optional-facet-quick-hide-open: var(--color-white);
+  --color-optional-facet-quick-hide-closed: var(--color-black);
+  --color-optional-facet-quick-hide-hover-open: var(--color-gray-500);
+  --color-optional-facet-quick-hide-hover-closed: var(--color-gray-200);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -93,6 +101,14 @@
     /** Decoration colors */
     --color-help-underline: oklch(70.7% 0.022 261.325);
     --color-open-facet-help-underline: oklch(50.7% 0.022 261.325);
+
+    /** Optional facet */
+    --color-optional-facet-config-header: var(--color-gray-400);
+    --color-optional-facet-config-divider: var(--color-gray-700);
+    --color-optional-facet-quick-hide-open: var(--color-black);
+    --color-optional-facet-quick-hide-closed: var(--color-white);
+    --color-optional-facet-quick-hide-hover-open: var(--color-gray-500);
+    --color-optional-facet-quick-hide-hover-closed: var(--color-gray-700);
   }
 }
 

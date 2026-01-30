@@ -42,7 +42,7 @@ import PageComponent from "./page-component";
 import PagePreamble from "./page-preamble";
 import SessionContext from "./session-context";
 // lib
-import FetchRequest from "../lib/fetch-request";
+import FetchRequest, { ErrorObject } from "../lib/fetch-request";
 import {
   detectConflictingName,
   getPageTitleAndCodes,
@@ -55,7 +55,7 @@ import {
   type WritingDirection,
 } from "../lib/page";
 // root
-import type { AwardObject, LabObject } from "../globals";
+import type { AwardObject, DataProviderObject, LabObject } from "../globals";
 
 /**
  * Page metadata reducer action codes.
@@ -1063,7 +1063,7 @@ export default function Page({
   useEffect(() => {
     // Handle redirecting to a page after a save, which can change the path of the page.
     if (redirectToPage) {
-      router.push(redirectToPage);
+      void router.push(redirectToPage);
       setRedirectToPage("");
     }
   }, [redirectToPage, router]);
@@ -1087,35 +1087,47 @@ export default function Page({
     setActiveError("");
     if (updates) {
       // User clicked save, so save the blocks and metadata.
-      savePage(page, updates.blocks, updates.pageMeta, session, isNewPage).then(
-        (updatedPage) => {
-          if (FetchRequest.isResponseSuccess(updatedPage)) {
-            setDirty(false);
-            setEditableBlocks(updates.blocks);
-            setEditablePageMeta(updates.pageMeta);
-            setEditablePageId(updatedPage["@id"]);
+      void savePage(
+        page,
+        updates.blocks,
+        updates.pageMeta,
+        session,
+        isNewPage
+      ).then((updatedPageResponse) => {
+        if (
+          FetchRequest.isResponseSuccess(
+            updatedPageResponse as unknown as DataProviderObject
+          )
+        ) {
+          const updatedPage = updatedPageResponse as PageObject;
+          setDirty(false);
+          setEditableBlocks(updates.blocks);
+          setEditablePageMeta(updates.pageMeta);
+          setEditablePageId(updatedPage["@id"]);
 
-            // The user can change the path to the page, so go to the returned page object's @id.
-            setRedirectToPage(updatedPage["@id"]);
-          } else {
-            setActiveError(
-              `${updatedPage.description} The page has not been saved.`
-            );
-          }
+          // The user can change the path to the page, so go to the returned page object's @id.
+          setRedirectToPage(updatedPage["@id"]);
+        } else {
+          const updatedPage = updatedPageResponse as ErrorObject;
+          setActiveError(
+            `${updatedPage.description} The page has not been saved.`
+          );
         }
-      );
+      });
     } else {
       if (isNewPage) {
-        router.push("/pages");
+        void router.push("/pages");
       } else {
         // User canceled editing. Remove #!edit from the URL which disables edit mode.
-        router.push(`${router.asPath.split("#")[0]}`);
+        void router.push(`${router.asPath.split("#")[0]}`);
       }
     }
   }
 
   // Get the displayable page title.
-  const { title, codes } = getPageTitleAndCodes(page);
+  const { title, codes } = getPageTitleAndCodes(
+    page as unknown as DataProviderObject
+  );
 
   // Determine whether to display the page border or not.
   const isPanelHidden = codes.includes("nopanel");
