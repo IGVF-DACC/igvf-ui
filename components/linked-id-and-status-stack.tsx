@@ -10,14 +10,14 @@ import type { DatabaseObject } from "../globals";
  * @param className - Additional Tailwind CSS classes for the wrapper div
  * @param children - Function that returns React nodes to render within each LinkedIdAndStatus
  */
-export default function LinkedIdAndStatusStack({
+export default function LinkedIdAndStatusStack<T extends DatabaseObject>({
   items,
   className = "",
   children,
 }: {
-  items: DatabaseObject[];
+  items: T[];
   className?: string;
-  children: (item: DatabaseObject) => React.ReactNode;
+  children: (item: T) => React.ReactNode;
 }) {
   return (
     <div className={className}>

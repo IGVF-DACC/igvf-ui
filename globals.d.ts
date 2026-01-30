@@ -635,16 +635,15 @@ export interface DocumentObject extends DatabaseObject {
   urls?: string[];
 }
 
-export interface SoftwareObject extends DatabaseObject {
-  description: string;
-  name: string;
-  source_url: string;
-  title: string;
-}
-
 export interface SoftwareVersionObject extends DatabaseObject {
   aliases: string[];
+  description?: string;
+  download_id?: string;
+  name: string;
+  publications?: string[] | PublicationObject[];
   software: string | SoftwareObject;
+  source_url?: string;
+  version: string;
 }
 
 export interface AnalysisStepObject extends DatabaseObject {

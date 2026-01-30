@@ -1,10 +1,13 @@
 // components
 import { DataAreaTitle } from "./data-area";
 import Link from "./link-no-prefetch";
-import SeparatedList from "./separated-list";
+import LinkedIdAndStatusStack from "./linked-id-and-status-stack";
 import SortableGrid, { type SortableGridConfig } from "./sortable-grid";
 // root
-import { AnalysisStepVersionObject } from "../globals";
+import type {
+  AnalysisStepVersionObject,
+  SoftwareVersionObject,
+} from "../globals";
 
 const analysisStepVersionColumns: SortableGridConfig<AnalysisStepVersionObject>[] =
   [
@@ -20,16 +23,13 @@ const analysisStepVersionColumns: SortableGridConfig<AnalysisStepVersionObject>[
       id: "software_versions",
       title: "Software Versions",
       display: ({ source }: { source: AnalysisStepVersionObject }) => {
-        console.log("source", source);
         if (source.software_versions?.length > 0) {
           return (
-            <SeparatedList>
-              {source.software_versions.map((version) => (
-                <Link key={version["@id"]} href={version["@id"]}>
-                  {version.name}
-                </Link>
-              ))}
-            </SeparatedList>
+            <LinkedIdAndStatusStack
+              items={source.software_versions as SoftwareVersionObject[]}
+            >
+              {(item) => item.name}
+            </LinkedIdAndStatusStack>
           );
         }
         return null;
