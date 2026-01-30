@@ -1,18 +1,29 @@
-// node_modules
-import PropTypes from "prop-types";
 // components
 import Link from "./link-no-prefetch";
 import Status from "./status";
+// root
+import type { DatabaseObject } from "../globals";
 
 /**
  * Display a link to an item's summary page along with its abbreviated status.
+ *
+ * @param item - Database object to link to and display status for
+ * @param status - Status to display instead of the item's own status
+ * @param isTargetBlank - True to open the link in a new tab
+ * @param className - Additional Tailwind CSS classes for the wrapper div
  */
 export default function LinkedIdAndStatus({
   item,
   status = "",
   isTargetBlank = false,
-  className = null,
+  className = "",
   children,
+}: {
+  item: DatabaseObject;
+  status?: string;
+  isTargetBlank?: boolean;
+  className?: string;
+  children: React.ReactNode;
 }) {
   return (
     <div className={className}>
@@ -31,14 +42,3 @@ export default function LinkedIdAndStatus({
     </div>
   );
 }
-
-LinkedIdAndStatus.propTypes = {
-  // Item to display the accession and status of
-  item: PropTypes.object.isRequired,
-  // Status to display if not using `item.status`
-  status: PropTypes.string,
-  // Open the link in a new tab
-  isTargetBlank: PropTypes.bool,
-  // Additional Tailwind CSS classes for the wrapper div
-  className: PropTypes.string,
-};
