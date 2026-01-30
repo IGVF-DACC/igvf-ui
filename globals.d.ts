@@ -374,6 +374,7 @@ export interface FileObject extends DatabaseObject {
   accession?: string;
   aliases?: string[];
   checkfiles_version?: string;
+  content_summary?: string;
   content_type: string;
   derived_from?: string[];
   external_host_url?: string;
