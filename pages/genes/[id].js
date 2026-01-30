@@ -53,8 +53,6 @@ export default function Gene({ gene, isJson }) {
                   <DataItemValue>{gene.allele}</DataItemValue>
                 </>
               )}
-              <DataItemLabel>Allele</DataItemLabel>
-              <DataItemValue>{gene.allele}</DataItemValue>
               <DataItemLabel>Taxa</DataItemLabel>
               <DataItemValue>{gene.taxa}</DataItemValue>
               {gene.dbxrefs?.length > 0 && (
