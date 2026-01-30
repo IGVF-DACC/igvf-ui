@@ -1,15 +1,23 @@
-// node_modules
-import PropTypes from "prop-types";
 // components
 import LinkedIdAndStatus from "./linked-id-and-status";
+// root
+import type { DatabaseObject } from "../globals";
 
 /**
  * Displays a stack of linked IDs and their statuses.
+ *
+ * @param items - Array of database objects to display
+ * @param className - Additional Tailwind CSS classes for the wrapper div
+ * @param children - Function that returns React nodes to render within each LinkedIdAndStatus
  */
 export default function LinkedIdAndStatusStack({
   items,
-  className = null,
+  className = "",
   children,
+}: {
+  items: DatabaseObject[];
+  className?: string;
+  children: (item: DatabaseObject) => React.ReactNode;
 }) {
   return (
     <div className={className}>
@@ -25,10 +33,3 @@ export default function LinkedIdAndStatusStack({
     </div>
   );
 }
-
-LinkedIdAndStatusStack.propTypes = {
-  // Items to display the accession and status of in a stack
-  items: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Additional Tailwind CSS classes for the wrapper div
-  className: PropTypes.string,
-};
