@@ -47,8 +47,14 @@ export default function Gene({ gene, isJson }) {
               <DataItemValue>
                 <EnsemblLink geneid={gene.geneid} taxa={gene.taxa} />
               </DataItemValue>
-              <DataItemLabel>Gene Symbol</DataItemLabel>
-              <DataItemValue>{gene.symbol}</DataItemValue>
+              {gene.allele && (
+                <>
+                  <DataItemLabel>Allele</DataItemLabel>
+                  <DataItemValue>{gene.allele}</DataItemValue>
+                </>
+              )}
+              <DataItemLabel>Allele</DataItemLabel>
+              <DataItemValue>{gene.allele}</DataItemValue>
               <DataItemLabel>Taxa</DataItemLabel>
               <DataItemValue>{gene.taxa}</DataItemValue>
               {gene.dbxrefs?.length > 0 && (
@@ -158,7 +164,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         gene,
-        pageContext: { title: gene.title },
+        pageContext: { title: gene.summary },
         isJson,
       },
     };

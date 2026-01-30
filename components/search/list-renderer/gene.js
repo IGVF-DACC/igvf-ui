@@ -25,7 +25,10 @@ export default function Gene({ item: gene }) {
           <SearchListItemType item={gene} />
           {gene.geneid}
         </SearchListItemUniqueId>
-        <SearchListItemTitle>{gene.title}</SearchListItemTitle>
+        <SearchListItemTitle>
+          {gene.title}
+          {gene.allele && ` ${gene.allele} allele`}
+        </SearchListItemTitle>
         <SearchListItemMeta>
           <span key="symbol">{gene.symbol}</span>
         </SearchListItemMeta>
