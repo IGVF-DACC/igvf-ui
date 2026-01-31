@@ -4,6 +4,7 @@ import _ from "lodash";
 import XXH from "xxhashjs";
 import { type Edge, type Node } from "@xyflow/react";
 // lib
+import { colorVariableToColorHex } from "../../lib/color";
 import { pathToId } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
@@ -596,7 +597,7 @@ export function generateSVGContent(graphId: string): string | undefined {
   const edgeArrowheadElementArray = Array.from(edgeArrowheadElements);
   svgContent += edgeArrowheadElementArray.reduce((acc, polygonElement) => {
     const points = polygonElement.getAttribute("points");
-    const fill = polygonElement.getAttribute("fill") || "#6b7280";
+    const fill = "#6b7280";
     return points
       ? `${acc}  <polygon points="${points}" fill="${fill}"/>\n`
       : acc;
@@ -616,7 +617,7 @@ export function generateSVGContent(graphId: string): string | undefined {
     const x = match ? parseFloat(match[1]) : 0;
     const y = match ? parseFloat(match[2]) : 0;
 
-    // Check if this is a file set node by looking for the data attribute
+    // Check if this is a file set node by looking for the data attribute.
     const isFileSetNode = svgElement.hasAttribute("data-fileset-type");
 
     // Determine colors based on node type.
@@ -630,17 +631,23 @@ export function generateSVGContent(graphId: string): string | undefined {
     }
 
     // Replace font specifications from the DOM with ones that should work in most SVG viewers.
-    const svgContentInner = svgElement.innerHTML
+    let svgContentInner = svgElement.innerHTML
       .replace(
         /<text([^>]*)>/g,
         '<text$1 font-family="Helvetica, Arial, sans-serif">'
       )
       .replace(/(<text[^>]*)\s+class="[^"]*"([^>]*>)/g, "$1$2");
 
+    // Find all color variables in the SVG content and replace them with their corresponding hex
+    // values.
+    svgContentInner = svgContentInner.replace(/var\(--[^)]+\)/g, (colorVar) => {
+      return colorVariableToColorHex(colorVar) || colorVar;
+    });
+
     // Add background rect and content.
     const cleanSvg = isFileSetNode
-      ? `<rect x="0" y="0" width="${NODE_WIDTH}" height="${NODE_HEIGHT}" rx="${NODE_HEIGHT / 2}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>${svgContentInner}`
-      : `<rect x="0" y="0" width="${NODE_WIDTH}" height="${NODE_HEIGHT}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>${svgContentInner}`;
+      ? `<rect x="0" y="0" width="${NODE_WIDTH - 2}" height="${NODE_HEIGHT - 2}" rx="${NODE_HEIGHT / 2}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>${svgContentInner}`
+      : `<rect x="0" y="0" width="${NODE_WIDTH - 2}" height="${NODE_HEIGHT - 2}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>${svgContentInner}`;
 
     svgContent += `  <g transform="translate(${x}, ${y})">${cleanSvg}</g>\n`;
   });
