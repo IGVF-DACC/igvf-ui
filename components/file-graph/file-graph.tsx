@@ -2,7 +2,7 @@
 import ELK from "elkjs/lib/elk.bundled.js";
 import type { ElkNode } from "elkjs/lib/elk-api";
 import _ from "lodash";
-import { Fragment, useEffect, useState } from "react";
+import { CSSProperties, Fragment, useEffect, useState } from "react";
 import {
   Handle,
   Position,
@@ -40,6 +40,7 @@ import {
   NODE_WIDTH,
   trimIsolatedFiles,
 } from "./lib";
+import { NodeStatus } from "./status";
 import {
   fileSetTypeColorMap,
   isFileNodeMetadata,
@@ -97,7 +98,7 @@ const CONTAINER_PADDING = 16;
  * Styles for the node handles. This puts the handles in the correct place for the edges to hook up
  * to, but hidden to avoid visual clutter.
  */
-const NodeHandleStyle: React.CSSProperties = {
+const NodeHandleStyle: CSSProperties = {
   opacity: 0,
   pointerEvents: "none",
   left: 0,
@@ -221,12 +222,12 @@ function FileNodeContent(props: NodeProps) {
   // Render the containing box with a div instead of an SVG rect to use the same mechanism that
   // `<FileSetNodeContent>` needs.
   return (
-    <div className="relative">
+    <>
       <div
-        className="bg-file-graph-file border-file-graph-file relative cursor-pointer border"
+        className="bg-file-graph-file border-file-graph-file cursor-pointer border"
         style={{ width: NODE_WIDTH, height: NODE_HEIGHT }}
       >
-        <svg width={NODE_WIDTH} height={NODE_HEIGHT}>
+        <svg width={NODE_WIDTH - 2} height={NODE_HEIGHT - 2}>
           <g>
             <NodeTitle content={file.accession} y={linePosition} />
             <NodeSubtitle
@@ -240,6 +241,7 @@ function FileNodeContent(props: NodeProps) {
               )}
               y={(linePosition += NODE_LINE_HEIGHT)}
             />
+            <NodeStatus file={file} />
           </g>
         </svg>
       </div>
@@ -247,7 +249,7 @@ function FileNodeContent(props: NodeProps) {
         <QCMetricTrigger file={file} fileMetrics={data.qualityMetrics} />
       </div>
       <NodeHandles />
-    </div>
+    </>
   );
 }
 
@@ -280,8 +282,8 @@ function FileSetNodeContent(props: NodeProps) {
         }}
       >
         <svg
-          width={NODE_WIDTH}
-          height={NODE_HEIGHT}
+          width={NODE_WIDTH - 2}
+          height={NODE_HEIGHT - 2}
           data-fileset-type={fileSetAtType}
         >
           <g>
@@ -445,7 +447,7 @@ function GraphCore({
         <div
           className="mx-auto"
           style={{
-            height: graphHeight,
+            height: graphHeight + 8,
             width: graphWidth,
           }}
         >

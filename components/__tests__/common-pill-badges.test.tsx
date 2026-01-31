@@ -34,7 +34,7 @@ describe("UniformlyProcessedBadge", () => {
   it("renders in abbreviated mode", () => {
     render(<UniformlyProcessedBadge isAbbreviated={true} />);
 
-    const badge = screen.getByTestId("uniform-pipeline-badge-abbreviated");
+    const badge = screen.getByTestId("uniform-pipeline-badge-abbreviated-pill");
     expect(badge).toBeInTheDocument();
 
     // Should have the icon but not the text content
@@ -54,7 +54,7 @@ describe("UniformlyProcessedBadge", () => {
       />
     );
 
-    const badge = screen.getByTestId("uniform-pipeline-badge-abbreviated");
+    const badge = screen.getByTestId("uniform-pipeline-badge-abbreviated-pill");
     expect(badge).toBeInTheDocument();
 
     // Should not display the label text when abbreviated

@@ -2,6 +2,12 @@
 @plugin "@tailwindcss/typography";
 @config '../tailwind.config.ts';
 
+/** Domain-specific color variables */
+@import "./theme/status.css";
+
+/** Domain-specific utility classes */
+@import "./utilities/status.css";
+
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -959,7 +965,7 @@
 
 /** Mask the right end of the term count "LEDs" to fade out */
 .facet-term-count-mask {
-  @apply [mask-image:linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)] [--webkit-mask-image:linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)];
+  @apply mask-[linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)] [--webkit-mask-image:linear-gradient(to_right,rgba(0,0,0,1)_calc(100%-30px),rgba(0,0,0,0)_100%)];
 }
 
 /**

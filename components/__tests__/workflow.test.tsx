@@ -105,7 +105,7 @@ describe("WorkflowList component", () => {
       render(<WorkflowList workflows={workflows} />);
 
       expect(
-        screen.getByTestId("uniform-pipeline-badge-abbreviated")
+        screen.getByTestId("uniform-pipeline-badge-abbreviated-pill")
       ).toBeInTheDocument();
     });
   });
@@ -286,7 +286,7 @@ describe("WorkflowList component", () => {
       render(<WorkflowList workflows={workflows} />);
 
       expect(
-        screen.getByTestId("uniform-pipeline-badge-abbreviated")
+        screen.getByTestId("uniform-pipeline-badge-abbreviated-pill")
       ).toBeInTheDocument();
     });
 
@@ -386,7 +386,7 @@ describe("WorkflowList component", () => {
       expect(screen.getByText("Full Featured Workflow")).toBeInTheDocument();
       expect(screen.getByText("v2.1.0")).toBeInTheDocument();
       expect(
-        screen.getByTestId("uniform-pipeline-badge-abbreviated")
+        screen.getByTestId("uniform-pipeline-badge-abbreviated-pill")
       ).toBeInTheDocument();
       expect(
         screen.getByRole("link", {
