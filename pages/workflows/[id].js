@@ -4,7 +4,7 @@ import { useContext } from "react";
 // components
 import AliasList from "../../components/alias-list";
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
-import { AnalysisStepVersionTable } from "../../components/analysis-step-version-table";
+import { AnalysisStepFromVersionTable } from "../../components/analysis-step-from-version-table";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { UniformlyProcessedBadge } from "../../components/common-pill-badges";
@@ -164,7 +164,7 @@ export default function Workflow({
             </DataArea>
           </DataPanel>
           {workflow.analysis_step_versions?.length > 0 && (
-            <AnalysisStepVersionTable
+            <AnalysisStepFromVersionTable
               analysisStepVersions={workflow.analysis_step_versions}
               reportLink={`/multireport/?type=AnalysisStepVersion&workflows.@id=${workflow["@id"]}`}
               reportLabel="Analysis Step Versions that link to this workflow"
