@@ -11,6 +11,7 @@ import {
 import Facet from "./facet";
 import facetRegistry from "./facet-registry";
 // lib
+import { type OptionalFacetsConfigForType } from "../../lib/facets";
 import { splitPathAndQueryString } from "../../lib/query-utils";
 // root
 import type { SearchResults, SearchResultsFacet } from "../../globals";
@@ -25,6 +26,8 @@ import type { SearchResults, SearchResultsFacet } from "../../globals";
  * @param openedFacets - Record of which facets are open
  * @param onFacetOpen - Callback when a facet is opened or closed
  * @param onReorder - Callback when the facet order is changed
+ * @param optionalFacetsConfigForType - List of optional facets for the current facet type
+ * @param onOptionalFacetQuickHideChange - Callback when the user clicks to quick hide an optional facet
  * @param isEditOrderMode - True when editing the facet order
  */
 export function FacetList({
@@ -33,6 +36,8 @@ export function FacetList({
   openedFacets,
   onFacetOpen,
   onReorder,
+  optionalFacetsConfigForType,
+  onOptionalFacetQuickHideChange,
   isEditOrderMode,
 }: {
   searchResults: SearchResults;
@@ -40,6 +45,8 @@ export function FacetList({
   openedFacets: Record<string, boolean>;
   onFacetOpen: (e: MouseEvent, field: string) => void;
   onReorder?: (newOrder: SearchResultsFacet[]) => void;
+  optionalFacetsConfigForType: OptionalFacetsConfigForType;
+  onOptionalFacetQuickHideChange: (facetToHide: string) => void;
   isEditOrderMode: boolean;
 }) {
   const router = useRouter();
@@ -91,10 +98,12 @@ export function FacetList({
               searchResults={searchResults}
               updateQuery={updateQuery}
               updateOpen={(e) => onFacetOpen(e, facet.field)}
+              onOptionalFacetQuickHideChange={onOptionalFacetQuickHideChange}
               isFacetOpen={
                 (!isEditOrderMode && openedFacets[facet.field]) || false
               }
               isEditOrderMode={isEditOrderMode}
+              isOptional={optionalFacetsConfigForType.includes(facet.field)}
             >
               <AnimatePresence>
                 {!isEditOrderMode && openedFacets[facet.field] && (

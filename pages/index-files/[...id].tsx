@@ -47,7 +47,7 @@ import { type QualityMetricObject } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
 import { type WorkflowObject } from "../../lib/workflow";
 // root
-import type { FileObject } from "../../globals.d";
+import type { FileObject, DocumentObject } from "../../globals.d";
 
 interface IndexFileObject extends FileObject {
   assembly?: string;
@@ -98,8 +98,8 @@ export default function IndexFile({
         />
         <ObjectPageHeader item={indexFile} isJsonFormat={isJson}>
           <ControlledAccessIndicator item={indexFile} />
-          <FileHeaderDownload file={indexFile}>
-            <HostedFilePreview file={indexFile} buttonSize="sm" />
+          <FileHeaderDownload file={indexFile as FileObject}>
+            <HostedFilePreview file={indexFile as FileObject} buttonSize="sm" />
           </FileHeaderDownload>
         </ObjectPageHeader>
         <JsonDisplay item={indexFile} isJsonFormat={isJson}>
@@ -198,7 +198,7 @@ export async function getServerSideProps(
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const indexFile = (
-    await request.getObject(`/index-files/${params.id}/`)
+    await request.getObject(`/index-files/${params!.id}/`)
   ).union() as IndexFileObject;
   if (FetchRequest.isResponseSuccess(indexFile)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
@@ -218,24 +218,23 @@ export async function getServerSideProps(
       ? await requestFiles(indexFile.derived_from, request)
       : [];
 
-    const inputFileFor =
-      indexFile.input_file_for?.length > 0
-        ? await requestFiles(indexFile.input_file_for as string[], request)
-        : [];
+    const inputFileFor = indexFile.input_file_for?.length
+      ? await requestFiles(indexFile.input_file_for as string[], request)
+      : [];
 
-    const referenceFiles =
-      indexFile.reference_files?.length > 0
-        ? await requestFiles(indexFile.reference_files as string[], request)
-        : [];
+    const referenceFiles = indexFile.reference_files?.length
+      ? await requestFiles(indexFile.reference_files as string[], request)
+      : [];
 
-    let fileFormatSpecifications = [];
-    if (indexFile.file_format_specifications?.length > 0) {
-      const fileFormatSpecificationsPaths =
-        indexFile.file_format_specifications.map((document) => document["@id"]);
-      fileFormatSpecifications = await requestDocuments(
+    let fileFormatSpecifications: DocumentObject[] = [];
+    if (indexFile.file_format_specifications?.length) {
+      const fileFormatSpecificationsPaths = (
+        indexFile.file_format_specifications as DocumentObject[]
+      ).map((document) => document["@id"]);
+      fileFormatSpecifications = (await requestDocuments(
         fileFormatSpecificationsPaths,
         request
-      );
+      )) as DocumentObject[];
     }
 
     let workflows: WorkflowObject[] = [];
@@ -263,7 +262,10 @@ export async function getServerSideProps(
           )
         : [];
 
-    const attribution = await buildAttribution(indexFile, req.headers.cookie);
+    const attribution = await buildAttribution(
+      indexFile,
+      req.headers.cookie || ""
+    );
 
     return {
       props: {

@@ -75,9 +75,20 @@ Cypress.Commands.add("delayForIndexing", (reload = true, delay = 20000) => {
 /**
  * Cypress can run into issues if we have a test interact with a page too soon after reloading the
  * page. This command lets you insert a delay after a reload to allow the page to load.
- * @param {string} delay Optional time to delay in ms
+ * @param {string} delay Optional time to delay in ms; none or 0 means 2000 ms
+ * @param {boolean} waitForLogin Optional flag to wait for login name to appear
  */
-Cypress.Commands.add("reloadWithDelay", (delay = 2000) => {
-  cy.reload();
-  cy.wait(delay);
-});
+Cypress.Commands.add(
+  "reloadWithDelay",
+  (delay = 2000, waitForLogin = false) => {
+    const actualDelay = delay || 2000;
+    cy.reload();
+    cy.wait(actualDelay);
+    if (waitForLogin) {
+      cy.get(`[data-testid="navigation-authenticate"]`).should(
+        "contain",
+        "Cypress Testing"
+      );
+    }
+  }
+);

@@ -47,8 +47,8 @@ function inlineClasses(isInline) {
  */
 export function Button({
   onClick,
-  label = null,
-  id = null,
+  label = "",
+  id = "",
   type = "primary",
   size = "md",
   hasIconOnly = false,
@@ -148,10 +148,24 @@ LinkElement.propTypes = {
  * <ButtonLink href="/path/to/page">
  *   Go Here!
  * </ButtonLink>
+ *
+ * @param {Object} props
+ * @param {string|undefined} props.href - Link that pressing the button will navigate to
+ * @param {string} [props.label] - Accessible label of the button if the button text is not sufficient for screen readers
+ * @param {string} [props.id] - HTML ID of the button element
+ * @param {string} [props.type] - Button color type
+ * @param {string} [props.size] - Button sizes
+ * @param {boolean} [props.hasIconOnly] - True for buttons that only contain an icon; makes the padding work better for these
+ * @param {boolean} [props.hasIconCircleOnly] - True for buttons that only contain an icon in a circular button
+ * @param {boolean} [props.isInline] - True to make the button appear inline with text
+ * @param {boolean} [props.isDisabled] - Is Disabled
+ * @param {boolean} [props.isExternal] - True if the link is external
+ * @param {string} [props.className] - Additional Tailwind CSS classes to apply to the <button> element
+ * @param {React.ReactNode} props.children - Content of the button
  */
 export function ButtonLink({
   href,
-  label = null,
+  label = "",
   id = null,
   type = "primary",
   size = "md",

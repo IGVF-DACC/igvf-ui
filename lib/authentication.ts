@@ -121,7 +121,7 @@ export function logoutAuthProvider(
   logout: (options?: LogoutOptions) => Promise<void>,
   altPath: string = ""
 ) {
-  logout({
+  void logout({
     clientId: AUTH0_CLIENT_ID,
     logoutParams: {
       returnTo: `${window.location.origin}${altPath}`,

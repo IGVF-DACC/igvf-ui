@@ -219,7 +219,7 @@ export default function ColumnSelector({
             </div>
           </Modal.Header>
 
-          <Modal.Body className="[&>div]:p-0">
+          <Modal.Body className="p-0">
             <div className="border-modal-border border-b p-1 md:flex md:items-center">
               <ChangeAllControls onChangeAll={onChangeAll} />
               <Note className="md:ml-2">

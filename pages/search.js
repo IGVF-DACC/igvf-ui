@@ -33,6 +33,7 @@ import {
  */
 export default function Search({
   searchResults,
+  types,
   allFacets,
   accessoryData = null,
 }) {
@@ -57,7 +58,11 @@ export default function Search({
         />
       )}
       <div className="lg:flex lg:items-start lg:gap-1">
-        <FacetSection searchResults={searchResults} allFacets={allFacets} />
+        <FacetSection
+          searchResults={searchResults}
+          types={types}
+          allFacets={allFacets}
+        />
         <div className="grow">
           <FacetTags searchResults={searchResults} />
           {searchResults.total > 0 ? (
@@ -98,6 +103,8 @@ export default function Search({
 Search.propTypes = {
   // /search results from igvfd
   searchResults: PropTypes.object.isRequired,
+  // All type={type} from the search query
+  types: PropTypes.arrayOf(PropTypes.string).isRequired,
   // All possible facets for the type
   allFacets: PropTypes.array.isRequired,
   // Accessory data for search results, keyed by each object's `@id`
@@ -123,6 +130,9 @@ export async function getServerSideProps({ req, query }) {
     await request.getObject(`/search/?${queryParams}`)
   ).union();
 
+  // Get all `type=` from the query string and put into an array of types.
+  const types = [].concat(query.type || []);
+
   if (FetchRequest.isResponseSuccess(searchResults)) {
     const itemListsByType = getItemListsByType(searchResults);
     const accessoryData = await getAccessoryData(
@@ -133,6 +143,7 @@ export async function getServerSideProps({ req, query }) {
     return {
       props: {
         searchResults,
+        types,
         allFacets,
         accessoryData,
       },
