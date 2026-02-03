@@ -416,21 +416,21 @@ export default function FacetSection({
             (facet) => facet.field
           );
 
-          // Determine newly visible fields that need to be added to the ordered facet fields.
-          const newlyVisibleFields = newVisibleFacetFields.filter(
-            (field) => !orderedFacetFields.includes(field)
-          );
+          // Use functional update to get the latest orderedFacetFields value.
+          setOrderedFacetFields((currentOrderedFacetFields) => {
+            // Determine newly visible fields that need to be added to the ordered facet fields.
+            const newlyVisibleFields = newVisibleFacetFields.filter(
+              (field) => !currentOrderedFacetFields.includes(field)
+            );
 
-          // Remove any now-hidden fields from the ordered facet fields.
-          const filteredOrderedFields = orderedFacetFields.filter((field) =>
-            newVisibleFacetFields.includes(field)
-          );
+            // Remove any now-hidden fields from the ordered facet fields.
+            const filteredOrderedFields = currentOrderedFacetFields.filter(
+              (field) => newVisibleFacetFields.includes(field)
+            );
 
-          // Update the ordered facet fields with visible field updates.
-          setOrderedFacetFields([
-            ...filteredOrderedFields,
-            ...newlyVisibleFields,
-          ]);
+            // Update the ordered facet fields with visible field updates.
+            return [...filteredOrderedFields, ...newlyVisibleFields];
+          });
         }
       });
     }
