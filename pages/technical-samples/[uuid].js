@@ -22,6 +22,7 @@ import PagePreamble from "../../components/page-preamble";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
+import TreatmentTable from "../../components/treatment-table";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
@@ -32,6 +33,7 @@ import {
   requestPublications,
   requestSamples,
   requestSupersedes,
+  requestTreatments,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
@@ -49,8 +51,10 @@ export default function TechnicalSample({
   sortedFractions,
   sources,
   multiplexedInSamples,
+  originOf,
   supersedes,
   supersededBy,
+  treatments,
   partOf,
   parts,
   isJson,
@@ -86,6 +90,14 @@ export default function TechnicalSample({
                     {sample.sample_terms[0].term_name}
                   </Link>
                 </DataItemValue>
+                {sample.selection_conditions?.length > 0 && (
+                  <>
+                    <DataItemLabel>Selection Conditions</DataItemLabel>
+                    <DataItemValue>
+                      {sample.selection_conditions.join(", ")}
+                    </DataItemValue>
+                  </>
+                )}
                 {partOf && (
                   <>
                     <DataItemLabel>Part of Sample</DataItemLabel>
@@ -94,10 +106,28 @@ export default function TechnicalSample({
                     </DataItemValue>
                   </>
                 )}
+                {sample.originated_from && (
+                  <>
+                    <DataItemLabel>Originated From Sample</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={sample.originated_from["@id"]}>
+                        {sample.originated_from.accession}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
               </SampleDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
+          {treatments.length > 0 && (
+            <TreatmentTable
+              treatments={treatments}
+              reportLink={`/multireport/?type=Treatment&biosamples_treated=${sample["@id"]}`}
+              reportLabel={`Report of treatments applied to the sample ${sample.accession}`}
+              isDeletedVisible
+            />
+          )}
           {sample.file_sets?.length > 0 && (
             <FileSetTable fileSets={sample.file_sets} />
           )}
@@ -126,6 +156,15 @@ export default function TechnicalSample({
               reportLabel="Report of samples into which this sample has been divided"
               title="Technical Sample Parts"
               panelId="parts"
+            />
+          )}
+          {originOf.length > 0 && (
+            <SampleTable
+              samples={originOf}
+              reportLink={`/multireport/?type=Sample&originated_from.@id=${sample["@id"]}`}
+              reportLabel="Report of samples which originate from this sample"
+              title="Origin Sample Of"
+              panelId="origin-of"
             />
           )}
           {institutionalCertificates.length > 0 && (
@@ -159,6 +198,8 @@ TechnicalSample.propTypes = {
   sources: PropTypes.arrayOf(PropTypes.object),
   // Multiplexed in samples
   multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Origin of sample
+  originOf: PropTypes.arrayOf(PropTypes.object),
   // Samples into which this sample has been divided
   parts: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Sample that represents a larger sample from which this sample was taken
@@ -167,6 +208,8 @@ TechnicalSample.propTypes = {
   supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples that supersede this sample
   supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Treatments of the sample
+  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Attribution for this technical sample
   attribution: PropTypes.object,
   // Is the format JSON?
@@ -241,15 +284,25 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       "Sample",
       request
     );
-
+    const originOf =
+      sample.origin_of?.length > 0
+        ? await requestSamples(sample.origin_of, request)
+        : [];
     const partOf = sample.part_of
       ? (await request.getObject(sample.part_of)).optional()
       : null;
-
     const parts =
       sample.parts?.length > 0
         ? await requestSamples(sample.parts, request)
         : [];
+
+    let treatments = [];
+    if (sample.treatments?.length > 0) {
+      const treatmentPaths = sample.treatments.map(
+        (treatment) => treatment["@id"]
+      );
+      treatments = await requestTreatments(treatmentPaths, request);
+    }
 
     const attribution = await buildAttribution(sample, req.headers.cookie);
     return {
@@ -262,10 +315,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         sortedFractions,
         sources,
         multiplexedInSamples,
+        originOf,
         parts,
         partOf,
         supersedes,
         supersededBy,
+        treatments,
         pageContext: {
           title: `${sample.accession} ${UC.mdash} ${sample.sample_terms[0].term_name}`,
         },
