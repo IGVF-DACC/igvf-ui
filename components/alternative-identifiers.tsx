@@ -30,7 +30,7 @@ export function AlternativeIdentifiers({
 
   if (anyAlternativeIdentifiersExist) {
     return (
-      <div className="-mt-5 mb-5 text-sm text-gray-500">
+      <div className="text-sm text-gray-500">
         {alternateAccessions?.length > 0 && (
           <AlternateAccessions alternateAccessions={alternateAccessions} />
         )}

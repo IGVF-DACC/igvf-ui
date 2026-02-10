@@ -15,6 +15,7 @@ import {
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DocumentTable from "../../components/document-table";
+import { DoiControl } from "../../components/doi";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import FileTable from "../../components/file-table";
@@ -63,6 +64,7 @@ export default function ModelSet({
       <Breadcrumbs item={modelSet} />
       <EditableItem item={modelSet}>
         <PagePreamble sections={sections} />
+        <DoiControl doi={modelSet.doi} />
         <AlternativeIdentifiers
           alternateAccessions={modelSet.alternate_accessions}
           supersedes={supersedes}

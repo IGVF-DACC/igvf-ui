@@ -41,6 +41,14 @@ setConfig(config);
 // Make TextEncoder and TextDecoder available globally in tests.
 Object.assign(globalThis, { TextEncoder, TextDecoder });
 
+// Mock navigator.clipboard for copy-to-clipboard tests.
+Object.assign(navigator, {
+  clipboard: {
+    writeText: jest.fn().mockImplementation(async () => Promise.resolve()),
+  },
+});
+jest.spyOn(navigator.clipboard, "writeText");
+
 // Create the tooltip portal root element for all tests.
 // This prevents "Target container is not a DOM element" errors in tooltip tests.
 beforeEach(() => {

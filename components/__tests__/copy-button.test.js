@@ -2,8 +2,7 @@ import {
   CheckIcon,
   ClipboardDocumentCheckIcon,
 } from "@heroicons/react/20/solid";
-import { fireEvent, render, screen } from "@testing-library/react";
-import "../__mocks__/navigator";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { CopyButton, useCopyAction } from "../copy-button";
 
 describe("Test <CopyButton> component", () => {
@@ -92,5 +91,45 @@ describe("Test useCopyAction hook", () => {
 
     // Test that the isCopied state becomes false after two seconds.
     await screen.findByText("false", {}, { timeout: 2200 });
+  });
+
+  it("logs an error and does not set isCopied when clipboard write fails", async () => {
+    function Component() {
+      const { isCopied, initiateCopy } = useCopyAction("the copied text");
+      return (
+        <div>
+          <button onClick={initiateCopy}>Copy</button>
+          <span data-testid="isCopied">{isCopied.toString()}</span>
+        </div>
+      );
+    }
+
+    // Mock the clipboard writeText method to reject with an error.
+    const clipboardError = new Error("Clipboard write failed");
+    navigator.clipboard.writeText.mockRejectedValueOnce(clipboardError);
+    const consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    render(<Component />);
+
+    // Check the button before clicking to confirm the initial state of isCopied is false.
+    const copyButton = screen.getByRole("button");
+    const isCopied = screen.getByTestId("isCopied");
+    expect(isCopied).toHaveTextContent("false");
+
+    // Click the copy button to trigger the clipboard write error.
+    fireEvent.click(copyButton);
+
+    // Make sure the error is logged and that isCopied remains false.
+    await waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Clipboard write failed:",
+        clipboardError
+      );
+    });
+    expect(isCopied).toHaveTextContent("false");
+
+    consoleErrorSpy.mockRestore();
   });
 });

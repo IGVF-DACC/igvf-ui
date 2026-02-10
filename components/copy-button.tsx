@@ -31,15 +31,20 @@ export function useCopyAction(target: string): CopyActions {
    * Copies the given text to the clipboard.
    */
   function initiateCopy() {
-    navigator.clipboard.writeText(target).then(() => {
-      // Temporarily display a checkmark to confirm to the user that the copy was successful. Once
-      // tooltips are feature complete, might want to add a "Copied" tooltip along with the check
-      // mark.
-      setCopied(true);
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-    });
+    navigator.clipboard
+      .writeText(target)
+      .then(() => {
+        // Temporarily display a checkmark to confirm to the user that the copy was successful. Once
+        // tooltips are feature complete, might want to add a "Copied" tooltip along with the check
+        // mark.
+        setCopied(true);
+        setTimeout(() => {
+          setCopied(false);
+        }, 2000);
+      })
+      .catch((error) => {
+        console.error("Clipboard write failed:", error);
+      });
   }
 
   return {
@@ -56,18 +61,24 @@ export function useCopyAction(target: string): CopyActions {
  * @param target - The text to copy to the clipboard
  * @param label - Accessible label for the button
  * @param disabled - True if the button should appear disabled
+ * @param type - Type of the button: "primary", "secondary", "warning", or "selected"
+ * @param size - Size of the button: "sm", "md", or "lg"
  * @param className - Additional Tailwind CSS class names
  */
 export function CopyButton({
   target,
   label = null,
   disabled = false,
+  type,
+  size,
   className = "",
   children,
 }: {
   target: string;
   label?: string | null;
   disabled?: boolean;
+  type?: "primary" | "secondary" | "warning" | "selected";
+  size?: "sm" | "md" | "lg";
   className?: string;
   children: (isCopied: boolean) => ReactNode;
 }) {
@@ -76,9 +87,11 @@ export function CopyButton({
   return (
     <Button
       onClick={initiateCopy}
-      isDisabled={disabled}
-      className={className}
       label={label}
+      isDisabled={disabled}
+      type={type}
+      size={size}
+      className={className}
     >
       {children(isCopied)}
     </Button>
@@ -92,18 +105,21 @@ export function CopyButton({
  *
  * @param target - The text to copy to the clipboard
  * @param label - Accessible label for the button
+ * @param type - Type of the button: "primary", "secondary", "warning", or "selected"
  * @param size - Size of the button: "sm", "md", or "lg"
  * @param className - Additional Tailwind CSS class names
  */
 function Icon({
   target,
   label,
-  size = "md",
-  className = "cursor-pointer",
+  type,
+  size,
+  className,
   children,
 }: {
   target: string;
   label: string;
+  type?: "primary" | "secondary" | "warning" | "selected";
   size?: "sm" | "md" | "lg";
   className?: string;
   children: (isCopied: boolean) => ReactNode;
@@ -115,6 +131,7 @@ function Icon({
       onClick={initiateCopy}
       className={className}
       label={label}
+      type={type}
       size={size}
       hasIconOnly
     >

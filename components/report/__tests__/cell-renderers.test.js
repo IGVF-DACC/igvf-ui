@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import "../../__mocks__/intersectionObserverMock";
-import profiles from "../../__mocks__/profile";
+import profiles from "../../__fixtures__/profiles";
 import { DataGridContainer } from "../../data-grid";
 import SessionContext from "../../session-context";
 import SortableGrid from "../../sortable-grid";

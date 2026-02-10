@@ -17,6 +17,7 @@ import {
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DocumentTable from "../../components/document-table";
+import { DoiControl } from "../../components/doi";
 import { EditableItem } from "../../components/edit";
 import { FileAccessionAndDownload } from "../../components/file-download";
 import { FileGraph } from "../../components/file-graph";
@@ -77,6 +78,7 @@ export default function PredictionSet({
       <Breadcrumbs item={predictionSet} />
       <EditableItem item={predictionSet}>
         <PagePreamble sections={sections} />
+        <DoiControl doi={predictionSet.doi} />
         <AlternativeIdentifiers
           alternateAccessions={predictionSet.alternate_accessions}
           supersedes={supersedes}

@@ -21,6 +21,7 @@
 // node_modules
 import PropTypes from "prop-types";
 import React from "react";
+import { twMerge } from "tailwind-merge";
 // components
 import Link from "../link-no-prefetch";
 // lib
@@ -74,9 +75,10 @@ export function Button({
       id={id}
       data-testid={id}
       onClick={onClick}
-      className={`cursor-pointer ${inlineClasses(
-        isInline
-      )} ${buttonClasses} ${className}`}
+      className={twMerge([
+        `cursor-pointer ${inlineClasses(isInline)} ${buttonClasses}`,
+        className,
+      ])}
       aria-label={label}
       aria-checked={isSelected}
       disabled={isDisabled}
@@ -189,9 +191,10 @@ export function ButtonLink({
     <div
       aria-label={label}
       id={id}
-      className={`text-center no-underline ${inlineClasses(
-        isInline
-      )} ${buttonClasses} ${className}`}
+      className={twMerge([
+        `text-center no-underline ${inlineClasses(isInline)} ${buttonClasses}`,
+        className,
+      ])}
     >
       {children}
     </div>
@@ -201,9 +204,10 @@ export function ButtonLink({
       href={href}
       aria-label={label}
       id={id}
-      className={`text-center no-underline ${inlineClasses(
-        isInline
-      )} ${buttonClasses} ${className}`}
+      className={twMerge([
+        `text-center no-underline ${inlineClasses(isInline)} ${buttonClasses}`,
+        className,
+      ])}
     >
       {children}
     </LinkElement>

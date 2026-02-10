@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { UC } from "../../../lib/constants";
-import profiles from "../../__mocks__/profile";
+import profiles from "../../__fixtures__/profiles";
 import SessionContext from "../../session-context";
 import Award from "../list-renderer/award";
 import AnalysisSet from "../list-renderer/analysis-set";
@@ -581,6 +581,7 @@ describe("Test Gene component", () => {
     const item = {
       "@id": "/genes/ENSG00000163930/",
       "@type": ["Gene", "Item"],
+      allele: "minor",
       dbxrefs: ["UniProtKB:F8W6N3"],
       geneid: "ENSG00000163930",
       status: "released",
@@ -600,7 +601,7 @@ describe("Test Gene component", () => {
     expect(uniqueId).toHaveTextContent(/ENSG00000163930$/);
 
     const title = screen.getByTestId("search-list-item-title");
-    expect(title).toHaveTextContent(/^BAP1 \(Homo sapiens\)$/);
+    expect(title).toHaveTextContent(/^BAP1 \(Homo sapiens\) minor allele$/);
 
     const meta = screen.getByTestId("search-list-item-meta");
     expect(meta).toHaveTextContent("BAP1");

@@ -30,7 +30,7 @@ export default function PageTitle({
 
   return (
     <div
-      className={`border-data-border sticky top-0 z-20 mb-5 border-b ${className}`}
+      className={`border-data-border sticky top-0 z-20 mb-0.5 border-b ${className}`}
     >
       <div className="bg-background flex items-end justify-between gap-2">
         <h1 className="text-3xl font-medium text-gray-700 dark:text-gray-300">
