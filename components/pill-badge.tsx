@@ -26,18 +26,14 @@ function AbbreviatedPillBadge({
   testid?: string;
   children: React.ReactNode;
 }) {
-  // Handle defaults inside the function body for better Jest coverage.
-  const finalClassName = className || "";
-  const finalTestId = testid || "";
-
-  const tooltipAttr = useTooltip(`pill-badge-${finalTestId}`);
+  const tooltipAttr = useTooltip(`pill-badge${testid ? `-${testid}` : ""}`);
 
   return (
     <>
       <TooltipRef tooltipAttr={tooltipAttr}>
         <div
-          className={`h-4.5 w-4.5 rounded-full border-1 border-white ring ${finalClassName}`}
-          data-testid={`${finalTestId}-abbreviated`}
+          className={`h-4.5 w-4.5 rounded-full border border-white ring ${className}`}
+          data-testid={`${testid ? `${testid}-` : ""}abbreviated-pill`}
         >
           {children}
         </div>

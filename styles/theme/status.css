@@ -1,0 +1,132 @@
+/**
+  * The `<Status>` component uses utilities (../utilities/status.css) that rely on CSS variables
+  * defined in this theme file. Each status type has three associated variables:
+  *
+  *   - background color
+  *   - text color (also used for SVG icon fill)
+  *   - ring color
+  *
+  * The ring color is used for the color outline of the badge, and it's normally the same hue as
+  * the background color but tinted slightly darker. The text/fill color is either white or black
+  * depending on which provides better contrast with the background color.
+  */
+
+@theme {
+  /** Status badge background colors */
+  --color-status-archived-bg: oklch(0.7168 0.0879 80.83);
+  --color-status-current-bg: oklch(0.6611 0.115985 185.9407);
+  --color-status-deleted-bg: oklch(0.603 0.2347 26.99);
+  --color-status-disabled-bg: oklch(0.6079 0.2362 12.25);
+  --color-status-fallback-bg: oklch(0.8576 0 0);
+  --color-status-file-not-found-bg: oklch(0.6079 0.2362 12.25);
+  --color-status-filtered-bg: oklch(0.702 0.183 293.541);
+  --color-status-in-progress-bg: oklch(0.5381 0.1433 247.55);
+  --color-status-invalidated-bg: oklch(0.6079 0.2362 12.25);
+  --color-status-pending-bg: oklch(0.5381 0.1433 247.55);
+  --color-status-preview-bg: oklch(0.879 0.169 91.605);
+  --color-status-released-bg: oklch(0.6346 0.17 151.18);
+  --color-status-replaced-bg: oklch(0.6759 0.1886 42.04);
+  --color-status-revoked-bg: oklch(0.6079 0.2362 12.25);
+  --color-status-standardized-bg: oklch(0.6611 0.115985 185.9407);
+  --color-status-validated-bg: oklch(0.6346 0.17 151.18);
+  --color-status-validation-exempted-bg: oklch(0.6346 0.17 151.18);
+
+  /** Status badge ring colors */
+  --color-status-archived-ring: oklch(0.6074 0.0733 81.06);
+  --color-status-current-ring: oklch(0.5368 0.09407 186.1693);
+  --color-status-deleted-ring: oklch(0.5276 0.2043 26.98);
+  --color-status-disabled-ring: oklch(0.5282 0.2039 11.96);
+  --color-status-fallback-ring: oklch(0.7058 0 0);
+  --color-status-file-not-found-ring: oklch(0.5282 0.2039 11.96);
+  --color-status-filtered-ring: oklch(0.606 0.25 292.717);
+  --color-status-in-progress-ring: oklch(0.4437 0.1155 246.57);
+  --color-status-invalidated-ring: oklch(0.5282 0.2039 11.96);
+  --color-status-pending-ring: oklch(0.4437 0.1155 246.57);
+  --color-status-preview-ring: oklch(0.828 0.189 84.429);
+  --color-status-released-ring: oklch(0.5163 0.1367 151.71);
+  --color-status-replaced-ring: oklch(0.596 0.1668 41.89);
+  --color-status-revoked-ring: oklch(0.5282 0.2039 11.96);
+  --color-status-standardized-ring: oklch(0.5368 0.09407 186.1693);
+  --color-status-validated-ring: oklch(0.5163 0.1367 151.71);
+  --color-status-validation-exempted-ring: oklch(0.5163 0.1367 151.71);
+
+  /** Status badge text and icon colors */
+  --color-status-archived-text: oklch(0 0 0);
+  --color-status-current-text: oklch(1 0 0);
+  --color-status-deleted-text: oklch(1 0 0);
+  --color-status-disabled-text: oklch(1 0 0);
+  --color-status-fallback-text: oklch(0 0 0);
+  --color-status-file-not-found-text: oklch(1 0 0);
+  --color-status-filtered-text: oklch(1 0 0);
+  --color-status-in-progress-text: oklch(1 0 0);
+  --color-status-invalidated-text: oklch(1 0 0);
+  --color-status-pending-text: oklch(1 0 0);
+  --color-status-preview-text: oklch(0 0 0);
+  --color-status-released-text: oklch(1 0 0);
+  --color-status-replaced-text: oklch(1 0 0);
+  --color-status-revoked-text: oklch(1 0 0);
+  --color-status-standardized-text: oklch(1 0 0);
+  --color-status-validated-text: oklch(1 0 0);
+  --color-status-validation-exempted-text: oklch(1 0 0);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /** Status badge background colors */
+    --color-status-archived-bg: oklch(0.7168 0.0879 80.83);
+    --color-status-current-bg: oklch(0.6611 0.115985 185.9407);
+    --color-status-deleted-bg: oklch(0.603 0.2347 26.99);
+    --color-status-disabled-bg: oklch(0.6079 0.2362 12.25);
+    --color-status-in-progress-bg: oklch(0.5381 0.1433 247.55);
+    --color-status-fallback-bg: oklch(0.8576 0 0);
+    --color-status-file-not-found-bg: oklch(0.6079 0.2362 12.25);
+    --color-status-filtered-bg: oklch(0.702 0.183 293.541);
+    --color-status-invalidated-bg: oklch(0.6079 0.2362 12.25);
+    --color-status-pending-bg: oklch(0.5381 0.1433 247.55);
+    --color-status-preview-bg: oklch(0.8021 0.169 91.605);
+    --color-status-released-bg: oklch(0.6346 0.17 151.18);
+    --color-status-replaced-bg: oklch(0.6759 0.1886 42.04);
+    --color-status-revoked-bg: oklch(0.6079 0.2362 12.25);
+    --color-status-standardized-bg: oklch(0.6611 0.115985 185.9407);
+    --color-status-validated-bg: oklch(0.6346 0.17 151.18);
+    --color-status-validation-exempted-bg: oklch(0.6346 0.17 151.18);
+
+    /** Status badge ring colors */
+    --color-status-archived-ring: oklch(0.6074 0.0733 81.06);
+    --color-status-current-ring: oklch(0.5368 0.09407 186.1693);
+    --color-status-deleted-ring: oklch(0.5276 0.2043 26.98);
+    --color-status-disabled-ring: oklch(0.5282 0.2039 11.96);
+    --color-status-fallback-ring: oklch(0.7058 0 0);
+    --color-status-file-not-found-ring: oklch(0.5282 0.2039 11.96);
+    --color-status-filtered-ring: oklch(0.606 0.25 292.717);
+    --color-status-in-progress-ring: oklch(0.4437 0.1155 246.57);
+    --color-status-invalidated-ring: oklch(0.5282 0.2039 11.96);
+    --color-status-pending-ring: oklch(0.4437 0.1155 246.57);
+    --color-status-preview-ring: oklch(0.7757 0.169 91.605);
+    --color-status-released-ring: oklch(0.5163 0.1367 151.71);
+    --color-status-replaced-ring: oklch(0.596 0.1668 41.89);
+    --color-status-revoked-ring: oklch(0.5282 0.2039 11.96);
+    --color-status-standardized-ring: oklch(0.5368 0.09407 186.1693);
+    --color-status-validated-ring: oklch(0.5163 0.1367 151.71);
+    --color-status-validation-exempted-ring: oklch(0.5163 0.1367 151.71);
+
+    /** Status badge text and icon colors */
+    --color-status-archived-text: oklch(0 0 0);
+    --color-status-current-text: oklch(1 0 0);
+    --color-status-deleted-text: oklch(1 0 0);
+    --color-status-disabled-text: oklch(1 0 0);
+    --color-status-fallback-text: oklch(0 0 0);
+    --color-status-file-not-found-text: oklch(1 0 0);
+    --color-status-filtered-text: oklch(1 0 0);
+    --color-status-in-progress-text: oklch(1 0 0);
+    --color-status-invalidated-text: oklch(1 0 0);
+    --color-status-pending-text: oklch(1 0 0);
+    --color-status-preview-text: oklch(0 0 0);
+    --color-status-released-text: oklch(1 0 0);
+    --color-status-replaced-text: oklch(1 0 0);
+    --color-status-revoked-text: oklch(1 0 0);
+    --color-status-standardized-text: oklch(1 0 0);
+    --color-status-validated-text: oklch(1 0 0);
+    --color-status-validation-exempted-text: oklch(1 0 0);
+  }
+}

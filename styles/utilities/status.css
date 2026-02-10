@@ -1,0 +1,136 @@
+/**
+ * These status badge utilities allow easy styling of the `<Status>` component. Each status type
+ * (e.g. "archived", "current", etc.) has a corresponding utility class (e.g. "status-archived",
+ * "status-current", etc.) that sets CSS variables for background color, text color, and ring
+ * color. The main "status" utility class then uses these variables to apply the appropriate styles
+ * to the badge.
+ *
+ * Use `className="status status-archived"` to apply the "archived" status styles to a badge, for
+ * example.
+ */
+
+@utility status {
+  background-color: var(--status-bg);
+  color: var(--status-text);
+  fill: var(--status-fill);
+  --tw-ring-color: var(--status-ring);
+}
+
+@utility status-archived {
+  --status-bg: var(--color-status-archived-bg);
+  --status-text: var(--color-status-archived-text);
+  --status-fill: var(--color-status-archived-text);
+  --status-ring: var(--color-status-archived-ring);
+}
+
+@utility status-current {
+  --status-bg: var(--color-status-current-bg);
+  --status-text: var(--color-status-current-text);
+  --status-fill: var(--color-status-current-text);
+  --status-ring: var(--color-status-current-ring);
+}
+
+@utility status-deleted {
+  --status-bg: var(--color-status-deleted-bg);
+  --status-text: var(--color-status-deleted-text);
+  --status-fill: var(--color-status-deleted-text);
+  --status-ring: var(--color-status-deleted-ring);
+}
+
+@utility status-disabled {
+  --status-bg: var(--color-status-disabled-bg);
+  --status-text: var(--color-status-disabled-text);
+  --status-fill: var(--color-status-disabled-text);
+  --status-ring: var(--color-status-disabled-ring);
+}
+
+@utility status-fallback {
+  --status-bg: var(--color-status-fallback-bg);
+  --status-text: var(--color-status-fallback-text);
+  --status-fill: var(--color-status-fallback-text);
+  --status-ring: var(--color-status-fallback-ring);
+}
+
+@utility status-file-not-found {
+  --status-bg: var(--color-status-file-not-found-bg);
+  --status-text: var(--color-status-file-not-found-text);
+  --status-fill: var(--color-status-file-not-found-text);
+  --status-ring: var(--color-status-file-not-found-ring);
+}
+
+@utility status-filtered {
+  --status-bg: var(--color-status-filtered-bg);
+  --status-text: var(--color-status-filtered-text);
+  --status-fill: var(--color-status-filtered-text);
+  --status-ring: var(--color-status-filtered-ring);
+}
+
+@utility status-in-progress {
+  --status-bg: var(--color-status-in-progress-bg);
+  --status-text: var(--color-status-in-progress-text);
+  --status-fill: var(--color-status-in-progress-text);
+  --status-ring: var(--color-status-in-progress-ring);
+}
+
+@utility status-invalidated {
+  --status-bg: var(--color-status-invalidated-bg);
+  --status-text: var(--color-status-invalidated-text);
+  --status-fill: var(--color-status-invalidated-text);
+  --status-ring: var(--color-status-invalidated-ring);
+}
+
+@utility status-pending {
+  --status-bg: var(--color-status-pending-bg);
+  --status-text: var(--color-status-pending-text);
+  --status-fill: var(--color-status-pending-text);
+  --status-ring: var(--color-status-pending-ring);
+}
+
+@utility status-preview {
+  --status-bg: var(--color-status-preview-bg);
+  --status-text: var(--color-status-preview-text);
+  --status-fill: var(--color-status-preview-text);
+  --status-ring: var(--color-status-preview-ring);
+}
+
+@utility status-released {
+  --status-bg: var(--color-status-released-bg);
+  --status-text: var(--color-status-released-text);
+  --status-fill: var(--color-status-released-text);
+  --status-ring: var(--color-status-released-ring);
+}
+
+@utility status-replaced {
+  --status-bg: var(--color-status-replaced-bg);
+  --status-text: var(--color-status-replaced-text);
+  --status-fill: var(--color-status-replaced-text);
+  --status-ring: var(--color-status-replaced-ring);
+}
+
+@utility status-revoked {
+  --status-bg: var(--color-status-revoked-bg);
+  --status-text: var(--color-status-revoked-text);
+  --status-fill: var(--color-status-revoked-text);
+  --status-ring: var(--color-status-revoked-ring);
+}
+
+@utility status-standardized {
+  --status-bg: var(--color-status-standardized-bg);
+  --status-text: var(--color-status-standardized-text);
+  --status-fill: var(--color-status-standardized-text);
+  --status-ring: var(--color-status-standardized-ring);
+}
+
+@utility status-validated {
+  --status-bg: var(--color-status-validated-bg);
+  --status-text: var(--color-status-validated-text);
+  --status-fill: var(--color-status-validated-text);
+  --status-ring: var(--color-status-validated-ring);
+}
+
+@utility status-validation-exempted {
+  --status-bg: var(--color-status-validation-exempted-bg);
+  --status-text: var(--color-status-validation-exempted-text);
+  --status-fill: var(--color-status-validation-exempted-text);
+  --status-ring: var(--color-status-validation-exempted-ring);
+}

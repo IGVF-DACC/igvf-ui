@@ -13,7 +13,7 @@ describe("Regular file download link", () => {
     const link = screen.getByText("File");
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/files/IGVFFI0000AAAA");
-    const status = screen.getByTestId("status-pill-released");
+    const status = screen.getByTestId("status-abbr-released");
     expect(status).toBeInTheDocument();
   });
 
@@ -31,7 +31,7 @@ describe("Regular file download link", () => {
     // Renders the status as "archived"
     const link = screen.getByText("File");
     expect(link).toBeInTheDocument();
-    const status = screen.getByTestId("status-pill-archived");
+    const status = screen.getByTestId("status-abbr-archived");
     expect(status).toBeInTheDocument();
   });
 

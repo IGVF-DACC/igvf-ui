@@ -20,7 +20,13 @@
     "types": ["jest", "node"],
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["next-env.d.ts", "pages/**/*.tsx", "components/**/*.tsx", "lib"],
+  "include": [
+    "next-env.d.ts",
+    "pages/**/*.tsx",
+    "components/**/*.tsx",
+    "components/**/*.ts",
+    "lib"
+  ],
   "exclude": [
     "node_modules",
     ".next",

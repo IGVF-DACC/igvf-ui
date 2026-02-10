@@ -106,7 +106,7 @@ describe("Test PillBadge component", () => {
       );
 
       // Should render with abbreviated testid
-      const badge = screen.getByTestId("abbreviated-1-abbreviated");
+      const badge = screen.getByTestId("abbreviated-1-abbreviated-pill");
       expect(badge).toBeInTheDocument();
 
       // Should contain the icon
@@ -127,7 +127,7 @@ describe("Test PillBadge component", () => {
       );
 
       // The tooltip component should be rendered with the proper aria-describedby attribute
-      const badge = screen.getByTestId("abbreviated-2-abbreviated");
+      const badge = screen.getByTestId("abbreviated-2-abbreviated-pill");
       expect(badge).toHaveAttribute(
         "aria-describedby",
         "tooltip-pill-badge-abbreviated-2"
@@ -145,7 +145,7 @@ describe("Test PillBadge component", () => {
         </PillBadge>
       );
 
-      const badge = screen.getByTestId("abbreviated-3-abbreviated");
+      const badge = screen.getByTestId("abbreviated-3-abbreviated-pill");
       expect(badge).toHaveClass("abbreviated-custom");
     });
 
@@ -156,12 +156,12 @@ describe("Test PillBadge component", () => {
         </PillBadge>
       );
 
-      const badge = screen.getByTestId("abbreviated-4-abbreviated");
+      const badge = screen.getByTestId("abbreviated-4-abbreviated-pill");
       expect(badge).toHaveClass(
         "h-4.5",
         "w-4.5",
         "rounded-full",
-        "border-1",
+        "border",
         "border-white",
         "ring"
       );
@@ -178,7 +178,7 @@ describe("Test PillBadge component", () => {
         </PillBadge>
       );
 
-      const badge = screen.getByTestId("abbreviated-5-abbreviated");
+      const badge = screen.getByTestId("abbreviated-5-abbreviated-pill");
       // Should not have the icon position classes since it's abbreviated
       expect(badge).not.toHaveClass("pl-0.5", "pr-1.5");
       expect(badge).not.toHaveClass("px-1.5");
@@ -205,7 +205,7 @@ describe("Test PillBadge component", () => {
       );
 
       // Should render abbreviated with default className="", testid="", abbreviatedLabel passed
-      const badge = screen.getByTestId("-abbreviated");
+      const badge = screen.getByTestId("abbreviated-pill");
       expect(badge).toBeInTheDocument();
       expect(badge).toHaveAttribute("aria-describedby", "tooltip-pill-badge");
     });
@@ -219,13 +219,13 @@ describe("Test PillBadge component", () => {
       );
 
       // Should render with all default values: className="", testid=""
-      const badge = container.querySelector('[data-testid="-abbreviated"]');
+      const badge = container.querySelector('[data-testid="abbreviated-pill"]');
       expect(badge).toBeInTheDocument();
       expect(badge).toHaveClass(
         "h-4.5",
         "w-4.5",
         "rounded-full",
-        "border-1",
+        "border",
         "border-white",
         "ring"
       );
@@ -241,7 +241,7 @@ describe("Test PillBadge component", () => {
       );
 
       // Should use default className="" but provided testid and abbreviatedLabel
-      const badge = screen.getByTestId("partial-params-abbreviated");
+      const badge = screen.getByTestId("partial-params-abbreviated-pill");
       expect(badge).toBeInTheDocument();
       expect(badge).toHaveAttribute(
         "aria-describedby",
@@ -259,7 +259,7 @@ describe("Test PillBadge component", () => {
         </PillBadge>
       );
 
-      const badge1 = screen.getByTestId("branch-test-1-abbreviated");
+      const badge1 = screen.getByTestId("branch-test-1-abbreviated-pill");
       expect(badge1).toBeInTheDocument();
       expect(badge1).toHaveClass("h-4.5", "w-4.5", "rounded-full");
       unmount1();
@@ -271,7 +271,7 @@ describe("Test PillBadge component", () => {
         </PillBadge>
       );
 
-      const badge2 = screen.getByTestId("-abbreviated");
+      const badge2 = screen.getByTestId("abbreviated-pill");
       expect(badge2).toBeInTheDocument();
       expect(badge2).toHaveClass("custom-branch");
       unmount2();
@@ -301,7 +301,7 @@ describe("Test PillBadge component", () => {
         </PillBadge>
       );
 
-      const badge1 = screen.getByTestId("null-test-abbreviated");
+      const badge1 = screen.getByTestId("null-test-abbreviated-pill");
       expect(badge1).toBeInTheDocument();
       unmount1();
 
@@ -312,7 +312,7 @@ describe("Test PillBadge component", () => {
         </PillBadge>
       );
 
-      const badge2 = screen.getByTestId("-abbreviated");
+      const badge2 = screen.getByTestId("abbreviated-pill");
       expect(badge2).toBeInTheDocument();
       unmount2();
     });
@@ -334,7 +334,7 @@ describe("Test PillBadge component", () => {
       );
 
       // Should render abbreviated version with empty testid
-      const badge = screen.getByTestId("-abbreviated");
+      const badge = screen.getByTestId("abbreviated-pill");
       expect(badge).toBeInTheDocument();
     });
 
@@ -384,7 +384,9 @@ describe("Test PillBadge component", () => {
         </PillBadge>
       );
 
-      const badge = screen.getByTestId("full-abbreviated-test-abbreviated");
+      const badge = screen.getByTestId(
+        "full-abbreviated-test-abbreviated-pill"
+      );
       expect(badge).toHaveClass("abbreviated-all-custom");
       expect(screen.getByTestId("icon")).toBeInTheDocument();
       // Check tooltip is properly set up with aria-describedby

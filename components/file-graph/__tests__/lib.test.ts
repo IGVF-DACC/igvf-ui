@@ -15,6 +15,16 @@ import type { QualityMetricObject } from "../../../lib/quality-metric";
 import type { Node } from "@xyflow/react";
 import type { NodeMetadata } from "../types";
 
+jest.mock("../../../lib/color", () => ({
+  colorVariableToColorHex: jest.fn((colorVar: string) => {
+    const map: Record<string, string> = {
+      "var(--color-status-released-bg)": "#00a651",
+      "var(--color-status-archived-bg)": "#b0b0b0",
+    };
+    return map[colorVar] || "";
+  }),
+}));
+
 // Test constants
 describe("Constants", () => {
   it("should export correct node dimensions", () => {
@@ -928,7 +938,8 @@ describe("countFileNodes", () => {
 });
 
 describe("generateSVGContent", () => {
-  // Mock DOM elements factory
+  // Mock DOM-elements factory that creates a fake DOM element for use in Jest tests. It returns a
+  // plain object that mimics the interface of a real HTMLElement
   function createMockElement(tagName: string): any {
     return {
       tagName: tagName.toUpperCase(),
@@ -937,10 +948,8 @@ describe("generateSVGContent", () => {
       removeAttribute: jest.fn(),
       querySelector: jest.fn().mockReturnValue(null),
       querySelectorAll: jest.fn().mockReturnValue([]),
-      classList: {
-        remove: jest.fn(),
-      },
-      style: {},
+      classList: { remove: jest.fn() } as unknown as DOMTokenList,
+      style: {} as unknown as CSSStyleDeclaration,
       getBoundingClientRect: jest.fn().mockReturnValue({
         width: 800,
         height: 600,
@@ -1084,7 +1093,7 @@ describe("generateSVGContent", () => {
     const result = generateSVGContent("test-graph-id");
 
     expect(result).toContain('<polygon points="0,0 10,5 0,10"');
-    expect(result).toContain('fill="#ff0000"');
+    expect(result).toContain('fill="#6b7280"');
   });
 
   it("should handle edges with default colors when attributes are missing", () => {
@@ -1161,33 +1170,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const _nodes: Node<NodeMetadata>[] = [
-      {
-        id: "file-node-1",
-        position: { x: 0, y: 0 },
-        data: {
-          kind: NODE_KINDS.FILE,
-          file: {
-            "@id": "/files/IGVFFI001ABC/",
-            "@type": ["File", "Item"],
-            accession: "IGVFFI001ABC",
-            file_format: "bigWig",
-            file_size: 123456,
-            href: "/files/IGVFFI001ABC/@@download/IGVFFI001ABC.bigWig",
-            upload_status: "validated",
-            content_type: "application/octet-stream",
-            file_set: "/file-sets/set1",
-          },
-          upstreamNativeFiles: [],
-          upstreamExternalFiles: [],
-          upstreamFileSetNodes: [],
-          referenceFiles: [],
-          qualityMetrics: [],
-        },
-      },
-    ];
     const result = generateSVGContent("test-graph-id");
-
     expect(result).toContain('font-family="Helvetica, Arial, sans-serif"');
   });
 
@@ -1241,35 +1224,6 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const _nodes: Node<NodeMetadata>[] = [
-      {
-        id: "fileset-node-1",
-        position: { x: 50, y: 100 },
-        data: {
-          kind: NODE_KINDS.FILESET,
-          fileSet: {
-            "@id": "/file-sets/set1",
-            "@type": ["AnalysisSet", "FileSet", "Item"],
-            accession: "IGVFDS001ABC",
-            files: [],
-            file_set_type: "analysis",
-            summary: "Test analysis set",
-          },
-          externalFiles: [],
-          downstreamFile: {
-            "@id": "/files/IGVFFI001ABC/",
-            "@type": ["File", "Item"],
-            accession: "IGVFFI001ABC",
-            file_format: "bigWig",
-            file_size: 123456,
-            href: "/files/IGVFFI001ABC/@@download/IGVFFI001ABC.bigWig",
-            upload_status: "validated",
-            content_type: "application/octet-stream",
-            file_set: "/file-sets/set1",
-          },
-        },
-      },
-    ];
     const result = generateSVGContent("test-graph-id");
 
     expect(result).toContain("Measurement FileSet");
@@ -1326,35 +1280,6 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const _nodes: Node<NodeMetadata>[] = [
-      {
-        id: "fileset-node-1",
-        position: { x: 0, y: 0 },
-        data: {
-          kind: NODE_KINDS.FILESET,
-          fileSet: {
-            "@id": "/file-sets/set1",
-            "@type": ["UnknownSet", "FileSet", "Item"],
-            accession: "IGVFDS001ABC",
-            files: [],
-            file_set_type: "unknown",
-            summary: "Unknown file set",
-          },
-          externalFiles: [],
-          downstreamFile: {
-            "@id": "/files/IGVFFI001ABC/",
-            "@type": ["File", "Item"],
-            accession: "IGVFFI001ABC",
-            file_format: "bigWig",
-            file_size: 123456,
-            href: "/files/IGVFFI001ABC/@@download/IGVFFI001ABC.bigWig",
-            upload_status: "validated",
-            content_type: "application/octet-stream",
-            file_set: "/file-sets/set1",
-          },
-        },
-      },
-    ];
     const result = generateSVGContent("test-graph-id");
 
     expect(result).toContain("Unknown FileSet");
@@ -1404,35 +1329,6 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const _nodes: Node<NodeMetadata>[] = [
-      {
-        id: "fileset-node-1",
-        position: { x: 0, y: 0 },
-        data: {
-          kind: NODE_KINDS.FILESET,
-          fileSet: {
-            "@id": "/file-sets/set1",
-            "@type": ["FileSet", "Item"],
-            accession: "IGVFDS001ABC",
-            files: [],
-            file_set_type: "unknown",
-            summary: "Unknown file set",
-          },
-          externalFiles: [],
-          downstreamFile: {
-            "@id": "/files/IGVFFI001ABC/",
-            "@type": ["File", "Item"],
-            accession: "IGVFFI001ABC",
-            file_format: "bigWig",
-            file_size: 123456,
-            href: "/files/IGVFFI001ABC/@@download/IGVFFI001ABC.bigWig",
-            upload_status: "validated",
-            content_type: "application/octet-stream",
-            file_set: "/file-sets/set1",
-          },
-        },
-      },
-    ];
     const result = generateSVGContent("test-graph-id");
 
     expect(result).toContain("No Type FileSet");
@@ -1470,35 +1366,11 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const _nodes: Node<NodeMetadata>[] = [
-      {
-        id: "missing-node-1",
-        position: { x: 10, y: 20 },
-        data: {
-          kind: NODE_KINDS.FILE,
-          file: {
-            "@id": "/files/IGVFFI001ABC/",
-            "@type": ["File", "Item"],
-            accession: "IGVFFI001ABC",
-            file_format: "bigWig",
-            file_size: 123456,
-            href: "/files/IGVFFI001ABC/@@download/IGVFFI001ABC.bigWig",
-            upload_status: "validated",
-            content_type: "application/octet-stream",
-            file_set: "/file-sets/set1",
-          },
-          upstreamNativeFiles: [],
-          upstreamExternalFiles: [],
-          upstreamFileSetNodes: [],
-          referenceFiles: [],
-          qualityMetrics: [],
-        },
-      },
-    ];
     const result = generateSVGContent("test-graph-id");
 
     expect(result).toBeDefined();
     expect(result).toContain("<svg");
+
     // Should not contain any node content since the node SVG was not found
     expect(result).not.toContain('transform="translate(10, 20)"');
   });
@@ -1595,25 +1467,6 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const _nodes: Node<NodeMetadata>[] = [
-      {
-        id: "file1",
-        type: "file",
-        position: { x: 100, y: 200 },
-        data: {
-          kind: "file",
-          nodeObject: {
-            "@id": "/files/file1/",
-            "@type": ["File"],
-            accession: "FILE001",
-            file_format: "fastq",
-          },
-        } as any,
-        width: 150,
-        height: 80,
-      },
-    ];
-
     const result = generateSVGContent("test-graph-id");
 
     expect(result).toContain('width="260px"');
@@ -1668,5 +1521,65 @@ describe("generateSVGContent", () => {
     // Should default to position (0, 0) when transform doesn't match expected pattern
     expect(result).toContain('transform="translate(0, 0)"');
     expect(result).toContain("Test Node");
+  });
+
+  it("should convert color variables to hex for file nodes", () => {
+    const mockFileNode = createMockElement("div");
+    mockFileNode.style = { transform: "translate(10px, 20px)" };
+
+    // Set up an SVG with elements that have fill colors using CSS variables.
+    const mockFileSvg = createMockElement("svg");
+    mockFileSvg.innerHTML =
+      '<rect fill="var(--color-status-released-bg)" /><text fill="var(--color-status-archived-bg)">Status</text><circle fill="var(--color-unknown-variable)" />';
+    mockFileNode.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === "svg") {
+        return mockFileSvg;
+      }
+      return null;
+    });
+
+    // Mock the renderer to return our file node.
+    const mockRenderer = createMockElement("div");
+    mockRenderer.querySelectorAll = jest.fn().mockImplementation((selector) => {
+      if (selector === "[data-id]") {
+        return [mockFileNode];
+      }
+      if (selector === ".react-flow__edge path") {
+        return [];
+      }
+      if (selector === ".react-flow__edge polygon") {
+        return [];
+      }
+      return [];
+    });
+    mockRenderer.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === ".react-flow__viewport") {
+        return createMockElement("div");
+      }
+      return null;
+    });
+
+    // Mock the container to return our renderer.
+    const mockContainer = createMockElement("div");
+    mockContainer.querySelector = jest.fn().mockReturnValue(mockRenderer);
+
+    // Mock the document.getElementById to return our container.
+    jest
+      .spyOn(document, "getElementById")
+      .mockReturnValue(mockContainer as any);
+
+    // Call `generateSVGContent` to make sure it does the color variable conversion to hex values.
+    const result = generateSVGContent("test-graph-id");
+
+    // CSS variables should be converted to hex values.
+    expect(result).toContain('fill="#00a651"');
+    expect(result).toContain('fill="#b0b0b0"');
+
+    // Original CSS variables should not remain.
+    expect(result).not.toContain("var(--color-status-released-bg)");
+    expect(result).not.toContain("var(--color-status-archived-bg)");
+
+    // Unknown variable falls back to the original when colorVariableToColorHex returns falsy.
+    expect(result).toContain('fill="var(--color-unknown-variable)"');
   });
 });
