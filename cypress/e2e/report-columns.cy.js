@@ -9,7 +9,7 @@ describe("Test report column selector", () => {
     // Make sure the column count string displays, and doesn't contain a maximum count.
     cy.get(`[data-testid="visible-column-count"]`).should("exist");
     cy.get(`[data-testid="visible-column-count"]`).contains(
-      /^\d+ columns shown$/
+      /^\d+ columns shown of/
     );
 
     // Make sure there are two fieldsets with a data-testid of "column-checkboxes".
