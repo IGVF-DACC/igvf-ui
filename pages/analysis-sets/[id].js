@@ -21,6 +21,7 @@ import {
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DocumentTable from "../../components/document-table";
+import { DoiControl } from "../../components/doi";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import { FileAccessionAndDownload } from "../../components/file-download";
@@ -101,6 +102,7 @@ export default function AnalysisSet({
       <Breadcrumbs item={analysisSet} />
       <EditableItem item={analysisSet}>
         <PagePreamble sections={sections} />
+        <DoiControl doi={analysisSet.doi} />
         <AlternativeIdentifiers
           alternateAccessions={analysisSet.alternate_accessions}
           supersedes={supersedes}

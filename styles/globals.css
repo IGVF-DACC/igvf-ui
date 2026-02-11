@@ -100,6 +100,11 @@
   --color-optional-facet-quick-hide-closed: var(--color-black);
   --color-optional-facet-quick-hide-hover-open: var(--color-gray-500);
   --color-optional-facet-quick-hide-hover-closed: var(--color-gray-200);
+
+  /** DOI badge; color derived from doi.org; same in light and dark mode */
+  --color-doi-brand: oklch(0.8181 0.1678 81.21);
+  --color-doi-outline: oklch(0 0 0);
+  --color-doi-label: oklch(0 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -115,6 +120,11 @@
     --color-optional-facet-quick-hide-closed: var(--color-white);
     --color-optional-facet-quick-hide-hover-open: var(--color-gray-500);
     --color-optional-facet-quick-hide-hover-closed: var(--color-gray-700);
+
+    /** DOI badge; color derived from doi.org; same in light and dark mode */
+    --color-doi-brand: oklch(0.8181 0.1678 81.21);
+    --color-doi-outline: oklch(1 0 0);
+    --color-doi-label: oklch(0 0 0);
   }
 }
 

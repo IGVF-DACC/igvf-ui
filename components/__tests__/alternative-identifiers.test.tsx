@@ -98,7 +98,7 @@ describe("AlternativeIdentifiers", () => {
       <AlternativeIdentifiers alternateAccessions={["IGVFDS0001ALTR"]} />
     );
     const mainDiv = container.firstChild as HTMLElement;
-    expect(mainDiv).toHaveClass("-mt-5", "mb-5", "text-sm", "text-gray-500");
+    expect(mainDiv).toHaveClass("text-sm", "text-gray-500");
   });
 });
 

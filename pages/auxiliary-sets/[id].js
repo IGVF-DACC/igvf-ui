@@ -17,6 +17,7 @@ import {
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
 import DocumentTable from "../../components/document-table";
+import { DoiControl } from "../../components/doi";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetFilesTables from "../../components/file-set-files-tables";
@@ -85,6 +86,7 @@ export default function AuxiliarySet({
       <Breadcrumbs item={auxiliarySet} />
       <EditableItem item={auxiliarySet}>
         <PagePreamble sections={sections} />
+        <DoiControl doi={auxiliarySet.doi} />
         <AlternativeIdentifiers
           alternateAccessions={auxiliarySet.alternate_accessions}
           supersedes={supersedes}

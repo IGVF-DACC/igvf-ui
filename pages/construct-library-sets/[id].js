@@ -14,6 +14,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DocumentTable from "../../components/document-table";
+import { DoiControl } from "../../components/doi";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetFilesTables from "../../components/file-set-files-tables";
@@ -285,6 +286,7 @@ export default function ConstructLibrarySet({
       <Breadcrumbs item={constructLibrarySet} />
       <EditableItem item={constructLibrarySet}>
         <PagePreamble sections={sections} />
+        <DoiControl doi={constructLibrarySet.doi} />
         <AlternativeIdentifiers
           alternateAccessions={constructLibrarySet.alternate_accessions}
           supersedes={supersedes}
