@@ -48,6 +48,11 @@ const HASH_SEED = 0xe8c0f852;
 const SVG_CONTENT_PADDING = 5;
 
 /**
+ * List of statuses considered "archived".
+ */
+const archivedStatuses = ["archived", "revoked", "deleted"];
+
+/**
  * Static root node of ELK graph.
  */
 const rootElkNode: ElkNodeEx = {
@@ -117,6 +122,57 @@ export function trimIsolatedFiles(
       filesWithOutgoingEdges.has(file["@id"]) ||
       filesWithIncomingEdges.has(file["@id"])
   );
+}
+
+/**
+ * Remove files with archived, revoked, or deleted statuses if `isArchivedVisible` is false. Files
+ * without a status get filtered out as well. If `isArchivedVisible` is true, all files get
+ * included regardless of status.
+ *
+ * @param nativeFiles - Native file objects to filter
+ * @param isArchivedVisible - True to include archived files in the graph
+ * @returns Filtered array of file objects
+ */
+export function trimArchivedFiles(
+  nativeFiles: FileObject[],
+  isArchivedVisible: boolean
+): FileObject[] {
+  return isArchivedVisible
+    ? nativeFiles
+    : nativeFiles.filter(
+        (file) => file.status && !archivedStatuses.includes(file.status)
+      );
+}
+
+/**
+ * Generate the list of files to include in the graph. This involves:
+ * - Filtering out `derived_from` files not included in `files`.
+ * - Trimming isolated files that have no connections to other files in the graph
+ *
+ * @param files - Files from which to calculate files to include in the graph
+ * @param availableDerivedFromFiles - All files that files in the graph derive from
+ * @returns Files to include in the graph
+ */
+export function generateIncludedFiles(
+  files: FileObject[],
+  availableDerivedFromFiles: FileObject[]
+): FileObject[] {
+  // Create a set of paths of files that are available to be included in the graph. Any files
+  // unavailable because of incomplete indexing or access privileges do not get included.
+  const availableFilePaths = new Set([
+    ...files.map((file) => file["@id"]),
+    ...availableDerivedFromFiles.map((file) => file["@id"]),
+  ]);
+
+  // Copy the files but with unavailable files filtered out of their `derived_from` arrays.
+  const filesWithFilteredDerived = files.map((file) => ({
+    ...file,
+    derived_from:
+      file.derived_from?.filter((path) => availableFilePaths.has(path)) || [],
+  }));
+
+  // Only consider native files that derive from other files or that other files derive from.
+  return trimIsolatedFiles(filesWithFilteredDerived, availableDerivedFromFiles);
 }
 
 /**

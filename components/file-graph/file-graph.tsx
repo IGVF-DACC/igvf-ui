@@ -16,6 +16,7 @@ import {
   type NodeProps,
 } from "@xyflow/react";
 // components
+import Checkbox from "../checkbox";
 import { DataAreaTitle, DataPanel } from "../data-area";
 import Link from "../link-no-prefetch";
 import { QualityMetricModal } from "../quality-metric";
@@ -35,10 +36,11 @@ import {
   countFileNodes,
   elkToReactFlow,
   generateGraphData,
+  generateIncludedFiles,
   MAX_LINE_LENGTH,
   NODE_HEIGHT,
   NODE_WIDTH,
-  trimIsolatedFiles,
+  trimArchivedFiles,
 } from "./lib";
 import { NodeStatus } from "./status";
 import {
@@ -518,6 +520,7 @@ function GraphCore({
  * @param graphData - Graph data after ELK layout
  * @param nativeFiles - Files included directly in the file set the user is viewing
  * @param graphId - ID to assign to the graph container element
+ * @param onNodeLayout - Callback invoked after node layout is complete with the laid out nodes
  */
 function Graph({
   graphData,
@@ -671,48 +674,70 @@ export function FileGraph({
   fileId?: string;
 }) {
   const tooltipAttr = useTooltip(`tooltip-${graphId}`);
+  const [isArchivedVisible, setIsArchivedVisible] = useState(false);
 
-  // Create a set of paths of files that are available to be included in the graph. Any files
-  // unavailable because of incomplete indexing or access privileges do not get included.
-  const availableFilePaths = new Set([
-    ...files.map((file) => file["@id"]),
-    ...derivedFromFiles.map((file) => file["@id"]),
-  ]);
-
-  // Copy the files but with unavailable files filtered out of their `derived_from` arrays.
-  const filesWithFilteredDerived = files.map((file) => ({
-    ...file,
-    derived_from:
-      file.derived_from?.filter((path) => availableFilePaths.has(path)) || [],
-  }));
-
-  // Only consider native files that derive from other files or that other files derive from. From
-  // these files look for cycles caused by circular `derived_from` relationships.
-  const includedFiles = trimIsolatedFiles(
-    filesWithFilteredDerived,
-    derivedFromFiles
+  // Filter out archived files if the user has not opted to include them.
+  const currentFiles = trimArchivedFiles(files, isArchivedVisible);
+  const includedDerivedFromFiles = trimArchivedFiles(
+    derivedFromFiles,
+    isArchivedVisible
   );
-  const cycles = detectCycles(includedFiles.concat(derivedFromFiles));
 
+  // Generate the lists of files to include in the graph, both for all files and for non-archived
+  // files.
+  const includedFiles = generateIncludedFiles(
+    currentFiles,
+    includedDerivedFromFiles
+  );
+  const includedFilesWithArchived = isArchivedVisible
+    ? includedFiles
+    : generateIncludedFiles(files, includedDerivedFromFiles);
+
+  // Determine if the graph is empty only after filtering out archived files. We still want to show
+  // a message about archived files being hidden in this case instead of the graph or cycle errors.
+  const isEmptyGraphAfterFiltering =
+    includedFiles.length === 0 && includedFilesWithArchived.length > 0;
+
+  // Look for cycles caused by circular `derived_from` relationships.
+  const cycles = detectCycles(includedFiles.concat(includedDerivedFromFiles));
+
+  // Final list of files now determined. Use them to generate the graph data if there are no cycles.
   const graphData =
     cycles.length === 0
       ? generateGraphData(
           includedFiles,
-          derivedFromFiles,
+          includedDerivedFromFiles,
           fileFileSets,
           referenceFiles,
           qualityMetrics
         )
       : null;
 
-  if (graphData || cycles.length > 0) {
+  if (graphData || cycles.length > 0 || isEmptyGraphAfterFiltering) {
     return (
       <section role="region" aria-labelledby="file-graph">
         <DataAreaTitle id={panelId}>
           <div id="file-graph">{title}</div>
-          <TooltipRef tooltipAttr={tooltipAttr}>
-            <DownloadTrigger graphId={graphId} fileId={fileId} />
-          </TooltipRef>
+          <div className="flex gap-1">
+            <Checkbox
+              id={`include-archived-${panelId}`}
+              checked={isArchivedVisible}
+              name="Include archived files"
+              onClick={() => setIsArchivedVisible((visible) => !visible)}
+              className="items-center [&>input]:mr-0"
+            >
+              <div className="order-first mr-1 text-sm">
+                Include archived files
+              </div>
+            </Checkbox>
+            <TooltipRef tooltipAttr={tooltipAttr}>
+              <DownloadTrigger
+                graphId={graphId}
+                fileId={fileId}
+                isDisabled={cycles.length > 0 || isEmptyGraphAfterFiltering}
+              />
+            </TooltipRef>
+          </div>
           <Tooltip tooltipAttr={tooltipAttr}>
             Download the graph as an SVG file. See{" "}
             <Link
@@ -729,9 +754,16 @@ export function FileGraph({
           <DataPanel isPaddingSuppressed>
             <Graph
               graphData={graphData}
-              nativeFiles={filesWithFilteredDerived}
+              nativeFiles={includedFiles}
               graphId={graphId}
             />
+          </DataPanel>
+        ) : isEmptyGraphAfterFiltering ? (
+          <DataPanel>
+            <p>
+              All files in this graph are archived and currently hidden. Select{" "}
+              <b>Include archived files</b> to view them.
+            </p>
           </DataPanel>
         ) : (
           <DataPanel>
