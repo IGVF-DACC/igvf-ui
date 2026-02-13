@@ -673,6 +673,8 @@ export function FileGraph({
   graphId?: string;
   fileId?: string;
 }) {
+  console.log("FILE GRAPH 0", derivedFromFiles);
+
   const tooltipAttr = useTooltip(`tooltip-${graphId}`);
   const [isArchivedVisible, setIsArchivedVisible] = useState(false);
 
