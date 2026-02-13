@@ -23,6 +23,7 @@ import { QualityMetricModal } from "../quality-metric";
 import SeparatedList from "../separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
+import { UC } from "../../lib/constants";
 import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
@@ -761,8 +762,8 @@ export function FileGraph({
         ) : isEmptyGraphAfterFiltering ? (
           <DataPanel>
             <p>
-              All files in this graph are archived and currently hidden. Select{" "}
-              <b>Include archived files</b> to view them.
+              The graph doesn{UC.rsquo}t appear because files are archived.
+              Select <b>Include archived files</b> to view the graph.
             </p>
           </DataPanel>
         ) : (
