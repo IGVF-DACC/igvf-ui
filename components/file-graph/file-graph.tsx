@@ -718,7 +718,7 @@ export function FileGraph({
     cycles.length === 0
       ? generateGraphData(
           includedFiles,
-          includedDerivedFromFiles,
+          derivedFromFiles,
           fileFileSets,
           referenceFiles,
           qualityMetrics
