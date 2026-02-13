@@ -673,8 +673,6 @@ export function FileGraph({
   graphId?: string;
   fileId?: string;
 }) {
-  console.log("FILE GRAPH 0", derivedFromFiles);
-
   const tooltipAttr = useTooltip(`tooltip-${graphId}`);
   const [isArchivedVisible, setIsArchivedVisible] = useState(false);
 
@@ -683,11 +681,6 @@ export function FileGraph({
   const includedDerivedFromFiles = trimArchivedFiles(
     derivedFromFiles,
     isArchivedVisible
-  );
-  console.log(
-    "******* FILE GRAPH 1: %o\n%o",
-    currentFiles,
-    includedDerivedFromFiles
   );
 
   // Generate the lists of files to include in the graph, both for all files and for non-archived
@@ -699,21 +692,14 @@ export function FileGraph({
   const includedFilesWithArchived = isArchivedVisible
     ? includedFiles
     : generateIncludedFiles(files, includedDerivedFromFiles);
-  console.log(
-    "******* FILE GRAPH 2: %o\n%o",
-    includedFiles,
-    includedFilesWithArchived
-  );
 
   // Determine if the graph is empty only after filtering out archived files. We still want to show
   // a message about archived files being hidden in this case instead of the graph or cycle errors.
   const isEmptyGraphAfterFiltering =
     includedFiles.length === 0 && includedFilesWithArchived.length > 0;
-  console.log("******* FILE GRAPH 3:", isEmptyGraphAfterFiltering);
 
   // Look for cycles caused by circular `derived_from` relationships.
   const cycles = detectCycles(includedFiles.concat(includedDerivedFromFiles));
-  console.log("******* FILE GRAPH 4:", cycles);
 
   // Final list of files now determined. Use them to generate the graph data if there are no cycles.
   const graphData =
@@ -726,7 +712,6 @@ export function FileGraph({
           qualityMetrics
         )
       : null;
-  console.log("******* FILE GRAPH 5:", graphData);
 
   if (graphData || cycles.length > 0 || isEmptyGraphAfterFiltering) {
     return (

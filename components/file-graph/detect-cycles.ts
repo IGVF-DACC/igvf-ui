@@ -127,8 +127,7 @@ function findCyclesFromNode(
  *    its neighbors until we have exhausted that subtree's nodes.
  *
  * Provide both native and external files in `files`. If a derived-from file does not appear in
- * `files`, this function throws an error though this was probably already handled by schema
- * validation.
+ * `files`, it get skipped.
  *
  * @param files - Native and external files to process
  * @returns result.adjacencyById - Adjacency map for each file's `@id` to all its derived_from `@id`
@@ -138,31 +137,15 @@ function buildAdjacencyMap(files: FileObject[]): {
   adjacencyById: Map<string, string[]>;
   allIdsInGraph: string[];
 } {
-  // Make a lookup map from each file's @id to the corresponding file object.
-  const objectById = new Map(files.map((file) => [file["@id"], file]));
-
-  // Collect all derived_from references to then validate them.
-  const allDerivedFromIds = files.flatMap((file) =>
-    (file.derived_from || []).map((derivedFromId) => ({
-      fileId: file["@id"],
-      derivedFromId,
-    }))
-  );
-
-  // Validate that all derived_from `@id`s exist in the given files. Throw if any don't exist.
-  const invalidRef = allDerivedFromIds.find(
-    ({ derivedFromId }) => !objectById.has(derivedFromId)
-  );
-  if (invalidRef) {
-    throw new Error(
-      `File '${invalidRef.fileId}' derived_from references missing @id '${invalidRef.derivedFromId}'.`
-    );
-  }
-
   // Build map for each file's @id to all its derived_from @ids -- the adjacency map.
   const adjacencyById = new Map<string, string[]>();
   files.forEach((file) => {
-    adjacencyById.set(file["@id"], [...(file.derived_from || [])]);
+    // Filter `file.derived_from` to only include `@id` that are present in the graph. This handles the case where a
+    // file derives from an external file that isn't included in the graph. We still want to render the graph and not consider this a cycle, so we ignore derived_from references to files that aren't included in the graph.
+    const validDerivedFrom = (file.derived_from || []).filter((id) =>
+      files.some((f) => f["@id"] === id)
+    );
+    adjacencyById.set(file["@id"], validDerivedFrom);
   });
 
   // Build the array of all @ids present in the graph.
