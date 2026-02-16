@@ -1,7 +1,7 @@
 // node_modules
 import _ from "lodash";
 import PropTypes from "prop-types";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 // components
 import AliasList from "../../components/alias-list";
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
@@ -96,6 +96,10 @@ export default function AnalysisSet({
   const { profiles } = useContext(SessionContext);
   const preferredAssayTitleDescriptionMap =
     getPreferredAssayTitleDescriptionMap(profiles);
+
+  // State for whether to include deprecated files in the file table and graph.
+  const [areDeprecatedFilesVisible, setAreDeprecatedFilesVisible] =
+    useState(false);
 
   return (
     <>
@@ -300,6 +304,8 @@ export default function AnalysisSet({
                 files={files}
                 fileSet={analysisSet}
                 isFilteredVisible
+                areDeprecatedFilesVisible={areDeprecatedFilesVisible}
+                setAreDeprecatedFilesVisible={setAreDeprecatedFilesVisible}
               />
               <FileGraph
                 fileSet={analysisSet}
@@ -309,6 +315,10 @@ export default function AnalysisSet({
                 derivedFromFiles={derivedFromFiles}
                 qualityMetrics={qualityMetrics}
                 fileId={analysisSet.accession}
+                areDeprecatedFilesVisible={areDeprecatedFilesVisible}
+                setAreDeprecatedFilesVisible={() =>
+                  setAreDeprecatedFilesVisible((visible) => !visible)
+                }
               />
             </>
           )}

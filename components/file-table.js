@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
+import Checkbox from "./checkbox";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
@@ -12,6 +13,7 @@ import Status from "./status";
 import { WorkflowList } from "./workflow";
 // lib
 import { FileTableController } from "../lib/batch-download";
+import { trimDeprecatedFiles } from "../lib/files";
 import { dataSize, truthyOrZero } from "../lib/general";
 
 const filesColumns = [
@@ -111,6 +113,8 @@ export default function FileTable({
   controllerContent = null,
   isFilteredVisible = false,
   isDeletedVisible = false,
+  areDeprecatedFilesVisible = true,
+  setAreDeprecatedFilesVisible = () => {},
   panelId = "files",
 }) {
   // Compose the report link, either from the file set or the given link and label.
@@ -128,14 +132,8 @@ export default function FileTable({
     ? new FileTableController(fileSet, downloadQuery)
     : null;
 
-  const sortableGrid = (
-    <SortableGrid
-      data={files}
-      columns={filesColumns}
-      keyProp="@id"
-      meta={{ isFilteredVisible }}
-    />
-  );
+  // Filter out deprecated files if the user has not opted to include them.
+  const currentFiles = trimDeprecatedFiles(files, areDeprecatedFilesVisible);
 
   return (
     <>
@@ -143,6 +141,19 @@ export default function FileTable({
         {title}
         {(controller || finalReportLink) && (
           <div className="align-center flex gap-1">
+            <Checkbox
+              id={`file-table-deprecated-${panelId}`}
+              checked={areDeprecatedFilesVisible}
+              name="Include deprecated files"
+              onClick={() =>
+                setAreDeprecatedFilesVisible(!areDeprecatedFilesVisible)
+              }
+              className="items-center [&>input]:mr-0"
+            >
+              <div className="order-first mr-1 text-sm">
+                Include deprecated files
+              </div>
+            </Checkbox>
             {controller && (
               <BatchDownloadActuator
                 controller={controller}
@@ -163,7 +174,14 @@ export default function FileTable({
           </div>
         )}
       </DataAreaTitle>
-      <div className="overflow-hidden">{sortableGrid}</div>
+      <div className="overflow-hidden">
+        <SortableGrid
+          data={currentFiles}
+          columns={filesColumns}
+          keyProp="@id"
+          meta={{ isFilteredVisible }}
+        />
+      </div>
     </>
   );
 }
@@ -187,6 +205,10 @@ FileTable.propTypes = {
   isFilteredVisible: PropTypes.bool,
   // True to include deleted files in the linked report
   isDeletedVisible: PropTypes.bool,
+  // True to show deprecated files in the table and linked report
+  areDeprecatedFilesVisible: PropTypes.bool,
+  // Function to toggle visibility of deprecated files
+  setAreDeprecatedFilesVisible: PropTypes.func,
   // Unique ID for the table for the section directory
   panelId: PropTypes.string,
 };

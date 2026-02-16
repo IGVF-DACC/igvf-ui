@@ -24,6 +24,7 @@ import SeparatedList from "../separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { UC } from "../../lib/constants";
+import { trimDeprecatedFiles } from "../../lib/files";
 import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
@@ -41,7 +42,6 @@ import {
   MAX_LINE_LENGTH,
   NODE_HEIGHT,
   NODE_WIDTH,
-  trimDeprecatedFiles,
 } from "./lib";
 import { NodeStatus } from "./status";
 import {
@@ -652,6 +652,8 @@ function GraphCycleError({ cycles }: { cycles: string[][] }) {
  * @param panelId - ID of the file-graph panel unique on the page for the section directory
  * @param graphId - ID of the graph container element unique on the page
  * @param fileId - ID of the file the graph is for; used to customize download filename
+ * @param areDeprecatedFilesVisible - True to show deprecated files in the graph
+ * @param setAreDeprecatedFilesVisible - Function to set the visibility of deprecated files
  */
 export function FileGraph({
   files,
@@ -663,6 +665,8 @@ export function FileGraph({
   panelId = "file-graph",
   graphId = "file-graph-container",
   fileId = "",
+  areDeprecatedFilesVisible,
+  setAreDeprecatedFilesVisible,
 }: {
   files: FileObject[];
   fileFileSets: FileSetObject[];
@@ -673,15 +677,16 @@ export function FileGraph({
   panelId?: string;
   graphId?: string;
   fileId?: string;
+  areDeprecatedFilesVisible: boolean;
+  setAreDeprecatedFilesVisible: (visible: boolean) => void;
 }) {
   const tooltipAttr = useTooltip(`tooltip-${graphId}`);
-  const [isDeprecatedVisible, setIsDeprecatedVisible] = useState(false);
 
   // Filter out deprecated files if the user has not opted to include them.
-  const currentFiles = trimDeprecatedFiles(files, isDeprecatedVisible);
+  const currentFiles = trimDeprecatedFiles(files, areDeprecatedFilesVisible);
   const includedDerivedFromFiles = trimDeprecatedFiles(
     derivedFromFiles,
-    isDeprecatedVisible
+    areDeprecatedFilesVisible
   );
 
   // Generate the lists of files to include in the graph, both for all files and for non-deprecated
@@ -690,7 +695,7 @@ export function FileGraph({
     currentFiles,
     includedDerivedFromFiles
   );
-  const includedFilesWithDeprecated = isDeprecatedVisible
+  const includedFilesWithDeprecated = areDeprecatedFilesVisible
     ? includedFiles
     : generateIncludedFiles(files, includedDerivedFromFiles);
 
@@ -722,10 +727,10 @@ export function FileGraph({
           <div id="file-graph">{title}</div>
           <div className="flex gap-1">
             <Checkbox
-              id={`include-deprecated-${panelId}`}
-              checked={isDeprecatedVisible}
+              id={`file-graph-deprecated-${panelId}`}
+              checked={areDeprecatedFilesVisible}
               name="Include deprecated files"
-              onClick={() => setIsDeprecatedVisible((visible) => !visible)}
+              onClick={setAreDeprecatedFilesVisible}
               className="items-center [&>input]:mr-0"
             >
               <div className="order-first mr-1 text-sm">

@@ -13,6 +13,7 @@ import {
   cloneElement,
   ComponentType,
   ReactNode,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -416,6 +417,11 @@ export default function SortableGrid<
       setSortDirection("asc");
     }
   }
+
+  useEffect(() => {
+    // Reset to the first page whenever the number of data items changes.
+    setPageIndex(0);
+  }, [data.length]);
 
   // Generate the cells within the header row. The column title can contain a string or a React
   // component.

@@ -48,11 +48,6 @@ const HASH_SEED = 0xe8c0f852;
 const SVG_CONTENT_PADDING = 5;
 
 /**
- * List of statuses considered "archived".
- */
-const archivedStatuses = ["archived", "revoked", "deleted"];
-
-/**
  * Static root node of ELK graph.
  */
 const rootElkNode: ElkNodeEx = {
@@ -122,26 +117,6 @@ export function trimIsolatedFiles(
       filesWithOutgoingEdges.has(file["@id"]) ||
       filesWithIncomingEdges.has(file["@id"])
   );
-}
-
-/**
- * Remove files with archived, revoked, or deleted statuses if `isArchivedVisible` is false. Files
- * without a status get filtered out as well. If `isArchivedVisible` is true, all files get
- * included regardless of status.
- *
- * @param nativeFiles - Native file objects to filter
- * @param isArchivedVisible - True to include archived files in the graph
- * @returns Filtered array of file objects
- */
-export function trimDeprecatedFiles(
-  nativeFiles: FileObject[],
-  isArchivedVisible: boolean
-): FileObject[] {
-  return isArchivedVisible
-    ? nativeFiles
-    : nativeFiles.filter(
-        (file) => file.status && !archivedStatuses.includes(file.status)
-      );
 }
 
 /**

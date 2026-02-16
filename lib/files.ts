@@ -57,6 +57,11 @@ export type IlluminaSequenceFiles = {
 };
 
 /**
+ * List of statuses considered deprecated.
+ */
+const deprecatedStatuses = ["archived", "revoked", "deleted"];
+
+/**
  * Type guard to check if `file` is a FileObject.
  *
  * @param file - Could be anything; function validates it's a FileObject
@@ -479,4 +484,24 @@ export function extractSeqspecsForFile(
     );
   }
   return _.sortBy(matchingSeqspecs, "accession");
+}
+
+/**
+ * Remove files with archived, revoked, or deleted statuses if `isDeprecatedVisible` is false. Files
+ * without a status get filtered out as well. If `isDeprecatedVisible` is true, all files get
+ * included regardless of status.
+ *
+ * @param nativeFiles - Native file objects to filter
+ * @param isDeprecatedVisible - True to include deprecated files in the graph
+ * @returns Filtered array of file objects
+ */
+export function trimDeprecatedFiles(
+  nativeFiles: FileObject[],
+  isDeprecatedVisible: boolean
+): FileObject[] {
+  return isDeprecatedVisible
+    ? nativeFiles
+    : nativeFiles.filter(
+        (file) => file.status && !deprecatedStatuses.includes(file.status)
+      );
 }
