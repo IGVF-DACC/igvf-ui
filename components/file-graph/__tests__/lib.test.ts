@@ -8,7 +8,7 @@ import {
   getFileMetrics,
   NODE_WIDTH,
   NODE_HEIGHT,
-  trimArchivedFiles,
+  trimDeprecatedFiles,
   trimIsolatedFiles,
 } from "../lib";
 import { NODE_KINDS } from "../types";
@@ -1676,12 +1676,12 @@ describe("generateSVGContent", () => {
   });
 });
 
-describe("Test trimArchivedFiles function", () => {
+describe("Test trimDeprecatedFiles function", () => {
   it("should return an empty array when given an empty array", () => {
-    let result = trimArchivedFiles([], true);
+    let result = trimDeprecatedFiles([], true);
     expect(result).toEqual([]);
 
-    result = trimArchivedFiles([], false);
+    result = trimDeprecatedFiles([], false);
     expect(result).toEqual([]);
   });
 
@@ -1705,7 +1705,7 @@ describe("Test trimArchivedFiles function", () => {
       },
     ];
 
-    const result = trimArchivedFiles(files, false);
+    const result = trimDeprecatedFiles(files, false);
     expect(result).toHaveLength(1);
     expect(result[0]["@id"]).toBe("/files/file2");
   });
@@ -1730,7 +1730,7 @@ describe("Test trimArchivedFiles function", () => {
       },
     ];
 
-    const result = trimArchivedFiles(files, true);
+    const result = trimDeprecatedFiles(files, true);
     expect(result).toHaveLength(2);
     expect(result.map((f) => f["@id"])).toEqual([
       "/files/file1",
@@ -1758,7 +1758,7 @@ describe("Test trimArchivedFiles function", () => {
       },
     ];
 
-    const result = trimArchivedFiles(files, false);
+    const result = trimDeprecatedFiles(files, false);
     expect(result).toHaveLength(1);
     expect(result[0]["@id"]).toBe("/files/file2");
   });

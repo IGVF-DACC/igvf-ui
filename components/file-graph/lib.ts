@@ -133,7 +133,7 @@ export function trimIsolatedFiles(
  * @param isArchivedVisible - True to include archived files in the graph
  * @returns Filtered array of file objects
  */
-export function trimArchivedFiles(
+export function trimDeprecatedFiles(
   nativeFiles: FileObject[],
   isArchivedVisible: boolean
 ): FileObject[] {

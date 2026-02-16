@@ -41,7 +41,7 @@ import {
   MAX_LINE_LENGTH,
   NODE_HEIGHT,
   NODE_WIDTH,
-  trimArchivedFiles,
+  trimDeprecatedFiles,
 } from "./lib";
 import { NodeStatus } from "./status";
 import {
@@ -675,29 +675,30 @@ export function FileGraph({
   fileId?: string;
 }) {
   const tooltipAttr = useTooltip(`tooltip-${graphId}`);
-  const [isArchivedVisible, setIsArchivedVisible] = useState(false);
+  const [isDeprecatedVisible, setIsDeprecatedVisible] = useState(false);
 
-  // Filter out archived files if the user has not opted to include them.
-  const currentFiles = trimArchivedFiles(files, isArchivedVisible);
-  const includedDerivedFromFiles = trimArchivedFiles(
+  // Filter out deprecated files if the user has not opted to include them.
+  const currentFiles = trimDeprecatedFiles(files, isDeprecatedVisible);
+  const includedDerivedFromFiles = trimDeprecatedFiles(
     derivedFromFiles,
-    isArchivedVisible
+    isDeprecatedVisible
   );
 
-  // Generate the lists of files to include in the graph, both for all files and for non-archived
+  // Generate the lists of files to include in the graph, both for all files and for non-deprecated
   // files.
   const includedFiles = generateIncludedFiles(
     currentFiles,
     includedDerivedFromFiles
   );
-  const includedFilesWithArchived = isArchivedVisible
+  const includedFilesWithDeprecated = isDeprecatedVisible
     ? includedFiles
     : generateIncludedFiles(files, includedDerivedFromFiles);
 
-  // Determine if the graph is empty only after filtering out archived files. We still want to show
-  // a message about archived files being hidden in this case instead of the graph or cycle errors.
+  // Determine if the graph is empty only after filtering out deprecated files. We still want to
+  // show a message about deprecated files being hidden in this case instead of the graph or cycle
+  // errors.
   const isEmptyGraphAfterFiltering =
-    includedFiles.length === 0 && includedFilesWithArchived.length > 0;
+    includedFiles.length === 0 && includedFilesWithDeprecated.length > 0;
 
   // Look for cycles caused by circular `derived_from` relationships.
   const cycles = detectCycles(includedFiles.concat(includedDerivedFromFiles));
@@ -721,14 +722,14 @@ export function FileGraph({
           <div id="file-graph">{title}</div>
           <div className="flex gap-1">
             <Checkbox
-              id={`include-archived-${panelId}`}
-              checked={isArchivedVisible}
-              name="Include archived files"
-              onClick={() => setIsArchivedVisible((visible) => !visible)}
+              id={`include-deprecated-${panelId}`}
+              checked={isDeprecatedVisible}
+              name="Include deprecated files"
+              onClick={() => setIsDeprecatedVisible((visible) => !visible)}
               className="items-center [&>input]:mr-0"
             >
               <div className="order-first mr-1 text-sm">
-                Include archived files
+                Include deprecated files
               </div>
             </Checkbox>
             <TooltipRef tooltipAttr={tooltipAttr}>
@@ -762,8 +763,8 @@ export function FileGraph({
         ) : isEmptyGraphAfterFiltering ? (
           <DataPanel>
             <p>
-              The graph doesn{UC.rsquo}t appear because files are archived.
-              Select <b>Include archived files</b> to view the graph.
+              The graph doesn{UC.rsquo}t appear because files are deprecated.
+              Select <b>Include deprecated files</b> to view the graph.
             </p>
           </DataPanel>
         ) : (
