@@ -737,7 +737,6 @@ export function FileGraph({
         )
       : null;
 
-  console.log("TITLE", secDirTitle);
   if (graphData || cycles.length > 0 || isEmptyGraphAfterFiltering) {
     return (
       <section role="region" aria-labelledby="file-graph">

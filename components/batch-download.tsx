@@ -126,6 +126,7 @@ export function BatchDownloadActuator({
   size = "md",
   onDownloadActuated,
   onDownloadModalClosed,
+  isDisabled = false,
   children,
 }: {
   controller: BaseController;
@@ -133,6 +134,7 @@ export function BatchDownloadActuator({
   size?: "sm" | "md" | "lg";
   onDownloadActuated?: () => void;
   onDownloadModalClosed?: () => void;
+  isDisabled?: boolean;
   children?: React.ReactNode;
 }) {
   const tooltipAttr = useTooltip("download-actuator-tips");
@@ -153,6 +155,7 @@ export function BatchDownloadActuator({
             label={label}
             hasIconOnly={true}
             className="h-full"
+            isDisabled={isDisabled}
           >
             <ArrowDownTrayIcon className="h-2 w-2" />
           </Button>

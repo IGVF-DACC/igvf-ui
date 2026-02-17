@@ -174,6 +174,7 @@ export default function FileTable({
                 controller={controller}
                 label="Download files associated with this file set"
                 size="sm"
+                isDisabled={currentFiles.length === 0}
               />
             )}
             {controllerContent}
@@ -182,6 +183,7 @@ export default function FileTable({
                 href={finalReportLink}
                 label={label}
                 isDeletedVisible={isDeletedVisible}
+                isDisabled={currentFiles.length === 0}
               >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>

@@ -131,12 +131,14 @@ export function DataAreaTitleLink({
   label,
   isExternal,
   isDeletedVisible = false,
+  isDisabled = false,
   children,
 }: {
   href: string;
   label: string;
   isExternal?: boolean;
   isDeletedVisible?: boolean;
+  isDisabled?: boolean;
   children: React.ReactNode;
 }) {
   // Add status!=deleted to the query string to avoid linking to deleted items in reports. Replace
@@ -155,6 +157,7 @@ export function DataAreaTitleLink({
       size="sm"
       label={label}
       isExternal={isExternal}
+      isDisabled={isDisabled}
     >
       {children}
     </ButtonLink>
