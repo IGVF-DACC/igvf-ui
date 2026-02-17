@@ -652,6 +652,8 @@ function GraphCycleError({ cycles }: { cycles: string[][] }) {
  * @param referenceFiles - Reference files associated with `files`
  * @param qualityMetrics - Quality metrics for `files`
  * @param title - Title that appears above the graph panel
+ * @param deprecatedFileProps - Props for handling the visibility of deprecated files in the graph.
+ * @param secDirTitle - Title for the section directory if the graph is within a section.
  * @param panelId - ID of the file-graph panel unique on the page for the section directory
  * @param graphId - ID of the graph container element unique on the page
  * @param fileId - ID of the file the graph is for; used to customize download filename
@@ -666,6 +668,7 @@ export function FileGraph({
   qualityMetrics,
   title = "File Association Graph",
   deprecatedFileProps,
+  secDirTitle = "File Association Graph",
   panelId = "file-graph",
   graphId = "file-graph-container",
   fileId = "",
@@ -677,6 +680,7 @@ export function FileGraph({
   qualityMetrics: QualityMetricObject[];
   title?: string;
   deprecatedFileProps?: DeprecatedFileFilterProps;
+  secDirTitle?: string;
   panelId?: string;
   graphId?: string;
   fileId?: string;
@@ -733,10 +737,11 @@ export function FileGraph({
         )
       : null;
 
+  console.log("TITLE", secDirTitle);
   if (graphData || cycles.length > 0 || isEmptyGraphAfterFiltering) {
     return (
       <section role="region" aria-labelledby="file-graph">
-        <DataAreaTitle id={panelId}>
+        <DataAreaTitle id={panelId} secDirTitle={secDirTitle}>
           <div id="file-graph">{title}</div>
           <div className="flex gap-1">
             {deprecatedFileControlTitle && (

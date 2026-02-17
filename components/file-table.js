@@ -115,6 +115,7 @@ export default function FileTable({
   isFilteredVisible = false,
   isDeletedVisible = false,
   deprecatedFileProps,
+  secDirTitle = "Files",
   panelId = "files",
 }) {
   // Handle deprecated file visibility state and control title from props if provided.
@@ -149,7 +150,7 @@ export default function FileTable({
 
   return (
     <>
-      <DataAreaTitle id={panelId}>
+      <DataAreaTitle id={panelId} secDirTitle={secDirTitle}>
         {title}
         {(controller || finalReportLink) && (
           <div className="align-center flex gap-1">
@@ -232,6 +233,8 @@ FileTable.propTypes = {
     setAreDeprecatedFilesVisible: PropTypes.func.isRequired,
     deprecatedFileControlTitle: PropTypes.string,
   }),
+  // Title for this table's section directory entry if not default
+  secDirTitle: PropTypes.string,
   // Unique ID for the table for the section directory
   panelId: PropTypes.string,
 };
