@@ -304,8 +304,10 @@ export default function AnalysisSet({
                 files={files}
                 fileSet={analysisSet}
                 isFilteredVisible
-                areDeprecatedFilesVisible={areDeprecatedFilesVisible}
-                setAreDeprecatedFilesVisible={setAreDeprecatedFilesVisible}
+                deprecatedFileProps={{
+                  areDeprecatedFilesVisible,
+                  setAreDeprecatedFilesVisible,
+                }}
               />
               <FileGraph
                 fileSet={analysisSet}
@@ -315,10 +317,10 @@ export default function AnalysisSet({
                 derivedFromFiles={derivedFromFiles}
                 qualityMetrics={qualityMetrics}
                 fileId={analysisSet.accession}
-                areDeprecatedFilesVisible={areDeprecatedFilesVisible}
-                setAreDeprecatedFilesVisible={() =>
-                  setAreDeprecatedFilesVisible((visible) => !visible)
-                }
+                deprecatedFileProps={{
+                  areDeprecatedFilesVisible,
+                  setAreDeprecatedFilesVisible,
+                }}
               />
             </>
           )}

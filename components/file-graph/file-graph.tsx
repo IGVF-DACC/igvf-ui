@@ -24,7 +24,10 @@ import SeparatedList from "../separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { UC } from "../../lib/constants";
-import { trimDeprecatedFiles } from "../../lib/files";
+import {
+  type DeprecatedFileFilterProps,
+  trimDeprecatedFiles,
+} from "../../lib/files";
 import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
@@ -662,11 +665,10 @@ export function FileGraph({
   referenceFiles,
   qualityMetrics,
   title = "File Association Graph",
+  deprecatedFileProps,
   panelId = "file-graph",
   graphId = "file-graph-container",
   fileId = "",
-  areDeprecatedFilesVisible,
-  setAreDeprecatedFilesVisible,
 }: {
   files: FileObject[];
   fileFileSets: FileSetObject[];
@@ -674,13 +676,24 @@ export function FileGraph({
   derivedFromFiles: FileObject[];
   qualityMetrics: QualityMetricObject[];
   title?: string;
+  deprecatedFileProps?: DeprecatedFileFilterProps;
   panelId?: string;
   graphId?: string;
   fileId?: string;
-  areDeprecatedFilesVisible: boolean;
-  setAreDeprecatedFilesVisible: (visible: boolean) => void;
 }) {
   const tooltipAttr = useTooltip(`tooltip-${graphId}`);
+
+  // Handle deprecated file visibility state and control title from props if provided.
+  let areDeprecatedFilesVisible;
+  let setAreDeprecatedFilesVisible;
+  let deprecatedFileControlTitle;
+  if (deprecatedFileProps) {
+    ({
+      areDeprecatedFilesVisible,
+      setAreDeprecatedFilesVisible,
+      deprecatedFileControlTitle = "Include deprecated files",
+    } = deprecatedFileProps);
+  }
 
   // Filter out deprecated files if the user has not opted to include them.
   const currentFiles = trimDeprecatedFiles(files, areDeprecatedFilesVisible);
@@ -726,17 +739,21 @@ export function FileGraph({
         <DataAreaTitle id={panelId}>
           <div id="file-graph">{title}</div>
           <div className="flex gap-1">
-            <Checkbox
-              id={`file-graph-deprecated-${panelId}`}
-              checked={areDeprecatedFilesVisible}
-              name="Include deprecated files"
-              onClick={setAreDeprecatedFilesVisible}
-              className="items-center [&>input]:mr-0"
-            >
-              <div className="order-first mr-1 text-sm">
-                Include deprecated files
-              </div>
-            </Checkbox>
+            {deprecatedFileControlTitle && (
+              <Checkbox
+                id={`file-graph-deprecated-${panelId}`}
+                checked={areDeprecatedFilesVisible}
+                name="Include deprecated files"
+                onClick={() =>
+                  setAreDeprecatedFilesVisible((visible) => !visible)
+                }
+                className="items-center [&>input]:mr-0"
+              >
+                <div className="order-first mr-1 text-sm">
+                  {deprecatedFileControlTitle}
+                </div>
+              </Checkbox>
+            )}
             <TooltipRef tooltipAttr={tooltipAttr}>
               <DownloadTrigger
                 graphId={graphId}
@@ -767,10 +784,8 @@ export function FileGraph({
           </DataPanel>
         ) : isEmptyGraphAfterFiltering ? (
           <DataPanel>
-            <p>
-              The graph doesn{UC.rsquo}t appear because files are deprecated.
-              Select <b>Include deprecated files</b> to view the graph.
-            </p>
+            The graph doesn{UC.rsquo}t appear because files are deprecated.
+            Select <b>Include deprecated files</b> to view the graph.
           </DataPanel>
         ) : (
           <DataPanel>

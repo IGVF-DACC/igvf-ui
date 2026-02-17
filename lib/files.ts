@@ -57,6 +57,21 @@ export type IlluminaSequenceFiles = {
 };
 
 /**
+ * Use to pass properties to React components that can filter deprecated files, such as the file
+ * table and file graph components.
+ *
+ * @property areDeprecatedFilesVisible - True to show deprecated files, false to hide them
+ * @property setAreDeprecatedFilesVisible - Function to toggle visibility of deprecated files
+ * @property deprecatedFileControlTitle - Non-default title for the control that toggles deprecated
+ *           file visibility
+ */
+export interface DeprecatedFileFilterProps {
+  areDeprecatedFilesVisible: boolean;
+  setAreDeprecatedFilesVisible: (visible: boolean) => void;
+  deprecatedFileControlTitle?: string;
+}
+
+/**
  * List of statuses considered deprecated.
  */
 const deprecatedStatuses = ["archived", "revoked", "deleted"];
