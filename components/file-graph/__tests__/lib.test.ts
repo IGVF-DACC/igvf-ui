@@ -8,7 +8,6 @@ import {
   getFileMetrics,
   NODE_WIDTH,
   NODE_HEIGHT,
-  trimDeprecatedFiles,
   trimIsolatedFiles,
 } from "../lib";
 import { NODE_KINDS } from "../types";
@@ -1673,93 +1672,5 @@ describe("generateSVGContent", () => {
 
     // Unknown variable falls back to the original when colorVariableToColorHex returns falsy.
     expect(result).toContain('fill="var(--color-unknown-variable)"');
-  });
-});
-
-describe("Test trimDeprecatedFiles function", () => {
-  it("should return an empty array when given an empty array", () => {
-    let result = trimDeprecatedFiles([], true);
-    expect(result).toEqual([]);
-
-    result = trimDeprecatedFiles([], false);
-    expect(result).toEqual([]);
-  });
-
-  it("should filter out archived files when isArchivedVisible is false", () => {
-    const files: FileObject[] = [
-      {
-        "@id": "/files/file1",
-        "@type": ["File", "Item"],
-        content_type: "reads",
-        file_format: "fastq",
-        file_set: "/file-sets/test",
-        status: "archived",
-      },
-      {
-        "@id": "/files/file2",
-        "@type": ["File", "Item"],
-        content_type: "reads",
-        file_format: "fastq",
-        file_set: "/file-sets/test",
-        status: "released",
-      },
-    ];
-
-    const result = trimDeprecatedFiles(files, false);
-    expect(result).toHaveLength(1);
-    expect(result[0]["@id"]).toBe("/files/file2");
-  });
-
-  it("should return all files when isArchivedVisible is true", () => {
-    const files: FileObject[] = [
-      {
-        "@id": "/files/file1",
-        "@type": ["File", "Item"],
-        content_type: "reads",
-        file_format: "fastq",
-        file_set: "/file-sets/test",
-        status: "archived",
-      },
-      {
-        "@id": "/files/file2",
-        "@type": ["File", "Item"],
-        content_type: "reads",
-        file_format: "fastq",
-        file_set: "/file-sets/test",
-        status: "released",
-      },
-    ];
-
-    const result = trimDeprecatedFiles(files, true);
-    expect(result).toHaveLength(2);
-    expect(result.map((f) => f["@id"])).toEqual([
-      "/files/file1",
-      "/files/file2",
-    ]);
-  });
-
-  it("should handle files without a status field", () => {
-    const files: FileObject[] = [
-      {
-        "@id": "/files/file1",
-        "@type": ["File", "Item"],
-        content_type: "reads",
-        file_format: "fastq",
-        file_set: "/file-sets/test",
-        // No status field
-      },
-      {
-        "@id": "/files/file2",
-        "@type": ["File", "Item"],
-        content_type: "reads",
-        file_format: "fastq",
-        file_set: "/file-sets/test",
-        status: "released",
-      },
-    ];
-
-    const result = trimDeprecatedFiles(files, false);
-    expect(result).toHaveLength(1);
-    expect(result[0]["@id"]).toBe("/files/file2");
   });
 });

@@ -11,6 +11,7 @@ import {
   isFileObjectArray,
   paginateSequenceFileGroups,
   splitIlluminaSequenceFiles,
+  trimDeprecatedFiles,
 } from "../files";
 import FetchRequest from "../fetch-request";
 import type { Cell, RowComponentProps } from "../data-grid";
@@ -20,7 +21,7 @@ import type {
   FileSetObject,
   SampleObject,
   SearchResults,
-} from "../../globals.d";
+} from "../../globals";
 
 describe("Test the splitIlluminaSequenceFiles function", () => {
   it("returns all arrays when given an array of each types of files", () => {
@@ -2131,5 +2132,93 @@ describe("Test the isFileObjectArray function", () => {
     const notFiles = [{ accession: "TEST123" }, { accession: "TEST456" }];
 
     expect(isFileObjectArray(notFiles)).toBe(false);
+  });
+});
+
+describe("Test trimDeprecatedFiles function", () => {
+  it("should return an empty array when given an empty array", () => {
+    let result = trimDeprecatedFiles([], true);
+    expect(result).toEqual([]);
+
+    result = trimDeprecatedFiles([], false);
+    expect(result).toEqual([]);
+  });
+
+  it("should filter out archived files when isArchivedVisible is false", () => {
+    const files: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        status: "archived",
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        status: "released",
+      },
+    ];
+
+    const result = trimDeprecatedFiles(files, false);
+    expect(result).toHaveLength(1);
+    expect(result[0]["@id"]).toBe("/files/file2");
+  });
+
+  it("should return all files when isArchivedVisible is true", () => {
+    const files: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        status: "archived",
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        status: "released",
+      },
+    ];
+
+    const result = trimDeprecatedFiles(files, true);
+    expect(result).toHaveLength(2);
+    expect(result.map((f) => f["@id"])).toEqual([
+      "/files/file1",
+      "/files/file2",
+    ]);
+  });
+
+  it("should handle files without a status field", () => {
+    const files: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        // No status field
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        status: "released",
+      },
+    ];
+
+    const result = trimDeprecatedFiles(files, false);
+    expect(result).toHaveLength(1);
+    expect(result[0]["@id"]).toBe("/files/file2");
   });
 });
