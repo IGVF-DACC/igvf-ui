@@ -126,14 +126,14 @@ export function DataAreaTitle({
  * @param label - Label for the link
  * @param isExternal - True if the link is external
  * @param isDeletedVisible - True to include deleted items in the linked report
- * @param isArchivedVisible - True to include archived items in the linked report
+ * @param isDeprecatedVisible - True to include archived items in the linked report
  */
 export function DataAreaTitleLink({
   href,
   label,
   isExternal,
   isDeletedVisible = false,
-  isArchivedVisible = false,
+  isDeprecatedVisible = true,
   isDisabled = false,
   children,
 }: {
@@ -141,7 +141,7 @@ export function DataAreaTitleLink({
   label: string;
   isExternal?: boolean;
   isDeletedVisible?: boolean;
-  isArchivedVisible?: boolean;
+  isDeprecatedVisible?: boolean;
   isDisabled?: boolean;
   children: React.ReactNode;
 }) {
@@ -157,7 +157,7 @@ export function DataAreaTitleLink({
 
   // Add deprecated status query params to the query string if archived items shouldn't appear in
   // the report.
-  if (!isArchivedVisible) {
+  if (!isDeprecatedVisible) {
     finalHref = `${finalHref}${finalHref.includes("?") ? "&" : "?"}${deprecatedStatusQueryParam()}`;
   }
 

@@ -117,6 +117,7 @@ export default function FileTable({
   downloadQuery = null,
   controllerContent = null,
   isFilteredVisible = false,
+  hasDeprecatedOption = false,
   isDeletedVisible = false,
   externalDeprecated,
   secDirTitle = "Files",
@@ -143,7 +144,7 @@ export default function FileTable({
 
   // Create a batch-download controller if a file set is provided.
   const controller = fileSet
-    ? new FileTableController(fileSet, downloadQuery, localDeprecated.visible)
+    ? new FileTableController(fileSet, downloadQuery)
     : null;
 
   // Filter out deprecated files if the user has not opted to include them.
@@ -156,9 +157,9 @@ export default function FileTable({
     <>
       <DataAreaTitle id={panelId} secDirTitle={secDirTitle}>
         {title}
-        {(controller || finalReportLink) && (
+        {(controller || finalReportLink || hasDeprecatedOption) && (
           <div className="align-center flex gap-1">
-            {showDeprecatedToggle && (
+            {hasDeprecatedOption && showDeprecatedToggle && (
               <Checkbox
                 id={`file-table-deprecated-${panelId}`}
                 checked={localDeprecated.visible}
@@ -188,7 +189,9 @@ export default function FileTable({
                 label={label}
                 isDeletedVisible={isDeletedVisible}
                 isDisabled={visibleFiles.length === 0}
-                isArchivedVisible={localDeprecated.visible}
+                isDeprecatedVisible={
+                  !hasDeprecatedOption || localDeprecated.visible
+                }
               >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>
@@ -234,6 +237,8 @@ FileTable.propTypes = {
   isFilteredVisible: PropTypes.bool,
   // True to include deleted files in the linked report
   isDeletedVisible: PropTypes.bool,
+  // True allows user to toggle deprecated file visibility; `externalDeprecated` ignored if false
+  hasDeprecatedOption: PropTypes.bool,
   // Props related to viewing deprecated files; if not provided, defaults to local state management
   externalDeprecated: PropTypes.shape({
     visible: PropTypes.bool.isRequired,

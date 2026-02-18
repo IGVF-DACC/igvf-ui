@@ -304,6 +304,7 @@ export default function AnalysisSet({
                 files={files}
                 fileSet={analysisSet}
                 isFilteredVisible
+                hasDeprecatedOption
                 externalDeprecated={{
                   visible: areDeprecatedFilesVisible,
                   setVisible: setAreDeprecatedFilesVisible,

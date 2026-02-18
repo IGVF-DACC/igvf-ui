@@ -249,9 +249,10 @@ export default function PredictionSet({
                 files={files}
                 fileSet={predictionSet}
                 isFilteredVisible
-                deprecatedFileProps={{
-                  areDeprecatedFilesVisible,
-                  setAreDeprecatedFilesVisible,
+                hasDeprecatedOption
+                externalDeprecated={{
+                  visible: areDeprecatedFilesVisible,
+                  setVisible: setAreDeprecatedFilesVisible,
                 }}
               />
               <FileGraph
@@ -262,9 +263,9 @@ export default function PredictionSet({
                 derivedFromFiles={derivedFromFiles}
                 qualityMetrics={qualityMetrics}
                 fileId={predictionSet.accession}
-                deprecatedFileProps={{
-                  areDeprecatedFilesVisible,
-                  setAreDeprecatedFilesVisible,
+                externalDeprecated={{
+                  visible: areDeprecatedFilesVisible,
+                  setVisible: setAreDeprecatedFilesVisible,
                 }}
               />
             </>
