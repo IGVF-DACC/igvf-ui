@@ -17,9 +17,24 @@ export interface DeprecatedFileFilterProps {
 }
 
 /**
- * List of statuses considered deprecated. A set for O(1) lookups.
+ * List of statuses considered deprecated. Use a set for O(1) lookups.
  */
-const deprecatedStatusSet = new Set(["archived", "revoked", "deleted"]);
+const deprecatedStatuses = ["archived", "revoked", "deleted"] as const;
+type DeprecatedStatus = (typeof deprecatedStatuses)[number];
+const deprecatedStatusSet: ReadonlySet<DeprecatedStatus> = new Set(
+  deprecatedStatuses
+);
+
+/**
+ * Type guard that checks if a given status is considered deprecated based on the predefined set of
+ * deprecated statuses.
+ *
+ * @param status - Object status to check if it's considered deprecated
+ * @returns True if the object status is considered deprecated
+ */
+export function isDeprecatedStatus(status: string): status is DeprecatedStatus {
+  return deprecatedStatusSet.has(status as DeprecatedStatus);
+}
 
 /**
  * Remove files with archived, revoked, or deleted statuses if `isDeprecatedVisible` is false. Files
@@ -37,7 +52,7 @@ export function trimDeprecatedFiles(
   return isDeprecatedVisible
     ? nativeFiles
     : nativeFiles.filter(
-        (file) => file.status && !deprecatedStatusSet.has(file.status)
+        (file) => file.status && !isDeprecatedStatus(file.status)
       );
 }
 
@@ -95,7 +110,7 @@ export function computeFileDisplayData(
     return {
       visibleFiles: files,
       showDeprecatedToggle: files.some((file) =>
-        deprecatedStatusSet.has(file.status)
+        isDeprecatedStatus(file.status)
       ),
     };
   }
@@ -103,10 +118,25 @@ export function computeFileDisplayData(
   // Otherwise, filter out deprecated files and determine if the toggle should be shown based on
   // whether any deprecated files were filtered out.
   const nonDeprecatedFiles = files.filter(
-    (file) => !deprecatedStatusSet.has(file.status)
+    (file) => !isDeprecatedStatus(file.status)
   );
   return {
     visibleFiles: nonDeprecatedFiles,
     showDeprecatedToggle: nonDeprecatedFiles.length < files.length,
   };
+}
+
+/**
+ * Returns a query parameter string to filter for or against deprecated statuses based on the provided
+ * operator.
+ *
+ * @param operator - Either = or !=; != is default
+ * @returns Query parameter string to filter for or against deprecated statuses
+ */
+export function deprecatedStatusQueryParam(
+  operator: "!=" | "=" = "!="
+): string {
+  return deprecatedStatuses
+    .map((s) => `status${operator}${encodeURIComponent(s)}`)
+    .join("&");
 }

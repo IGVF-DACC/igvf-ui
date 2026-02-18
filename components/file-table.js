@@ -188,6 +188,7 @@ export default function FileTable({
                 label={label}
                 isDeletedVisible={isDeletedVisible}
                 isDisabled={visibleFiles.length === 0}
+                isArchivedVisible={localDeprecated.visible}
               >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>

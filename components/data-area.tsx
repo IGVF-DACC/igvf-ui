@@ -23,6 +23,7 @@ import { ButtonLink } from "./form-elements";
 import { secDirId } from "./section-directory";
 import SeparatedList from "./separated-list";
 // lib
+import { deprecatedStatusQueryParam } from "../lib/deprecated-files";
 import QueryString from "../lib/query-string";
 import { splitPathAndQueryString } from "../lib/query-utils";
 
@@ -125,12 +126,14 @@ export function DataAreaTitle({
  * @param label - Label for the link
  * @param isExternal - True if the link is external
  * @param isDeletedVisible - True to include deleted items in the linked report
+ * @param isArchivedVisible - True to include archived items in the linked report
  */
 export function DataAreaTitleLink({
   href,
   label,
   isExternal,
   isDeletedVisible = false,
+  isArchivedVisible = false,
   isDisabled = false,
   children,
 }: {
@@ -138,6 +141,7 @@ export function DataAreaTitleLink({
   label: string;
   isExternal?: boolean;
   isDeletedVisible?: boolean;
+  isArchivedVisible?: boolean;
   isDisabled?: boolean;
   children: React.ReactNode;
 }) {
@@ -149,6 +153,12 @@ export function DataAreaTitleLink({
     const query = new QueryString(queryString);
     query.replaceKeyValue("status", "deleted", "NEGATIVE");
     finalHref = `${path}?${query.format()}`;
+  }
+
+  // Add deprecated status query params to the query string if archived items shouldn't appear in
+  // the report.
+  if (!isArchivedVisible) {
+    finalHref = `${finalHref}${finalHref.includes("?") ? "&" : "?"}${deprecatedStatusQueryParam()}`;
   }
 
   return (
