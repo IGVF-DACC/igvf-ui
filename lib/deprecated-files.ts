@@ -55,7 +55,7 @@ export function resolveDeprecatedFileProps(
   externalDeprecated?: DeprecatedFileFilterProps,
   localDeprecated = {
     deprecatedVisible: false,
-    setDeprecatedVisible: () => {},
+    setDeprecatedVisible: (_visible: boolean) => {},
   }
 ): DeprecatedFileFilterProps {
   if (externalDeprecated) {
