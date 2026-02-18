@@ -62,16 +62,16 @@ export function trimDeprecatedFiles(
  * to either manage their own deprecated file state or receive it from a parent component, while
  * ensuring consistent control titles and behavior.
  *
- * @param localDeprecated - Local properties for tracking deprecated state and title
  * @param externalDeprecated - External properties for tracking deprecated state and title
+ * @param localDeprecated - Local properties for tracking deprecated state and title
  * @returns An object containing the resolved properties for tracking deprecated state and title.
  */
 export function resolveDeprecatedFileProps(
+  externalDeprecated?: DeprecatedFileFilterProps,
   localDeprecated = {
     deprecatedVisible: false,
     setDeprecatedVisible: (_visible: boolean) => {},
-  },
-  externalDeprecated?: DeprecatedFileFilterProps
+  }
 ): DeprecatedFileFilterProps {
   if (externalDeprecated) {
     return {

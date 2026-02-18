@@ -5,8 +5,8 @@ import { useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
+import Checkbox from "./checkbox";
 import { DataAreaTitle, DataAreaTitleLink, DataPanel } from "./data-area";
-import { DeprecatedFileFilterControl } from "./deprecated-files";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
 import SortableGrid from "./sortable-grid";
@@ -126,13 +126,10 @@ export default function FileTable({
   const [deprecatedVisible, setDeprecatedVisible] = useState(false);
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
-  const localDeprecated = resolveDeprecatedFileProps(
-    {
-      deprecatedVisible,
-      setDeprecatedVisible,
-    },
-    externalDeprecated
-  );
+  const localDeprecated = resolveDeprecatedFileProps(externalDeprecated, {
+    deprecatedVisible,
+    setDeprecatedVisible,
+  });
 
   // Compose the report link, either from the file set or the given link and label.
   const finalReportLink = fileSet
@@ -162,10 +159,19 @@ export default function FileTable({
         {(controller || finalReportLink) && (
           <div className="align-center flex gap-1">
             {showDeprecatedToggle && (
-              <DeprecatedFileFilterControl
-                panelId={panelId}
-                deprecatedData={localDeprecated}
-              />
+              <Checkbox
+                id={`file-table-deprecated-${panelId}`}
+                checked={localDeprecated.visible}
+                name="Include deprecated files"
+                onClick={() =>
+                  localDeprecated.setVisible((visible) => !visible)
+                }
+                className="items-center [&>input]:mr-0"
+              >
+                <div className="order-first mr-1 text-sm">
+                  {localDeprecated.controlTitle}
+                </div>
+              </Checkbox>
             )}
             {controller && (
               <BatchDownloadActuator

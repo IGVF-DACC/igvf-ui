@@ -1,21 +1,15 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
-import { useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
-import { DeprecatedFileFilterControl } from "./deprecated-files";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
 import Link from "./link-no-prefetch";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
-import {
-  computeFileDisplayData,
-  resolveDeprecatedFileProps,
-} from "../lib/deprecated-files";
 import { dataSize, truthyOrZero } from "../lib/general";
 
 /**
@@ -97,45 +91,22 @@ export default function DerivedFromTable({
   isDeletedVisible = false,
   panelId = "derived-from",
 }) {
-  // Local state for deprecated file visibility if not controlled externally via props
-  const [deprecatedVisible, setDeprecatedVisible] = useState(false);
-
-  // Filter out deprecated files if the user has not opted to include them.
-  const localDeprecated = resolveDeprecatedFileProps({
-    deprecatedVisible,
-    setDeprecatedVisible,
-  });
-
-  const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
-    derivedFrom,
-    localDeprecated
-  );
-
   return (
     <>
       <DataAreaTitle id={panelId}>
         {title}
-        <div className="align-center flex gap-1">
-          {showDeprecatedToggle && (
-            <DeprecatedFileFilterControl
-              panelId={panelId}
-              deprecatedData={localDeprecated}
-            />
-          )}
-          {reportLink && reportLabel && (
-            <DataAreaTitleLink
-              href={reportLink}
-              label={reportLabel}
-              isDeletedVisible={isDeletedVisible}
-              isArchivedVisible={localDeprecated.visible}
-            >
-              <TableCellsIcon className="h-4 w-4" />
-            </DataAreaTitleLink>
-          )}
-        </div>
+        {reportLink && reportLabel && (
+          <DataAreaTitleLink
+            href={reportLink}
+            label={reportLabel}
+            isDeletedVisible={isDeletedVisible}
+          >
+            <TableCellsIcon className="h-4 w-4" />
+          </DataAreaTitleLink>
+        )}
       </DataAreaTitle>
       <div className="overflow-hidden">
-        <SortableGrid data={visibleFiles} columns={columns} keyProp="@id" />
+        <SortableGrid data={derivedFrom} columns={columns} keyProp="@id" />
       </div>
     </>
   );
