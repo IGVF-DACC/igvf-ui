@@ -19,7 +19,7 @@ export interface DeprecatedFileFilterProps {
 /**
  * List of statuses considered deprecated. Use a set for O(1) lookups.
  */
-const deprecatedStatuses = ["archived", "revoked", "deleted"] as const;
+export const deprecatedStatuses = ["archived", "revoked", "deleted"] as const;
 type DeprecatedStatus = (typeof deprecatedStatuses)[number];
 const deprecatedStatusSet: ReadonlySet<DeprecatedStatus> = new Set(
   deprecatedStatuses

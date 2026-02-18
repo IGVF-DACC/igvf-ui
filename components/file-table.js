@@ -143,7 +143,7 @@ export default function FileTable({
 
   // Create a batch-download controller if a file set is provided.
   const controller = fileSet
-    ? new FileTableController(fileSet, downloadQuery)
+    ? new FileTableController(fileSet, downloadQuery, localDeprecated.visible)
     : null;
 
   // Filter out deprecated files if the user has not opted to include them.
