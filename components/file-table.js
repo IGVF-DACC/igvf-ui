@@ -1,6 +1,7 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
+import { useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
@@ -14,7 +15,10 @@ import { WorkflowList } from "./workflow";
 // lib
 import { FileTableController } from "../lib/batch-download";
 import { UC } from "../lib/constants";
-import { trimDeprecatedFiles } from "../lib/files";
+import {
+  computeFileDisplayData,
+  resolveDeprecatedFileProps,
+} from "../lib/deprecated-files";
 import { dataSize, truthyOrZero } from "../lib/general";
 
 const filesColumns = [
@@ -114,21 +118,18 @@ export default function FileTable({
   controllerContent = null,
   isFilteredVisible = false,
   isDeletedVisible = false,
-  deprecatedFileProps,
+  externalDeprecated,
   secDirTitle = "Files",
   panelId = "files",
 }) {
-  // Handle deprecated file visibility state and control title from props if provided.
-  let areDeprecatedFilesVisible;
-  let setAreDeprecatedFilesVisible;
-  let deprecatedFileControlTitle;
-  if (deprecatedFileProps) {
-    ({
-      areDeprecatedFilesVisible,
-      setAreDeprecatedFilesVisible,
-      deprecatedFileControlTitle = "Include deprecated files",
-    } = deprecatedFileProps);
-  }
+  // Local state for deprecated file visibility if not controlled externally via props
+  const [deprecatedVisible, setDeprecatedVisible] = useState(false);
+
+  // Determine the deprecated file visibility and toggle control, either from props or local state.
+  const localDeprecated = resolveDeprecatedFileProps(externalDeprecated, {
+    deprecatedVisible,
+    setDeprecatedVisible,
+  });
 
   // Compose the report link, either from the file set or the given link and label.
   const finalReportLink = fileSet
@@ -146,7 +147,10 @@ export default function FileTable({
     : null;
 
   // Filter out deprecated files if the user has not opted to include them.
-  const currentFiles = trimDeprecatedFiles(files, areDeprecatedFilesVisible);
+  const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
+    files,
+    localDeprecated
+  );
 
   return (
     <>
@@ -154,18 +158,18 @@ export default function FileTable({
         {title}
         {(controller || finalReportLink) && (
           <div className="align-center flex gap-1">
-            {deprecatedFileProps && (
+            {showDeprecatedToggle && (
               <Checkbox
                 id={`file-table-deprecated-${panelId}`}
-                checked={areDeprecatedFilesVisible}
+                checked={localDeprecated.visible}
                 name="Include deprecated files"
                 onClick={() =>
-                  setAreDeprecatedFilesVisible((visible) => !visible)
+                  localDeprecated.setVisible((visible) => !visible)
                 }
                 className="items-center [&>input]:mr-0"
               >
                 <div className="order-first mr-1 text-sm">
-                  {deprecatedFileControlTitle}
+                  {localDeprecated.controlTitle}
                 </div>
               </Checkbox>
             )}
@@ -174,7 +178,7 @@ export default function FileTable({
                 controller={controller}
                 label="Download files associated with this file set"
                 size="sm"
-                isDisabled={currentFiles.length === 0}
+                isDisabled={visibleFiles.length === 0}
               />
             )}
             {controllerContent}
@@ -183,7 +187,7 @@ export default function FileTable({
                 href={finalReportLink}
                 label={label}
                 isDeletedVisible={isDeletedVisible}
-                isDisabled={currentFiles.length === 0}
+                isDisabled={visibleFiles.length === 0}
               >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>
@@ -191,10 +195,10 @@ export default function FileTable({
           </div>
         )}
       </DataAreaTitle>
-      {currentFiles.length > 0 ? (
+      {visibleFiles.length > 0 ? (
         <div className="overflow-hidden">
           <SortableGrid
-            data={currentFiles}
+            data={visibleFiles}
             columns={filesColumns}
             keyProp="@id"
             meta={{ isFilteredVisible }}
@@ -202,8 +206,8 @@ export default function FileTable({
         </div>
       ) : (
         <DataPanel>
-          The table doesn{UC.rsquo}t appear because files are deprecated. Select{" "}
-          <b>Include deprecated files</b> to view the table.
+          The files don{UC.rsquo}t appear because they are deprecated. Select{" "}
+          <b>Include deprecated files</b> to view the files.
         </DataPanel>
       )}
     </>
@@ -229,11 +233,11 @@ FileTable.propTypes = {
   isFilteredVisible: PropTypes.bool,
   // True to include deleted files in the linked report
   isDeletedVisible: PropTypes.bool,
-  // Props related to handling deprecated files, including visibility state and control title
-  deprecatedFileProps: PropTypes.shape({
-    areDeprecatedFilesVisible: PropTypes.bool.isRequired,
-    setAreDeprecatedFilesVisible: PropTypes.func.isRequired,
-    deprecatedFileControlTitle: PropTypes.string,
+  // Props related to viewing deprecated files; if not provided, defaults to local state management
+  externalDeprecated: PropTypes.shape({
+    visible: PropTypes.bool.isRequired,
+    setVisible: PropTypes.func.isRequired,
+    controlTitle: PropTypes.string,
   }),
   // Title for this table's section directory entry if not default
   secDirTitle: PropTypes.string,
