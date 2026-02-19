@@ -164,7 +164,9 @@ export default function ModelSet({
             </DataArea>
           </DataPanel>
 
-          {files.length > 0 && <FileTable files={files} fileSet={modelSet} />}
+          {files.length > 0 && (
+            <FileTable files={files} fileSet={modelSet} hasDeprecatedOption />
+          )}
 
           {samples.length > 0 && (
             <SampleTable

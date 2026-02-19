@@ -286,6 +286,7 @@ export default function MeasurementSet({
                 fileSet={measurementSet}
                 title="Imaging Results"
                 panelId="imaging"
+                hasDeprecatedOption
               />
             )}
           </FileSetFilesTables>

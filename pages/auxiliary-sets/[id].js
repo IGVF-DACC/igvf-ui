@@ -133,6 +133,7 @@ export default function AuxiliarySet({
                 fileSet={auxiliarySet}
                 title="Tabular Files"
                 panelId="tabular"
+                hasDeprecatedOption
               />
             )}
           </FileSetFilesTables>
