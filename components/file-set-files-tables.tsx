@@ -92,6 +92,7 @@ export default function FileSetFilesTables({
           fileSet={fileSet}
           title="Other Raw Data Files"
           panelId="other-raw-files"
+          hasDeprecatedOption
         />
       )}
     </>

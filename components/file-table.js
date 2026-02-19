@@ -5,8 +5,8 @@ import { useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
-import Checkbox from "./checkbox";
 import { DataAreaTitle, DataAreaTitleLink, DataPanel } from "./data-area";
+import { DeprecatedFileFilterControl } from "./deprecated-files";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
 import SortableGrid from "./sortable-grid";
@@ -117,8 +117,8 @@ export default function FileTable({
   downloadQuery = null,
   controllerContent = null,
   isFilteredVisible = false,
-  hasDeprecatedOption = false,
   isDeletedVisible = false,
+  hasDeprecatedOption = false,
   externalDeprecated,
   secDirTitle = "Files",
   panelId = "files",
@@ -127,10 +127,13 @@ export default function FileTable({
   const [deprecatedVisible, setDeprecatedVisible] = useState(false);
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
-  const localDeprecated = resolveDeprecatedFileProps(externalDeprecated, {
-    deprecatedVisible,
-    setDeprecatedVisible,
-  });
+  const localDeprecated = resolveDeprecatedFileProps(
+    {
+      deprecatedVisible,
+      setDeprecatedVisible,
+    },
+    externalDeprecated
+  );
 
   // Compose the report link, either from the file set or the given link and label.
   const finalReportLink = fileSet
@@ -160,19 +163,10 @@ export default function FileTable({
         {(controller || finalReportLink || hasDeprecatedOption) && (
           <div className="align-center flex gap-1">
             {hasDeprecatedOption && showDeprecatedToggle && (
-              <Checkbox
-                id={`file-table-deprecated-${panelId}`}
-                checked={localDeprecated.visible}
-                name="Include deprecated files"
-                onClick={() =>
-                  localDeprecated.setVisible((visible) => !visible)
-                }
-                className="items-center [&>input]:mr-0"
-              >
-                <div className="order-first mr-1 text-sm">
-                  {localDeprecated.controlTitle}
-                </div>
-              </Checkbox>
+              <DeprecatedFileFilterControl
+                panelId={panelId}
+                deprecatedData={localDeprecated}
+              />
             )}
             {controller && (
               <BatchDownloadActuator
