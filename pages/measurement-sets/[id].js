@@ -51,6 +51,7 @@ import {
   requestSeqspecFiles,
   requestSupersedes,
 } from "../../lib/common-requests";
+import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
@@ -287,6 +288,9 @@ export default function MeasurementSet({
                 title="Imaging Results"
                 panelId="imaging"
                 hasDeprecatedOption
+                externalDeprecated={{
+                  defaultVisible: isDeprecatedStatus(measurementSet.status),
+                }}
               />
             )}
           </FileSetFilesTables>

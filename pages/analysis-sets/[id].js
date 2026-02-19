@@ -53,6 +53,7 @@ import {
   requestSamples,
   requestSupersedes,
 } from "../../lib/common-requests";
+import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { getAllDerivedFromFiles } from "../../lib/files";
@@ -98,8 +99,9 @@ export default function AnalysisSet({
     getPreferredAssayTitleDescriptionMap(profiles);
 
   // State for whether to include deprecated files in the file table and graph.
-  const [areDeprecatedFilesVisible, setAreDeprecatedFilesVisible] =
-    useState(false);
+  const [areDeprecatedFilesVisible, setAreDeprecatedFilesVisible] = useState(
+    isDeprecatedStatus(analysisSet.status)
+  );
 
   return (
     <>

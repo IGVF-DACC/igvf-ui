@@ -91,15 +91,20 @@ export function CuratedSetFileTable({
   reportLabel = "",
   downloadQuery = null,
   controllerContent = null,
+  defaultDeprecatedVisible = false,
   panelId = "files",
 }) {
   // Local state for deprecated file visibility if not controlled externally via props
-  const [deprecatedVisible, setDeprecatedVisible] = useState(false);
+  const [deprecatedVisible, setDeprecatedVisible] = useState(
+    defaultDeprecatedVisible
+  );
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
   const localDeprecated = resolveDeprecatedFileProps({
-    deprecatedVisible,
-    setDeprecatedVisible,
+    visible: deprecatedVisible,
+    setVisible: setDeprecatedVisible,
+    defaultVisible: defaultDeprecatedVisible,
+    controlTitle: "Include deprecated files",
   });
 
   // Compose the report link, either from the file set or the given link and label.
@@ -182,6 +187,8 @@ CuratedSetFileTable.propTypes = {
   downloadQuery: PropTypes.object,
   // Extra text or JSX content for the batch download controller
   controllerContent: PropTypes.node,
+  // Default visibility for deprecated files
+  defaultDeprecatedVisible: PropTypes.bool,
   // Unique ID for the table for the section directory
   panelId: PropTypes.string,
 };

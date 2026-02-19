@@ -16,6 +16,7 @@ import { WorkflowList } from "./workflow";
 import { FileTableController } from "../lib/batch-download";
 import { UC } from "../lib/constants";
 import {
+  computeDefaultDeprecatedVisibility,
   computeFileDisplayData,
   resolveDeprecatedFileProps,
 } from "../lib/deprecated-files";
@@ -123,15 +124,22 @@ export default function FileTable({
   secDirTitle = "Files",
   panelId = "files",
 }) {
-  // Local state for deprecated file visibility if not controlled externally via props
-  const [deprecatedVisible, setDeprecatedVisible] =
-    useState(!hasDeprecatedOption);
+  // Local state for deprecated file visibility if not controlled externally via props.
+  const defaultDeprecatedVisible = computeDefaultDeprecatedVisibility(
+    hasDeprecatedOption,
+    externalDeprecated
+  );
+  const [deprecatedVisible, setDeprecatedVisible] = useState(
+    defaultDeprecatedVisible
+  );
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
   const localDeprecated = resolveDeprecatedFileProps(
     {
-      deprecatedVisible,
-      setDeprecatedVisible,
+      visible: deprecatedVisible,
+      setVisible: setDeprecatedVisible,
+      defaultVisible: defaultDeprecatedVisible,
+      controlTitle: "Include deprecated files",
     },
     externalDeprecated
   );
@@ -236,8 +244,9 @@ FileTable.propTypes = {
   hasDeprecatedOption: PropTypes.bool,
   // Props related to viewing deprecated files; if not provided, defaults to local state management
   externalDeprecated: PropTypes.shape({
-    visible: PropTypes.bool.isRequired,
-    setVisible: PropTypes.func.isRequired,
+    visible: PropTypes.bool,
+    setVisible: PropTypes.func,
+    defaultVisible: PropTypes.bool,
     controlTitle: PropTypes.string,
   }),
   // Title for this table's section directory entry if not default

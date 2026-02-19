@@ -37,6 +37,7 @@ import {
   requestSamples,
   requestSupersedes,
 } from "../../lib/common-requests";
+import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -109,7 +110,11 @@ export default function CuratedSet({
           )}
           {donors.length > 0 && <DonorTable donors={donors} />}
           {files.length > 0 && (
-            <CuratedSetFileTable files={files} fileSet={curatedSet} />
+            <CuratedSetFileTable
+              files={files}
+              fileSet={curatedSet}
+              defaultDeprecatedVisible={isDeprecatedStatus(curatedSet.status)}
+            />
           )}
           {curatedSet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable

@@ -1,7 +1,7 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
@@ -329,6 +329,7 @@ export default function SequencingFileTable({
   seqspecFiles = [],
   seqspecDocuments = [],
   isDeletedVisible = false,
+  defaultDeprecatedVisible = false,
   panelId = "sequencing-files",
 }: {
   files: FileObject[];
@@ -340,18 +341,23 @@ export default function SequencingFileTable({
   seqspecFiles?: FileObject[];
   seqspecDocuments?: DocumentObject[];
   isDeletedVisible?: boolean;
+  defaultDeprecatedVisible?: boolean;
   panelId?: string;
 }) {
   // Currently viewed page of sequence files
   const [pageIndex, setPageIndex] = useState(0);
 
   // Local state for deprecated file visibility if not controlled externally via props
-  const [deprecatedVisible, setDeprecatedVisible] = useState(false);
+  const [deprecatedVisible, setDeprecatedVisible] = useState(
+    defaultDeprecatedVisible
+  );
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
   const localDeprecated = resolveDeprecatedFileProps({
-    deprecatedVisible,
-    setDeprecatedVisible,
+    visible: deprecatedVisible,
+    setVisible: setDeprecatedVisible,
+    defaultVisible: defaultDeprecatedVisible,
+    controlTitle: "Include deprecated files",
   });
 
   // Filter out deprecated files if the user has not opted to include them.
@@ -443,6 +449,11 @@ export default function SequencingFileTable({
   function setCurrentPageIndex(newIndex: number) {
     setPageIndex(newIndex);
   }
+
+  useEffect(() => {
+    // Reset to the first page whenever the number of data items changes.
+    setPageIndex(0);
+  }, [files.length]);
 
   return (
     <>

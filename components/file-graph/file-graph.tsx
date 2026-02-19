@@ -25,6 +25,7 @@ import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { UC } from "../../lib/constants";
 import {
+  computeDefaultDeprecatedVisibility,
   computeFileDisplayData,
   resolveDeprecatedFileProps,
   trimDeprecatedFiles,
@@ -59,7 +60,7 @@ import {
   type NodeMetadata,
 } from "./types";
 // root
-import type { FileObject, FileSetObject } from "../../globals.d";
+import type { FileObject, FileSetObject } from "../../globals";
 import "@xyflow/react/dist/style.css";
 
 /**
@@ -690,7 +691,13 @@ export function FileGraph({
   const tooltipAttr = useTooltip(`tooltip-${graphId}`);
 
   // Local state for deprecated file visibility if not controlled externally via props
-  const [deprecatedVisible, setDeprecatedVisible] = useState(false);
+  const defaultDeprecatedVisible = computeDefaultDeprecatedVisibility(
+    true,
+    externalDeprecated
+  );
+  const [deprecatedVisible, setDeprecatedVisible] = useState(
+    defaultDeprecatedVisible
+  );
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
   const localDeprecated = resolveDeprecatedFileProps(

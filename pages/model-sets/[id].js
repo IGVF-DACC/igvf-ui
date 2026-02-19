@@ -38,6 +38,7 @@ import {
   requestSamples,
   requestSupersedes,
 } from "../../lib/common-requests";
+import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -165,7 +166,14 @@ export default function ModelSet({
           </DataPanel>
 
           {files.length > 0 && (
-            <FileTable files={files} fileSet={modelSet} hasDeprecatedOption />
+            <FileTable
+              files={files}
+              fileSet={modelSet}
+              hasDeprecatedOption
+              externalDeprecated={{
+                defaultVisible: isDeprecatedStatus(modelSet.status),
+              }}
+            />
           )}
 
           {samples.length > 0 && (

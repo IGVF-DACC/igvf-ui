@@ -3,16 +3,25 @@ import type { FileObject } from "../globals";
 
 /**
  * Use to pass properties to React components that can filter deprecated files, such as the file
- * table and file graph components.
+ * table and file graph components. The parent component uses both `visible` and `setVisible` to
+ * track visibility state itself, otherwise `FileTable` and `FileGraph` manage their own local
+ * state for deprecated file visibility.
+ *
+ * When you don't use `visible` and `setVisible`, the deprecated file visibility defaults to false
+ * (i.e. deprecated files are hidden) unless you set `defaultVisible` to true. The label for the
+ * control defaults to "Include deprecated files" but you can override it by setting `controlTitle`
+ * to a custom string.
  *
  * @property visible - True to show deprecated files, false to hide them
  * @property setVisible - Function to toggle visibility of deprecated files
+ * @property defaultVisible - Default deprecated file visibility if external state not provided
  * @property controlTitle - Non-default title for the control that toggles deprecated file
  *                          visibility
  */
 export interface DeprecatedFileFilterProps {
-  visible: boolean;
-  setVisible: (visible: boolean) => void;
+  visible?: boolean;
+  setVisible?: (visible: boolean) => void;
+  defaultVisible?: boolean;
   controlTitle?: string;
 }
 
@@ -63,31 +72,26 @@ export function trimDeprecatedFiles(
  * ensuring consistent control titles and behavior.
  *
  * @param localDeprecated - Local properties for tracking deprecated state and title
- * @param externalDeprecated - External properties for tracking deprecated state and title
+ * @param [externalDeprecated] - External properties for tracking deprecated state and title
  * @returns An object containing the resolved properties for tracking deprecated state and title.
  */
 export function resolveDeprecatedFileProps(
-  localDeprecated = {
-    deprecatedVisible: false,
-    setDeprecatedVisible: (_visible: boolean) => {},
-  },
+  localDeprecated: DeprecatedFileFilterProps,
   externalDeprecated?: DeprecatedFileFilterProps
 ): DeprecatedFileFilterProps {
   if (externalDeprecated) {
     return {
-      visible: externalDeprecated.visible,
-      setVisible: externalDeprecated.setVisible,
+      visible: externalDeprecated.visible ?? localDeprecated.visible,
+      setVisible: externalDeprecated.setVisible ?? localDeprecated.setVisible,
+      defaultVisible:
+        externalDeprecated.defaultVisible ?? localDeprecated.defaultVisible,
       controlTitle:
         externalDeprecated.controlTitle || "Include deprecated files",
     };
   }
 
   // Return local state and default title.
-  return {
-    visible: localDeprecated.deprecatedVisible,
-    setVisible: localDeprecated.setDeprecatedVisible,
-    controlTitle: "Include deprecated files",
-  };
+  return localDeprecated;
 }
 
 /**
@@ -139,4 +143,20 @@ export function deprecatedStatusQueryParam(
   return deprecatedStatuses
     .map((s) => `status${operator}${encodeURIComponent(s)}`)
     .join("&");
+}
+
+/**
+ * Use this in components with a deprecated file filter control, like `<FileGraph>` and
+ * `<FileTable>`. Pass the `hasDeprecatedOption` and `externalDeprecated` props, and this function
+ * returns the default visibility to use for local deprecated visibility state.
+ *
+ * @param hasDeprecatedOption - Pass the `hasDeprecatedOption` property
+ * @param externalDeprecated  - Pass the `externalDeprecated` property
+ * @returns Default visibility to use for local deprecated visibility state
+ */
+export function computeDefaultDeprecatedVisibility(
+  hasDeprecatedOption?: boolean,
+  externalDeprecated?: DeprecatedFileFilterProps
+): boolean {
+  return !hasDeprecatedOption || externalDeprecated?.defaultVisible || false;
 }
