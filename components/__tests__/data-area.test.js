@@ -468,3 +468,69 @@ describe("Test the DataItemValueAnnotated component", () => {
     expect(listItems[2]).toHaveTextContent("medium");
   });
 });
+
+describe("Test DataAreaTitleLink component", () => {
+  it("renders a link with the correct href and label", () => {
+    render(
+      <DataAreaTitle>
+        Section Title
+        <DataAreaTitleLink href="/test-link" label="Test Link">
+          Test Link
+        </DataAreaTitleLink>
+      </DataAreaTitle>
+    );
+
+    const link = screen.getByRole("link", { name: "Test Link" });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/test-link?status!=deleted");
+  });
+
+  it("renders the link with the correct aria-label for accessibility", () => {
+    render(
+      <DataAreaTitle>
+        Section Title
+        <DataAreaTitleLink href="/test-link" label="Test Link">
+          Test Link
+        </DataAreaTitleLink>
+      </DataAreaTitle>
+    );
+
+    const link = screen.getByRole("link", { name: "Test Link" });
+    expect(link).toHaveAttribute("aria-label", "Test Link");
+  });
+
+  it("renders the correct link when deleted files should be shown", () => {
+    render(
+      <DataAreaTitle>
+        Section Title
+        <DataAreaTitleLink href="/test-link" label="Test Link" isDeletedVisible>
+          Test Link
+        </DataAreaTitleLink>
+      </DataAreaTitle>
+    );
+
+    const link = screen.getByRole("link", { name: "Test Link" });
+    expect(link).toHaveAttribute("href", "/test-link");
+  });
+
+  it("renders the correct link when `isDeprecatedVisible is false", () => {
+    render(
+      <DataAreaTitle>
+        Section Title
+        <DataAreaTitleLink
+          href="/test-link"
+          label="Test Link"
+          isDeprecatedVisible={false}
+        >
+          Test Link
+        </DataAreaTitleLink>
+      </DataAreaTitle>
+    );
+
+    const link = screen.getByRole("link", { name: "Test Link" });
+    expect(link).toHaveAttribute(
+      "href",
+      "/test-link?status!=archived&status!=revoked&status!=deleted"
+    );
+  });
+});

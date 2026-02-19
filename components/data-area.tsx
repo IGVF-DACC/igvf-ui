@@ -23,7 +23,7 @@ import { ButtonLink } from "./form-elements";
 import { secDirId } from "./section-directory";
 import SeparatedList from "./separated-list";
 // lib
-import { deprecatedStatusQueryParam } from "../lib/deprecated-files";
+import { deprecatedStatuses } from "../lib/deprecated-files";
 import QueryString from "../lib/query-string";
 import { splitPathAndQueryString } from "../lib/query-utils";
 
@@ -158,7 +158,13 @@ export function DataAreaTitleLink({
   // Add deprecated status query params to the query string if archived items shouldn't appear in
   // the report.
   if (!isDeprecatedVisible) {
-    finalHref = `${finalHref}${finalHref.includes("?") ? "&" : "?"}${deprecatedStatusQueryParam()}`;
+    const { path, queryString } = splitPathAndQueryString(finalHref);
+    const query = new QueryString(queryString);
+    deprecatedStatuses.forEach((deprecatedStatus) => {
+      query.deleteKeyValue("status", deprecatedStatus);
+      query.addKeyValue("status", deprecatedStatus, "NEGATIVE");
+    });
+    finalHref = `${path}?${query.format()}`;
   }
 
   return (

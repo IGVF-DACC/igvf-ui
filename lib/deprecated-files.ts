@@ -86,7 +86,9 @@ export function resolveDeprecatedFileProps(
       defaultVisible:
         externalDeprecated.defaultVisible ?? localDeprecated.defaultVisible,
       controlTitle:
-        externalDeprecated.controlTitle || "Include deprecated files",
+        externalDeprecated.controlTitle ||
+        localDeprecated.controlTitle ||
+        "Include deprecated files",
     };
   }
 
