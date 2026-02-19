@@ -702,8 +702,10 @@ export function FileGraph({
   // Determine the deprecated file visibility and toggle control, either from props or local state.
   const localDeprecated = resolveDeprecatedFileProps(
     {
-      deprecatedVisible,
-      setDeprecatedVisible,
+      visible: deprecatedVisible,
+      setVisible: setDeprecatedVisible,
+      defaultVisible: defaultDeprecatedVisible,
+      controlTitle: "Include deprecated files",
     },
     externalDeprecated
   );
