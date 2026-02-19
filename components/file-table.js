@@ -124,7 +124,8 @@ export default function FileTable({
   panelId = "files",
 }) {
   // Local state for deprecated file visibility if not controlled externally via props
-  const [deprecatedVisible, setDeprecatedVisible] = useState(false);
+  const [deprecatedVisible, setDeprecatedVisible] =
+    useState(!hasDeprecatedOption);
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
   const localDeprecated = resolveDeprecatedFileProps(
